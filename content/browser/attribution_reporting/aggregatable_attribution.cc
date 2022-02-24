@@ -21,12 +21,10 @@ AggregatableHistogramContribution::AggregatableHistogramContribution(
 }
 
 AggregatableAttribution::AggregatableAttribution(
-    StoredSource::Id source_id,
-    base::Time trigger_time,
+    AttributionInfo attribution_info,
     base::Time report_time,
     std::vector<AggregatableHistogramContribution> contributions)
-    : source_id(source_id),
-      trigger_time(trigger_time),
+    : attribution_info(std::move(attribution_info)),
       report_time(report_time),
       contributions(std::move(contributions)) {}
 

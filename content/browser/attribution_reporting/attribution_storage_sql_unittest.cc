@@ -374,14 +374,16 @@ TEST_F(AttributionStorageSqlTest,
        ClearDataRangeMultipleAggregatableAttributions) {
   OpenDatabase();
 
-  auto source = SourceBuilder().SetExpiry(base::Days(30)).Build();
-  storage()->StoreSource(source);
+  SourceBuilder source_builder;
+  storage()->StoreSource(source_builder.SetExpiry(base::Days(30)).Build());
 
-  StoredSource::Id source_id(1);
+  auto stored_source =
+      source_builder.SetSourceId(StoredSource::Id(1)).BuildStored();
+  AttributionInfoBuilder attribution_info_builder(stored_source);
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_1(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
@@ -390,7 +392,7 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_2(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
@@ -400,7 +402,7 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_3(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/7, /*value=*/8)});
@@ -411,7 +413,7 @@ TEST_F(AttributionStorageSqlTest,
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(),
-                          source.common_info().impression_origin()));
+                          stored_source.common_info().impression_origin()));
   EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
                   base::Time::Max()),
               IsEmpty());
@@ -430,14 +432,16 @@ TEST_F(AttributionStorageSqlTest,
        ClearDataWithVestigialAggregatableAttribution) {
   OpenDatabase();
 
-  auto source = SourceBuilder().SetExpiry(base::Days(30)).Build();
-  storage()->StoreSource(source);
+  SourceBuilder source_builder;
+  storage()->StoreSource(source_builder.SetExpiry(base::Days(30)).Build());
 
-  StoredSource::Id source_id(1);
+  auto stored_source =
+      source_builder.SetSourceId(StoredSource::Id(1)).BuildStored();
+  AttributionInfoBuilder attribution_info_builder(stored_source);
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_1(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
@@ -446,7 +450,7 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_2(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
@@ -458,7 +462,7 @@ TEST_F(AttributionStorageSqlTest,
   storage()->ClearData(
       base::Time::Now(), base::Time::Now(),
       base::BindRepeating(std::equal_to<url::Origin>(),
-                          source.common_info().impression_origin()));
+                          stored_source.common_info().impression_origin()));
   EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
                   base::Time::Max()),
               IsEmpty());
@@ -474,13 +478,15 @@ TEST_F(AttributionStorageSqlTest,
        ClearAllDataWithVestigialAggregatableAttribution) {
   OpenDatabase();
 
-  storage()->StoreSource(SourceBuilder().SetExpiry(base::Days(30)).Build());
+  SourceBuilder source_builder;
+  storage()->StoreSource(source_builder.SetExpiry(base::Days(30)).Build());
 
-  StoredSource::Id source_id(1);
+  AttributionInfoBuilder attribution_info_builder(
+      source_builder.SetSourceId(StoredSource::Id(1)).BuildStored());
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_1(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
@@ -489,7 +495,7 @@ TEST_F(AttributionStorageSqlTest,
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_2(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/3, /*value=*/4),
@@ -521,10 +527,14 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
     task_environment_.FastForwardBy(base::Days(1));
   }
 
-  StoredSource::Id source_id(1);
+  AttributionInfoBuilder attribution_info_builder(
+      SourceBuilder(start)
+          .SetExpiry(base::Days(30))
+          .SetSourceId(StoredSource::Id(1))
+          .BuildStored());
 
   AggregatableAttribution aggregatable_attribution_1(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
@@ -534,7 +544,7 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
 
   task_environment_.FastForwardBy(base::Days(1));
   AggregatableAttribution aggregatable_attribution_2(
-      source_id, /*trigger_time=*/base::Time::Now(),
+      attribution_info_builder.SetTime(base::Time::Now()).Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/5, /*value=*/6)});
@@ -891,8 +901,13 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
 
   storage()->StoreSource(SourceBuilder().Build());
 
+  auto attribution_info =
+      AttributionInfoBuilder(
+          SourceBuilder().SetSourceId(StoredSource::Id(1)).BuildStored())
+          .Build();
+
   AggregatableAttribution aggregatable_attribution(
-      StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+      attribution_info,
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2),
@@ -907,10 +922,8 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
       storage()->GetAggregatableContributionReportsForTesting(
           base::Time::Max()),
       ElementsAre(AttributionReport(
-          AttributionInfo(SourceBuilder().BuildStored(),
-                          aggregatable_attribution.trigger_time,
-                          /*debug_key=*/absl::nullopt),
-          aggregatable_attribution.report_time, DefaultExternalReportID(),
+          attribution_info, aggregatable_attribution.report_time,
+          DefaultExternalReportID(),
           AttributionReport::AggregatableContributionData(
               aggregatable_attribution.contributions[1],
               AttributionReport::AggregatableContributionData::Id(2)))));
@@ -930,11 +943,14 @@ TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithPendingAggregatableAttribution_NotDeleted) {
   OpenDatabase();
 
+  SourceBuilder source_builder;
   storage()->StoreSource(
-      SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
+      source_builder.SetExpiry(base::Milliseconds(3)).Build());
 
   AggregatableAttribution aggregatable_attribution(
-      StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+      AttributionInfoBuilder(
+          source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
+          .Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});
@@ -954,11 +970,14 @@ TEST_F(AttributionStorageSqlTest,
        ExpiredSourceWithSentAggregatableAttribution_Deleted) {
   OpenDatabase();
 
+  SourceBuilder source_builder;
   storage()->StoreSource(
-      SourceBuilder().SetExpiry(base::Milliseconds(3)).Build());
+      source_builder.SetExpiry(base::Milliseconds(3)).Build());
 
   AggregatableAttribution aggregatable_attribution(
-      StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
+      AttributionInfoBuilder(
+          source_builder.SetSourceId(StoredSource::Id(1)).BuildStored())
+          .Build(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
       {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)});

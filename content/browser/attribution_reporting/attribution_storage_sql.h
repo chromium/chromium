@@ -264,7 +264,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Checks if the given aggregatable attribution is allowed according to the
   // L1 budget policy specified by the delegate.
   RateLimitResult AggregatableAttributionAllowedForBudgetLimit(
-      const AggregatableAttribution& aggregatable_attribution)
+      const AggregatableAttribution& aggregatable_attribution,
+      int64_t aggregatable_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Adjusts the aggregatable budget for the source event by

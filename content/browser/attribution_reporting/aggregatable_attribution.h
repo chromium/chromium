@@ -12,7 +12,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
@@ -46,8 +46,7 @@ struct CONTENT_EXPORT AggregatableAttribution {
   using Id = base::StrongAlias<AggregatableAttribution, int64_t>;
 
   AggregatableAttribution(
-      StoredSource::Id source_id,
-      base::Time trigger_time,
+      AttributionInfo attribution_info,
       base::Time report_time,
       std::vector<AggregatableHistogramContribution> contributions);
   AggregatableAttribution(const AggregatableAttribution& other);
@@ -59,8 +58,7 @@ struct CONTENT_EXPORT AggregatableAttribution {
   // Returns the sum of the contributions (values) across all buckets.
   base::CheckedNumeric<int64_t> BudgetRequired() const;
 
-  StoredSource::Id source_id;
-  base::Time trigger_time;
+  AttributionInfo attribution_info;
   // Might be null if not set yet.
   base::Time report_time;
   std::vector<AggregatableHistogramContribution> contributions;
