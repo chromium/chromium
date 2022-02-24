@@ -44,6 +44,13 @@ class SavedDeviceRegistry;
 class FastPairRepositoryImpl : public FastPairRepository {
  public:
   FastPairRepositoryImpl();
+  FastPairRepositoryImpl(
+      std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
+      std::unique_ptr<FootprintsFetcher> footprints_fetcher,
+      std::unique_ptr<FastPairImageDecoder> image_decoder,
+      std::unique_ptr<DeviceIdMap> device_id_map,
+      std::unique_ptr<DeviceImageStore> device_image_store,
+      std::unique_ptr<SavedDeviceRegistry> saved_device_registry);
   FastPairRepositoryImpl(const FastPairRepositoryImpl&) = delete;
   FastPairRepositoryImpl& operator=(const FastPairRepositoryImpl&) = delete;
   ~FastPairRepositoryImpl() override;
@@ -51,8 +58,6 @@ class FastPairRepositoryImpl : public FastPairRepository {
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
-  void IsValidModelId(const std::string& hex_model_id,
-                      base::OnceCallback<void(bool)> callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
   void AssociateAccountKey(scoped_refptr<Device> device,

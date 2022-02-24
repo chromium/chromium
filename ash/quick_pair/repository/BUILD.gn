@@ -68,6 +68,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_device_metadata_http_fetcher.cc",
+    "fake_device_metadata_http_fetcher.h",
     "fake_fast_pair_repository.cc",
     "fake_fast_pair_repository.h",
     "fast_pair/fake_footprints_fetcher.cc",
@@ -88,7 +90,11 @@ static_library("test_support") {
     "//base/test:test_support",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//device/bluetooth",
+    "//net",
     "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//url",
   ]
@@ -103,6 +109,7 @@ source_set("unit_tests") {
     "fast_pair/device_metadata_fetcher_unittest.cc",
     "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
+    "fast_pair_repository_impl_unittest.cc",
   ]
 
   deps = [
@@ -112,6 +119,7 @@ source_set("unit_tests") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/services/bluetooth_config/public/cpp",

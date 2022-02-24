@@ -156,6 +156,12 @@ bool DeviceIdMap::HasPersistedRecordsForModelId(const std::string& model_id) {
   return false;
 }
 
+void DeviceIdMap::RefreshCacheForTest() {
+  QP_LOG(INFO) << __func__;
+  device_id_to_model_id_.clear();
+  LoadPersistedRecordsFromPrefs();
+}
+
 void DeviceIdMap::LoadPersistedRecordsFromPrefs() {
   QP_LOG(INFO) << __func__;
   PrefService* local_state = Shell::Get()->local_state();

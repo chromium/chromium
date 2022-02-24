@@ -48,11 +48,6 @@ class FastPairRepository {
   virtual void GetDeviceMetadata(const std::string& hex_model_id,
                                  DeviceMetadataCallback callback) = 0;
 
-  // Checks if the input |hex_model_id| is valid and notifies the requester
-  // through the provided |callback|.
-  virtual void IsValidModelId(const std::string& hex_model_id,
-                              ValidModelIdCallback callback) = 0;
-
   // Checks all account keys associated with the user's account against the
   // given filter.  If a match is found, metadata for the associated device will
   // be returned through the callback.

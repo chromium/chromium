@@ -52,8 +52,6 @@ class FakeFastPairRepository : public FastPairRepository {
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
-  void IsValidModelId(const std::string& hex_model_id,
-                      base::OnceCallback<void(bool)> callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
   void AssociateAccountKey(scoped_refptr<Device> device,

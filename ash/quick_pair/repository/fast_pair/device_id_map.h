@@ -60,6 +60,9 @@ class DeviceIdMap {
   // local state prefs, false otherwise.
   bool HasPersistedRecordsForModelId(const std::string& model_id);
 
+  // Clears the in-memory map and reloads from prefs.
+  void RefreshCacheForTest();
+
  private:
   // Returns the device ID that owns |address|, if found.
   absl::optional<const std::string> GetDeviceIdForAddress(

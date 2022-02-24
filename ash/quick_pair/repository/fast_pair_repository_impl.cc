@@ -38,6 +38,22 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
       footprints_last_updated_(base::Time::UnixEpoch()) {}
 
+FastPairRepositoryImpl::FastPairRepositoryImpl(
+    std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher,
+    std::unique_ptr<FootprintsFetcher> footprints_fetcher,
+    std::unique_ptr<FastPairImageDecoder> image_decoder,
+    std::unique_ptr<DeviceIdMap> device_id_map,
+    std::unique_ptr<DeviceImageStore> device_image_store,
+    std::unique_ptr<SavedDeviceRegistry> saved_device_registry)
+    : FastPairRepository(),
+      device_metadata_fetcher_(std::move(device_metadata_fetcher)),
+      footprints_fetcher_(std::move(footprints_fetcher)),
+      image_decoder_(std::move(image_decoder)),
+      device_id_map_(std::move(device_id_map)),
+      device_image_store_(std::move(device_image_store)),
+      saved_device_registry_(std::move(saved_device_registry)),
+      footprints_last_updated_(base::Time::UnixEpoch()) {}
+
 FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
 
 void FastPairRepositoryImpl::GetDeviceMetadata(
@@ -96,13 +112,6 @@ void FastPairRepositoryImpl::OnImageDecoded(
       std::make_unique<DeviceMetadata>(response, std::move(image));
   std::move(callback).Run(metadata_cache_[normalized_model_id].get(),
                           /*has_retryable_error=*/false);
-}
-
-void FastPairRepositoryImpl::IsValidModelId(
-    const std::string& hex_model_id,
-    base::OnceCallback<void(bool)> callback) {
-  QP_LOG(INFO) << __func__;
-  std::move(callback).Run(false);
 }
 
 void FastPairRepositoryImpl::CheckAccountKeys(
@@ -221,7 +230,7 @@ void FastPairRepositoryImpl::OnAddToFootprintsComplete(
     const std::vector<uint8_t>& account_key,
     bool success) {
   if (!success) {
-    // TODO(jonmann): Handle caching to disk + retries.
+    // TODO(b/221126805): Handle caching to disk + retries.
     return;
   }
 
@@ -239,7 +248,7 @@ bool FastPairRepositoryImpl::DeleteAssociatedDevice(
   QP_LOG(INFO) << __func__ << ": Removing device from Footprints.";
   footprints_fetcher_->DeleteUserDevice(base::HexEncode(*account_key),
                                         base::DoNothing());
-  // TODO(jonmann): Handle saving pending update to disk + retries.
+  // TODO(b/221126805): Handle saving pending update to disk + retries.
   return true;
 }
 

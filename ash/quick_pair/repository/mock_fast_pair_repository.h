@@ -26,10 +26,6 @@ class MockFastPairRepository : public FastPairRepository {
                DeviceMetadataCallback callback),
               (override));
   MOCK_METHOD(void,
-              IsValidModelId,
-              (const std::string& hex_model_id, ValidModelIdCallback callback),
-              (override));
-  MOCK_METHOD(void,
               CheckAccountKeys,
               (const AccountKeyFilter& account_key_filter,
                CheckAccountKeysCallback callback),

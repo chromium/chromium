@@ -58,12 +58,6 @@ void FakeFastPairRepository::GetDeviceMetadata(
   std::move(callback).Run(nullptr, /*has_retryable_error=*/true);
 }
 
-void FakeFastPairRepository::IsValidModelId(
-    const std::string& hex_model_id,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(data_.contains(base::ToUpperASCII(hex_model_id)));
-}
-
 void FakeFastPairRepository::CheckAccountKeys(
     const AccountKeyFilter& account_key_filter,
     CheckAccountKeysCallback callback) {
