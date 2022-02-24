@@ -215,7 +215,7 @@ void FastPairPairerImpl::OnGattClientInitializedCallback(
       // will not be able to find the device this way, and we will have to
       // connect via address and add ourselves as a pairing delegate.
 
-      QP_LOG(VERBOSE) << "Key-based pairing changed. Address: "
+      QP_LOG(VERBOSE) << "Sending pair request to device. Address: "
                       << device_address << ". Found device: "
                       << ((bt_device != nullptr) ? "Yes" : "No") << ".";
 
@@ -229,7 +229,8 @@ void FastPairPairerImpl::OnGattClientInitializedCallback(
                       PAIRING_DELEGATE_PRIORITY_HIGH);
 
         adapter_->ConnectDevice(
-            device_address, /*address_type=*/absl::nullopt,
+            device_address,
+            device::BluetoothDevice::AddressType::ADDR_TYPE_PUBLIC,
             base::BindOnce(&FastPairPairerImpl::OnConnectDevice,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindOnce(&FastPairPairerImpl::OnConnectError,
