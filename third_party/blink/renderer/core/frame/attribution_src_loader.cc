@@ -199,7 +199,7 @@ void AttributionSrcLoader::HandleSourceRegistration(
 
   // Treat invalid expiry, priority, and debug key as if they were not set.
   String priority_string;
-  if (object->GetString("source_priority", &priority_string)) {
+  if (object->GetString("priority", &priority_string)) {
     bool priority_is_valid = false;
     int64_t priority = priority_string.ToInt64Strict(&priority_is_valid);
     if (priority_is_valid)
