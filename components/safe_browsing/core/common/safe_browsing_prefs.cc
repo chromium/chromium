@@ -55,7 +55,7 @@ GURL GetSimplifiedURL(const GURL& url) {
   if (!url.is_valid() || !url.IsStandard())
     return GURL();
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   replacements.ClearQuery();
