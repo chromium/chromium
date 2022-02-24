@@ -491,6 +491,15 @@ void TabContainer::SnapToIdealBounds() {
 }
 
 void TabContainer::AnimateTabClosed(Tab* tab, int former_model_index) {
+  if (in_tab_close_ && GetTabCount() > 0 &&
+      override_available_width_for_tabs_ >
+          tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()) {
+    // Tab closing mode is no longer constraining tab widths - they're at full
+    // size. Exit tab closing mode so that it doesn't artificially inflate our
+    // bounds.
+    ExitTabClosingMode();
+  }
+
   const int tab_overlap = TabStyle::GetTabOverlap();
 
   // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
@@ -530,6 +539,54 @@ void TabContainer::StartResetDragAnimation(int tab_model_index) {
           this, GetTabAtModelIndex(tab_model_index),
           base::BindRepeating(&TabContainer::OnTabSlotAnimationProgressed,
                               base::Unretained(this))));
+}
+
+void TabContainer::EnterTabClosingMode(absl::optional<int> override_width) {
+  in_tab_close_ = true;
+  override_available_width_for_tabs_ = override_width;
+}
+
+void TabContainer::ExitTabClosingMode() {
+  in_tab_close_ = false;
+  override_available_width_for_tabs_.reset();
+}
+
+void TabContainer::OnTabWillBeRemovedAt(int model_index, bool was_active) {
+  // The tab at |model_index| has already been removed from the model, but is
+  // still in |tabs_view_model_|.  Index math with care!
+  const int model_count = GetTabCount() - 1;
+  const int tab_overlap = TabStyle::GetTabOverlap();
+  if (in_tab_close() && model_count > 0 && model_index != model_count) {
+    // The user closed a tab other than the last tab. Set
+    // override_available_width_for_tabs_ so that as the user closes tabs with
+    // the mouse a tab continues to fall under the mouse.
+    int next_active_index = controller_->GetActiveIndex();
+    DCHECK(IsValidModelIndex(next_active_index));
+    if (model_index <= next_active_index) {
+      // At this point, model's internal state has already been updated.
+      // |contents| has been detached from model and the active index has been
+      // updated. But the tab for |contents| isn't removed yet. Thus, we need to
+      // fix up next_active_index based on it.
+      next_active_index++;
+    }
+    Tab* next_active_tab = GetTabAtModelIndex(next_active_index);
+    Tab* tab_being_removed = GetTabAtModelIndex(model_index);
+
+    int size_delta = tab_being_removed->width();
+    if (!tab_being_removed->data().pinned && was_active &&
+        layout_helper_->active_tab_width() >
+            layout_helper_->inactive_tab_width()) {
+      // When removing an active, non-pinned tab, an inactive tab will be made
+      // active and thus given the active width. Thus the width being removed
+      // from the container is really the current width of whichever inactive
+      // tab will be made active.
+      size_delta = next_active_tab->width();
+    }
+
+    override_available_width_for_tabs_ =
+        tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
+        tab_overlap;
+  }
 }
 
 void TabContainer::PaintChildren(const views::PaintInfo& paint_info) {

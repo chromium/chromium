@@ -1080,7 +1080,7 @@ void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
   }
 
   if (group.has_value())
-    ExitTabClosingMode();
+    tab_container_->ExitTabClosingMode();
 }
 
 void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
@@ -1110,7 +1110,7 @@ void TabStrip::OnGroupVisualsChanged(
   bool is_collapsing = old_visuals && !old_visuals->is_collapsed() &&
                        new_visuals->is_collapsed();
   if (!is_collapsing)
-    ExitTabClosingMode();
+    tab_container_->ExitTabClosingMode();
   UpdateIdealBounds();
   tab_container_->AnimateToIdealBounds();
 }
@@ -1119,7 +1119,6 @@ void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                               bool is_collapsing,
                               ToggleTabGroupCollapsedStateOrigin origin) {
   if (is_collapsing && GetWidget()) {
-    in_tab_close_ = true;
     if (origin == ToggleTabGroupCollapsedStateOrigin::kMouse) {
       AddMessageLoopObserver();
     } else if (origin == ToggleTabGroupCollapsedStateOrigin::kGesture) {
@@ -1142,12 +1141,12 @@ void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
                                  empty_group_title_adjustment;
     const int collapsed_header_width =
         title_chip_width + 2 * TabGroupUnderline::GetStrokeInset();
-    override_available_width_for_tabs_ =
+    tab_container_->EnterTabClosingMode(
         ideal_bounds(GetModelCount() - 1).right() -
         tab_container_->group_views()[group]->GetBounds().width() +
-        collapsed_header_width;
+        collapsed_header_width);
   } else {
-    ExitTabClosingMode();
+    tab_container_->ExitTabClosingMode();
   }
 }
 
@@ -1876,9 +1875,8 @@ gfx::Size TabStrip::CalculatePreferredSize() const {
     preferred_width = max_x;
   } else {
     preferred_width =
-        override_available_width_for_tabs_
-            ? override_available_width_for_tabs_.value()
-            : tab_container_->layout_helper()->CalculatePreferredWidth();
+        tab_container_->override_available_width_for_tabs().value_or(
+            tab_container_->layout_helper()->CalculatePreferredWidth());
   }
 
   return gfx::Size(preferred_width, GetLayoutConstant(TAB_HEIGHT));
@@ -2061,7 +2059,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
 void TabStrip::StartInsertTabAnimation(int model_index) {
   PrepareForAnimation();
 
-  ExitTabClosingMode();
+  tab_container_->ExitTabClosingMode();
 
   gfx::Rect bounds = tab_at(model_index)->bounds();
   bounds.set_height(GetLayoutConstant(TAB_HEIGHT));
@@ -2090,37 +2088,7 @@ void TabStrip::StartInsertTabAnimation(int model_index) {
 }
 
 void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
-  const int model_count = GetModelCount();
-  const int tab_overlap = TabStyle::GetTabOverlap();
-  if (in_tab_close_ && model_count > 0 && model_index != model_count) {
-    // The user closed a tab other than the last tab. Set
-    // override_available_width_for_tabs_ so that as the user closes tabs with
-    // the mouse a tab continues to fall under the mouse.
-    int next_active_index = controller_->GetActiveIndex();
-    DCHECK(IsValidModelIndex(next_active_index));
-    if (model_index <= next_active_index) {
-      // At this point, model's internal state has already been updated.
-      // |contents| has been detached from model and the active index has been
-      // updated. But the tab for |contents| isn't removed yet. Thus, we need to
-      // fix up next_active_index based on it.
-      next_active_index++;
-    }
-    Tab* next_active_tab = tab_at(next_active_index);
-    Tab* tab_being_removed = tab_at(model_index);
-
-    int size_delta = tab_being_removed->width();
-    if (!tab_being_removed->data().pinned && was_active &&
-        GetActiveTabWidth() > GetInactiveTabWidth()) {
-      // When removing an active, non-pinned tab, an inactive tab will be made
-      // active and thus given the active width. Thus the width being removed
-      // from the strip is really the current width of whichever inactive tab
-      // will be made active.
-      size_delta = next_active_tab->width();
-    }
-
-    override_available_width_for_tabs_ =
-        ideal_bounds(model_count).right() - size_delta + tab_overlap;
-  }
+  tab_container_->OnTabWillBeRemovedAt(model_index, was_active);
 
   PrepareForAnimation();
 
@@ -2132,15 +2100,6 @@ void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
   UpdateIdealBounds();
   tab_container_->AnimateToIdealBounds();
 
-  if (in_tab_close_ && model_count > 0 &&
-      override_available_width_for_tabs_ >
-          ideal_bounds(model_count - 1).right()) {
-    // Tab closing mode is no longer constraining tab widths - they're at full
-    // size. Exit tab closing mode so that it doesn't artificially inflate the
-    // tabstrip's bounds.
-    ExitTabClosingMode();
-  }
-
   // Animate the tab closed.
   tab_container_->AnimateTabClosed(tab, model_index);
 }
@@ -2151,13 +2110,8 @@ void TabStrip::StartMoveTabAnimation() {
   tab_container_->AnimateToIdealBounds();
 }
 
-void TabStrip::ExitTabClosingMode() {
-  in_tab_close_ = false;
-  override_available_width_for_tabs_.reset();
-}
-
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
-  return in_tab_close_;
+  return tab_container_->in_tab_close();
 }
 
 bool TabStrip::TitlebarBackgroundIsTransparent() const {
@@ -2245,14 +2199,17 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
   if (!controller_->BeforeCloseTab(model_index, source))
     return;
 
-  if (!in_tab_close_ && IsAnimating()) {
+  if (!tab_container_->in_tab_close() && IsAnimating()) {
     // Cancel any current animations. We do this as remove uses the current
     // ideal bounds and we need to know ideal bounds is in a good state.
     StopAnimating(true);
   }
 
   if (GetWidget()) {
-    in_tab_close_ = true;
+    // Enter tab closing mode now, but wait to calculate the width constraint
+    // until RemoveTabAt() is called, since there are code paths that go through
+    // RemoveTabAt() but not this method that must also set that constraint.
+    tab_container_->EnterTabClosingMode(absl::nullopt);
     resize_layout_timer_.Stop();
     if (source == CLOSE_TAB_FROM_TOUCH)
       StartResizeLayoutTabsFromTouchTimer();
@@ -2457,7 +2414,7 @@ void TabStrip::ResizeLayoutTabs() {
   // keep spying on messages forever.
   RemoveMessageLoopObserver();
 
-  ExitTabClosingMode();
+  tab_container_->ExitTabClosingMode();
   int pinned_tab_count = GetPinnedTabCount();
   if (pinned_tab_count == GetTabCount()) {
     // Only pinned tabs, we know the tab widths won't have changed (all
@@ -2709,7 +2666,7 @@ void TabStrip::UpdateIdealBounds() {
 }
 
 int TabStrip::CalculateAvailableWidthForTabs() const {
-  return override_available_width_for_tabs_.value_or(
+  return tab_container_->override_available_width_for_tabs().value_or(
       GetAvailableWidthForTabStrip());
 }
 
@@ -2726,7 +2683,7 @@ void TabStrip::StartResizeLayoutAnimation() {
 }
 
 void TabStrip::StartPinnedTabAnimation() {
-  ExitTabClosingMode();
+  tab_container_->ExitTabClosingMode();
 
   PrepareForAnimation();
 

@@ -429,8 +429,6 @@ class TabStrip : public views::View,
   // move.
   void StartMoveTabAnimation();
 
-  void ExitTabClosingMode();
-
   // Returns whether the close button should be highlighted after a remove.
   bool ShouldHighlightCloseButtonAfterRemove();
 
@@ -593,18 +591,8 @@ class TabStrip : public views::View,
   // Responsible for animating the scroll of the tab strip.
   std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
-  // If this value is defined, it is used as the width to lay out tabs
-  // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
-  // tabs with the mouse, and is used to control which tab will end up under the
-  // cursor after the close animation completes.
-  absl::optional<int> override_available_width_for_tabs_;
-
   // The background offset used by inactive tabs to match the frame image.
   int background_offset_ = 0;
-
-  // True if PrepareForCloseAt has been invoked. When true remove animations
-  // preserve current tab bounds.
-  bool in_tab_close_ = false;
 
   // Valid for the lifetime of a drag over us.
   std::unique_ptr<DropArrow> drop_arrow_;

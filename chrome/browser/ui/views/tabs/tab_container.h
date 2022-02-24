@@ -88,6 +88,16 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   void AnimateTabClosed(Tab* tab, int former_model_index);
   void StartResetDragAnimation(int tab_model_index);
 
+  void EnterTabClosingMode(absl::optional<int> override_width);
+  void ExitTabClosingMode();
+
+  bool in_tab_close() { return in_tab_close_; }
+  absl::optional<int> override_available_width_for_tabs() {
+    return override_available_width_for_tabs_;
+  }
+
+  void OnTabWillBeRemovedAt(int model_index, bool was_active);
+
   // TODO (1295774): Move callers down into TabContainer so this
   // encapsulation-breaking getter can be removed.
   TabStripLayoutHelper* layout_helper() const { return layout_helper_.get(); }
@@ -156,6 +166,18 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   views::BoundsAnimator bounds_animator_;
 
   std::unique_ptr<TabStripLayoutHelper> layout_helper_;
+
+  // If this value is defined, it is used as the width to lay out tabs
+  // (instead of GetAvailableWidthForTabStrip()). It is defined when closing
+  // tabs with the mouse, and is used to control which tab will end up under the
+  // cursor after the close animation completes.
+  absl::optional<int> override_available_width_for_tabs_;
+
+  // True if EnterTabClosingMode has been invoked. Currently, this happens when
+  // a tab is closed with the mouse/touch and when collapsing a tab group. When
+  // true, remove animations preserve current tab bounds, making tabs move more
+  // predictably in case the user wants to perform more mouse-based actions.
+  bool in_tab_close_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_
