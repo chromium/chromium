@@ -418,7 +418,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
             constFpses = prefFps === 30 ? [30, 60] : [60, 30];
           } else {
             constFpses = [
-              ...constFpsInfo.filter((fps) => fps >= 30).sort().reverse(),
+              ...constFpsInfo.filter((fps) => fps >= 30).sort((a, b) => b - a),
               null,
             ];
           }
@@ -477,7 +477,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
             constFpses = prefFps === 30 ? [30, 60] : [60, 30];
           } else {
             constFpses = [
-              ...constFpsInfo.filter((fps) => fps >= 30).sort().reverse(),
+              ...constFpsInfo.filter((fps) => fps >= 30).sort((a, b) => b - a),
               null,
             ];
           }

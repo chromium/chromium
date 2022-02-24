@@ -560,6 +560,8 @@ module.exports = {
     rules: {
       // go/tsstyle#use-readonly
       '@typescript-eslint/prefer-readonly': 'error',
+
+      '@typescript-eslint/require-array-sort-compare': 'error',
     },
   }],
 };
