@@ -3514,7 +3514,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4662373422909645029">L'àlies no pot incloure nombres</translation>
 <translation id="4662788913887017617">Comparteix aquesta adreça d'interès amb el teu iPhone</translation>
 <translation id="4663373278480897665">La càmera es pot utilitzar</translation>
-<translation id="4664289193573249666">Gestiona un DNS segur a la configuració de Chrome OS</translation>
+<translation id="4664289193573249666">Gestiona el DNS segur a la configuració de Chrome OS</translation>
 <translation id="4664482161435122549">Error d'exportació PKCS #12</translation>
 <translation id="4665014895760275686">Fabricant</translation>
 <translation id="4665446389743427678">Se suprimiran totes les dades emmagatzemades per <ph name="SITE" />.</translation>
@@ -5335,7 +5335,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="666099631117081440">Servidors d'impressió</translation>
 <translation id="6662931079349804328">S'ha modificat la política d'Enterprise. El botó Experiments s'ha suprimit de la barra d'eines.</translation>
 <translation id="6663190258859265334">Fes un Powerwash al dispositiu <ph name="DEVICE_TYPE" /> i torna a la versió anterior.</translation>
-<translation id="6664237456442406323">L'ordinador està configurat amb un ID de maquinari amb un format incorrecte. Això impedeix a Chrome OS actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
+<translation id="6664237456442406323">Malauradament, l'ordinador està configurat amb un identificador de maquinari que té un format incorrecte. Això impedeix a Chrome OS actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">S'ha produït un error en obrir el teu perfil. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="666731172850799929">Obre a <ph name="APP_NAME" /></translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ja està disponible</translation>
