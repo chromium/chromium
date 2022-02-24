@@ -26,9 +26,7 @@
 #endif
 
 namespace {
-#if !TARGET_OS_MACCATALYST
 constexpr CGFloat preferredCornerRadius = 20;
-#endif  // TARGET_OS_MACCATALYST
 }  // namespace
 
 @interface PasswordSuggestionCoordinator () <
@@ -70,7 +68,6 @@ constexpr CGFloat preferredCornerRadius = 20;
   self.viewController.presentationController.delegate = self;
   self.viewController.actionHandler = self;
 
-#if !TARGET_OS_MACCATALYST
   if (@available(iOS 15, *)) {
     self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
     UISheetPresentationController* presentationController =
@@ -82,9 +79,6 @@ constexpr CGFloat preferredCornerRadius = 20;
     ];
     presentationController.preferredCornerRadius = preferredCornerRadius;
   } else {
-#else
-  {
-#endif
     self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
   }
 
