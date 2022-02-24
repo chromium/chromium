@@ -574,6 +574,23 @@ TEST(ValuesTest, Insert) {
 // TODO(dcheng): Add more tests directly exercising the updated dictionary and
 // list APIs. For now, most of the updated APIs are tested indirectly via the
 // legacy APIs that are largely backed by the updated APIs.
+TEST(ValuesTest, DictFindByDottedPath) {
+  Value::Dict dict;
+
+  EXPECT_EQ(nullptr, dict.FindByDottedPath("a.b.c"));
+
+  Value::Dict& a_dict = dict.Set("a", Value::Dict())->GetDict();
+  EXPECT_EQ(nullptr, dict.FindByDottedPath("a.b.c"));
+
+  Value::Dict& b_dict = a_dict.Set("b", Value::Dict())->GetDict();
+  EXPECT_EQ(nullptr, dict.FindByDottedPath("a.b.c"));
+
+  b_dict.Set("c", true);
+  const Value* value = dict.FindByDottedPath("a.b.c");
+  ASSERT_NE(nullptr, value);
+  EXPECT_TRUE(value->GetBool());
+}
+
 TEST(ValuesTest, ListErase) {
   Value::List list;
   list.Append(1);
