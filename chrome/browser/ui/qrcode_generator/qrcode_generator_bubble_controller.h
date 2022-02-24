@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_QRCODE_GENERATOR_QRCODE_GENERATOR_BUBBLE_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
@@ -47,16 +48,19 @@ class QRCodeGeneratorBubbleController
   // Returns nullptr if no bubble is currently shown.
   QRCodeGeneratorBubbleView* qrcode_generator_bubble_view() const;
 
-  // Handler for when the bubble is dismissed.
-  void OnBubbleClosed();
-
-  void OnBackButtonPressed();
+  base::OnceClosure GetOnBubbleClosedCallback();
+  base::OnceClosure GetOnBackButtonPressedCallback();
 
  protected:
   explicit QRCodeGeneratorBubbleController(content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<QRCodeGeneratorBubbleController>;
+
+  // Handler for when the bubble is dismissed.
+  void OnBubbleClosed();
+  // Handler for when the back button is pressed.
+  void OnBackButtonPressed();
 
   void UpdateIcon();
 
@@ -67,6 +71,8 @@ class QRCodeGeneratorBubbleController
   bool bubble_shown_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<QRCodeGeneratorBubbleController> weak_ptr_factory_{this};
 };
 
 }  // namespace qrcode_generator
