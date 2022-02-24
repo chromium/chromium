@@ -1299,6 +1299,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_TYPE" desc="ONC Property label for VPN.Type">
         Provider type
       </message>
+      <message name="IDS_ONC_VPN_AUTH_TYPE" desc="ONC Porperty label for VPN.IPsec.AuthenticationType">
+        Authentication type
+      </message>
       <message name="IDS_ONC_VPN_IPSEC_GROUP" desc="ONC Property label for VPN.IPSec.Group">
         Group name
       </message>
@@ -1325,12 +1328,6 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC" desc="ONC Property label for VPN.Type.L2TP-IPSec">
         L2TP/IPsec
-      </message>
-      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_PSK" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec with AuthenticationType = PSK">
-        L2TP/IPsec + pre-shared key
-      </message>
-      <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC_CERT" desc="ONC Property label for configuring VPN.Type.L2TP-IPSec  with AuthenticationType = Cert">
-        L2TP/IPsec + user certificate
       </message>
       <message name="IDS_ONC_VPN_OPENVPN_EXTRA_HOSTS" desc="ONC Property label for VPN.OpenVPN.ExtraHosts">
         Extra hosts

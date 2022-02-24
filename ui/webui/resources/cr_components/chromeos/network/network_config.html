@@ -96,7 +96,12 @@
               property="[[managedProperties_.typeProperties.vpn.host]]">
           </network-config-input>
         </template>
-        <template is="dom-if" if="[[showVpn_.L2TPIPsec]]">
+        <template is="dom-if" if="[[showVpn_.L2TPIPsec]]" restamp>
+          <network-config-select label="[[i18n('OncVPN-IPsec-AuthType')]]"
+              id="vpn-ipsec-auth-type" value="{{ipsecAuthType_}}"
+              items="[[ipsecAuthTypeItems_]]" onc-prefix="VPN.IPsec.AuthType"
+              disabled="[[hasGuid_(guid)]]">
+          </network-config-select>
           <network-config-input label="[[i18n('OncVPN-L2TP-Username')]]"
               value="{{configProperties_.typeConfig.vpn.l2tp.username}}"
               property="[[managedProperties_.typeProperties.vpn.l2tp.username]]">
@@ -109,8 +114,9 @@
               value="{{configProperties_.typeConfig.vpn.ipSec.group}}"
               property="[[managedProperties_.typeProperties.vpn.ipSec.group]]">
           </network-config-input>
-          <template is="dom-if" if="[[!showVpn_.Cert]]">
+          <template is="dom-if" if="[[!showVpn_.Cert]]" restamp>
             <network-password-input label="[[i18n('OncVPN-IPsec-PSK')]]"
+                id="ipsec-psk-input"
                 value="{{configProperties_.typeConfig.vpn.ipSec.psk}}"
                 property="[[managedProperties_.typeProperties.vpn.ipSec.psk]]">
             </network-password-input>
@@ -130,7 +136,7 @@
               property="[[managedProperties_.typeProperties.vpn.openVpn.otp]]">
           </network-config-input>
         </template>
-        <template is="dom-if" if="[[showVpn_.Cert]]">
+        <template is="dom-if" if="[[showVpn_.Cert]]" restamp>
           <network-config-select id="vpnServerCa"
               label="[[i18n('OncEAP-ServerCA')]]"
               value="{{selectedServerCaHash_}}" items="[[serverCaCerts_]]"

@@ -162,9 +162,48 @@ suite('network-config', function() {
       PolymerTest.clearBody();
     });
 
+    test('Switch VPN Type', function() {
+      initNetworkConfig();
+
+      // Authentication type dropdown should only appear for L2TP/IPsec. Check
+      // that if this dom appear/disappear properly when switching VPN types.
+      assertFalse(!!networkConfig.$$('#vpn-ipsec-auth-type'));
+
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      Polymer.dom.flush();
+      assertTrue(!!networkConfig.$$('#vpn-ipsec-auth-type'));
+
+      networkConfig.set('vpnType_', 'OpenVPN');
+      Polymer.dom.flush();
+      assertFalse(!!networkConfig.$$('#vpn-ipsec-auth-type'));
+    });
+
+    test('Switch Authentication Type', function() {
+      initNetworkConfig();
+
+      // Switch to L2TP/IPsec, the authentication type is default to PSK. The
+      // PSK input should appear and the dropdowns for server CA and user
+      // certificate should be hidden.
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      Polymer.dom.flush();
+      assertEquals('PSK', networkConfig.ipsecAuthType_);
+      assertTrue(!!networkConfig.$$('#ipsec-psk-input'));
+      assertFalse(!!networkConfig.$$('#vpnServerCa'));
+      assertFalse(!!networkConfig.$$('#vpnUserCert'));
+
+      // Switch the authentication type to Cert. The PSK input should be hidden
+      // and the dropdowns for server CA and user certificate should appear.
+      networkConfig.set('ipsecAuthType_', 'Cert');
+      Polymer.dom.flush();
+      assertFalse(!!networkConfig.$$('#ipsec-psk-input'));
+      assertTrue(!!networkConfig.$$('#vpnServerCa'));
+      assertTrue(!!networkConfig.$$('#vpnUserCert'));
+    });
+
     test('No Certs', function() {
       initNetworkConfig();
-      networkConfig.set('vpnType_', 'L2TP_IPsec_Cert');
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      networkConfig.set('ipsecAuthType_', 'Cert');
       return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
         return flushAsync().then(() => {
           // Check that with no certificates, 'do-not-check' and 'no-certs' are
@@ -190,7 +229,8 @@ suite('network-config', function() {
             deviceWide: false
           }]);
       initNetworkConfig();
-      networkConfig.set('vpnType_', 'L2TP_IPsec_Cert');
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      networkConfig.set('ipsecAuthType_', 'Cert');
       return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
         return flushAsync().then(() => {
           // The first Server CA and User certificate should be selected.
