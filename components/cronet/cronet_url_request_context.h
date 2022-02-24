@@ -11,12 +11,14 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "components/prefs/json_pref_store.h"
+#include "net/base/network_change_notifier.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -35,6 +37,7 @@ enum EffectiveConnectionType;
 class ProxyConfigService;
 class NetLog;
 class URLRequestContext;
+class URLRequestContextBuilder;
 class URLRequestContextGetter;
 class FileNetLogObserver;
 }  // namespace net
@@ -118,12 +121,18 @@ class CronetURLRequestContext {
   // Returns true if running on network thread.
   bool IsOnNetworkThread() const;
 
-  // Returns net::URLRequestContext owned by |this|.
-  net::URLRequestContext* GetURLRequestContext();
+  // Returns the net::URLRequestContext associated with `network`.
+  // kInvalidNetworkHandle represent the default context: this one will always
+  // be present and used whenever a requests doesn't specify a target network
+  // (currently the only possible behavior).
+  net::URLRequestContext* GetURLRequestContext(
+      net::NetworkChangeNotifier::NetworkHandle network =
+          net::NetworkChangeNotifier::kInvalidNetworkHandle);
 
   // Returns a new instance of net::URLRequestContextGetter.
   // The net::URLRequestContext and base::SingleThreadTaskRunner that
-  // net::URLRequestContextGetter returns are owned by |this|.
+  // net::URLRequestContextGetter returns are owned by `this`.
+  // The returned getter will always return the default context of `this`.
   net::URLRequestContextGetter* CreateURLRequestContextGetter();
 
   // TODO(xunjieli): Keep only one version of StartNetLog().
@@ -230,7 +239,8 @@ class CronetURLRequestContext {
         const base::TimeTicks& timestamp,
         net::NetworkQualityObservationSource source) override;
 
-    net::URLRequestContext* GetURLRequestContext();
+    net::URLRequestContext* GetURLRequestContext(
+        net::NetworkChangeNotifier::NetworkHandle network);
 
     // Same as StartNetLogToDisk.
     void StartNetLogToBoundedFile(const std::string& dir_path,
@@ -256,8 +266,23 @@ class CronetURLRequestContext {
     friend class TestUtil;
     base::Value GetNetLogInfo() const;
 
-    // Wraps the logic to build the underlying net::URLRequestContext.
-    std::unique_ptr<net::URLRequestContext> BuildURLRequestContext(
+    // Configures `context_builder` with the settings shared between default
+    // context and network bound contexts.
+    void SetSharedURLRequestContextBuilderConfig(
+        net::URLRequestContextBuilder* context_builder);
+
+    // Configures `context` with the settings shared between default context
+    // and network bound contexts.
+    void SetSharedURLRequestContextConfig(net::URLRequestContext* context);
+
+    // Builds a URLRequestContext specifically bound to `network`.
+    std::unique_ptr<net::URLRequestContext> BuildNetworkBoundURLRequestContext(
+        net::NetworkChangeNotifier::NetworkHandle network);
+
+    // Builds a URLRequestContext to be used a default context for `this`.
+    // `proxy_config_service` is injected as it currently cannot be built on the
+    // network thread.
+    std::unique_ptr<net::URLRequestContext> BuildDefaultURLRequestContext(
         std::unique_ptr<net::ProxyConfigService> proxy_config_service);
 
     std::unique_ptr<net::FileNetLogObserver> net_log_file_observer_;
@@ -274,8 +299,19 @@ class CronetURLRequestContext {
     // after |context_|.
     std::unique_ptr<CronetPrefsManager> cronet_prefs_manager_;
 
-    std::unique_ptr<net::URLRequestContext> context_;
-    bool is_context_initialized_;
+    // The mapping between networks and their URLRequestContext. The only
+    // context guaranteed to exist for the entire lifetime of `this` is default
+    // one, which is associated to kInvalidNetworkHandle.
+    // For requests not requiring a specific network the default context must be
+    // used.
+    base::flat_map<net::NetworkChangeNotifier::NetworkHandle,
+                   std::unique_ptr<net::URLRequestContext>>
+        contexts_;
+    // Shorthand for the default context (needed by
+    // components/cronet/android/test/cronet_test_util.cc).
+    net::URLRequestContext* default_context_;
+
+    bool is_default_context_initialized_;
 
     // Context config is only valid until context is initialized.
     std::unique_ptr<URLRequestContextConfig> context_config_;

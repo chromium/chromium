@@ -48,7 +48,7 @@ scoped_refptr<base::SingleThreadTaskRunner> TestUtil::GetTaskRunner(
 net::URLRequestContext* TestUtil::GetURLRequestContext(jlong jcontext_adapter) {
   CronetURLRequestContextAdapter* context_adapter =
       reinterpret_cast<CronetURLRequestContextAdapter*>(jcontext_adapter);
-  return context_adapter->context_->network_tasks_->context_.get();
+  return context_adapter->context_->network_tasks_->default_context_;
 }
 
 // static
@@ -56,7 +56,8 @@ void TestUtil::RunAfterContextInitOnNetworkThread(jlong jcontext_adapter,
                                                   base::OnceClosure task) {
   CronetURLRequestContextAdapter* context_adapter =
       reinterpret_cast<CronetURLRequestContextAdapter*>(jcontext_adapter);
-  if (context_adapter->context_->network_tasks_->is_context_initialized_) {
+  if (context_adapter->context_->network_tasks_
+          ->is_default_context_initialized_) {
     std::move(task).Run();
   } else {
     context_adapter->context_->network_tasks_->tasks_waiting_for_context_.push(
