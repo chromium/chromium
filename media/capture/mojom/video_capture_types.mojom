@@ -365,4 +365,5 @@ enum CropRequestResult {
   kUnsupportedCaptureDevice,
   kErrorUnknownDeviceId,
   kNotImplemented,
+  kNonIncreasingCropVersion,
 };
