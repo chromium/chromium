@@ -36,13 +36,6 @@ class ChromiumDepGraph {
             licenseName: 'BSD 3-Clause',
             generateTarget: false,
             cipdSuffix: 'cr1'),
-        backport_util_concurrent_backport_util_concurrent: new PropertyOverride(
-            licensePath: 'licenses/CC01.0.txt',
-            licenseName: 'CC0 1.0'),
-        classworlds_classworlds: new PropertyOverride(
-            description: 'A class loader framework.',
-            licensePath: 'licenses/Codehaus_License-2009.txt',
-            licenseName: 'MIT'),
         com_github_kevinstern_software_and_algorithms: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE',
             licenseName: 'MIT License'),
@@ -125,96 +118,12 @@ class ChromiumDepGraph {
             url: 'https://github.com/google/guava',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
-        nekohtml_nekohtml: new PropertyOverride(
-            description: 'NekoHTML is a simple HTML scanner and tag balancer.'),
-        nekohtml_xercesMinimal: new PropertyOverride(
-            description: 'Only contains necessary framework & Xerces2 classes',
-            url: 'http://nekohtml.sourceforge.net/index.html',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
-        org_apache_ant_ant: new PropertyOverride(
-            url: 'https://ant.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_ant_ant_launcher: new PropertyOverride(
-            url: 'https://ant.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_ant_tasks: new PropertyOverride(
-            url: 'https://ant.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_artifact: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_artifact_manager: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_error_diagnostics: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_model: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_plugin_registry: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_profile: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_project: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_repository_metadata: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_maven_settings: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_wagon_wagon_file: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_wagon_wagon_http_lightweight: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_wagon_wagon_http_shared: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_apache_maven_wagon_wagon_provider_api: new PropertyOverride(
-            url: 'https://maven.apache.org/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
             url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
             /* groovylint-disable-next-line LineLength */
             licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
-        org_codehaus_plexus_plexus_container_default: new PropertyOverride(
-            url: 'https://codehaus-plexus.github.io/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_codehaus_plexus_plexus_interpolation: new PropertyOverride(
-            url: 'https://codehaus-plexus.github.io/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
-        org_codehaus_plexus_plexus_utils: new PropertyOverride(
-            url: 'https://codehaus-plexus.github.io/',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0'),
         org_eclipse_jgit_org_eclipse_jgit: new PropertyOverride(
             url: 'https://www.eclipse.org/jgit/',
             licenseUrl: 'https://www.eclipse.org/org/documents/edl-v10.html',
