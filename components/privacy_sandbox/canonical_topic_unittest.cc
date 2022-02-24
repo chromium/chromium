@@ -72,6 +72,22 @@ TEST_F(CanonicalTopicTest, InvalidTopicIdLocalized) {
                                      too_high_id.topic_id(), 1);
 }
 
+TEST_F(CanonicalTopicTest, ValueConversion) {
+  // Confirm that conversion to and from base::Value forms work correctly.
+  CanonicalTopic test_topic(kLowestTopicID, kAvailableTaxononmyVersion);
+
+  auto topic_value = test_topic.ToValue();
+
+  auto converted_topic = CanonicalTopic::FromValue(topic_value);
+  EXPECT_TRUE(converted_topic);
+  EXPECT_EQ(test_topic, *converted_topic);
+
+  base::Value invalid_value(base::Value::Type::DICTIONARY);
+  invalid_value.SetKey("unrelated", base::Value("unrelated"));
+  converted_topic = CanonicalTopic::FromValue(invalid_value);
+  EXPECT_FALSE(converted_topic);
+}
+
 using CanonicalTopicDeathTest = testing::Test;
 
 TEST_F(CanonicalTopicDeathTest, OutOfBoundsDeath) {

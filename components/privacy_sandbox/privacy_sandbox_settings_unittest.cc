@@ -687,6 +687,68 @@ TEST_P(PrivacySandboxSettingsTest, TrustTokensAllowed) {
   EXPECT_TRUE(privacy_sandbox_settings()->IsTrustTokensAllowed());
 }
 
+TEST_P(PrivacySandboxSettingsTest, IsTopicAllowed) {
+  // Confirm that allowing / blocking topics is correctly reflected by
+  // IsTopicsAllowed().
+  CanonicalTopic topic_one(1, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_two(2, CanonicalTopic::AVAILABLE_TAXONOMY);
+
+  privacy_sandbox_settings()->SetTopicAllowed(topic_one, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+
+  privacy_sandbox_settings()->SetTopicAllowed(topic_two, false);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+
+  privacy_sandbox_settings()->SetTopicAllowed(topic_two, true);
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+
+  privacy_sandbox_settings()->SetTopicAllowed(topic_one, true);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+}
+
+TEST_P(PrivacySandboxSettingsTest, ClearingTopicSettings) {
+  // Confirm that time range deletions affect the correct settings.
+  CanonicalTopic topic_one(1, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_two(2, CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_three(3, CanonicalTopic::AVAILABLE_TAXONOMY);
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+
+  privacy_sandbox_settings()->SetTopicAllowed(topic_one, false);
+  task_environment()->AdvanceClock(base::Hours(1));
+
+  const auto kSecondSettingTime = base::Time::Now();
+  privacy_sandbox_settings()->SetTopicAllowed(topic_two, false);
+
+  task_environment()->AdvanceClock(base::Hours(1));
+  privacy_sandbox_settings()->SetTopicAllowed(topic_three, false);
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+
+  // Construct a deletion which only targets the second setting.
+  privacy_sandbox_settings()->ClearTopicSettings(
+      kSecondSettingTime - base::Seconds(1),
+      kSecondSettingTime + base::Seconds(1));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+
+  // Perform a maximmal time range deletion, which should remove the two
+  // remaining settings.
+  privacy_sandbox_settings()->ClearTopicSettings(base::Time(),
+                                                 base::Time::Max());
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_one));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_two));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_three));
+}
+
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsTestInstance,
                          PrivacySandboxSettingsTest,
                          testing::Bool());

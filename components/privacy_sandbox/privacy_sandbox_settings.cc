@@ -24,6 +24,9 @@ namespace privacy_sandbox {
 
 namespace {
 
+constexpr char kBlockedTopicsTopicKey[] = "topic";
+constexpr char kBlockedTopicsBlockTimeKey[] = "blockedOn";
+
 bool IsCookiesClearOnExitEnabled(HostContentSettingsMap* map) {
   return map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
                                        /*provider_id=*/nullptr) ==
@@ -75,6 +78,16 @@ std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
           ContentSettingsPattern::FromString(entry)};
 }
 
+// Returns a base::Value for storage in prefs that represents |topic| blocked
+// at the current time.
+base::Value CreateBlockedTopicEntry(const CanonicalTopic& topic) {
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetKey(kBlockedTopicsTopicKey, topic.ToValue());
+  entry.SetKey(kBlockedTopicsBlockTimeKey,
+               base::TimeToValue(base::Time::Now()));
+  return entry;
+}
+
 }  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
@@ -124,6 +137,67 @@ bool PrivacySandboxSettings::IsTopicsAllowedForContext(
 
   return IsPrivacySandboxEnabledForContext(url, top_frame_origin,
                                            cookie_settings);
+}
+
+bool PrivacySandboxSettings::IsTopicAllowed(const CanonicalTopic& topic) {
+  auto* blocked_topics =
+      pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
+
+  for (const auto& item : blocked_topics->GetList()) {
+    auto blocked_topic =
+        CanonicalTopic::FromValue(*item.GetDict().Find(kBlockedTopicsTopicKey));
+    if (!blocked_topic)
+      continue;
+
+    if (topic == *blocked_topic)
+      return false;
+  }
+  return true;
+}
+
+void PrivacySandboxSettings::SetTopicAllowed(const CanonicalTopic& topic,
+                                             bool allowed) {
+  ListPrefUpdate scoped_pref_update(pref_service_,
+                                    prefs::kPrivacySandboxBlockedTopics);
+
+  // Presence in the preference list indicates that a topic is blocked, as
+  // there is no concept of explicitly allowed topics. Thus, allowing a topic
+  // is the same as removing it, if it exists, from the blocklist. Blocking
+  // a topic is the same as adding it to the blocklist, but as duplicate entries
+  // are undesireable, removing any existing reference first is desireable.
+  // Thus, regardless of |allowed|, removing any existing reference is the
+  // first step.
+  scoped_pref_update->GetList().EraseIf([&](const base::Value& value) {
+    auto* blocked_topic_value = value.GetDict().Find(kBlockedTopicsTopicKey);
+    auto converted_topic = CanonicalTopic::FromValue(*blocked_topic_value);
+    return converted_topic && *converted_topic == topic;
+  });
+
+  // If the topic is being blocked, it can be (re)added to the blocklist. If the
+  // topic was removed from the blocklist above, this is equivalent to updating
+  // the modified time associated with the entry to the current time. As data
+  // deletions are typically from the current time backwards, this makes it
+  // more likely to be removed - a privacy improvement.
+  if (!allowed)
+    scoped_pref_update->Append(CreateBlockedTopicEntry(topic));
+}
+
+void PrivacySandboxSettings::ClearTopicSettings(base::Time start_time,
+                                                base::Time end_time) {
+  ListPrefUpdate scoped_pref_update(pref_service_,
+                                    prefs::kPrivacySandboxBlockedTopics);
+
+  // Shortcut for maximum time range deletion.
+  if (start_time == base::Time() && end_time == base::Time::Max()) {
+    scoped_pref_update->GetList().clear();
+    return;
+  }
+
+  scoped_pref_update->GetList().EraseIf([&](const base::Value& value) {
+    auto blocked_time =
+        base::ValueToTime(value.GetDict().Find(kBlockedTopicsBlockTimeKey));
+    return start_time <= blocked_time && blocked_time <= end_time;
+  });
 }
 
 base::Time PrivacySandboxSettings::TopicsDataAccessibleSince() const {

@@ -49,6 +49,12 @@ extern const char kPrivacySandboxTopicsDataAccessibleSince[];
 // kPrivacySandboxApisEnabled preference be enabled to take effect.
 extern const char kPrivacySandboxFlocEnabled[];
 
+// List of entries representing Topics API topics which are blocked for
+// the profile. Blocked topics cannot be provided to site, or considered as
+// part of the profile's "top topics". Entries in the list are dictionaries
+// containing the CanonicalTopic and the time the setting was created.
+extern const char kPrivacySandboxBlockedTopics[];
+
 // Dictionary of entries representing top frame origins on which the profile
 // cannot be joined to an interest group. Keys are the blocked origins, and
 // values are the time the setting was applied.

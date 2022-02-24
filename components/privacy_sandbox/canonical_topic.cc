@@ -11,6 +11,10 @@
 
 namespace {
 
+// Keys of the value representation of a CanonicalTopic.
+constexpr char kTopicId[] = "topicId";
+constexpr char kTaxonomyVersion[] = "taxonomyVersion";
+
 std::u16string GetLocalizedRepresentationInternal(int topic_id,
                                                   int taxonomy_version) {
   // The available Taxonomy versions are included in the Chrome binary, and
@@ -395,6 +399,29 @@ CanonicalTopic::CanonicalTopic(int topic_id, int taxonomy_version)
 
 std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
   return GetLocalizedRepresentationInternal(topic_id_, taxonomy_version_);
+}
+
+base::Value CanonicalTopic::ToValue() const {
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetKey(kTopicId, base::Value(topic_id_));
+  value.SetKey(kTaxonomyVersion, base::Value(taxonomy_version_));
+  return value;
+}
+
+/*static*/ absl::optional<CanonicalTopic> CanonicalTopic::FromValue(
+    const base::Value& value) {
+  if (!value.is_dict())
+    return absl::nullopt;
+
+  auto topic_id = value.GetDict().FindInt(kTopicId);
+  if (!topic_id)
+    return absl::nullopt;
+
+  auto taxonomy_version = value.GetDict().FindInt(kTaxonomyVersion);
+  if (!taxonomy_version)
+    return absl::nullopt;
+
+  return CanonicalTopic(*topic_id, *taxonomy_version);
 }
 
 bool CanonicalTopic::operator<(const CanonicalTopic& other) const {

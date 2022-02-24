@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class HostContentSettingsMap;
@@ -74,6 +75,20 @@ class PrivacySandboxSettings : public KeyedService {
   bool IsTopicsAllowedForContext(
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin) const;
+
+  // Returns whether |topic| can be either considered as a top topic for the
+  // current epoch, or provided to a website as a previous / current epochs
+  // site assigned topic.
+  bool IsTopicAllowed(const CanonicalTopic& topic);
+
+  // Sets |topic| to |allowed|. Whether a topic is allowed or not is made
+  // available through IsTopicAllowed().
+  void SetTopicAllowed(const CanonicalTopic& topic, bool allowed);
+
+  // Removes all Topic settings with creation times between |start_time|
+  // and |end_time|. This allows for integration with the existing browsing data
+  // remover, such as the one powering Clear Browser Data.
+  void ClearTopicSettings(base::Time start_time, base::Time end_time);
 
   // Returns the point in time from which history is eligible to be used when
   // calculating a user's Topics API topics. Reset when a user clears all
