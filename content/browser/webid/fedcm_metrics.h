@@ -94,6 +94,12 @@ void RecordIsSignInUser(bool is_sign_in);
 // Records whether a user has left the page where the API is called when the
 // browser is ready to show the accounts dialog.
 void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible);
+
+// Records whether an IDP returns an approved clients list in the response.
+void RecordApprovedClientsExistence(bool has_approved_clients);
+
+// Records the size of the approved clients list if applicable.
+void RecordApprovedClientsSize(int size);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

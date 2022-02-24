@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -181,6 +182,8 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
   if (!(id && email && name))
     return absl::nullopt;
 
+  RecordApprovedClientsExistence(approved_clients != nullptr);
+
   absl::optional<LoginState> approved_value;
   if (approved_clients) {
     for (const base::Value& entry : approved_clients->GetListDeprecated()) {
@@ -195,6 +198,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
       // kSignUp instead of leaving as nullopt.
       approved_value = LoginState::kSignUp;
     }
+    RecordApprovedClientsSize(approved_clients->GetList().size());
   }
 
   return content::IdentityRequestAccount(

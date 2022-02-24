@@ -750,6 +750,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.ApprovedClientsExistence" enum="Boolean"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records whether an IDP returns an approved clients list in the response.
+    Records at most one sample per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.ApprovedClientsSize" units="clients"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records the size of the approved clients list returned by IDP if applicable.
+    Records at most one sample per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IsSignInUser" enum="Boolean" expires_after="M110">
   <owner>yigu@chromium.org</owner>
   <owner>fedcm-core@google.com</owner>
@@ -762,7 +782,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Status.RequestIdToken"
     enum="FedCmRequestIdTokenStatus" expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the status of a request id token call to the FedCM API.
   </summary>
@@ -771,14 +791,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Status.Revoke" enum="FedCmRevokeStatus"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>Records the status of a revoke call to the FedCM API.</summary>
 </histogram>
 
 <histogram name="Blink.FedCm.Timing.CancelOnDialog" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when the accounts dialog is shown to when the user
     closes the dialog without selecting any account. Only records a sample when
@@ -789,7 +809,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Timing.ContinueOnDialog" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when the accounts dialog is shown to when the user
     presses the Continue button. Only records a sample when the user sees and
@@ -800,7 +820,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Timing.IdTokenResponse" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when the user presses the Continue button to when the
     idtoken response is received. Only records a sample when the idtoken
@@ -811,7 +831,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Timing.ShowAccountsDialog" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the time from when a call to the API was made to when the accounts
     dialog is shown. Only records a sample when the dialog is shown.
@@ -821,7 +841,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.Timing.TurnaroundTime" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records the overall time from when the API is called to when the idtoken
     response is received. Only records a sample when the idtoken response is
@@ -832,7 +852,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Blink.FedCm.WebContentsVisible" enum="Boolean"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>
-  <owner>webid-core@google.com</owner>
+  <owner>fedcm-core@google.com</owner>
   <summary>
     Records whether the WebContents is visible when the browser is ready to show
     the accounts dialog to the user. Records at most one sample per API call.

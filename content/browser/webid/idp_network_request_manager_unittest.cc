@@ -11,6 +11,7 @@
 #include <utility>
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -696,6 +697,69 @@ TEST_F(IdpNetworkRequestManagerTest, RevokeError) {
       SendRevokeRequestAndWaitForResponse("xxx", "yyy", net::HTTP_FORBIDDEN);
   ASSERT_EQ(RevokeResponse::kError, status);
 }
+
+// Tests that we correctly records metrics regarding approved_clients.
+TEST_F(IdpNetworkRequestManagerTest, RecordApprovedClientsMetrics) {
+  base::HistogramTester histogram_tester;
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestAccountsEndpoint), request.url);
+        EXPECT_EQ(request.request_body, nullptr);
+        EXPECT_FALSE(request.referrer.is_valid());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "id" : "1",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "approved_clients": []
+    },
+    {
+      "id" : "2",
+      "email": "jim@idp.test",
+      "name": "Jim R. Example",
+      "approved_clients": ["xxx"]
+    },
+    {
+      "id" : "3",
+      "email": "rashida@idp.test",
+      "name": "Rashida R. Example",
+      "approved_clients": ["xxx", "yyy"]
+    },
+    {
+      "id" : "4",
+      "email": "wei@idp.test",
+      "name": "Wei R. Example"
+    }
+   ]
+  })";
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
+
+  EXPECT_TRUE(called);
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+  ASSERT_EQ(4ul, accounts.size());
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.ApprovedClientsExistence", 4);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsExistence", 1,
+                                     3);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsExistence", 0,
+                                     1);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.ApprovedClientsSize", 3);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsSize", 0, 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsSize", 1, 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsSize", 2, 1);
+}
+
 }  // namespace
 
 }  // namespace content
