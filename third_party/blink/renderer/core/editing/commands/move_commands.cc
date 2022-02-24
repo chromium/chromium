@@ -139,7 +139,7 @@ void MoveCommands::UpdateFocusForCaretBrowsing(LocalFrame& frame) {
     return;
 
   const ComputedStyle* style = node->GetComputedStyle();
-  if (!style || style->UserModify() != EUserModify::kReadOnly)
+  if (!style || style->UsedUserModify() != EUserModify::kReadOnly)
     return;
 
   Element* new_focused_element = nullptr;

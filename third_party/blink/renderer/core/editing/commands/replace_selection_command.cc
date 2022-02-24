@@ -1055,17 +1055,20 @@ ElementToSplitToAvoidPastingIntoInlineElementsWithStyle(
 
 void ReplaceSelectionCommand::SetUpStyle(const VisibleSelection& selection) {
   // We can skip matching the style if the selection is plain text.
-  // TODO(editing-dev): Use IsEditablePosition instead of using UserModify
+  // TODO(editing-dev): Use IsEditablePosition instead of using UsedUserModify
   // directly.
   if ((selection.Start().AnchorNode()->GetLayoutObject() &&
        selection.Start()
                .AnchorNode()
                ->GetLayoutObject()
                ->Style()
-               ->UserModify() == EUserModify::kReadWritePlaintextOnly) &&
+               ->UsedUserModify() == EUserModify::kReadWritePlaintextOnly) &&
       (selection.End().AnchorNode()->GetLayoutObject() &&
-       selection.End().AnchorNode()->GetLayoutObject()->Style()->UserModify() ==
-           EUserModify::kReadWritePlaintextOnly))
+       selection.End()
+               .AnchorNode()
+               ->GetLayoutObject()
+               ->Style()
+               ->UsedUserModify() == EUserModify::kReadWritePlaintextOnly))
     match_style_ = false;
 
   if (match_style_) {

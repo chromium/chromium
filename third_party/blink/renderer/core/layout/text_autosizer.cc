@@ -136,7 +136,7 @@ static bool IsIndependentDescendant(const LayoutBlock* layout_object) {
                                   layout_object->IsHorizontalWritingMode()) ||
          layout_object->StyleRef().IsDisplayReplacedType() ||
          layout_object->IsTextAreaIncludingNG() ||
-         layout_object->StyleRef().UserModify() != EUserModify::kReadOnly;
+         layout_object->StyleRef().UsedUserModify() != EUserModify::kReadOnly;
 }
 
 static bool BlockIsRowOfLinks(const LayoutBlock* block) {
@@ -781,7 +781,7 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
   // of text content.
   if (root->IsTextAreaIncludingNG() ||
       (root->Style() &&
-       root->StyleRef().UserModify() != EUserModify::kReadOnly)) {
+       root->StyleRef().UsedUserModify() != EUserModify::kReadOnly)) {
     cluster->has_enough_text_to_autosize_ = kHasEnoughText;
     return true;
   }

@@ -254,7 +254,7 @@ bool IsRootEditableElementWithCounting(const Element& element) {
   const auto* style = element.GetComputedStyle();
   if (!style)
     return is_editable;
-  auto user_modify = style->UserModify();
+  auto user_modify = style->UsedUserModify();
   const AtomicString& ce_value =
       element.FastGetAttribute(html_names::kContenteditableAttr);
   if (ce_value.IsNull() || EqualIgnoringASCIICase(ce_value, "false")) {
@@ -422,7 +422,7 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   // TODO(layout-dev): Once LayoutNG handles inline content editable, we
   // should get rid of following code fragment.
   if (!RuntimeEnabledFeatures::EditingNGEnabled()) {
-    if (style.UserModify() != EUserModify::kReadOnly ||
+    if (style.UsedUserModify() != EUserModify::kReadOnly ||
         document.InDesignMode()) {
       UseCounter::Count(document, WebFeature::kLegacyLayoutByEditing);
       return true;

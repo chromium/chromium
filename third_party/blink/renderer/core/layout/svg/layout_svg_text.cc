@@ -144,7 +144,7 @@ void LayoutSVGText::SubtreeStructureChanged(
   // TODO(fs): Restore the passing of |reason| here.
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(*this);
 
-  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+  if (StyleRef().UsedUserModify() != EUserModify::kReadOnly)
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 

@@ -70,7 +70,7 @@ void LayoutSVGInlineText::TextDidChange() {
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);
 
-  if (StyleRef().UserModify() != EUserModify::kReadOnly)
+  if (StyleRef().UsedUserModify() != EUserModify::kReadOnly)
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 

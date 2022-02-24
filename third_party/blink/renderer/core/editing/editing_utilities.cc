@@ -357,7 +357,7 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
     const ComputedStyle* style = ancestor.GetComputedStyle();
     if (!style)
       continue;
-    switch (style->UserModify()) {
+    switch (style->UsedUserModify()) {
       case EUserModify::kReadOnly:
         return false;
       case EUserModify::kReadWrite:

@@ -147,6 +147,7 @@ class UserSelect;
 class WebkitTapHighlightColor;
 class WebkitTextFillColor;
 class WebkitTextStrokeColor;
+class WebkitUserModify;
 
 }  // namespace css_longhand
 
@@ -262,6 +263,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::WebkitTapHighlightColor;
   friend class css_longhand::WebkitTextFillColor;
   friend class css_longhand::WebkitTextStrokeColor;
+  friend class css_longhand::WebkitUserModify;
   // Access to private Appearance() and HasAppearance().
   friend class LayoutTheme;
   friend class StyleAdjuster;
@@ -273,7 +275,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class CachedUAStyle;
   // Accesses visited and unvisited colors.
   friend class ColorPropertyFunctions;
-  // Edits the background for media controls.
+  // Edits the background for media controls and accesses UserModify().
   friend class StyleAdjuster;
   // Access to private SetFontInternal().
   friend class FontBuilder;
@@ -282,6 +284,8 @@ class ComputedStyle : public ComputedStyleBase,
   friend class FilterOperationResolver;
   // Access to SetInitialData() and GetCurrentColor().
   friend class StyleResolver;
+  // Access to UserModify().
+  friend class MatchedPropertiesCache;
 
  protected:
   mutable std::unique_ptr<StyleCachedData> cached_data_;
@@ -2199,6 +2203,13 @@ class ComputedStyle : public ComputedStyleBase,
     return PointerEventsInternal();
   }
 
+  // User modify utility functions.
+  EUserModify UsedUserModify() const {
+    if (IsInert())
+      return EUserModify::kReadOnly;
+    return UserModifyInternal();
+  }
+
   // User select utility functions.
   EUserSelect UsedUserSelect() const {
     if (IsInert())
@@ -2208,7 +2219,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool IsSelectable() const {
     return !IsInert() && !(UserSelectInternal() == EUserSelect::kNone &&
-                           UserModify() == EUserModify::kReadOnly);
+                           UserModifyInternal() == EUserModify::kReadOnly);
   }
 
   bool IsFocusable() const {
@@ -2747,6 +2758,7 @@ class ComputedStyle : public ComputedStyleBase,
   EFloat Floating() const { return FloatingInternal(); }
   EPointerEvents PointerEvents() const { return PointerEventsInternal(); }
   EResize Resize() const { return ResizeInternal(); }
+  EUserModify UserModify() const { return UserModifyInternal(); }
   EUserSelect UserSelect() const { return UserSelectInternal(); }
 
   bool IsInlineSizeContainer() const {

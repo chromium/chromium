@@ -45,6 +45,11 @@ class StyleAdjuster {
   static void AdjustStyleForTextCombine(ComputedStyle&);
 
  private:
+  static bool IsEditableElement(Element*, const ComputedStyle&);
+  static void AdjustEffectiveTouchAction(ComputedStyle& style,
+                                         const ComputedStyle& parent_style,
+                                         Element* element,
+                                         bool is_svg_root);
   static void AdjustOverflow(ComputedStyle& style, Element* element);
   static void AdjustForForcedColorsMode(ComputedStyle& style);
 };
