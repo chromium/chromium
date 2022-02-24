@@ -153,8 +153,6 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
  private:
   sk_sp<SkImage> MakeSkImage(
       const SkPixmap& pixmap,
-      uint32_t width,
-      uint32_t height,
       absl::optional<TargetColorParams> target_color_params);
 
   raw_ptr<GrDirectContext> context_ = nullptr;
