@@ -47,7 +47,7 @@ TEST(DomDistillerUrlUtilsTest, TestGetValueForKeyInUrlPathQuery) {
 }
 
 void AssertEqualExceptHost(const GURL& a, const GURL& b) {
-  url::Replacements<char> no_host;
+  GURL::Replacements no_host;
   no_host.ClearHost();
   EXPECT_EQ(a.ReplaceComponents(no_host), b.ReplaceComponents(no_host));
 }
