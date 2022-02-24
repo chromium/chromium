@@ -259,6 +259,36 @@ TEST_F(SVGImageTest, PaintFrameForCurrentFrameWithMQAndZoom) {
   EXPECT_EQ(bitmap.getColor(90, 90), SK_ColorBLUE);
 }
 
+TEST_F(SVGImageTest, SVGWithSmilAnimationIsAnimated) {
+  const bool kShouldPause = true;
+  Load(R"SVG(
+         <svg xmlns="http://www.w3.org/2000/svg">
+           <rect width="10" height="10"/>
+           <animateTransform attributeName="transform" type="rotate"
+                             from="0 5 5" to="360 5 5" dur="1s"
+                             repeatCount="indefinite"/>
+         </svg>)SVG",
+       kShouldPause);
+
+  EXPECT_TRUE(GetImage().MaybeAnimated());
+}
+
+TEST_F(SVGImageTest, NestedSVGWithSmilAnimationIsAnimated) {
+  const bool kShouldPause = true;
+  Load(R"SVG(
+         <svg xmlns="http://www.w3.org/2000/svg">
+           <svg>
+             <rect width="10" height="10"/>
+             <animateTransform attributeName="transform" type="rotate"
+                               from="0 5 5" to="360 5 5" dur="1s"
+                               repeatCount="indefinite"/>
+           </svg>
+         </svg>)SVG",
+       kShouldPause);
+
+  EXPECT_TRUE(GetImage().MaybeAnimated());
+}
+
 class SVGImageSimTest : public SimTest, private ScopedMockOverlayScrollbars {};
 
 TEST_F(SVGImageSimTest, PageVisibilityHiddenToVisible) {

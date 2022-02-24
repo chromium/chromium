@@ -58,6 +58,7 @@ class CORE_EXPORT SVGDocumentExtensions final
 
   void StartAnimations();
   void PauseAnimations();
+  bool HasSmilAnimations() const;
   // True if a SMIL animation frame is successfully scheduled.
   bool ServiceSmilAnimations();
   void ServiceWebAnimations();

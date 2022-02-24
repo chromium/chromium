@@ -105,6 +105,14 @@ void SVGDocumentExtensions::PauseAnimations() {
     element->pauseAnimations();
 }
 
+bool SVGDocumentExtensions::HasSmilAnimations() const {
+  for (SVGSVGElement* element : time_containers_) {
+    if (element->TimeContainer()->HasAnimations())
+      return true;
+  }
+  return false;
+}
+
 void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
