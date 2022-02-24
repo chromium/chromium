@@ -21,6 +21,7 @@
 #include "third_party/webrtc/media/engine/internal_decoder_factory.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 #include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"
+#include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
@@ -93,10 +94,26 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
 
   std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
       const webrtc::SdpVideoFormat& format) override {
-    const bool supported_in_software =
-        IsFormatSupported(&software_encoder_factory_, format);
     const bool supported_in_hardware =
         IsFormatSupported(hardware_encoder_factory_.get(), format);
+    bool allow_h264_profile_fallback = false;
+    // Special handling of H264 hardware encoder fallback during encoding when
+    // high profile is requested. However if hardware encoding is not supported,
+    // trust supported formats reported by |software_encoder_factory_| and do
+    // not allow profile mismatch when only software encoder factory is used for
+    // creating the simulcast encoder adapter.
+    if (base::EqualsCaseInsensitiveASCII(format.name.c_str(),
+                                         cricket::kH264CodecName) &&
+        supported_in_hardware) {
+      allow_h264_profile_fallback = IsFormatSupported(
+          &software_encoder_factory_,
+          webrtc::CreateH264Format(
+              webrtc::H264Profile::kProfileConstrainedBaseline,
+              webrtc::H264Level::kLevel1_1, "1"));
+    }
+    const bool supported_in_software =
+        allow_h264_profile_fallback ||
+        IsFormatSupported(&software_encoder_factory_, format);
 
     if (!supported_in_software && !supported_in_hardware)
       return nullptr;
