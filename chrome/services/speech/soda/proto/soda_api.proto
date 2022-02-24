@@ -203,6 +203,7 @@ message SodaResponse {
     ENDPOINT = 5;
     AUDIO_LEVEL = 6;
     LANGID = 7;
+    LOGS_ONLY_ARTIFICIAL_MESSAGE = 8;
   }
 
   optional SodaMessageType soda_type = 1 [default = UNKNOWN];
