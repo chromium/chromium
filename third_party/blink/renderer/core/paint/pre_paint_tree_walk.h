@@ -36,6 +36,9 @@ class CORE_EXPORT PrePaintTreeWalk final {
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
 
   struct ContainingFragment {
+    STACK_ALLOCATED();
+
+   public:
     const NGPhysicalBoxFragment* fragment = nullptr;
     wtf_size_t fragmentainer_idx = WTF::kNotFound;
     int fragmentation_nesting_level = 0;
@@ -220,7 +223,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   // List of fragments that may be missed during LayoutObject walking. See
   // CollectMissableChildren() and WalkMissedChildren().
-  HashSet<const NGPhysicalFragment*> pending_missables_;
+  HeapHashSet<Member<const NGPhysicalFragment>> pending_missables_;
 
   // List of fixedpos objects that may be missed during fragment traversal. This
   // can happen if a fixedpos is nested in another OOF inside a multicol, and

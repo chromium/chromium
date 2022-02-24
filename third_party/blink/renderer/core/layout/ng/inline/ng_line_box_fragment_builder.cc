@@ -82,7 +82,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
 const NGLayoutResult* NGLineBoxFragmentBuilder::ToLineBoxFragment() {
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
 
-  scoped_refptr<const NGPhysicalLineBoxFragment> fragment =
+  const NGPhysicalLineBoxFragment* fragment =
       NGPhysicalLineBoxFragment::Create(this);
 
   return MakeGarbageCollected<NGLayoutResult>(

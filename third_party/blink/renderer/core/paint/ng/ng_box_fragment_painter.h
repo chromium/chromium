@@ -312,7 +312,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
 
   const NGPhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;
-  const NGFragmentItems* items_;
+  const NGFragmentItems* items_ = nullptr;
   const NGFragmentItem* box_item_ = nullptr;
   const NGInlineCursor* inline_box_cursor_ = nullptr;
 };

@@ -524,7 +524,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
         items_builder_->HasFloatingDescendantsForPaint();
   }
 
-  scoped_refptr<const NGPhysicalBoxFragment> fragment =
+  const NGPhysicalBoxFragment* fragment =
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
 
@@ -648,7 +648,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
   LayoutUnit previous_consumed_block_size =
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
-    NGMulticolWithPendingOOFs<LogicalOffset>& value = multicol.value;
+    NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
     if (!value.fixedpos_containing_block.fragment) {
       value.fixedpos_containing_block.offset.block_offset -=
           previous_consumed_block_size;

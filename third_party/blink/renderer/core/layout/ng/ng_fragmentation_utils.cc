@@ -962,7 +962,7 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
   const NGBlockBreakToken* previous_break_token = nullptr;
   for (wtf_size_t i = index; i > 0; --i) {
     auto* previous_fragment =
-        container_builder.Children()[i - 1].fragment.get();
+        container_builder.Children()[i - 1].fragment.Get();
     if (previous_fragment->IsFragmentainerBox()) {
       previous_break_token = To<NGBlockBreakToken>(
           To<NGPhysicalBoxFragment>(previous_fragment)->BreakToken());
