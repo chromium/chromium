@@ -427,6 +427,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
       /*succeeded=*/false, 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_AnimationFirst) {
   personal_data_manager_->ClearCreditCardArtImages();
   SetUpCard();
@@ -495,5 +496,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, UpstreamAnimationSync_ResponseFirst) {
   virtual_card_enrollment_manager_->OnCardSavedAnimationComplete();
   EXPECT_TRUE(virtual_card_enrollment_manager_->GetAvatarAnimationComplete());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill

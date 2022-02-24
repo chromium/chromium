@@ -287,11 +287,13 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
             state_.virtual_card_enrollment_fields.credit_card.card_art_url());
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
           VirtualCardEnrollmentSource::kUpstream &&
       !avatar_animation_complete_) {
     return;
   }
+#endif
 
   if (autofill_client_) {
     ShowVirtualCardEnrollBubble();
