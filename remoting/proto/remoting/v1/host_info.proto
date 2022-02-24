@@ -13,6 +13,7 @@ package remoting.apis.v1;
 // Represents a Chrome Remote Desktop host instance.  It includes static data
 // from when the host was first registered as well as transient data such as
 // the signaling ID and the last heartbeat time.
+// Be sure to update the copy of this proto in Google3 when making changes.
 message HostInfo {
   // Host identity. Normally a UUID.
   optional string host_id = 1;
@@ -77,4 +78,10 @@ message HostInfo {
 
   // Operating system version of the host.
   optional string host_os_version = 14;
+
+  // Hostname of the machine.
+  optional string hostname = 15;
+
+  // Indicates whether third_party auth is required.
+  optional bool require_third_party_auth = 16;
 }
