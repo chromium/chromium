@@ -664,7 +664,8 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       "Ash.NotificationView.ActionsRow.FadeIn.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest,
+       DISABLED_ImageExpandCollapseAnimationsRecordSmoothness) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -729,7 +730,8 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
                           "ScaleAndTranslate.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest,
+       DISABLED_GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
@@ -836,7 +838,8 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       "Ash.NotificationView.InlineReply.FadeOut.AnimationSmoothness");
 }
 
-TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
+TEST_F(AshNotificationViewTest,
+       DISABLED_InlineSettingsAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
   // Enable animations.
