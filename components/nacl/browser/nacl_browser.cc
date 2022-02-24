@@ -57,7 +57,7 @@ const base::FilePath::StringType NaClIrtName() {
   else
     irt_name.append(FILE_PATH_LITERAL("x86_32"));
 
-#elif defined(ARCH_CPU_ARMEL)
+#elif defined(ARCH_CPU_ARM_FAMILY)
   irt_name.append(FILE_PATH_LITERAL("arm"));
 #elif defined(ARCH_CPU_MIPSEL)
   irt_name.append(FILE_PATH_LITERAL("mips32"));
