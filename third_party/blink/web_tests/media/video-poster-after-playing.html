@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Tests setting the poster attribute after a video is playing.</title>
+<video></video>
 <script>
 if (window.testRunner)
   testRunner.waitUntilDone();
@@ -9,14 +10,14 @@ function startTest() {
   video.addEventListener("playing", function () {
     video.poster = "content/abe.png";
   });
-  video.addEventListener("timeupdate", function () {
-    if (video.currentTime > 1 && window.testRunner)
+  video.requestVideoFrameCallback(function () {
+    if (window.testRunner)
       testRunner.notifyDone();
   });
 
+  video.src = "resources/test-positive-start-time.webm";
   video.play();
 }
 
 window.addEventListener('load', startTest, false);
 </script>
-<video src="resources/test-positive-start-time.webm"></video>
