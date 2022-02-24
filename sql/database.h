@@ -727,9 +727,6 @@ class COMPONENT_EXPORT(SQL) Database {
   // Implementation helper for GetUniqueStatement() and GetCachedStatement().
   scoped_refptr<StatementRef> GetStatementImpl(const char* sql);
 
-  [[nodiscard]] bool IntegrityCheckHelper(const char* pragma_sql,
-                                          std::vector<std::string>* messages);
-
   // Release page-cache memory if memory-mapped I/O is enabled and the database
   // was changed.  Passing true for |implicit_change_performed| allows
   // overriding the change detection for cases like DDL (CREATE, DROP, etc),

@@ -27,6 +27,7 @@
 #include "sql/test/error_callback_support.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
 
@@ -1293,27 +1294,33 @@ TEST_P(SQLDatabaseTest, AttachDatabaseWithOpenTransaction) {
   EXPECT_FALSE(db_->IsSQLValid("SELECT count(*) from other.bar"));
 }
 
-TEST_P(SQLDatabaseTest, Basic_FullIntegrityCheck) {
-  const std::string kOk("ok");
-  std::vector<std::string> messages;
-
-  const char* kCreateSql = "CREATE TABLE foo (id INTEGER PRIMARY KEY, value)";
-  ASSERT_TRUE(db_->Execute(kCreateSql));
-  EXPECT_TRUE(db_->FullIntegrityCheck(&messages));
-  EXPECT_EQ(1u, messages.size());
-  EXPECT_EQ(kOk, messages[0]);
+TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
+  static constexpr char kTableSql[] =
+      "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL)";
+  ASSERT_TRUE(db_->Execute(kTableSql));
+  {
+    std::vector<std::string> messages;
+    EXPECT_TRUE(db_->FullIntegrityCheck(&messages))
+        << "FullIntegrityCheck() failed before database was corrupted";
+    EXPECT_THAT(messages, testing::ElementsAre("ok"))
+        << "FullIntegrityCheck() should report ok before database is corrupted";
+  }
   db_->Close();
 
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
-
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_TRUE(db_->Open(db_path_));
-    EXPECT_TRUE(db_->FullIntegrityCheck(&messages));
-    EXPECT_LT(1u, messages.size());
-    EXPECT_NE(kOk, messages[0]);
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Open() did not encounter SQLITE_CORRUPT";
+  }
+  {
+    std::vector<std::string> messages;
+    EXPECT_TRUE(db_->FullIntegrityCheck(&messages))
+        << "FullIntegrityCheck() failed on corrupted database";
+    EXPECT_THAT(messages, testing::Not(testing::ElementsAre("ok")))
+        << "FullIntegrityCheck() should not report ok for a corrupted database";
   }
 
   // TODO(shess): CorruptTableOrIndex could be used to produce a
