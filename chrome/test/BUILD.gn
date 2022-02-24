@@ -2252,6 +2252,7 @@ if (!is_android) {
       sources += [
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/ui/views/frame/browser_non_client_frame_view_chromeos_browsertest.cc",
+        "../browser/ui/web_applications/web_share_target_browsertest.cc",
       ]
     }
 
@@ -3642,7 +3643,6 @@ if (!is_android) {
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/ui/web_applications/web_app_guest_session_browsertest_chromeos.cc",
-        "../browser/ui/web_applications/web_share_target_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/chromeos/add_supervision/add_supervision_ui_browsertest.cc",
         "../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest-inl.h",
