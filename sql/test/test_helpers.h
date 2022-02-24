@@ -39,11 +39,6 @@ namespace test {
 // Returns false if any error occurs accessing the file.
 [[nodiscard]] bool CorruptSizeInHeader(const base::FilePath& db_path);
 
-// Common implementation of CorruptSizeInHeader() which operates on loaded
-// memory. Shared between CorruptSizeInHeader() and the the mojo proxy testing
-// code.
-void CorruptSizeInHeaderMemory(unsigned char* header, int64_t db_size);
-
 // Call CorruptSizeInHeader() while holding a SQLite-compatible lock
 // on the database.  This can be used to corrupt a database which is
 // already open elsewhere.  Blocks until a write lock can be acquired.

@@ -7,10 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <tuple>
 
+#include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -20,6 +22,8 @@
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
+
+namespace sql::test {
 
 namespace {
 
@@ -53,46 +57,64 @@ bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
   return true;
 }
 
-// Helper for reading a number from the SQLite header.
-// See base/big_endian.h.
-unsigned ReadBigEndian(unsigned char* buf, size_t bytes) {
-  unsigned r = buf[0];
-  for (size_t i = 1; i < bytes; i++) {
-    r <<= 8;
-    r |= buf[i];
-  }
-  return r;
-}
-
-// Helper for writing a number to the SQLite header.
-void WriteBigEndian(unsigned val, unsigned char* buf, size_t bytes) {
-  for (size_t i = 0; i < bytes; i++) {
-    buf[bytes - i - 1] = (val & 0xFF);
-    val >>= 8;
-  }
-}
-
-bool IsWalDatabase(const base::FilePath& db_path) {
-  // The SQLite header is documented at:
-  //   https://www.sqlite.org/fileformat.html#the_database_header
-  //
-  // Read the entire header.
-  constexpr int kHeaderSize = 100;
+[[nodiscard]] bool IsWalDatabase(const base::FilePath& db_path) {
+  // See http://www.sqlite.org/fileformat2.html#database_header
+  constexpr size_t kHeaderSize = 100;
+  constexpr int64_t kHeaderOffset = 0;
   uint8_t header[kHeaderSize];
-  base::ReadFile(db_path, reinterpret_cast<char*>(header), sizeof(header));
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid())
+    return false;
+  if (!file.ReadAndCheck(kHeaderOffset, header))
+    return false;
+
+  // See https://www.sqlite.org/fileformat2.html#file_format_version_numbers
   constexpr int kWriteVersionHeaderOffset = 18;
   constexpr int kReadVersionHeaderOffset = 19;
   // If the read version is unsupported, we can't rely on our ability to
   // interpret anything else in the header.
-  DCHECK_LE(header[kReadVersionHeaderOffset], 2)
+  DCHECK_LE(int{header[kReadVersionHeaderOffset]}, 2)
       << "Unsupported SQLite file format";
   return header[kWriteVersionHeaderOffset] == 2;
 }
 
-}  // namespace
+[[nodiscard]] bool CorruptSizeInHeaderMemory(uint8_t* header, int64_t db_size) {
+  // See https://www.sqlite.org/fileformat2.html#page_size
+  constexpr size_t kPageSizeOffset = 16;
+  constexpr uint16_t kMinPageSize = 512;
+  uint16_t raw_page_size;
+  base::ReadBigEndian(header + kPageSizeOffset, &raw_page_size);
+  const int page_size = (raw_page_size == 1) ? 65536 : raw_page_size;
+  // Sanity-check that the page size is valid.
+  if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
+    return false;
 
-namespace sql {
-namespace test {
+  // Set the page count to exceed the file size.
+  // See https://www.sqlite.org/fileformat2.html#in_header_database_size
+  constexpr size_t kPageCountOffset = 28;
+  const int64_t page_count = (db_size + page_size * 2 - 1) / page_size;
+  if (page_count > std::numeric_limits<uint32_t>::max())
+    return false;
+  base::WriteBigEndian(reinterpret_cast<char*>(header + kPageCountOffset),
+                       static_cast<uint32_t>(page_count));
+
+  // Update change count so outstanding readers know the info changed.
+  // See https://www.sqlite.org/fileformat2.html#file_change_counter
+  // and
+  // https://www.sqlite.org/fileformat2.html#write_library_version_number_and_version_valid_for_number
+  constexpr size_t kFileChangeCountOffset = 24;
+  constexpr size_t kVersionValidForOffset = 92;
+  uint32_t old_change_count;
+  base::ReadBigEndian(header + kFileChangeCountOffset, &old_change_count);
+  const uint32_t new_change_count = old_change_count + 1;
+  base::WriteBigEndian(reinterpret_cast<char*>(header + kFileChangeCountOffset),
+                       new_change_count);
+  base::WriteBigEndian(reinterpret_cast<char*>(header + kVersionValidForOffset),
+                       new_change_count);
+  return true;
+}
+
+}  // namespace
 
 bool CorruptSizeInHeader(const base::FilePath& db_path) {
   if (IsWalDatabase(db_path)) {
@@ -119,32 +141,25 @@ bool CorruptSizeInHeader(const base::FilePath& db_path) {
     db.Close();
   }
 
-  // See http://www.sqlite.org/fileformat.html#database_header
-  const size_t kHeaderSize = 100;
-
-  unsigned char header[kHeaderSize];
-
-  base::ScopedFILE file(base::OpenFile(db_path, "rb+"));
-  if (!file.get())
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  if (!file.IsValid())
     return false;
 
-  if (0 != fseek(file.get(), 0, SEEK_SET))
-    return false;
-  if (1u != fread(header, sizeof(header), 1, file.get()))
-    return false;
-
-  int64_t db_size = 0;
-  if (!base::GetFileSize(db_path, &db_size))
+  int64_t db_size = file.GetLength();
+  if (db_size < 0)
     return false;
 
-  CorruptSizeInHeaderMemory(header, db_size);
-
-  if (0 != fseek(file.get(), 0, SEEK_SET))
+  // Read the entire database header, corrupt it, and write it back.
+  // See http://www.sqlite.org/fileformat2.html#database_header
+  constexpr size_t kHeaderSize = 100;
+  constexpr int64_t kHeaderOffset = 0;
+  uint8_t header[kHeaderSize];
+  if (!file.ReadAndCheck(kHeaderOffset, header))
     return false;
-  if (1u != fwrite(header, sizeof(header), 1, file.get()))
+  if (!CorruptSizeInHeaderMemory(header, db_size))
     return false;
-
-  return true;
+  return file.WriteAndCheck(kHeaderOffset, header);
 }
 
 bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
@@ -159,26 +174,6 @@ bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
     return false;
 
   return CorruptSizeInHeader(db_path);
-}
-
-void CorruptSizeInHeaderMemory(unsigned char* header, int64_t db_size) {
-  const size_t kPageSizeOffset = 16;
-  const size_t kFileChangeCountOffset = 24;
-  const size_t kPageCountOffset = 28;
-  const size_t kVersionValidForOffset = 92;  // duplicate kFileChangeCountOffset
-
-  const unsigned page_size = ReadBigEndian(header + kPageSizeOffset, 2);
-
-  // One larger than the expected size.
-  const unsigned page_count =
-      static_cast<unsigned>((db_size + page_size) / page_size);
-  WriteBigEndian(page_count, header + kPageCountOffset, 4);
-
-  // Update change count so outstanding readers know the info changed.
-  // Both spots must match for the page count to be considered valid.
-  unsigned change_count = ReadBigEndian(header + kFileChangeCountOffset, 4);
-  WriteBigEndian(change_count + 1, header + kFileChangeCountOffset, 4);
-  WriteBigEndian(change_count + 1, header + kVersionValidForOffset, 4);
 }
 
 bool CorruptTableOrIndex(const base::FilePath& db_path,
@@ -374,5 +369,4 @@ ColumnInfo ColumnInfo::Create(sql::Database* db,
           not_null != 0, primary_key != 0, auto_increment != 0};
 }
 
-}  // namespace test
-}  // namespace sql
+}  // namespace sql::test

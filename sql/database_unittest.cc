@@ -1743,9 +1743,10 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "2");
 }
 
-TEST_P(SQLDatabaseTest, CorruptSizeInHeaderTest) {
-  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (x)"));
-  ASSERT_TRUE(db_->Execute("CREATE TABLE bar (x)"));
+TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
+  // The database file ends up empty if we don't create at least one table.
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(i INTEGER PRIMARY KEY NOT NULL)"));
   db_->Close();
 
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
@@ -1753,11 +1754,56 @@ TEST_P(SQLDatabaseTest, CorruptSizeInHeaderTest) {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     ASSERT_TRUE(db_->Open(db_path_));
-    EXPECT_FALSE(db_->Execute("INSERT INTO foo values (1)"));
-    EXPECT_FALSE(db_->DoesTableExist("foo"));
-    EXPECT_FALSE(db_->DoesTableExist("bar"));
-    EXPECT_FALSE(db_->Execute("SELECT * FROM foo"));
     EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+}
+
+TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(i INTEGER PRIMARY KEY NOT NULL)"));
+  constexpr static char kSelectSql[] = "SELECT * from rows";
+  EXPECT_TRUE(db_->Execute(kSelectSql))
+      << "The test Execute() statement fails before the header is corrupted";
+  db_->Close();
+
+  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    ASSERT_TRUE(db_->Open(db_path_));
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Database::Open() did not encounter SQLITE_CORRUPT";
+  }
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    EXPECT_FALSE(db_->Execute(kSelectSql));
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Database::Execute() did not encounter SQLITE_CORRUPT";
+  }
+}
+
+TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
+  ASSERT_TRUE(
+      db_->Execute("CREATE TABLE rows(i INTEGER PRIMARY KEY NOT NULL)"));
+  ASSERT_TRUE(db_->DoesTableExist("rows"))
+      << "The test schema check fails before the header is corrupted";
+  db_->Close();
+
+  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    ASSERT_TRUE(db_->Open(db_path_));
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Database::Open() did not encounter SQLITE_CORRUPT";
+  }
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    EXPECT_FALSE(db_->DoesTableExist("rows"));
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Database::DoesTableExist() did not encounter SQLITE_CORRUPT";
   }
 }
 
