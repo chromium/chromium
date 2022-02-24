@@ -1346,7 +1346,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           bool row_container_separation = has_processed_first_line_;
           NGBreakStatus row_break_status = BreakBeforeRowIfNeeded(
               line_output, (*row_break_between_outputs)[flex_line_idx],
-              flex_line_idx, flex_item->ng_input_node, *layout_result,
+              flex_line_idx, flex_item->ng_input_node,
               row_container_separation);
           if (row_break_status == NGBreakStatus::kBrokeBefore) {
             ConsumeRemainingFragmentainerSpace();
@@ -1678,7 +1678,6 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
     EBreakBetween row_break_between,
     wtf_size_t row_index,
     NGLayoutInputNode child,
-    const NGLayoutResult& layout_result,
     bool has_container_separation) {
   DCHECK(is_horizontal_flow_);
   DCHECK(involved_in_block_fragmentation_);
@@ -1691,9 +1690,10 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   NGBreakAppeal appeal_before = kBreakAppealPerfect;
   if (has_container_separation) {
     if (IsForcedBreakValue(ConstraintSpace(), row_break_between)) {
-      BreakBeforeChild(ConstraintSpace(), child, layout_result,
+      BreakBeforeChild(ConstraintSpace(), child, /* layout_result */ nullptr,
                        fragmentainer_block_offset, kBreakAppealPerfect,
-                       /* is_forced_break */ true, &container_builder_);
+                       /* is_forced_break */ true, &container_builder_,
+                       row.line_cross_size);
       return NGBreakStatus::kBrokeBefore;
     }
   } else {
@@ -1716,8 +1716,9 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   // We're out of space. Figure out where to insert a soft break. It will either
   // be before this row, or before an earlier sibling, if there's a more
   // appealing breakpoint there.
-  if (!AttemptRowSoftBreak(child, layout_result, appeal_before,
-                           fragmentainer_block_offset, row.line_cross_size))
+  if (!AttemptSoftBreak(ConstraintSpace(), child, /* layout_result */ nullptr,
+                        fragmentainer_block_offset, appeal_before,
+                        &container_builder_, row.line_cross_size))
     return NGBreakStatus::kNeedsEarlierBreak;
 
   return NGBreakStatus::kBrokeBefore;
@@ -1767,30 +1768,6 @@ bool NGFlexLayoutAlgorithm::MovePastRowBreakPoint(
   }
 
   // Avoiding breaks inside a row will be handled at the item level.
-  return true;
-}
-
-bool NGFlexLayoutAlgorithm::AttemptRowSoftBreak(
-    NGLayoutInputNode child,
-    const NGLayoutResult& layout_result,
-    NGBreakAppeal appeal_before,
-    LayoutUnit fragmentainer_block_offset,
-    LayoutUnit row_block_size) {
-  if (container_builder_.HasEarlyBreak() &&
-      container_builder_.EarlyBreak().BreakAppeal() > appeal_before) {
-    PropagateSpaceShortage(ConstraintSpace(), /* layout_result */ nullptr,
-                           fragmentainer_block_offset, &container_builder_,
-                           row_block_size);
-    return false;
-  }
-
-  // Break before the row. Note that there may be a better break further up
-  // with higher appeal (but it's too early to tell), in which case this
-  // breakpoint will be replaced.
-  // TODO(almaher): PropagateSpaceShortage() will be different for rows.
-  BreakBeforeChild(ConstraintSpace(), child, layout_result,
-                   fragmentainer_block_offset, appeal_before,
-                   /* is_forced_break */ false, &container_builder_);
   return true;
 }
 

@@ -122,7 +122,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                        EBreakBetween row_break_between,
                                        wtf_size_t row_index,
                                        NGLayoutInputNode child,
-                                       const NGLayoutResult& layout_result,
                                        bool has_container_separation);
 
   // Move past the breakpoint before the row, if possible, and return true. Also
@@ -134,19 +133,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                              LayoutUnit fragmentainer_block_offset,
                              LayoutUnit row_block_size,
                              wtf_size_t row_index);
-
-  // Attempt to insert a soft break before the row, and return true if we did.
-  // If false is returned, it means that the desired breakpoint is earlier in
-  // the container, and that we need to abort and re-layout to that breakpoint.
-  // |child| and |layout_result| should be those associated with the first child
-  // in the row. |appeal_before|, |fragmentainer_block_offset| and
-  // |row_block_size| are specific to the row itself. See
-  // |::blink::AttemptSoftBreak()| for more documentation.
-  bool AttemptRowSoftBreak(NGLayoutInputNode child,
-                           const NGLayoutResult& layout_result,
-                           NGBreakAppeal appeal_before,
-                           LayoutUnit fragmentainer_block_offset,
-                           LayoutUnit row_block_size);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;

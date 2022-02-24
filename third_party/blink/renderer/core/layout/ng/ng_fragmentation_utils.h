@@ -243,13 +243,17 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace&,
                                        NGBoxFragmentBuilder*);
 
 // Insert a break before the child, and propagate space shortage if needed.
-void BreakBeforeChild(const NGConstraintSpace&,
-                      NGLayoutInputNode child,
-                      const NGLayoutResult&,
-                      LayoutUnit fragmentainer_block_offset,
-                      absl::optional<NGBreakAppeal> appeal,
-                      bool is_forced_break,
-                      NGBoxFragmentBuilder*);
+// |block_size_override| should only be supplied when you wish to propagate a
+// different block-size than that of the provided layout result.
+void BreakBeforeChild(
+    const NGConstraintSpace&,
+    NGLayoutInputNode child,
+    const NGLayoutResult*,
+    LayoutUnit fragmentainer_block_offset,
+    absl::optional<NGBreakAppeal> appeal,
+    bool is_forced_break,
+    NGBoxFragmentBuilder*,
+    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
 
 // Propagate the block-size of unbreakable content. This is used to inflate the
 // initial minimal column block-size when balancing columns, before we calculate
@@ -303,12 +307,16 @@ void UpdateEarlyBreakAtBlockChild(const NGConstraintSpace&,
 // Attempt to insert a soft break before the child, and return true if we did.
 // If false is returned, it means that the desired breakpoint is earlier in the
 // container, and that we need to abort and re-layout to that breakpoint.
-bool AttemptSoftBreak(const NGConstraintSpace&,
-                      NGLayoutInputNode child,
-                      const NGLayoutResult&,
-                      LayoutUnit fragmentainer_block_offset,
-                      NGBreakAppeal appeal_before,
-                      NGBoxFragmentBuilder*);
+// |block_size_override| should only be supplied when you wish to propagate a
+// different block-size than that of the provided layout result.
+bool AttemptSoftBreak(
+    const NGConstraintSpace&,
+    NGLayoutInputNode child,
+    const NGLayoutResult*,
+    LayoutUnit fragmentainer_block_offset,
+    NGBreakAppeal appeal_before,
+    NGBoxFragmentBuilder*,
+    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
 
 // If we have an previously found break point, and we're entering an ancestor of
 // the node we're going to break before, return the early break inside. This can

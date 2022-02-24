@@ -1177,7 +1177,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
     LayoutUnit fragmentainer_block_offset =
         ConstraintSpace().FragmentainerOffsetAtBfc() +
         positioned_float.bfc_offset.block_offset;
-    BreakBeforeChild(ConstraintSpace(), child, *positioned_float.layout_result,
+    BreakBeforeChild(ConstraintSpace(), child, positioned_float.layout_result,
                      fragmentainer_block_offset,
                      /* appeal */ absl::nullopt,
                      /* is_forced_break */ false, &container_builder_);
@@ -2394,7 +2394,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
     EBreakBetween break_between =
         CalculateBreakBetweenValue(child, layout_result, container_builder_);
     if (IsForcedBreakValue(ConstraintSpace(), break_between)) {
-      BreakBeforeChild(ConstraintSpace(), child, layout_result,
+      BreakBeforeChild(ConstraintSpace(), child, &layout_result,
                        fragmentainer_block_offset, kBreakAppealPerfect,
                        /* is_forced_break */ true, &container_builder_);
       ConsumeRemainingFragmentainerSpace(previous_inflow_position);
@@ -2501,7 +2501,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
     }
   }
 
-  if (!AttemptSoftBreak(ConstraintSpace(), child, layout_result,
+  if (!AttemptSoftBreak(ConstraintSpace(), child, &layout_result,
                         fragmentainer_block_offset, appeal_before,
                         &container_builder_))
     return NGBreakStatus::kNeedsEarlierBreak;
