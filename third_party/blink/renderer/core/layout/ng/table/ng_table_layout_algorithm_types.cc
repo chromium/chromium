@@ -173,16 +173,13 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     resolved_min_inline_size = std::max(
         MinMaxSizesFunc().min_size, css_min_inline_size.value_or(LayoutUnit()));
     // https://quirks.spec.whatwg.org/#the-table-cell-nowrap-minimum-width-calculation-quirk
-    // Has not worked in Legacy, might be pulled out.
-    if (css_inline_size && node.GetDocument().InQuirksMode()) {
-      bool has_nowrap_attribute =
-          !To<Element>(node.GetDOMNode())
-               ->FastGetAttribute(html_names::kNowrapAttr)
-               .IsNull();
-      if (has_nowrap_attribute && style.AutoWrap()) {
-        resolved_min_inline_size =
-            std::max(resolved_min_inline_size, *css_inline_size);
-      }
+    bool has_nowrap_attribute =
+        node.GetDOMNode() && To<Element>(node.GetDOMNode())
+                                 ->FastHasAttribute(html_names::kNowrapAttr);
+    if (css_inline_size && node.GetDocument().InQuirksMode() &&
+        has_nowrap_attribute) {
+      resolved_min_inline_size =
+          std::max(resolved_min_inline_size, *css_inline_size);
     }
   }
 
