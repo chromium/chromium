@@ -73,16 +73,17 @@ SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;
 
 void SharingHubBubbleActionButton::UpdateBackgroundColor() {
   // Pretend to be a menu item:
-  SkColor bg_color = GetColorProvider()->GetColor(
-      GetVisualState() == STATE_HOVERED ? ui::kColorMenuItemBackgroundSelected
-                                        : ui::kColorMenuBackground);
+  SkColor bg_color =
+      GetColorProvider()->GetColor(GetVisualState() == STATE_HOVERED
+                                       ? ui::kColorMenuItemBackgroundHighlighted
+                                       : ui::kColorMenuBackground);
 
   SetBackground(views::CreateSolidBackground(bg_color));
   SetTitleTextStyle(
-      // Give the hovered element the "selected" menu styling - otherwise the
+      // Give the hovered element the "highlighted" menu styling - otherwise the
       // text color won't change appropriately to keep up with the background
       // color changing in high contrast mode.
-      GetVisualState() == STATE_HOVERED ? views::style::STYLE_SELECTED
+      GetVisualState() == STATE_HOVERED ? views::style::STYLE_HIGHLIGHTED
                                         : views::style::STYLE_PRIMARY,
       bg_color);
 }
