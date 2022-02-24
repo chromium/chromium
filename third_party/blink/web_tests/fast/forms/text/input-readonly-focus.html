@@ -1,28 +1,19 @@
-<html>
-<head>
-<script>
-function runTest() {
-  testRunner.waitUntilDone();
-  testRunner.dumpAsText();
+<!DOCTYPE html>
 
-  var input = document.getElementById('i');
-  eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-}
-window.onload = function() {
-  var input = document.getElementById('i');
-  input.onfocus = function(e) {
+<input readonly>
+
+<script>
+window.onload = () => {
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    testRunner.dumpAsText();
+  }
+  const input = document.querySelector('input');
+  input.onfocus = (e) => {
     document.body.innerHTML = 'PASS';
     if (window.testRunner)
       window.testRunner.notifyDone();
   }
-  if (window.testRunner)
-    runTest();
+  input.focus();
 }
 </script>
-</head>
-<body>
-<input id="i" readonly>
-</body>
-</html>
