@@ -95,6 +95,13 @@ class LinkHighlightImplTest : public testing::Test,
     return paint_artifact_compositor()->RootLayer()->children().size();
   }
 
+  size_t AnimationCount() {
+    cc::AnimationHost* animation_host = web_view_helper_.LocalMainFrame()
+                                            ->GetFrameView()
+                                            ->GetCompositorAnimationHost();
+    return animation_host->ticking_animations_for_testing().size();
+  }
+
   PaintArtifactCompositor* paint_artifact_compositor() {
     auto* local_frame_view = web_view_helper_.LocalMainFrame()->GetFrameView();
     return local_frame_view->GetPaintArtifactCompositor();
@@ -127,6 +134,7 @@ INSTANTIATE_PAINT_TEST_SUITE_P(LinkHighlightImplTest);
 
 TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   WebViewImpl* web_view_impl = web_view_helper_.GetWebView();
+  size_t animation_count_before_highlight = AnimationCount();
   int page_width = 640;
   int page_height = 480;
   web_view_impl->MainFrameViewWidget()->Resize(
@@ -159,16 +167,20 @@ TEST_P(LinkHighlightImplTest, verifyWebViewImplIntegration) {
   // Find a target inside a scrollable div
   touch_event.SetPositionInWidget(gfx::PointF(20, 100));
   web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
+  GetLinkHighlight().StartHighlightAnimationIfNeeded();
   ASSERT_TRUE(highlight);
 
-  // Enesure the timeline was added to a host.
+  // Ensure the timeline and animation was added to a host.
   EXPECT_TRUE(GetAnimationHost());
+  EXPECT_EQ(animation_count_before_highlight + 1, AnimationCount());
 
   // Don't highlight if no "hand cursor"
   touch_event.SetPositionInWidget(
       gfx::PointF(20, 220));  // An A-link with cross-hair cursor.
   web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
   EXPECT_FALSE(GetLinkHighlightImpl());
+  // Expect animation to have been removed.
+  EXPECT_EQ(animation_count_before_highlight, AnimationCount());
 
   touch_event.SetPositionInWidget(gfx::PointF(20, 260));  // A text input box.
   web_view_impl->EnableTapHighlightAtPoint(GetTargetedEvent(touch_event));
@@ -318,6 +330,7 @@ TEST_P(LinkHighlightImplTest, RemoveNodeDuringHighlightAnimation) {
 
   UpdateAllLifecyclePhases();
   size_t layer_count_before_highlight = LayerCount();
+  size_t animation_count_before_highlight = AnimationCount();
 
   WebGestureEvent touch_event(WebInputEvent::Type::kGestureShowPress,
                               WebInputEvent::kNoModifiers,
@@ -330,13 +343,17 @@ TEST_P(LinkHighlightImplTest, RemoveNodeDuringHighlightAnimation) {
   ASSERT_TRUE(touch_node);
 
   web_view_impl->EnableTapHighlightAtPoint(targeted_event);
-  // The highlight should create one additional layer.
+  GetLinkHighlight().StartHighlightAnimationIfNeeded();
+  // The highlight should create one additional layer and animate it.
   EXPECT_EQ(layer_count_before_highlight + 1, LayerCount());
+  EXPECT_EQ(animation_count_before_highlight + 1, AnimationCount());
 
   touch_node->remove(IGNORE_EXCEPTION_FOR_TESTING);
   UpdateAllLifecyclePhases();
-  // Removing the highlight layer should drop the cc layer count by one.
+  // Removing the highlight layer should drop the cc layer count by one and
+  // its corresponding animation.
   EXPECT_EQ(layer_count_before_highlight, LayerCount());
+  EXPECT_EQ(animation_count_before_highlight, AnimationCount());
 }
 
 TEST_P(LinkHighlightImplTest, MultiColumn) {

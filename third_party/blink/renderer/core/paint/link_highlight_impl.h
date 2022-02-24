@@ -118,7 +118,8 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
   std::unique_ptr<CompositorAnimation> compositor_animation_;
   scoped_refptr<EffectPaintPropertyNode> effect_;
 
-  bool is_animating_;
+  bool is_animating_ = false;
+  int compositor_keyframe_model_id_ = 0;
   base::TimeTicks start_time_;
   CompositorElementId element_id_;
 };
