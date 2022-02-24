@@ -6,18 +6,16 @@
 #define CONTENT_BROWSER_QUOTA_QUOTA_CHANGE_DISPATCHER_H_
 
 #include <map>
-#include <utility>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
-
-class TimeDelta;
 
 namespace content {
 
