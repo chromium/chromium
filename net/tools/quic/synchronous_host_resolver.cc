@@ -24,6 +24,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -40,7 +41,7 @@ class ResolverThread : public base::SimpleThread {
   ~ResolverThread() override;
 
   // Called on the main thread.
-  int Resolve(const std::string& host, AddressList* addresses);
+  int Resolve(url::SchemeHostPort scheme_host_port, AddressList* addresses);
 
   // SimpleThread methods:
   void Run() override;
@@ -49,12 +50,11 @@ class ResolverThread : public base::SimpleThread {
   void OnResolutionComplete(base::OnceClosure on_done, int rv);
 
   AddressList* addresses_;
-  std::string host_;
-  int rv_;
+  url::SchemeHostPort scheme_host_port_;
+  int rv_ = ERR_UNEXPECTED;
 };
 
-ResolverThread::ResolverThread()
-    : SimpleThread("resolver_thread"), rv_(ERR_UNEXPECTED) {}
+ResolverThread::ResolverThread() : SimpleThread("resolver_thread") {}
 
 ResolverThread::~ResolverThread() = default;
 
@@ -67,11 +67,10 @@ void ResolverThread::Run() {
   std::unique_ptr<net::HostResolver> resolver =
       net::HostResolver::CreateStandaloneResolver(NetLog::Get(), options);
 
-  HostPortPair host_port_pair(host_, 80);
   // No need to use a NetworkIsolationKey here, since this is an external tool
   // not used by net/ consumers.
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request =
-      resolver->CreateRequest(host_port_pair, NetworkIsolationKey(),
+      resolver->CreateRequest(scheme_host_port_, NetworkIsolationKey(),
                               NetLogWithSource(), absl::nullopt);
 
   base::RunLoop run_loop;
@@ -89,8 +88,9 @@ void ResolverThread::Run() {
   }
 }
 
-int ResolverThread::Resolve(const std::string& host, AddressList* addresses) {
-  host_ = host;
+int ResolverThread::Resolve(url::SchemeHostPort scheme_host_port,
+                            AddressList* addresses) {
+  scheme_host_port_ = std::move(scheme_host_port);
   addresses_ = addresses;
   this->Start();
   this->Join();
@@ -105,10 +105,10 @@ void ResolverThread::OnResolutionComplete(base::OnceClosure on_done, int rv) {
 }  // namespace
 
 // static
-int SynchronousHostResolver::Resolve(const std::string& host,
+int SynchronousHostResolver::Resolve(url::SchemeHostPort scheme_host_port,
                                      AddressList* addresses) {
   ResolverThread resolver;
-  return resolver.Resolve(host, addresses);
+  return resolver.Resolve(std::move(scheme_host_port), addresses);
 }
 
 }  // namespace net
