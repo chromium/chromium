@@ -52,6 +52,10 @@ try_.compilator_builder(
 )
 
 try_.builder(
+    name = "android-12-x64-dbg",
+)
+
+try_.builder(
     name = "android-12-x64-fyi-rel",
 )
 
@@ -327,6 +331,10 @@ try_.builder(
 
 try_.builder(
     name = "android-weblayer-pie-x86-wpt-smoketest",
+)
+
+try_.builder(
+    name = "android-webview-12-x64-dbg",
 )
 
 try_.builder(

@@ -836,6 +836,8 @@
       'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-12-x64-fyi-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
+      'android-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
+      'android-webview-12-x64-dbg': 'android_debug_trybot_x64_webview_trichrome_webview_shell',
       'android-webview-marshmallow-arm64-dbg': 'android_release_trybot_arm64_webview_google',
       'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
@@ -1442,6 +1444,10 @@
 
     'android_debug_trybot_java_coverage': [
       'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info',
+    ],
+
+    'android_debug_trybot_x64_webview_trichrome_webview_shell': [
+      'android', 'debug_bot', 'x64', 'webview_trichrome', 'webview_shell',
     ],
 
     'android_incremental_debug_bot_reclient': [
