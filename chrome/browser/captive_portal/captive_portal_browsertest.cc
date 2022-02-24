@@ -2082,6 +2082,47 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
             GetInterstitialType(broken_tab_contents));
 }
 
+// A cert error triggers a captive portal check and results in opening a login
+// tab; that login tab should not itself show a captive portal interstitial.
+IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
+                       CertErrorOnCaptivePortalLoginShowsSSLErrorInterstitial) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+  SSLErrorHandler::SetOSReportsCaptivePortalForTesting(true);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  WebContents* broken_tab_contents = tab_strip_model->GetActiveWebContents();
+
+  // The path does not matter.
+  GURL cert_error_url = https_server.GetURL(kTestServerLoginPath);
+
+  // Cause an interstitial to be loaded.
+  FastErrorBehindCaptivePortal(browser(), true /* expect_open_login_tab */,
+                               false /* expect_new_login_browser */,
+                               cert_error_url);
+  EXPECT_EQ(CaptivePortalBlockingPage::kTypeForTesting,
+            GetInterstitialType(broken_tab_contents));
+
+  WebContents* login_tab_contents = tab_strip_model->GetActiveWebContents();
+  int login_tab_index = tab_strip_model->active_index();
+  EXPECT_EQ(1, login_tab_index);
+  EXPECT_TRUE(IsLoginTab(login_tab_contents));
+
+  // Navigate the Login tab to a cert error. In the real world, the captive
+  // portal might take the user to a Login page with a bad certificate.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), cert_error_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(IsLoginTab(login_tab_contents));
+
+  // Ensure that the Login tab is showing a cert error interstitial and not a
+  // captive portal interstitial.
+  EXPECT_EQ(SSLBlockingPage::kTypeForTesting,
+            GetInterstitialType(login_tab_contents));
+}
+
 // Tests this scenario:
 // - Portal probe requests are ignored, so that no captive portal result can
 //   arrive.
