@@ -35,7 +35,7 @@ BatteryInfo& BatteryInfo::operator=(BatteryInfo&&) = default;
 BatteryInfo::~BatteryInfo() = default;
 
 // static
-absl::optional<BatteryInfo> BatteryInfo::FromByte(uint8_t byte) {
+BatteryInfo BatteryInfo::FromByte(uint8_t byte) {
   // Battery value is in the form 0bSVVVVVVV.
   // S = charinging (0b1) or not (0b0).
   // V = value, Ranges from 0-100, or 0bS1111111 if unknown.
@@ -46,9 +46,9 @@ absl::optional<BatteryInfo> BatteryInfo::FromByte(uint8_t byte) {
   if (percentage == kBatteryPercentageMask || percentage_signed < 0 ||
       percentage_signed > 100) {
     LOG(WARNING) << "Invalid battery percentage.";
-    return absl::make_optional<BatteryInfo>(is_charging);
+    return BatteryInfo(is_charging);
   } else {
-    return absl::make_optional<BatteryInfo>(is_charging, percentage_signed);
+    return BatteryInfo(is_charging, percentage_signed);
   }
 }
 
@@ -97,27 +97,12 @@ absl::optional<BatteryNotification> BatteryNotification::FromBytes(
     return absl::nullopt;
   }
 
-  absl::optional<BatteryInfo> left_bud_info = BatteryInfo::FromByte(bytes[0]);
-  if (!left_bud_info) {
-    LOG(WARNING) << __func__ << ": Failed to parse the left bud info.";
-    return absl::nullopt;
-  }
+  BatteryInfo left_bud_info = BatteryInfo::FromByte(bytes[0]);
+  BatteryInfo right_bud_info = BatteryInfo::FromByte(bytes[1]);
+  BatteryInfo case_info = BatteryInfo::FromByte(bytes[2]);
 
-  absl::optional<BatteryInfo> right_bud_info = BatteryInfo::FromByte(bytes[1]);
-  if (!right_bud_info) {
-    LOG(WARNING) << __func__ << ": Failed to parse the right bud info.";
-    return absl::nullopt;
-  }
-
-  absl::optional<BatteryInfo> case_info = BatteryInfo::FromByte(bytes[2]);
-  if (!case_info) {
-    LOG(WARNING) << __func__ << ": Failed to parse the case info.";
-    return absl::nullopt;
-  }
-
-  return absl::make_optional<BatteryNotification>(
-      show_ui, left_bud_info.value(), right_bud_info.value(),
-      case_info.value());
+  return absl::make_optional<BatteryNotification>(show_ui, left_bud_info,
+                                                  right_bud_info, case_info);
 }
 
 }  // namespace quick_pair

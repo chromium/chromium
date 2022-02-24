@@ -25,7 +25,7 @@ struct BatteryInfo {
   BatteryInfo& operator=(BatteryInfo&&);
   ~BatteryInfo();
 
-  static absl::optional<BatteryInfo> FromByte(uint8_t byte);
+  static BatteryInfo FromByte(uint8_t byte);
 
   uint8_t ToByte() const;
 
