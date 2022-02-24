@@ -52,6 +52,13 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
     autofill_client_ = autofill_client;
   }
 
+  void SetVirtualCardEnrollmentFieldsLoadedCallback(
+      VirtualCardEnrollmentFieldsLoadedCallback
+          virtual_card_enrollment_fields_loaded_callback) {
+    virtual_card_enrollment_fields_loaded_callback_ =
+        std::move(virtual_card_enrollment_fields_loaded_callback);
+  }
+
   bool AutofillClientIsPresent() { return autofill_client_ != nullptr; }
 
   // VirtualCardEnrollmentManager:

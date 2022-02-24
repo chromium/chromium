@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/AutofillPaymentMethodsDelegate_jni.h"
 #include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentFields_jni.h"
@@ -30,6 +31,8 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace autofill {
@@ -75,6 +78,14 @@ ScopedJavaLocalRef<jobject> GetVirtualCardEnrollmentFieldsJavaObject(
   return java_object;
 }
 
+// static
+void RunVirtualCardEnrollmentFieldsLoadedCallback(
+    const JavaRef<jobject>& j_callback,
+    VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
+  RunObjectCallbackAndroid(j_callback, GetVirtualCardEnrollmentFieldsJavaObject(
+                                           virtual_card_enrollment_fields));
+}
+
 AutofillPaymentMethodsDelegate::AutofillPaymentMethodsDelegate(Profile* profile)
     : profile_(profile) {
   personal_data_manager_ = PersonalDataManagerFactory::GetForProfile(profile);
@@ -110,11 +121,13 @@ void AutofillPaymentMethodsDelegate::OfferVirtualCardEnrollment(
       personal_data_manager_->GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->OfferVirtualCardEnroll(
       *credit_card, VirtualCardEnrollmentSource::kSettingsPage,
-      profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper));
+      profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper),
+      base::BindOnce(&RunVirtualCardEnrollmentFieldsLoadedCallback,
+                     ScopedJavaGlobalRef<jobject>(jcallback)));
 }
 
 void AutofillPaymentMethodsDelegate::EnrollOfferedVirtualCard(JNIEnv* env) {
-  // TODO (crbug/1281695) Implement call to enroll Virtual Cards.
+  virtual_card_enrollment_manager_->Enroll();
 }
 
 void AutofillPaymentMethodsDelegate::UnenrollVirtualCard(

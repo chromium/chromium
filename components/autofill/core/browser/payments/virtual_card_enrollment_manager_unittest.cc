@@ -4,7 +4,9 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -21,6 +23,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
+
+using testing::_;
 
 namespace autofill {
 
@@ -238,7 +242,13 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       VirtualCardEnrollmentSource::kSettingsPage;
 
   virtual_card_enrollment_manager_->SetAutofillClient(nullptr);
-
+  base::MockCallback<TestVirtualCardEnrollmentManager::
+                         VirtualCardEnrollmentFieldsLoadedCallback>
+      virtual_card_enrollment_fields_loadaed_callback;
+  virtual_card_enrollment_manager_
+      ->SetVirtualCardEnrollmentFieldsLoadedCallback(
+          virtual_card_enrollment_fields_loadaed_callback.Get());
+  EXPECT_CALL(virtual_card_enrollment_fields_loadaed_callback, Run(_));
   virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
 
