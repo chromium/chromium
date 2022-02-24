@@ -865,6 +865,9 @@ group("gn_all") {
       "//mojo/public/rust:tests",
     ]
   }
+  if (enable_rust) {
+    deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
+  }
 }
 
 group("rust_build_tests") {

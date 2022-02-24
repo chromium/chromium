@@ -1609,6 +1609,10 @@
     "label": "//build/rust/tests",
     "type": "additional_compile_target",
   },
+  "rust_gtest_interop_unittests": {
+    "label": "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
+    "type": "console_test_launcher",
+  },
   "sandbox_linux_unittests": {
     "label": "//sandbox/linux:sandbox_linux_unittests",
     "type": "console_test_launcher",

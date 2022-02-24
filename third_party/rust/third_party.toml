@@ -57,3 +57,4 @@ build_script_outputs = [ "common.rs", "dynamic.rs" ]
 [dev-dependencies]
 rstest = "0.12"
 small_ctor = "0.1"
+syn = {version = "1", features = ["full"]}
