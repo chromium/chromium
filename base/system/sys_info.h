@@ -24,7 +24,6 @@ namespace debug {
 FORWARD_DECLARE_TEST(SystemMetricsTest, ParseMeminfo);
 }
 
-class CommandLine;
 class FilePath;
 struct SystemMemoryInfoKB;
 
@@ -68,21 +67,6 @@ class BASE_EXPORT SysInfo {
   // Return the total disk space in bytes on the volume containing |path|, or -1
   // on failure.
   static int64_t AmountOfTotalDiskSpace(const FilePath& path);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, spaced is the central source-of-truth for disk space
-  // information. Spaced takes into account the available extents on the
-  // underlying thinpool to make sure that thinly provisioned filesystems
-  // return only the available physical extents as the free space.
-  //
-  // Return the available disk space in bytes on the volume containing |path|,
-  // or -1 on failure.
-  static int64_t GetFreeDiskSpaceFromSpaced(const FilePath& path);
-
-  // Return the total disk space in bytes on the volume containing |path|, or -1
-  // on failure.
-  static int64_t GetTotalDiskSpaceFromSpaced(const FilePath& path);
-#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
   // Sets the total amount of disk space to report under the specified |path|.
@@ -184,14 +168,6 @@ class BASE_EXPORT SysInfo {
 
   // Undoes the function above.
   static void ResetChromeOSVersionInfoForTest();
-
-  // Overrides the command runner for running commands. Overrides cannot be
-  // nested. Users must call SetChromeOSGetAppOutputForTest(nullptr) to revert
-  // the test function.
-  using GetAppOutputCallback =
-      RepeatingCallback<bool(const CommandLine&, std::string*)>;
-
-  static void SetChromeOSGetAppOutputForTest(GetAppOutputCallback* callback);
 
   // Returns the kernel version of the host operating system.
   static std::string KernelVersion();
