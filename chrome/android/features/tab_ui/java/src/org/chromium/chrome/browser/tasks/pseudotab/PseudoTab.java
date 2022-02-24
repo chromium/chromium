@@ -136,7 +136,10 @@ public class PseudoTab {
         if (tabList != null) {
             pseudoTabs = new ArrayList<>();
             for (int i = 0; i < tabList.getCount(); i++) {
-                pseudoTabs.add(fromTab(tabList.getTabAt(i)));
+                Tab tab = tabList.getTabAt(i);
+                if (tab != null) {
+                    pseudoTabs.add(fromTab(tab));
+                }
             }
         }
         return pseudoTabs;
