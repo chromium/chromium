@@ -447,11 +447,12 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
 void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     const WebAXObject& obj,
     bool subtree,
+    ax::mojom::EventFrom event_from,
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents,
     ax::mojom::Event event_type) {
-  EnqueueDirtyObject(obj, ax::mojom::EventFrom::kAction, event_from_action,
-                     event_intents, dirty_objects_.end());
+  EnqueueDirtyObject(obj, event_from, event_from_action, event_intents,
+                     dirty_objects_.end());
 
   if (subtree)
     serializer_->InvalidateSubtree(obj);
@@ -508,8 +509,9 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
   if (ShouldSerializeNodeForEvent(obj, event)) {
-    MarkWebAXObjectDirty(obj, false, event.event_from_action,
-                         event.event_intents, event.event_type);
+    MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
+                         event.event_from_action, event.event_intents,
+                         event.event_type);
   }
 
   ScheduleSendPendingAccessibilityEvents();
@@ -1306,7 +1308,8 @@ void RenderAccessibilityImpl::MarkAllAXObjectsDirty(
     objs_to_explore.pop();
 
     if (obj.Role() == role)
-      MarkWebAXObjectDirty(obj, /* subtree */ false, event_from_action);
+      MarkWebAXObjectDirty(obj, /* subtree */ false,
+                           ax::mojom::EventFrom::kNone, event_from_action);
 
     std::vector<blink::WebAXObject> children;
     tree_source_->GetChildren(obj, &children);
