@@ -1859,13 +1859,29 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateScrimVisibilityForText:searchText];
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
-      [self.incognitoTabsDelegate searchItemsWithText:searchText];
+      if (searchText.length) {
+        [self.incognitoTabsDelegate searchItemsWithText:searchText];
+      } else {
+        // The expectation from searchItemsWithText is to search tabs from all
+        // the available windows to the app. However in the case of empy string
+        // the grid should revert back to its original state so it doesn't
+        // display all the tabs from all the available windows.
+        [self.incognitoTabsDelegate resetToAllItems];
+      }
       self.incognitoTabsViewController.searchText = searchText;
       break;
     case TabGridPageRegularTabs:
     case TabGridPageRemoteTabs:
+      if (searchText.length) {
+        [self.regularTabsDelegate searchItemsWithText:searchText];
+      } else {
+        // The expectation from searchItemsWithText is to search tabs from all
+        // the available windows to the app. However in the case of empy string
+        // the grid should revert back to its original state so it doesn't
+        // display all the tabs from all the available windows.
+        [self.regularTabsDelegate resetToAllItems];
+      }
       self.regularTabsViewController.searchText = searchText;
-      [self.regularTabsDelegate searchItemsWithText:searchText];
       self.remoteTabsViewController.searchTerms = searchText;
       break;
   }
