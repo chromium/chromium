@@ -77,6 +77,14 @@ public class VariationsHeadersTest {
         Assert.assertFalse(mTestServer.getLastRequest(PATH).headerValue(HEADER_NAME).isEmpty());
     }
 
+    @MediumTest
+    @Test
+    public void testMatchesApiValue() throws Throwable {
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), mUrl);
+        String serverHeaderValue = mTestServer.getLastRequest(PATH).headerValue(HEADER_NAME);
+        Assert.assertEquals(serverHeaderValue, mAwContents.getVariationsHeader());
+    }
+
     @CommandLineFlags.Add({"disable-features=WebViewSendVariationsHeaders"})
     @MediumTest
     @Test

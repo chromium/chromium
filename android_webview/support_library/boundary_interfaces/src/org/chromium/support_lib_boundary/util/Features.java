@@ -195,4 +195,7 @@ public class Features {
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
     public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
+
+    // WebViewCompat.getVariationsHeader
+    public static final String GET_VARIATIONS_HEADER = "GET_VARIATIONS_HEADER";
 }

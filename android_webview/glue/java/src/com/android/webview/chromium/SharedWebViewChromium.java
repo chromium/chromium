@@ -174,6 +174,14 @@ public class SharedWebViewChromium {
         return mContentsClientAdapter.getWebViewRendererClientAdapter();
     }
 
+    public String getVariationsHeader() {
+        mAwInit.startYourEngines(true);
+        if (checkNeedsPost()) {
+            return mRunQueue.runOnUiThreadBlocking(() -> getVariationsHeader());
+        }
+        return mAwContents.getVariationsHeader();
+    }
+
     protected boolean checkNeedsPost() {
         boolean needsPost = !mRunQueue.chromiumHasStarted() || !ThreadUtils.runningOnUiThread();
         if (!needsPost && mAwContents == null) {
