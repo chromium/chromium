@@ -47,6 +47,7 @@ include_rules = [
   "+components/policy",
   "+components/prefs/android",
   "+components/query_tiles",
+  "+components/safe_browsing/android/java",
   "+components/security_interstitials/content/android",
   "+components/signin/public/android",
   "+components/site_engagement/content/android",

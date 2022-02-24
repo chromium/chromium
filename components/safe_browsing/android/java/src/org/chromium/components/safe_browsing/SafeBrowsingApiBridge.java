@@ -20,6 +20,7 @@ public final class SafeBrowsingApiBridge {
     private static final boolean DEBUG = false;
 
     private static Class<? extends SafeBrowsingApiHandler> sHandler;
+    private static UrlCheckTimeObserver sUrlCheckTimeObserver;
 
     private SafeBrowsingApiBridge() {
         // Util class, do not instantiate.
@@ -31,6 +32,30 @@ public final class SafeBrowsingApiBridge {
      */
     public static void setSafeBrowsingHandlerType(Class<? extends SafeBrowsingApiHandler> handler) {
         sHandler = handler;
+    }
+
+    /**
+     * Observer to record latency from requests to GmsCore.
+     */
+    public interface UrlCheckTimeObserver {
+        /**
+         * @param urlCheckTimeDeltaMicros Time it took for {@link SafeBrowsingApiHandler} to check
+         * the URL.
+         */
+        void onUrlCheckTime(long urlCheckTimeDeltaMicros);
+    }
+
+    /**
+     * Set the observer to notify about the time it took to respond for SafeBrowsing. Notified for
+     * the first URL check, and only once.
+     *
+     * The notification happens on another thread. The caller *must* guarantee that setting the
+     * observer happens-before (in JMM sense) the first SafeBrowsing request is made.
+     *
+     * @param observer the observer to notify.
+     */
+    public static void setOneTimeUrlCheckObserver(UrlCheckTimeObserver observer) {
+        sUrlCheckTimeObserver = observer;
     }
 
     /**
@@ -48,16 +73,20 @@ public final class SafeBrowsingApiBridge {
             Log.e(TAG, "Failed to init handler: " + e.getMessage());
             return null;
         }
-        boolean initSuccesssful =
+        boolean initSuccessful =
                 handler.init(new SafeBrowsingApiHandler.Observer() {
                     @Override
                     public void onUrlCheckDone(
                             long callbackId, int resultStatus, String metadata, long checkDelta) {
+                        if (sUrlCheckTimeObserver != null) {
+                            sUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                            sUrlCheckTimeObserver = null;
+                        }
                         SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
                                 callbackId, resultStatus, metadata, checkDelta);
                     }
                 });
-        return initSuccesssful ? handler : null;
+        return initSuccessful ? handler : null;
     }
 
     /**

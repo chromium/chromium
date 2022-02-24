@@ -89,6 +89,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.Cold.FirstSafeBrowsingResponseTime.Tabbed"
+    units="ms" expires_after="2022-07-24">
+  <owner>pasko@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    The time it took GmsCore to respond to the first hash-based SafeBrowsing
+    request in the process lifetime. Recorded at the same time as
+    Startup.Android.Cold.TimeToFirstNavigationCommit.Tabbed.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
     units="ms" expires_after="2022-07-24">
   <owner>pasko@chromium.org</owner>
