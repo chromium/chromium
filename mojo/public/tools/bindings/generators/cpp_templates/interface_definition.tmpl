@@ -45,6 +45,52 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {%-   endif %}
 {%- endfor %}
 
+uint32_t {{interface.name}}::MessageToStableIPCHash_(mojo::Message& message) {
+{%- if interface.methods %}
+  switch (message.name()) {
+{%-   for method in interface.methods %}
+    case internal::k{{interface.name}}_{{method.name}}_Name: {
+      constexpr uint32_t value = base::MD5Hash32Constexpr(
+              "(Impl){{namespace_as_string}}::{{interface.name}}::{{method.name}}");
+      return value;
+    }
+{%-   endfor %} 
+  }
+{%- endif %}
+  return 0;
+}
+
+
+const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+{%- if interface.methods %}
+  bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
+  if (!is_response) {
+    switch (message.name()) {
+{%-   for method in interface.methods %}
+      case internal::k{{interface.name}}_{{method.name}}_Name:
+            return "Receive {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
+{%-   endfor %} 
+    }
+  } else {
+    switch (message.name()) {
+{%-   for method in interface.methods %}
+      case internal::k{{interface.name}}_{{method.name}}_Name:
+            return "Receive reply {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
+{%-   endfor %} 
+    }
+  }
+{%- endif %}
+  return "Receive unknown mojo message";
+#else
+  bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
+  if (is_response) {
+    return "Receive mojo message";
+  } else {
+    return "Receive mojo reply";
+  }
+#endif // BUILDFLAG(MOJO_TRACE_ENABLED)
+}
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}
@@ -297,10 +343,6 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
 
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT("toplevel", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-               perfetto::Flow::Global(message->GetTraceId()));
-#endif
 {%-     if method|method_supports_lazy_serialization %}
   if (!message->is_serialized()) {
     auto context =
@@ -428,15 +470,6 @@ bool {{class_name}}StubDispatch::Accept(
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters == None %}
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT(
-          "toplevel",
-          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          perfetto::Flow::Global(message->GetTraceId()));
-#endif
-      static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
-              "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
-      base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 {%-       if method|method_supports_lazy_serialization %}
       if (!message->is_serialized()) {
         auto context = message->TakeUnserializedContext<
@@ -488,15 +521,6 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
 {%-   for method in interface.methods %}
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters != None %}
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT(
-          "toplevel",
-          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          perfetto::Flow::Global(message->GetTraceId()));
-#endif
-      static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
-              "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
-      base::TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(kMessageHash);
 {%-       if method|method_supports_lazy_serialization %}
       if (!message->is_serialized()) {
         auto context = message->TakeUnserializedContext<

@@ -539,9 +539,11 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
   // the category is "toplevel" if full tracing isn't available. If it's
   // available, it's emitted under "disabled-by-default-mojom" for debugging
   // purposes.
+  // TODO(altimin): This event is temporarily kept as a debug fallback. Remove
+  // it once the new implementation proves to be stable.
   TRACE_EVENT(
-      TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM("toplevel"),
-      "Connector::DispatchMessage", [&](perfetto::EventContext& ctx) {
+      TRACE_DISABLED_BY_DEFAULT("mojom"), "Connector::DispatchMessage",
+      [&](perfetto::EventContext& ctx) {
         ctx.event()->set_chrome_mojo_event_info()->set_mojo_interface_tag(
             interface_name_);
 

@@ -92,7 +92,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BindingStateBase {
                     bool passes_associated_kinds,
                     bool has_sync_methods,
                     MessageReceiverWithResponderStatus* stub,
-                    uint32_t interface_version);
+                    uint32_t interface_version,
+                    MessageToStableIPCHashCallback ipc_hash_callback,
+                    MessageToMethodNameCallback method_name_callback);
 
   scoped_refptr<internal::MultiplexRouter> router_;
   std::unique_ptr<InterfaceEndpointClient> endpoint_client_;
@@ -120,7 +122,8 @@ class BindingState : public BindingStateBase {
         std::move(receiver_state), runner, Interface::Name_,
         std::make_unique<typename Interface::RequestValidator_>(),
         Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_, &stub_,
-        Interface::Version_);
+        Interface::Version_, Interface::MessageToStableIPCHash_,
+        Interface::MessageToMethodName_);
   }
 
   PendingReceiver<Interface> Unbind() {

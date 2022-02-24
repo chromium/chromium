@@ -35,6 +35,7 @@
 #include "mojo/public/cpp/bindings/message_dispatcher.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
+#include "mojo/public/cpp/bindings/tracing_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
@@ -59,7 +60,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
                           bool expect_sync_requests,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
-                          const char* interface_name);
+                          const char* interface_name,
+                          MessageToStableIPCHashCallback ipc_hash_callback,
+                          MessageToMethodNameCallback method_name_callback);
 
   InterfaceEndpointClient(const InterfaceEndpointClient&) = delete;
   InterfaceEndpointClient& operator=(const InterfaceEndpointClient&) = delete;
@@ -191,6 +194,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   void MaybeSendNotifyIdle();
 
   const char* interface_name() const { return interface_name_; }
+  MessageToStableIPCHashCallback ipc_hash_callback() const {
+    return ipc_hash_callback_;
+  }
+  MessageToMethodNameCallback method_name_callback() const {
+    return method_name_callback_;
+  }
 
 #if DCHECK_IS_ON()
   void SetNextCallLocation(const base::Location& location) {
@@ -318,6 +327,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;
   const char* interface_name_;
+  const MessageToStableIPCHashCallback ipc_hash_callback_;
+  const MessageToMethodNameCallback method_name_callback_;
 
 #if DCHECK_IS_ON()
   // The code location of the the most recent call into a method on this

@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
@@ -27,6 +28,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/thread_safe_proxy.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"
 
 namespace mojo {
 
@@ -419,14 +421,18 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     bool expect_sync_requests,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     uint32_t interface_version,
-    const char* interface_name)
+    const char* interface_name,
+    MessageToStableIPCHashCallback ipc_hash_callback,
+    MessageToMethodNameCallback method_name_callback)
     : expect_sync_requests_(expect_sync_requests),
       handle_(std::move(handle)),
       incoming_receiver_(receiver),
       dispatcher_(&thunk_),
       task_runner_(std::move(task_runner)),
       control_message_handler_(this, interface_version),
-      interface_name_(interface_name) {
+      interface_name_(interface_name),
+      ipc_hash_callback_(ipc_hash_callback),
+      method_name_callback_(method_name_callback) {
   DCHECK(handle_.is_valid());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -835,6 +841,21 @@ void InterfaceEndpointClient::OnAssociationEvent(
 }
 
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
+  TRACE_EVENT("toplevel",
+              perfetto::StaticString{method_name_callback_(*message)},
+              [&](perfetto::EventContext& ctx) {
+                auto* info = ctx.event()->set_chrome_mojo_event_info();
+                info->set_mojo_interface_tag(interface_name_);
+                info->set_ipc_hash(ipc_hash_callback_(*message));
+
+                static const uint8_t* flow_enabled =
+                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+                if (!*flow_enabled)
+                  return;
+
+                perfetto::Flow::Global(message->GetTraceId())(ctx);
+              });
+
   DCHECK_EQ(handle_.id(), message->interface_id());
 
   if (encountered_error_) {

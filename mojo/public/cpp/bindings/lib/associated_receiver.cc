@@ -65,14 +65,17 @@ void AssociatedReceiverBase::BindImpl(
     bool expect_sync_requests,
     scoped_refptr<base::SequencedTaskRunner> runner,
     uint32_t interface_version,
-    const char* interface_name) {
+    const char* interface_name,
+    MessageToStableIPCHashCallback ipc_hash_callback,
+    MessageToMethodNameCallback method_name_callback) {
   DCHECK(handle.is_valid());
 
   endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
       std::move(handle), receiver, std::move(payload_validator),
       expect_sync_requests,
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
-      interface_version, interface_name);
+      interface_version, interface_name, ipc_hash_callback,
+      method_name_callback);
 }
 
 }  // namespace internal

@@ -25,6 +25,14 @@ namespace {
 
 const char kTestInterfaceName[] = "TestInterface";
 
+uint32_t MessageToStableIPCHash(Message& message) {
+  return -1;
+}
+
+const char* MessageToMethodName(Message& message) {
+  return "method";
+}
+
 using mojo::internal::MultiplexRouter;
 
 class MultiplexRouterTest : public testing::Test {
@@ -67,11 +75,13 @@ class MultiplexRouterTest : public testing::Test {
 TEST_F(MultiplexRouterTest, BasicRequestResponse) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
   ResponseGenerator generator;
   InterfaceEndpointClient client1(
       std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -114,11 +124,13 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse) {
 TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
   ResponseGenerator generator;
   InterfaceEndpointClient client1(
       std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -161,13 +173,15 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
 TEST_F(MultiplexRouterTest, LazyResponses) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
   base::RunLoop run_loop;
   LazyResponseGenerator generator(run_loop.QuitClosure());
   InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
                                   base::WrapUnique(new PassThroughFilter()),
                                   false, base::ThreadTaskRunnerHandle::Get(),
-                                  0u, kTestInterfaceName);
+                                  0u, kTestInterfaceName,
+                                  MessageToStableIPCHash, MessageToMethodName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -233,7 +247,8 @@ TEST_F(MultiplexRouterTest, MissingResponses) {
   base::RunLoop run_loop0, run_loop1;
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+      MessageToStableIPCHash, MessageToMethodName);
   bool error_handler_called0 = false;
   client0.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called0, run_loop0.QuitClosure()));
@@ -243,7 +258,8 @@ TEST_F(MultiplexRouterTest, MissingResponses) {
   InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
                                   base::WrapUnique(new PassThroughFilter()),
                                   false, base::ThreadTaskRunnerHandle::Get(),
-                                  0u, kTestInterfaceName);
+                                  0u, kTestInterfaceName,
+                                  MessageToStableIPCHash, MessageToMethodName);
   bool error_handler_called1 = false;
   client1.set_connection_error_handler(base::BindOnce(
       &ForwardErrorHandler, &error_handler_called1, run_loop1.QuitClosure()));
@@ -290,11 +306,13 @@ TEST_F(MultiplexRouterTest, LateResponse) {
   {
     InterfaceEndpointClient client0(
         std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
-        false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
-    InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                    std::make_unique<PassThroughFilter>(),
-                                    false, base::ThreadTaskRunnerHandle::Get(),
-                                    0u, kTestInterfaceName);
+        false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+        MessageToStableIPCHash, MessageToMethodName);
+    InterfaceEndpointClient client1(
+        std::move(endpoint1_), &generator,
+        std::make_unique<PassThroughFilter>(), false,
+        base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName,
+        MessageToStableIPCHash, MessageToMethodName);
 
     Message request;
     AllocRequestMessage(1, "hello", &request);

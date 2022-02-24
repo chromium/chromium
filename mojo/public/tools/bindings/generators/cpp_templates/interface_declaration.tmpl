@@ -16,6 +16,9 @@ class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
   static const char Name_[];
+  static uint32_t MessageToStableIPCHash_(mojo::Message& message);
+  static const char* MessageToMethodName_(mojo::Message& message);
+
 {%-  if interface.uuid %}
   static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
                                       {{interface.uuid[1]}}ULL };

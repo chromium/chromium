@@ -985,8 +985,10 @@ class ChannelAssociatedGroupController
       return;
     }
 
+    // TODO(altimin): This event is temporarily kept as a debug fallback. Remove
+    // it once the new implementation proves to be stable.
     TRACE_EVENT(
-        TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM("mojom"),
+        TRACE_DISABLED_BY_DEFAULT("mojom"),
         // Using client->interface_name() is safe here because this is a static
         // string defined for each mojo interface.
         perfetto::StaticString(client->interface_name()),
