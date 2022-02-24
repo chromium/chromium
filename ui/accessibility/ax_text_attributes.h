@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_AX_TEXT_ATTRIBUTES_H_
 
 #include <string>
+#include <vector>
 
 #include "ui/accessibility/ax_base_export.h"
 
@@ -47,6 +48,8 @@ struct AX_BASE_EXPORT AXTextAttributes final {
   float font_size = kUnsetValue;
   float font_weight = kUnsetValue;
   std::string font_family;
+  std::vector<int32_t> marker_types;
+  std::vector<int32_t> highlight_types;
 };
 
 }  // namespace ui
