@@ -17,6 +17,13 @@ extern const char* const kBaselineAttributes[];
 extern const char* const kDefaultElements[];
 extern const char* const kDefaultAttributes[];
 
+// We currently support an alternate set of builtins, enabled via a flag.
+namespace with_namespace_names {
+extern const char* const kBaselineElements[];
+extern const char* const kBaselineAttributes[];
+extern const char* const kDefaultElements[];
+extern const char* const kDefaultAttributes[];
+}  // namespace with_namespace_names
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SANITIZER_API_BUILTINS_SANITIZER_BUILTINS_H_

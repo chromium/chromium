@@ -9,6 +9,7 @@ import("//third_party/protobuf/proto_library.gni")
 blink_modules_sources("sanitizer_api") {
   sources = [
     "$target_gen_dir/builtins/sanitizer_builtins.cc",
+    "$target_gen_dir/builtins/sanitizer_builtins_with_namespaces.cc",
     "builtins.cc",
     "builtins.h",
     "builtins/sanitizer_builtins.h",
@@ -20,7 +21,10 @@ blink_modules_sources("sanitizer_api") {
     "sanitizer.h",
     "sanitizer_config_impl.h",
   ]
-  deps = [ ":generate_sanitizer_builtins" ]
+  deps = [
+    ":generate_sanitizer_builtins",
+    ":generate_sanitizer_builtins_with_namespaces",
+  ]
 }
 
 # The Sanitizer API relies on several spec-defined constants. For easier
@@ -45,6 +49,35 @@ action("generate_sanitizer_builtins") {
     rebase_path(source_attributes, root_build_dir),
     "--default-configuration",
     rebase_path(source_default, root_build_dir),
+  ]
+}
+
+# We (temporarily) supoprt a second set of builtins, to be enabled by a
+# runtime feature. We'll simply re-use the :generate_sanitizer_builtins rule,
+# but with a different set of inputs.
+action("generate_sanitizer_builtins_with_namespaces") {
+  script = "builtins/generate_builtins.py"
+  source_attributes =
+      "builtins/baseline_attribute_allow_list_with_namespaces.txt"
+  source_elements = "builtins/baseline_element_allow_list_with_namespaces.txt"
+  source_default = "builtins/default_configuration.txt"
+  sources = [
+    source_attributes,
+    source_default,
+    source_elements,
+  ]
+  outputs = [ "$target_gen_dir/builtins/sanitizer_builtins_with_namespaces.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--baseline-elements",
+    rebase_path(source_elements, root_build_dir),
+    "--baseline-attributes",
+    rebase_path(source_attributes, root_build_dir),
+    "--default-configuration",
+    rebase_path(source_default, root_build_dir),
+    "--cxx-namespace",
+    "with_namespace_names",
   ]
 }
 

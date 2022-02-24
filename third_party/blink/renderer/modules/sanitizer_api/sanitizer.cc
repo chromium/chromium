@@ -373,7 +373,6 @@ Node* Sanitizer::KeepElement(Element* element,
     }
   }
   return NodeTraversal::Next(*element, fragment);
-  ;
 }
 
 SanitizerConfig* Sanitizer::getConfiguration() const {

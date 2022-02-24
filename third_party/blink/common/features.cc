@@ -951,6 +951,13 @@ const base::FeatureParam<std::string>
 const base::Feature kSanitizerAPI{"SanitizerAPI",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the Sanitizer API allows namespaced content (SVG + MathML).
+//
+// This feature is unlikely to be launched as-is. The primary purpose is to
+// allow testing of different non-standard configurations.
+const base::Feature kSanitizerAPINamespaces{"SanitizerAPINamespacesForTesting",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Kill switch for the blocking of the navigation of top from a cross origin
 // iframe to a different protocol. TODO(https://crbug.com/1151507): Remove in
 // M92.

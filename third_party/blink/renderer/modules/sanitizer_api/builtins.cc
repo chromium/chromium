@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/sanitizer_api/builtins.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/builtins/sanitizer_builtins.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/config_util.h"
 #include "third_party/blink/renderer/modules/sanitizer_api/sanitizer_config_impl.h"
@@ -49,10 +51,11 @@ SanitizerConfigImpl::AttributeList AttributesFromAPI(
   return attributes_list;
 }
 
-SanitizerConfigImpl BuildDefaultConfigImpl() {
+SanitizerConfigImpl BuildDefaultConfigImpl(const char* const* elements,
+                                           const char* const* attributes) {
   SanitizerConfigImpl config;
-  config.allow_elements_ = ElementsFromAPI(kDefaultElements);
-  config.allow_attributes_ = AttributesFromAPI(kDefaultAttributes);
+  config.allow_elements_ = ElementsFromAPI(elements);
+  config.allow_attributes_ = AttributesFromAPI(attributes);
   config.allow_custom_elements_ = false;
   config.allow_comments_ = false;
   config.had_allow_elements_ = true;
@@ -63,8 +66,16 @@ SanitizerConfigImpl BuildDefaultConfigImpl() {
 
 }  // anonymous namespace
 
+// To support two sets of baseline/default constants, we'll stick them into two
+// c++ namespaces, so that the code mirrors each other, but we can still
+// unambiguously refer to them.
+
+namespace default_config_names {
+
 const SanitizerConfigImpl& GetDefaultConfig() {
-  DEFINE_STATIC_LOCAL(SanitizerConfigImpl, config_, (BuildDefaultConfigImpl()));
+  DEFINE_STATIC_LOCAL(
+      SanitizerConfigImpl, config_,
+      (BuildDefaultConfigImpl(kDefaultElements, kDefaultAttributes)));
   return config_;
 }
 
@@ -90,6 +101,75 @@ const HashMap<String, String>& GetMixedCaseAttributeNames() {
   DEFINE_STATIC_LOCAL(StringMap, attribute_names_,
                       (MixedCaseNames(kBaselineAttributes)));
   return attribute_names_;
+}
+
+}  // namespace default_config_names
+
+namespace with_namespace_names {
+
+const SanitizerConfigImpl& GetDefaultConfig() {
+  DEFINE_STATIC_LOCAL(
+      SanitizerConfigImpl, config_,
+      (BuildDefaultConfigImpl(kDefaultElements, kDefaultAttributes)));
+  return config_;
+}
+
+const SanitizerConfigImpl::ElementList& GetBaselineAllowElements() {
+  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::ElementList, elements_,
+                      (ElementsFromAPI(kBaselineElements)));
+  return elements_;
+}
+
+const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
+  DEFINE_STATIC_LOCAL(SanitizerConfigImpl::AttributeList, attributes_,
+                      (AttributesFromAPI(kBaselineAttributes)));
+  return attributes_;
+}
+
+const HashMap<String, String>& GetMixedCaseElementNames() {
+  DEFINE_STATIC_LOCAL(StringMap, element_names_,
+                      (MixedCaseNames(kBaselineElements)));
+  return element_names_;
+}
+
+const HashMap<String, String>& GetMixedCaseAttributeNames() {
+  DEFINE_STATIC_LOCAL(StringMap, attribute_names_,
+                      (MixedCaseNames(kBaselineAttributes)));
+  return attribute_names_;
+}
+
+}  // namespace with_namespace_names
+
+bool WithNamespaces() {
+  return base::FeatureList::IsEnabled(blink::features::kSanitizerAPINamespaces);
+}
+
+// Now we'll implement the API functions, by "bouncing" to the corresponding
+// namespaces version.
+
+const SanitizerConfigImpl& GetDefaultConfig() {
+  return WithNamespaces() ? with_namespace_names::GetDefaultConfig()
+                          : default_config_names::GetDefaultConfig();
+}
+
+const SanitizerConfigImpl::ElementList& GetBaselineAllowElements() {
+  return WithNamespaces() ? with_namespace_names::GetBaselineAllowElements()
+                          : default_config_names::GetBaselineAllowElements();
+}
+
+const SanitizerConfigImpl::AttributeList& GetBaselineAllowAttributes() {
+  return WithNamespaces() ? with_namespace_names::GetBaselineAllowAttributes()
+                          : default_config_names::GetBaselineAllowAttributes();
+}
+
+const HashMap<String, String>& GetMixedCaseElementNames() {
+  return WithNamespaces() ? with_namespace_names::GetMixedCaseElementNames()
+                          : default_config_names::GetMixedCaseElementNames();
+}
+
+const HashMap<String, String>& GetMixedCaseAttributeNames() {
+  return WithNamespaces() ? with_namespace_names::GetMixedCaseAttributeNames()
+                          : default_config_names::GetMixedCaseAttributeNames();
 }
 
 }  // namespace blink
