@@ -108,6 +108,31 @@ bool ECPrivateKey::ExportPrivateKey(std::vector<uint8_t>* output) const {
   return true;
 }
 
+bool ECPrivateKey::ExportEncryptedPrivateKey(
+    std::vector<uint8_t>* output) const {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  // Encrypt the object.
+  // NOTE: NSS uses SEC_OID_PKCS12_V2_PBE_WITH_SHA1_AND_3KEY_TRIPLE_DES_CBC
+  // so use NID_pbe_WithSHA1And3_Key_TripleDES_CBC which should be the OpenSSL
+  // equivalent.
+  uint8_t* der;
+  size_t der_len;
+  bssl::ScopedCBB cbb;
+  if (!CBB_init(cbb.get(), 0) ||
+      !PKCS8_marshal_encrypted_private_key(
+          cbb.get(), NID_pbe_WithSHA1And3_Key_TripleDES_CBC,
+          nullptr /* cipher */, nullptr /* no password */, 0 /* pass_len */,
+          nullptr /* salt */, 0 /* salt_len */, 1 /* iterations */,
+          key_.get()) ||
+      !CBB_finish(cbb.get(), &der, &der_len)) {
+    return false;
+  }
+  output->assign(der, der + der_len);
+  OPENSSL_free(der);
+  return true;
+}
+
 bool ECPrivateKey::ExportPublicKey(std::vector<uint8_t>* output) const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   uint8_t* der;

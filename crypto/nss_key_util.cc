@@ -103,7 +103,7 @@ bool GenerateECKeyPairNSS(PK11SlotInfo* slot,
 
 ScopedSECKEYPrivateKey ImportNSSKeyFromPrivateKeyInfo(
     PK11SlotInfo* slot,
-    base::span<const uint8_t> input,
+    const std::vector<uint8_t>& input,
     bool permanent) {
   DCHECK(slot);
 

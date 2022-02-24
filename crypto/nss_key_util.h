@@ -8,6 +8,8 @@
 #include <secoidt.h>
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
@@ -43,7 +45,7 @@ CRYPTO_EXPORT bool GenerateECKeyPairNSS(
 // plaintext form.
 CRYPTO_EXPORT ScopedSECKEYPrivateKey
 ImportNSSKeyFromPrivateKeyInfo(PK11SlotInfo* slot,
-                               base::span<const uint8_t> input,
+                               const std::vector<uint8_t>& input,
                                bool permanent);
 
 // Decodes |input| as a DER-encoded X.509 SubjectPublicKeyInfo and searches for
