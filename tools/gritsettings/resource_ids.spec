@@ -23,17 +23,7 @@
 #
 # The range of ID values, which is used by pak files, is from 0 to 2^16 - 1.
 #
-# IMPORTANT: Update instructions:
-# * If adding items, manually assign draft start IDs so that numerical order is
-#   preserved. Usually it suffices to +1 from previous tag.
-#   * If updating items with repeated, be sure to add / update
-#     "META": {"join": <duplicate count>},
-#     for the item following duplicates. Be sure to look for duplicates that
-#     may appear earlier than those that immediately precede the item.
-# * Periodically we might need to refresh this file to make more space for
-#   numbers. The command lines to do this (from current directory) are:
-#   $ python ../grit/grit.py update_resource_ids --fake resource_ids.spec > temp
-#   $ mv temp resource_ids.spec
+# IMPORTANT: For update instructions, see README.md.
 {
   # The first entry in the file, SRCDIR, is special: It is a relative path from
   # this file to the base of your checkout.
