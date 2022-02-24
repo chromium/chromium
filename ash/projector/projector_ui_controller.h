@@ -14,6 +14,7 @@
 namespace ash {
 
 class ProjectorControllerImpl;
+struct AnnotatorTool;
 
 // The controller in charge of UI.
 class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver,
@@ -40,6 +41,8 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver,
   virtual void OnLaserPointerPressed();
   // Invoked when marker button is pressed. Virtual for testing.
   virtual void OnMarkerPressed();
+  // Sets the annotator tool.
+  virtual void SetAnnotatorTool(const AnnotatorTool& tool);
   // Reset and disable the laser pointer and the annotator tools.
   void ResetTools();
 

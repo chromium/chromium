@@ -18,6 +18,22 @@ namespace ash {
 AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
 AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
 
+void AnnotatorMessageHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "onToolSet", base::BindRepeating(&AnnotatorMessageHandler::OnToolSet,
+                                       base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "onUndoRedoAvailabilityChanged",
+      base::BindRepeating(
+          &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
+          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "onError", base::BindRepeating(&AnnotatorMessageHandler::OnError,
+                                     base::Unretained(this)));
+}
+
 void AnnotatorMessageHandler::SetTool(const AnnotatorTool& tool) {
   AllowJavascript();
   FireWebUIListener("setTool", tool.ToValue());
@@ -36,22 +52,6 @@ void AnnotatorMessageHandler::Redo() {
 void AnnotatorMessageHandler::Clear() {
   AllowJavascript();
   FireWebUIListener("clear");
-}
-
-void AnnotatorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "onToolSet", base::BindRepeating(&AnnotatorMessageHandler::OnToolSet,
-                                       base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "onUndoRedoAvailabilityChanged",
-      base::BindRepeating(
-          &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "onError", base::BindRepeating(&AnnotatorMessageHandler::OnError,
-                                     base::Unretained(this)));
 }
 
 void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {

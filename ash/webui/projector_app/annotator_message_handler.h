@@ -5,7 +5,6 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_MESSAGE_HANDLER_H_
 #define ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_MESSAGE_HANDLER_H_
 
-#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "base/callback.h"
 #include "base/values.h"
@@ -21,23 +20,20 @@ struct AnnotatorTool;
 
 // Handles communication with the Annotator WebUI (i.e.
 // chrome://projector/annotator/annotator_embedder.html)
-class AnnotatorMessageHandler : public content::WebUIMessageHandler,
-                                public ProjectorAnnotatorController {
+class AnnotatorMessageHandler : public content::WebUIMessageHandler {
  public:
   AnnotatorMessageHandler();
   AnnotatorMessageHandler(const AnnotatorMessageHandler&) = delete;
   AnnotatorMessageHandler& operator=(const AnnotatorMessageHandler&) = delete;
   ~AnnotatorMessageHandler() override;
 
-  // ProjectorAnnotatorController:
-  void SetTool(const AnnotatorTool& tool) override;
-  void Undo() override;
-  void Redo() override;
-  void Clear() override;
-
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
+  void SetTool(const AnnotatorTool& tool);
+  void Undo();
+  void Redo();
+  void Clear();
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:

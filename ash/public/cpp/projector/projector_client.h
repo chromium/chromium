@@ -13,6 +13,7 @@ class FilePath;
 
 namespace ash {
 
+class AnnotatorMessageHandler;
 struct NewScreencastPrecondition;
 
 // Creates interface to access Browser side functionalities for the
@@ -41,6 +42,10 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual void ShowSelfieCam() = 0;
   virtual void CloseSelfieCam() = 0;
   virtual bool IsSelfieCamVisible() const = 0;
+
+  // Registers the AnnotatorMessageHandler that is owned by the WebUI that
+  // contains the Projector annotator.
+  virtual void SetAnnotatorMessageHandler(AnnotatorMessageHandler* handler) = 0;
 
   // Notifies the Projector SWA if it can trigger a new Projector session.
   virtual void OnNewScreencastPreconditionChanged(

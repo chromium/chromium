@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -44,10 +45,6 @@ void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
   if (!ash::features::IsProjectorAnnotatorEnabled())
     return;
   web_view->LoadInitialURL(GURL(ash::kChromeUIAnnotatorUrl));
-
-  content::WebContents* web_contents = web_view->GetWebContents();
-  content::WebUI* web_ui = web_contents->GetWebUI();
-  web_ui->AddMessageHandler(std::make_unique<ash::AnnotatorMessageHandler>());
 }
 
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
@@ -91,37 +88,6 @@ void ProjectorClientImpl::CloseSelfieCam() {
 
 bool ProjectorClientImpl::IsSelfieCamVisible() const {
   return selfie_cam_bubble_manager_.IsVisible();
-}
-
-void ProjectorClientImpl::OnSpeechResult(
-    const std::u16string& text,
-    bool is_final,
-    const absl::optional<media::SpeechRecognitionResult>& full_result) {
-  DCHECK(full_result.has_value());
-  controller_->OnTranscription(full_result.value());
-}
-
-void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
-    SpeechRecognizerStatus new_state) {
-  if (new_state == SPEECH_RECOGNIZER_ERROR) {
-    speech_recognizer_.reset();
-    recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-    controller_->OnTranscriptionError();
-  } else if (new_state == SPEECH_RECOGNIZER_READY) {
-    if (recognizer_status_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
-      // The SpeechRecognizer was initialized after being created, and
-      // is ready to start recognizing speech.
-      speech_recognizer_->Start();
-    }
-  }
-
-  recognizer_status_ = new_state;
-}
-
-void ProjectorClientImpl::OnSpeechRecognitionStopped() {
-  speech_recognizer_.reset();
-  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-  controller_->OnSpeechRecognitionStopped();
 }
 
 bool ProjectorClientImpl::GetDriveFsMountPointPath(
@@ -180,3 +146,52 @@ void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
   ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(
       precondition);
 }
+
+void ProjectorClientImpl::SetAnnotatorMessageHandler(
+    ash::AnnotatorMessageHandler* handler) {
+  message_handler_ = handler;
+}
+
+void ProjectorClientImpl::OnSpeechResult(
+    const std::u16string& text,
+    bool is_final,
+    const absl::optional<media::SpeechRecognitionResult>& full_result) {
+  DCHECK(full_result.has_value());
+  controller_->OnTranscription(full_result.value());
+}
+
+void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
+    SpeechRecognizerStatus new_state) {
+  if (new_state == SPEECH_RECOGNIZER_ERROR) {
+    speech_recognizer_.reset();
+    recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+    controller_->OnTranscriptionError();
+  } else if (new_state == SPEECH_RECOGNIZER_READY) {
+    if (recognizer_status_ == SPEECH_RECOGNIZER_OFF && speech_recognizer_) {
+      // The SpeechRecognizer was initialized after being created, and
+      // is ready to start recognizing speech.
+      speech_recognizer_->Start();
+    }
+  }
+
+  recognizer_status_ = new_state;
+}
+
+void ProjectorClientImpl::OnSpeechRecognitionStopped() {
+  speech_recognizer_.reset();
+  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  controller_->OnSpeechRecognitionStopped();
+}
+
+void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
+  message_handler_->SetTool(tool);
+}
+
+// TODO(b/220202359): Implement undo.
+void ProjectorClientImpl::Undo() {}
+
+// TODO(b/220202359): Implement redo.
+void ProjectorClientImpl::Redo() {}
+
+// TODO(b/220202359): Implement clear.
+void ProjectorClientImpl::Clear() {}

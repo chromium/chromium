@@ -62,11 +62,14 @@ class ProjectorUiControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = Shell::Get()->projector_controller()->ui_controller();
+    auto* projector_controller = Shell::Get()->projector_controller();
+    projector_controller->SetClient(&projector_client_);
+    controller_ = projector_controller->ui_controller();
   }
 
  protected:
   ProjectorUiController* controller_;
+  MockProjectorClient projector_client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -103,6 +106,12 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
   laser_pointer_controller_->SetEnabled(true);
   EXPECT_TRUE(laser_pointer_controller->is_enabled());
   EXPECT_FALSE(controller_->is_annotator_enabled());
+}
+
+TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
+  AnnotatorTool tool;
+  EXPECT_CALL(projector_client_, SetTool(tool));
+  controller_->SetAnnotatorTool(tool);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {

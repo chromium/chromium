@@ -5,6 +5,7 @@
 #include "ash/webui/projector_app/trusted_projector_annotator_ui.h"
 
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/public/cpp/projector/projector_client.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources_map.h"
 #include "ash/webui/projector_app/annotator_message_handler.h"
@@ -53,6 +54,14 @@ TrustedProjectorAnnotatorUI::TrustedProjectorAnnotatorUI(
     const GURL& url,
     PrefService* pref_service)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  // Multiple WebUIs (and therefore TrustedProjectorAnnotatorUIs) are created
+  // for a single Projector recording session, so a new AnnotatorMessageHandler
+  // needs to be created each time and attached to the new WebUI. The new
+  // handler is then referenced in ProjectorClientImpl.
+  auto handler = std::make_unique<ash::AnnotatorMessageHandler>();
+  ProjectorClient::Get()->SetAnnotatorMessageHandler(handler.get());
+  web_ui->AddMessageHandler(std::move(handler));
+
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context,
                                 CreateProjectorAnnotatorHTMLSource());

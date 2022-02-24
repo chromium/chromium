@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
@@ -25,7 +27,8 @@ class OnDeviceSpeechRecognizer;
 // The client implementation for the ProjectorController in ash/. This client is
 // responsible for handling requests that have browser dependencies.
 class ProjectorClientImpl : public ash::ProjectorClient,
-                            public SpeechRecognizerDelegate {
+                            public SpeechRecognizerDelegate,
+                            public ash::ProjectorAnnotatorController {
  public:
   // RecordingOverlayViewImpl calls this function to initialize the annotator
   // tool.
@@ -50,6 +53,8 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void MinimizeProjectorApp() const override;
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) const override;
+  void SetAnnotatorMessageHandler(
+      ash::AnnotatorMessageHandler* handler) override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
@@ -62,8 +67,15 @@ class ProjectorClientImpl : public ash::ProjectorClient,
       SpeechRecognizerStatus new_state) override;
   void OnSpeechRecognitionStopped() override;
 
+  // ash::ProjectorAnnotatorController:
+  void SetTool(const ash::AnnotatorTool& tool) override;
+  void Undo() override;
+  void Redo() override;
+  void Clear() override;
+
  private:
   ash::ProjectorController* const controller_;
+  ash::AnnotatorMessageHandler* message_handler_;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;

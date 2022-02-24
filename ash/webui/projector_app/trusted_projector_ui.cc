@@ -7,7 +7,6 @@
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources.h"
 #include "ash/webui/grit/ash_projector_app_trusted_resources_map.h"
-#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "components/prefs/pref_service.h"
