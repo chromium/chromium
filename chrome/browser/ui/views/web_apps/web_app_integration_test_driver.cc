@@ -934,6 +934,21 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::ManifestUpdateDisplayBrowser(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_browser.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents(site_mode, url);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
   BeforeStateChangeAction();
@@ -1416,6 +1431,20 @@ void WebAppIntegrationTestDriver::CheckTabCreated() {
   absl::optional<TabState> active_tab =
       GetStateForActiveTab(most_recent_browser_state.value());
   ASSERT_TRUE(active_tab.has_value());
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckTabNotCreated() {
+  BeforeStateCheckAction();
+  DCHECK(before_state_change_action_state_);
+  absl::optional<BrowserState> most_recent_browser_state = GetStateForBrowser(
+      after_state_change_action_state_.get(), profile(), browser());
+  absl::optional<BrowserState> previous_browser_state = GetStateForBrowser(
+      before_state_change_action_state_.get(), profile(), browser());
+  ASSERT_TRUE(most_recent_browser_state.has_value());
+  ASSERT_TRUE(previous_browser_state.has_value());
+  EXPECT_EQ(most_recent_browser_state->tabs.size(),
+            previous_browser_state->tabs.size());
   AfterStateCheckAction();
 }
 

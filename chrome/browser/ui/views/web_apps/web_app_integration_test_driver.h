@@ -173,6 +173,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
   void ManifestUpdateTitle(const std::string& site_mode);
+  void ManifestUpdateDisplayBrowser(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
   void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
   void OpenInChrome(const std::string& site_mode);
@@ -203,6 +204,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckLaunchIconShown();
   void CheckLaunchIconNotShown();
   void CheckTabCreated();
+  void CheckTabNotCreated();
   void CheckCustomToolbar();
   void CheckPlatformShortcutAndIcon(const std::string& site_mode);
   void CheckPlatformShortcutNotExists(const std::string& site_mode);
@@ -211,6 +213,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
   void CheckWindowClosed();
   void CheckWindowCreated();
+  void CheckWindowDisplayBrowser();
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayStandalone();
 

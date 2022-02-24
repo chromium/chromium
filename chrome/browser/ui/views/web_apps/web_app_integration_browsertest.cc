@@ -51,6 +51,18 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, OpenInChrome) {
   helper_.CheckTabCreated();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest,
+                       ManifestUpdateDisplayBrowser) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+  helper_.ManifestUpdateDisplayBrowser("SiteA");
+  helper_.LaunchFromChromeApps("SiteA");
+  helper_.CheckTabNotCreated();
+  helper_.CheckWindowCreated();
+  helper_.CheckWindowDisplayMinimal();
+}
+
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.
