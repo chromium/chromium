@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Proto definitions supporting the Chrome Root Store.
+// This file should be manually kept in sync with the corresponding google3
+// file.
+
 syntax = "proto3";
 
 package chrome_root_store;
@@ -22,6 +26,12 @@ message TrustAnchor {
   repeated string ev_policy_oids = 3;
 }
 
+// Message storing a complete Chrome Root Store.
 message RootStore {
   repeated TrustAnchor trust_anchors = 1;
+
+  // Major version # of the Chrome Root Store. It is assumed that if
+  // root_store_1.version_major > root_store_2.version_major, then root_store_1
+  // is newer and should be preferred over root_store_2.
+  int64 version_major = 2;
 }
