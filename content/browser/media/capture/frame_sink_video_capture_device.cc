@@ -105,7 +105,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.fixed_aspect_ratio);
 
   if (target_) {
-    capturer_->ChangeTarget(target_);
+    capturer_->ChangeTarget(target_, crop_version_);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -300,17 +300,22 @@ void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetChanged(
-    const absl::optional<viz::VideoCaptureTarget>& target) {
+    const absl::optional<viz::VideoCaptureTarget>& target,
+    uint32_t crop_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(crop_version, crop_version_);
+
   target_ = target;
+  crop_version_ = crop_version;
+
   if (capturer_) {
-    capturer_->ChangeTarget(target_);
+    capturer_->ChangeTarget(target_, crop_version_);
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnTargetChanged(absl::nullopt);
+  OnTargetChanged(absl::nullopt, crop_version_);
   OnFatalError("Capture target has been permanently lost.");
 }
 

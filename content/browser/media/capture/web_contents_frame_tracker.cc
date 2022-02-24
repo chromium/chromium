@@ -213,9 +213,14 @@ void WebContentsFrameTracker::Crop(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(callback);
 
-  // TODO(crbug.com/1266378): Forward |crop_version| to Viz and use it there.
+  if (crop_version_ >= crop_version) {
+    // TODO(crbug.com/1266378): BadMessage here.
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
 
   crop_id_ = crop_id;
+  crop_version_ = crop_version;
 
   // If we don't have a target yet, we can store the crop ID but cannot actually
   // crop yet.
@@ -226,7 +231,7 @@ void WebContentsFrameTracker::Crop(
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const viz::VideoCaptureTarget& target,
+          [](const viz::VideoCaptureTarget& target, uint32_t crop_version,
              base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
              base::WeakPtr<WebContentsVideoCaptureDevice> device) {
             if (!device) {
@@ -234,10 +239,10 @@ void WebContentsFrameTracker::Crop(
                   media::mojom::CropRequestResult::kErrorGeneric);
               return;
             }
-            device->OnTargetChanged(target);
+            device->OnTargetChanged(target, crop_version);
             std::move(callback).Run(media::mojom::CropRequestResult::kSuccess);
           },
-          target, std::move(callback), device_));
+          target, crop_version_, std::move(callback), device_));
 }
 
 void WebContentsFrameTracker::SetWebContentsAndContextForTesting(
@@ -278,7 +283,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetChanged, device_,
-                       std::move(target)));
+                       std::move(target), crop_version_));
   }
 
   SetTargetView(web_contents()->GetNativeView());

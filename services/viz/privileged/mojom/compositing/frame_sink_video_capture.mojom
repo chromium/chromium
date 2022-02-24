@@ -155,7 +155,15 @@ interface FrameSinkVideoCapturer {
   // crop id, only the region associated with that crop id will be captured.
   // Otherwise, the capturer captures the root render pass of the target frame
   // sink.
-  ChangeTarget(VideoCaptureTarget? target);
+  // |crop_version| is a non-decreasing value (for subsequent calls).
+  // It is increased whenever the crop-target changes (new sub_target).
+  // Viz annotates frames with this value, and that allows Blink to
+  // discover when a crop has been applied. Blink will resolve a Promise it
+  // gave the Web-application when the crop was applied, and this way,
+  // the application will know when to start consuming cropped frames.
+  // Note that only tab-capture frames are croppable. Anything else,
+  // such as window-capture for instance, should always set |crop_version| to 0.
+  ChangeTarget(VideoCaptureTarget? target, uint32 crop_version);
 
   // Starts emitting video frames to the given |consumer|.
   // The caller can express if the |consumer| prefers to receive video buffers
