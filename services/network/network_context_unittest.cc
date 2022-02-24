@@ -522,9 +522,8 @@ class NetworkContextTest : public testing::Test {
   }
 
   GURL GetHttpUrlFromHttps(const GURL& https_url) {
-    url::Replacements<char> replacements;
-    const char http[] = "http";
-    replacements.SetScheme(http, url::Component(0, strlen(http)));
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr("http");
     return https_url.ReplaceComponents(replacements);
   }
 

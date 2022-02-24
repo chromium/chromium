@@ -2697,9 +2697,8 @@ GURL NetworkContext::GetHSTSRedirect(const GURL& original_url) {
     return original_url;
   }
 
-  url::Replacements<char> replacements;
-  const char kNewScheme[] = "https";
-  replacements.SetScheme(kNewScheme, url::Component(0, strlen(kNewScheme)));
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr("https");
   return original_url.ReplaceComponents(replacements);
 }
 
