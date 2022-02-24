@@ -49,7 +49,7 @@ void TestWallpaperController::SetCustomWallpaper(
     const base::FilePath& file_path,
     ash::WallpaperLayout layout,
     bool preview_mode,
-    SetCustomWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   ++set_custom_wallpaper_count_;
   std::move(callback).Run(true);
 }
@@ -64,7 +64,7 @@ void TestWallpaperController::SetCustomWallpaper(const AccountId& account_id,
 
 void TestWallpaperController::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   ++set_online_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo(params);
   std::move(callback).Run(/*success=*/true);
@@ -72,7 +72,7 @@ void TestWallpaperController::SetOnlineWallpaper(
 
 void TestWallpaperController::SetGooglePhotosWallpaper(
     const ash::GooglePhotosWallpaperParams& params,
-    SetGooglePhotosWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   ++set_google_photos_wallpaper_count_;
   if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
     std::move(callback).Run(/*success=*/false);
@@ -84,14 +84,14 @@ void TestWallpaperController::SetGooglePhotosWallpaper(
 
 void TestWallpaperController::SetOnlineWallpaperIfExists(
     const ash::OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestWallpaperController::SetOnlineWallpaperFromData(
     const ash::OnlineWallpaperParams& params,
     const std::string& image_data,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   NOTIMPLEMENTED();
 }
 

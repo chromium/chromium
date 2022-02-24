@@ -98,17 +98,17 @@ class WallpaperControllerClientImpl
                           bool preview_mode);
   void SetOnlineWallpaper(
       const ash::OnlineWallpaperParams& params,
-      ash::WallpaperController::SetOnlineWallpaperCallback callback);
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetGooglePhotosWallpaper(
       const ash::GooglePhotosWallpaperParams& params,
-      ash::WallpaperController::SetGooglePhotosWallpaperCallback callback);
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
       const ash::OnlineWallpaperParams& params,
-      ash::WallpaperController::SetOnlineWallpaperCallback callback);
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetOnlineWallpaperFromData(
       const ash::OnlineWallpaperParams& params,
       const std::string& image_data,
-      ash::WallpaperController::SetOnlineWallpaperCallback callback);
+      ash::WallpaperController::SetWallpaperCallback callback);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);

@@ -1095,7 +1095,7 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     const base::FilePath& file_path,
     WallpaperLayout layout,
     bool preview_mode,
-    SetCustomWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
     // Return early to skip the work of decoding.
@@ -1150,7 +1150,7 @@ void WallpaperControllerImpl::SetCustomWallpaper(
 
 void WallpaperControllerImpl::SetOnlineWallpaper(
     const OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   DCHECK(callback);
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(params.account_id)) {
@@ -1168,7 +1168,7 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
 
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     const OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   DCHECK(callback);
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   DVLOG(1) << __func__ << " params=" << params;
@@ -1217,7 +1217,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
 void WallpaperControllerImpl::SetOnlineWallpaperFromData(
     const OnlineWallpaperParams& params,
     const std::string& image_data,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
       !CanSetUserWallpaper(params.account_id)) {
     std::move(callback).Run(/*success=*/false);
@@ -1245,7 +1245,7 @@ std::string FetchGooglePhotosMetadataFromId(const std::string& id) {
 
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     const GooglePhotosWallpaperParams& params,
-    WallpaperController::SetGooglePhotosWallpaperCallback callback) {
+    WallpaperController::SetWallpaperCallback callback) {
   if (!features::IsWallpaperGooglePhotosIntegrationEnabled()) {
     std::move(callback).Run(false);
     return;
@@ -2068,7 +2068,7 @@ bool WallpaperControllerImpl::SetDefaultWallpaperInfo(
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
-    SetOnlineWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const OnlineWallpaperParams& params,
     const base::FilePath& file_path) {
   bool file_exists = !file_path.empty();
@@ -2085,7 +2085,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
-    SetOnlineWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const OnlineWallpaperParams& params,
     const base::flat_map<std::string, base::FilePath>& url_to_file_path_map) {
   if (url_to_file_path_map.empty()) {
@@ -2103,7 +2103,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
     const OnlineWallpaperParams& params,
     bool save_file,
-    SetOnlineWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
   if (callback)
@@ -2158,7 +2158,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 
 void WallpaperControllerImpl::OnGooglePhotosMetadataFetched(
     const GooglePhotosWallpaperParams& params,
-    SetGooglePhotosWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const std::string& metadata) {
   // TODO(angusmclean): Verify that the image is still valid/not deleted, then
   // check the cache for it, only downloading if necessary.
@@ -2175,7 +2175,7 @@ void WallpaperControllerImpl::OnGooglePhotosMetadataFetched(
 
 void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
     const GooglePhotosWallpaperParams& params,
-    SetGooglePhotosWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   // TODO(angusmclean): Replace this DCHECK with actual logic to handle an image
   // coming back empty.
@@ -2372,7 +2372,7 @@ void WallpaperControllerImpl::OnCustomWallpaperDecoded(
     const base::FilePath& path,
     WallpaperLayout layout,
     bool preview_mode,
-    SetCustomWallpaperCallback callback,
+    SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   bool success = !image.isNull();
   // Run callback before finishing setting the image. This is the same timing of
@@ -2674,7 +2674,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
 
 void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
     const OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback,
+    SetWallpaperCallback callback,
     bool success) {
   if (success) {
     std::move(callback).Run(true);
@@ -2739,7 +2739,7 @@ void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(
 
 void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
     const OnlineWallpaperParams& params,
-    SetOnlineWallpaperCallback callback) {
+    SetWallpaperCallback callback) {
   bool success = url_to_image_map_.size() == params.variants.size() &&
                  !url_to_image_map_.at(params.url.spec()).isNull();
   if (!success) {

@@ -627,7 +627,7 @@ class WallpaperControllerTestBase : public AshTestBase {
       bool from_user,
       const absl::optional<uint64_t>& unit_id,
       const std::vector<OnlineWallpaperVariant>& variants,
-      WallpaperControllerImpl::SetOnlineWallpaperCallback callback) {
+      WallpaperController::SetWallpaperCallback callback) {
     const OnlineWallpaperParams params = {
         account_id, asset_id,     GURL(url), collection_id,
         layout,     preview_mode, from_user, /*daily_refresh_enabled=*/false,
@@ -690,7 +690,7 @@ class WallpaperControllerTestBase : public AshTestBase {
             /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
             /*variants=*/std::vector<OnlineWallpaperVariant>()),
         /*image_data=*/std::string(),
-        WallpaperControllerImpl::SetOnlineWallpaperCallback());
+        WallpaperController::SetWallpaperCallback());
     RunAllTasksUntilIdle();
 
     // Change the on-screen wallpaper to a different one. (Otherwise the
@@ -1099,7 +1099,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   controller_->SetOnlineWallpaperFromData(
       params,
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
@@ -1159,7 +1159,7 @@ TEST_P(WallpaperControllerTest, SetOnlineWallpaperFromDataSavesFile) {
           /*daily_refresh_enabled=*/false, kUnitId,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
 
   // Verify that the wallpaper with |url| is available offline, and the returned
@@ -1191,7 +1191,7 @@ TEST_P(WallpaperControllerTest,
           /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   // Verify that the user wallpaper info is updated.
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
@@ -1213,7 +1213,7 @@ TEST_P(WallpaperControllerTest,
           /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
@@ -1852,7 +1852,7 @@ TEST_P(WallpaperControllerTest, VerifyWallpaperCache) {
           /*daily_refresh_enabled=*/false, kUnitId,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
       controller_->GetWallpaperFromCache(account_id_1, &cached_wallpaper));
@@ -2089,7 +2089,7 @@ TEST_P(WallpaperControllerTest, UpdateCustomWallpaperLayout) {
           /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
           /*variants=*/std::vector<OnlineWallpaperVariant>()),
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
@@ -2746,7 +2746,7 @@ TEST_P(WallpaperControllerTest, CancelPreviewWallpaper) {
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(online_wallpaper_color, GetWallpaperColor());
@@ -2849,7 +2849,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
       layout,
       /*save_file=*/false, /*preview_mode=*/true, /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -2869,7 +2869,7 @@ TEST_P(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
       kDummyCollectionId, layout, /*save_file=*/false, /*preview_mode=*/false,
       /*from_user=*/true, kUnitId,
       /*variants=*/std::vector<OnlineWallpaperVariant>(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -4023,7 +4023,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetOnlineWallpaperIfExists) {
   controller_->SetOnlineWallpaperFromData(
       params,
       /*image_data=*/std::string(),
-      WallpaperControllerImpl::SetOnlineWallpaperCallback());
+      WallpaperController::SetWallpaperCallback());
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);

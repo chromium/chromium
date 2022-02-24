@@ -255,22 +255,21 @@ class ASH_EXPORT WallpaperControllerImpl
                           const base::FilePath& file_path,
                           WallpaperLayout layout,
                           bool preview_mode,
-                          SetCustomWallpaperCallback callback) override;
+                          SetWallpaperCallback callback) override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const std::string& file_name,
                           WallpaperLayout layout,
                           const gfx::ImageSkia& image,
                           bool preview_mode) override;
   void SetOnlineWallpaper(const OnlineWallpaperParams& params,
-                          SetOnlineWallpaperCallback callback) override;
+                          SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
-                                  SetOnlineWallpaperCallback callback) override;
+                                  SetWallpaperCallback callback) override;
   void SetOnlineWallpaperFromData(const OnlineWallpaperParams& params,
                                   const std::string& image_data,
-                                  SetOnlineWallpaperCallback callback) override;
-  void SetGooglePhotosWallpaper(
-      const GooglePhotosWallpaperParams& params,
-      SetGooglePhotosWallpaperCallback callback) override;
+                                  SetWallpaperCallback callback) override;
+  void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
+                                SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(
@@ -450,14 +449,14 @@ class ASH_EXPORT WallpaperControllerImpl
   // Used as the callback of checking `WallpaperType::kOnline` wallpaper
   // existence in `SetOnlineWallpaperIfExists`. Initiates reading and decoding
   // the wallpaper if `file_path` is not empty.
-  void SetOnlineWallpaperFromPath(SetOnlineWallpaperCallback callback,
+  void SetOnlineWallpaperFromPath(SetWallpaperCallback callback,
                                   const OnlineWallpaperParams& params,
                                   const base::FilePath& file_path);
 
   // Used as the callback of checking that all the wallpaper variants' paths
   // exist. If they do, set the online wallpaper from the given |params.url|.
   void SetOnlineWallpaperFromVariantPaths(
-      SetOnlineWallpaperCallback callback,
+      SetWallpaperCallback callback,
       const OnlineWallpaperParams& params,
       const base::flat_map<std::string, base::FilePath>& url_to_file_path_map);
 
@@ -467,13 +466,13 @@ class ASH_EXPORT WallpaperControllerImpl
   // active user.
   void OnOnlineWallpaperDecoded(const OnlineWallpaperParams& params,
                                 bool save_file,
-                                SetOnlineWallpaperCallback callback,
+                                SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
   // Used as the callback of fetching the metadata for a Google Photos photo
   // from the unique id. Currently metadata is simply the image URL (stubbed).
   void OnGooglePhotosMetadataFetched(const GooglePhotosWallpaperParams& params,
-                                     SetGooglePhotosWallpaperCallback callback,
+                                     SetWallpaperCallback callback,
                                      const std::string& metadata);
 
   // Used as the callback of downloading wallpapers of type
@@ -481,7 +480,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // `params.account_id` is the active user.
   void OnGooglePhotosWallpaperDownloaded(
       const GooglePhotosWallpaperParams& params,
-      SetGooglePhotosWallpaperCallback callback,
+      SetWallpaperCallback callback,
       const gfx::ImageSkia& image);
 
   // Implementation of |SetOnlineWallpaper|. Shows the wallpaper on screen if
@@ -539,7 +538,7 @@ class ASH_EXPORT WallpaperControllerImpl
                                 const base::FilePath& path,
                                 WallpaperLayout layout,
                                 bool preview_mode,
-                                SetCustomWallpaperCallback callback,
+                                SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
   // Used as the callback of wallpaper decoding. (Wallpapers of type
@@ -632,7 +631,7 @@ class ASH_EXPORT WallpaperControllerImpl
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,
-                                   SetOnlineWallpaperCallback callback,
+                                   SetWallpaperCallback callback,
                                    bool success);
 
   // Save the downloaded |params.variants| at |current_index|.
@@ -645,7 +644,7 @@ class ASH_EXPORT WallpaperControllerImpl
   // from |params.url|.
   void OnAllOnlineWallpaperVariantsDownloaded(
       const OnlineWallpaperParams& params,
-      SetOnlineWallpaperCallback callback);
+      SetWallpaperCallback callback);
 
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
 

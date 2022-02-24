@@ -62,22 +62,21 @@ class TestWallpaperController : public ash::WallpaperController {
                           const base::FilePath& file_path,
                           ash::WallpaperLayout layout,
                           bool preview_mode,
-                          SetCustomWallpaperCallback callback) override;
+                          SetWallpaperCallback callback) override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const std::string& file_name,
                           ash::WallpaperLayout layout,
                           const gfx::ImageSkia& image,
                           bool preview_mode) override;
   void SetOnlineWallpaper(const ash::OnlineWallpaperParams& params,
-                          SetOnlineWallpaperCallback callback) override;
+                          SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const ash::OnlineWallpaperParams& params,
-                                  SetOnlineWallpaperCallback callback) override;
+                                  SetWallpaperCallback callback) override;
   void SetOnlineWallpaperFromData(const ash::OnlineWallpaperParams& params,
                                   const std::string& image_data,
-                                  SetOnlineWallpaperCallback callback) override;
-  void SetGooglePhotosWallpaper(
-      const ash::GooglePhotosWallpaperParams& params,
-      SetGooglePhotosWallpaperCallback callback) override;
+                                  SetWallpaperCallback callback) override;
+  void SetGooglePhotosWallpaper(const ash::GooglePhotosWallpaperParams& params,
+                                SetWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(

@@ -353,7 +353,7 @@ void WallpaperControllerClientImpl::SetCustomWallpaper(
 
 void WallpaperControllerClientImpl::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
-    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
+    ash::WallpaperController::SetWallpaperCallback callback) {
   if (!IsKnownUser(params.account_id))
     return;
 
@@ -362,7 +362,7 @@ void WallpaperControllerClientImpl::SetOnlineWallpaper(
 
 void WallpaperControllerClientImpl::SetGooglePhotosWallpaper(
     const ash::GooglePhotosWallpaperParams& params,
-    ash::WallpaperController::SetGooglePhotosWallpaperCallback callback) {
+    ash::WallpaperController::SetWallpaperCallback callback) {
   if (!IsKnownUser(params.account_id))
     return;
 
@@ -371,7 +371,7 @@ void WallpaperControllerClientImpl::SetGooglePhotosWallpaper(
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
     const ash::OnlineWallpaperParams& params,
-    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
+    ash::WallpaperController::SetWallpaperCallback callback) {
   if (!IsKnownUser(params.account_id))
     return;
   wallpaper_controller_->SetOnlineWallpaperIfExists(params,
@@ -381,7 +381,7 @@ void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(
 void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
     const ash::OnlineWallpaperParams& params,
     const std::string& image_data,
-    ash::WallpaperController::SetOnlineWallpaperCallback callback) {
+    ash::WallpaperController::SetWallpaperCallback callback) {
   if (!IsKnownUser(params.account_id))
     return;
   wallpaper_controller_->SetOnlineWallpaperFromData(params, image_data,
