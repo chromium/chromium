@@ -16,6 +16,9 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -35,6 +38,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace nearby_share {
 
@@ -104,6 +108,12 @@ void NearbyShareDialogUI::SetAttachments(
   attachments_ = std::move(attachments);
 }
 
+void NearbyShareDialogUI::SetWebView(views::WebView* web_view) {
+  CHECK(web_view);
+  web_view_ = web_view;
+  web_view_->GetWebContents()->SetDelegate(this);
+}
+
 void NearbyShareDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::DiscoveryManager> manager) {
   mojo::MakeSelfOwnedReceiver(
@@ -126,6 +136,30 @@ void NearbyShareDialogUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   nearby_sharing_service->GetContactManager()->Bind(std::move(receiver));
+}
+
+bool NearbyShareDialogUI::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  if (!web_view_) {
+    return false;
+  }
+
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view_->GetFocusManager());
+}
+
+void NearbyShareDialogUI::WebContentsCreated(
+    content::WebContents* source_contents,
+    int opener_render_process_id,
+    int opener_render_frame_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
+  chrome::ScopedTabbedBrowserDisplayer displayer(Profile::FromWebUI(web_ui()));
+  NavigateParams nav_params(displayer.browser(), target_url,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+  Navigate(&nav_params);
 }
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
