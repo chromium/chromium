@@ -634,8 +634,9 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(PLATFORM_IS_ARM))
 // TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
 #else
@@ -647,8 +648,9 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(PLATFORM_IS_ARM))
 // TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+// TODO(https://crbug.com/1280308): Fails on Fuchsia-arm64
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2
 #else
