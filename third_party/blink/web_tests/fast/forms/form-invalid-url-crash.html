@@ -8,18 +8,23 @@
 </select>
 </form>
 
-<p>Test passes if there is no crash</p>
+<style>
+* {
+  visibility: hidden;
+}
+</style>
 
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
+
+// This test passes if there is no crash.
 
 window.onload = () => {
-    const x=document.querySelector('select');
-    x.options[2].selected=true;
-    var evt = document.createEvent("HTMLEvents");
-    evt.initEvent("change", true, true);
-    x.dispatchEvent(evt);
+  if (window.testRunner)
+    testRunner.dumpAsText();
+  const x=document.querySelector('select');
+  x.options[2].selected=true;
+  var evt = document.createEvent("HTMLEvents");
+  evt.initEvent("change", true, true);
+  x.dispatchEvent(evt);
 };
 </script>
-

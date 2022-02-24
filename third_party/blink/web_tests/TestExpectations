@@ -156,8 +156,6 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-insert-ready-state.html [ Failure Pass ]
 
-crbug.com/1262934 fast/forms/form-invalid-url-crash.html [ Failure Pass ]
-
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
