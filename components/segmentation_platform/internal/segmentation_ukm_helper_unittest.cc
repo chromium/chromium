@@ -90,8 +90,8 @@ class SegmentationUkmHelperTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that basic recording works properly.
-TEST_F(SegmentationUkmHelperTest, TestBasicReporting) {
+// Tests that basic execution results recording works properly.
+TEST_F(SegmentationUkmHelperTest, TestExecutionResultReporting) {
   // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
   InitializeAllowedSegmentIds("4");
   std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
@@ -115,6 +115,33 @@ TEST_F(SegmentationUkmHelperTest, TestBasicReporting) {
           SegmentationUkmHelper::FloatToInt64(0.8),
           SegmentationUkmHelper::FloatToInt64(0.5),
           SegmentationUkmHelper::FloatToInt64(0.6),
+      });
+}
+
+// Tests that the training data collection recording works properly.
+TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
+  // Allow results for OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB to be recorded.
+  InitializeAllowedSegmentIds("4");
+  std::vector<float> input_tensors = {0.1};
+  std::vector<float> outputs = {1.0, 0.0};
+  std::vector<int> output_indexes = {2, 3};
+
+  SegmentationUkmHelper::GetInstance()->RecordTrainingData(
+      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
+      input_tensors, outputs, output_indexes);
+  ExpectUkmMetrics(
+      Segmentation_ModelExecution::kEntryName,
+      {Segmentation_ModelExecution::kOptimizationTargetName,
+       Segmentation_ModelExecution::kModelVersionName,
+       Segmentation_ModelExecution::kInput0Name,
+       Segmentation_ModelExecution::kActualResult3Name,
+       Segmentation_ModelExecution::kActualResult4Name},
+      {
+          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+          101,
+          SegmentationUkmHelper::FloatToInt64(0.1),
+          SegmentationUkmHelper::FloatToInt64(1.0),
+          SegmentationUkmHelper::FloatToInt64(0.0),
       });
 }
 
@@ -177,4 +204,35 @@ TEST_F(SegmentationUkmHelperTest, TooManyInputTensors) {
   tester.ExpectTotalCount(histogram_name, 1);
   ASSERT_EQ(tester.GetTotalSum(histogram_name), 100);
 }
+
+// Tests output validation for |RecordTrainingData|.
+TEST_F(SegmentationUkmHelperTest, OutputsValidation) {
+  InitializeAllowedSegmentIds("4");
+  std::vector<float> input_tensors{0.1};
+
+  // outputs, output_indexes size doesn't match.
+  std::vector<float> outputs{1.0, 0.0};
+  std::vector<int> output_indexes{0};
+
+  ukm::SourceId source_id =
+      SegmentationUkmHelper::GetInstance()->RecordTrainingData(
+          optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+          101, input_tensors, outputs, output_indexes);
+  ASSERT_EQ(source_id, ukm::kInvalidSourceId);
+
+  // output_indexes value too large.
+  output_indexes = {100, 1000};
+  source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
+      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
+      input_tensors, outputs, output_indexes);
+  ASSERT_EQ(source_id, ukm::kInvalidSourceId);
+
+  // Valid outputs.
+  output_indexes = {3, 0};
+  source_id = SegmentationUkmHelper::GetInstance()->RecordTrainingData(
+      optimization_guide::proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101,
+      input_tensors, outputs, output_indexes);
+  ASSERT_NE(source_id, ukm::kInvalidSourceId);
+}
+
 }  // namespace segmentation_platform
