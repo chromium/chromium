@@ -33,16 +33,13 @@ import org.chromium.android.support.PackageManagerWrapper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareHistoryBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -289,11 +286,7 @@ public class ShareSheetTest {
 
     @Test
     @SmallTest
-    @Feature({ChromeFeatureList.SHARE_USAGE_RANKING})
-    @EnableFeatures({ChromeFeatureList.SHARE_USAGE_RANKING,
-            ChromeFeatureList.SHARE_USAGE_RANKING_FIXED_MORE})
-    public void
-    nothingFromDefaultRankingAvailable() {
+    public void nothingFromDefaultRankingAvailable() {
         replaceRecentShareHistory(defaultTestHistory());
         replaceSystemApps(defaultTestSystemApps());
 

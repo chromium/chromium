@@ -2006,10 +2006,6 @@ extern const char kRequestDesktopSiteExceptionsDescription[];
 extern const char kRequestDesktopSiteGlobalName[];
 extern const char kRequestDesktopSiteGlobalDescription[];
 
-extern const char kShareUsageRankingName[];
-extern const char kShareUsageRankingDescription[];
-extern const char kShareUsageRankingFixedMoreName[];
-extern const char kShareUsageRankingFixedMoreDescription[];
 extern const char kSwapAndroidShareHubRowsName[];
 extern const char kSwapAndroidShareHubRowsDescription[];
 

@@ -620,13 +620,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSharesheetCopyToClipboard;
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kShareUsageRanking;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kShareUsageRankingFixedMore;
-#endif
-
 #if BUILDFLAG(IS_MAC)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kShow10_10ObsoleteInfobar;

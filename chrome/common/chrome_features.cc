@@ -919,13 +919,6 @@ const base::Feature kSharesheetCopyToClipboard{
     "SharesheetCopyToClipboard", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-const base::Feature kShareUsageRanking{"ShareUsageRanking",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-const base::Feature kShareUsageRankingFixedMore{
-    "ShareUsageRankingFixedMore", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if BUILDFLAG(IS_MAC)
 // Enables the "this OS is obsolete" infobar on Mac 10.10.
 // TODO(ellyjones): Remove this after the last 10.10 release.

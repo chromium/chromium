@@ -196,7 +196,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME,
                 component.flattenToString());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING) && profile != null) {
+        if (profile != null) {
             ShareHistoryBridge.addShareEntry(profile, component.flattenToString());
         }
     }
