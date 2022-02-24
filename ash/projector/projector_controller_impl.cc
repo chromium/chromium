@@ -312,11 +312,6 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
   RecordCreationFlowMetrics(ProjectorCreationFlow::kRecordingAborted);
 }
 
-void ProjectorControllerImpl::OnLaserPointerPressed() {
-  DCHECK(ui_controller_);
-  ui_controller_->OnLaserPointerPressed();
-}
-
 void ProjectorControllerImpl::OnMarkerPressed() {
   DCHECK(ui_controller_);
   ui_controller_->OnMarkerPressed();
@@ -325,10 +320,6 @@ void ProjectorControllerImpl::OnMarkerPressed() {
 void ProjectorControllerImpl::ResetTools() {
   if (ui_controller_)
     ui_controller_->ResetTools();
-}
-
-bool ProjectorControllerImpl::IsLaserPointerEnabled() {
-  return ui_controller_ && ui_controller_->IsLaserPointerEnabled();
 }
 
 bool ProjectorControllerImpl::IsAnnotatorEnabled() {

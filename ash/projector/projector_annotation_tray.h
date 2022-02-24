@@ -50,7 +50,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   // Image view of the tray icon.
   views::ImageView* const image_view_;
 
-  HoverHighlightView* laser_view_;
   HoverHighlightView* pen_view_;
 
   // The bubble that appears after clicking the annotation tools tray button.

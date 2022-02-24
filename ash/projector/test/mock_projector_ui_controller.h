@@ -28,7 +28,6 @@ class ASH_EXPORT MockProjectorUiController : public ProjectorUiController {
   // ProjectorUiController:
   MOCK_METHOD0(ShowToolbar, void());
   MOCK_METHOD0(CloseToolbar, void());
-  MOCK_METHOD0(OnLaserPointerPressed, void());
   MOCK_METHOD0(OnMarkerPressed, void());
 };
 

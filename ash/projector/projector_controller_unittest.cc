@@ -225,12 +225,6 @@ TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {
   EXPECT_FALSE(controller_->IsEligible());
 }
 
-TEST_F(ProjectorControllerTest, OnLaserPointerPressed) {
-  // Verify that |OnLaserPointerPressed| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, OnLaserPointerPressed());
-  controller_->OnLaserPointerPressed();
-}
-
 TEST_F(ProjectorControllerTest, OnMarkerPressed) {
   // Verify that |OnMarkerPressed| in |ProjectorUiController| is called.
   EXPECT_CALL(*mock_ui_controller_, OnMarkerPressed());

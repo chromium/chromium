@@ -79,14 +79,10 @@ class ASH_EXPORT ProjectorControllerImpl
   // cancellation, an error, or a DLP/HDCP restriction.
   void OnRecordingStartAborted();
 
-  // Invoked when laser pointer button is pressed.
-  void OnLaserPointerPressed();
   // Invoked when marker button is pressed.
   void OnMarkerPressed();
-  // Reset and disable the laser pointer and the annotator tools.
+  // Reset and disable the the annotator tools.
   void ResetTools();
-  // Returns true if laser pointer is active.
-  bool IsLaserPointerEnabled();
   // Returns true if annotator is active.
   bool IsAnnotatorEnabled();
 

@@ -6,7 +6,6 @@
 #define ASH_PROJECTOR_PROJECTOR_UI_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -17,8 +16,7 @@ class ProjectorControllerImpl;
 struct AnnotatorTool;
 
 // The controller in charge of UI.
-class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver,
-                                         public LaserPointerObserver {
+class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  public:
   // Shows a notification informing the user that a Projector error has
   // occurred.
@@ -37,29 +35,20 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver,
   virtual void ShowToolbar();
   // Close Projector toolbar. Virtual for testing.
   virtual void CloseToolbar();
-  // Invoked when laser pointer button is pressed. Virtual for testing.
-  virtual void OnLaserPointerPressed();
   // Invoked when marker button is pressed. Virtual for testing.
   virtual void OnMarkerPressed();
   // Sets the annotator tool.
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
-  // Reset and disable the laser pointer and the annotator tools.
+  // Reset and disable the annotator tools.
   void ResetTools();
 
-  bool IsLaserPointerEnabled();
   bool is_annotator_enabled() { return annotator_enabled_; }
 
  private:
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
 
-  // LaserPointerObserver:
-  void OnLaserPointerStateChanged(bool enabled) override;
-
   bool annotator_enabled_ = false;
-
-  base::ScopedObservation<LaserPointerController, LaserPointerObserver>
-      laser_pointer_controller_observation_{this};
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};

@@ -49,12 +49,6 @@ constexpr char kProjectorErrorNotificationId[] = "projector_error_notification";
 constexpr char kProjectorSaveErrorNotificationId[] =
     "projector_save_error_notification";
 
-void EnableLaserPointer(bool enabled) {
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  DCHECK(laser_pointer_controller);
-  Shell::Get()->laser_pointer_controller()->SetEnabled(enabled);
-}
-
 void ToggleAnnotator() {
   auto* capture_mode_controller = CaptureModeController::Get();
   // TODO(b/200292852): This check should not be necessary, but because
@@ -120,10 +114,6 @@ void ProjectorUiController::ShowSaveFailureNotification() {
 
 ProjectorUiController::ProjectorUiController(
     ProjectorControllerImpl* projector_controller) {
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  DCHECK(laser_pointer_controller);
-  laser_pointer_controller_observation_.Observe(laser_pointer_controller);
-
   projector_session_observation_.Observe(
       projector_controller->projector_session());
 }
@@ -148,13 +138,7 @@ void ProjectorUiController::CloseToolbar() {
   projector_annotation_tray->SetVisiblePreferred(false);
 }
 
-void ProjectorUiController::OnLaserPointerPressed() {
-  EnableLaserPointer(!IsLaserPointerEnabled());
-  RecordToolbarMetrics(ProjectorToolbar::kLaserPointer);
-}
-
 void ProjectorUiController::OnMarkerPressed() {
-  EnableLaserPointer(false);
   ToggleAnnotator();
   annotator_enabled_ = !annotator_enabled_;
   RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
@@ -170,27 +154,10 @@ void ProjectorUiController::ResetTools() {
     ToggleAnnotator();
     annotator_enabled_ = false;
   }
-
-  if (IsLaserPointerEnabled())
-    EnableLaserPointer(false);
-}
-
-bool ProjectorUiController::IsLaserPointerEnabled() {
-  return Shell::Get()->laser_pointer_controller()->is_enabled();
 }
 
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
     ResetTools();
 }
-
-void ProjectorUiController::OnLaserPointerStateChanged(bool enabled) {
-  // If laser pointer is enabled, disable marker and magnifier.
-  if (!enabled || !annotator_enabled_)
-    return;
-
-  ToggleAnnotator();
-  annotator_enabled_ = false;
-}
-
 }  // namespace ash

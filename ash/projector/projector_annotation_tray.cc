@@ -5,7 +5,6 @@
 #include "ash/projector/projector_annotation_tray.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -31,19 +30,16 @@ namespace ash {
 namespace {
 
 // Margins between the title view and the edges around it (dp).
-constexpr int kPaddingBetweenTitleAndSeparator = 3;
 constexpr int kPaddingBetweenBottomAndLastTrayItem = 4;
 
 // Width of the bubble itself (dp).
 constexpr int kBubbleWidth = 372;
 
 // Insets for the views (dp).
-constexpr gfx::Insets kTitleViewPadding(4, 16, 0, 24);
 constexpr gfx::Insets kPenViewPadding(4, 0, 0, 24);
-constexpr gfx::Insets kLaserViewPadding(0, 0, 0, 24);
 
-// Spacing between buttons in the title view (dp).
-constexpr int kTitleViewChildSpacing = 20;
+// Spacing between buttons (dp).
+constexpr int kButtonsPadding = 20;
 
 // Size of menu rows.
 constexpr int kMenuRowHeight = 48;
@@ -57,7 +53,7 @@ constexpr SkColor kRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
 constexpr SkColor kYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
 
 // TODO(b/201664243): Use AnnotatorToolType.
-enum ProjectorTool { kToolNone, kToolLaser, kToolPen };
+enum ProjectorTool { kToolNone, kToolPen };
 
 ProjectorTool GetCurrentTool() {
   auto* controller = Shell::Get()->projector_controller();
@@ -68,15 +64,13 @@ ProjectorTool GetCurrentTool() {
 
   if (controller->IsAnnotatorEnabled())
     return kToolPen;
-  return controller->IsLaserPointerEnabled() ? kToolLaser : kToolNone;
+  return kToolNone;
 }
 
 const gfx::VectorIcon& GetIconForTool(ProjectorTool tool) {
   switch (tool) {
     case kToolNone:
       return kPaletteTrayIconProjectorIcon;
-    case kToolLaser:
-      return kPaletteModeLaserPointerIcon;
     case kToolPen:
       return kInkPenIcon;
   }
@@ -91,7 +85,6 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
-      laser_view_(nullptr),
       pen_view_(nullptr) {
   image_view_->SetTooltipText(GetAccessibleNameForTray());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
@@ -133,7 +126,6 @@ void ProjectorAnnotationTray::HideBubbleWithView(
 }
 
 void ProjectorAnnotationTray::CloseBubble() {
-  laser_view_ = nullptr;
   pen_view_ = nullptr;
   bubble_.reset();
 
@@ -176,38 +168,6 @@ void ProjectorAnnotationTray::ShowBubble() {
     view->layer()->SetFillsBoundsOpaquely(false);
   };
 
-  // Add title.
-  auto* title_view = bubble_view->AddChildView(std::make_unique<views::View>());
-
-  auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kTitleViewPadding);
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  box_layout->set_minimum_cross_axis_size(kMenuRowHeight);
-  views::BoxLayout* layout_ptr =
-      title_view->SetLayoutManager(std::move(box_layout));
-
-  auto* title_label = title_view->AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_TITLE)));
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  TrayPopupUtils::SetLabelFontList(title_label,
-                                   TrayPopupUtils::FontStyle::kPodMenuHeader);
-  layout_ptr->SetFlexForView(title_label, 1, true);
-
-  setup_layered_view(title_view);
-
-  // Add horizontal separator between the title and tools.
-  auto* separator =
-      bubble_view->AddChildView(std::make_unique<views::Separator>());
-  setup_layered_view(separator);
-  separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor));
-  separator->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      kPaddingBetweenTitleAndSeparator, 0, kMenuSeparatorVerticalPadding, 0)));
-
   // Add drawing tools
   {
     auto* marker_view_container =
@@ -215,7 +175,7 @@ void ProjectorAnnotationTray::ShowBubble() {
 
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kPenViewPadding,
-        kTitleViewChildSpacing);
+        kButtonsPadding);
     box_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     box_layout->set_minimum_cross_axis_size(kMenuRowHeight);
@@ -256,33 +216,6 @@ void ProjectorAnnotationTray::ShowBubble() {
     setup_layered_view(marker_view_container);
   }
 
-  // Add Laser Pointer
-  {
-    auto* laser_view_container =
-        bubble_view->AddChildView(std::make_unique<views::View>());
-
-    auto box_layout = std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, kLaserViewPadding,
-        kTitleViewChildSpacing);
-    box_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-    box_layout->set_minimum_cross_axis_size(kMenuRowHeight);
-    views::BoxLayout* layout_ptr =
-        laser_view_container->SetLayoutManager(std::move(box_layout));
-
-    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    gfx::ImageSkia icon = CreateVectorIcon(kPaletteModeLaserPointerIcon,
-                                           kMenuIconSize, icon_color);
-    laser_view_ = laser_view_container->AddChildView(
-        std::make_unique<HoverHighlightView>(this));
-    laser_view_->AddIconAndLabel(
-        icon, l10n_util::GetStringUTF16(IDS_LASER_POINTER_BUTTON));
-
-    layout_ptr->SetFlexForView(laser_view_, 1, true);
-    setup_layered_view(laser_view_container);
-  }
-
   // Show the bubble.
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
@@ -307,8 +240,6 @@ void ProjectorAnnotationTray::OnViewClicked(views::View* sender) {
 
   if (sender == pen_view_) {
     projector_controller->OnMarkerPressed();
-  } else if (sender == laser_view_) {
-    projector_controller->OnLaserPointerPressed();
   }
 
   CloseBubble();

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/fast_ink/laser/laser_pointer_controller.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
@@ -85,27 +84,12 @@ TEST_F(ProjectorUiControllerTest, ShowAndCloseToolbar) {
   EXPECT_FALSE(projector_annotation_tray->visible_preferred());
 }
 
-// Verifies that toggling on the laser pointer on Projector tools propagates to
-// the laser pointer controller.
-TEST_F(ProjectorUiControllerTest, EnablingDisablingLaserPointer) {
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+// Verifies that toggling on the marker on Projector tools enables the
+// annotator.
+TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   // Enable marker.
   controller_->OnMarkerPressed();
   EXPECT_TRUE(controller_->is_annotator_enabled());
-  EXPECT_FALSE(laser_pointer_controller->is_enabled());
-
-  controller_->OnLaserPointerPressed();
-  EXPECT_TRUE(laser_pointer_controller->is_enabled());
-  EXPECT_FALSE(controller_->is_annotator_enabled());
-
-  controller_->OnMarkerPressed();
-  EXPECT_TRUE(controller_->is_annotator_enabled());
-  EXPECT_FALSE(laser_pointer_controller->is_enabled());
-
-  auto* laser_pointer_controller_ = Shell::Get()->laser_pointer_controller();
-  laser_pointer_controller_->SetEnabled(true);
-  EXPECT_TRUE(laser_pointer_controller->is_enabled());
-  EXPECT_FALSE(controller_->is_annotator_enabled());
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
