@@ -107,6 +107,14 @@ RecentAppsInteractionHandlerImpl::GetUserIdsWithDisplayRecentApps() {
       user_ids.emplace(user.user_id);
     }
   }
+  // Skip filtering recent apps when not receiving user states.
+  if (user_ids.empty()) {
+    for (auto const& it : recent_app_metadata_list_) {
+      if (!user_ids.contains(it.first.user_id)) {
+        user_ids.emplace(it.first.user_id);
+      }
+    }
+  }
   return user_ids;
 }
 

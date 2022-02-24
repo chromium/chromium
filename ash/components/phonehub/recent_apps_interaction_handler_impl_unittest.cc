@@ -156,6 +156,21 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     handler().NotifyRecentAppAddedOrUpdated(app_metadata2, now);
   }
 
+  void GenerateAppMetadataWithDuplicateUserId() {
+    const base::Time now = base::Time::Now();
+    const char16_t app_visible_name1[] = u"Fake App1";
+    const char package_name1[] = "com.fakeapp1";
+    const int64_t expected_user_id = 1;
+    auto app_metadata1 = Notification::AppMetadata(
+        app_visible_name1, package_name1, gfx::Image(), expected_user_id);
+    const char16_t app_visible_name2[] = u"Fake App2";
+    const char package_name2[] = "com.fakeapp2";
+    auto app_metadata2 = Notification::AppMetadata(
+        app_visible_name2, package_name2, gfx::Image(), expected_user_id);
+    handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+    handler().NotifyRecentAppAddedOrUpdated(app_metadata2, now);
+  }
+
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
 
@@ -509,6 +524,34 @@ TEST_F(RecentAppsInteractionHandlerTest, ShowRecentAppsOfUserWithQuietModeOn) {
   EXPECT_EQ(recent_apps_metadata_result.size(), 1u);
   EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
   EXPECT_EQ("com.fakeapp1", recent_apps_metadata_result[0].package_name);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest, ShowRecentAppsWhenGetsEmptyUser) {
+  GenerateDefaultAppMetadata();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states;
+  handler().set_user_states(user_states);
+
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+
+  EXPECT_EQ(recent_apps_metadata_result.size(), 2u);
+  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ(2, recent_apps_metadata_result[1].user_id);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest, GetUserIdSet) {
+  GenerateAppMetadataWithDuplicateUserId();
+
+  std::vector<RecentAppsInteractionHandler::UserState> user_states;
+  handler().set_user_states(user_states);
+
+  std::vector<Notification::AppMetadata> recent_apps_metadata_result =
+      handler().FetchRecentAppMetadataList();
+
+  EXPECT_EQ(recent_apps_metadata_result.size(), 2u);
+  EXPECT_EQ(1, recent_apps_metadata_result[0].user_id);
+  EXPECT_EQ(1, recent_apps_metadata_result[1].user_id);
 }
 
 }  // namespace phonehub
