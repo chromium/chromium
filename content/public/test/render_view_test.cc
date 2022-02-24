@@ -850,7 +850,7 @@ void RenderViewTest::OnSameDocumentNavigation(blink::WebLocalFrame* frame,
       ->DidFinishSameDocumentNavigation(
           is_new_navigation ? blink::kWebStandardCommit
                             : blink::kWebHistoryInertCommit,
-          false /* is_synchronously_committed */,
+          true /* is_synchronously_committed */,
           blink::mojom::SameDocumentNavigationType::kFragment,
           false /* is_client_redirect */);
 }

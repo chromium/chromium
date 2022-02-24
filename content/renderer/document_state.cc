@@ -4,18 +4,17 @@
 
 #include "content/renderer/document_state.h"
 
+#include "content/renderer/navigation_state.h"
+
 namespace content {
 
-DocumentState::DocumentState() : was_load_data_with_base_url_request_(false) {}
+DocumentState::DocumentState() {}
 
 DocumentState::~DocumentState() {}
 
-std::unique_ptr<DocumentState> DocumentState::Clone() {
-  std::unique_ptr<DocumentState> new_document_state(new DocumentState());
-  new_document_state->set_was_load_data_with_base_url_request(
-      was_load_data_with_base_url_request_);
-  new_document_state->set_data_url(data_url_);
-  return new_document_state;
+void DocumentState::set_navigation_state(
+    std::unique_ptr<NavigationState> navigation_state) {
+  navigation_state_ = std::move(navigation_state);
 }
 
 }  // namespace content

@@ -15,10 +15,12 @@
 
 namespace content {
 
-// The RenderView stores an instance of this class in the "extra data" of each
-// WebDocumentLoader (see RenderView::DidCreateDataSource).
-class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
-                                     public base::SupportsUserData {
+class NavigationState;
+
+// RenderFrameImpl stores an instance of this class in the "extra data" of each
+// WebDocumentLoader.
+class CONTENT_EXPORT DocumentState
+    : public blink::WebDocumentLoader::ExtraData {
  public:
   DocumentState();
   ~DocumentState() override;
@@ -27,10 +29,6 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
       blink::WebDocumentLoader* document_loader) {
     return static_cast<DocumentState*>(document_loader->GetExtraData());
   }
-
-  // Returns a copy of the DocumentState. This is a shallow copy,
-  // user data is not copied.
-  std::unique_ptr<DocumentState> Clone();
 
   // For LoadDataWithBaseURL navigations, |was_load_data_with_base_url_request_|
   // is set to true and |data_url_| is set to the data URL of the navigation.
@@ -51,9 +49,39 @@ class CONTENT_EXPORT DocumentState : public blink::WebDocumentLoader::ExtraData,
   const GURL& data_url() const { return data_url_; }
   void set_data_url(const GURL& data_url) { data_url_ = data_url; }
 
+  // True if the user agent was overridden for this page.
+  bool is_overriding_user_agent() const { return is_overriding_user_agent_; }
+  void set_is_overriding_user_agent(bool state) {
+    is_overriding_user_agent_ = state;
+  }
+
+  // True if we have to reset the scroll and scale state of the page
+  // after the provisional load has been committed.
+  bool must_reset_scroll_and_scale_state() const {
+    return must_reset_scroll_and_scale_state_;
+  }
+  void set_must_reset_scroll_and_scale_state(bool state) {
+    must_reset_scroll_and_scale_state_ = state;
+  }
+
+  // This is a fake navigation request id, which we send to the browser process
+  // together with metrics. Note that renderer does not actually issue a request
+  // for navigation (browser does it instead), but still reports metrics for it.
+  // See content::mojom::ResourceLoadInfo.
+  int request_id() const { return request_id_; }
+  void set_request_id(int request_id) { request_id_ = request_id; }
+
+  NavigationState* navigation_state() { return navigation_state_.get(); }
+  void set_navigation_state(std::unique_ptr<NavigationState> navigation_state);
+  void clear_navigation_state() { navigation_state_.reset(); }
+
  private:
-  bool was_load_data_with_base_url_request_;
+  bool was_load_data_with_base_url_request_ = false;
   GURL data_url_;
+  bool is_overriding_user_agent_ = false;
+  bool must_reset_scroll_and_scale_state_ = false;
+  int request_id_ = -1;
+  std::unique_ptr<NavigationState> navigation_state_;
 };
 
 }  // namespace content

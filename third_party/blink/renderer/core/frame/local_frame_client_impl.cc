@@ -783,13 +783,6 @@ DocumentLoader* LocalFrameClientImpl::CreateDocumentLoader(
   return document_loader;
 }
 
-void LocalFrameClientImpl::UpdateDocumentLoader(
-    DocumentLoader* document_loader,
-    std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
-  static_cast<WebDocumentLoaderImpl*>(document_loader)
-      ->SetExtraData(std::move(extra_data));
-}
-
 String LocalFrameClientImpl::UserAgent() {
   WebString override =
       web_frame_->Client() ? web_frame_->Client()->UserAgentOverride() : "";

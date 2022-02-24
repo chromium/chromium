@@ -7992,7 +7992,7 @@ TEST_F(WebFrameTest, SameDocumentHistoryNavigationCommitType) {
       false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, nullptr /* extra_data */);
+      true /* is_browser_initiated */);
   EXPECT_EQ(kWebBackForwardCommit, client.LastCommitType());
 }
 

@@ -78,7 +78,7 @@ TEST_F(AppHistoryTest, BrowserInitiatedSameDocumentBackForwardUncancelable) {
       false /* has_transient_user_activation */, nullptr /* initiator_origin */,
       false /* is_synchronously_committed */,
       mojom::blink::TriggeringEventInfo::kNotFromEvent,
-      true /* is_browser_initiated */, nullptr);
+      true /* is_browser_initiated */);
 
   EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
 }

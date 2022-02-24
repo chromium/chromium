@@ -237,8 +237,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const SecurityOrigin* initiator_origin,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
-      bool is_browser_initiated,
-      std::unique_ptr<WebDocumentLoader::ExtraData>);
+      bool is_browser_initiated);
 
   void SetDefersLoading(LoaderFreezeMode);
 
@@ -415,8 +414,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       const SecurityOrigin* initiator_origin,
       bool is_browser_initiated,
       bool is_synchronously_committed,
-      mojom::blink::TriggeringEventInfo,
-      std::unique_ptr<WebDocumentLoader::ExtraData>);
+      mojom::blink::TriggeringEventInfo);
 
   // Use these method only where it's guaranteed that |m_frame| hasn't been
   // cleared.
