@@ -200,13 +200,15 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onOpenInNewTab(GURL url, Referrer referrer) {
+    public void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
-        mTabModelSelector.openNewTab(
-                loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, mTab, isIncognito());
+        mTabModelSelector.openNewTab(loadUrlParams,
+                navigateToTab ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
+                              : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                mTab, isIncognito());
     }
 
     @Override
