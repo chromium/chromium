@@ -14,7 +14,6 @@ namespace features {
 GIN_EXPORT extern const base::Feature kV8CompactCodeSpaceWithStack;
 GIN_EXPORT extern const base::Feature kV8CompactMaps;
 GIN_EXPORT extern const base::Feature kV8CompactWithStack;
-GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
 GIN_EXPORT extern const base::Feature kV8ConcurrentSparkplug;
 GIN_EXPORT extern const base::FeatureParam<int>
     kV8ConcurrentSparkplugMaxThreads;
