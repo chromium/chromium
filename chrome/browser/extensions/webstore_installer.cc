@@ -153,9 +153,8 @@ void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
   // TODO(rockot): Share this duplicated code with the extension updater.
   // See http://crbug.com/371398.
   std::string new_query_string = old_query + authuser_param;
-  url::Component new_query(0, new_query_string.length());
-  url::Replacements<char> replacements;
-  replacements.SetQuery(new_query_string.c_str(), new_query);
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(new_query_string);
   *url = url->ReplaceComponents(replacements);
 }
 
