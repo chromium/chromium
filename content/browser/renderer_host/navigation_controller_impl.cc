@@ -40,6 +40,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -689,6 +690,7 @@ void NavigationControllerImpl::Restore(
   needs_reload_ = true;
   needs_reload_type_ = NeedsReloadType::kRestoreSession;
   entries_.reserve(entries->size());
+  int index = 0;
   for (auto& entry : *entries) {
     if (entry->GetURL().is_empty()) {
       // We're trying to restore an entry with an empty URL (e.g. from
@@ -696,11 +698,28 @@ void NavigationControllerImpl::Restore(
       // some old persisted sessions might still contain it). Trying to restore
       // and navigate to an entry with an empty URL will result in crashes, so
       // change the URL to about:blank. See also https://crbug.com/1240138.
-      CHECK_EQ(1u, entries->size());
+      if (entries->size() != 1) {
+        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "restored_entries_size",
+                                entries->size());
+        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "current_entries_size",
+                                entries_.size());
+        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "empty_url_entry_index",
+                                index);
+        NavigationEntryImpl::TreeNode* root_node =
+            static_cast<NavigationEntryImpl*>(entry.get())->root_node();
+        SCOPED_CRASH_KEY_NUMBER("EmptyURLRestore", "root_children",
+                                root_node->children.size());
+        SCOPED_CRASH_KEY_STRING256("EmptyURLRestore", "root_origin",
+                                   root_node->frame_entry->committed_origin()
+                                       .value()
+                                       .GetDebugString());
+        base::debug::DumpWithoutCrashing();
+      }
       entry->SetURL(GURL(url::kAboutBlankURL));
     }
     entries_.push_back(
         NavigationEntryImpl::FromNavigationEntry(std::move(entry)));
+    index++;
   }
 
   // At this point, the |entries| is full of empty scoped_ptrs, so it can be
