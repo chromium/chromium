@@ -392,15 +392,6 @@
       },
     },
   },
-  'flounder': {
-    # Nexus 9
-    'swarming': {
-      'dimensions': {
-        'device_type': 'flounder',
-        'os': 'Android',
-      },
-    },
-  },
   'fuchsia-code-coverage': {
     '$mixin_append': {
       'args': [

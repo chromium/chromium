@@ -83,15 +83,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Android FYI Release (Nexus 9)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Android|M64|NVDA",
-        short_name = "N9",
-    ),
-    triggered_by = ["GPU FYI Android arm64 Builder"],
-)
-
-ci.thin_tester(
     name = "Android FYI Release (Pixel 2)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|P32|QCOM",

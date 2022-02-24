@@ -11,14 +11,6 @@
         "scale_factor": 1.105
       },
       {
-        "device_type": "Nexus 6",
-        "scale_factor": 1.47436
-      },
-      {
-        "device_type": "Nexus 9",
-        "scale_factor": 1.566
-      },
-      {
         "comment": "NVIDIA Shield",
         "device_type": "sb_na_wf",
         "scale_factor": 1.226

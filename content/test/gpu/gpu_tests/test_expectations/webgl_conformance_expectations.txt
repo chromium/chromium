@@ -9,8 +9,8 @@
 #             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
-#             android-pixel-4 android-pixel-6 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+#             android-pixel-6 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
@@ -613,12 +613,7 @@ crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
 crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
-# Android NVIDIA: Nexus 9 and/or Shield TV
-crbug.com/798117 [ android android-nexus-9 ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
-crbug.com/606096 [ android android-nexus-9 ] conformance/glsl/bugs/multiplication-assignment.html [ Failure ]
-crbug.com/478572 [ android android-nexus-9 ] deqp/data/gles2/shaders/functions.html [ Failure ]
-# Texture tests found to generate intermittent GL errors in the GPU process
-crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
+# Android NVIDIA Shield TV
 crbug.com/1294071 [ android-pie android-shield-android-tv ] conformance/glsl/bugs/vector-matrix-constructor-scalarization.html [ Failure ]
 # Flakily returning RGBA(0,0,0,0) for all pixels
 crbug.com/1295386 [ android android-shield-android-tv ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]

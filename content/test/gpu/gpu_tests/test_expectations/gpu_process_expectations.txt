@@ -9,8 +9,8 @@
 #             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
-#             android-pixel-4 android-pixel-6 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+#             android-pixel-6 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
@@ -116,7 +116,6 @@ crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performan
 
 # Flakey/slow tests using clang_rt.
 crbug.com/1261260 [ android android-nexus-5x ] GpuProcess_webgpu_iframe_removed [ Failure ]
-crbug.com/1261260 [ android android-nexus-9 ] GpuProcess_webgpu_iframe_removed [ Failure ]
 crbug.com/1261260 [ android android-shield-android-tv ] GpuProcess_webgpu_iframe_removed [ Failure ]
 
 #######################################################################

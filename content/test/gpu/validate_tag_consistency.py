@@ -22,8 +22,8 @@ TAG_HEADER = """\
 #             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
-#             android-pixel-4 android-pixel-6 android-shield-android-tv
+# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+#             android-pixel-6 android-shield-android-tv
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
