@@ -6,6 +6,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_VIRTUAL_CARD_ENROLL_BUBBLE_CONTROLLER_IMPL_H_
@@ -57,6 +58,7 @@ class VirtualCardEnrollBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase::
+  void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
 
@@ -64,11 +66,16 @@ class VirtualCardEnrollBubbleControllerImpl
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;
 
-  // Contains more details regarding the sort of bubble to show the users.
-  raw_ptr<const VirtualCardEnrollmentFields> virtual_card_enrollment_fields_;
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns whether the web content associated with this controller is active.
+  virtual bool IsWebContentsActive();
 
   // True if the icon should be showing on the webpage
-  bool should_show_icon_ = false;
+  BubbleState bubble_state_ = BubbleState::kHidden;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Contains more details regarding the sort of bubble to show the users.
+  raw_ptr<const VirtualCardEnrollmentFields> virtual_card_enrollment_fields_;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
