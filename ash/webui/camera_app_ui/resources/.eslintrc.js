@@ -463,6 +463,12 @@ module.exports = {
         message: 'Error constructor should be called with new Error(...). ' +
             '(go/tsstyle#exceptions)',
       },
+      // Disallow for (... in ...). (go/tsstyle#iterating-objects)
+      {
+        selector: 'ForInStatement',
+        message: 'for (... in ...) is not allowed. ' +
+            '(go/tsstyle#iterating-objects)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [
