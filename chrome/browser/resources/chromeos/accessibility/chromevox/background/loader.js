@@ -21,7 +21,6 @@ goog.require('DownloadHandler');
 goog.require('ExtensionBridge');
 goog.require('FocusAutomationHandler');
 goog.require('GestureCommandHandler');
-goog.require('InstanceChecker');
 goog.require('JaPhoneticMap');
 goog.require('LocaleOutputHelper');
 goog.require('MathHandler');

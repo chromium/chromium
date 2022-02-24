@@ -27,7 +27,6 @@ chromevox_modules = [
   "../common/cursors/recovery_strategy.js",
   "../common/event_generator.js",
   "../common/key_code.js",
-  "../common/instance_checker.js",
   "../common/string_util.js",
   "../common/tree_walker.js",
   "background/auto_scroll_handler.js",
@@ -120,6 +119,7 @@ chromevox_modules = [
 
 # ES6 modules.
 chromevox_es6_modules = [
+  "../common/instance_checker.js",
   "background/background.js",
   "background/earcon_engine.js",
   "background/earcons.js",
