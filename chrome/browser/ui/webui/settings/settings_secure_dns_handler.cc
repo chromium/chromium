@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/rand_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
@@ -25,6 +26,7 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace secure_dns = chrome_browser_net::secure_dns;
@@ -190,15 +192,12 @@ void SecureDnsHandler::HandleProbeConfig(base::Value::ConstListView args) {
 
   probe_callback_id_ = args[0].GetString();
   const std::string& doh_config = args[1].GetString();
-
-  net::DnsConfigOverrides overrides;
-  overrides.search = std::vector<std::string>();
-  overrides.attempts = 1;
-  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  secure_dns::ApplyConfig(&overrides, doh_config);
   DCHECK(!runner_);
-  runner_ = std::make_unique<chrome_browser_net::DnsProbeRunner>(
-      overrides, network_context_getter_);
+  absl::optional<net::DnsOverHttpsConfig> parsed =
+      net::DnsOverHttpsConfig::FromString(doh_config);
+  DCHECK(parsed.has_value());  // `doh_config` must be valid.
+  runner_ =
+      secure_dns::MakeProbeRunner(std::move(*parsed), network_context_getter_);
   runner_->RunProbe(base::BindOnce(&SecureDnsHandler::OnProbeComplete,
                                    base::Unretained(this)));
 }

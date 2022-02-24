@@ -5,6 +5,7 @@
 #include "chrome/browser/net/secure_dns_util.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -14,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/common/chrome_features.h"
 #include "components/country_codes/country_codes.h"
 #include "components/embedder_support/pref_names.h"
@@ -22,10 +24,9 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
 
-namespace chrome_browser_net {
-
-namespace secure_dns {
+namespace chrome_browser_net::secure_dns {
 
 namespace {
 
@@ -145,13 +146,17 @@ void UpdateProbeHistogram(bool success) {
   UMA_HISTOGRAM_BOOLEAN("Net.DNS.UI.ProbeAttemptSuccess", success);
 }
 
-void ApplyConfig(net::DnsConfigOverrides* overrides,
-                 base::StringPiece doh_config) {
-  overrides->dns_over_https_config =
-      net::DnsOverHttpsConfig::FromString(doh_config);
-  CHECK(overrides->dns_over_https_config);  // `doh_config` must be valid.
+std::unique_ptr<DnsProbeRunner> MakeProbeRunner(
+    net::DnsOverHttpsConfig doh_config,
+    const DnsProbeRunner::NetworkContextGetter& network_context_getter) {
+  net::DnsConfigOverrides overrides;
+  overrides.search = std::vector<std::string>();
+  overrides.attempts = 1;
+  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
+  overrides.dns_over_https_config = std::move(doh_config);
+
+  return std::make_unique<DnsProbeRunner>(std::move(overrides),
+                                          network_context_getter);
 }
 
-}  // namespace secure_dns
-
-}  // namespace chrome_browser_net
+}  // namespace chrome_browser_net::secure_dns

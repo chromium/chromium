@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/browser_process.h"
@@ -30,6 +31,7 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -51,10 +53,13 @@ net::DohProviderEntry::List GetFilteredProviders() {
 // |waiter| when the probe has completed.  Must run on the UI thread.
 void RunProbe(base::WaitableEvent* waiter,
               bool* success,
-              net::DnsConfigOverrides overrides) {
+              const std::string& doh_config) {
+  absl::optional<net::DnsOverHttpsConfig> parsed =
+      net::DnsOverHttpsConfig::FromString(doh_config);
+  DCHECK(parsed.has_value());  // `doh_config` must be valid.
   auto* manager = g_browser_process->system_network_context_manager();
-  auto runner = std::make_unique<DnsProbeRunner>(
-      std::move(overrides),
+  auto runner = secure_dns::MakeProbeRunner(
+      std::move(*parsed),
       base::BindRepeating(&SystemNetworkContextManager::GetContext,
                           base::Unretained(manager)));
   auto* const runner_ptr = runner.get();
@@ -154,13 +159,6 @@ static void JNI_SecureDnsBridge_UpdateValidationHistogram(JNIEnv* env,
 static jboolean JNI_SecureDnsBridge_ProbeConfig(
     JNIEnv* env,
     const JavaParamRef<jstring>& doh_config) {
-  net::DnsConfigOverrides overrides;
-  overrides.search = std::vector<std::string>();
-  overrides.attempts = 1;
-  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
-  secure_dns::ApplyConfig(&overrides,
-                          base::android::ConvertJavaStringToUTF8(doh_config));
-
   // Android recommends converting async functions to blocking when using JNI:
   // https://developer.android.com/training/articles/perf-jni.
   // This function converts the DnsProbeRunner, which can only be created and
@@ -171,7 +169,8 @@ static jboolean JNI_SecureDnsBridge_ProbeConfig(
   bool success;
   bool posted = content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(RunProbe, &waiter, &success, std::move(overrides)));
+      base::BindOnce(RunProbe, &waiter, &success,
+                     base::android::ConvertJavaStringToUTF8(doh_config)));
   DCHECK(posted);
   waiter.Wait();
 

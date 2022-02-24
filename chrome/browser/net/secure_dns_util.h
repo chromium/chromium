@@ -5,21 +5,18 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "chrome/browser/net/dns_probe_runner.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
-
-namespace net {
-struct DnsConfigOverrides;
-}  // namespace net
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chrome_browser_net {
-
-namespace secure_dns {
+namespace chrome_browser_net::secure_dns {
 
 // Returns the subset of |providers| that are marked for use in the specified
 // country.
@@ -47,9 +44,10 @@ void UpdateDropdownHistograms(const net::DohProviderEntry::List& providers,
 void UpdateValidationHistogram(bool valid);
 void UpdateProbeHistogram(bool success);
 
-// Modifies `overrides` to use the DoH servers specified by `doh_config`.
-void ApplyConfig(net::DnsConfigOverrides* overrides,
-                 base::StringPiece doh_config);
+// Returns a DNS prober configured for testing DoH servers
+std::unique_ptr<DnsProbeRunner> MakeProbeRunner(
+    net::DnsOverHttpsConfig doh_config,
+    const DnsProbeRunner::NetworkContextGetter& network_context_getter);
 
 // Registers the backup preference required for the DNS probes setting reset.
 // TODO(crbug.com/1062698): Remove this once the privacy settings redesign
@@ -63,8 +61,6 @@ void RegisterProbesSettingBackupPref(PrefRegistrySimple* registry);
 // is fully launched.
 void MigrateProbesSettingToOrFromBackup(PrefService* prefs);
 
-}  // namespace secure_dns
-
-}  // namespace chrome_browser_net
+}  // namespace chrome_browser_net::secure_dns
 
 #endif  // CHROME_BROWSER_NET_SECURE_DNS_UTIL_H_

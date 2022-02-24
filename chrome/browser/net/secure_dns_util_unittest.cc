@@ -5,9 +5,13 @@
 #include "chrome/browser/net/secure_dns_util.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "components/country_codes/country_codes.h"
@@ -17,14 +21,15 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/dns/public/secure_dns_mode.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::ElementsAre;
 
-namespace chrome_browser_net {
-
-namespace secure_dns {
+namespace chrome_browser_net::secure_dns {
 
 class SecureDnsUtilTest : public testing::Test {};
 
@@ -72,31 +77,21 @@ TEST_F(SecureDnsUtilTest, MigrateProbesPrefForwardCustomDisabled) {
   EXPECT_FALSE(prefs.GetBoolean(kAlternateErrorPagesBackup));
 }
 
-TEST(SecureDnsUtil, ApplyDohTemplatePost) {
-  std::string post_template("https://valid");
-  net::DnsConfigOverrides overrides;
-  ApplyConfig(&overrides, post_template);
+TEST(SecureDnsUtil, MakeProbeRunner) {
+  base::test::SingleThreadTaskEnvironment task_environment;
 
-  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(post_template),
-            overrides.dns_over_https_config);
-}
-
-TEST(SecureDnsUtil, ApplyTwoDohTemplates) {
-  std::string two_templates("https://valid https://valid/{?dns}");
-  net::DnsConfigOverrides overrides;
-  ApplyConfig(&overrides, two_templates);
-
-  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(two_templates),
-            overrides.dns_over_https_config);
-}
-
-TEST(SecureDnsUtil, ApplyDohTemplateGet) {
-  std::string get_template("https://valid/{?dns}");
-  net::DnsConfigOverrides overrides;
-  ApplyConfig(&overrides, get_template);
-
-  EXPECT_EQ(*net::DnsOverHttpsConfig::FromString(get_template),
-            overrides.dns_over_https_config);
+  auto doh_config = *net::DnsOverHttpsConfig::FromString(
+      "https://valid https://valid/{?dns}");
+  network::TestNetworkContext test_context;
+  auto prober = MakeProbeRunner(
+      doh_config,
+      base::BindLambdaForTesting(
+          [&]() -> network::mojom::NetworkContext* { return &test_context; }));
+  auto overrides = prober->GetConfigOverridesForTesting();
+  EXPECT_EQ(1, overrides.attempts);
+  EXPECT_EQ(std::vector<std::string>(), overrides.search);
+  EXPECT_EQ(net::SecureDnsMode::kSecure, overrides.secure_dns_mode);
+  EXPECT_EQ(doh_config, overrides.dns_over_https_config);
 }
 
 net::DohProviderEntry::List GetProvidersForTesting() {
@@ -199,6 +194,4 @@ TEST(SecureDnsUtil, UpdateDropdownHistogramsCustom) {
   histograms.ExpectTotalCount(kUmaBase + ".Unselected", 1u);
 }
 
-}  // namespace secure_dns
-
-}  // namespace chrome_browser_net
+}  // namespace chrome_browser_net::secure_dns
