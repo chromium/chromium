@@ -457,6 +457,12 @@ module.exports = {
         message: 'Array constructor are not allowed. ' +
             '(go/tsstyle#array-constructor)',
       },
+      // Disallow calling Error without new. (go/tsstyle#exceptions)
+      {
+        selector: 'CallExpression[callee.name="Error"]',
+        message: 'Error constructor should be called with new Error(...). ' +
+            '(go/tsstyle#exceptions)',
+      },
     ],
 
     '@typescript-eslint/naming-convention': [
