@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
@@ -96,6 +97,7 @@ class CodecPressureManagerTest
     base::RunLoop run_loop;
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
+    HeapPointersOnStackScope pointers_on_stack(ThreadState::Current());
     run_loop.Run();
   }
 
