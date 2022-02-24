@@ -957,6 +957,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.FromWebContent.Duration{DropResult}"
+    units="ms" expires_after="2022-07-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration in ms of drag process when {DropResult}. Recorded for
+    the drag process starts from the web content, and drop happens outside of
+    the web content. Does not capture drag events that end inside the
+    ContentView containing web contents. Recorded when such a drag event ends.
+    Android only.
+
+    For more information regarding drag results, see:
+    https://developer.android.com/reference/android/view/DragEvent#getResult()
+  </summary>
+  <token key="DropResult">
+    <variant name=".Canceled" summary="DragEvent#getResult() returns false."/>
+    <variant name=".Success" summary="DragEvent#getResult() returns true."/>
+  </token>
+</histogram>
+
+<histogram name="Android.DragDrop.FromWebContent.TargetType"
+    enum="AndroidDragTargetType" expires_after="2022-07-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the type of object being dragged, for the drag process starts from
+    the web content, and drop happens outside of the web content. Does not
+    capture drag events that end inside the ContentView containing web contents.
+    Recorded when such a drag event ends. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"
     expires_after="2023-02-02">
   <owner>skym@chromium.org</owner>

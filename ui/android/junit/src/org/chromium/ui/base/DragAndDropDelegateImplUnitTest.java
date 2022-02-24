@@ -23,7 +23,9 @@ import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDisplay;
 
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.DragAndDropDelegateImpl.DragTargetType;
 import org.chromium.url.JUnitTestGURLs;
 
 /**
@@ -31,7 +33,8 @@ import org.chromium.url.JUnitTestGURLs;
  * the ease of dp / pixel calculation.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowDisplay.class}, qualifiers = "w1000dp-h2000dp-mdpi")
+@Config(shadows = {ShadowDisplay.class, ShadowRecordHistogram.class},
+        qualifiers = "w1000dp-h2000dp-mdpi")
 public class DragAndDropDelegateImplUnitTest {
     private Context mContext;
     private DragAndDropDelegateImpl mDragAndDropDelegateImpl;
@@ -45,10 +48,11 @@ public class DragAndDropDelegateImplUnitTest {
     @After
     public void tearDown() {
         DropDataContentProvider.clearCache();
+        ShadowRecordHistogram.reset();
     }
 
     @Test
-    public void testStartDragAndDrop() {
+    public void testStartDragAndDrop_Text() {
         final View containerView = new View(mContext);
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null);
@@ -60,37 +64,23 @@ public class DragAndDropDelegateImplUnitTest {
                 mDragAndDropDelegateImpl.getDragShadowWidth());
         Assert.assertEquals("Drag shadow height not match. Should not resize for text.", 200,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
+        assertDragTypeNotRecorded("Drag didn't end.");
 
-        DragEvent dragEvent = Mockito.mock(DragEvent.class);
-        doReturn(DragEvent.ACTION_DRAG_ENDED).when(dragEvent).getAction();
-        mDragAndDropDelegateImpl.onDrag(containerView, dragEvent);
+        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
 
         Assert.assertFalse("Drag should end.", mDragAndDropDelegateImpl.isDragStarted());
         Assert.assertEquals("Drag shadow width should be reset.", 0,
                 mDragAndDropDelegateImpl.getDragShadowWidth());
         Assert.assertEquals("Drag shadow height should be reset.", 0,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
+        assertDragTypeRecorded(DragTargetType.TEXT);
+        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/true);
     }
 
     @Test
-    public void testResizeShadowForDifferentDropData() {
+    public void testStartDragAndDrop_Image() {
         final View containerView = new View(mContext);
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
-
-        final DropDataAndroid textDropData = DropDataAndroid.create("text", null, null, null);
-        mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, textDropData);
-        Assert.assertEquals("Drag shadow width not match. Should not resize for text.", 100,
-                mDragAndDropDelegateImpl.getDragShadowWidth());
-        Assert.assertEquals("Drag shadow height not match. Should not resize for text.", 200,
-                mDragAndDropDelegateImpl.getDragShadowHeight());
-
-        final DropDataAndroid linkDropData = DropDataAndroid.create(
-                "text", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null);
-        mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, linkDropData);
-        Assert.assertEquals("Drag shadow width not match. Should not resize for link.", 100,
-                mDragAndDropDelegateImpl.getDragShadowWidth());
-        Assert.assertEquals("Drag shadow height not match. Should not resize for link.", 200,
-                mDragAndDropDelegateImpl.getDragShadowHeight());
 
         final DropDataAndroid imageDropData =
                 DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
@@ -99,8 +89,72 @@ public class DragAndDropDelegateImplUnitTest {
                 mDragAndDropDelegateImpl.getDragShadowWidth());
         Assert.assertEquals("Drag shadow height not match. Should do resize for image.", 120,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
-
         Assert.assertNotNull("Cached Image bytes should not be null.",
+                DropDataContentProvider.getImageBytesForTesting());
+        assertDragTypeNotRecorded("Drag didn't end.");
+
+        DragEvent dragEnd = mockDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        mDragAndDropDelegateImpl.onDrag(containerView, dragEnd);
+        Assert.assertNull("Cached Image bytes should be cleaned.",
+                DropDataContentProvider.getImageBytesForTesting());
+        assertDragTypeRecorded(DragTargetType.IMAGE);
+        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/true);
+    }
+
+    /**
+     * Link dragging is not supported yet, adding this test to make sure status are handled
+     * correctly.
+     * TODO(https://crbug.com/1289393): Handle link dragging.
+     */
+    @Test
+    public void testStartDragAndDrop_Link() {
+        final View containerView = new View(mContext);
+        final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
+
+        final DropDataAndroid linkDropData = DropDataAndroid.create(
+                "", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), null, null);
+        mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, linkDropData);
+        Assert.assertEquals(
+                "Drag link is not supported.", 0, mDragAndDropDelegateImpl.getDragShadowWidth());
+        Assert.assertEquals(
+                "Drag link is not supported.", 0, mDragAndDropDelegateImpl.getDragShadowHeight());
+        Assert.assertFalse("Drag Link is not supported.", mDragAndDropDelegateImpl.isDragStarted());
+        assertDragTypeNotRecorded("Drag didn't started.");
+    }
+
+    @Test
+    public void testDragImage_DragHandled() {
+        final View containerView = new View(mContext);
+        final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
+        final DropDataAndroid imageDropData =
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+        mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, imageDropData);
+
+        final DragEvent dragEndEvent = mockDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        doReturn(true).when(dragEndEvent).getResult();
+        mDragAndDropDelegateImpl.onDrag(containerView, dragEndEvent);
+
+        Assert.assertNotNull("Cached Image bytes should not be cleaned, drag is handled.",
+                DropDataContentProvider.getImageBytesForTesting());
+        assertDragTypeRecorded(DragTargetType.IMAGE);
+        assertDragDurationRecorded(/*dropResult=*/true, /*recorded=*/true);
+    }
+
+    @Test
+    public void testDragImage_ReceivedDropBeforeDragEnds() {
+        final View containerView = new View(mContext);
+        final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
+        final DropDataAndroid imageDropData =
+                DropDataAndroid.create("", null, new byte[] {1, 2, 3, 4}, "png");
+        mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, imageDropData);
+
+        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DROP));
+        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+
+        // Drop on the same view does not lead to recording of drag duration.
+        assertDragTypeNotRecorded("Drag dropped on the same view.");
+        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/false);
+        Assert.assertNull("Cached Image bytes should be cleaned since drop is not handled.",
                 DropDataContentProvider.getImageBytesForTesting());
     }
 
@@ -176,5 +230,33 @@ public class DragAndDropDelegateImplUnitTest {
 
         Assert.assertTrue(assertMsg,
                 expectedWidth == actualResizedWidth && expectedHeight == actualResizedHeight);
+    }
+
+    private DragEvent mockDragEvent(int action) {
+        DragEvent event = Mockito.mock(DragEvent.class);
+        doReturn(action).when(event).getAction();
+        return event;
+    }
+
+    private void assertDragTypeNotRecorded(String reason) {
+        final String histogram = "Android.DragDrop.FromWebContent.TargetType";
+        final String errorMsg = "<" + histogram + "> should not recorded. Reason:" + reason;
+        Assert.assertEquals(
+                errorMsg, 0, ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+    }
+
+    private void assertDragTypeRecorded(@DragTargetType int type) {
+        final String histogram = "Android.DragDrop.FromWebContent.TargetType";
+        final String errorMsg = "<" + histogram + "> is not recorded correctly.";
+        Assert.assertEquals(errorMsg, 1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, type));
+    }
+
+    private void assertDragDurationRecorded(boolean dropResult, boolean recorded) {
+        final String histogram =
+                "Android.DragDrop.FromWebContent.Duration." + (dropResult ? "Success" : "Canceled");
+        final String errorMsg = "<" + histogram + "> is not recorded correctly.";
+        Assert.assertEquals(errorMsg, recorded ? 1 : 0,
+                ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 }

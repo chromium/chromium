@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -17,13 +18,18 @@ import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.widget.ImageView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.R;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Drag and drop helper class in charge of building the clip data, wrapping calls to
@@ -31,9 +37,34 @@ import org.chromium.ui.R;
  * Android.
  */
 class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate, DragStateTracker {
+    /**
+     * Java Enum of AndroidDragTargetType used for histogram recording for
+     * Android.DragDrop.FromWebContent.TargetType. This is used for histograms and should therefore
+     * be treated as append-only.
+     */
+    @IntDef({DragTargetType.INVALID, DragTargetType.TEXT, DragTargetType.IMAGE, DragTargetType.LINK,
+            DragTargetType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface DragTargetType {
+        int INVALID = 0;
+        int TEXT = 1;
+        int IMAGE = 2;
+        int LINK = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
     private int mShadowWidth;
     private int mShadowHeight;
     private boolean mIsDragStarted;
+
+    /** Whether the current drop has happened on top of the view this object tracks.  */
+    private boolean mIsDropOnView;
+
+    /** The type of drag target from the view this object tracks. */
+    private @DragTargetType int mDragTargetType;
+
+    private long mDragStartSystemElapsedTime;
 
     // Implements ViewAndroidDelegate.DragAndDropDelegate
     /**
@@ -44,12 +75,14 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     @RequiresApi(api = VERSION_CODES.N)
     public boolean startDragAndDrop(@NonNull View containerView, @NonNull Bitmap shadowImage,
             @NonNull DropDataAndroid dropData) {
-        mIsDragStarted = true;
-
         ClipData clipdata = buildClipData(dropData);
         if (clipdata == null) {
             return false;
         }
+
+        mIsDragStarted = true;
+        mDragStartSystemElapsedTime = SystemClock.elapsedRealtime();
+        mDragTargetType = getDragTargetType(dropData);
         return ApiHelperForN.startDragAndDrop(containerView, clipdata,
                 createDragShadowBuilder(
                         containerView.getContext(), shadowImage, dropData.hasImage()),
@@ -81,33 +114,34 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
         if (dragEvent.getAction() == DragEvent.ACTION_DRAG_ENDED) {
+            onDragEnd(dragEvent);
             reset();
-            if (!dragEvent.getResult()) {
-                // Clear the image data immediately when not used.
-                DropDataContentProvider.clearCache();
-                // TODO: add metric
-            } else {
-                // Otherwise, clear it with a delay to allow asynchronous data transfer.
-                DropDataContentProvider.clearCacheWithDelay();
-                // TODO: add metric
-            }
+        } else if (dragEvent.getAction() == DragEvent.ACTION_DROP) {
+            mIsDropOnView = true;
         }
         // Return false so this listener does not consume the drag event of the view it listened to.
         return false;
     }
 
     protected ClipData buildClipData(DropDataAndroid dropData) {
-        if (dropData.isPlainText()) {
-            return ClipData.newPlainText(null, dropData.text);
-        } else if (dropData.hasImage()) {
-            Uri uri = DropDataContentProvider.cache(
-                    dropData.imageContent, dropData.imageContentExtension);
-            return ClipData.newUri(
-                    ContextUtils.getApplicationContext().getContentResolver(), null, uri);
-            // TODO: ensure MIME type of ClipData is correct
-        } else {
-            // TODO(crbug.com/1289393): handle link dragging
-            return null;
+        @DragTargetType
+        int type = getDragTargetType(dropData);
+        switch (type) {
+            case DragTargetType.TEXT:
+                return ClipData.newPlainText(null, dropData.text);
+            case DragTargetType.IMAGE:
+                Uri uri = DropDataContentProvider.cache(
+                        dropData.imageContent, dropData.imageContentExtension);
+                return ClipData.newUri(
+                        ContextUtils.getApplicationContext().getContentResolver(), null, uri);
+            case DragTargetType.LINK:
+                // TODO(https://crbug.com/1289393): Handle link dragging.
+            case DragTargetType.INVALID:
+                return null;
+            case DragTargetType.NUM_ENTRIES:
+            default:
+                assert false : "Should not be reached!";
+                return null;
         }
     }
 
@@ -180,9 +214,62 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
         return new Pair<>(Math.round(width), Math.round(height));
     }
 
+    private void onDragEnd(DragEvent dragEndEvent) {
+        boolean dragResult = dragEndEvent.getResult();
+
+        // Only record metrics when drop does not happen for ContentView.
+        if (!mIsDropOnView) {
+            assert mDragStartSystemElapsedTime > 0;
+            assert mDragTargetType != DragTargetType.INVALID;
+            long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
+            recordDragDurationAndResult(dragDuration, dragResult);
+            recordDragTargetType(mDragTargetType);
+        }
+
+        if (!dragResult) {
+            // Clear the image data immediately when not used.
+            DropDataContentProvider.clearCache();
+            // TODO(https://crbug.com/1299143): add metric
+        } else {
+            // Otherwise, clear it with a delay to allow asynchronous data transfer.
+            DropDataContentProvider.clearCacheWithDelay();
+            // TODO(https://crbug.com/1299143): add metric
+        }
+    }
+
+    /**
+     * Return the {@link DragTargetType} based on the content of DropDataAndroid. The result will
+     * bias plain text > image > link.
+     * TODO(https://crbug.com/1299994): Manage the ClipData bias with EventForwarder in one place.
+     */
+    static @DragTargetType int getDragTargetType(DropDataAndroid dropDataAndroid) {
+        if (dropDataAndroid.isPlainText()) {
+            return DragTargetType.TEXT;
+        } else if (dropDataAndroid.hasImage()) {
+            return DragTargetType.IMAGE;
+        } else {
+            // TODO(https://crbug.com/1289393): Handle link dragging.
+            return DragTargetType.INVALID;
+        }
+    }
+
     private void reset() {
         mShadowHeight = 0;
         mShadowWidth = 0;
+        mDragTargetType = DragTargetType.INVALID;
         mIsDragStarted = false;
+        mIsDropOnView = false;
+        mDragStartSystemElapsedTime = -1;
+    }
+
+    private void recordDragTargetType(@DragTargetType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.DragDrop.FromWebContent.TargetType", type, DragTargetType.NUM_ENTRIES);
+    }
+
+    private void recordDragDurationAndResult(long duration, boolean result) {
+        String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
+        String suffix = result ? "Success" : "Canceled";
+        RecordHistogram.recordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
 }
