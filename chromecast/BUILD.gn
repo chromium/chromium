@@ -31,10 +31,13 @@ declare_args() {
 group("all") {
   data_deps = []
   deps = [ "//chromecast/build:archive" ]
-  if (is_android && chromecast_branding == "public") {
-    deps += [ ":cast_shell_apk" ]
-  }
-  if (!is_android) {
+  if (is_android) {
+    if (chromecast_branding == "public") {
+      deps += [ ":cast_shell_apk" ]
+    } else {
+      deps += [ ":cast_browser_bundle_module" ]
+    }
+  } else {
     data_deps += [
       ":cast_browser",
       ":cast_shell",
@@ -653,6 +656,9 @@ buildflag_header("chromecast_buildflags") {
 if (is_android) {
   generate_jni_registration("cast_shell_jni_registration") {
     targets = [ ":cast_shell_apk" ]
+    if (chromecast_branding != "public") {
+      targets += [ ":cast_browser_bundle_module" ]
+    }
     header_output = "$root_gen_dir/chromecast/android/${target_name}.h"
   }
 
@@ -711,5 +717,34 @@ if (is_android) {
 
     command_line_flags_file = "castshell-command-line"
     enable_multidex = true
+  }
+
+  if (chromecast_branding != "public") {
+    android_app_bundle_module("cast_browser_bundle_module") {
+      is_base_module = false
+      base_module_target = "//chromecast/internal/service/main/android:cast_service_bundle_module"
+
+      android_manifest =
+          "$root_gen_dir/cast_browser_manifest/AndroidManifest.xml"
+      android_manifest_dep =
+          "//chromecast/browser/android:cast_browser_manifest"
+
+      min_sdk_version = 23
+      target_sdk_version = 31
+
+      shared_libraries = [ "//chromecast/android:libcast_browser_android" ]
+      product_config_java_packages = [ "org.chromium.chromecast.shell" ]
+      deps = [
+        ":cast_shell_apk_assets",
+        "//base:base_java",
+        "//chromecast/android:libcast_browser_android",
+        "//chromecast/browser/android:cast_browser_java",
+        "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+      ]
+
+      loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
+
+      enable_multidex = true
+    }
   }
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:dist="http://schemas.android.com/apk/distribution"
+          package="com.google.android.apps.mediashell"
+          featureSplit="cast_browser" >
+    <dist:module
+        dist:onDemand="false"
+        dist:title="cast_browser">
+        <!-- This will fuse the module into the base APK if a system image
+             APK is built from this bundle. -->
+        <dist:fusing dist:include="true" />
+    </dist:module>
+
+    <uses-sdk android:minSdkVersion="23"/>
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <application android:icon="@drawable/ic_settings_cast">
+        <activity android:name="org.chromium.chromecast.shell.CastWebContentsActivity"
+                  android:theme="@style/CastShellTheme"
+                  android:exported="true"
+                  android:hardwareAccelerated="true"
+                  android:launchMode="standard"
+                  android:screenOrientation="landscape"
+                  android:taskAffinity=".CastWebContentsActivity"
+                  android:supportsPictureInPicture="true"
+                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+                  android:excludeFromRecents="false"
+                  android:noHistory="false">
+        </activity>
+
+        <!-- The following service entries exist in order to allow us to
+             start more than one sandboxed process. -->
+        {% set num_sandboxed_services = 40 %}
+        <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
+                   android:value="{{ num_sandboxed_services }}"/>
+
+        {% for i in range(num_sandboxed_services) %}
+        <service android:name="org.chromium.content.app.SandboxedProcessService{{ i }}"
+                 android:process=":sandboxed_process{{ i }}"
+                 android:isolatedProcess="true"
+                 android:exported="false" />
+        {% endfor %}
+
+        {% set num_privileged_services = 5 %}
+        <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
+                   android:value="{{ num_privileged_services }}"/>
+
+        {% for i in range(num_privileged_services) %}
+        <service android:name="org.chromium.content.app.PrivilegedProcessService{{ i }}"
+                 android:process=":privileged_process{{ i }}"
+                 android:isolatedProcess="false"
+                 android:exported="false" />
+        {% endfor %}
+    </application>
+
+</manifest>
