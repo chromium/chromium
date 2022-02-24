@@ -59,7 +59,7 @@ class Reconfigurer {
   /**
    * Preferred configuration.
    */
-  public config: CameraConfig;
+  config: CameraConfig;
 
   private shouldSuspend = false;
 
@@ -320,7 +320,7 @@ enum OperationType {
 }
 
 export class OperationScheduler {
-  public cameraInfo: CameraInfo|null = null;
+  cameraInfo: CameraInfo|null = null;
   private pendingUpdateInfo: CameraInfo|null = null;
   private readonly firstInfoUpdate = new WaitableEvent();
 
@@ -328,9 +328,9 @@ export class OperationScheduler {
   readonly capturer: Capturer;
   private ongoingOperationType: OperationType|null = null;
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
-  public readonly photoPreferrer = new PhotoConstraintsPreferrer();
-  public readonly videoPreferrer = new VideoConstraintsPreferrer();
-  public readonly modes: Modes;
+  readonly photoPreferrer = new PhotoConstraintsPreferrer();
+  readonly videoPreferrer = new VideoConstraintsPreferrer();
+  readonly modes: Modes;
 
   constructor(
       private readonly infoUpdater: DeviceInfoUpdater,

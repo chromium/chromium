@@ -511,6 +511,14 @@ module.exports = {
     ],
 
     'quote-props': ['error', 'consistent-as-needed'],
+
+    // go/tsstyle#visibility
+    '@typescript-eslint/explicit-member-accessibility': [
+      'error',
+      {
+        accessibility: 'no-public',
+      },
+    ],
   }),
   overrides: [{
     files: ['**/*.ts'],
