@@ -326,8 +326,6 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   PositionWithAffinity PositionForPoint(PhysicalOffset) const;
 
-  UBiDiLevel BidiLevel() const;
-
   PhysicalBoxSides SidesToInclude() const {
     return PhysicalBoxSides(include_border_top_, include_border_right_,
                             include_border_bottom_, include_border_left_);

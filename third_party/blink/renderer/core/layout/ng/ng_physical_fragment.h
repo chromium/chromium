@@ -33,7 +33,6 @@ class FragmentData;
 class Node;
 class NGContainerFragmentBuilder;
 class NGFragmentItem;
-class NGInlineItem;
 class PaintLayer;
 struct LogicalRect;
 struct NGFragmentedOutOfFlowData;
@@ -234,12 +233,6 @@ class CORE_EXPORT NGPhysicalFragment
     return (IsBox() && BoxType() >= NGBoxType::kMinimumFormattingContextRoot) ||
            IsLegacyLayoutRoot();
   }
-
-  // |Offset()| is reliable only when this fragment was placed by LayoutNG
-  // parent. When the parent is not LayoutNG, the parent may move the
-  // |LayoutObject| after this fragment was placed. See comments in
-  // |LayoutNGBlockFlow::UpdateBlockLayout()| and crbug.com/788590
-  bool IsPlacedByLayoutNG() const;
 
   // Returns true if we have a descendant within this formatting context, which
   // is potentially above our block-start edge.
@@ -467,7 +460,6 @@ class CORE_EXPORT NGPhysicalFragment
   // Helper functions to convert between |PhysicalRect| and |LogicalRect| of a
   // child.
   LogicalRect ConvertChildToLogical(const PhysicalRect& physical_rect) const;
-  PhysicalRect ConvertChildToPhysical(const LogicalRect& logical_rect) const;
 
   String ToString() const;
 
@@ -645,8 +637,6 @@ class CORE_EXPORT NGPhysicalFragment
  protected:
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  const HeapVector<NGInlineItem>& InlineItemsOfContainingBlock() const;
-
   void AddScrollableOverflowForInlineChild(
       const NGPhysicalBoxFragment& container,
       const ComputedStyle& container_style,
@@ -731,16 +721,6 @@ class CORE_EXPORT NGPhysicalFragment
  private:
   friend struct NGPhysicalFragmentTraits;
   void Destroy() const;
-};
-
-// Used for return value of traversing fragment tree.
-struct CORE_EXPORT NGPhysicalFragmentWithOffset {
-  DISALLOW_NEW();
-
-  scoped_refptr<const NGPhysicalFragment> fragment;
-  PhysicalOffset offset_to_container_box;
-
-  PhysicalRect RectInContainerBox() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment*);

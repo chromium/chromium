@@ -1588,21 +1588,6 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
   return child.GetLayoutObject()->PositionAfterThis();
 }
 
-UBiDiLevel NGPhysicalBoxFragment::BidiLevel() const {
-  // TODO(xiaochengh): Make the implementation more efficient.
-  DCHECK(IsInline());
-  DCHECK(IsAtomicInline());
-  const auto& inline_items = InlineItemsOfContainingBlock();
-  const NGInlineItem* self_item =
-      std::find_if(inline_items.begin(), inline_items.end(),
-                   [this](const NGInlineItem& item) {
-                     return GetLayoutObject() == item.GetLayoutObject();
-                   });
-  DCHECK(self_item);
-  DCHECK_NE(self_item, inline_items.end());
-  return self_item->BidiLevel();
-}
-
 #if DCHECK_IS_ON()
 NGPhysicalBoxFragment::AllowPostLayoutScope::AllowPostLayoutScope() {
   ++allow_count_;

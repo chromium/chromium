@@ -473,19 +473,6 @@ bool NGPhysicalFragment::IsTextControlPlaceholder() const {
   return blink::IsTextControlPlaceholder(layout_object_->GetNode());
 }
 
-bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
-  // TODO(kojii): Move this to a flag for |LayoutNGBlockFlow::UpdateBlockLayout|
-  // to set.
-  if (IsLineBox())
-    return false;
-  if (IsFragmentainerBox())
-    return true;
-  const LayoutBlock* container = layout_object_->ContainingBlock();
-  if (!container)
-    return false;
-  return container->IsLayoutNGObject();
-}
-
 NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   if (!has_fragmented_out_of_flow_data_)
     return nullptr;
@@ -643,23 +630,6 @@ void NGPhysicalFragment::AdjustScrollableOverflowForPropagation(
   }
 }
 
-const HeapVector<NGInlineItem>&
-NGPhysicalFragment::InlineItemsOfContainingBlock() const {
-  DCHECK(IsInline());
-  DCHECK(GetLayoutObject());
-  LayoutBlockFlow* block_flow = GetLayoutObject()->FragmentItemsContainer();
-  // TODO(xiaochengh): Code below is copied from ng_offset_mapping.cc with
-  // modification. Unify them.
-  DCHECK(block_flow);
-  NGBlockNode block_node = NGBlockNode(block_flow);
-  DCHECK(block_node.IsInlineFormattingContextRoot());
-  DCHECK(block_node.CanUseNewLayout());
-  NGLayoutInputNode node = block_node.FirstChild();
-
-  // TODO(xiaochengh): Handle ::first-line.
-  return To<NGInlineNode>(node).ItemsData(false).items;
-}
-
 TouchAction NGPhysicalFragment::EffectiveAllowedTouchAction() const {
   DCHECK(layout_object_);
   return layout_object_->EffectiveAllowedTouchAction();
@@ -674,12 +644,6 @@ LogicalRect NGPhysicalFragment::ConvertChildToLogical(
     const PhysicalRect& physical_rect) const {
   return WritingModeConverter(Style().GetWritingDirection(), Size())
       .ToLogical(physical_rect);
-}
-
-PhysicalRect NGPhysicalFragment::ConvertChildToPhysical(
-    const LogicalRect& logical_rect) const {
-  return WritingModeConverter(Style().GetWritingDirection(), Size())
-      .ToPhysical(logical_rect);
 }
 
 String NGPhysicalFragment::ToString() const {
@@ -1068,10 +1032,6 @@ bool NGPhysicalFragment::DependsOnPercentageBlockSize(
     return true;
 
   return false;
-}
-
-PhysicalRect NGPhysicalFragmentWithOffset::RectInContainerBox() const {
-  return {offset_to_container_box, fragment->Size()};
 }
 
 std::ostream& operator<<(std::ostream& out,
