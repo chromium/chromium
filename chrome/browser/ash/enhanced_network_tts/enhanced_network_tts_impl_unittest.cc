@@ -87,7 +87,7 @@ class TestServerURLLoaderFactory {
           request.request_body->elements();
 
       // We only support the simplest body structure.
-      if (elements && elements->size() == 1 &&
+      if (elements && elements->size() == 1u &&
           (*elements)[0].type() ==
               network::mojom::DataElementDataView::Tag::kBytes) {
         actual_body = std::string(
@@ -224,15 +224,15 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceeds) {
                GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(audio_data, expected_output);
   // The timing data is hardcoded in |kTemplateResponse|.
-  EXPECT_EQ(timing_data.size(), 2);
+  EXPECT_EQ(timing_data.size(), 2u);
   EXPECT_EQ(timing_data[0].text, "test1");
   EXPECT_EQ(timing_data[0].time_offset, "0.01s");
   EXPECT_EQ(timing_data[0].duration, "0.14s");
-  EXPECT_EQ(timing_data[0].text_offset, 0);
+  EXPECT_EQ(timing_data[0].text_offset, 0u);
   EXPECT_EQ(timing_data[1].text, "test2");
   EXPECT_EQ(timing_data[1].time_offset, "0.16s");
   EXPECT_EQ(timing_data[1].duration, "0.17s");
-  EXPECT_EQ(timing_data[1].text_offset, 6);
+  EXPECT_EQ(timing_data[1].text_offset, 6u);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataIgnoresWhitespacesAtStart) {
@@ -272,9 +272,9 @@ TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataIgnoresWhitespacesAtStart) {
                GetTestingObserverPtr()->GetNexResponse());
   // The text offset will be compensated with whitespaces.
   EXPECT_EQ(timing_data[0].text, "test1");
-  EXPECT_EQ(timing_data[0].text_offset, 4);
+  EXPECT_EQ(timing_data[0].text_offset, 4u);
   EXPECT_EQ(timing_data[1].text, "test2");
-  EXPECT_EQ(timing_data[1].text_offset, 10);
+  EXPECT_EQ(timing_data[1].text_offset, 10u);
 }
 
 TEST_F(EnhancedNetworkTtsImplTest, GetAudioDataSucceedsWithFasterRate) {
@@ -466,8 +466,8 @@ TEST_F(EnhancedNetworkTtsImplTest, OverrideRequest) {
                &timing_data_first_request,
                GetTestingObserverPtr()->GetNexResponse());
   EXPECT_EQ(error_first_request, mojom::TtsRequestError::kRequestOverride);
-  EXPECT_EQ(timing_data_first_request.size(), 0);
-  EXPECT_EQ(audio_data_first_request.size(), 0);
+  EXPECT_EQ(timing_data_first_request.size(), 0u);
+  EXPECT_EQ(audio_data_first_request.size(), 0u);
 
   // The second request gets the data.
   absl::optional<mojom::TtsRequestError> error_second_request;

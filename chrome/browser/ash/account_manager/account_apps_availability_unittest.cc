@@ -145,13 +145,14 @@ TEST_F(AccountAppsAvailabilityTest, InitializationPrefIsPersistedOnDisk) {
   EXPECT_TRUE(account_apps_availability->IsInitialized());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
-      0,
+      0u,
       tester.GetAllSamples(AccountAppsAvailability::kNumAccountsInArcMetricName)
           .size());
-  EXPECT_EQ(0, tester
-                   .GetAllSamples(
-                       AccountAppsAvailability::kPercentAccountsInArcMetricName)
-                   .size());
+  EXPECT_EQ(0u,
+            tester
+                .GetAllSamples(
+                    AccountAppsAvailability::kPercentAccountsInArcMetricName)
+                .size());
   account_apps_availability.reset();
 
   account_apps_availability = CreateAccountAppsAvailability();
@@ -195,7 +196,7 @@ TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
   EXPECT_TRUE(account_apps_availability->IsInitialized());
 
   // Only primary account is available, secondary account was removed.
-  EXPECT_EQ(result.size(), 1ul);
+  EXPECT_EQ(result.size(), 1u);
   EXPECT_THAT(result, Contains(AccountEqual(primary_account)));
 }
 
@@ -214,7 +215,7 @@ TEST_F(AccountAppsAvailabilityTest, GetAccountsAvailableInArc) {
   // All accounts are available after initialization:
   auto accounts =
       GetAccountsAvailableInArcSync(account_apps_availability.get());
-  EXPECT_EQ(accounts.size(), 2ul);
+  EXPECT_EQ(accounts.size(), 2u);
   EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
   EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account)));
 
@@ -223,7 +224,7 @@ TEST_F(AccountAppsAvailabilityTest, GetAccountsAvailableInArc) {
                                                         false);
   auto accounts_1 =
       GetAccountsAvailableInArcSync(account_apps_availability.get());
-  EXPECT_EQ(accounts_1.size(), 1ul);
+  EXPECT_EQ(accounts_1.size(), 1u);
   EXPECT_THAT(accounts_1, Contains(AccountEqual(primary_account)));
 }
 
@@ -243,7 +244,7 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   {
     auto accounts =
         GetAccountsAvailableInArcSync(account_apps_availability.get());
-    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_EQ(accounts.size(), 2u);
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
     EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_1)));
   }
@@ -254,7 +255,7 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   {
     auto accounts =
         GetAccountsAvailableInArcSync(account_apps_availability.get());
-    EXPECT_EQ(accounts.size(), 1l);
+    EXPECT_EQ(accounts.size(), 1u);
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
   }
 
@@ -268,7 +269,7 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   {
     auto accounts =
         GetAccountsAvailableInArcSync(account_apps_availability.get());
-    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_EQ(accounts.size(), 2u);
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
     EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_2)));
   }
@@ -282,7 +283,7 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   {
     auto accounts =
         GetAccountsAvailableInArcSync(account_apps_availability.get());
-    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_EQ(accounts.size(), 2u);
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
     EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_2)));
   }
@@ -296,7 +297,7 @@ TEST_F(AccountAppsAvailabilityTest, SetIsAccountAvailableInArc) {
   {
     auto accounts =
         GetAccountsAvailableInArcSync(account_apps_availability.get());
-    EXPECT_EQ(accounts.size(), 2ul);
+    EXPECT_EQ(accounts.size(), 2u);
     EXPECT_THAT(accounts, Contains(AccountEqual(primary_account)));
     EXPECT_THAT(accounts, Contains(AccountEqual(secondary_account_1)));
   }

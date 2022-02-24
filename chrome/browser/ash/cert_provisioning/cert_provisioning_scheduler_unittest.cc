@@ -54,7 +54,7 @@ void VerifyDeleteKeysByPrefixCalledOnce(CertScope cert_scope) {
           ->GetTestInterface()
           ->delete_keys_history();
   // Use `ASSERT_EQ()` so the checks that follows don't crash.
-  ASSERT_EQ(delete_keys_history.size(), 1);
+  ASSERT_EQ(delete_keys_history.size(), 1U);
   EXPECT_EQ(delete_keys_history[0].username().empty(),
             cert_scope != CertScope::kUser);
   EXPECT_EQ(delete_keys_history[0].key_label_match(), kKeyNamePrefix);

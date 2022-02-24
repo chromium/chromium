@@ -140,7 +140,7 @@ TEST_F(GrammarManagerTest, HandlesSingleGrammarCheckResult) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments.size(), 1u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
@@ -181,7 +181,7 @@ TEST_F(GrammarManagerTest, DoesNotRunGrammarCheckOnTextFieldWithSpellcheckOff) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 0);
+  EXPECT_EQ(grammar_fragments.size(), 0u);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Grammar.Actions",
                                       0 /*GrammarAction::kUnderlined*/, 0);
 }
@@ -200,7 +200,7 @@ TEST_F(GrammarManagerTest, ChecksLastSentenceImmediately) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments.size(), 1u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
 }
@@ -219,7 +219,7 @@ TEST_F(GrammarManagerTest, ChecksBothLastAndCurrentSentence) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 2);
+  EXPECT_EQ(grammar_fragments.size(), 2u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
   EXPECT_EQ(grammar_fragments[1].range, gfx::Range(28, 33));
@@ -239,7 +239,7 @@ TEST_F(GrammarManagerTest, HandlesMultipleGrammarCheckResults) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 2);
+  EXPECT_EQ(grammar_fragments.size(), 2u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
   EXPECT_EQ(grammar_fragments[1].range, gfx::Range(15, 20));
@@ -259,7 +259,7 @@ TEST_F(GrammarManagerTest, ClearsPreviousMarkersUponGettingNewResults) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments.size(), 1u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
 
@@ -268,7 +268,7 @@ TEST_F(GrammarManagerTest, ClearsPreviousMarkersUponGettingNewResults) {
 
   auto updated_grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(updated_grammar_fragments.size(), 1);
+  EXPECT_EQ(updated_grammar_fragments.size(), 1u);
   EXPECT_EQ(updated_grammar_fragments[0].range, gfx::Range(15, 20));
   EXPECT_EQ(updated_grammar_fragments[0].suggestion, "correct");
 }
@@ -320,7 +320,7 @@ TEST_F(GrammarManagerTest, DoesntShowGrammarSuggestionWhenUndoWindowIsShown) {
 
   auto grammar_fragments =
       mock_ime_input_context_handler_.get_grammar_fragments();
-  EXPECT_EQ(grammar_fragments.size(), 1);
+  EXPECT_EQ(grammar_fragments.size(), 1u);
   EXPECT_EQ(grammar_fragments[0].range, gfx::Range(9, 14));
   EXPECT_EQ(grammar_fragments[0].suggestion, "correct");
 
@@ -395,7 +395,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
   auto deleteSurroundingTextArg =
       mock_ime_input_context_handler_.last_delete_surrounding_text_arg();
   EXPECT_EQ(deleteSurroundingTextArg.offset, 9);
-  EXPECT_EQ(deleteSurroundingTextArg.length, 5);
+  EXPECT_EQ(deleteSurroundingTextArg.length, 5u);
 
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 1);
   EXPECT_EQ(mock_ime_input_context_handler_.last_commit_text(), u"correct");
@@ -439,7 +439,7 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
   auto deleteSurroundingTextArg =
       mock_ime_input_context_handler_.last_delete_surrounding_text_arg();
   EXPECT_EQ(deleteSurroundingTextArg.offset, 9);
-  EXPECT_EQ(deleteSurroundingTextArg.length, 5);
+  EXPECT_EQ(deleteSurroundingTextArg.length, 5u);
 
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 1);
   EXPECT_EQ(mock_ime_input_context_handler_.last_commit_text(), u"correct");
@@ -461,7 +461,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
   manager.OnSurroundingTextChanged(u"There is error.", 0, 0);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
-  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 1);
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 1u);
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
@@ -487,7 +487,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
               Announce(std::u16string(kIgnoreGrammarSuggestionMessage)));
   manager.OnKeyEvent(CreateKeyEvent(ui::DomCode::ENTER));
 
-  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0);
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0u);
   EXPECT_EQ(
       mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 0);
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 0);
@@ -496,7 +496,7 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
 
   manager.OnSurroundingTextChanged(u"There is error. There is error.", 20, 20);
   task_environment_.FastForwardBy(base::Milliseconds(2500));
-  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0);
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0u);
 }
 
 }  // namespace

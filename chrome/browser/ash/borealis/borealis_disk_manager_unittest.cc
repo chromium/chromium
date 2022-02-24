@@ -35,7 +35,7 @@ namespace {
 using ::testing::_;
 using ::testing::Not;
 
-constexpr int64_t kGiB = 1024 * 1024 * 1024;
+constexpr uint64_t kGiB = 1024 * 1024 * 1024;
 
 class FreeSpaceProviderMock
     : public BorealisDiskManagerImpl::FreeSpaceProvider {
@@ -137,9 +137,9 @@ class BorealisDiskManagerTest : public testing::Test,
   }
 
   vm_tools::concierge::ListVmDisksResponse BuildValidListVmDisksResponse(
-      int64_t min_size,
-      int64_t size,
-      int64_t available_space) {
+      uint64_t min_size,
+      uint64_t size,
+      uint64_t available_space) {
     vm_tools::concierge::ListVmDisksResponse response;
     auto* image = response.add_images();
     response.set_success(true);
@@ -317,7 +317,7 @@ TEST_F(BorealisDiskManagerTest, GetDiskInfoReservesExpandableSpaceForBuffer) {
                       Described<BorealisGetDiskInfoResult>> response_or_error) {
             EXPECT_TRUE(response_or_error);
             // Buffer is undersized so 0 space is available
-            EXPECT_EQ(response_or_error.Value().available_bytes, 0);
+            EXPECT_EQ(response_or_error.Value().available_bytes, 0u);
             // 3GB of expandable space less 1GB of headroom and less 1GB (needed
             // to regenerate the buffer) leaves 1GB free.
             EXPECT_EQ(response_or_error.Value().expandable_bytes, 1 * kGiB);

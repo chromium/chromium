@@ -43,7 +43,7 @@ class CryptohomeMixinTest : public ::testing::Test {
 // has been initialized
 TEST_F(CryptohomeMixinTest, PoolUsersWhenUserDataAuthClientIsNull) {
   cryptohome_mixin_->MarkUserAsExisting(user_);
-  ASSERT_EQ(cryptohome_mixin_->pending_users_.size(), 1);
+  ASSERT_EQ(cryptohome_mixin_->pending_users_.size(), 1u);
   ASSERT_EQ(cryptohome_mixin_->pending_users_.front(),
             cryptohome::CreateAccountIdentifierFromAccountId(user_));
 }

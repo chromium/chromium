@@ -339,7 +339,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       [](std::unique_ptr<TempFileSystem> temp_file_system,
          base::OnceClosure quit_closure,
          std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
+        ASSERT_EQ(1u, entries->size());
         EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
                   entries->at(0).error);
         EXPECT_TRUE(temp_file_system->TearDown());
@@ -369,7 +369,7 @@ TEST_P(FileManagerFileAPIUtilTest,
       [](std::unique_ptr<TempFileSystem> temp_file_system,
          base::OnceClosure quit_closure,
          std::unique_ptr<EntryDefinitionList> entries) {
-        ASSERT_EQ(1, entries->size());
+        ASSERT_EQ(1u, entries->size());
         EXPECT_EQ(base::File::FILE_OK, entries->at(0).error);
         EXPECT_TRUE(temp_file_system->TearDown());
         std::move(quit_closure).Run();

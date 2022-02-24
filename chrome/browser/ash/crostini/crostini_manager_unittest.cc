@@ -1631,7 +1631,7 @@ TEST_F(CrostiniManagerRestartTest, AllObservers) {
   run_loop()->Run();
   EXPECT_EQ(2, restart_crostini_callback_count_);
   EXPECT_EQ(8, observer1_count);
-  EXPECT_EQ(5, observer2.stages.size());
+  EXPECT_EQ(5u, observer2.stages.size());
 }
 
 TEST_F(CrostiniManagerRestartTest, StartVmOnly) {

@@ -20,11 +20,11 @@ const char kHttpsScheme[] = "https://";
 }  // namespace
 
 TEST(NetworkDiagnosticsUtilTest, TestGetRandomString) {
-  int length = 8;
-  auto random_string = util::GetRandomString(length);
+  size_t kLength = 8;
+  auto random_string = util::GetRandomString(kLength);
   // Ensure that the length equals |length| and all characters are in between
   // 'a'-'z', inclusive.
-  EXPECT_EQ(length, random_string.size());
+  EXPECT_EQ(kLength, random_string.size());
   for (char const& c : random_string) {
     EXPECT_TRUE(c >= 'a' && c <= 'z');
   }

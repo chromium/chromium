@@ -36,7 +36,7 @@ class ArcSurveyServiceTest : public testing::Test {
         ArcSurveyService::GetForBrowserContextForTesting(&testing_profile_);
     arc_survey_service_->AddAllowedPackageNameForTesting(kPackageA);
     arc_survey_service_->AddAllowedPackageNameForTesting(kPackageB);
-    EXPECT_EQ(2, arc_survey_service_->GetAllowedPackagesForTesting()->size());
+    EXPECT_EQ(2u, arc_survey_service_->GetAllowedPackagesForTesting()->size());
   }
 
   void OnTaskCreated(int32_t task_id, const std::string package_name) {
@@ -82,17 +82,17 @@ TEST_F(ArcSurveyServiceTest, SingleTask) {
   EXPECT_TRUE(GetPackageNameMap()->empty());
   OnTaskCreated(1, kPackageA);
 
-  EXPECT_EQ(1, GetPackageNameMap()->size());
+  EXPECT_EQ(1u, GetPackageNameMap()->size());
   EXPECT_EQ(kPackageA, GetPackageNameMap()->find(kPackageA)->first);
   EXPECT_EQ(1, GetPackageNameMap()->find(kPackageA)->second.first);
-  EXPECT_EQ(1, getTaskIdMap()->size());
+  EXPECT_EQ(1u, getTaskIdMap()->size());
   EXPECT_EQ(1, getTaskIdMap()->find(1)->first);
   EXPECT_EQ(kPackageA, getTaskIdMap()->find(1)->second);
 
   // Destroy unrelated task
   OnTaskDestroyed(10);
-  EXPECT_EQ(1, GetPackageNameMap()->size());
-  EXPECT_EQ(1, getTaskIdMap()->size());
+  EXPECT_EQ(1u, GetPackageNameMap()->size());
+  EXPECT_EQ(1u, getTaskIdMap()->size());
 
   // Destroy original task
   OnTaskDestroyed(1);
@@ -106,12 +106,12 @@ TEST_F(ArcSurveyServiceTest, MultiPackage) {
   OnTaskCreated(1, kPackageA);
   OnTaskCreated(2, kPackageB);
 
-  EXPECT_EQ(2, GetPackageNameMap()->size());  // Verify 2 entries
+  EXPECT_EQ(2u, GetPackageNameMap()->size());  // Verify 2 entries
   EXPECT_EQ(kPackageA, GetPackageNameMap()->find(kPackageA)->first);
   EXPECT_EQ(1, GetPackageNameMap()->find(kPackageA)->second.first);
   EXPECT_EQ(kPackageB, GetPackageNameMap()->find(kPackageB)->first);
   EXPECT_EQ(1, GetPackageNameMap()->find(kPackageB)->second.first);
-  EXPECT_EQ(2, getTaskIdMap()->size());  // Verify 2 entries
+  EXPECT_EQ(2u, getTaskIdMap()->size());  // Verify 2 entries
   EXPECT_EQ(1, getTaskIdMap()->find(1)->first);
   EXPECT_EQ(kPackageA, getTaskIdMap()->find(1)->second);
   EXPECT_EQ(2, getTaskIdMap()->find(2)->first);
@@ -119,8 +119,8 @@ TEST_F(ArcSurveyServiceTest, MultiPackage) {
 
   // Destroy task w/ ID 2
   OnTaskDestroyed(2);
-  EXPECT_EQ(1, GetPackageNameMap()->size());
-  EXPECT_EQ(1, getTaskIdMap()->size());
+  EXPECT_EQ(1u, GetPackageNameMap()->size());
+  EXPECT_EQ(1u, getTaskIdMap()->size());
 
   // Destroy task w/ ID 1
   OnTaskDestroyed(1);
@@ -134,10 +134,10 @@ TEST_F(ArcSurveyServiceTest, MultiTask) {
   OnTaskCreated(1, kPackageA);
   OnTaskCreated(2, kPackageA);
 
-  EXPECT_EQ(1, GetPackageNameMap()->size());
+  EXPECT_EQ(1u, GetPackageNameMap()->size());
   EXPECT_EQ(kPackageA, GetPackageNameMap()->find(kPackageA)->first);
   EXPECT_EQ(2, GetPackageNameMap()->find(kPackageA)->second.first);
-  EXPECT_EQ(2, getTaskIdMap()->size());
+  EXPECT_EQ(2u, getTaskIdMap()->size());
   EXPECT_EQ(1, getTaskIdMap()->find(1)->first);
   EXPECT_EQ(kPackageA, getTaskIdMap()->find(1)->second);
   EXPECT_EQ(2, getTaskIdMap()->find(2)->first);
@@ -145,8 +145,8 @@ TEST_F(ArcSurveyServiceTest, MultiTask) {
 
   // Destroy task w/ ID 2
   OnTaskDestroyed(2);
-  EXPECT_EQ(1, GetPackageNameMap()->size());
-  EXPECT_EQ(1, getTaskIdMap()->size());
+  EXPECT_EQ(1u, GetPackageNameMap()->size());
+  EXPECT_EQ(1u, getTaskIdMap()->size());
 
   // Destroy task w/ ID 1
   OnTaskDestroyed(1);
@@ -195,9 +195,9 @@ TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat) {
   ASSERT_TRUE(LoadSurveyData(R"({
       "package_names":["com.android.vending","com.android.settings"],
       "elapsed_time_survey_trigger_min":200})"));
-  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(2u, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.settings"));
   EXPECT_EQ(base::Minutes(200), GetElapsedTimeSurveyTrigger());
 }
 
@@ -221,9 +221,9 @@ TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat_NoSurveyTrigger) {
   // No |elapsed_time_survey_trigger_min| key
   ASSERT_TRUE(LoadSurveyData(R"({
       "package_names":["com.android.vending","com.android.settings"]})"));
-  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(2u, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.settings"));
   EXPECT_EQ(base::Minutes(10), GetElapsedTimeSurveyTrigger());
 }
 
@@ -242,9 +242,9 @@ TEST_F(ArcSurveyServiceTest, LoadSurveyData_ValidFormat_CharSubstitution) {
          "com\{%}android\{%}vending"\{~}"com\{%}android\{%}settings"]\{~}
       "elapsed_time_survey_trigger_min"\{@}500})"));
 
-  EXPECT_EQ(2, GetAllowedPackageNameSet().size());
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.vending"));
-  EXPECT_EQ(1, GetAllowedPackageNameSet().count("com.android.settings"));
+  EXPECT_EQ(2u, GetAllowedPackageNameSet().size());
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.vending"));
+  EXPECT_EQ(1u, GetAllowedPackageNameSet().count("com.android.settings"));
   EXPECT_EQ(base::Minutes(500), GetElapsedTimeSurveyTrigger());
 }
 

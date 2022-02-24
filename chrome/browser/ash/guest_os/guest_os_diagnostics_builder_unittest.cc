@@ -53,7 +53,7 @@ TEST_F(GuestOsDiagnosticsBuilderTest, TopError) {
   }
   auto diagnostics = builder.Build();
   auto& entries = diagnostics->entries;
-  ASSERT_EQ(entries.size(), 2);
+  ASSERT_EQ(entries.size(), 2u);
 
   CheckDiagnosticEntry(entries[0], "foo", Status::kFail, "foo is wrong",
                        GURL("http://foo-is-wrong"));
@@ -75,7 +75,7 @@ TEST_F(GuestOsDiagnosticsBuilderTest, OverrideTopError) {
   }
   auto diagnostics = builder.Build();
   auto& entries = diagnostics->entries;
-  ASSERT_EQ(entries.size(), 1);
+  ASSERT_EQ(entries.size(), 1u);
 
   CheckDiagnosticEntry(entries[0], "foo", Status::kFail, "foo is wrong",
                        GURL("http://foo-is-wrong"));

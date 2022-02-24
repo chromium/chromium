@@ -112,7 +112,7 @@ TEST_F(SecureDnsManagerTest, SetModeSecure) {
   EXPECT_TRUE(it != providers.end());
   EXPECT_EQ(it->first, kGoogleDns);
   EXPECT_TRUE(it->second.empty());
-  EXPECT_EQ(providers.size(), 1);
+  EXPECT_EQ(providers.size(), 1u);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
@@ -128,7 +128,7 @@ TEST_F(SecureDnsManagerTest, SetModeSecureMultipleTemplates) {
 
   EXPECT_TRUE(providers.find(kGoogleDns) != providers.end());
   EXPECT_TRUE(providers.find(kCloudflareDns) != providers.end());
-  EXPECT_EQ(providers.size(), 2);
+  EXPECT_EQ(providers.size(), 2u);
 }
 
 TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
@@ -148,7 +148,7 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
   it = providers.find(kCloudflareDns);
   EXPECT_TRUE(it != providers.end());
   EXPECT_FALSE(it->second.empty());
-  EXPECT_EQ(providers.size(), 2);
+  EXPECT_EQ(providers.size(), 2u);
 }
 
 }  // namespace

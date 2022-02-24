@@ -485,7 +485,7 @@ TEST_F(LorgnetteScannerManagerTest, UniqueScannerNames) {
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   GetScannerNames();
   WaitForResult();
-  ASSERT_EQ(scanner_names().size(), 2ul);
+  ASSERT_EQ(scanner_names().size(), 2u);
   EXPECT_NE(scanner_names()[0], scanner_names()[1]);
 }
 
@@ -565,10 +565,10 @@ TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   WaitForResult();
   ASSERT_TRUE(scanner_capabilities());
   const auto caps = scanner_capabilities().value();
-  ASSERT_EQ(caps.resolutions_size(), 1);
+  ASSERT_EQ(caps.resolutions_size(), 1u);
   EXPECT_EQ(caps.resolutions()[0], 300u);
-  EXPECT_EQ(caps.sources_size(), 0);
-  ASSERT_EQ(caps.color_modes_size(), 1);
+  EXPECT_EQ(caps.sources_size(), 0u);
+  ASSERT_EQ(caps.color_modes_size(), 1u);
   EXPECT_EQ(caps.color_modes()[0], lorgnette::MODE_COLOR);
 }
 
@@ -577,7 +577,7 @@ TEST_F(LorgnetteScannerManagerTest, NoScannersNames) {
   lorgnette::ScanSettings settings;
   Scan(kUnknownScannerName, settings);
   WaitForResult();
-  EXPECT_EQ(scan_data().size(), 0);
+  EXPECT_EQ(scan_data().size(), 0u);
   EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
@@ -591,7 +591,7 @@ TEST_F(LorgnetteScannerManagerTest, UnknownScannerName) {
   lorgnette::ScanSettings settings;
   Scan(kUnknownScannerName, settings);
   WaitForResult();
-  EXPECT_EQ(scan_data().size(), 0);
+  EXPECT_EQ(scan_data().size(), 0u);
   EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
@@ -605,7 +605,7 @@ TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
   lorgnette::ScanSettings settings;
   Scan(scanner.display_name, settings);
   WaitForResult();
-  EXPECT_EQ(scan_data().size(), 0);
+  EXPECT_EQ(scan_data().size(), 0u);
   EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
@@ -661,7 +661,7 @@ TEST_F(LorgnetteScannerManagerTest, ScanOnePage) {
   lorgnette::ScanSettings settings;
   Scan(scanner.display_name, settings);
   WaitForResult();
-  ASSERT_EQ(scan_data().size(), 1);
+  ASSERT_EQ(scan_data().size(), 1u);
   EXPECT_EQ(scan_data()[0], "TestScanData");
   EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
 }
@@ -678,7 +678,7 @@ TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
   lorgnette::ScanSettings settings;
   Scan(scanner.display_name, settings);
   WaitForResult();
-  ASSERT_EQ(scan_data().size(), 3);
+  ASSERT_EQ(scan_data().size(), 3u);
   EXPECT_EQ(scan_data()[0], "TestPageOne");
   EXPECT_EQ(scan_data()[1], "TestPageTwo");
   EXPECT_EQ(scan_data()[2], "TestPageThree");

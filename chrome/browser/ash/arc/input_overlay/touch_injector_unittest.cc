@@ -413,7 +413,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
   injector_->ParseActions(json_value.value.value());
-  EXPECT_EQ(2, injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
 
   auto* primary_action = static_cast<input_overlay::ActionTapMouse*>(
@@ -430,8 +430,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_EQ(ui::EF_RIGHT_MOUSE_BUTTON, secondary_action->target_flags());
 
   event_generator_->MoveMouseTo(gfx::Point(300, 200));
-  EXPECT_EQ(2, event_capturer_.mouse_events().size());
-  EXPECT_EQ(0, event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.mouse_events().size());
+  EXPECT_EQ(0u, event_capturer_.touch_events().size());
   event_capturer_.Clear();
 
   // Lock mouse and check primary and secondary click.
@@ -439,7 +439,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
                                        1 /* keyboard id */);
   event_generator_->PressLeftButton();
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
-  EXPECT_EQ(1, event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   EXPECT_EQ(0, event->pointer_details().id);
@@ -448,7 +448,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
   // Mouse secondary button click.
   event_generator_->PressRightButton();
-  EXPECT_EQ(2, event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   EXPECT_EQ(1, event->pointer_details().id);
@@ -457,14 +457,14 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
 
   event_generator_->ReleaseRightButton();
-  EXPECT_EQ(3, event_capturer_.touch_events().size());
+  EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_EQ(1, event->pointer_details().id);
   EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
 
   event_generator_->ReleaseLeftButton();
-  EXPECT_EQ(4, event_capturer_.touch_events().size());
+  EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_EQ(0, event->pointer_details().id);
@@ -475,7 +475,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   base::JSONReader::ValueWithError json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
   injector_->ParseActions(json_value.value.value());
-  EXPECT_EQ(1, injector_->actions().size());
+  EXPECT_EQ(1u, injector_->actions().size());
   auto* action = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
 
@@ -569,7 +569,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
   EXPECT_FALSE(!json_value.value || !json_value.value->is_dict());
   injector_->ParseActions(json_value.value.value());
-  EXPECT_EQ(2, injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
   auto* hover_action = static_cast<input_overlay::ActionMoveMouse*>(
       injector_->actions()[0].get());
@@ -591,9 +591,9 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   // events are received as mouse events.
   event_generator_->SendMouseEnter();
   EXPECT_FALSE(hover_action->touch_id());
-  EXPECT_EQ(1, event_capturer_.mouse_events().size());
+  EXPECT_EQ(1u, event_capturer_.mouse_events().size());
   event_generator_->MoveMouseTo(gfx::Point(250, 150));
-  EXPECT_EQ(3, event_capturer_.mouse_events().size());
+  EXPECT_EQ(3u, event_capturer_.mouse_events().size());
   event_capturer_.Clear();
 
   // Lock mouse.
@@ -606,13 +606,13 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   event_generator_->MoveMouseTo(gfx::Point(300, 200), 1);
   EXPECT_TRUE(hover_action->touch_id() && *(hover_action->touch_id()) == 0);
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
-  EXPECT_EQ(1, event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   auto expect = gfx::PointF(350, 200);
   EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
   event_generator_->MoveMouseTo(gfx::Point(350, 250), 1);
-  EXPECT_EQ(2, event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_MOVED, event->type());
   expect = gfx::PointF(375, 250);
@@ -620,21 +620,21 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   // Send mouse hover move outside of window content bounds when mouse is
   // locked. The mouse event will be discarded.
   event_generator_->MoveMouseTo(gfx::Point(500, 200), 1);
-  EXPECT_EQ(2, event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
   // Send other mouse events when the mouse is locked and events will be
   // discarded.
   event_generator_->PressLeftButton();
   event_generator_->ReleaseLeftButton();
   EXPECT_TRUE(event_capturer_.mouse_events().empty());
-  EXPECT_EQ(2, event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
 
   // Unlock the mouse and the mouse events received
   // as mouse events.
   event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
                                        1 /* keyboard id */);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(3, event_capturer_.touch_events().size());
+  EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_RELEASED, event->type());
   EXPECT_FALSE(hover_action->touch_id());

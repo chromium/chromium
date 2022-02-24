@@ -60,10 +60,9 @@ class PSIMemoryMetricsTest : public testing::Test {
 
 TEST_F(PSIMemoryMetricsTest, SunnyDay1) {
   Init(10);
-  int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
-                                      sizeof(kFileContents1) - 1);
 
-  EXPECT_EQ(sizeof(kFileContents1) - 1, bytes_written);
+  ASSERT_TRUE(base::WriteFile(GetTestFileName(),
+                              {kFileContents1, sizeof(kFileContents1)}));
 
   Cit()->CollectEvents();
 
@@ -75,10 +74,8 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay1) {
 
 TEST_F(PSIMemoryMetricsTest, TestWithTimer) {
   Init(10);
-  int bytes_written = base::WriteFile(GetTestFileName(), kFileContents1,
-                                      sizeof(kFileContents1) - 1);
 
-  EXPECT_EQ(sizeof(kFileContents1) - 1, bytes_written);
+  ASSERT_TRUE(base::WriteFile(GetTestFileName(), kFileContents1));
 
   //  Repeating timer comes on.
   Cit()->Start();

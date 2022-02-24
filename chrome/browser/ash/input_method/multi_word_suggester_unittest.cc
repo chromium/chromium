@@ -368,7 +368,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForOneWord) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you going");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 2);  // ho
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 2u);  // ho
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
@@ -385,7 +385,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForManyWords) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"where are you going");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 3);  // whe
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 3u);  // whe
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
@@ -403,7 +403,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthGreedily) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"hohohohoho");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 6);  // hohoho
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 6u);  // hohoho
 }
 
 TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
@@ -420,7 +420,7 @@ TEST_F(MultiWordSuggesterTest, CalculatesConfirmedLengthForPredictions) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"is the next task");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 0);
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 0u);
 }
 
 TEST_F(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
@@ -437,7 +437,7 @@ TEST_F(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 1);  // h
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 1u);  // h
 }
 
 TEST_F(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
@@ -505,7 +505,7 @@ TEST_F(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"where are you going");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 9);  // where are
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 9u);  // where are
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -526,7 +526,7 @@ TEST_F(MultiWordSuggesterTest,
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 3);  // how
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 3u);  // how
 }
 
 TEST_F(MultiWordSuggesterTest,
@@ -547,7 +547,7 @@ TEST_F(MultiWordSuggesterTest,
 
   EXPECT_TRUE(suggestion_handler_.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler_.GetSuggestionText(), u"how are you");
-  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 10);  // how are yo
+  EXPECT_EQ(suggestion_handler_.GetConfirmedLength(), 10u);  // how are yo
 }
 
 TEST_F(MultiWordSuggesterTest,
