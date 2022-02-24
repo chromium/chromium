@@ -158,8 +158,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       const char* name,
-      Sample minimum,
-      Sample maximum,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -231,10 +229,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
 
   // |ranges| should contain the underflow and overflow buckets. See top
   // comments for example.
-  Histogram(const char* name,
-            Sample minimum,
-            Sample maximum,
-            const BucketRanges* ranges);
+  Histogram(const char* name, const BucketRanges* ranges);
 
   // Traditionally, histograms allocate their own memory for the bucket
   // vector but "shared" histograms use memory regions allocated from a
@@ -243,8 +238,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // of this object. Practically, this memory is never released until the
   // process exits and the OS cleans it up.
   Histogram(const char* name,
-            Sample minimum,
-            Sample maximum,
             const BucketRanges* ranges,
             const DelayedPersistentAllocation& counts,
             const DelayedPersistentAllocation& logged_counts,
@@ -339,8 +332,6 @@ class BASE_EXPORT LinearHistogram : public Histogram {
   // Create a histogram using data in persistent storage.
   static std::unique_ptr<HistogramBase> PersistentCreate(
       const char* name,
-      Sample minimum,
-      Sample maximum,
       const BucketRanges* ranges,
       const DelayedPersistentAllocation& counts,
       const DelayedPersistentAllocation& logged_counts,
@@ -375,14 +366,9 @@ class BASE_EXPORT LinearHistogram : public Histogram {
  protected:
   class Factory;
 
-  LinearHistogram(const char* name,
-                  Sample minimum,
-                  Sample maximum,
-                  const BucketRanges* ranges);
+  LinearHistogram(const char* name, const BucketRanges* ranges);
 
   LinearHistogram(const char* name,
-                  Sample minimum,
-                  Sample maximum,
                   const BucketRanges* ranges,
                   const DelayedPersistentAllocation& counts,
                   const DelayedPersistentAllocation& logged_counts,

@@ -553,6 +553,10 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
       ranges_data, histogram_ranges_checksum, histogram_bucket_count + 1);
   if (!created_ranges)
     return nullptr;
+  DCHECK_EQ(created_ranges->size(), histogram_bucket_count + 1);
+  DCHECK_EQ(created_ranges->range(1), histogram_minimum);
+  DCHECK_EQ(created_ranges->range(histogram_bucket_count - 1),
+            histogram_maximum);
   const BucketRanges* ranges =
       StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
           created_ranges.release());
@@ -590,16 +594,16 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
   std::unique_ptr<HistogramBase> histogram;
   switch (histogram_type) {
     case HISTOGRAM:
-      histogram = Histogram::PersistentCreate(
-          name, histogram_minimum, histogram_maximum, ranges, counts_data,
-          logged_data, &histogram_data_ptr->samples_metadata,
-          &histogram_data_ptr->logged_metadata);
+      histogram =
+          Histogram::PersistentCreate(name, ranges, counts_data, logged_data,
+                                      &histogram_data_ptr->samples_metadata,
+                                      &histogram_data_ptr->logged_metadata);
       DCHECK(histogram);
       break;
     case LINEAR_HISTOGRAM:
       histogram = LinearHistogram::PersistentCreate(
-          name, histogram_minimum, histogram_maximum, ranges, counts_data,
-          logged_data, &histogram_data_ptr->samples_metadata,
+          name, ranges, counts_data, logged_data,
+          &histogram_data_ptr->samples_metadata,
           &histogram_data_ptr->logged_metadata);
       DCHECK(histogram);
       break;

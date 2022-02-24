@@ -137,8 +137,7 @@ class Histogram::Factory {
   // Allocate the correct Histogram object off the heap (in case persistent
   // memory is not available).
   virtual std::unique_ptr<HistogramBase> HeapAlloc(const BucketRanges* ranges) {
-    return WrapUnique(
-        new Histogram(GetPermanentName(name_), minimum_, maximum_, ranges));
+    return WrapUnique(new Histogram(GetPermanentName(name_), ranges));
   }
 
   // Perform any required datafill on the just-created histogram.  If
@@ -315,15 +314,13 @@ HistogramBase* Histogram::FactoryMicrosecondsTimeGet(const char* name,
 
 std::unique_ptr<HistogramBase> Histogram::PersistentCreate(
     const char* name,
-    Sample minimum,
-    Sample maximum,
     const BucketRanges* ranges,
     const DelayedPersistentAllocation& counts,
     const DelayedPersistentAllocation& logged_counts,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta) {
-  return WrapUnique(new Histogram(name, minimum, maximum, ranges, counts,
-                                  logged_counts, meta, logged_meta));
+  return WrapUnique(
+      new Histogram(name, ranges, counts, logged_counts, meta, logged_meta));
 }
 
 // Calculate what range of values are held in each bucket.
@@ -591,13 +588,9 @@ void Histogram::SerializeInfoImpl(Pickle* pickle) const {
   pickle->WriteUInt32(bucket_ranges()->checksum());
 }
 
-// TODO(bcwhite): Remove minimum/maximum parameters from here and call chain.
-Histogram::Histogram(const char* name,
-                     Sample minimum,
-                     Sample maximum,
-                     const BucketRanges* ranges)
+Histogram::Histogram(const char* name, const BucketRanges* ranges)
     : HistogramBase(name) {
-  DCHECK(ranges) << name << ": " << minimum << "-" << maximum;
+  DCHECK(ranges) << name;
   unlogged_samples_ =
       std::make_unique<SampleVector>(HashMetricName(name), ranges);
   logged_samples_ =
@@ -605,15 +598,13 @@ Histogram::Histogram(const char* name,
 }
 
 Histogram::Histogram(const char* name,
-                     Sample minimum,
-                     Sample maximum,
                      const BucketRanges* ranges,
                      const DelayedPersistentAllocation& counts,
                      const DelayedPersistentAllocation& logged_counts,
                      HistogramSamples::Metadata* meta,
                      HistogramSamples::Metadata* logged_meta)
     : HistogramBase(name) {
-  DCHECK(ranges) << name << ": " << minimum << "-" << maximum;
+  DCHECK(ranges) << name;
   unlogged_samples_ = std::make_unique<PersistentSampleVector>(
       HashMetricName(name), ranges, meta, counts);
   logged_samples_ = std::make_unique<PersistentSampleVector>(
@@ -708,8 +699,7 @@ class LinearHistogram::Factory : public Histogram::Factory {
 
   std::unique_ptr<HistogramBase> HeapAlloc(
       const BucketRanges* ranges) override {
-    return WrapUnique(new LinearHistogram(GetPermanentName(name_), minimum_,
-                                          maximum_, ranges));
+    return WrapUnique(new LinearHistogram(GetPermanentName(name_), ranges));
   }
 
   void FillHistogram(HistogramBase* base_histogram) override {
@@ -775,15 +765,13 @@ HistogramBase* LinearHistogram::FactoryTimeGet(const char* name,
 
 std::unique_ptr<HistogramBase> LinearHistogram::PersistentCreate(
     const char* name,
-    Sample minimum,
-    Sample maximum,
     const BucketRanges* ranges,
     const DelayedPersistentAllocation& counts,
     const DelayedPersistentAllocation& logged_counts,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta) {
-  return WrapUnique(new LinearHistogram(name, minimum, maximum, ranges, counts,
-                                        logged_counts, meta, logged_meta));
+  return WrapUnique(new LinearHistogram(name, ranges, counts, logged_counts,
+                                        meta, logged_meta));
 }
 
 HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
@@ -821,29 +809,17 @@ HistogramType LinearHistogram::GetHistogramType() const {
   return LINEAR_HISTOGRAM;
 }
 
-LinearHistogram::LinearHistogram(const char* name,
-                                 Sample minimum,
-                                 Sample maximum,
-                                 const BucketRanges* ranges)
-    : Histogram(name, minimum, maximum, ranges) {}
+LinearHistogram::LinearHistogram(const char* name, const BucketRanges* ranges)
+    : Histogram(name, ranges) {}
 
 LinearHistogram::LinearHistogram(
     const char* name,
-    Sample minimum,
-    Sample maximum,
     const BucketRanges* ranges,
     const DelayedPersistentAllocation& counts,
     const DelayedPersistentAllocation& logged_counts,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta)
-    : Histogram(name,
-                minimum,
-                maximum,
-                ranges,
-                counts,
-                logged_counts,
-                meta,
-                logged_meta) {}
+    : Histogram(name, ranges, counts, logged_counts, meta, logged_meta) {}
 
 const std::string LinearHistogram::GetAsciiBucketRange(uint32_t i) const {
   int range = ranges(i);
@@ -1036,7 +1012,7 @@ HistogramType BooleanHistogram::GetHistogramType() const {
 }
 
 BooleanHistogram::BooleanHistogram(const char* name, const BucketRanges* ranges)
-    : LinearHistogram(name, 1, 2, ranges) {}
+    : LinearHistogram(name, ranges) {}
 
 BooleanHistogram::BooleanHistogram(
     const char* name,
@@ -1045,14 +1021,7 @@ BooleanHistogram::BooleanHistogram(
     const DelayedPersistentAllocation& logged_counts,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta)
-    : LinearHistogram(name,
-                      1,
-                      2,
-                      ranges,
-                      counts,
-                      logged_counts,
-                      meta,
-                      logged_meta) {}
+    : LinearHistogram(name, ranges, counts, logged_counts, meta, logged_meta) {}
 
 HistogramBase* BooleanHistogram::DeserializeInfoImpl(PickleIterator* iter) {
   std::string histogram_name;
@@ -1167,10 +1136,7 @@ std::vector<Sample> CustomHistogram::ArrayToCustomEnumRanges(
 }
 
 CustomHistogram::CustomHistogram(const char* name, const BucketRanges* ranges)
-    : Histogram(name,
-                ranges->range(1),
-                ranges->range(ranges->bucket_count() - 1),
-                ranges) {}
+    : Histogram(name, ranges) {}
 
 CustomHistogram::CustomHistogram(
     const char* name,
@@ -1179,14 +1145,7 @@ CustomHistogram::CustomHistogram(
     const DelayedPersistentAllocation& logged_counts,
     HistogramSamples::Metadata* meta,
     HistogramSamples::Metadata* logged_meta)
-    : Histogram(name,
-                ranges->range(1),
-                ranges->range(ranges->bucket_count() - 1),
-                ranges,
-                counts,
-                logged_counts,
-                meta,
-                logged_meta) {}
+    : Histogram(name, ranges, counts, logged_counts, meta, logged_meta) {}
 
 void CustomHistogram::SerializeInfoImpl(Pickle* pickle) const {
   Histogram::SerializeInfoImpl(pickle);
