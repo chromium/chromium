@@ -1353,8 +1353,14 @@ bool TabStripModel::IsContextMenuCommandEnabled(
       return false;
     }
 
-    case CommandToggleSiteMuted:
-      return true;
+    case CommandToggleSiteMuted: {
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      for (int index : indices) {
+        if (!GetWebContentsAt(index)->GetLastCommittedURL().is_empty())
+          return true;
+      }
+      return false;
+    }
 
     case CommandTogglePinned:
       return true;
@@ -2443,6 +2449,12 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
   for (int tab_index : indices) {
     content::WebContents* web_contents = GetWebContentsAt(tab_index);
     GURL url = web_contents->GetLastCommittedURL();
+
+    // `GetLastCommittedURL` could return an empty URL if no navigation has
+    // occurred yet.
+    if (url.is_empty())
+      continue;
+
     if (url.SchemeIs(content::kChromeUIScheme)) {
       // chrome:// URLs don't have content settings but can be muted, so just
       // mute the WebContents.
