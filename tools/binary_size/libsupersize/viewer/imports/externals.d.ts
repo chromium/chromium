@@ -14,12 +14,12 @@ declare namespace gapi {
 
   declare namespace auth2 {
     function getAuthInstance(): any;
-  };
+  }
 
   declare namespace client {
     function init(Object): any;
-  };
-};
+  }
+}
 
 // Emscripten definitions.
 declare namespace Module {
@@ -29,4 +29,4 @@ declare namespace Module {
   function _free(number): any;
 
   let HEAPU8: Uint8Array;
-};
+}

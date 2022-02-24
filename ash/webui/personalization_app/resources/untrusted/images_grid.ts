@@ -6,7 +6,7 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
 
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {assertNotReached} from '//resources/js/assert.m.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Events, EventType, ImageTile} from '../common/constants.js';

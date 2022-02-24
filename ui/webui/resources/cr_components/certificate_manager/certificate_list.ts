@@ -17,8 +17,8 @@ import {assertNotReached} from '../../js/assert.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
-import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
-import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
+import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
 const CertificateListElementBase = I18nMixin(PolymerElement);
 

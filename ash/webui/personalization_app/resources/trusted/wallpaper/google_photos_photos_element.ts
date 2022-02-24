@@ -10,7 +10,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './styles.js';
 import '../../common/styles.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

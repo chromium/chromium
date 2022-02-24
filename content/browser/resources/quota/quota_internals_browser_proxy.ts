@@ -4,7 +4,7 @@
 
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {QuotaInternalsHandler, QuotaInternalsHandlerRemote} from './quota_internals.mojom-webui.js';
+import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 type GetDiskAvailabilityResult = {
   totalSpace: bigint, availableSpace: bigint;

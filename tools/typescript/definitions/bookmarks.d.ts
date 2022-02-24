@@ -77,8 +77,8 @@ declare global {
       export function removeTree(id: string, callback?: () => void): void;
       function _import(callback?: () => void): void;
       function _export(callback?: () => void): void;
-      export { _import as import }
-      export { _export as export }
+      export { _import as import };
+      export { _export as export };
 
       export const onCreated:
           ChromeEvent<(id: string, bookmark: BookmarkTreeNode) => void>;

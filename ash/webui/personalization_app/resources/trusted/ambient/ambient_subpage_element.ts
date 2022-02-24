@@ -11,7 +11,6 @@ import 'chrome://personalization/trusted/ambient/toggle_row_element.js';
 import 'chrome://personalization/trusted/ambient/topic_source_list_element.js';
 import 'chrome://personalization/trusted/ambient/ambient_weather_element.js';
 
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
@@ -21,7 +20,6 @@ import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {ToggleRow} from './toggle_row_element.js';
-import {TopicSourceList} from './topic_source_list_element.js';
 
 export class AmbientSubpage extends WithPersonalizationStore {
   static get is() {

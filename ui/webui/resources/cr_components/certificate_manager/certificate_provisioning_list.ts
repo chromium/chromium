@@ -17,7 +17,7 @@ import {focusWithoutInk} from '../../js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 
-import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
+import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
 const CertificateProvisioningListElementBase =

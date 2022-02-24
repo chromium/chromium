@@ -5,7 +5,7 @@ import { Button as MwcButton } from '@material/mwc-button';
 import { css, customElement, property, query, CSSResult, CSSResultArray } from 'lit-element';
 
 function linearGradientOf(color : CSSResult) : CSSResult {
-  return css`linear-gradient(${color}, ${color})`
+  return css`linear-gradient(${color}, ${color})`;
 }
 
 /**

@@ -18,7 +18,7 @@ import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_me
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
-import {CertificateProvisioningActionEventDetail, CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
+import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 
 export interface CertificateProvisioningEntryElement {

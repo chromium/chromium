@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.m.js';
 import * as constants from '../common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from '../common/utils.js';
+import {isNullOrArray, isNullOrNumber} from '../common/utils.js';
 
 /**
  * @fileoverview Helper functions for communicating between trusted and

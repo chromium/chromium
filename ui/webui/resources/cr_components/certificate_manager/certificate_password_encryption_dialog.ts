@@ -18,7 +18,7 @@ import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
-import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl} from './certificates_browser_proxy.js';
 
 export interface CertificatePasswordEncryptionDialogElement {
   $: {
@@ -42,7 +42,6 @@ export class CertificatePasswordEncryptionDialogElement extends
 
   static get properties() {
     return {
-      /** @type {!CertificateSubnode} */
       model: Object,
 
       password_: {

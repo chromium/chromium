@@ -15,9 +15,9 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
+import {isSelectionEvent} from '../../common/utils.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
-import {PersonalizationStore, WithPersonalizationStore} from '../personalization_store.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto} from '../utils.js';
 
 import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';

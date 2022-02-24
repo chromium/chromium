@@ -25,7 +25,7 @@ import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 
-import {CertificateAction, CertificateActionEvent, CertificatesErrorEventDetail} from './certificate_manager_types.js';
+import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
 import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
 const CertificateManagerElementBase =
