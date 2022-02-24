@@ -24,7 +24,6 @@
  * DAMAGE.
  */
 
-
 function initializeColorSuggestionPicker() {
   new ColorSuggestionPicker(main, global.params);
 }
@@ -50,199 +49,176 @@ function handleArgumentsTimeout() {
   initialize(args);
 }
 
-function ColorSuggestionPicker(element, config) {
-  Picker.call(this, element, config);
-  this._config = config;
-  if (this._config.values.length === 0)
-    this._config.values = DefaultColorPalette;
-  this._container = null;
-  this._layout();
-  document.body.addEventListener('keydown', this._handleKeyDown.bind(this));
-  this._element.addEventListener('mousemove', this._handleMouseMove.bind(this));
-  this._element.addEventListener('mousedown', this._handleMouseDown.bind(this));
-}
-ColorSuggestionPicker.prototype = Object.create(Picker.prototype);
+class ColorSuggestionPicker extends Picker {
+  constructor(element, config) {
+    super(element, config);
+    if (this._config.values.length === 0)
+      this._config.values = DefaultColorPalette;
+    this._container = null;
+    this._layout();
+    document.body.addEventListener('keydown', this._handleKeyDown.bind(this));
+    this._element.addEventListener(
+        'mousemove', this._handleMouseMove.bind(this));
+    this._element.addEventListener(
+        'mousedown', this._handleMouseDown.bind(this));
+  }
 
-Object.defineProperty(ColorSuggestionPicker, '_ColorSwatchWidth', {
-  get: function() {
+  get _ColorSwatchWidth() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-width')
                       .replace('px', ''));
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, '_ColorSwatchHeight', {
-  get: function() {
+  get _ColorSwatchHeight() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-height')
                       .replace('px', ''));
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, '_ColorSwatchPadding', {
-  get: function() {
+  get _ColorSwatchPadding() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-padding')
                       .replace('px', ''));
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, '_ColorSwatchBorderWidth', {
-  get: function() {
+  get _ColorSwatchBorderWidth() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-border-width')
                       .replace('px', ''));
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, '_ColorSwatchMargin', {
-  get: function() {
+  get _ColorSwatchMargin() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--color-swatch-margin')
                       .replace('px', ''));
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, 'SwatchBorderBoxWidth', {
-  get: function() {
-    return ColorSuggestionPicker._ColorSwatchWidth +
-        (ColorSuggestionPicker._ColorSwatchPadding * 2) +
-        (ColorSuggestionPicker._ColorSwatchBorderWidth * 2) +
-        (ColorSuggestionPicker._ColorSwatchMargin * 2);
+  get SwatchBorderBoxWidth() {
+    return (
+        this._ColorSwatchWidth + this._ColorSwatchPadding * 2 +
+        this._ColorSwatchBorderWidth * 2 + this._ColorSwatchMargin * 2);
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, 'SwatchBorderBoxHeight', {
-  get: function() {
-    return ColorSuggestionPicker._ColorSwatchHeight +
-        (ColorSuggestionPicker._ColorSwatchPadding * 2) +
-        (ColorSuggestionPicker._ColorSwatchBorderWidth * 2) +
-        (ColorSuggestionPicker._ColorSwatchMargin * 2);
+  get SwatchBorderBoxHeight() {
+    return (
+        this._ColorSwatchHeight + this._ColorSwatchPadding * 2 +
+        this._ColorSwatchBorderWidth * 2 + this._ColorSwatchMargin * 2);
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, 'SwatchesPerRow', {
-  get: function() {
+  get SwatchesPerRow() {
     return 5;
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, 'SwatchesMaxRow', {
-  get: function() {
+  get SwatchesMaxRow() {
     return 3;
   }
-});
 
-Object.defineProperty(ColorSuggestionPicker, 'ScrollbarWidth', {
-  get: function() {
+  get ScrollbarWidth() {
     return Number(window.getComputedStyle(document.body)
                       .getPropertyValue('--scrollbar-width')
                       .replace('px', ''));
   }
-});
 
-ColorSuggestionPicker.prototype._layout = function() {
-  var container = createElement('div', 'color-swatch-container');
-  container.addEventListener(
-      'click', this._handleSwatchClick.bind(this), false);
-  for (var i = 0; i < this._config.values.length; ++i) {
-    var swatch = createElement('button', 'color-swatch');
-    swatch.dataset.index = i;
-    swatch.dataset.value = this._config.values[i];
-    swatch.title = this._config.values[i];
-    swatch.style.backgroundColor = this._config.values[i];
-    container.appendChild(swatch);
-  }
-  var containerWidth = ColorSuggestionPicker.SwatchBorderBoxWidth *
-      ColorSuggestionPicker.SwatchesPerRow;
-  if (this._config.values.length > (ColorSuggestionPicker.SwatchesPerRow *
-                                    ColorSuggestionPicker.SwatchesMaxRow))
-    containerWidth += ColorSuggestionPicker.ScrollbarWidth;
-  container.style.width = containerWidth + 'px';
-  container.style.maxHeight = (ColorSuggestionPicker.SwatchBorderBoxHeight *
-                               ColorSuggestionPicker.SwatchesMaxRow) +
-      'px';
-  this._element.appendChild(container);
-  var otherButton =
-      createElement('button', 'other-color', this._config.otherColorLabel);
-  otherButton.addEventListener(
-      'click', this._onOtherButtonClick.bind(this), false);
-  this._element.appendChild(otherButton);
-  this._container = container;
-  this._otherButton = otherButton;
-  var elementWidth = this._element.offsetWidth;
-  var elementHeight = this._element.offsetHeight;
-  resizeWindow(elementWidth, elementHeight);
-};
-
-ColorSuggestionPicker.prototype._onOtherButtonClick = function() {
-  var main = $('main');
-  main.innerHTML = '';
-  main.classList.remove('color-suggestion-picker-main');
-  main.classList.add('color-picker-main');
-  // Replace document.body with a deep clone to drop all event listeners.
-  var oldBody = document.body;
-  var newBody = oldBody.cloneNode(true);
-  oldBody.parentElement.replaceChild(newBody, oldBody);
-  initializeColorPicker();
-};
-
-ColorSuggestionPicker.prototype.selectColorAtIndex = function(index) {
-  index = Math.max(Math.min(this._container.childNodes.length - 1, index), 0);
-  this._container.childNodes[index].focus();
-};
-
-ColorSuggestionPicker.prototype._handleMouseMove = function(event) {
-  if (event.target.classList.contains('color-swatch'))
-    event.target.focus();
-};
-
-ColorSuggestionPicker.prototype._handleMouseDown = function(event) {
-  // Prevent blur.
-  if (event.target.classList.contains('color-swatch'))
-    event.preventDefault();
-};
-
-ColorSuggestionPicker.prototype._handleKeyDown = function(event) {
-  var key = event.key;
-  if (key === 'Escape')
-    this.handleCancel();
-  else if (
-      key == 'ArrowLeft' || key == 'ArrowUp' || key == 'ArrowRight' ||
-      key == 'ArrowDown') {
-    var selectedElement = document.activeElement;
-    var index = 0;
-    if (selectedElement.classList.contains('other-color')) {
-      if (key != 'ArrowRight' && key != 'ArrowUp')
-        return;
-      index = this._container.childNodes.length - 1;
-    } else if (selectedElement.classList.contains('color-swatch')) {
-      index = parseInt(selectedElement.dataset.index, 10);
-      switch (key) {
-        case 'ArrowLeft':
-          index--;
-          break;
-        case 'ArrowRight':
-          index++;
-          break;
-        case 'ArrowUp':
-          index -= ColorSuggestionPicker.SwatchesPerRow;
-          break;
-        case 'ArrowDown':
-          index += ColorSuggestionPicker.SwatchesPerRow;
-          break;
-      }
-      if (index > this._container.childNodes.length - 1) {
-        this._otherButton.focus();
-        return;
-      }
+  _layout() {
+    var container = createElement('div', 'color-swatch-container');
+    container.addEventListener(
+        'click', this._handleSwatchClick.bind(this), false);
+    for (var i = 0; i < this._config.values.length; ++i) {
+      var swatch = createElement('button', 'color-swatch');
+      swatch.dataset.index = i;
+      swatch.dataset.value = this._config.values[i];
+      swatch.title = this._config.values[i];
+      swatch.style.backgroundColor = this._config.values[i];
+      container.appendChild(swatch);
     }
-    this.selectColorAtIndex(index);
+    var containerWidth = this.SwatchBorderBoxWidth * this.SwatchesPerRow;
+    if (this._config.values.length > this.SwatchesPerRow * this.SwatchesMaxRow)
+      containerWidth += this.ScrollbarWidth;
+    container.style.width = containerWidth + 'px';
+    container.style.maxHeight =
+        this.SwatchBorderBoxHeight * this.SwatchesMaxRow + 'px';
+    this._element.appendChild(container);
+    var otherButton =
+        createElement('button', 'other-color', this._config.otherColorLabel);
+    otherButton.addEventListener(
+        'click', this._onOtherButtonClick.bind(this), false);
+    this._element.appendChild(otherButton);
+    this._container = container;
+    this._otherButton = otherButton;
+    var elementWidth = this._element.offsetWidth;
+    var elementHeight = this._element.offsetHeight;
+    resizeWindow(elementWidth, elementHeight);
   }
-  event.preventDefault();
-};
 
-ColorSuggestionPicker.prototype._handleSwatchClick = function(event) {
-  if (event.target.classList.contains('color-swatch'))
-    this.submitValue(event.target.dataset.value);
-};
+  _onOtherButtonClick() {
+    var main = $('main');
+    main.innerHTML = '';
+    main.classList.remove('color-suggestion-picker-main');
+    main.classList.add('color-picker-main');
+    // Replace document.body with a deep clone to drop all event listeners.
+    var oldBody = document.body;
+    var newBody = oldBody.cloneNode(true);
+    oldBody.parentElement.replaceChild(newBody, oldBody);
+    initializeColorPicker();
+  }
+
+  selectColorAtIndex(index) {
+    index = Math.max(Math.min(this._container.childNodes.length - 1, index), 0);
+    this._container.childNodes[index].focus();
+  }
+
+  _handleMouseMove(event) {
+    if (event.target.classList.contains('color-swatch'))
+      event.target.focus();
+  }
+
+  _handleMouseDown(event) {
+    // Prevent blur.
+    if (event.target.classList.contains('color-swatch'))
+      event.preventDefault();
+  }
+
+  _handleKeyDown(event) {
+    var key = event.key;
+    if (key === 'Escape')
+      this.handleCancel();
+    else if (
+        key == 'ArrowLeft' || key == 'ArrowUp' || key == 'ArrowRight' ||
+        key == 'ArrowDown') {
+      var selectedElement = document.activeElement;
+      var index = 0;
+      if (selectedElement.classList.contains('other-color')) {
+        if (key != 'ArrowRight' && key != 'ArrowUp')
+          return;
+        index = this._container.childNodes.length - 1;
+      } else if (selectedElement.classList.contains('color-swatch')) {
+        index = parseInt(selectedElement.dataset.index, 10);
+        switch (key) {
+          case 'ArrowLeft':
+            index--;
+            break;
+          case 'ArrowRight':
+            index++;
+            break;
+          case 'ArrowUp':
+            index -= this.SwatchesPerRow;
+            break;
+          case 'ArrowDown':
+            index += this.SwatchesPerRow;
+            break;
+        }
+        if (index > this._container.childNodes.length - 1) {
+          this._otherButton.focus();
+          return;
+        }
+      }
+      this.selectColorAtIndex(index);
+    }
+    event.preventDefault();
+  }
+
+  _handleSwatchClick(event) {
+    if (event.target.classList.contains('color-swatch'))
+      this.submitValue(event.target.dataset.value);
+  }
+}
