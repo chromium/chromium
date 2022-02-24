@@ -42,6 +42,12 @@ const char kEncodeBinary[] = "encode-binary";
 const char kDisableAutoWPTOriginIsolation[] =
     "disable-auto-wpt-origin-isolation";
 
+// Forces each web test to be run in a new BrowsingInstance. Required for origin
+// isolation web tests where the BrowsingInstance retains state from origin
+// isolation requests, but this flag may benefit other web tests.
+const char kResetBrowsingInstanceBetweenTests[] =
+    "reset-browsing-instance-between-tests";
+
 // This makes us disable some web-platform runtime features so that we test
 // content_shell as if it was a stable release. It is only followed when
 // kRunWebTest is set. For the features' level, see

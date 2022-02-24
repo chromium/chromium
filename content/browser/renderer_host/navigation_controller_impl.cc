@@ -3766,6 +3766,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.impression, params.is_pdf);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
+  navigation_request->set_force_new_browsing_instance(
+      params.force_new_browsing_instance);
   return navigation_request;
 }
 

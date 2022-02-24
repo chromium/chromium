@@ -1798,6 +1798,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     bool was_server_redirect,
     bool cross_origin_opener_policy_mismatch,
     bool should_replace_current_entry,
+    bool force_new_browsing_instance,
     std::string* reason) {
   // On renderer-initiated navigations, when the frame initiating the navigation
   // and the frame being navigated differ, |source_instance| is set to the
@@ -1854,12 +1855,15 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   SiteInstanceImpl* current_instance_impl =
       static_cast<SiteInstanceImpl*>(current_instance);
   ShouldSwapBrowsingInstance should_swap_result =
-      ShouldSwapBrowsingInstancesForNavigation(
-          current_effective_url, current_is_view_source_mode, source_instance,
-          current_instance_impl, dest_instance, dest_url_info,
-          dest_is_view_source_mode, transition, is_failure, is_reload,
-          is_same_document, cross_origin_opener_policy_mismatch,
-          was_server_redirect, should_replace_current_entry);
+      force_new_browsing_instance
+          ? ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap
+          : ShouldSwapBrowsingInstancesForNavigation(
+                current_effective_url, current_is_view_source_mode,
+                source_instance, current_instance_impl, dest_instance,
+                dest_url_info, dest_is_view_source_mode, transition, is_failure,
+                is_reload, is_same_document,
+                cross_origin_opener_policy_mismatch, was_server_redirect,
+                should_replace_current_entry);
 
   TraceShouldSwapBrowsingInstanceResult(frame_tree_node_->frame_tree_node_id(),
                                         should_swap_result);
@@ -3078,7 +3082,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       request->GetRestoreType() == RestoreType::kRestored,
       request->commit_params().is_view_source, request->WasServerRedirect(),
       request->coop_status().require_browsing_instance_swap(),
-      request->common_params().should_replace_current_entry, reason);
+      request->common_params().should_replace_current_entry,
+      request->force_new_browsing_instance(), reason);
 
   TRACE_EVENT_INSTANT(
       "navigation",

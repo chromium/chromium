@@ -23,6 +23,7 @@ extern const char kEncodeBinary[];
 extern const char kStableReleaseMode[];
 extern const char kDisableHeadlessMode[];
 extern const char kDisableAutoWPTOriginIsolation[];
+extern const char kResetBrowsingInstanceBetweenTests[];
 
 #if BUILDFLAG(IS_WIN)
 extern const char kRegisterFontFiles[];

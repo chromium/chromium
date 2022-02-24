@@ -518,7 +518,8 @@
       "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
       "external/wpt/app-history/navigate-event/cross-window"
     ],
-    "args": ["--disable-auto-wpt-origin-isolation"]
+    "args": ["--disable-auto-wpt-origin-isolation",
+             "--reset-browsing-instance-between-tests"]
   },
   {
     "prefix": "focusless-spat-nav",

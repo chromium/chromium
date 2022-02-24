@@ -679,6 +679,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool was_server_redirect,
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
+      bool force_new_browsing_instance,
       std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given

@@ -21052,6 +21052,32 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerInitialNavigationEntryBrowserTest,
   EXPECT_EQ(url, new_controller.GetLastCommittedEntry()->GetURL());
 }
 
+// A test to verify that a navigation with |force_new_browsing_instance| set to
+// true results in a new BrowsingInstance, even if it's to a URL compatible with
+// the original SiteInstance.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ResetForTestForcesNewBrowsingInstance) {
+  GURL test_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  SiteInstance* initial_site_instance = contents()->GetSiteInstance();
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  DisableProactiveBrowsingInstanceSwapFor(root->current_frame_host());
+
+  TestNavigationObserver navigation_observer(contents());
+  NavigationController::LoadURLParams params(test_url);
+  params.force_new_browsing_instance = true;
+  contents()->GetController().LoadURLWithParams(params);
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+
+  SiteInstance* post_reset_site_instance = contents()->GetSiteInstance();
+  EXPECT_NE(initial_site_instance, post_reset_site_instance);
+  EXPECT_FALSE(
+      post_reset_site_instance->IsRelatedSiteInstance(initial_site_instance));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
