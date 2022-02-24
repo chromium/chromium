@@ -192,7 +192,7 @@ void MirrorWindowController::UpdateWindow(
       AshWindowTreeHostInitParams init_params;
       init_params.initial_bounds = display_info.bounds_in_native();
       init_params.display_id = display_info.id();
-      init_params.mirroring_delegate = this;
+      init_params.delegate = this;
       init_params.mirroring_unified = display_manager->IsInUnifiedMode();
       init_params.device_scale_factor = display_info.device_scale_factor();
       MirroringHostInfo* host_info = new MirroringHostInfo;
@@ -367,7 +367,7 @@ display::Display MirrorWindowController::GetDisplayForRootWindow(
     if (pair.second->ash_host->AsWindowTreeHost()->window() == root) {
       // Sanity check to catch an error early.
       const int64_t id = pair.first;
-      const display::Display* display = GetMirroringDisplayById(id);
+      const display::Display* display = GetDisplayById(id);
       DCHECK(display);
       if (display)
         return *display;
@@ -390,7 +390,7 @@ aura::Window::Windows MirrorWindowController::GetAllRootWindows() const {
   return root_windows;
 }
 
-const display::Display* MirrorWindowController::GetMirroringDisplayById(
+const display::Display* MirrorWindowController::GetDisplayById(
     int64_t display_id) const {
   const display::Displays& list =
       Shell::Get()->display_manager()->software_mirroring_display_list();

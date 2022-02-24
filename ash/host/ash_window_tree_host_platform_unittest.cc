@@ -4,8 +4,8 @@
 
 #include "ash/host/ash_window_tree_host_platform.h"
 
+#include "ash/host/ash_window_tree_host_delegate.h"
 #include "ash/test/ash_test_base.h"
-
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/input_controller.h"
@@ -13,15 +13,13 @@
 
 namespace ash {
 
-class AshWindowTreeHostPlatformTest : public AshTestBase {
- public:
-  AshWindowTreeHostPlatformTest() = default;
-  ~AshWindowTreeHostPlatformTest() override = default;
-};
+namespace {
 
 class TestInputController : public ui::InputController {
  public:
   TestInputController() = default;
+  TestInputController(const TestInputController&) = delete;
+  TestInputController& operator=(const TestInputController&) = delete;
   ~TestInputController() override = default;
 
   // InputController:
@@ -107,8 +105,34 @@ class TestInputController : public ui::InputController {
   bool acceleration_suspended_ = false;
 };
 
+class FakeAshWindowTreeHostDelegate : public AshWindowTreeHostDelegate {
+ public:
+  FakeAshWindowTreeHostDelegate() = default;
+  FakeAshWindowTreeHostDelegate(const FakeAshWindowTreeHostDelegate&) = delete;
+  FakeAshWindowTreeHostDelegate& operator=(
+      const FakeAshWindowTreeHostDelegate&) = delete;
+  ~FakeAshWindowTreeHostDelegate() override = default;
+
+  const display::Display* GetDisplayById(int64_t display_id) const override {
+    return nullptr;
+  }
+  void SetCurrentEventTargeterSourceHost(aura::WindowTreeHost*) override {}
+};
+
+}  // namespace
+
+class AshWindowTreeHostPlatformTest : public AshTestBase {
+ public:
+  AshWindowTreeHostPlatformTest() = default;
+  AshWindowTreeHostPlatformTest(const AshWindowTreeHostPlatformTest&) = delete;
+  AshWindowTreeHostPlatformTest& operator=(
+      const AshWindowTreeHostPlatformTest&) = delete;
+  ~AshWindowTreeHostPlatformTest() override = default;
+};
+
 TEST_F(AshWindowTreeHostPlatformTest, UnadjustedMovement) {
-  AshWindowTreeHostPlatform host;
+  FakeAshWindowTreeHostDelegate fake_delegate;
+  AshWindowTreeHostPlatform host(&fake_delegate);
   auto test_input_controller = std::make_unique<TestInputController>();
   host.input_controller_ = test_input_controller.get();
 

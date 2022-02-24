@@ -8,5 +8,9 @@ include_rules = [
 specific_include_rules = {
   "ash_window_tree_host_platform_unittest.cc" : [
     "+ash/test/ash_test_base.h",
-  ]
+  ],
+  "ash_window_tree_host_unified_unittest.cc" : [
+    "+ash/display/mirror_window_test_api.h",
+    "+ash/test/ash_test_base.h",
+  ],
 }

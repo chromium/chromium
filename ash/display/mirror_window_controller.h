@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/host/ash_window_tree_host_mirroring_delegate.h"
+#include "ash/host/ash_window_tree_host_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/manager/display_manager.h"
@@ -37,9 +37,8 @@ class MirrorWindowTestApi;
 // An object that copies the content of the primary root window to a
 // mirror window. This also draws a mouse cursor as the mouse cursor
 // is typically drawn by the window system.
-class ASH_EXPORT MirrorWindowController
-    : public aura::WindowTreeHostObserver,
-      public AshWindowTreeHostMirroringDelegate {
+class ASH_EXPORT MirrorWindowController : public aura::WindowTreeHostObserver,
+                                          public AshWindowTreeHostDelegate {
  public:
   MirrorWindowController();
 
@@ -72,9 +71,8 @@ class ASH_EXPORT MirrorWindowController
   // Returns all root windows hosting mirroring displays.
   aura::Window::Windows GetAllRootWindows() const;
 
-  // AshWindowTreeHostMirroringDelegate:
-  const display::Display* GetMirroringDisplayById(
-      int64_t display_id) const override;
+  // AshWindowTreeHostDelegate:
+  const display::Display* GetDisplayById(int64_t display_id) const override;
   void SetCurrentEventTargeterSourceHost(
       aura::WindowTreeHost* targeter_src_host) override;
 

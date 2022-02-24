@@ -19,6 +19,8 @@ struct PlatformWindowInitProperties;
 }
 
 namespace ash {
+class AshWindowTreeHostDelegate;
+
 class ExtendedMouseWarpControllerTest;
 class AshWindowTreeHostPlatformTest;
 
@@ -26,8 +28,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
     : public AshWindowTreeHost,
       public aura::WindowTreeHostPlatform {
  public:
-  explicit AshWindowTreeHostPlatform(
-      ui::PlatformWindowInitProperties properties);
+  AshWindowTreeHostPlatform(ui::PlatformWindowInitProperties properties,
+                            AshWindowTreeHostDelegate* delegate);
 
   AshWindowTreeHostPlatform(const AshWindowTreeHostPlatform&) = delete;
   AshWindowTreeHostPlatform& operator=(const AshWindowTreeHostPlatform&) =
@@ -42,7 +44,7 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   friend AshWindowTreeHostPlatformTest;
   FRIEND_TEST_ALL_PREFIXES(AshWindowTreeHostPlatformTest, UnadjustedMovement);
 
-  AshWindowTreeHostPlatform();
+  explicit AshWindowTreeHostPlatform(AshWindowTreeHostDelegate* delegate);
 
   // AshWindowTreeHost:
   void ConfineCursorToRootWindow() override;
@@ -53,8 +55,7 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   gfx::Insets GetHostInsets() const override;
   aura::WindowTreeHost* AsWindowTreeHost() override;
   void PrepareForShutdown() override;
-  void SetCursorConfig(const display::Display& display,
-                       display::Display::Rotation rotation) override;
+  void UpdateCursorConfig() override;
   void ClearCursorConfig() override;
 
   // aura::WindowTreeHostPlatform:
@@ -69,6 +70,8 @@ class ASH_EXPORT AshWindowTreeHostPlatform
   std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
   RequestUnadjustedMovement() override;
 
+  AshWindowTreeHostDelegate* delegate_ = nullptr;  // Not owned.
+
  private:
   // All constructors call into this.
   void CommonInit();
@@ -78,7 +81,7 @@ class ASH_EXPORT AshWindowTreeHostPlatform
 
   TransformerHelper transformer_helper_;
 
-  ui::InputController* input_controller_;
+  ui::InputController* input_controller_ = nullptr;
 
   gfx::Rect last_cursor_confine_bounds_in_pixels_;
 };

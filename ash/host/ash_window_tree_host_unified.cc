@@ -8,7 +8,7 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/host/ash_window_tree_host_mirroring_delegate.h"
+#include "ash/host/ash_window_tree_host_delegate.h"
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -26,7 +26,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
  public:
   UnifiedEventTargeter(aura::Window* src_root,
                        aura::Window* dst_root,
-                       AshWindowTreeHostMirroringDelegate* delegate)
+                       AshWindowTreeHostDelegate* delegate)
       : src_root_(src_root), dst_root_(dst_root), delegate_(delegate) {
     DCHECK(delegate);
   }
@@ -60,14 +60,13 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
  private:
   aura::Window* src_root_;
   aura::Window* dst_root_;
-  AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
+  AshWindowTreeHostDelegate* delegate_;  // Not owned.
 };
 
 AshWindowTreeHostUnified::AshWindowTreeHostUnified(
     const gfx::Rect& initial_bounds,
-    AshWindowTreeHostMirroringDelegate* delegate)
-    : AshWindowTreeHostPlatform(), delegate_(delegate) {
-  DCHECK(delegate);
+    AshWindowTreeHostDelegate* delegate)
+    : AshWindowTreeHostPlatform(delegate) {
   std::unique_ptr<ui::PlatformWindow> window(new ui::StubWindow(this));
   window->SetBounds(initial_bounds);
   SetPlatformWindow(std::move(window));
@@ -92,7 +91,17 @@ void AshWindowTreeHostUnified::RegisterMirroringHost(
       std::make_unique<UnifiedEventTargeter>(src_root, window(), delegate_));
   DCHECK(!base::Contains(mirroring_hosts_, mirroring_ash_host));
   mirroring_hosts_.push_back(mirroring_ash_host);
-  mirroring_ash_host->AsWindowTreeHost()->window()->AddObserver(this);
+  src_root->AddObserver(this);
+  mirroring_ash_host->UpdateCursorConfig();
+}
+
+// Do nothing, since mirroring hosts had their cursor config updated when they
+// were registered.
+void AshWindowTreeHostUnified::UpdateCursorConfig() {}
+
+void AshWindowTreeHostUnified::ClearCursorConfig() {
+  for (auto* host : mirroring_hosts_)
+    host->ClearCursorConfig();
 }
 
 void AshWindowTreeHostUnified::SetCursorNative(gfx::NativeCursor cursor) {

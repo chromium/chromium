@@ -70,16 +70,17 @@ std::unique_ptr<AshWindowTreeHost> AshWindowTreeHost::Create(
   if (init_params.mirroring_unified) {
     return std::make_unique<AshWindowTreeHostMirroringUnified>(
         init_params.initial_bounds, init_params.display_id,
-        init_params.mirroring_delegate);
+        init_params.delegate);
   }
   if (init_params.offscreen) {
     return std::make_unique<AshWindowTreeHostUnified>(
-        init_params.initial_bounds, init_params.mirroring_delegate);
+        init_params.initial_bounds, init_params.delegate);
   }
   return std::make_unique<AshWindowTreeHostPlatform>(
       ui::PlatformWindowInitProperties{
           init_params.initial_bounds,
-          features::IsCompositingBasedThrottlingEnabled()});
+          features::IsCompositingBasedThrottlingEnabled()},
+      init_params.delegate);
 }
 
 }  // namespace ash

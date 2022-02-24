@@ -4,7 +4,7 @@
 
 #include "ash/host/ash_window_tree_host_mirroring_unified.h"
 
-#include "ash/host/ash_window_tree_host_mirroring_delegate.h"
+#include "ash/host/ash_window_tree_host_delegate.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -15,11 +15,11 @@ namespace ash {
 AshWindowTreeHostMirroringUnified::AshWindowTreeHostMirroringUnified(
     const gfx::Rect& initial_bounds,
     int64_t mirroring_display_id,
-    AshWindowTreeHostMirroringDelegate* delegate)
+    AshWindowTreeHostDelegate* delegate)
     : AshWindowTreeHostPlatform(
-          ui::PlatformWindowInitProperties{initial_bounds}),
-      mirroring_display_id_(mirroring_display_id),
-      delegate_(delegate) {
+          ui::PlatformWindowInitProperties{initial_bounds},
+          delegate),
+      mirroring_display_id_(mirroring_display_id) {
   DCHECK(delegate_);
 }
 
@@ -32,8 +32,7 @@ AshWindowTreeHostMirroringUnified::GetRootTransformForLocalEventCoordinates()
   gfx::Transform trans = GetRootTransform();
 
   if (!is_shutting_down_) {
-    const auto* display =
-        delegate_->GetMirroringDisplayById(mirroring_display_id_);
+    const auto* display = delegate_->GetDisplayById(mirroring_display_id_);
     DCHECK(display);
     // Undo the translation in the root window transform, since this transform
     // should be applied on local points to this host.

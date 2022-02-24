@@ -30,6 +30,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -85,10 +86,9 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
   const display::Display::Rotation effective_rotation =
       display.panel_rotation();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
-  ash_host->SetCursorConfig(display, effective_rotation);
-  std::unique_ptr<RootWindowTransformer> transformer(
+  ash_host->UpdateCursorConfig();
+  ash_host->SetRootWindowTransformer(
       CreateRootWindowTransformerForDisplay(display));
-  ash_host->SetRootWindowTransformer(std::move(transformer));
 
   host->SetDisplayTransformHint(
       display::DisplayRotationToOverlayTransform(effective_rotation));
@@ -859,6 +859,18 @@ ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(
   return root_window->GetHost()->DispatchKeyEventPostIME(event);
 }
 
+const display::Display* WindowTreeHostManager::GetDisplayById(
+    int64_t display_id) const {
+  const display::Display& display =
+      GetDisplayManager()->GetDisplayForId(display_id);
+  return display.id() == display::kInvalidDisplayId ? nullptr : &display;
+}
+
+void WindowTreeHostManager::SetCurrentEventTargeterSourceHost(
+    aura::WindowTreeHost* targeter_src_host) {
+  NOTIMPLEMENTED();
+}
+
 AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
     const display::Display& display,
     const AshWindowTreeHostInitParams& init_params) {
@@ -869,7 +881,9 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   params_with_bounds.initial_bounds = display_info.bounds_in_native();
   if (display.id() == display::kUnifiedDisplayId) {
     params_with_bounds.offscreen = true;
-    params_with_bounds.mirroring_delegate = mirror_window_controller();
+    params_with_bounds.delegate = mirror_window_controller();
+  } else {
+    params_with_bounds.delegate = this;
   }
   params_with_bounds.display_id = display.id();
   params_with_bounds.device_scale_factor = display.device_scale_factor();

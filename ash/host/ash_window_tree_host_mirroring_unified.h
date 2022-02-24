@@ -9,17 +9,16 @@
 
 namespace ash {
 
-class AshWindowTreeHostMirroringDelegate;
+class AshWindowTreeHostDelegate;
 
 // A window tree host for the mirroing displays that constitute the unified
 // desktop. This correctly handles coordinates conversion from DIP to pixels and
 // vice versa.
 class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
  public:
-  AshWindowTreeHostMirroringUnified(
-      const gfx::Rect& initial_bounds,
-      int64_t mirroring_display_id,
-      AshWindowTreeHostMirroringDelegate* delegate);
+  AshWindowTreeHostMirroringUnified(const gfx::Rect& initial_bounds,
+                                    int64_t mirroring_display_id,
+                                    AshWindowTreeHostDelegate* delegate);
 
   AshWindowTreeHostMirroringUnified(const AshWindowTreeHostMirroringUnified&) =
       delete;
@@ -41,8 +40,6 @@ class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
 
  private:
   int64_t mirroring_display_id_;
-
-  AshWindowTreeHostMirroringDelegate* delegate_;  // Not owned.
 
   bool is_shutting_down_ = false;
 };
