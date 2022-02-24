@@ -1110,7 +1110,9 @@ void DeleteSelectionCommand::CalculateTypingStyleAfterDelete() {
     typing_style_ = delete_into_blockquote_style_;
   delete_into_blockquote_style_ = nullptr;
 
-  typing_style_->PrepareToApplyAt(ending_position_);
+  // |editing_position_| can be null. See http://crbug.com/1299189
+  if (ending_position_.IsNotNull())
+    typing_style_->PrepareToApplyAt(ending_position_);
   if (typing_style_->IsEmpty())
     typing_style_ = nullptr;
   // This is where we've deleted all traces of a style but not a whole paragraph

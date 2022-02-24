@@ -1275,6 +1275,7 @@ void EditingStyle::PrepareToApplyAt(
     ShouldPreserveWritingDirection should_preserve_writing_direction) {
   if (!mutable_style_)
     return;
+  DCHECK(position.IsNotNull());
 
   // ReplaceSelectionCommand::handleStyleSpans() requires that this function
   // only removes the editing style. If this function was modified in the future

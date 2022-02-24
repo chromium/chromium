@@ -102,6 +102,30 @@ TEST_F(DeleteSelectionCommandTest, ForwardDeleteWithFirstLetter) {
   EXPECT_EQ("<p contenteditable>a|c</p>", GetSelectionTextFromBody());
 }
 
+// http://crbug.com/1299189
+TEST_F(DeleteSelectionCommandTest, DeleteOptionElement) {
+  Selection().SetSelection(
+      SetSelectionTextToBody("<p contenteditable>"
+                             "^<option></option>|"
+                             "<select><option>A</option></select>"
+                             "</p>"),
+      SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::Builder()
+                             .SetMergeBlocksAfterDelete(true)
+                             .SetSanitizeMarkup(true)
+                             .Build());
+  EXPECT_TRUE(command.Apply()) << "the delete command should have succeeded";
+  EXPECT_EQ(
+      "<p contenteditable>"
+      "^<option><select><option>A</option></select><br></option>|"
+      "</p>",
+      GetSelectionTextFromBody())
+      << "Not sure why we get this.";
+}
+
 // This is a regression test for https://crbug.com/1172439
 TEST_F(DeleteSelectionCommandTest, DeleteWithEditabilityChange) {
   Selection().SetSelection(
