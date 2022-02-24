@@ -360,7 +360,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" units="Boolean"
     expires_after="2022-06-30">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
     Records the whether the &quot;Close all tabs&quot; action was taken when

@@ -16912,7 +16912,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileCloseAllTabsDialog.Cancelled">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <description>
     Recorded when user cancelled closing all tabs with the cancel button.
@@ -16921,7 +16920,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileCloseAllTabsDialog.CancelledWithTouchOutside">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <description>
     Recorded when user cancelled closing all tabs by tapping outside the dialog.
@@ -16930,7 +16928,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileCloseAllTabsDialog.ClosedAllTabs">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <description>
     Recorded when user closed all tabs from the close all tabs dialog.

@@ -1805,7 +1805,6 @@ chromium-metrics-reviews@google.com.
     units="MB" expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <summary>
     A rough estimate of the private memory footprint of the paint preview
     compositor process.
@@ -1826,7 +1825,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-01-10">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <summary>
     An amount of private memory of the paint preview compositor process placed
     in swap (VmSwap).
@@ -1840,7 +1838,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <summary>
     The size of the resident memory in a paint preview compositor process. This
     is influenced by factors we control (e.g. memory that is not accessed can be
@@ -1864,7 +1861,6 @@ chromium-metrics-reviews@google.com.
     units="MB" expires_after="2023-01-10">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <summary>
     A rough estimate of the shared memory footprint of the paint preview
     compositor process.

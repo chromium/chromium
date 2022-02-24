@@ -135,7 +135,6 @@ chromium-metrics-reviews@google.com.
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     The time from Chrome tabbed activity creation to the moment the Chrome first
@@ -190,7 +189,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.Android.Cold.TimeToVisibleContent" units="ms"
     expires_after="2022-08-07">
-  <owner>yashard@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
     Android: The time from the activity creation point to the moment the content

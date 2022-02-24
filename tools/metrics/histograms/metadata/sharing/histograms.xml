@@ -370,7 +370,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
     expires_after="2022-07-03">
-  <owner>yashard@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
@@ -383,7 +382,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.ScrollCapture.SuccessfulCaptureDuration" units="ms"
     expires_after="2022-07-03">
-  <owner>yashard@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>src/components/paint_preview/OWNERS</owner>
   <summary>
