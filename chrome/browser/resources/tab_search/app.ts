@@ -36,6 +36,15 @@ import {TitleItem} from './title_item.js';
 // height. Includes a half row that hints to the user the capability to scroll.
 const MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT: number = 5.5;
 
+/**
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ */
+export enum TabSwitchAction {
+  WITHOUT_SEARCH = 0,
+  WITH_SEARCH = 1,
+}
+
 export interface TabSearchAppElement {
   $: {
     searchField: TabSearchSearchField,
@@ -125,6 +134,8 @@ export class TabSearchAppElement extends PolymerElement {
   private openTabsTitleItem_: TitleItem;
   private recentlyClosedTitleItem_: TitleItem;
   private filteredOpenTabsCount_: number = 0;
+  private filteredMediaTabsCount_: number = 0;
+  private initiallySelectedTabIndex_: number = NO_SELECTION;
   private visibilityChangedListener_: () => void;
 
   constructor() {
@@ -345,6 +356,39 @@ export class TabSearchAppElement extends PolymerElement {
     this.tabItemAction_(tabItem, e.model.index);
   }
 
+  private recordMetricsForAction(
+      action: string, isMediaTab: boolean, tabIndex: number,
+      indexRelativeToSection: number,
+      distanceFromInitiallySelectedIndex: number) {
+    const withSearch = !!this.searchText_;
+    if (action === 'SwitchTab') {
+      chrome.metricsPrivate.recordEnumerationValue(
+          'Tabs.TabSearch.WebUI.TabSwitchAction',
+          withSearch ? TabSwitchAction.WITH_SEARCH :
+                       TabSwitchAction.WITHOUT_SEARCH,
+          Object.keys(TabSwitchAction).length);
+    }
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ? `Tabs.TabSearch.WebUI.IndexOf${action}InFilteredList` :
+                     `Tabs.TabSearch.WebUI.IndexOf${action}InUnfilteredList`,
+        tabIndex);
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ? `Tabs.TabSearch.DistanceOf${
+                         action}FromInitiallySelectedTabInFilteredList` :
+                     `Tabs.TabSearch.DistanceOf${
+                         action}FromInitiallySelectedTabInUnfilteredList`,
+        distanceFromInitiallySelectedIndex);
+    if (isMediaTab) {
+      chrome.metricsPrivate.recordBoolean(
+          `Tabs.TabSearch.WebUI.MediaTab${action}Action`, withSearch);
+    } else if (!withSearch) {
+      chrome.metricsPrivate.recordSmallCount(
+          `Tabs.TabSearch.WebUI.IndexRelativeToOpenTabsSectionOf${
+              action}InUnfilteredList`,
+          indexRelativeToSection);
+    }
+  }
+
   /**
    * Trigger the click/press action associated with the given Tab item type.
    */
@@ -353,9 +397,13 @@ export class TabSearchAppElement extends PolymerElement {
     let action;
     switch (itemData.type) {
       case TabItemType.OPEN_TAB:
-        this.apiProxy_.switchToTab(
-            {tabId: (itemData as TabData).tab.tabId}, !!this.searchText_,
-            tabHasMediaAlerts((itemData as TabData).tab as Tab), tabIndex);
+        const isMediaTab = tabHasMediaAlerts((itemData as TabData).tab as Tab);
+        const tabIndexRelativeToSection =
+            isMediaTab ? tabIndex : tabIndex - this.filteredMediaTabsCount_;
+        this.recordMetricsForAction(
+            'SwitchTab', isMediaTab, tabIndex, tabIndexRelativeToSection,
+            Math.abs(this.initiallySelectedTabIndex_ - tabIndex));
+        this.apiProxy_.switchToTab({tabId: (itemData as TabData).tab.tabId});
         action = 'SwitchTab';
         break;
       case TabItemType.RECENTLY_CLOSED_TAB:
@@ -382,9 +430,14 @@ export class TabSearchAppElement extends PolymerElement {
   private onItemClose_(e: DomRepeatEvent<TabData>) {
     performance.mark('tab_search:close_tab:metric_begin');
     const tabId = e.model.item.tab.tabId;
-    this.apiProxy_.closeTab(
-        tabId, !!this.searchText_, tabHasMediaAlerts((e.model.item.tab as Tab)),
-        e.model.index);
+    const tabIndex = e.model.index;
+    const isMediaTab = tabHasMediaAlerts(e.model.item.tab as Tab);
+    const tabIndexRelativeToSection =
+        isMediaTab ? tabIndex : tabIndex - this.filteredMediaTabsCount_;
+    this.recordMetricsForAction(
+        'CloseTab', isMediaTab, tabIndex, tabIndexRelativeToSection,
+        Math.abs(this.initiallySelectedTabIndex_ - tabIndex));
+    this.apiProxy_.closeTab(tabId);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('tab_search:close_tab:metric_end');
@@ -573,9 +626,8 @@ export class TabSearchAppElement extends PolymerElement {
     // The MRU tab that is not the active tab is either the first tab in the
     // Audio and Video section (if it exists) or the first tab in the Open Tabs
     // section.
-    let initiallySelectedTabIndex = NO_SELECTION;
     if (filteredOpenTabs.length > 0) {
-      initiallySelectedTabIndex =
+      this.initiallySelectedTabIndex_ =
           tabHasMediaAlerts(filteredOpenTabs[0]!.tab! as Tab) ?
           0 :
           filteredMediaTabs.length;
@@ -589,6 +641,8 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.filteredOpenTabsCount_ =
         filteredOpenTabs.length + filteredMediaTabs.length;
+
+    this.filteredMediaTabsCount_ = filteredMediaTabs.length;
 
     const recentlyClosedItems: Array<TabData|TabGroupData> =
         [...this.recentlyClosedTabs_, ...this.recentlyClosedTabGroups_];
@@ -654,7 +708,7 @@ export class TabSearchAppElement extends PolymerElement {
     const tabsList = this.$.tabsList;
     let selectedIndex = this.getSelectedIndex();
     if (selectedIndex === NO_SELECTION) {
-      selectedIndex = initiallySelectedTabIndex;
+      selectedIndex = this.initiallySelectedTabIndex_;
     }
     tabsList.selected =
         Math.min(Math.max(selectedIndex, 0), this.selectableItemCount_() - 1);

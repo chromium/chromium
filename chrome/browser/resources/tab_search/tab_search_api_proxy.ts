@@ -13,28 +13,15 @@ export enum RecentlyClosedItemOpenAction {
   WITH_SEARCH = 1,
 }
 
-/**
- * These values are persisted to logs and should not be renumbered or re-used.
- * See tools/metrics/histograms/enums.xml.
- */
-export enum TabSwitchAction {
-  WITHOUT_SEARCH = 0,
-  WITH_SEARCH = 1,
-}
-
 export interface TabSearchApiProxy {
-  closeTab(
-      tabId: number, withSearch: boolean, isMediaTab: boolean,
-      closedTabIndex: number): void;
+  closeTab(tabId: number): void;
 
   getProfileData(): Promise<{profileData: ProfileData}>;
 
   openRecentlyClosedEntry(
       id: number, withSearch: boolean, isTab: boolean, index: number): void;
 
-  switchToTab(
-      info: SwitchToTabInfo, withSearch: boolean, isMediaTab: boolean,
-      switchedTabIndex: number): void;
+  switchToTab(info: SwitchToTabInfo): void;
 
   getCallbackRouter(): PageCallbackRouter;
 
@@ -54,17 +41,7 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  closeTab(
-      tabId: number, withSearch: boolean, isMediaTab: boolean,
-      closedTabIndex: number) {
-    chrome.metricsPrivate.recordSmallCount(
-        withSearch ? 'Tabs.TabSearch.WebUI.IndexOfCloseTabInFilteredList' :
-                     'Tabs.TabSearch.WebUI.IndexOfCloseTabInUnfilteredList',
-        closedTabIndex);
-    if (isMediaTab) {
-      chrome.metricsPrivate.recordBoolean(
-          'Tabs.TabSearch.WebUI.CloseMediaTabAction', withSearch);
-    }
+  closeTab(tabId: number) {
     this.handler.closeTab(tabId);
   }
 
@@ -88,23 +65,7 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.openRecentlyClosedEntry(id);
   }
 
-  switchToTab(
-      info: SwitchToTabInfo, withSearch: boolean, isMediaTab: boolean,
-      switchedTabIndex: number) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'Tabs.TabSearch.WebUI.TabSwitchAction',
-        withSearch ? TabSwitchAction.WITH_SEARCH :
-                     TabSwitchAction.WITHOUT_SEARCH,
-        Object.keys(TabSwitchAction).length);
-    chrome.metricsPrivate.recordSmallCount(
-        withSearch ? 'Tabs.TabSearch.WebUI.IndexOfSwitchTabInFilteredList' :
-                     'Tabs.TabSearch.WebUI.IndexOfSwitchTabInUnfilteredList',
-        switchedTabIndex);
-    if (isMediaTab) {
-      chrome.metricsPrivate.recordBoolean(
-          'Tabs.TabSearch.WebUI.SwitchToMediaTabAction', withSearch);
-    }
-
+  switchToTab(info: SwitchToTabInfo) {
     this.handler.switchToTab(info);
   }
 
