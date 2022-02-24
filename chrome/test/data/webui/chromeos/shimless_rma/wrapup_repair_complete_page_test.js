@@ -114,6 +114,25 @@ export function wrapupRepairCompletePageTest() {
     assertEquals(1, callCount);
   });
 
+  test('CanCutOffBattery', async () => {
+    const resolver = new PromiseResolver();
+    await initializeRepairCompletePage();
+    let callCount = 0;
+    service.endRmaAndCutoffBattery = () => {
+      callCount++;
+      return resolver.promise;
+    };
+    await flushTasks();
+
+    const cutButton = component.shadowRoot.querySelector('#batteryCutButton');
+    cutButton.disabled = false;
+
+    await clickButton('#batteryCutButton');
+    await flushTasks();
+
+    assertEquals(1, callCount);
+  });
+
   test('OpensRmaLogDialog', async () => {
     await initializeRepairCompletePage();
     await clickButton('#rmaLogButton');

@@ -124,7 +124,18 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
-  onBatteryCutButtonClick_() {}
+  onBatteryCutButtonClick_() {
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.endRmaAndCutoffBattery();
+          })
+        },
+        ));
+  }
 
   /** @protected */
   onCancelClick_() {
