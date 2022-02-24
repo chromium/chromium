@@ -702,11 +702,10 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID);
     }
 
-    /** @return Whether the user has consented to reporting usage metrics and crash dumps. */
+    /** @return Whether metrics and crash dumps are enabled. */
     private static boolean isUMAEnabled() {
         return sForceUmaEnabledForTesting
-                || PrivacyPreferencesManagerImpl.getInstance()
-                           .isUsageAndCrashReportingPermittedByUser();
+                || PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
     }
 
     /** @return Whether survey is enabled by command line flag. */

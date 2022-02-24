@@ -243,7 +243,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * CrashReportingPermissionManager.isUsageAndCrashReportingPermittedByUser().
+     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class TestCrashSamplingMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -321,7 +321,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * CrashReportingPermissionManager.isUsageAndCrashReportingPermittedByUser().
+     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class WebViewUserConsentMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -337,17 +337,17 @@ public class MinidumpUploadJobTest {
             return new MockCrashReportingPermissionManager() {
                 {
                     // This setup ensures we depend on
-                    // isUsageAndCrashReportingPermittedByUser().
+                    // isUsageAndCrashReportingPermitted().
                     mIsInSample = true;
                     mIsNetworkAvailable = true;
                     mIsEnabledForTests = false;
                 }
                 @Override
-                public boolean isUsageAndCrashReportingPermittedByUser() {
+                public boolean isUsageAndCrashReportingPermitted() {
                     // Ensure that we use the real implementation of
-                    // isUsageAndCrashReportingPermittedByUser.
+                    // isUsageAndCrashReportingPermitted.
                     boolean userPermitted =
-                            realPermissionManager.isUsageAndCrashReportingPermittedByUser();
+                            realPermissionManager.isUsageAndCrashReportingPermitted();
                     Assert.assertEquals(mUserConsent, userPermitted);
                     return userPermitted;
                 }

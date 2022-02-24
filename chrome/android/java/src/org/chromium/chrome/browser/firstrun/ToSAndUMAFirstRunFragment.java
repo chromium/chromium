@@ -184,7 +184,8 @@ public class ToSAndUMAFirstRunFragment
         final boolean hasChildAccount = getPageDelegate().getProperties().getBoolean(
                 SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, false);
         final boolean isMetricsReportingDisabledByPolicy = !isWaitingForNativeAndPolicyInit()
-                && PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingDisabledByPolicy();
+                && !PrivacyPreferencesManagerImpl.getInstance()
+                            .isUsageAndCrashReportingPermittedByPolicy();
 
         updateTosText(umaDialogMayBeShown, hasChildAccount, isMetricsReportingDisabledByPolicy);
 
@@ -350,8 +351,8 @@ public class ToSAndUMAFirstRunFragment
     private boolean getUmaCheckBoxInitialState() {
         // Metrics and crash reporting could not be permitted by policy.
         if (!isWaitingForNativeAndPolicyInit()
-                && PrivacyPreferencesManagerImpl.getInstance()
-                           .isMetricsReportingDisabledByPolicy()) {
+                && !PrivacyPreferencesManagerImpl.getInstance()
+                            .isUsageAndCrashReportingPermittedByPolicy()) {
             return false;
         }
 
@@ -396,8 +397,8 @@ public class ToSAndUMAFirstRunFragment
         return !FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()
                 && (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild())
                 && (isWaitingForNativeAndPolicyInit()
-                        || !PrivacyPreferencesManagerImpl.getInstance()
-                                    .isMetricsReportingDisabledByPolicy());
+                        || PrivacyPreferencesManagerImpl.getInstance()
+                                   .isUsageAndCrashReportingPermittedByPolicy());
     }
 
     @VisibleForTesting

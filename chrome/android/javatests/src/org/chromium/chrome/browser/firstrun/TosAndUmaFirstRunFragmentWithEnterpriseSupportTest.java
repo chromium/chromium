@@ -630,8 +630,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
         // Initialize policies.
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
+        Mockito.when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
         setPolicyServiceMockInitializedWithDialogEnabled(true);
         setAppRestrictionsMockInitialized(true);
@@ -658,8 +658,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
         // Initialize policies.
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
+        Mockito.when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
         setPolicyServiceMockInitializedWithDialogEnabled(true);
         setAppRestrictionsMockInitialized(true);
@@ -689,8 +689,8 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         TestThreadUtils.runOnUiThreadBlocking(tosAndUmaFragment::clearFocus);
 
         // Initialize policies.
-        Mockito.when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy())
-                .thenReturn(true);
+        Mockito.when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
         setPolicyServiceMockInitializedWithDialogEnabled(true);
         setAppRestrictionsMockInitialized(true);

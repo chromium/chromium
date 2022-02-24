@@ -653,8 +653,7 @@ public class FirstRunIntegrationTest {
 
         waitForActivity(CustomTabActivity.class);
         Assert.assertFalse("Usage and crash reporting pref was set to true after skip",
-                PrivacyPreferencesManagerImpl.getInstance()
-                        .isUsageAndCrashReportingPermittedByUser());
+                PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted());
         Assert.assertTrue(
                 "FRE should be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
     }

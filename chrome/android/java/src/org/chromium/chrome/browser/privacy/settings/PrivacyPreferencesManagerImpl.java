@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -78,7 +79,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         // Skip if native browser process is not yet fully initialized.
         if (!BrowserStartupController.getInstance().isNativeStarted()) return;
 
-        setMetricsReportingEnabled(isUsageAndCrashReportingPermittedByUser());
+        setMetricsReportingEnabled(isUsageAndCrashReportingPermitted());
     }
 
     @Override
@@ -104,7 +105,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public boolean isUsageAndCrashReportingPermittedByPolicy() {
         // Skip if native browser process is not yet fully initialized.
-        if (!BrowserStartupController.getInstance().isNativeStarted()) {
+        if (!LibraryLoader.getInstance().isInitialized()) {
             return true;
         }
 
@@ -124,7 +125,7 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public boolean isMetricsUploadPermitted() {
         return isNetworkAvailable()
-                && (isUsageAndCrashReportingPermittedByUser() || isUploadEnabledForTests());
+                && (isUsageAndCrashReportingPermitted() || isUploadEnabledForTests());
     }
 
     @Override

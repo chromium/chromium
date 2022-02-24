@@ -131,7 +131,7 @@ public class MinidumpUploadJobImplTest {
             }
         });
         MinidumpUploadJob minidumpUploadJob = createCallableListMinidumpUploadJob(
-                callables, permManager.isUsageAndCrashReportingPermittedByUser());
+                callables, permManager.isUsageAndCrashReportingPermitted());
 
         File firstFile = createMinidumpFileInCrashDir("firstFile.dmp0.try0");
         File secondFile = createMinidumpFileInCrashDir("secondFile.dmp0.try0");

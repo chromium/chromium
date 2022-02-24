@@ -90,7 +90,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                             .isSigninDisabledByPolicy();
         mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
 
-        if (mPrivacyPreferencesManager.isMetricsReportingDisabledByPolicy()) {
+        if (!mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy()) {
             // If metrics reporting is disabled by policy then there is at least one policy.
             // Therefore, policies have loaded and frePolicy is not null.
             assert hasPolicies;

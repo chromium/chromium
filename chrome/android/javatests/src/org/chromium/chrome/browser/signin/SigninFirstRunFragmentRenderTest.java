@@ -306,7 +306,8 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWhenMetricsReportingIsDisabledByPolicy(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
@@ -323,7 +324,8 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithAccount(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
@@ -345,7 +347,8 @@ public class SigninFirstRunFragmentRenderTest {
     public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithChildAccount(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
-        when(mPrivacyPreferencesManagerMock.isMetricsReportingDisabledByPolicy()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
 
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
 
