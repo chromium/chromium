@@ -1,0 +1,41 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FAKE_FOOTPRINTS_FETCHER_H_
+#define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FAKE_FOOTPRINTS_FETCHER_H_
+
+#include "ash/quick_pair/proto/fastpair.pb.h"
+#include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace ash {
+namespace quick_pair {
+
+class FakeFootprintsFetcher : public FootprintsFetcher {
+ public:
+  FakeFootprintsFetcher();
+  FakeFootprintsFetcher(const FakeFootprintsFetcher&) = delete;
+  FakeFootprintsFetcher& operator=(const FakeFootprintsFetcher&) = delete;
+  ~FakeFootprintsFetcher() override;
+
+  // FootprintsFetcher::
+  void GetUserDevices(UserReadDevicesCallback callback) override;
+  void AddUserDevice(nearby::fastpair::FastPairInfo info,
+                     AddDeviceCallback callback) override;
+  void DeleteUserDevice(const std::string& hex_account_key,
+                        DeleteDeviceCallback callback) override;
+
+  bool ContainsKey(const std::vector<uint8_t>& account_key);
+
+ private:
+  base::flat_map<std::string, nearby::fastpair::FastPairInfo>
+      account_key_to_info_map_;
+};
+
+}  // namespace quick_pair
+}  // namespace ash
+
+#endif  // ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_FAKE_FOOTPRINTS_FETCHER_H_

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+#include "ash/quick_pair/repository/fast_pair/footprints_fetcher_impl.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -76,25 +76,25 @@ GURL GetUserDeleteDeviceUrl(const std::string& hex_account_key) {
 
 }  // namespace
 
-FootprintsFetcher::FootprintsFetcher() = default;
-FootprintsFetcher::~FootprintsFetcher() = default;
+FootprintsFetcherImpl::FootprintsFetcherImpl() = default;
+FootprintsFetcherImpl::~FootprintsFetcherImpl() = default;
 
-void FootprintsFetcher::GetUserDevices(UserReadDevicesCallback callback) {
+void FootprintsFetcherImpl::GetUserDevices(UserReadDevicesCallback callback) {
   auto http_fetcher = CreateHttpFetcher();
   auto* raw_http_fetcher = http_fetcher.get();
   raw_http_fetcher->ExecuteGetRequest(
       GetUserDevicesUrl(),
-      base::BindOnce(&FootprintsFetcher::OnGetComplete,
+      base::BindOnce(&FootprintsFetcherImpl::OnGetComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(http_fetcher)));
 }
 
-void FootprintsFetcher::OnGetComplete(
+void FootprintsFetcherImpl::OnGetComplete(
     UserReadDevicesCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
-  QP_LOG(VERBOSE) << "FootprintsFetcher::" << __func__ << ": HTTP result: "
+  QP_LOG(VERBOSE) << __func__ << ": HTTP result: "
                   << (http_result ? http_result->ToString() : "[null]");
 
   if (http_result)
@@ -128,23 +128,23 @@ void FootprintsFetcher::OnGetComplete(
   std::move(callback).Run(devices);
 }
 
-void FootprintsFetcher::AddUserDevice(nearby::fastpair::FastPairInfo info,
-                                      AddDeviceCallback callback) {
+void FootprintsFetcherImpl::AddUserDevice(nearby::fastpair::FastPairInfo info,
+                                          AddDeviceCallback callback) {
   auto http_fetcher = CreateHttpFetcher();
   auto* raw_http_fetcher = http_fetcher.get();
   raw_http_fetcher->ExecutePostRequest(
       GetUserDevicesUrl(), info.SerializeAsString(),
-      base::BindOnce(&FootprintsFetcher::OnPostComplete,
+      base::BindOnce(&FootprintsFetcherImpl::OnPostComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(http_fetcher)));
 }
 
-void FootprintsFetcher::OnPostComplete(
+void FootprintsFetcherImpl::OnPostComplete(
     AddDeviceCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
-  QP_LOG(VERBOSE) << "FootprintsFetcher::" << __func__ << ": HTTP result: "
+  QP_LOG(VERBOSE) << __func__ << ": HTTP result: "
                   << (http_result ? http_result->ToString() : "[null]");
 
   if (http_result)
@@ -160,23 +160,23 @@ void FootprintsFetcher::OnPostComplete(
   std::move(callback).Run(true);
 }
 
-void FootprintsFetcher::DeleteUserDevice(const std::string& hex_account_key,
-                                         DeleteDeviceCallback callback) {
+void FootprintsFetcherImpl::DeleteUserDevice(const std::string& hex_account_key,
+                                             DeleteDeviceCallback callback) {
   auto http_fetcher = CreateHttpFetcher();
   auto* raw_http_fetcher = http_fetcher.get();
   raw_http_fetcher->ExecuteDeleteRequest(
       GetUserDeleteDeviceUrl(hex_account_key),
-      base::BindOnce(&FootprintsFetcher::OnPostComplete,
+      base::BindOnce(&FootprintsFetcherImpl::OnPostComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(http_fetcher)));
 }
 
-void FootprintsFetcher::OnDeleteComplete(
+void FootprintsFetcherImpl::OnDeleteComplete(
     DeleteDeviceCallback callback,
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body,
     std::unique_ptr<FastPairHttpResult> http_result) {
-  QP_LOG(VERBOSE) << "FootprintsFetcher::" << __func__ << ": HTTP result: "
+  QP_LOG(VERBOSE) << __func__ << ": HTTP result: "
                   << (http_result ? http_result->ToString() : "[null]");
 
   if (http_result)
