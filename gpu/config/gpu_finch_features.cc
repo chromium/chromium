@@ -324,8 +324,10 @@ bool IsDrDcEnabled() {
     return false;
 
   // DrDc is supported on android MediaPlayer and MCVD path only when
-  // AImageReader is enabled.
-  if (!IsAImageReaderEnabled())
+  // AImageReader is enabled. Also DrDc requires AImageReader max size to be
+  // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
+  // only 1 image.
+  if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
     return false;
 
   // Check block list against build info.
