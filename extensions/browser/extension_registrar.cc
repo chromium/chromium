@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -24,7 +23,6 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker_task_queue.h"
@@ -124,11 +122,6 @@ void ExtensionRegistrar::AddNewExtension(
     registry_->AddBlocked(extension);
   } else if (extension_prefs_->IsExtensionDisabled(extension->id())) {
     registry_->AddDisabled(extension);
-    // Notify that a disabled extension was added or updated.
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-        content::Source<content::BrowserContext>(browser_context_),
-        content::Details<const Extension>(extension.get()));
   } else {  // Extension should be enabled.
     // All apps that are displayed in the launcher are ordered by their ordinals
     // so we must ensure they have valid ordinals.

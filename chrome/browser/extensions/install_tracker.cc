@@ -6,9 +6,7 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
@@ -17,9 +15,6 @@ namespace extensions {
 
 InstallTracker::InstallTracker(content::BrowserContext* browser_context,
                                extensions::ExtensionPrefs* prefs) {
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-                 content::Source<content::BrowserContext>(browser_context));
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context));
 
@@ -127,22 +122,6 @@ void InstallTracker::Shutdown() {
     observer.OnShutdown();
   observers_.Clear();
   pref_change_registrar_.RemoveAll();
-}
-
-void InstallTracker::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED: {
-      const Extension* extension =
-          content::Details<const Extension>(details).ptr();
-      for (auto& observer : observers_)
-        observer.OnDisabledExtensionUpdated(extension);
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
 }
 
 void InstallTracker::OnExtensionInstalled(

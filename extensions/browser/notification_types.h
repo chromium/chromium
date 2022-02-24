@@ -38,11 +38,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174728): Remove.
   NOTIFICATION_CRX_INSTALLER_DONE = NOTIFICATION_EXTENSIONS_START,
 
-  // Sent when attempting to load a new extension, but they are disabled. The
-  // details are an Extension, and the source is a BrowserContext*.
-  // TODO(https://crbug.com/1174732): Remove.
-  NOTIFICATION_EXTENSION_UPDATE_DISABLED,
-
   // Sent when an extension's permissions change. The details are an
   // UpdatedExtensionPermissionsInfo, and the source is a BrowserContext*.
   // TODO(https://crbug.com/1174733): Remove.

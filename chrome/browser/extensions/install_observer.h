@@ -60,10 +60,6 @@ class InstallObserver {
   // Called if the extension fails to install.
   virtual void OnInstallFailure(const std::string& extension_id) {}
 
-  // Called when an extension or an app is installed to the app list. These are
-  // simply forwarded from the chrome::NOTIFICATIONs.
-  virtual void OnDisabledExtensionUpdated(const Extension* extension) {}
-
   // Called when the app list is reordered. If |extension_id| is set, it
   // indicates the extension ID that was re-ordered.
   virtual void OnAppsReordered(

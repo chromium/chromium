@@ -13,8 +13,6 @@
 #include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -28,9 +26,7 @@ namespace extensions {
 
 class ExtensionPrefs;
 
-class InstallTracker : public KeyedService,
-                       public content::NotificationObserver,
-                       public ExtensionRegistryObserver {
+class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
  public:
   InstallTracker(content::BrowserContext* browser_context,
                  extensions::ExtensionPrefs* prefs);
@@ -83,11 +79,6 @@ class InstallTracker : public KeyedService,
  private:
   void OnExtensionPrefChanged();
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // ExtensionRegistryObserver implementation.
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const Extension* extension,
@@ -98,7 +89,6 @@ class InstallTracker : public KeyedService,
   ActiveInstallsMap active_installs_;
 
   base::ObserverList<InstallObserver>::Unchecked observers_;
-  content::NotificationRegistrar registrar_;
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
