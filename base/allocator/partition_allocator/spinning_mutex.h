@@ -101,6 +101,7 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   void Reinit() UNLOCK_FUNCTION();
 
  private:
+  NOINLINE void AcquireSpinThenBlock() EXCLUSIVE_LOCK_FUNCTION();
   void LockSlow() EXCLUSIVE_LOCK_FUNCTION();
 
   // See below, the latency of PA_YIELD_PROCESSOR can be as high as ~150
@@ -151,36 +152,14 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
 };
 
 ALWAYS_INLINE void SpinningMutex::Acquire() {
-  int tries = 0;
-  int backoff = 1;
-  // Busy-waiting is inlined, which is fine as long as we have few callers. This
-  // is only used for the partition lock, so this is the case.
-  do {
-    if (LIKELY(Try()))
-      return;
-    // Note: Per the intel optimization manual
-    // (https://software.intel.com/content/dam/develop/public/us/en/documents/64-ia-32-architectures-optimization-manual.pdf),
-    // the "pause" instruction is more costly on Skylake Client than on previous
-    // architectures. The latency is found to be 141 cycles
-    // there (from ~10 on previous ones, nice 14x).
-    //
-    // According to Agner Fog's instruction tables, the latency is still >100
-    // cycles on Ice Lake, and from other sources, seems to be high as well on
-    // Adler Lake. Separately, it is (from
-    // https://agner.org/optimize/instruction_tables.pdf) also high on AMD Zen 3
-    // (~65). So just assume that it's this way for most x86_64 architectures.
-    //
-    // Also, loop several times here, following the guidelines in section 2.3.4
-    // of the manual, "Pause latency in Skylake Client Microarchitecture".
-    for (int yields = 0; yields < backoff; yields++) {
-      PA_YIELD_PROCESSOR;
-      tries++;
-    }
-    constexpr int kMaxBackoff = 16;
-    backoff = std::min(kMaxBackoff, backoff << 1);
-  } while (tries < kSpinCount);
+  // Not marked LIKELY(), as:
+  // 1. We don't know how much contention the lock would experience
+  // 2. This may lead to weird-looking code layout when inlined into a caller
+  // with (UN)LIKELY() annotations.
+  if (Try())
+    return;
 
-  LockSlow();
+  return AcquireSpinThenBlock();
 }
 
 inline constexpr SpinningMutex::SpinningMutex() = default;
