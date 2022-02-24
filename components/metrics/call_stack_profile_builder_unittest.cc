@@ -111,11 +111,11 @@ TEST(CallStackProfileBuilderTest, ProfilingCompleted) {
   std::vector<base::Frame> frames1 = {frame1, frame2};
   std::vector<base::Frame> frames2 = {frame3};
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames1, base::TimeTicks());
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames2, base::TimeTicks());
   profile_builder->OnProfileCompleted(base::Milliseconds(500),
                                       base::Milliseconds(100));
@@ -213,11 +213,11 @@ TEST(CallStackProfileBuilderTest, StacksDeduped) {
 
   // Two stacks are completed with the same frames therefore they are deduped
   // to one.
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames, base::TimeTicks());
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames, base::TimeTicks());
 
   profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
@@ -254,11 +254,11 @@ TEST(CallStackProfileBuilderTest, StacksNotDeduped) {
   std::vector<base::Frame> frames2 = {frame2};
 
   // Two stacks are completed with the different frames therefore not deduped.
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames1, base::TimeTicks());
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames2, base::TimeTicks());
 
   profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
@@ -303,8 +303,8 @@ TEST(CallStackProfileBuilderTest, Modules) {
 
   std::vector<base::Frame> frames = {frame1, frame2};
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames, base::TimeTicks());
   profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
 
@@ -357,8 +357,8 @@ TEST(CallStackProfileBuilderTest, DedupModules) {
 
   std::vector<base::Frame> frames = {frame1, frame2};
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(frames, base::TimeTicks());
   profile_builder->OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
 
@@ -410,26 +410,26 @@ TEST(CallStackProfileBuilderTest, WorkIds) {
 
   // Id 0 means the message loop hasn't been started yet, so the sample should
   // not have continued_work set.
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
   // The second sample with the same id should have continued_work set.
   work_id_recorder.current_id = 1;
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
   // Ids are in general non-contiguous across multiple samples.
   work_id_recorder.current_id = 10;
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
   profile_builder->OnProfileCompleted(base::Milliseconds(500),
@@ -475,9 +475,9 @@ TEST(CallStackProfileBuilderTest, RecordMetadata) {
   base::TestModule module;
   base::Frame frame = {0x10, &module};
 
-  metadata_recorder.Set(100, absl::nullopt, 10);
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, base::TimeTicks());
 
   profile_builder->OnProfileCompleted(base::Milliseconds(500),
@@ -513,22 +513,22 @@ TEST(CallStackProfileBuilderTest, ApplyMetadataRetrospectively_Basic) {
   base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch();
   base::TimeDelta sample_time_delta = base::Seconds(1);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, profile_start_time);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame},
                                      profile_start_time + sample_time_delta);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(
       {frame}, profile_start_time + 2 * sample_time_delta);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(
       {frame}, profile_start_time + 3 * sample_time_delta);
 
@@ -536,7 +536,7 @@ TEST(CallStackProfileBuilderTest, ApplyMetadataRetrospectively_Basic) {
   profile_builder->ApplyMetadataRetrospectively(
       profile_start_time + sample_time_delta,
       profile_start_time + sample_time_delta * 2,
-      base::MetadataRecorder::Item(3, 30, 300));
+      base::MetadataRecorder::Item(3, 30, absl::nullopt, 300));
 
   profile_builder->OnProfileCompleted(3 * sample_time_delta, sample_time_delta);
 
@@ -578,29 +578,29 @@ TEST(CallStackProfileBuilderTest,
   base::TimeTicks profile_start_time = base::TimeTicks::UnixEpoch();
   base::TimeDelta sample_time_delta = base::Seconds(1);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame}, profile_start_time);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted({frame},
                                      profile_start_time + sample_time_delta);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(
       {frame}, profile_start_time + 2 * sample_time_delta);
 
-  profile_builder->RecordMetadata(
-      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
+  profile_builder->RecordMetadata(base::MetadataRecorder::MetadataProvider(
+      &metadata_recorder, base::PlatformThread::CurrentId()));
   profile_builder->OnSampleCompleted(
       {frame}, profile_start_time + 3 * sample_time_delta);
 
   profile_builder->ApplyMetadataRetrospectively(
       profile_start_time - base::Microseconds(1),
       profile_start_time + sample_time_delta,
-      base::MetadataRecorder::Item(3, 30, 300));
+      base::MetadataRecorder::Item(3, 30, absl::nullopt, 300));
 
   profile_builder->OnProfileCompleted(3 * sample_time_delta, sample_time_delta);
 

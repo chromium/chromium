@@ -7,6 +7,7 @@
 
 #include "base/profiler/metadata_recorder.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/platform_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // -----------------------------------------------------------------------------
@@ -15,8 +16,8 @@
 //
 // Overview:
 // These functions provide a means to control the metadata attached to samples
-// collected by the stack sampling profiler. Metadata state is shared between
-// all threads within a process.
+// collected by the stack sampling profiler. SampleMetadataScope controls the
+// scope covered by the metadata (thread, process).
 //
 // Any samples collected by the sampling profiler will include the active
 // metadata. This enables us to later analyze targeted subsets of samples
@@ -55,10 +56,20 @@ namespace base {
 
 class TimeTicks;
 
+enum class SampleMetadataScope {
+  // All threads in the current process will have the associated metadata
+  // attached to their samples.
+  kProcess,
+  // The metadata will only be attached to samples for the current thread.
+  kThread
+};
+
 class BASE_EXPORT SampleMetadata {
  public:
-  // Set the metadata value associated with |name|.
-  explicit SampleMetadata(StringPiece name);
+  // Set the metadata value associated with |name| to be recorded for |scope|.
+  explicit SampleMetadata(
+      StringPiece name,
+      SampleMetadataScope scope = SampleMetadataScope::kProcess);
 
   SampleMetadata(const SampleMetadata&) = default;
   ~SampleMetadata() = default;
@@ -96,21 +107,32 @@ class BASE_EXPORT SampleMetadata {
 
  private:
   const uint64_t name_hash_;
+  // Scope is kept as-is instead of retrieving a PlatformThreadId in case
+  // Set()/Remove() is called on a thread different from where the object was
+  // constructed.
+  const SampleMetadataScope scope_;
 };
 
 class BASE_EXPORT ScopedSampleMetadata {
  public:
-  // Set the metadata value associated with |name|.
-  ScopedSampleMetadata(StringPiece name, int64_t value);
+  // Set the metadata value associated with |name| for |scope|.
+  ScopedSampleMetadata(
+      StringPiece name,
+      int64_t value,
+      SampleMetadataScope scope = SampleMetadataScope::kProcess);
 
-  // Set the metadata value associated with the pair (|name|, |key|). This
-  // constructor allows the metadata to be associated with an additional
-  // user-defined key. One might supply a key based on the frame id, for
-  // example, to distinguish execution in service of scrolling between different
-  // frames. Prefer the previous constructor if no user-defined metadata is
-  // required. Note: values specified for a name and key are stored separately
-  // from values specified with only a name.
-  ScopedSampleMetadata(StringPiece name, int64_t key, int64_t value);
+  // Set the metadata value associated with the pair (|name|, |key|) for
+  // |scope|. This constructor allows the metadata to be associated with an
+  // additional user-defined key. One might supply a key based on the frame id,
+  // for example, to distinguish execution in service of scrolling between
+  // different frames. Prefer the previous constructor if no user-defined
+  // metadata is required. Note: values specified for a name and key are stored
+  // separately from values specified with only a name.
+  ScopedSampleMetadata(
+      StringPiece name,
+      int64_t key,
+      int64_t value,
+      SampleMetadataScope scope = SampleMetadataScope::kProcess);
 
   ScopedSampleMetadata(const ScopedSampleMetadata&) = delete;
   ~ScopedSampleMetadata();
@@ -120,6 +142,7 @@ class BASE_EXPORT ScopedSampleMetadata {
  private:
   const uint64_t name_hash_;
   absl::optional<int64_t> key_;
+  absl::optional<PlatformThreadId> thread_id_;
 };
 
 // Applies the specified metadata to samples already recorded between
@@ -131,15 +154,19 @@ class BASE_EXPORT ScopedSampleMetadata {
 // metadata scope (i.e. because the start or end of execution was missed), at
 // the cost of missing execution that are longer than the profiling period, or
 // extend before or after it. |period_end| must be <= TimeTicks::Now().
-BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
-                                            TimeTicks period_end,
-                                            StringPiece name,
-                                            int64_t value);
-BASE_EXPORT void ApplyMetadataToPastSamples(TimeTicks period_start,
-                                            TimeTicks period_end,
-                                            StringPiece name,
-                                            int64_t key,
-                                            int64_t value);
+BASE_EXPORT void ApplyMetadataToPastSamples(
+    TimeTicks period_start,
+    TimeTicks period_end,
+    StringPiece name,
+    int64_t value,
+    SampleMetadataScope scope = SampleMetadataScope::kProcess);
+BASE_EXPORT void ApplyMetadataToPastSamples(
+    TimeTicks period_start,
+    TimeTicks period_end,
+    StringPiece name,
+    int64_t key,
+    int64_t value,
+    SampleMetadataScope scope = SampleMetadataScope::kProcess);
 
 // Returns the process-global metadata recorder instance used for tracking
 // sampling profiler metadata.

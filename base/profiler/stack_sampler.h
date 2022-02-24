@@ -67,7 +67,8 @@ class BASE_EXPORT StackSampler {
 
   // Records a set of frames and returns them.
   virtual void RecordStackFrames(StackBuffer* stackbuffer,
-                                 ProfileBuilder* profile_builder) = 0;
+                                 ProfileBuilder* profile_builder,
+                                 PlatformThreadId thread_id) = 0;
 
  protected:
   StackSampler();
