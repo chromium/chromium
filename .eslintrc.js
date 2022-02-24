@@ -60,5 +60,17 @@ module.exports = {
   'overrides': [{
     'files': ['**/*.ts'],
     'parser': './third_party/node/node_modules/@typescript-eslint/parser',
+    'plugins': [
+      '@typescript-eslint',
+    ],
+    'rules': {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error', {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        }
+      ]
+    }
   }]
 };
