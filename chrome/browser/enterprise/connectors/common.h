@@ -15,6 +15,8 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace enterprise_connectors {
 
 // Alias to reduce verbosity when using TriggeredRule::Actions.
@@ -209,6 +211,9 @@ void RunSavePackageScanningCallback(download::DownloadItem* item, bool allowed);
 
 // Checks if |response| contains a negative malware verdict.
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
+
+// Returns whether device info should be reported for the profile.
+bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 
 }  // namespace enterprise_connectors
 

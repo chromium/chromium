@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -560,16 +561,8 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
     return nullptr;
 
   Profile* profile = Profile::FromBrowserContext(context_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  const bool include_device_info = user && user->IsAffiliated();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool include_device_info =
-      policy::PolicyLoaderLacros::IsMainUserAffiliated();
-#else
-  const bool include_device_info = !reporting_settings.value().per_profile;
-#endif
+  const bool include_device_info = enterprise_connectors::IncludeDeviceInfo(
+      profile, reporting_settings.value().per_profile);
 
   auto metadata = std::make_unique<ClientMetadata>(
       reporting::GetContextAsClientMetadata(profile));

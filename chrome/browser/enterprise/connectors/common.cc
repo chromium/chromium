@@ -7,6 +7,14 @@
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace enterprise_connectors {
 
 AnalysisSettings::AnalysisSettings() = default;
@@ -176,6 +184,18 @@ bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
   return std::any_of(results.begin(), results.end(), [](const auto& result) {
     return result.tag() == "malware" && !result.triggered_rules().empty();
   });
+}
+
+bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  return user && user->IsAffiliated();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
+#else
+  return !per_profile;
+#endif
 }
 
 }  // namespace enterprise_connectors

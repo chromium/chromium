@@ -1145,9 +1145,11 @@ void SafeBrowsingPrivateEventRouter::ReportRealtimeEvent(
   base::Value::List event_list;
   event_list.Append(std::move(wrapper));
 
+  Profile* profile = Profile::FromBrowserContext(context_);
+
   client->UploadSecurityEventReport(
       context_,
-      /* include_device_info */ !settings.per_profile,
+      enterprise_connectors::IncludeDeviceInfo(profile, settings.per_profile),
       policy::RealtimeReportingJobConfiguration::BuildReport(
           std::move(event_list),
           reporting::GetContext(Profile::FromBrowserContext(context_))),
