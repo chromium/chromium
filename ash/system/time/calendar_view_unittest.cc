@@ -1033,7 +1033,8 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
+// TODO(crbug.com/1298314) flaky test
+TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
