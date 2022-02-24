@@ -77,6 +77,9 @@ template("rust_target") {
   }
   _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
+    # TODO(crbug.com/gn/104): GN rust_proc_macro targets are missing this
+    # command line flag, for the proc_macro crate which is provided by rustc for
+    # compiling proc-macros.
     _rustflags += [
       "--extern",
       "proc_macro",
