@@ -916,15 +916,20 @@ TEST_F(ZipTest, NestedZip) {
 // are correctly enumerated (crbug.com/1298347), and that the big file can be
 // extracted.
 //
+// Because this test is dealing with big files, it tends to take a lot of disk
+// space and time (crbug.com/1299736). Therefore, it only gets run on a few bots
+// (ChromeOS and Windows).
+//
 // This test is too slow with TSAN.
 // OS Fuchsia does not seem to support large files.
-// Some Android waterfall and CQ try bots are running out of space when
+// Some 32-bit Android waterfall and CQ try bots are running out of space when
 // performing this test (android-asan, android-11-x86-rel,
 // android-marshmallow-x86-rel-non-cq).
-// TODO(https://crbug.com/1299736): Re-enable on Mac and debug builds when
-// timeouts are fixed.
-#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || !defined(NDEBUG)
+// Some Mac, Linux and Debug (dbg) bots tend to time out when performing this
+// test (crbug.com/1299736).
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_FUCHSIA) ||                \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    !defined(NDEBUG)
 TEST_F(ZipTest, DISABLED_BigFile) {
 #else
 TEST_F(ZipTest, BigFile) {
