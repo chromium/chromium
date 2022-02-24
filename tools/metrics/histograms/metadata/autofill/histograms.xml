@@ -1961,7 +1961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleOffer.{BubbleType}"
-    enum="BooleanPreviouslyShown" expires_after="2022-04-01">
+    enum="BooleanPreviouslyShown" expires_after="2023-05-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1975,7 +1975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OfferNotificationBubblePromoCodeButtonClicked.{BubbleType}"
-    enum="BooleanClicked" expires_after="2022-04-01">
+    enum="BooleanClicked" expires_after="2023-05-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1989,7 +1989,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.OfferNotificationBubbleResult.{BubbleType}.{ShowType}"
-    enum="AutofillOfferNotificationBubbleResult" expires_after="2022-04-01">
+    enum="AutofillOfferNotificationBubbleResult" expires_after="2023-05-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -2002,9 +2002,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationBubbleSuppressed.{BubbleType}"
-    enum="BooleanSuppressed" expires_after="2022-04-01">
+    enum="BooleanSuppressed" expires_after="2023-05-01">
   <owner>jsaul@google.com</owner>
   <owner>yuezhanggg@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -2017,7 +2018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationInfoBarOffer.{OfferType}"
-    enum="BooleanShown" expires_after="2022-04-01">
+    enum="BooleanShown" expires_after="2023-05-01">
   <owner>siashah@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -2029,7 +2030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.OfferNotificationInfoBarResult.{OfferType}"
-    enum="AutofillOfferNotificationInfoBarResult" expires_after="2022-04-01">
+    enum="AutofillOfferNotificationInfoBarResult" expires_after="2023-05-01">
   <owner>siashah@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -2463,7 +2464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProgressDialog.{FlowType}.Result"
-    enum="BooleanCanceled" expires_after="2022-04-01">
+    enum="BooleanCanceled" expires_after="2023-04-01">
   <owner>siashah@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2482,7 +2483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProgressDialog.{FlowType}.Shown" enum="BooleanShown"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>siashah@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2676,7 +2677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ServerCardUnmask.{CardType}.Attempt"
-    enum="BooleanAttempted" expires_after="2022-04-01">
+    enum="BooleanAttempted" expires_after="2023-06-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2687,7 +2688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ServerCardUnmask.{CardType}.FormSubmission"
-    enum="BooleanSubmitted" expires_after="2022-04-01">
+    enum="BooleanSubmitted" expires_after="2023-06-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2698,7 +2699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ServerCardUnmask.{CardType}.Result.{FlowType}"
-    enum="AutofillServerCardUnmaskResult" expires_after="2022-04-01">
+    enum="AutofillServerCardUnmaskResult" expires_after="2023-06-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2763,7 +2764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithCardArtImage"
-    units="units" expires_after="2022-04-01">
+    units="units" expires_after="2022-12-12">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2773,7 +2774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithVirtualCardMetadata"
-    units="units" expires_after="2022-08-07">
+    units="units" expires_after="2022-12-12">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3274,7 +3275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UsedCachedVirtualCard" units="uses"
-    expires_after="2022-04-01">
+    expires_after="2022-06-26">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3384,7 +3385,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"
     enum="AutofillVirtualCardManualFallbackBubbleFieldClicked"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3397,7 +3398,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.Result.{ShowType}"
     enum="AutofillVirtualCardManualFallbackBubbleResult"
-    expires_after="2022-04-01">
+    expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3409,7 +3410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.Shown"
-    enum="BooleanPreviouslyShown" expires_after="2022-07-31">
+    enum="BooleanPreviouslyShown" expires_after="2023-04-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
