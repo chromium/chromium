@@ -316,8 +316,7 @@ def _rts_config(*, condition, recall = None):
 
 def _try_settings(
         *,
-        # TODO(gbeaty) Add support for this value
-        # include_all_triggered_testers = False,
+        include_all_triggered_testers = False,
         is_compile_only = None,
         analyze_names = None,
         retry_failed_shards = None,
@@ -326,6 +325,8 @@ def _try_settings(
     """Settings specific to try builders.
 
     Args:
+        include_all_triggered_testers: (bool) If true, any testers that are
+            triggered by the builders that are mirrored will also be mirrored.
         is_compile_only: (bool) If true, any configured compile targets or tests
             will be compiled, but not tests will be triggered.
         analyze_names: (list[str]|str) Additional names to analyze in the build.
@@ -342,7 +343,7 @@ def _try_settings(
         builder.
     """
     return _struct_with_non_none_values(
-        # include_all_triggered_testers = include_all_triggered_testers,
+        include_all_triggered_testers = include_all_triggered_testers,
         is_compile_only = is_compile_only,
         analyze_names = analyze_names,
         retry_failed_shards = retry_failed_shards,
@@ -443,13 +444,19 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
     if builder_spec and mirrors:
         fail("only one of builder_spec or mirrors can be set")
 
+    if try_settings:
+        try_settings = _struct_to_dict(try_settings)
+        include_all_triggered_testers = try_settings.pop("include_all_triggered_testers")
+    else:
+        include_all_triggered_testers = not mirrors
     builder_config_key = _BUILDER_CONFIG.add(bucket, name, props = dict(
         bucket = bucket,
         name = name,
         builder_group = builder_group,
         builder_spec = _struct_to_dict(builder_spec),
         mirrors = mirrors,
-        try_settings = _struct_to_dict(try_settings),
+        include_all_triggered_testers = include_all_triggered_testers,
+        try_settings = try_settings,
     ))
 
     parent = getattr(builder_spec, "parent", None)
@@ -504,7 +511,20 @@ def _get_mirrored_builders(node):
     return nodes
 
 def _get_mirroring_builders(node):
-    return _BUILDER_CONFIG_MIRROR.parents(node.key)
+    if not node.props.builder_spec:
+        return []
+
+    nodes = _BUILDER_CONFIG_MIRROR.parents(node.key)
+
+    # If there are builders that mirror the parent of the current builder and
+    # include all triggered testers, then they mirror the current builder also
+    parent = _get_parent_node(node)
+    if parent:
+        for m in _BUILDER_CONFIG_MIRROR.parents(parent.key):
+            if m.props.include_all_triggered_testers:
+                nodes.append(m)
+
+    return nodes
 
 def _builder_id(node):
     return dict(
@@ -560,6 +580,7 @@ def _set_builder_config_property(ctx):
             entries = []
             builder_ids = []
             builder_ids_in_scope_for_testing = []
+            try_settings = dict(node.props.try_settings or {})
 
             if node.props.builder_spec:
                 parent = _get_parent_node(node)
@@ -590,6 +611,9 @@ def _set_builder_config_property(ctx):
                     if parent:
                         add(parent)
                     add(m, parent)
+                    if node.props.include_all_triggered_testers:
+                        for child in _get_child_nodes(m):
+                            add(child, m)
 
             if not entries:
                 fail("internal error: entries is empty for builder {}"
@@ -603,7 +627,7 @@ def _set_builder_config_property(ctx):
                     entries = sorted(entries, key = lambda e: _builder_id_sort_key(e["builder_id"])),
                 ),
                 builder_ids = sorted(builder_ids, key = _builder_id_sort_key),
-                **(node.props.try_settings or {})
+                **try_settings
             )
 
             if builder_ids_in_scope_for_testing:
