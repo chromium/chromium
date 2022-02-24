@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -65,7 +65,7 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
     start_time_ = base::TimeTicks();
     // Post a task to maintain our guarantee that the delegate will only be
     // called asynchronously.
-    base::ThreadPool::PostTask(
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, BindOnce(std::move(callback), std::move(response_body)));
     return;
   }
