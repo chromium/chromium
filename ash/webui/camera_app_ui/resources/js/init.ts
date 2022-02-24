@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
  * strings.m.js is generated when we enable it via UseStringsJs() in webUI
  * controller. When loading it, it will populate data such as localized strings
  * into |window.loadTimeData|.
- * @suppress {moduleLoad}
  */
 import '/strings.m.js';
 

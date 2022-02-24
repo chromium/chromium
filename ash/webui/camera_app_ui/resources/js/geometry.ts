@@ -229,12 +229,8 @@ export class Box {
     /**
      * Intersection point of two line segments in 2 dimensions:
      * http://paulbourke.net/geometry/pointlineplane/
-     * @param {!Point} pt1
-     * @param {!Point} pt2
-     * @param {!Point} pt3
-     * @param {!Point} pt4
-     * @return {?Point} Intersection of segment pt1, pt2 and segment pt3, pt4.
-     *     Null for no intersection between two segment.
+     * @return Intersection of segment pt1, pt2 and segment pt3, pt4.
+     *     null for no intersection between two segment.
      */
     const intersect =
         (pt1: Point, pt2: Point, pt3: Point, pt4: Point): Point|null => {

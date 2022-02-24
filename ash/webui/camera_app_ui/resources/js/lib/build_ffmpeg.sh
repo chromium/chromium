@@ -107,12 +107,6 @@ do_add_header() {
 //
 /* eslint-disable */
 // @ts-nocheck
-
-/**
- * @fileoverview
- * @suppress {checkTypes|missingProperties|suspiciousCode}
- * @suppress {undefinedVars|uselessCode}
- */
 EOF
   cat ffmpeg.orig.js >> ffmpeg.js
   echo >> ffmpeg.js

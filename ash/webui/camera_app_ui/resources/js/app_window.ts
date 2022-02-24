@@ -17,8 +17,7 @@ const DEFAULT_WINDOW_WIDTH = 764;
 /**
  * Gets default window size which minimizes the letterbox area for given preview
  * aspect ratio.
- * @param {number} aspectRatio Preview aspect ratio.
- * @return {!Resolution}
+ * @param aspectRatio Preview aspect ratio.
  */
 export function getDefaultWindowSize(aspectRatio: number): Resolution {
   // For the call site from background.js cannot access letterbox space reserved
