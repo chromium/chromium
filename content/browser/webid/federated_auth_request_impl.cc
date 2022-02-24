@@ -929,6 +929,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
     return;
   }
 
+  RecordIsSignInUser(is_sign_in);
+
   // Account selection is considered sufficient for granting request permission
   // (which also implies the logout permission).
   if (GetRequestPermissionContext()) {

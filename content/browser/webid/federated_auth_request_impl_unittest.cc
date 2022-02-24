@@ -647,7 +647,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                   displayed_accounts_ =
                       AccountList(accounts.begin(), accounts.end());
                   std::move(on_selected)
-                      .Run(accounts[0].id, /*is_sign_in=*/false);
+                      .Run(accounts[0].id,
+                           accounts[0].login_state == LoginState::kSignIn);
                 }));
       }
     } else {
@@ -1377,6 +1378,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
   histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
                                       IdTokenStatus::kSuccess, 1);
 
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 0, 1);
+
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.ContinueOnDialog");
   ExpectTimingUKM("Timing.IdTokenResponse");
@@ -1422,6 +1425,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
   histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
                                       IdTokenStatus::kSuccess, 1);
+
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 1, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.ContinueOnDialog");

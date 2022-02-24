@@ -88,6 +88,9 @@ void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
 // Records the status of the |Revoke| call.
 void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id);
 
+// Records whether the user selected account is for sign-in or not.
+void RecordIsSignInUser(bool is_sign_in);
+
 // Records whether a user has left the page where the API is called when the
 // browser is ready to show the accounts dialog.
 void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible);

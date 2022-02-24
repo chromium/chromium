@@ -750,6 +750,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.IsSignInUser" enum="Boolean" expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>fedcm-core@google.com</owner>
+  <summary>
+    Records whether the user selected account is for sign-in or not. Records at
+    most one sample per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Status.RequestIdToken"
     enum="FedCmRequestIdTokenStatus" expires_after="M110">
   <owner>yigu@chromium.org</owner>
