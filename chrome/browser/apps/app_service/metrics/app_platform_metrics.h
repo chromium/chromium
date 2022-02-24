@@ -36,6 +36,7 @@ enum class InstallTime {
 
 extern const char kAppRunningDuration[];
 extern const char kAppActivatedCount[];
+extern const char kAppUsageTime[];
 
 extern const char kAppLaunchPerAppTypeHistogramName[];
 extern const char kAppLaunchPerAppTypeV2HistogramName[];
@@ -57,6 +58,10 @@ extern const char kChromeAppTabHistogramName[];
 extern const char kChromeAppWindowHistogramName[];
 extern const char kWebAppTabHistogramName[];
 extern const char kWebAppWindowHistogramName[];
+
+extern const char kUsageTimeAppIdKey[];
+extern const char kUsageTimeAppTypeKey[];
+extern const char kUsageTimeDurationKey[];
 
 std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name);
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
@@ -153,8 +158,17 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   struct UsageTime {
     base::TimeDelta running_time;
     ukm::SourceId source_id = ukm::kInvalidSourceId;
+    std::string app_id;
     AppTypeName app_type_name = AppTypeName::kUnknown;
     bool window_is_closed = false;
+
+    // Converts the struct UsageTime to base::Value, e.g.:
+    // {
+    //    "app_id": "hhsosodfjlsjdflkjsdlfksdf",
+    //    "app_type": "SystemWebApp",
+    //    "time": 3600,
+    // }
+    base::Value ConvertToValue() const;
   };
 
   // AppRegistryCache::Observer:
@@ -210,6 +224,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void RecordAppsInstallUkm(const apps::AppUpdate& update,
                             InstallTime install_time);
 
+  void UpdateUsageTime(const base::UnguessableToken& instance_id,
+                       const std::string& app_id,
+                       AppTypeName app_type_name,
+                       const base::TimeDelta& running_time);
+
+  void SaveUsageTime();
+
   Profile* const profile_ = nullptr;
 
   AppRegistryCache& app_registry_cache_;
@@ -239,8 +260,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
       app_type_running_time_per_five_minutes_;
   std::map<AppTypeNameV2, base::TimeDelta>
       app_type_v2_running_time_per_five_minutes_;
+
+  // TODO(crbug.com/1299978): Remove `usage_time_per_five_minutes_`.
   std::map<const base::UnguessableToken, UsageTime>
       usage_time_per_five_minutes_;
+
+  // Record the app window running duration for the app usage AppKM.
+  std::map<const base::UnguessableToken, UsageTime> usage_time_per_two_hours_;
 };
 
 }  // namespace apps
