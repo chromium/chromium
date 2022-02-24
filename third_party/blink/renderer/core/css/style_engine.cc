@@ -2506,7 +2506,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
-  DCHECK(style.IsContainerForContainerQueries());
+  DCHECK(style.IsContainerForSizeContainerQueries());
   WritingMode writing_mode = style.GetWritingMode();
   PhysicalSize physical_size = AdjustForAbsoluteZoom::AdjustPhysicalSize(
       ToPhysicalSize(logical_size, writing_mode), style);

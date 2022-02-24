@@ -673,10 +673,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            ShouldApplyInlineSizeContainment();
   }
 
-  inline bool IsContainerForContainerQueries() const {
+  inline bool CanMatchSizeContainerQueries() const {
     NOT_DESTROYED();
     if (Element* element = DynamicTo<Element>(GetNode()))
-      return StyleRef().IsContainerForContainerQueries(*element);
+      return StyleRef().CanMatchSizeContainerQueries(*element);
     return false;
   }
 

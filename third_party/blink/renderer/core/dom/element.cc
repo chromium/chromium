@@ -2857,7 +2857,7 @@ void Element::ReattachLayoutTreeChildren(base::PassKey<HTMLFieldSetElement>) {
   DCHECK(ChildNeedsReattachLayoutTree());
   DCHECK(!GetShadowRoot());
   DCHECK(GetLayoutObject());
-  DCHECK(GetLayoutObject()->StyleRef().IsContainerForContainerQueries(*this));
+  DCHECK(GetLayoutObject()->StyleRef().CanMatchSizeContainerQueries(*this));
 
   constexpr bool performing_reattach = true;
 
@@ -3097,7 +3097,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled()) {
     if (const ComputedStyle* style = GetComputedStyle()) {
-      if (style->IsContainerForContainerQueries(*this)) {
+      if (style->CanMatchSizeContainerQueries(*this)) {
         if (RuntimeEnabledFeatures::CSSContainerSkipStyleRecalcEnabled()) {
           if (change.IsSuppressed()) {
             // IsSuppressed() means we are at the root of a container subtree
@@ -3117,8 +3117,9 @@ void Element::RecalcStyle(const StyleRecalcChange change,
             return;
           }
         }
-        child_recalc_context.container = this;
       }
+      if (style->IsContainerForSizeContainerQueries())
+        child_recalc_context.container = this;
     }
   }
 
@@ -3186,7 +3187,7 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     Element& element,
     const ComputedStyle* old_style,
     const ComputedStyle& new_style) {
-  if (!new_style.IsContainerForContainerQueries(element))
+  if (!new_style.IsContainerForSizeContainerQueries())
     return nullptr;
   // If we're switching to display:contents, any existing results cached on
   // ContainerQueryEvaluator are no longer valid, since any style recalc
@@ -5592,7 +5593,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
     ancestors.pop_back();
     const ComputedStyle* style =
         ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
-    if (style->IsContainerForContainerQueries(*ancestor))
+    if (style->IsContainerForSizeContainerQueries())
       style_recalc_context.container = ancestor;
   }
 
@@ -5663,7 +5664,7 @@ const ComputedStyle* Element::EnsureOwnComputedStyle(
 
   StyleRecalcContext child_recalc_context = style_recalc_context;
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
-      element_style->IsContainerForContainerQueries(*this)) {
+      element_style->IsContainerForSizeContainerQueries()) {
     child_recalc_context.container = this;
   }
 

@@ -65,7 +65,7 @@ Element* ContainerQueryEvaluator::FindContainer(
   for (Element* element = container; element;
        element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (style->IsContainerForContainerQueries(*element) &&
+      if (style->IsContainerForSizeContainerQueries() &&
           Matches(*style, container_selector)) {
         return element;
       }

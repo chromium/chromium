@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Size @container query against inline box never matches
-FAIL Size @container query against svg element never matches assert_not_equals: got disallowed value "rgb(255, 0, 0)"
-Harness: the test ran to completion.
-

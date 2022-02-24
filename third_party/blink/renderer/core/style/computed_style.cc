@@ -221,8 +221,8 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
 
 static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
                                         const ComputedStyle& new_style) {
-  if (!old_style.IsContainerForContainerQueries() &&
-      !new_style.IsContainerForContainerQueries()) {
+  if (!old_style.IsContainerForSizeContainerQueries() &&
+      !new_style.IsContainerForSizeContainerQueries()) {
     return false;
   }
   if ((old_style.ContainerName() != new_style.ContainerName()) ||
@@ -2648,9 +2648,9 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
           Display() == EDisplay::kTableCaption);
 }
 
-bool ComputedStyle::IsContainerForContainerQueries(
-    const Element& element) const {
-  return IsContainerForContainerQueries() &&
+bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
+  return IsContainerForSizeContainerQueries() &&
+         !InsideFragmentationContextWithNondeterministicEngine() &&
          !element.ShouldForceLegacyLayout() &&
          (!element.IsSVGElement() ||
           To<SVGElement>(element).IsOutermostSVGSVGElement());

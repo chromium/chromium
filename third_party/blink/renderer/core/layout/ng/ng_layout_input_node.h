@@ -240,8 +240,8 @@ class CORE_EXPORT NGLayoutInputNode {
     return box_->ShouldApplyBlockSizeContainment();
   }
 
-  bool IsContainerForContainerQueries() const {
-    return box_->IsContainerForContainerQueries();
+  bool CanMatchSizeContainerQueries() const {
+    return box_->CanMatchSizeContainerQueries();
   }
 
   LogicalAxes ContainedAxes() const {
