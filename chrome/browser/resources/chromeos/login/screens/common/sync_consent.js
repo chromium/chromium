@@ -128,6 +128,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     this.initializeLoginScreen('SyncConsentScreen', {
       resetAllowed: true,
     });
+
+    if (this.locale === '') {
+      // Update the locale just in case the locale switched between the element
+      // loading start and `ready()` event (see https://crbug.com/1289095).
+      this.i18nUpdateLocale();
+    }
   }
 
   /**
