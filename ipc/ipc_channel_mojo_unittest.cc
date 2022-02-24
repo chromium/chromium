@@ -1733,6 +1733,8 @@ class ListenerThatVerifiesPeerPid : public TestListenerBase {
   }
 };
 
+// The global PID is only used on systems that use the zygote. Hence, this
+// test is disabled on other platforms.
 TEST_F(IPCChannelMojoTest, VerifyGlobalPid) {
   Init("IPCChannelMojoTestVerifyGlobalPidClient");
 

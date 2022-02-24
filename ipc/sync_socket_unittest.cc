@@ -21,7 +21,7 @@
 #include "ipc/ipc_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #endif
 
@@ -38,7 +38,7 @@
 // Windows HANDLEs versus posix file descriptors.
 #if BUILDFLAG(IS_WIN)
 IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::SyncSocket::Handle)
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 IPC_MESSAGE_CONTROL1(MsgClassSetHandle, base::FileDescriptor)
 #endif
 
@@ -86,7 +86,7 @@ class SyncSocketServerListener : public IPC::Listener {
   void OnMsgClassSetHandle(const base::SyncSocket::Handle handle) {
     SetHandle(handle);
   }
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   void OnMsgClassSetHandle(const base::FileDescriptor& fd_struct) {
     SetHandle(fd_struct.fd);
   }
@@ -209,7 +209,7 @@ TEST_F(SyncSocketTest, SanityTest) {
 // |length| bytes of packets or Shutdown() is called on another thread.
 static void BlockingRead(base::SyncSocket* socket, char* buf,
                          size_t length, size_t* received) {
-  DCHECK(buf != NULL);
+  DCHECK_NE(buf, nullptr);
   // Notify the parent thread that we're up and running.
   socket->Send(kHelloString, kHelloStringLength);
   *received = socket->Receive(buf, length);

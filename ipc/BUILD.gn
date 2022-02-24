@@ -292,13 +292,6 @@ if (!is_ios) {
     if (is_mac) {
       deps += [ "//sandbox/mac:seatbelt" ]
     }
-
-    if (is_fuchsia) {
-      sources -= [
-        # No AF_UNIX domain sockets on Fuchsia.
-        "sync_socket_unittest.cc",
-      ]
-    }
   }
 
   test("ipc_perftests") {
