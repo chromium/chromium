@@ -579,6 +579,7 @@
               "fast/forms/color-scheme",
               "fast/forms/validation-bubble-appearance-edge.html",
               "fast/forms/validation-bubble-appearance-wrap.html",
+              "fast/loader/plain-text-document-appearance.html",
               "http/tests/eye-dropper"],
     "args": ["--blink-settings=preferredColorScheme=0",
              "--enable-features=EyeDropper"]
