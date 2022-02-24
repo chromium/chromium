@@ -3317,4 +3317,40 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   EXPECT_FALSE(player_observer->IsPlaying(0));
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
+                       CacheClearDoesntAffectCurrentPage) {
+  // The bug this test is protecting against (https://crbug.com/1288620) only
+  // reproduces on pages with an iframe, so load one.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "a.test", "/iframe_clipped.html")));
+
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      GetMainFrame(), media::MediaContentType::Persistent);
+
+  // Add a player.
+  StartNewPlayer(player_observer.get());
+  ResolveAudioFocusSuccess();
+  EXPECT_TRUE(player_observer->IsPlaying(0));
+  RenderFrameHostImplWrapper frame_host(GetMainFrame());
+
+  // Navigate to another page. The original page is cached in back-forward
+  // cache.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+  EXPECT_TRUE(frame_host->IsInBackForwardCache());
+
+  // Add a player on the new page
+  StartNewPlayer(player_observer.get());
+  ResolveAudioFocusSuccess();
+  EXPECT_TRUE(player_observer->IsPlaying(1));
+
+  // Evict the page from the back-forward cache.
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  EXPECT_TRUE(frame_host.WaitUntilRenderFrameDeleted());
+
+  // The page being removed from the back-forward cache should not affect the
+  // play state of the current page.
+  EXPECT_TRUE(player_observer->IsPlaying(1));
+}
+
 }  // namespace content
