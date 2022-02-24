@@ -118,6 +118,9 @@ crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performan
 crbug.com/1261260 [ android android-nexus-5x ] GpuProcess_webgpu_iframe_removed [ Failure ]
 crbug.com/1261260 [ android android-shield-android-tv ] GpuProcess_webgpu_iframe_removed [ Failure ]
 
+# Flaky Vulkan Loader Timeout
+crbug.com/1275738 [ linux angle-swiftshader ] GpuProcess_disable_gpu [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
