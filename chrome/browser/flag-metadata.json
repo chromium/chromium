@@ -4250,6 +4250,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "ntp-photos-opt-in-art-work",
+    "owners": [ "mplg", "tiborg"],
+    "expiry_milestone":105
+  },
+  {
     "name": "ntp-photos-opt-in-title",
     "owners": [ "mplg", "tiborg"],
     "expiry_milestone":105

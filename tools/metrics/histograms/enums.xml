@@ -51835,6 +51835,8 @@ from previous Chrome versions.
   <int value="-1765004425"
       label="CertificateTransparency2022PolicyAllCerts:disabled"/>
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
+  <int value="-1761695937"
+      label="NtpPhotosModuleCustomizedOptInArtWork:enabled"/>
   <int value="-1760624380"
       label="ImprovedCookieControlsForThirdPartyCookieBlocking:enabled"/>
   <int value="-1760146324" label="CellularAllowPerNetworkRoaming:disabled"/>
@@ -52943,6 +52945,8 @@ from previous Chrome versions.
   <int value="-1008130438" label="PageEntitiesPageContentAnnotations:enabled"/>
   <int value="-1007961880" label="PrivacySandboxSettings:enabled"/>
   <int value="-1007856269" label="CssSelectorFragmentAnchor:disabled"/>
+  <int value="-1007267652"
+      label="NtpPhotosModuleCustomizedOptInArtWork:disabled"/>
   <int value="-1005937042" label="ArcVmBalloonPolicy:enabled"/>
   <int value="-1005164075" label="ContextualSearchTranslations:enabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>

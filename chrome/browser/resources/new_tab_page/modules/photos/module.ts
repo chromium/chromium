@@ -63,6 +63,21 @@ export class PhotosModuleElement extends I18nMixin
         reflectToAttribute: true,
       },
 
+      customArtworkUrl_: {
+        type: String,
+        value: () => {
+          return `chrome://new-tab-page/modules/photos/images/img0${
+              loadTimeData.getString('photosModuleCustomArtWork')}_240x236.svg`;
+        }
+      },
+
+      showCustomArtWork_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getString('photosModuleCustomArtWork') !== '';
+        }
+      },
+
       showSoftOptOutButton: Boolean,
       optInTitleText: String,
       hideMenuButton: Boolean,
@@ -82,6 +97,8 @@ export class PhotosModuleElement extends I18nMixin
   hideMenuButton: boolean;
   private showExploreMore_: boolean;
   private headerChipText_: string;
+  private customArtworkUrl_: string;
+  private showCustomArtWork_: boolean;
 
   ready() {
     super.ready();
