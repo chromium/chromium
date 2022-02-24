@@ -1149,15 +1149,22 @@
 
     'tryserver.chromium.perf': {
       'Android Compile Perf': 'official_goma_minimal_symbols_android',
+      'Android Compile Perf PGO': 'official_goma_minimal_symbols_android_pgo',
       'Android arm64 Compile Perf': 'official_goma_minimal_symbols_android_arm64',
+      'Android arm64 Compile Perf PGO': 'official_goma_minimal_symbols_android_arm64_pgo',
       'Chromeos Amd64 Generic Lacros Builder Perf': 'chromeos_amd64-generic_lacros_official',
       'Fuchsia Builder Perf': 'official_goma_fuchsia_arm64_perf',
       'Fuchsia Builder Perf x64': 'official_goma_fuchsia_x64_perf',
       'Linux Builder Perf': 'official_goma_linux_perf',
+      'Linux Builder Perf PGO': 'official_goma_linux_perf_pgo',
       'Mac Builder Perf': 'official_goma_mac_perf',
+      'Mac Builder Perf PGO': 'official_goma_mac_perf_pgo',
       'Mac arm Builder Perf': 'official_goma_mac_arm_perf',
+      'Mac arm Builder Perf PGO': 'official_goma_mac_arm_perf_pgo',
       'Win Builder Perf': 'official_goma_x86_perf',
+      'Win Builder Perf PGO': 'official_goma_x86_perf_pgo',
       'Win x64 Builder Perf': 'official_goma_perf',
+      'Win x64 Builder Perf PGO': 'official_goma_perf_pgo',
     },
 
     'tryserver.chromium.rust': {
@@ -2803,12 +2810,24 @@
       'official', 'goma', 'minimal_symbols', 'pgo_phase_0',
     ],
 
+    'official_goma_perf_pgo': [
+      'official', 'goma', 'minimal_symbols', 'pgo_phase_1',
+    ],
+
     'official_goma_mac_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
     ],
 
+    'official_goma_mac_perf_pgo': [
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_1',
+    ],
+
     'official_goma_mac_arm_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
+    ],
+
+    'official_goma_mac_arm_perf_pgo': [
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_1',
     ],
 
     'official_goma_mac_arm_pgo': [
@@ -2821,6 +2840,10 @@
 
     'official_goma_linux_perf': [
       'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
+    ],
+
+    'official_goma_linux_perf_pgo': [
+      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_1',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -2842,8 +2865,16 @@
       'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
     ],
 
+    'official_goma_minimal_symbols_android_pgo': [
+      'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_1', 'no_default_afdo'
+    ],
+
     'official_goma_minimal_symbols_android_arm64': [
       'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
+    ],
+
+    'official_goma_minimal_symbols_android_arm64_pgo': [
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_1', 'no_default_afdo'
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [
@@ -2868,6 +2899,10 @@
 
     'official_goma_x86_perf': [
       'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_0',
+    ],
+
+    'official_goma_x86_perf_pgo': [
+      'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_1',
     ],
 
     'official_goma_x86_pgo': [
