@@ -9,6 +9,9 @@ Commands:
   chrome  Starts a Chrome instance with autofill hooks
   wpr     Starts a WPR server instance to record or replay
   run     Starts a test for a single site or "*" for all sites
+  refresh Starts a test for a single site or "*" for all sites, and records new
+          server prediction responses.
+
 Use "captured_sites [command] -h" for more information about each command.',
 
 This script attempts to simplify the various configuration and override options
@@ -87,7 +90,9 @@ _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
 _RUN_DEBUGGING_TESTS = '--gtest_break_on_failure'
 
 _AUTOFILL_TEST = '*/AutofillCapturedSitesInteractiveTest'
+_AUTOFILL_REFRESH = '*/AutofillCapturedSitesRefresh'
 _PASSWORD_MANAGER_TEST = '*/CapturedSitesPasswordManagerBrowserTest'
+_PASSWORD_MANAGER_REFRESH = '*/CapturedSitesPasswordManagerRefresh'
 _VMODULE_AUTOFILL_FILE = 'autofill_captured_sites_interactive_uitest'
 _VMODULE_PASSWORD_FILE = 'password_manager_captured_sites_interactive_uitest'
 
@@ -318,12 +323,22 @@ def _launch_wpr(options, forward_args):
   _make_process_call(command_args + forward_args, options.print_only)
 
 
+def _launch_refresh(options, forward_args):
+  _launch_test(options, forward_args, _AUTOFILL_REFRESH,
+               _PASSWORD_MANAGER_REFRESH)
+
+
 def _launch_run(options, forward_args):
-  gtest_filter = _AUTOFILL_TEST
+  _launch_test(options, forward_args, _AUTOFILL_TEST, _PASSWORD_MANAGER_TEST)
+
+
+def _launch_test(options, forward_args, gtest_filter_autofill,
+                 gtest_filter_password):
+  gtest_filter = gtest_filter_autofill
   gtest_parameter = options.site_name
   vmodule_name = _VMODULE_AUTOFILL_FILE
   if options.scenario_dir != '':
-    gtest_filter = _PASSWORD_MANAGER_TEST
+    gtest_filter = gtest_filter_password
     gtest_parameter = '%s_%s' % (options.scenario_dir, options.site_name)
     vmodule_name = _VMODULE_PASSWORD_FILE
 
@@ -399,6 +414,10 @@ def main():
       Command('Start WPR to replay or record.',
               [_add_wpr_args, _add_shared_args, _add_scenario_site_args],
               _launch_wpr),
+      'refresh':
+      Command('Refresh the Server Predictions of an autofill or password test.',
+              [_add_run_args, _add_shared_args, _add_scenario_site_args],
+              _launch_refresh),
       'run':
       Command('Start an autofill or password test run.',
               [_add_run_args, _add_shared_args, _add_scenario_site_args],
