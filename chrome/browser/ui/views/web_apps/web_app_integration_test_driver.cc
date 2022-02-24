@@ -76,6 +76,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/dns/mock_host_resolver.h"
@@ -302,6 +303,18 @@ absl::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
              ? absl::nullopt
              : absl::make_optional<AppState>(it->second);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+AppManagementPageHandler CreateAppManagementPageHandler(Profile* profile) {
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  static auto delegate =
+      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile);
+  return AppManagementPageHandler(handler.BindNewPipeAndPassReceiver(),
+                                  page.InitWithNewPipeAndPassRemote(), profile,
+                                  *delegate);
+}
+#endif
 
 }  // anonymous namespace
 
@@ -819,7 +832,7 @@ void WebAppIntegrationTestDriver::LaunchFromShortcut(
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::LaunchAppSettingsFromAppMenu(
+void WebAppIntegrationTestDriver::OpenAppSettingsFromAppMenu(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
@@ -857,7 +870,7 @@ void WebAppIntegrationTestDriver::LaunchAppSettingsFromAppMenu(
 #endif
 }
 
-void WebAppIntegrationTestDriver::LaunchAppSettingsFromChromeApps(
+void WebAppIntegrationTestDriver::OpenAppSettingsFromChromeApps(
     const std::string& site_mode) {
 #if !BUILDFLAG(IS_CHROMEOS)
   BeforeStateChangeAction(__FUNCTION__);
@@ -1011,13 +1024,7 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
                                     true);
 #else
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  auto delegate =
-      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
-  AppManagementPageHandler app_management_page_handler(
-      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile(), *delegate);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id,
                                             apps::mojom::WindowMode::kBrowser);
 #endif
@@ -1038,13 +1045,7 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
   sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
 #else
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  auto delegate =
-      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
-  AppManagementPageHandler app_management_page_handler(
-      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile(), *delegate);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id,
                                             apps::mojom::WindowMode::kWindow);
 #endif
@@ -1129,6 +1130,44 @@ void WebAppIntegrationTestDriver::UninstallFromList(
   observer.Wait();
 
   AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::UninstallFromAppSettings(
+    const std::string& site_mode) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  BeforeStateChangeAction(__FUNCTION__);
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  auto app_id = app_state->id;
+  WebAppTestUninstallObserver uninstall_observer(profile());
+  uninstall_observer.BeginListening({app_id});
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  if (web_contents->GetURL() !=
+      GURL("chrome://app-settings/" + app_state->id)) {
+    OpenAppSettingsFromChromeApps(site_mode);
+    CheckBrowserNavigationIsAppSettings("SiteA");
+  }
+
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsDestroyedWatcher destroyed_watcher(web_contents);
+
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  app_management_page_handler.Uninstall(app_id);
+
+  uninstall_observer.Wait();
+
+  // Wait for app settings page to be closed.
+  destroyed_watcher.Wait();
+
+  AfterStateChangeAction();
+#else
+  NOTREACHED() << "Not implemented on Chrome OS.";
+#endif
 }
 
 void WebAppIntegrationTestDriver::UninstallFromMenu(
@@ -1990,16 +2029,10 @@ void WebAppIntegrationTestDriver::SetRunOnOsLoginMode(
       before_state_change_action_state_.get(), profile(), site_mode);
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  auto delegate =
-      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile());
   base::RunLoop run_loop;
   web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
       run_loop.QuitClosure());
-  AppManagementPageHandler app_management_page_handler(
-      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
-      profile(), *delegate);
+  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetRunOnOsLoginMode(app_state->id, login_mode);
   run_loop.Run();
 #endif

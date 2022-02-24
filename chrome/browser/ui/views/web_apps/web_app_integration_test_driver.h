@@ -166,8 +166,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void LaunchFromLaunchIcon(const std::string& site_mode);
   void LaunchFromMenuOption(const std::string& site_mode);
   void LaunchFromShortcut(const std::string& site_mode);
-  void LaunchAppSettingsFromChromeApps(const std::string& site_mode);
-  void LaunchAppSettingsFromAppMenu(const std::string& site_mode);
+  void OpenAppSettingsFromChromeApps(const std::string& site_mode);
+  void OpenAppSettingsFromAppMenu(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();
@@ -184,6 +184,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void SyncTurnOn();
   void UninstallFromList(const std::string& site_mode);
   void UninstallFromMenu(const std::string& site_mode);
+  void UninstallFromAppSettings(const std::string& site_mode);
   void UninstallPolicyApp(const std::string& site_mode);
   void UninstallFromOs(const std::string& site_mode);
 
