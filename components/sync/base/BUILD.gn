@@ -35,7 +35,6 @@ static_library("base") {
     "logging.h",
     "model_type.cc",
     "model_type.h",
-    "ordinal.h",
     "passphrase_enums.cc",
     "passphrase_enums.h",
     "pref_names.h",

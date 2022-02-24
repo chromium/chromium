@@ -8,7 +8,4 @@ include_rules = [
   "+net/base/net_errors.h",
   "+net/http/http_status_code.h",
   "+ui/base",
-  # TODO(crbug.com/1300525): Remove this once ordinal_unittest.cc is moved to
-  # model/.
-  "+components/sync/model/string_ordinal.h",
 ]

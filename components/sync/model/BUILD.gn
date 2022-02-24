@@ -52,6 +52,7 @@ static_library("model") {
     "processor_entity_tracker.h",
     "proxy_model_type_controller_delegate.cc",
     "proxy_model_type_controller_delegate.h",
+    "string_ordinal.cc",
     "string_ordinal.h",
     "sync_change.cc",
     "sync_change.h",

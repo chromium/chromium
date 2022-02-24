@@ -129,7 +129,6 @@ source_set("unit_tests") {
   sources = [
     "base/client_tag_hash_unittest.cc",
     "base/model_type_unittest.cc",
-    "base/ordinal_unittest.cc",
     "base/protobuf_unittest.cc",
     "base/sync_prefs_unittest.cc",
     "base/sync_util_unittest.cc",
@@ -190,6 +189,7 @@ source_set("unit_tests") {
     "model/mutable_data_batch_unittest.cc",
     "model/processor_entity_tracker_unittest.cc",
     "model/processor_entity_unittest.cc",
+    "model/string_ordinal_unittest.cc",
     "model/sync_change_unittest.cc",
     "model/sync_data_unittest.cc",
     "model/sync_error_unittest.cc",

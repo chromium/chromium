@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1300525): Move this file to model/ and remove this include
-// (it's kept now to avoid a presubmit error). None of that is done now to allow
-// for a friendlier diff.
-#include "components/sync/base/ordinal.h"
+#include "components/sync/model/string_ordinal.h"
 
+#include <algorithm>
 #include <cctype>
 #include <vector>
 
 #include "base/rand_util.h"
-#include "components/sync/model/string_ordinal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
