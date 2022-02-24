@@ -29,7 +29,6 @@ class ImageData;
 class ImageElementBase;
 class ImageDecoder;
 class OffscreenCanvas;
-class ScriptPromiseResolver;
 
 class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
                                       public CanvasImageSource,
