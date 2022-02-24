@@ -42,9 +42,6 @@ class DiscoverFeedProvider {
   // Stops the Feed, which will disconnect all of its services and clear the
   // models.
   virtual void StopFeedService();
-  // TODO(crbug.com/1277504): Remove when cleaned out of downstream.
-  virtual void StartFeed(DiscoverFeedConfiguration* discover_config);
-  virtual void StopFeed();
   // Creates models for all enabled feed types.
   virtual void CreateFeedModels();
   // Clears all existing feed models.

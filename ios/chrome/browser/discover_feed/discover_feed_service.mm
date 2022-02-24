@@ -38,7 +38,7 @@ void DiscoverFeedService::Shutdown() {
   identity_manager_observation_.Reset();
 
   // Stop the Discover feed to disconnects its services.
-  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StopFeed();
+  ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StopFeedService();
 
   feed_metrics_recorder_ = nil;
 }
