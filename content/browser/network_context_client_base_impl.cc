@@ -128,11 +128,4 @@ void NetworkContextClientBase::OnTrustTokenIssuanceDivertedToSystem(
   std::move(callback).Run(std::move(response));
 }
 
-void NetworkContextClientBase::OnCanSendSCTAuditingReport(
-    OnCanSendSCTAuditingReportCallback callback) {
-  std::move(callback).Run(false);
-}
-
-void NetworkContextClientBase::OnNewSCTAuditingReportSent() {}
-
 }  // namespace content

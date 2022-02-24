@@ -59,10 +59,3 @@ void PrefetchProxyNetworkContextClient::OnTrustTokenIssuanceDivertedToSystem(
       network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
   std::move(callback).Run(std::move(response));
 }
-
-void PrefetchProxyNetworkContextClient::OnCanSendSCTAuditingReport(
-    OnCanSendSCTAuditingReportCallback callback) {
-  std::move(callback).Run(false);
-}
-
-void PrefetchProxyNetworkContextClient::OnNewSCTAuditingReportSent() {}
