@@ -143,7 +143,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     data->link_locations_.push_back(element->ratio_distance_top_to_visible_top);
 
     // Collect the target URL if it is new, without ref (# fragment).
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearRef();
     document_url = element->source_url.ReplaceComponents(replacements);
     GURL target_url = element->target_url.ReplaceComponents(replacements);
@@ -222,7 +222,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     }
     const auto& anchor = anchors_[element->anchor_id];
     // Collect the target URL if it is new, without ref (# fragment).
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearRef();
     GURL document_url = anchor->source_url.ReplaceComponents(replacements);
     GURL target_url = anchor->target_url.ReplaceComponents(replacements);
