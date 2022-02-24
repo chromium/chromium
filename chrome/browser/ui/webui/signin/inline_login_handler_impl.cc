@@ -212,7 +212,8 @@ void UnlockProfileAndHideLoginUI(const base::FilePath profile_path,
 
 void LockProfileAndShowUserManager(const base::FilePath& profile_path) {
   SetProfileLocked(profile_path, true);
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 }
 
 // Callback for DiceTurnOnSyncHelper.

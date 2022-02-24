@@ -4470,7 +4470,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   run_loop.Run();
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }

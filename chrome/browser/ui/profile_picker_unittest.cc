@@ -3,9 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/profile_picker.h"
+
+#include "base/files/file_path.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -129,3 +134,19 @@ TEST_F(ProfilePickerTest, ShouldShowAtLaunch_SingleProfile) {
 
   EXPECT_FALSE(ProfilePicker::ShouldShowAtLaunch());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(ProfilePickerParamsTest, ForLacrosSelectAvailableAccount) {
+  base::FilePath path = base::FilePath::FromASCII("/test/path");
+  testing::StrictMock<base::MockOnceCallback<void(const std::string&)>>
+      callback;
+  {
+    ProfilePicker::Params params =
+        ProfilePicker::Params::ForLacrosSelectAvailableAccount(path,
+                                                               callback.Get());
+    EXPECT_EQ(path, params.custom_profile_path());
+    // The callback is called at destruction.
+    EXPECT_CALL(callback, Run(std::string()));
+  }
+}
+#endif

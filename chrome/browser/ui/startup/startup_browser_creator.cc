@@ -449,10 +449,10 @@ StartupProfileInfo GetProfilePickerStartupProfileInfo() {
 
 void ShowProfilePicker(chrome::startup::IsProcessStartup process_startup) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePicker::Show(
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
       process_startup == chrome::startup::IsProcessStartup::kYes
           ? ProfilePicker::EntryPoint::kOnStartup
-          : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
+          : ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   return;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

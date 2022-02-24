@@ -44,6 +44,54 @@ ProfilePicker::AvailabilityOnStartup GetAvailabilityOnStartup() {
 const char ProfilePicker::kTaskManagerUrl[] =
     "chrome://profile-picker/task-manager";
 
+ProfilePicker::Params::~Params() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  NotifyAccountSelected(std::string());
+#endif
+}
+
+ProfilePicker::Params::Params(ProfilePicker::Params&&) = default;
+
+ProfilePicker::Params& ProfilePicker::Params::operator=(
+    ProfilePicker::Params&&) = default;
+
+// static
+ProfilePicker::Params ProfilePicker::Params::FromEntryPoint(
+    EntryPoint entry_point) {
+  // Use specialized constructors when available.
+  DCHECK_NE(entry_point, EntryPoint::kBackgroundModeManager);
+  DCHECK_NE(entry_point, EntryPoint::kLacrosSelectAvailableAccount);
+  return ProfilePicker::Params(entry_point);
+}
+
+// static
+ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
+    const GURL& on_select_profile_target_url) {
+  Params params(EntryPoint::kBackgroundModeManager);
+  params.on_select_profile_target_url_ = on_select_profile_target_url;
+  return params;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+ProfilePicker::Params ProfilePicker::Params::ForLacrosSelectAvailableAccount(
+    const base::FilePath& custom_profile_path,
+    base::OnceCallback<void(const std::string&)> account_selected_callback) {
+  Params params(EntryPoint::kLacrosSelectAvailableAccount);
+  params.custom_profile_path_ = custom_profile_path;
+  params.account_selected_callback_ = std::move(account_selected_callback);
+  return params;
+}
+
+void ProfilePicker::Params::NotifyAccountSelected(const std::string& gaia_id) {
+  if (account_selected_callback_)
+    std::move(account_selected_callback_).Run(gaia_id);
+}
+#endif
+
+ProfilePicker::Params::Params(EntryPoint entry_point)
+    : entry_point_(entry_point) {}
+
 // static
 bool ProfilePicker::Shown() {
   PrefService* prefs = g_browser_process->local_state();

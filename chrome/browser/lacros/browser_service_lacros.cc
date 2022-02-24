@@ -138,8 +138,8 @@ void BrowserServiceLacros::NewWindow(bool incognito,
     // we can't skip the picker in this case. The default behavior for the first
     // browser window supports session restore, additional windows are opened
     // blank and thus it works reasonably well for BrowserServiceLacros.
-    ProfilePicker::Show(
-        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
     std::move(callback).Run();
     return;
   }

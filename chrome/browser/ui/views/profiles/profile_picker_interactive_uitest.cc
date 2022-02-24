@@ -63,7 +63,7 @@ class ProfilePickerInteractiveUiTest : public ProfilePickerTestBase {
 
   void ShowAndFocusPicker(ProfilePicker::EntryPoint entry_point,
                           const GURL& expected_url) {
-    ProfilePicker::Show(entry_point);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(entry_point));
     WaitForLoadStop(expected_url);
     EXPECT_TRUE(
         ui_test_utils::ShowAndFocusNativeWindow(widget()->GetNativeWindow()));

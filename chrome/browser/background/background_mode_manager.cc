@@ -634,8 +634,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::ShowAboutChrome(bmd->GetBrowserWindow());
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
-                            GURL(chrome::kChromeUIHelpURL));
+        ProfilePicker::Show(ProfilePicker::Params::ForBackgroundManager(
+            GURL(chrome::kChromeUIHelpURL)));
       }
       break;
     case IDC_TASK_MANAGER:
@@ -643,8 +643,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         chrome::OpenTaskManager(bmd->GetBrowserWindow());
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager,
-                            GURL(ProfilePicker::kTaskManagerUrl));
+        ProfilePicker::Show(ProfilePicker::Params::ForBackgroundManager(
+            GURL(ProfilePicker::kTaskManagerUrl)));
       }
       break;
     case IDC_EXIT:
@@ -671,7 +671,8 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
       if (bmd) {
         bmd->ExecuteCommand(command_id, event_flags);
       } else {
-        ProfilePicker::Show(ProfilePicker::EntryPoint::kBackgroundModeManager);
+        ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+            ProfilePicker::EntryPoint::kBackgroundModeManager));
       }
       break;
   }

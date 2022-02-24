@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
+#include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -63,11 +65,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // nothing.
   void DisplayErrorMessage();
 
-  // Sets the URL to be opened after the user selects a profile.
-  void set_on_select_profile_target_url(const GURL& url) {
-    on_select_profile_target_url_ = url;
-  }
-
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
@@ -98,7 +95,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   friend class ProfilePicker;
 
   // To display the Profile picker, use ProfilePicker::Show().
-  explicit ProfilePickerView(const base::FilePath& custom_profile_path);
+  explicit ProfilePickerView(ProfilePicker::Params&& params);
   ~ProfilePickerView() override;
 
   enum State { kNotStarted = 0, kInitializing = 1, kReady = 2, kClosing = 3 };
@@ -124,12 +121,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // If the picker needs to be re-opened, this function schedules the reopening,
   // closes the picker and return true. Otherwise, it returns false.
-  bool ShouldReopen(ProfilePicker::EntryPoint entry_point,
-                    const GURL& on_select_profile_target_url,
-                    const base::FilePath& custom_profile_path);
+  bool MaybeReopen(ProfilePicker::Params& params);
 
   // Displays the profile picker.
-  void Display(ProfilePicker::EntryPoint entry_point);
+  void Display();
 
   // On picker profile creation success, it initializes the view.
   void OnPickerProfileCreated(Profile* picker_profile,
@@ -220,10 +215,16 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // profile selection instead of the new tab page.
   GURL GetOnSelectProfileTargetUrl() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the user selects an account on the Lacros-specific account
+  // selection screen. Only called for existing profiles, not as part of profile
+  // creation.
+  void NotifyAccountSelected(const std::string& gaia_id);
+#endif
+
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
-  ProfilePicker::EntryPoint entry_point_ =
-      ProfilePicker::EntryPoint::kOnStartup;
+  ProfilePicker::Params params_;
   State state_ = State::kNotStarted;
 
   // Callback that gets called (if set) when the current window has closed -
@@ -268,14 +269,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
   ProfilePickerForceSigninDialogHost dialog_host_;
-
-  // A target page url that opens on profile selection instead of the new tab
-  // page.
-  GURL on_select_profile_target_url_;
-
-  // The custom path for the profile to be used for the picker (the default path
-  // is used when empty).
-  base::FilePath custom_profile_path_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

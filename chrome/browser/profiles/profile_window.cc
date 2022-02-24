@@ -167,7 +167,8 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
             ->GetProfileAttributesStorage()
             .GetProfileAttributesWithPath(profile->GetPath());
     if (entry && entry->IsSigninRequired()) {
-      ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileLocked));
       return;
     }
   }
@@ -175,7 +176,8 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!AreSecondaryProfilesAllowed() && !profile->IsMainProfile()) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

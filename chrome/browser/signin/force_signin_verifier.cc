@@ -178,7 +178,8 @@ void ForceSigninVerifier::OnCloseBrowsersSuccess(
   if (!entry)
     return;
   entry->LockForceSigninProfile(true);
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 }
 
 signin::PrimaryAccountAccessTokenFetcher*

@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,6 +54,71 @@ class ProfilePicker {
     kMaxValue = kLacrosSelectAvailableAccount,
   };
 
+  class Params final {
+   public:
+    // Basic constructors and operators.
+    ~Params();
+    Params(Params&&);
+    Params& operator=(Params&&);
+
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+
+    // Basic constructor. Specifies only the entry point, and all other
+    // parameters have default values. Use specialized entry points when they
+    // are available (e.g. `ForBackgroundManager()`).
+    static Params FromEntryPoint(EntryPoint entry_point);
+
+    // Builds parameter with the `kBackgroundModeManager` entry point. Allows
+    // specifying extra parameters.
+    static Params ForBackgroundManager(
+        const GURL& on_select_profile_target_url);
+
+    EntryPoint entry_point() const { return entry_point_; }
+
+    // May be non-empty only for the `kBackgroundModeManager` entry point.
+    const GURL& on_select_profile_target_url() const {
+      return on_select_profile_target_url_;
+    }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Builds parameter with the `kLacrosSelectAvailableAccount` entry point.
+    //
+    // `custom_profile_path` specifies the profile that should be used to render
+    // the profile picker. If `custom_profile_path` matches the current value
+    // for an existing picker, then `Show()` reactivates the existing picker.
+    // Otherwise `Show()` hides the current window and shows a new one.
+    //
+    // `account_selected_callback` is called when the user picks an account on
+    // the account selection screen. If the user closes the window, it is called
+    // with the empty string. If the user clicks "Use another account" and
+    // starts an OS account addition, this callback is passed to
+    // `ShowAddACcountDialog()` and will be called with its result.
+    static Params ForLacrosSelectAvailableAccount(
+        const base::FilePath& custom_profile_path,
+        base::OnceCallback<void(const std::string&)> account_selected_callback);
+
+    // May be non-empty only for the `kLacrosSelectAvailableAccount` entry
+    // point. See `ForLacrosSelectAvailableAccount()` for more details.
+    const base::FilePath& custom_profile_path() const {
+      return custom_profile_path_;
+    }
+
+    // Calls `account_selected_callback_`. See
+    // `ForLacrosSelectAvailableAccount()` for more details.
+    void NotifyAccountSelected(const std::string& gaia_id);
+#endif
+
+   private:
+    // Constructor is private, use static functions instead.
+    explicit Params(EntryPoint entry_point);
+
+    EntryPoint entry_point_ = EntryPoint::kOnStartup;
+    GURL on_select_profile_target_url_;
+    base::FilePath custom_profile_path_;
+    base::OnceCallback<void(const std::string&)> account_selected_callback_;
+  };
+
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
   // re-numbered. See components/policy/resources/policy_templates.json for
   // documentation.
@@ -65,19 +132,10 @@ class ProfilePicker {
   ProfilePicker(const ProfilePicker&) = delete;
   ProfilePicker& operator=(const ProfilePicker&) = delete;
 
-  // Shows the Profile picker for the given `entry_point` or re-activates an
-  // existing one (if `custom_profile_path` matches the current one) or hides
-  // the current window and shows a new one (if `custom_profile_path` does not
-  // match the current one). When reactivated, the displayed page is not
-  // updated. `custom_profile_path` specifies the profile that should be used to
-  // render the profile picker and may be non-empty only for the
-  // `kLacrosSelectAvailableAccount` entry point.
-  // TODO(crbug.com/1226076): Clean the API up, make the optional params part of
-  // a struct together with EntryPoint.
-  static void Show(
-      EntryPoint entry_point,
-      const GURL& on_select_profile_target_url = GURL(),
-      const base::FilePath& custom_profile_path = base::FilePath());
+  // Shows the Profile picker for the given `Params` or re-activates an existing
+  // one (see `Params::ForAccountSelecAvailableAccount()` for details on
+  // re-activation). When reactivated, the displayed page is not updated.
+  static void Show(Params&& params);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Starts the Dice sign-in flow. The layout of the window gets updated for the
@@ -159,6 +217,12 @@ class ProfilePicker {
   // MacOS when there are no windows, or from Windows tray icon.
   // This returns true if the user has multiple profiles and has not opted-out.
   static bool ShouldShowAtLaunch();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Calls the callback passed to
+  // `ProfilePicker::Params::ForLacrosSelectAvailableAccount()`.
+  static void NotifyAccountSelected(const std::string& gaia_id);
+#endif
 };
 
 // Dialog that will be displayed when a locked profile is selected in the

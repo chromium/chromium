@@ -1269,7 +1269,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
   if (unsafeLastProfile && !lastProfile) {
     // The profile is disallowed by policy (locked or guest mode disabled).
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
     return;
   }
 
@@ -1471,10 +1472,11 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   }
   if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
       lastProfile->IsSystemProfile()) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
   } else if (ProfilePicker::ShouldShowAtLaunch()) {
-    ProfilePicker::Show(
-        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   } else {
     CreateBrowser(lastProfile);
   }
@@ -2039,8 +2041,10 @@ void RunInSafeProfileHelper::OnProfileLoaded(
   if (status == Profile::CREATE_STATUS_CREATED)
     return;  // Profile loading is not complete, wait to be called again.
   Profile* safe_profile = GetSafeProfile(loaded_profile, status);
-  if (!safe_profile)
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kUnableToCreateBrowser);
+  if (!safe_profile) {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kUnableToCreateBrowser));
+  }
   std::move(callback).Run(safe_profile);
 }
 

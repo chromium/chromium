@@ -173,9 +173,8 @@ void OnLacrosAccountsAvailableAsSecondaryFetched(
   if (!accounts.empty()) {
     // Pass in the current profile to signal that the user wants to select a
     // _secondary_ account for this particular profile.
-    ProfilePicker::Show(
-        ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount, GURL(),
-        profile_path);
+    ProfilePicker::Show(ProfilePicker::Params::ForLacrosSelectAvailableAccount(
+        profile_path, base::OnceCallback<void(const std::string&)>()));
     return;
   }
   mapper->ShowAddAccountDialog(profile_path,

@@ -116,7 +116,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (IBAction)newProfile:(id)sender {
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
 }
 
 - (BOOL)insertItemsIntoMenu:(NSMenu*)menu

@@ -91,7 +91,8 @@ void AvatarMenu::SwitchToProfile(size_t index, bool always_create) {
 
   // Don't open a browser window for signed-out profiles.
   if (item.signin_required) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileLocked));
     return;
   }
 

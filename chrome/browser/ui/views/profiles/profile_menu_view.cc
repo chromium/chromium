@@ -388,14 +388,16 @@ void ProfileMenuView::OnAddNewProfileButtonClicked() {
   RecordClick(ActionableItem::kAddNewProfileButton);
   if (!perform_menu_actions())
     return;
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
 }
 
 void ProfileMenuView::OnManageProfilesButtonClicked() {
   RecordClick(ActionableItem::kManageProfilesButton);
   if (!perform_menu_actions())
     return;
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
 }
 
 void ProfileMenuView::OnEditProfileButtonClicked() {

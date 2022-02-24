@@ -662,7 +662,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 // Checks that menu items and commands work when the profile picker is open.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
   // Show the profile picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
 
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);

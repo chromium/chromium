@@ -37,7 +37,8 @@ void OpenNewWindowForProfile(Profile* profile) {
     DCHECK(signin_util::IsForceSigninEnabled());
     // Displays the ProfilePicker without any sign-in dialog opened.
     if (!ProfilePicker::IsOpen()) {
-      ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileLocked));
     }
 
     g_browser_process->profile_manager()->CreateProfileAsync(
@@ -48,8 +49,8 @@ void OpenNewWindowForProfile(Profile* profile) {
 
   if (ProfilePicker::IsOpen()) {
     // If the profile picker is open, do not open a new browser automatically.
-    ProfilePicker::Show(
-        ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
     return;
   }
 

@@ -396,7 +396,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       const std::string& email,
       const std::string& given_name,
       const std::string& hosted_domain = kNoHostedDomainFound) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
     // Wait until webUI is fully initialized.
     const GURL kNewProfileUrl("chrome://profile-picker/new-profile");
     WaitForLoadStop(kNewProfileUrl);
@@ -447,7 +448,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   // Opens the Gaia signin page in the profile creation flow. Returns the new
   // profile that was created.
   Profile* StartDiceSignIn() {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
     // Wait until webUI is fully initialized.
     WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
 
@@ -563,7 +565,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kOnStartup));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   WaitForPickerWidgetCreated();
   // Check that non-default accessible title is provided both before the page
@@ -575,7 +578,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowChoice) {
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   WaitForPickerWidgetCreated();
   // Check that non-default accessible title is provided both before the page
@@ -709,7 +713,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CancelWhileSigningInBeforeProfileCreated) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   // Wait until webUI is fully initialized.
   WaitForLoadStop(GURL("chrome://profile-picker/new-profile"));
 
@@ -1034,7 +1039,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenPickerAndClose) {
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   ProfilePicker::Hide();
@@ -1045,14 +1051,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        OpenPickerWhileClosing) {
   // Open the first picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Request to open the second picker window while the first one is still
   // closing.
   ProfilePicker::Hide();
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 
   // The first picker should be closed and the second picker should be
   // displayed.
@@ -1068,7 +1076,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
   // Open the other profile.
   OpenProfileFromPicker(other_path, /*open_settings=*/false);
@@ -1098,7 +1107,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
 
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kOnStartup));
   EXPECT_TRUE(ProfilePicker::IsOpen());
   WaitForLoadStop(GURL("chrome://profile-picker"));
 
@@ -1129,7 +1139,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
   // Open the other profile.
   OpenProfileFromPicker(other_path, /*open_settings=*/true);
@@ -1150,31 +1161,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Create a profile.
   base::FilePath profile_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
-                      kTargetURL);
+  ProfilePicker::Show(ProfilePicker::Params::ForBackgroundManager(kTargetURL));
   WaitForLoadStop(GURL("chrome://profile-picker"));
-  // Open the profile.
-  OpenProfileFromPicker(profile_path, /*open_settings=*/false);
-  // Browser for the profile is displayed.
-  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForLoadStop(kTargetURL,
-                  new_browser->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ(new_browser->profile()->GetPath(), profile_path);
-  WaitForPickerClosed();
-}
-
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       OpenURL_PickerAlreadyOpen) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  const GURL kTargetURL("chrome://settings/help");
-  // Create a profile.
-  base::FilePath profile_path = CreateNewProfileWithoutBrowser();
-  // Open the picker without target URL.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
-  WaitForLoadStop(GURL("chrome://profile-picker"));
-  // Request a URL when the picker is already open.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
-                      kTargetURL);
   // Open the profile.
   OpenProfileFromPicker(profile_path, /*open_settings=*/false);
   // Browser for the profile is displayed.
@@ -1193,7 +1181,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
   // Open a Guest profile.
   OpenGuestFromPicker();
@@ -1217,7 +1206,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Open the picker.
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
   WaitForLoadStop(GURL("chrome://profile-picker"));
 
   // Close the browser window.

@@ -9,12 +9,14 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -703,4 +705,48 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
   EXPECT_EQ(0, *theme_info.FindIntKey("colorId"));  // 0: manually picked color.
   EXPECT_EQ(SK_ColorRED, static_cast<SkColor>(*theme_info.FindIntKey("color")));
 }
+
+TEST_F(ProfilePickerHandlerInUserProfileTest, NoAvailableAccount) {
+  // Lacros always expects a default profile.
+  CreateTestingProfile("Default");
+  CompleteFacadeGetAccounts({});
+  const std::string kGaiaId = "some_gaia_id";
+
+  // Set a callback for account selection.
+  testing::StrictMock<base::MockOnceCallback<void(const std::string&)>>
+      callback;
+  ProfilePicker::Show(ProfilePicker::Params::ForLacrosSelectAvailableAccount(
+      base::FilePath(), callback.Get()));
+  EXPECT_CALL(callback, Run(kGaiaId));
+
+  // Mock the OS account addition.
+  account_manager::Account account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      "example@gmail.com"};
+  EXPECT_CALL(*mock_account_manager_facade(),
+              ShowAddAccountDialog(account_manager::AccountManagerFacade::
+                                       AccountAdditionSource::kOgbAddAccount,
+                                   testing::_))
+      .WillOnce(
+          [account, this](
+              account_manager::AccountManagerFacade::AccountAdditionSource,
+              base::OnceCallback<void(
+                  const account_manager::AccountAdditionResult&)> callback) {
+            std::move(callback).Run(
+                account_manager::AccountAdditionResult::FromAccount(account));
+            // Notify the mapper that an account has been added.
+            profile_manager()
+                ->profile_manager()
+                ->GetAccountProfileMapper()
+                ->OnAccountUpserted(account);
+            CompleteFacadeGetAccounts({account});
+          });
+
+  // Request account addition.
+  base::ListValue args;
+  args.Append(/*color=*/base::Value());
+  args.Append(/*gaiaId=*/base::Value(base::Value::Type::STRING));
+  web_ui()->HandleReceivedMessage("loadSignInProfileCreationFlow", &args);
+}
+
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

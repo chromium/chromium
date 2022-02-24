@@ -579,7 +579,8 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileEdit) {
     avatar_menu_->EditProfile(active_profile_index_);
   } else if (command_id == kTagProfileCreate) {
-    ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile);
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
   } else if (base::Contains(history_items_, command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.

@@ -242,6 +242,17 @@ SkBitmap GetAvailableAccountBitmap(const gfx::Image& gaia_image,
       kAccountPictureSize);
   return default_image.AsBitmap();
 }
+
+void RunAccountSelectionCallback(
+    const absl::optional<AccountProfileMapper::AddAccountResult>& result) {
+  if (!result.has_value() || result->account.key.account_type() !=
+                                 account_manager::AccountType::kGaia) {
+    return;
+  }
+
+  ProfilePicker::NotifyAccountSelected(result->account.key.id());
+  ProfilePicker::Hide();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void RecordProfilingFinishReason(
@@ -885,18 +896,19 @@ void ProfilePickerHandler::HandleLoadSignInProfileCreationFlow(
   if (IsSelectingSecondaryAccount(web_ui())) {
     AccountProfileMapper* mapper =
         g_browser_process->profile_manager()->GetAccountProfileMapper();
+    AccountProfileMapper::AddAccountCallback add_account_callback =
+        base::BindOnce(&RunAccountSelectionCallback);
     if (gaia_id.empty()) {
       mapper->ShowAddAccountDialog(GetCurrentProfilePath(web_ui()),
                                    account_manager::AccountManagerFacade::
                                        AccountAdditionSource::kOgbAddAccount,
-                                   AccountProfileMapper::AddAccountCallback());
+                                   std::move(add_account_callback));
     } else {
       mapper->AddAccount(GetCurrentProfilePath(web_ui()),
                          account_manager::AccountKey(
                              gaia_id, account_manager::AccountType::kGaia),
-                         AccountProfileMapper::AddAccountCallback());
+                         std::move(add_account_callback));
     }
-    ProfilePicker::Hide();
     return;
   }
 

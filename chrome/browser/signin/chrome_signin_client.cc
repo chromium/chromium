@@ -363,6 +363,7 @@ void ChromeSigninClient::LockForceSigninProfile(
 
 void ChromeSigninClient::ShowUserManager(const base::FilePath& profile_path) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileLocked);
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileLocked));
 #endif
 }
