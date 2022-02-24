@@ -1081,7 +1081,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragDropActiveLeave").FilesSwa(),
         TestCase("transferDragDropActiveDrop"),
         TestCase("transferDragDropActiveDrop").FilesSwa(),
-        TestCase("transferDragDropTreeItemAccepts"),
+        // TODO(crbug.com/1254578): Remove flakiness and enable.
+        // TestCase("transferDragDropTreeItemAccepts"),
         TestCase("transferDragDropTreeItemAccepts").FilesSwa(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
