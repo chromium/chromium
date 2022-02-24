@@ -9,8 +9,10 @@
 
 #include <iosfwd>
 #include <limits>
+#include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -34,6 +36,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
@@ -661,6 +664,38 @@ MATCHER_P(DeactivatedSourceIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.GetDeactivatedSource(),
                             result_listener);
 }
+
+struct AttributionFilterSizeTestCase {
+  const char* description;
+  bool valid;
+
+  size_t filter_count;
+  size_t filter_size;
+  size_t value_count;
+  size_t value_size;
+
+  using Map = base::flat_map<std::string, std::vector<std::string>>;
+
+  Map AsMap() const;
+};
+
+constexpr AttributionFilterSizeTestCase kAttributionFilterSizeTestCases[] = {
+    {"empty", true, 0, 0, 0, 0},
+    {"max_filters", true, blink::kMaxAttributionFiltersPerSource, 1, 0, 0},
+    {"too_many_filters", false, blink::kMaxAttributionFiltersPerSource + 1, 1,
+     0, 0},
+    {"max_filter_size", true, 1, blink::kMaxBytesPerAttributionFilterString, 0,
+     0},
+    {"excessive_filter_size", false, 1,
+     blink::kMaxBytesPerAttributionFilterString + 1, 0, 0},
+    {"max_values", true, 1, 0, blink::kMaxValuesPerAttributionFilter, 0},
+    {"too_many_values", false, 1, 0, blink::kMaxValuesPerAttributionFilter + 1,
+     0},
+    {"max_value_size", true, 1, 0, 1,
+     blink::kMaxBytesPerAttributionFilterString},
+    {"excessive_value_size", false, 1, 0, 1,
+     blink::kMaxBytesPerAttributionFilterString + 1},
+};
 
 }  // namespace content
 

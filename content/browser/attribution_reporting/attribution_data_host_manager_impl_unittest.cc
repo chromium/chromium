@@ -75,6 +75,7 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   source_data->reporting_origin = reporting_origin;
   source_data->priority = 20;
   source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
 }
@@ -128,6 +129,32 @@ TEST_F(AttributionDataHostManagerImplTest,
         url::Origin::Create(GURL(test_case.destination_origin));
     source_data->reporting_origin =
         url::Origin::Create(GURL(test_case.reporting_origin));
+    source_data->filter_data = blink::mojom::AttributionFilterData::New();
+    data_host_remote->SourceDataAvailable(std::move(source_data));
+    data_host_remote.FlushForTesting();
+
+    Mock::VerifyAndClear(&mock_manager_);
+  }
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHost_FilterSizeCheckPerformed) {
+  for (const auto& test_case : kAttributionFilterSizeTestCases) {
+    SCOPED_TRACE(test_case.description);  // EXPECT_CALL doesn't support <<
+    EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.valid);
+
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+    data_host_manager_.RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        url::Origin::Create(GURL("https://page.example")));
+
+    auto source_data = blink::mojom::AttributionSourceData::New();
+    source_data->destination =
+        url::Origin::Create(GURL("https://trigger.example"));
+    source_data->reporting_origin =
+        url::Origin::Create(GURL("https://reporter.example"));
+    source_data->filter_data =
+        blink::mojom::AttributionFilterData::New(test_case.AsMap());
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -160,6 +187,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->source_event_id = 10;
   source_data->destination = destination_origin;
   source_data->reporting_origin = reporting_origin;
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
 }
@@ -191,6 +219,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto source_data = blink::mojom::AttributionSourceData::New();
   source_data->destination = destination_origin;
   source_data->reporting_origin = reporting_origin;
+  source_data->filter_data = blink::mojom::AttributionFilterData::New();
   data_host_remote->SourceDataAvailable(source_data.Clone());
   data_host_remote.FlushForTesting();
 

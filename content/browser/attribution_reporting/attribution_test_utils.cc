@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -821,6 +822,21 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
     case StorableSource::Result::kExcessiveReportingOrigins:
       return out << "excessiveReportingOrigins";
   }
+}
+
+AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
+    const {
+  Map map;
+
+  for (size_t i = 0; i < filter_count; i++) {
+    // Give each filter a unique name while respecting the desired size.
+    std::string filter(filter_size, 'A' + i);
+    std::vector<std::string> values(value_count, std::string(value_size, '*'));
+    map.emplace(std::move(filter), std::move(values));
+  }
+
+  DCHECK_EQ(map.size(), filter_count);
+  return map;
 }
 
 std::vector<AttributionReport> GetAttributionsToReportForTesting(

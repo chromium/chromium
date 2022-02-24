@@ -109,6 +109,7 @@ source_set("headers") {
     "action_after_pagehide.h",
     "associated_interfaces/associated_interface_provider.h",
     "associated_interfaces/associated_interface_registry.h",
+    "attribution_reporting/constants.h",
     "blob/blob_utils.h",
     "bluetooth/web_bluetooth_device_id.h",
     "bluetooth/web_bluetooth_device_id_mojom_traits.h",

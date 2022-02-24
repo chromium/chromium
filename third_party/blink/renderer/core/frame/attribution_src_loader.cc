@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -36,8 +37,62 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+namespace {
+
+bool ParseAttributionFilterData(
+    JSONValue* value,
+    mojom::blink::AttributionFilterData& filter_data) {
+  if (!value)
+    return true;
+
+  JSONObject* object = JSONObject::Cast(value);
+  if (!object)
+    return false;
+
+  const wtf_size_t num_filters = object->size();
+  if (num_filters > kMaxAttributionFiltersPerSource)
+    return false;
+
+  for (wtf_size_t i = 0; i < num_filters; ++i) {
+    JSONObject::Entry entry = object->at(i);
+
+    if (entry.first.CharactersSizeInBytes() >
+        kMaxBytesPerAttributionFilterString) {
+      return false;
+    }
+
+    JSONArray* array = JSONArray::Cast(entry.second);
+    if (!array)
+      return false;
+
+    const wtf_size_t num_values = array->size();
+    if (num_values > kMaxValuesPerAttributionFilter)
+      return false;
+
+    WTF::Vector<String> values;
+
+    for (wtf_size_t j = 0; j < num_values; ++j) {
+      String value;
+      if (!array->at(j)->AsString(&value))
+        return false;
+
+      if (value.CharactersSizeInBytes() > kMaxBytesPerAttributionFilterString)
+        return false;
+
+      values.push_back(std::move(value));
+    }
+
+    filter_data.filter_values.insert(entry.first, std::move(values));
+  }
+
+  return true;
+}
+
+}  // namespace
 
 AttributionSrcLoader::AttributionSrcLoader(LocalFrame* frame)
     : local_frame_(frame) {}
@@ -155,6 +210,7 @@ void AttributionSrcLoader::HandleSourceRegistration(
 
   mojom::blink::AttributionSourceDataPtr source_data =
       mojom::blink::AttributionSourceData::New();
+  source_data->filter_data = mojom::blink::AttributionFilterData::New();
 
   // Verify the current url is trustworthy and capable of registering sources.
   scoped_refptr<const SecurityOrigin> reporting_origin =
@@ -165,6 +221,7 @@ void AttributionSrcLoader::HandleSourceRegistration(
       SecurityOrigin::Create(response.CurrentRequestUrl());
 
   // Populate attribution data from provided JSON.
+  // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(response.HttpHeaderField(
       http_names::kAttributionReportingRegisterSource));
 
@@ -222,6 +279,11 @@ void AttributionSrcLoader::HandleSourceRegistration(
       source_data->debug_key =
           mojom::blink::AttributionDebugKey::New(debug_key);
     }
+  }
+
+  if (!ParseAttributionFilterData(object->Get("filter_data"),
+                                  *source_data->filter_data)) {
+    return;
   }
 
   it->value->SourceDataAvailable(std::move(source_data));

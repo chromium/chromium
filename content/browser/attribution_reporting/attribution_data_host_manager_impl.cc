@@ -18,9 +18,34 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+bool IsFilterDataValid(const blink::mojom::AttributionFilterData& filter_data) {
+  if (filter_data.filter_values.size() > blink::kMaxAttributionFiltersPerSource)
+    return false;
+
+  for (const auto& [filter, values] : filter_data.filter_values) {
+    if (filter.size() > blink::kMaxBytesPerAttributionFilterString)
+      return false;
+
+    if (values.size() > blink::kMaxValuesPerAttributionFilter)
+      return false;
+
+    for (const auto& value : values) {
+      if (value.size() > blink::kMaxBytesPerAttributionFilterString)
+        return false;
+    }
+  }
+
+  return true;
+}
+
+}  // namespace
 
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     BrowserContext* browser_context,
@@ -79,6 +104,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
           data->destination)) {
     return;
   }
+
+  if (!IsFilterDataValid(*data->filter_data))
+    return;
 
   StorableSource storable_source(CommonSourceInfo(
       data->source_event_id, context.context_origin, data->destination,

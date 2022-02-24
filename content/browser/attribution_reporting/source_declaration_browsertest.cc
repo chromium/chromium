@@ -4,8 +4,11 @@
 
 #include <memory>
 
+#include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -32,7 +35,11 @@ namespace content {
 
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
@@ -193,6 +200,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_EQ(source_data.front()->priority, 0);
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
+  EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -231,6 +239,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_EQ(source_data.front()->expiry, base::Seconds(1000));
   EXPECT_EQ(source_data.front()->debug_key,
             blink::mojom::AttributionDebugKey::New(789));
+  EXPECT_THAT(source_data.front()->filter_data->filter_values,
+              UnorderedElementsAre(Pair("a", IsEmpty()),
+                                   Pair("b", ElementsAre("1", "2"))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -1195,5 +1206,172 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   // We should see a null impression on the navigation.
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
 }
+
+class AttributionSourceDeclarationInvalidFiltersBrowserTest
+    : public AttributionSourceDeclarationBrowserTest,
+      public ::testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(AttributionSourceDeclarationInvalidFiltersBrowserTest,
+                       AttributionSrcImgFiltersInvalid_SourceDropped) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionSourceImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+  http_response->AddCustomHeader(
+      "Attribution-Reporting-Register-Source",
+      base::StrCat(
+          {R"({"source_event_id":"9", "destination":"https://advertiser.example", "filter_data":)",
+           GetParam(), "}"}));
+  http_response->AddCustomHeader("Location", "/register_source_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  // Only the second source is registered.
+  EXPECT_EQ(source_data.size(), 1u);
+  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.back()->destination,
+            url::Origin::Create(GURL("https://advertiser.example")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AttributionSourceDeclarationInvalidFilters,
+    AttributionSourceDeclarationInvalidFiltersBrowserTest,
+    ::testing::Values(R"("x")",        // not a dictionary
+                      R"({"a":"y"})",  // dictionary value isn't an array
+                      R"({"b":[8]})"   // array value isn't a string
+                      ));
+
+class AttributionSourceDeclarationFilterSizeBrowserTest
+    : public AttributionSourceDeclarationBrowserTest,
+      public ::testing::WithParamInterface<AttributionFilterSizeTestCase> {};
+
+IN_PROC_BROWSER_TEST_P(AttributionSourceDeclarationFilterSizeBrowserTest,
+                       AttributionSrcImgExcessiveFilterSize_SourceDropped) {
+  const AttributionFilterSizeTestCase& test_case = GetParam();
+
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::RegisterDefaultHandlers(https_server.get());
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+  https_server->ServeFilesFromSourceDirectory("content/test/data");
+  SetupCrossSiteRedirector(https_server.get());
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/register_source");
+  ASSERT_TRUE(https_server->Start());
+
+  GURL page_url =
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server->GetURL("d.test", "/register_source");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionSourceImg($1);", register_url)));
+
+  register_response->WaitForRequest();
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("source_event_id", "9");
+  dict.SetStringKey("destination", "https://advertiser.example");
+
+  base::Value filter_data(base::Value::Type::DICTIONARY);
+  for (auto [filter, values] : test_case.AsMap()) {
+    base::Value list(base::Value::Type::LIST);
+    for (auto value : values) {
+      list.Append(std::move(value));
+    }
+    filter_data.SetKey(std::move(filter), std::move(list));
+  }
+  dict.SetKey("filter_data", std::move(filter_data));
+
+  std::string json;
+  EXPECT_TRUE(base::JSONWriter::Write(dict, &json));
+
+  http_response->AddCustomHeader("Attribution-Reporting-Register-Source",
+                                 std::move(json));
+  http_response->AddCustomHeader("Location", "/register_source_headers.html");
+  register_response->Send(http_response->ToResponseString());
+  register_response->Done();
+
+  if (!data_host)
+    loop.Run();
+
+  const size_t expected_sources = test_case.valid ? 2 : 1;
+  data_host->WaitForSourceData(/*num_source_data=*/expected_sources);
+  const auto& source_data = data_host->source_data();
+
+  EXPECT_EQ(source_data.size(), expected_sources);
+  EXPECT_EQ(source_data.back()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.back()->destination,
+            url::Origin::Create(GURL("https://advertiser.example")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AttributionSourceDeclarationFilterSizes,
+    AttributionSourceDeclarationFilterSizeBrowserTest,
+    ::testing::ValuesIn(kAttributionFilterSizeTestCases),
+    /*name_generator=*/
+    [](const ::testing::TestParamInfo<AttributionFilterSizeTestCase>& info) {
+      return info.param.description;
+    });
+
+// TODO(apaseltiner): Add tests for overlong filters.
 
 }  // namespace content

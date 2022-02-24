@@ -11,6 +11,14 @@ struct AttributionDebugKey {
   uint64 value;
 };
 
+// Filter data for selectively matching attribution sources and triggers.
+// See https://github.com/WICG/conversion-measurement-api/blob/main/EVENT.md#optional-attribution-filters
+// for details.
+struct AttributionFilterData {
+  // Map of filter name to a possibly empty set of values.
+  map<string, array<string>> filter_values;
+};
+
 struct AttributionSourceData {
   // Target site where this source will be triggered.
   //
@@ -34,6 +42,8 @@ struct AttributionSourceData {
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
   AttributionDebugKey? debug_key;
+
+  AttributionFilterData filter_data;
 };
 
 // Browser-process interface responsible for processing attribution
