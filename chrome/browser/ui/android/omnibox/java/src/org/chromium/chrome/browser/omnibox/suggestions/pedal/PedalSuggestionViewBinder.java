@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.core.view.ViewCompat;
+
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -66,6 +68,9 @@ public final class PedalSuggestionViewBinder<T extends View>
             Drawable backgroundDrawable =
                     BaseSuggestionViewBinder.getSelectableBackgroundDrawable(view, model);
             view.getPedalView().setBackground(backgroundDrawable);
+        } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
+            ViewCompat.setLayoutDirection(
+                    view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         }
     }
 }
