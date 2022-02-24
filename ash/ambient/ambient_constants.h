@@ -59,13 +59,6 @@ constexpr int kMediaStringMaxWidthDip = 280;
 
 constexpr int kMediaStringGradientWidthDip = 20;
 
-// Do not use directly. Use IsDynamicLottieAsset() in ambient_util.h instead.
-// This is only exposed here so that Lottie asset ids can be generated in tests.
-//
-// The motion designers who build the Lottie animations and eng have agreed upon
-// this prefix. Do not change unless coordinated with motion designers.
-constexpr char kLottieDynamicAssetIdPrefix[] = "dynamic_img";
-
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_

@@ -21,14 +21,14 @@ TEST(AmbientAnimationPhotoConfigTest, SetsTopicSetSize) {
               Eq(0u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-0",
-      GenerateTestLottieDynamicAssetId(/*unique_id=*/0),
+      GenerateLottieCustomizableIdForTesting(/*unique_id=*/0),
       /*size=*/absl::nullopt));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
                   .topic_set_size,
               Eq(1u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-1",
-      GenerateTestLottieDynamicAssetId(/*unique_id=*/1),
+      GenerateLottieCustomizableIdForTesting(/*unique_id=*/1),
       /*size=*/absl::nullopt));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
                   .topic_set_size,

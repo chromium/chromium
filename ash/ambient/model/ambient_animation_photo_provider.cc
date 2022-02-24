@@ -11,8 +11,8 @@
 
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
-#include "ash/ambient/util/ambient_util.h"
 #include "ash/utility/cropping_util.h"
+#include "ash/utility/lottie_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -56,7 +56,7 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
   StaticImageAssetImpl(base::StringPiece asset_id,
                        const AmbientAnimationStaticResources& static_resources)
       : image_(static_resources.GetStaticImageAsset(asset_id)) {
-    DCHECK(!ambient::util::IsDynamicLottieAsset(asset_id));
+    DCHECK(!IsCustomizableLottieId(asset_id));
     DCHECK(!image_.isNull())
         << "Static image asset " << asset_id << " is unknown.";
     DVLOG(1) << "Loaded static asset " << asset_id;
@@ -290,7 +290,7 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
   // Note in practice, all of the image assets are loaded one time by Skottie
   // when the animation is initially loaded. So the set of assets does not
   // change once the animation starts rendering.
-  if (ambient::util::IsDynamicLottieAsset(asset_id)) {
+  if (IsCustomizableLottieId(asset_id)) {
     dynamic_assets_.push_back(base::MakeRefCounted<DynamicImageAssetImpl>(
         asset_id, size,
         base::BindRepeating(

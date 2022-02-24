@@ -5,6 +5,7 @@
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/utility/lottie_util.h"
 #include "cc/paint/skottie_resource_metadata.h"
 
 namespace ash {
@@ -15,7 +16,7 @@ size_t GetNumDynamicAssetsInAnimation(
   size_t num_dynamic_assets = 0;
   for (const auto& resource_pair : skottie_resource_metadata.asset_storage()) {
     const std::string& asset_id = resource_pair.first;
-    if (ambient::util::IsDynamicLottieAsset(asset_id))
+    if (IsCustomizableLottieId(asset_id))
       ++num_dynamic_assets;
   }
   return num_dynamic_assets;

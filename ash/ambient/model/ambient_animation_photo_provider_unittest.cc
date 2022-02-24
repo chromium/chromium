@@ -95,7 +95,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     for (int i = 0; i < kNumDynamicAssets; ++i) {
       CHECK(resource_metadata.RegisterAsset(
           "dummy-resource-path", "dummy-resource-name",
-          GenerateTestLottieDynamicAssetId(i), /*size=*/absl::nullopt));
+          GenerateLottieCustomizableIdForTesting(i), /*size=*/absl::nullopt));
     }
     return resource_metadata;
   }
@@ -123,8 +123,9 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
           std::array<absl::optional<gfx::Size>, kNumDynamicAssets>()) {
     std::vector<scoped_refptr<ImageAsset>> all_assets;
     for (int asset_idx = 0; asset_idx < kNumDynamicAssets; ++asset_idx) {
-      all_assets.push_back(LoadAsset(
-          GenerateTestLottieDynamicAssetId(asset_idx), asset_sizes[asset_idx]));
+      all_assets.push_back(
+          LoadAsset(GenerateLottieCustomizableIdForTesting(asset_idx),
+                    asset_sizes[asset_idx]));
     }
     return all_assets;
   }
@@ -402,10 +403,10 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateTestLottieDynamicAssetId(0)),
-                      Key(GenerateTestLottieDynamicAssetId(1)),
-                      Key(GenerateTestLottieDynamicAssetId(2)),
-                      Key(GenerateTestLottieDynamicAssetId(3))),
+          ElementsAre(Key(GenerateLottieCustomizableIdForTesting(0)),
+                      Key(GenerateLottieCustomizableIdForTesting(1)),
+                      Key(GenerateLottieCustomizableIdForTesting(2)),
+                      Key(GenerateLottieCustomizableIdForTesting(3))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-a")),
                                Pair(_, TopicHasDetails("attribution-b")),
                                Pair(_, TopicHasDetails("attribution-c")),
@@ -427,10 +428,10 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   EXPECT_CALL(
       observer,
       OnDynamicImageAssetsRefreshed(AllOf(
-          ElementsAre(Key(GenerateTestLottieDynamicAssetId(0)),
-                      Key(GenerateTestLottieDynamicAssetId(1)),
-                      Key(GenerateTestLottieDynamicAssetId(2)),
-                      Key(GenerateTestLottieDynamicAssetId(3))),
+          ElementsAre(Key(GenerateLottieCustomizableIdForTesting(0)),
+                      Key(GenerateLottieCustomizableIdForTesting(1)),
+                      Key(GenerateLottieCustomizableIdForTesting(2)),
+                      Key(GenerateLottieCustomizableIdForTesting(3))),
           UnorderedElementsAre(Pair(_, TopicHasDetails("attribution-e")),
                                Pair(_, TopicHasDetails("attribution-f")),
                                Pair(_, TopicHasDetails("attribution-g")),

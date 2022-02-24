@@ -1813,7 +1813,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/assistant/ambient',
-        'version': 'pxg90ShqKWp8ch5tFVsNUirz7Nm0Az3_-nwhsqfQA4sC',
+        'version': '2JMBtDZyOScy9MApnSIBxYDEYBloph9vTPpsNXbj5sIC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
