@@ -21,7 +21,6 @@
 
 using infobars::InfoBar;
 
-// TODO(crbug.com/1289645): Use appropriate images.
 namespace {
 
 // Name of the camera icon image for the permissions banner.

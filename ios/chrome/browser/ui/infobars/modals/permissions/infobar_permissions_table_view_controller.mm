@@ -94,7 +94,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
        toSectionWithIdentifier:SectionIdentifierContent];
 
   for (id permission in self.permissionsInfo) {
-    [self updateSwitchForPermission:permission];
+    [self updateSwitchForPermission:permission tableViewLoaded:NO];
   }
 }
 
@@ -134,7 +134,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)permissionStateChanged:(PermissionInfo*)permissionInfo {
-  [self updateSwitchForPermission:permissionInfo];
+  [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
 }
 
 #pragma mark - Private Methods
@@ -152,20 +152,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Updates the switch of the given permission.
-- (void)updateSwitchForPermission:(PermissionInfo*)permissionInfo {
-  // TODO(crbug.com/1289645): Display permissions always in the same order.
+- (void)updateSwitchForPermission:(PermissionInfo*)permissionInfo
+                  tableViewLoaded:(BOOL)tableViewLoaded {
   switch (permissionInfo.permission) {
     case web::PermissionCamera:
       [self updateSwitchForPermissionState:permissionInfo.state
                                  withLabel:l10n_util::GetNSString(
                                                IDS_IOS_PERMISSIONS_CAMERA)
-                                    toItem:ItemTypePermissionsCamera];
+                                    toItem:ItemTypePermissionsCamera
+                           tableViewLoaded:tableViewLoaded];
       break;
     case web::PermissionMicrophone:
       [self updateSwitchForPermissionState:permissionInfo.state
                                  withLabel:l10n_util::GetNSString(
                                                IDS_IOS_PERMISSIONS_MICROPHONE)
-                                    toItem:ItemTypePermissionsMicrophone];
+                                    toItem:ItemTypePermissionsMicrophone
+                           tableViewLoaded:tableViewLoaded];
       break;
   }
 }
@@ -200,7 +202,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Adds or removes a switch depending on the value of the PermissionState.
 - (void)updateSwitchForPermissionState:(web::PermissionState)state
                              withLabel:(NSString*)label
-                                toItem:(ItemType)itemType {
+                                toItem:(ItemType)itemType
+                       tableViewLoaded:(BOOL)tableViewLoaded {
   if ([self.tableViewModel hasItemForItemType:itemType
                             sectionIdentifier:SectionIdentifierContent]) {
     // Remove the switch item if the permission is not accessible.
@@ -236,8 +239,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewSwitchItem alloc] initWithType:itemType];
   switchItem.text = label;
   switchItem.on = state == web::PermissionStateAllowed;
-  [self.tableViewModel addItem:switchItem
-       toSectionWithIdentifier:SectionIdentifierContent];
+
+  // If ItemTypePermissionsMicrophone is already added, insert the
+  // ItemTypePermissionsCamera before the ItemTypePermissionsMicrophone.
+  if (itemType == ItemTypePermissionsCamera &&
+      [self.tableViewModel hasItemForItemType:ItemTypePermissionsMicrophone
+                            sectionIdentifier:SectionIdentifierContent]) {
+    NSIndexPath* index = [self.tableViewModel
+        indexPathForItemType:ItemTypePermissionsMicrophone];
+    [self.tableViewModel insertItem:switchItem
+            inSectionWithIdentifier:SectionIdentifierContent
+                            atIndex:index.row];
+  } else {
+    [self.tableViewModel addItem:switchItem
+         toSectionWithIdentifier:SectionIdentifierContent];
+  }
+
+  if (tableViewLoaded) {
+    // TODO(crbug.com/1289645): Update the modal frame after reload.
+    NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+    [self.tableView insertRowsAtIndexPaths:@[ index ]
+                          withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
 }
 
 @end
