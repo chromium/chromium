@@ -61,7 +61,7 @@ public class FeedPlaceholderLayout extends LinearLayout {
     private static final int TEXT_PLACEHOLDER_RADIUS_DP = 12;
     private static final int LARGE_IMAGE_HEIGHT_DP = 207;
 
-    private static final int START_DELAY_MS = 733;
+    private static final int START_DELAY_MS = 0;
     private static final int FADE_DURATION_MS = 620;
     private static final PathInterpolator INITIAL_FADE_IN_CURVE =
             new PathInterpolator(0.17f, 0.17f, 0.85f, 1f);
