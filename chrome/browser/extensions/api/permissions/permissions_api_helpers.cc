@@ -19,6 +19,7 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "extensions/common/url_pattern_set.h"
+#include "extensions/common/user_script.h"
 
 namespace extensions {
 

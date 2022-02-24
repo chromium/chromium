@@ -16,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/values.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/permissions/api_permission.h"
 
 namespace extensions {

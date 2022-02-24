@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_session_type.h"

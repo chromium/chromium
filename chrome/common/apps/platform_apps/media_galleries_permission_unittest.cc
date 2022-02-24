@@ -13,8 +13,6 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using content::SocketPermissionRequest;
-using extensions::SocketPermissionData;
 using extensions::mojom::APIPermissionID;
 
 namespace chrome_apps {
