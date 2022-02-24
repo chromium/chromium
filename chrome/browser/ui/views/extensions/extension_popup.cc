@@ -31,6 +31,32 @@
 constexpr gfx::Size ExtensionPopup::kMinSize;
 constexpr gfx::Size ExtensionPopup::kMaxSize;
 
+// A helper class to scope the observation of DevToolsAgentHosts. We can't just
+// use base::ScopedObservation here because that requires a specific source
+// object, where as DevToolsAgentHostObservers are added to a singleton list.
+// The `observer_` passed into this object will be registered as an observer
+// for this object's lifetime.
+class ExtensionPopup::ScopedDevToolsAgentHostObservation {
+ public:
+  ScopedDevToolsAgentHostObservation(
+      content::DevToolsAgentHostObserver* observer)
+      : observer_(observer) {
+    content::DevToolsAgentHost::AddObserver(observer_);
+  }
+
+  ScopedDevToolsAgentHostObservation(
+      const ScopedDevToolsAgentHostObservation&) = delete;
+  ScopedDevToolsAgentHostObservation& operator=(
+      const ScopedDevToolsAgentHostObservation&) = delete;
+
+  ~ScopedDevToolsAgentHostObservation() {
+    content::DevToolsAgentHost::RemoveObserver(observer_);
+  }
+
+ private:
+  content::DevToolsAgentHostObserver* observer_;
+};
+
 // static
 void ExtensionPopup::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
@@ -64,8 +90,6 @@ void ExtensionPopup::ShowPopup(
 }
 
 ExtensionPopup::~ExtensionPopup() {
-  content::DevToolsAgentHost::RemoveObserver(this);
-
   // The ExtensionPopup may close before it was ever shown. If so, indicate such
   // through the callback.
   if (shown_callback_)
@@ -167,10 +191,11 @@ void ExtensionPopup::OnExtensionUnloaded(
 
     extension_host_observation_.Reset();
     host_.reset();
-    // Stop observing the registry immediately to prevent any subsequent
-    // notifications, since Widget::Close is asynchronous.
+    // Stop observing the registry and devtools immediately to prevent any
+    // subsequent notifications, since Widget::Close is asynchronous.
     DCHECK(extension_registry_observation_.IsObserving());
     extension_registry_observation_.Reset();
+    scoped_devtools_observation_.reset();
 
     GetWidget()->Close();
   }
@@ -192,18 +217,14 @@ void ExtensionPopup::OnTabStripModelChanged(
 
 void ExtensionPopup::DevToolsAgentHostAttached(
     content::DevToolsAgentHost* agent_host) {
+  DCHECK(host_);
   if (host_->host_contents() == agent_host->GetWebContents())
     show_action_ = PopupShowAction::kShowAndInspect;
 }
 
 void ExtensionPopup::DevToolsAgentHostDetached(
     content::DevToolsAgentHost* agent_host) {
-  // If the extension's page is open it will be closed when the extension
-  // is uninstalled, and if DevTools are attached, we will be notified here.
-  // But because OnExtensionUnloaded was already called, |host_| is
-  // no longer valid.
-  if (!host_)
-    return;
+  DCHECK(host_);
   if (host_->host_contents() == agent_host->GetWebContents())
     show_action_ = PopupShowAction::kShow;
 }
@@ -244,7 +265,8 @@ ExtensionPopup::ExtensionPopup(
   // See comments in OnWidgetActivationChanged().
   set_close_on_deactivate(false);
 
-  content::DevToolsAgentHost::AddObserver(this);
+  scoped_devtools_observation_ =
+      std::make_unique<ScopedDevToolsAgentHostObservation>(this);
   host_->browser()->tab_strip_model()->AddObserver(this);
 
   // Listen for the containing view calling window.close();

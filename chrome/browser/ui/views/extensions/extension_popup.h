@@ -121,6 +121,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
 
  private:
+  class ScopedDevToolsAgentHostObservation;
+
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
@@ -149,6 +151,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   PopupShowAction show_action_;
 
   ShowPopupCallback shown_callback_;
+
+  std::unique_ptr<ScopedDevToolsAgentHostObservation>
+      scoped_devtools_observation_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
