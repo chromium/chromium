@@ -635,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
 
   // While archive loading is still in progress and nothing has been committed,
   // trigger a same-document navigation.
-  url::Replacements<char> replacements;
-  replacements.SetRef("fragment", url::Component(0, strlen("fragment")));
+  GURL::Replacements replacements;
+  replacements.SetRefStr("fragment");
   const GURL mhtml_url_with_fragment =
       mhtml_url.ReplaceComponents(replacements);
   // TODO(dcheng): Using NavigateToURL() here seems to cause the test to hang.

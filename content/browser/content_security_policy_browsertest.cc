@@ -154,16 +154,16 @@ base::FilePath TestFilePath(const char* filename) {
 // Unfortunately, we cannot write this as Web Platform Test since Web Platform
 // Tests don't support file: urls.
 IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
-  url::Replacements<char> add_localhost;
-  add_localhost.SetHost("localhost", url::Component(0, 9));
-  url::Replacements<char> none;
+  GURL::Replacements add_localhost;
+  add_localhost.SetHostStr("localhost");
+  GURL::Replacements none;
   struct {
     const char* csp;
     std::string element_name;
-    const url::Replacements<char>& document_host;
-    const url::Replacements<char>& element_host;
+    const GURL::Replacements& document_host;
+    const GURL::Replacements& element_host;
     bool expect_allowed;
-  } testCases[]{
+  } test_cases[] = {
       {"img-src 'none'", "img", none, none, false},
       {"img-src file:", "img", none, none, true},
       {"img-src 'self'", "img", none, none, true},
@@ -194,9 +194,9 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
       {"frame-src 'self'", "iframe", add_localhost, add_localhost, true},
   };
 
-  for (const auto& testCase : testCases) {
+  for (const auto& test_case : test_cases) {
     GURL document_url = net::FilePathToFileURL(TestFilePath("hello.html"))
-                            .ReplaceComponents(testCase.document_host);
+                            .ReplaceComponents(test_case.document_host);
 
     // On windows, if `document_url` contains the host part "localhost", the
     // actual committed URL does not. So we omit EXPECT_TRUE and ignore the
@@ -204,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
     std::ignore = NavigateToURL(shell(), document_url);
 
     GURL element_url = net::FilePathToFileURL(TestFilePath(
-        testCase.element_name == "iframe" ? "empty.html" : "blank.jpg"));
-    element_url = element_url.ReplaceComponents(testCase.element_host);
+        test_case.element_name == "iframe" ? "empty.html" : "blank.jpg"));
+    element_url = element_url.ReplaceComponents(test_case.element_host);
     TestNavigationObserver load_observer(shell()->web_contents());
 
     EXPECT_TRUE(
@@ -230,9 +230,9 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
           });
           document.body.appendChild(element);
     )",
-                         testCase.csp, testCase.element_name, element_url)));
+                         test_case.csp, test_case.element_name, element_url)));
 
-    if (testCase.element_name == "iframe") {
+    if (test_case.element_name == "iframe") {
       // Since iframes always trigger the onload event, we need to be more
       // careful checking whether the iframe was blocked or not.
       load_observer.Wait();
@@ -240,10 +240,10 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
                                            ->child_at(0)
                                            ->current_frame_host()
                                            ->GetLastCommittedOrigin();
-      if (testCase.expect_allowed) {
+      if (test_case.expect_allowed) {
         EXPECT_TRUE(load_observer.last_navigation_succeeded())
             << element_url << " in " << document_url << " with CSPs \""
-            << testCase.csp << "\" should be allowed";
+            << test_case.csp << "\" should be allowed";
         EXPECT_FALSE(child_origin.opaque());
       } else {
         EXPECT_FALSE(load_observer.last_navigation_succeeded());
@@ -251,17 +251,17 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
         // The blocked frame's origin should become unique.
         EXPECT_TRUE(child_origin.opaque())
             << element_url << " in " << document_url << " with CSPs \""
-            << testCase.csp << "\" should be blocked";
+            << test_case.csp << "\" should be blocked";
       }
     } else {
       std::string expect_message =
-          testCase.expect_allowed ? "allowed" : "blocked";
+          test_case.expect_allowed ? "allowed" : "blocked";
       EXPECT_EQ(expect_message, EvalJs(current_frame_host(), "promise"))
           << element_url << " in " << document_url << " with CSPs \""
-          << testCase.csp << "\" should be " << expect_message;
+          << test_case.csp << "\" should be " << expect_message;
     }
 
-    if (!testCase.expect_allowed) {
+    if (!test_case.expect_allowed) {
       EXPECT_EQ("got violation", EvalJs(current_frame_host(), "violation"));
     }
   }
