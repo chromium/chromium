@@ -315,8 +315,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
   if (response.threat_info_size() > 0) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&VerdictCacheManager::CacheRealTimeUrlVerdict,
-                                  base::Unretained(cache_manager_), url,
-                                  response, base::Time::Now()));
+                                  cache_manager_->GetWeakPtr(), url, response,
+                                  base::Time::Now()));
   }
 }
 
