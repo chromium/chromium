@@ -56,6 +56,11 @@ const char kBackoffEntryKey[] = "backoff_entry";
 const char kReportKey[] = "report";
 const char kSCTHashdanceMetadataKey[] = "sct_metadata";
 
+void RecordPopularSCTSkippedMetrics(bool popular_sct_skipped) {
+  base::UmaHistogramBoolean("Security.SCTAuditing.OptOut.PopularSCTSkipped",
+                            popular_sct_skipped);
+}
+
 }  // namespace
 
 SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
@@ -132,6 +137,16 @@ void SCTAuditingHandler::MaybeEnqueueReport(
     DCHECK(result);
     result = net::ct::HashMerkleTreeLeaf(tree_leaf, &sct_metadata->leaf_hash);
     DCHECK(result);
+
+    // Do not report if this is a known popular SCT.
+    if (owner_network_context_->network_service()
+            ->sct_auditing_cache()
+            ->IsPopularSCT(
+                base::as_bytes(base::make_span(sct_metadata->leaf_hash)))) {
+      RecordPopularSCTSkippedMetrics(true);
+      return;
+    }
+    RecordPopularSCTSkippedMetrics(false);
 
     // Find the corresponding log entry metadata.
     const std::vector<mojom::CTLogInfoPtr>& logs =

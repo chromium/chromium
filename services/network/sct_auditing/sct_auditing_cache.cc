@@ -4,6 +4,8 @@
 
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 
+#include <algorithm>
+
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -161,6 +163,13 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   report_entry.key = std::move(cache_key);
   report_entry.report = std::move(report);
   return report_entry;
+}
+
+bool SCTAuditingCache::IsPopularSCT(base::span<const uint8_t> sct_leaf_hash) {
+  // Copy into a vector to make comparisons easier.
+  std::vector<uint8_t> leaf_hash(sct_leaf_hash.begin(), sct_leaf_hash.end());
+  return std::binary_search(popular_scts_.begin(), popular_scts_.end(),
+                            leaf_hash);
 }
 
 void SCTAuditingCache::ClearCache() {

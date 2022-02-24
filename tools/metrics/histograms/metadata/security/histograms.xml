@@ -576,6 +576,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.SCTAuditing.OptOut.PopularSCTSkipped" enum="Boolean"
+    expires_after="M104">
+  <owner>cthomp@chromium.org</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether an SCT selected for a hashdance lookup query was skipped
+    because it was found on the Popular SCTs list. Recorded once when creating a
+    new auditing report, but before the report is sampled or deduplicated.
+  </summary>
+</histogram>
+
 <histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
     expires_after="2022-09-01">
   <owner>cthomp@chromium.org</owner>
