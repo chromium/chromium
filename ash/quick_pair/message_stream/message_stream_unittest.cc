@@ -133,8 +133,8 @@ class FakeQuickPairProcessManager
 
     if (process_stopped_) {
       std::move(on_process_stopped_callback_)
-          .Run(
-              ash::quick_pair::QuickPairProcessManager::ShutdownReason::kCrash);
+          .Run(ash::quick_pair::QuickPairProcessManager::ShutdownReason::
+                   kFastPairDataParserMojoPipeDisconnection);
     }
 
     return std::make_unique<
