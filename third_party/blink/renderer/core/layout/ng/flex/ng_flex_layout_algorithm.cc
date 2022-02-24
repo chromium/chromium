@@ -1717,7 +1717,7 @@ NGBreakStatus NGFlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   // be before this row, or before an earlier sibling, if there's a more
   // appealing breakpoint there.
   if (!AttemptRowSoftBreak(child, layout_result, appeal_before,
-                           fragmentainer_block_offset))
+                           fragmentainer_block_offset, row.line_cross_size))
     return NGBreakStatus::kNeedsEarlierBreak;
 
   return NGBreakStatus::kBrokeBefore;
@@ -1774,12 +1774,13 @@ bool NGFlexLayoutAlgorithm::AttemptRowSoftBreak(
     NGLayoutInputNode child,
     const NGLayoutResult& layout_result,
     NGBreakAppeal appeal_before,
-    LayoutUnit fragmentainer_block_offset) {
+    LayoutUnit fragmentainer_block_offset,
+    LayoutUnit row_block_size) {
   if (container_builder_.HasEarlyBreak() &&
       container_builder_.EarlyBreak().BreakAppeal() > appeal_before) {
-    // TODO(almaher): This will be different for rows.
-    PropagateSpaceShortage(ConstraintSpace(), layout_result,
-                           fragmentainer_block_offset, &container_builder_);
+    PropagateSpaceShortage(ConstraintSpace(), /* layout_result */ nullptr,
+                           fragmentainer_block_offset, &container_builder_,
+                           row_block_size);
     return false;
   }
 

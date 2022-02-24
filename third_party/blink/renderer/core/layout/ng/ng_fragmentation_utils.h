@@ -270,11 +270,15 @@ inline void PropagateUnbreakableBlockSize(LayoutUnit block_size,
 // Propagate space shortage to the builder and beyond, if appropriate. This is
 // something we do during column balancing, when we already have a tentative
 // column block-size, as a means to calculate by how much we need to stretch the
-// columns to make everything fit.
-void PropagateSpaceShortage(const NGConstraintSpace&,
-                            const NGLayoutResult&,
-                            LayoutUnit fragmentainer_block_offset,
-                            NGBoxFragmentBuilder*);
+// columns to make everything fit. |block_size_override| should only be supplied
+// when you wish to propagate a different block-size than that of the provided
+// layout result.
+void PropagateSpaceShortage(
+    const NGConstraintSpace&,
+    const NGLayoutResult*,
+    LayoutUnit fragmentainer_block_offset,
+    NGBoxFragmentBuilder*,
+    absl::optional<LayoutUnit> block_size_override = absl::nullopt);
 
 // Move past the breakpoint before the child, if possible, and return true. Also
 // update the appeal of breaking before or inside the child (if we're not going

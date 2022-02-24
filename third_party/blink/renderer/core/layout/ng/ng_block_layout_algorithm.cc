@@ -2451,7 +2451,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
       // require an additional piece of machinery. This case should be rare
       // enough (to worry about performance), so let's focus on code
       // simplicity instead.
-      PropagateSpaceShortage(ConstraintSpace(), layout_result,
+      PropagateSpaceShortage(ConstraintSpace(), &layout_result,
                              fragmentainer_block_offset, &container_builder_);
     }
     // Attempt to honor orphans and widows requests.

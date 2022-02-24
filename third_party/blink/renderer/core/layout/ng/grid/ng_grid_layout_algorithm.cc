@@ -3308,7 +3308,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
           // We are choosing to add an early breakpoint at a row. Propagate our
           // space shortage to the column balancer.
-          PropagateSpaceShortage(ConstraintSpace(), *result,
+          PropagateSpaceShortage(ConstraintSpace(), result,
                                  fragment_relative_block_offset,
                                  &container_builder_);
 

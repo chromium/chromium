@@ -643,7 +643,7 @@ void BreakBeforeChild(const NGConstraintSpace& space,
   // (only blocks), because line boxes need handle it in their own way (due to
   // how we implement widows).
   if (child.IsBlock() && space.HasKnownFragmentainerBlockSize()) {
-    PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
+    PropagateSpaceShortage(space, &layout_result, fragmentainer_block_offset,
                            builder);
   }
 
@@ -660,33 +660,38 @@ void BreakBeforeChild(const NGConstraintSpace& space,
 }
 
 void PropagateSpaceShortage(const NGConstraintSpace& space,
-                            const NGLayoutResult& layout_result,
+                            const NGLayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
-                            NGBoxFragmentBuilder* builder) {
+                            NGBoxFragmentBuilder* builder,
+                            absl::optional<LayoutUnit> block_size_override) {
   // Space shortage is only reported for soft breaks, and they can only exist if
   // we know the fragmentainer block-size.
   DCHECK(space.HasKnownFragmentainerBlockSize());
+  DCHECK(layout_result || block_size_override);
 
   // Only multicol cares about space shortage.
   if (space.BlockFragmentationType() != kFragmentColumn)
     return;
 
   LayoutUnit space_shortage;
-  if (layout_result.MinimalSpaceShortage() == LayoutUnit::Max()) {
+  if (block_size_override) {
+    space_shortage = fragmentainer_block_offset + block_size_override.value() -
+                     space.FragmentainerBlockSize();
+  } else if (layout_result->MinimalSpaceShortage() == LayoutUnit::Max()) {
     // Calculate space shortage: Figure out how much more space would have been
     // sufficient to make the child fragment fit right here in the current
     // fragmentainer. If layout aborted, though, we can't propagate anything.
-    if (layout_result.Status() != NGLayoutResult::kSuccess)
+    if (layout_result->Status() != NGLayoutResult::kSuccess)
       return;
     NGFragment fragment(space.GetWritingDirection(),
-                        layout_result.PhysicalFragment());
+                        layout_result->PhysicalFragment());
     space_shortage = fragmentainer_block_offset + fragment.BlockSize() -
                      space.FragmentainerBlockSize();
   } else {
     // However, if space shortage was reported inside the child, use that. If we
     // broke inside the child, we didn't complete layout, so calculating space
     // shortage for the child as a whole would be impossible and pointless.
-    space_shortage = layout_result.MinimalSpaceShortage();
+    space_shortage = layout_result->MinimalSpaceShortage();
   }
 
   // TODO(mstensho): Turn this into a DCHECK, when the engine is ready for
@@ -864,7 +869,7 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
       builder->EarlyBreak().BreakAppeal() > appeal_before) {
     // Found a better place to break. Before aborting, calculate and report
     // space shortage from where we'd actually break.
-    PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
+    PropagateSpaceShortage(space, &layout_result, fragmentainer_block_offset,
                            builder);
     return false;
   }

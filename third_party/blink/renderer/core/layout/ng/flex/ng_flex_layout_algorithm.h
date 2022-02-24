@@ -139,13 +139,14 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // If false is returned, it means that the desired breakpoint is earlier in
   // the container, and that we need to abort and re-layout to that breakpoint.
   // |child| and |layout_result| should be those associated with the first child
-  // in the row. |appeal_before| and |fragmentainer_block_offset| are specific
-  // to the row itself. See |::blink::AttemptSoftBreak()| for more
-  // documentation.
+  // in the row. |appeal_before|, |fragmentainer_block_offset| and
+  // |row_block_size| are specific to the row itself. See
+  // |::blink::AttemptSoftBreak()| for more documentation.
   bool AttemptRowSoftBreak(NGLayoutInputNode child,
                            const NGLayoutResult& layout_result,
                            NGBreakAppeal appeal_before,
-                           LayoutUnit fragmentainer_block_offset);
+                           LayoutUnit fragmentainer_block_offset,
+                           LayoutUnit row_block_size);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
