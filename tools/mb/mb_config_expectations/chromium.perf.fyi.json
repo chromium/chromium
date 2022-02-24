@@ -61,7 +61,6 @@
     "gn_args": {
       "ffmpeg_branding": "Chrome",
       "fuchsia_additional_boot_images": [
-        "//third_party/fuchsia-sdk/images/qemu-x64-release/",
         "//third_party/fuchsia-sdk/images-internal/chromebook-x64-release/"
       ],
       "is_chrome_branded": true,
