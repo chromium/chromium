@@ -351,7 +351,7 @@ void ImeAdapterAndroid::FocusedNodeChanged(bool is_editable_node) {
   }
 }
 
-void ImeAdapterAndroid::AdvanceFocusInForm(JNIEnv* env,
+void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jint focus_type) {
   RenderFrameHostImpl* rfh =
@@ -359,7 +359,7 @@ void ImeAdapterAndroid::AdvanceFocusInForm(JNIEnv* env,
   if (!rfh)
     return;
 
-  rfh->GetAssociatedLocalFrame()->AdvanceFocusInForm(
+  rfh->GetAssociatedLocalFrame()->AdvanceFocusForIME(
       static_cast<blink::mojom::FocusType>(focus_type));
 }
 

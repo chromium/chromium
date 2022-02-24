@@ -79,7 +79,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void AdvanceFocusInFrame(blink::mojom::FocusType focus_type,
                            const absl::optional<blink::RemoteFrameToken>&
                                source_frame_token) override;
-  void AdvanceFocusInForm(blink::mojom::FocusType focus_type) override;
+  void AdvanceFocusForIME(blink::mojom::FocusType focus_type) override;
   void ReportContentSecurityPolicyViolation(
       network::mojom::CSPViolationPtr violation) override;
   void DidUpdateFramePolicy(const blink::FramePolicy& frame_policy) override;

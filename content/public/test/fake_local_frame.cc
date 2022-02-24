@@ -105,7 +105,7 @@ void FakeLocalFrame::AdvanceFocusInFrame(
     blink::mojom::FocusType focus_type,
     const absl::optional<blink::RemoteFrameToken>& source_frame_token) {}
 
-void FakeLocalFrame::AdvanceFocusInForm(blink::mojom::FocusType focus_type) {}
+void FakeLocalFrame::AdvanceFocusForIME(blink::mojom::FocusType focus_type) {}
 
 void FakeLocalFrame::ReportContentSecurityPolicyViolation(
     network::mojom::CSPViolationPtr violation) {}

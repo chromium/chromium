@@ -699,10 +699,12 @@ interface LocalFrame {
   AdvanceFocusInFrame(blink.mojom.FocusType focus_type,
                       blink.mojom.RemoteFrameToken? source_frame_token);
 
-  // Notifies this Frame to advance the focus to next input node in the form by
-  // moving in specified direction if the currently focused node is a Text node
-  // (textfield, text area or content editable nodes).
-  AdvanceFocusInForm(blink.mojom.FocusType focus_type);
+  // Notifies this Frame to advance the focus to next input node within its form
+  // by moving in specified direction if the currently focused node is a Text
+  // node (textfield, text area or content editable nodes). The next input node
+  // chosen (if available) will always have the same form owner as the currently
+  // focused node.
+  AdvanceFocusForIME(blink.mojom.FocusType focus_type);
 
   // Notifies the document navigation was blocked because a content security
   // policy was violated.

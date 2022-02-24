@@ -637,7 +637,7 @@ class CORE_EXPORT LocalFrame final
       mojom::blink::UserActivationNotificationType notification_type);
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr);
   void SaveImageAt(const gfx::Point& window_point);
-  void AdvanceFocusInForm(mojom::blink::FocusType focus_type);
+  void AdvanceFocusForIME(mojom::blink::FocusType focus_type);
   void PostMessageEvent(
       const absl::optional<RemoteFrameToken>& source_frame_token,
       const String& source_origin,

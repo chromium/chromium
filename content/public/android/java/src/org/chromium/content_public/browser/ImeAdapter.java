@@ -74,7 +74,7 @@ public interface ImeAdapter {
      *
      * @param focusType indicates whether to advance forward or backward direction.
      */
-    void advanceFocusInForm(int focusType);
+    void advanceFocusForIME(int focusType);
 
     /**
      * @return a newly instantiated {@link ResultReceiver} used to scroll to the editable
