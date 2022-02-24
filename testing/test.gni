@@ -12,6 +12,7 @@ import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
 import("//build/rust/mixed_executable.gni")
+import("//build/rust/mixed_shared_library.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
@@ -184,6 +185,7 @@ template("test") {
       }
     } else {
       _library_target = "${target_name}__library"
+      _library_crate_name = "${target_name}_library"
       _apk_target = "${target_name}__apk"
       _apk_specific_vars = [
         "allow_cleartext_traffic",
@@ -221,12 +223,14 @@ template("test") {
         }
       }
 
-      # TODO(crbug.com/1296718): Need a mixed_shared_library for rust tests on
-      # Android (or can it be a mixed_component?).
-      shared_library(_library_target) {
-        # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
+      mixed_shared_library(_library_target) {
+        # Configs will always be defined since we set_defaults in
+        # BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
+
+        rs_crate_name = _library_crate_name
+        rs_configs = [ "//build/rust:test" ]
 
         forward_variables_from(
             invoker,

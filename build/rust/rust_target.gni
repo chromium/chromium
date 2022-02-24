@@ -47,7 +47,6 @@ template("rust_target") {
   } else {
     _crate_root = "src/lib.rs"
   }
-  crate_root = _crate_root
 
   _rustflags = []
   if (defined(invoker.rustflags)) {
@@ -76,11 +75,15 @@ template("rust_target") {
       _configs += invoker.library_configs
     }
   }
+  _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
     _rustflags += [
       "--extern",
       "proc_macro",
     ]
+
+    _forward_to_host_toolchain = true
+    _forward_to_target_name = "${target_name}_proc_macro"
   }
 
   _deps_for_rust_targets = []
@@ -174,49 +177,88 @@ template("rust_target") {
     assert(main_target_suffix == "")
   }
 
-  target(invoker.target_type, "${target_name}${main_target_suffix}") {
-    crate_name = _crate_name
-    crate_root = _crate_root
-    configs = []
-    configs = _configs
-    deps = _deps
-    if (defined(_cxx_bindings)) {
-      deps += [ "//build/rust:cxx_rustdeps" ]
-    }
-    rustflags = _rustflags
-    rustflags += [ string_join("",
-                               [
-                                 "-Cmetadata=",
-                                 _metadata,
-                               ]) ]
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "features",
-                             "deps",
-                             "rustflags",
-                             "rustenv",
-                             "configs",
-                             "output_name",
-                             "crate_root",
-                             "unit_test_target",
-                             "visibility",
-                           ])
-    rustenv = [ "OUT_DIR=" + rebase_path(target_out_dir) ]
-    if (defined(invoker.rustenv)) {
-      rustenv += invoker.rustenv
-    }
-    if (_create_cpp_groups) {
-      visibility = [
-        ":${_target_name}",
-        ":${_target_name}_cpp_bindings",
-      ]
+  _generate_target = true
+  if (_forward_to_host_toolchain) {
+    if (current_toolchain != host_toolchain) {
+      # Redirect to the host toolchain.
+      group(target_name) {
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+        public_deps = [ ":${_forward_to_target_name}($host_toolchain)" ]
+      }
+
+      not_needed(invoker, "*")
+      not_needed([ "proc_macro_target" ])
+      _generate_target = false
     } else {
-      forward_variables_from(invoker, [ "visibility" ])
+      # We're in the host toolchain, so just generate an alias.
+      group(target_name) {
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+        public_deps = [ ":${_forward_to_target_name}" ]
+      }
     }
+
+    # Since we're forwarding through a group which uses `target_name`, we rename
+    # the actual target to what the group points at.
+    target_name = _forward_to_target_name
   }
 
-  if (_build_unit_tests) {
+  if (_generate_target) {
+    target(invoker.target_type, "${target_name}${main_target_suffix}") {
+      crate_name = _crate_name
+      crate_root = _crate_root
+      configs = []
+      configs = _configs
+      deps = _deps
+      if (defined(_cxx_bindings)) {
+        deps += [ "//build/rust:cxx_rustdeps" ]
+      }
+      rustflags = _rustflags
+      rustflags += [ string_join("",
+                                 [
+                                   "-Cmetadata=",
+                                   _metadata,
+                                 ]) ]
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "features",
+                               "deps",
+                               "rustflags",
+                               "rustenv",
+                               "configs",
+                               "output_name",
+                               "unit_test_target",
+                               "visibility",
+                             ])
+      rustenv = [ "OUT_DIR=" + rebase_path(target_out_dir) ]
+      if (defined(invoker.rustenv)) {
+        rustenv += invoker.rustenv
+      }
+      if (_create_cpp_groups) {
+        visibility = [
+          ":${_target_name}",
+          ":${_target_name}_cpp_bindings",
+        ]
+      } else {
+        forward_variables_from(invoker, [ "visibility" ])
+      }
+    }
+
+    if (defined(_cxx_bindings)) {
+      rust_cxx("${_target_name}_cxx") {
+        inputs = _cxx_bindings
+        native_header_deps = _deps
+      }
+    }
+  } else {
+    not_needed([
+                 "_metadata",
+                 "_crate_root",
+                 "_crate_name",
+               ])
+  }
+
+  if (_generate_target && _build_unit_tests) {
     _unit_test_target = "${_target_name}_unittests"
     if (defined(invoker.unit_test_target)) {
       _unit_test_target = invoker.unit_test_target
@@ -234,14 +276,10 @@ template("rust_target") {
       deps += _deps_for_rust_targets
     }
   } else {
-    not_needed([ "_test_deps" ])
-  }
-
-  if (defined(_cxx_bindings)) {
-    rust_cxx("${_target_name}_cxx") {
-      inputs = _cxx_bindings
-      native_header_deps = _deps
-    }
+    not_needed([
+                 "_test_deps",
+                 "_build_unit_tests",
+               ])
   }
 }
 

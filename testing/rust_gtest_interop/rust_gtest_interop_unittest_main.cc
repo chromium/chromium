@@ -7,19 +7,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <iostream>
-
-// TODO(crbug.com/1297592): Android doesn't build tests with mixed-target
-// support, so we can't include Rust files. This is because tests are built in a
-// shared_library, and we have no mixed_shared_library template yet.
-#if BUILDFLAG(IS_ANDROID)
-// Placeholder to run the test suite on the bots, until Android can build gtests
-// with Rust in them.
-TEST(Test, AndroidPlaceholder) {}
-#endif
 
 // Update this when adding a new test to rust_test_interop_unittest.rs.
 int kNumTests = 8;
@@ -53,7 +43,6 @@ int main(int argc, char** argv) {
       my_argc, my_argv,
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
-#if !BUILDFLAG(IS_ANDROID)
   if (is_subprocess()) {
     // Double-check that we actually ran all the tests. If this fails we'll see
     // all the tests marked as "fail on exit" since the whole process is
@@ -66,7 +55,6 @@ int main(int argc, char** argv) {
       return 1;
     }
   }
-#endif
 
   return result;
 }

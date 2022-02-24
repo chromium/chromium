@@ -179,7 +179,7 @@ pub fn gtest(arg_stream: TokenStream, input: TokenStream) -> TokenStream {
             tokens.extend(quote! {
                 {
                     #[doc=#comment]
-                    &[#(#c_chars),*]
+                    &[#(#c_chars as std::os::raw::c_char),*]
                 }
             });
         }

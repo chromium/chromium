@@ -45,6 +45,7 @@ import("//build/rust/rust_target.gni")
 #   rs_test_deps
 #   rs_skip_unit_tests
 #   rs_unit_test_target
+#   rs_crate_name
 #   rs_crate_root
 #   rs_features
 #   rs_cxx_bindings
@@ -88,6 +89,7 @@ template("mixed_target") {
     "rs_sources",
     "rs_features",
     "rs_cxx_bindings",
+    "rs_crate_name",
     "rs_crate_root",
     "rs_skip_unit_tests",
     "rs_unit_test_target",
@@ -134,6 +136,9 @@ template("mixed_target") {
       }
       if (defined(invoker.rs_crate_root)) {
         crate_root = invoker.rs_crate_root
+      }
+      if (defined(invoker.rs_crate_name)) {
+        crate_name = invoker.rs_crate_name
       }
       if (defined(invoker.rs_skip_unit_tests)) {
         skip_unit_tests = invoker.rs_skip_unit_tests
