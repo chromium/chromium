@@ -107,8 +107,8 @@ GURL AttributionReport::ReportURL() const {
   };
 
   const char* path = absl::visit(Visitor{}, data_);
-  url::Replacements<char> replacements;
-  replacements.SetPath(path, url::Component(0, strlen(path)));
+  GURL::Replacements replacements;
+  replacements.SetPathStr(path);
   return attribution_info_.source.common_info()
       .reporting_origin()
       .GetURL()
