@@ -1743,19 +1743,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
-  auto* desks_controller = ash::DesksController::Get();
-  auto active_desk_index = desks_controller->GetActiveDeskIndex();
 
   // Save 3 templates.
   const int saves = 3;
   for (int i = 0; i < saves; i++) {
     ClickSaveDeskAsTemplateButton();
-
-    // Change desk name to avoid duplication on template name. Having duplicate
-    // names invokes a workflow that involves showing and accepting the replace
-    // dialog, which is unnecessary for this test.
-    desks_controller->desks()[active_desk_index]->SetName(
-        base::UTF8ToUTF16(base::NumberToString(i)), true);
 
     // Exit and renenter overview to save the next template. Once we are viewing
     // the grid we can't go back to regular overview unless we exit overview or
