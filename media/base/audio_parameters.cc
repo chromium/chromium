@@ -6,21 +6,9 @@
 
 #include <sstream>
 
-#include "media/base/audio_bus.h"
 #include "media/base/limits.h"
 
 namespace media {
-
-static_assert(AudioBus::kChannelAlignment == kParametersAlignment,
-              "Audio buffer parameters struct alignment not same as AudioBus");
-static_assert(sizeof(AudioInputBufferParameters) %
-                      AudioBus::kChannelAlignment ==
-                  0,
-              "AudioInputBufferParameters not aligned");
-static_assert(sizeof(AudioOutputBufferParameters) %
-                      AudioBus::kChannelAlignment ==
-                  0,
-              "AudioOutputBufferParameters not aligned");
 
 const char* FormatToString(AudioParameters::Format format) {
   switch (format) {
