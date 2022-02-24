@@ -145,15 +145,30 @@ export class ModulesElement extends PolymerElement {
       if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
         // Wrap pairs of sibling short modules in a container. All other
         // modules will be placed in a container of their own.
-        if (moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
+        if ((moduleContainer.classList.contains(SHORT_CLASS_NAME) ||
+             moduleContainer.hidden) &&
             shortModuleSiblingsContainer) {
-          // Add current sibling short module to container which already
-          // contains the previous sibling short module by setting its parent
-          // to be 'shortModuleSiblingsContainer'.
+          // Add current sibling short module or hidden module to sibling
+          // container which already contains one or more other modules, by
+          // setting its parent to be 'shortModuleSiblingsContainer'. We add
+          // hidden modules to the sibling container, so if a user reverts a
+          // module from its hidden state, the module assumes its original
+          // position.
           moduleContainerParent = shortModuleSiblingsContainer;
           this.$.modules.appendChild(shortModuleSiblingsContainer);
-          shortModuleSiblingsContainer = null;
+          // If another visible short module is added, a visible tall module is
+          // next, or we've reached the end of our container list we stop adding
+          // to the container.
+          if (!moduleContainer.hidden ||
+              index + 1 !== moduleContainers.length &&
+                  moduleContainers[index + 1].classList.contains(
+                      TALL_CLASS_NAME) &&
+                  !moduleContainers[index + 1].hidden ||
+              index + 1 === moduleContainers.length) {
+            shortModuleSiblingsContainer = null;
+          }
         } else if (
+            !moduleContainer.hidden &&
             moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
             index + 1 !== moduleContainers.length &&
             moduleContainers[index + 1].classList.contains(SHORT_CLASS_NAME)) {
@@ -325,6 +340,10 @@ export class ModulesElement extends PolymerElement {
           moduleWrapper.parentElement!.hidden =
               this.moduleDisabled_(moduleWrapper.module.descriptor.id);
         });
+    // Append modules again to accommodate for empty space from removed module.
+    const moduleContainers = [...this.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.module-container')];
+    this.appendModuleContainers_(moduleContainers);
   }
 
   /**
