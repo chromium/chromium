@@ -84,9 +84,10 @@ interface StorageManager {
 
 interface Window {
   loadTimeData: {
-    getBoolean(id: string): boolean; getString(id: string): string;
-    getStringF(id: string, ...args: Array<number|string>): string;
-  }
+    getBoolean(id: string): boolean,
+    getString(id: string): string,
+    getStringF(id: string, ...args: Array<number|string>): string,
+  };
 }
 
 // v8 specific stack information.

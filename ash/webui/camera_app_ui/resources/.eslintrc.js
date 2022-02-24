@@ -519,6 +519,34 @@ module.exports = {
         accessibility: 'no-public',
       },
     ],
+
+    // go/tsstyle#member-property-declarations
+    '@typescript-eslint/member-delimiter-style': [
+      'error',
+      {
+        multiline: {
+          delimiter: 'comma',
+          requireLast: true,
+        },
+        singleline: {
+          delimiter: 'comma',
+          requireLast: false,
+        },
+        multilineDetection: 'last-member',
+        overrides: {
+          interface: {
+            multiline: {
+              delimiter: 'semi',
+              requireLast: true,
+            },
+            singleline: {
+              delimiter: 'semi',
+              requireLast: true,
+            },
+          },
+        },
+      },
+    ],
   }),
   overrides: [{
     files: ['**/*.ts'],

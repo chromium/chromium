@@ -347,7 +347,7 @@ function parseSearchParams(): {
   facing: Facing,
   mode: Mode|null,
   openFrom: string|null,
-  autoTake: boolean
+  autoTake: boolean,
 } {
   const url = new URL(window.location.href);
   const params = url.searchParams;

@@ -34,9 +34,9 @@ export class Option<T> {
    *     executed when option selected.
    */
   constructor(readonly uiArgs: UIArgs, {exitValue, callback, hasPopup}: {
-    exitValue?: T;
-    callback?: (() => void);
-    hasPopup?: boolean;
+    exitValue?: T,
+    callback?: (() => void),
+    hasPopup?: boolean,
   }) {
     this.exitValue = exitValue;
     this.hasPopup = hasPopup ?? null;
@@ -62,7 +62,7 @@ export class OptionGroup<T> {
 
   /** Constructs Options. */
   constructor({options, template}:
-                  {options: Array<Option<T>>; template: ButtonGroupTemplate;}) {
+                  {options: Array<Option<T>>, template: ButtonGroupTemplate}) {
     this.options = options;
     this.template = template;
   }
