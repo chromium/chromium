@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
 
+class PrefRegistrySimple;
+
 namespace message_center {
 class MessageCenter;
 }  // namespace message_center
@@ -24,6 +26,8 @@ class ASH_EXPORT UsbPeripheralNotificationController
   UsbPeripheralNotificationController& operator=(
       const UsbPeripheralNotificationController&) = delete;
   ~UsbPeripheralNotificationController() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Called after parent class is initialized.
   void OnPeripheralNotificationManagerInitialized();

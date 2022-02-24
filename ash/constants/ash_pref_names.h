@@ -355,6 +355,9 @@ extern const char kBatteryChargeCustomStopCharging[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kUsbPowerShareEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kUsbPeripheralCableSpeedNotificationShown[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuggestedContentInfoShownInLauncher[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuggestedContentInfoDismissedInLauncher[];

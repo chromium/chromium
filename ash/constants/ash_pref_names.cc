@@ -780,6 +780,11 @@ const char kBatteryChargeCustomStopCharging[] =
 // Ignored unless powerd is configured to honor charging-related prefs.
 const char kUsbPowerShareEnabled[] = "ash.power.usb_power_share_enabled";
 
+// A bool pref to block the USB-C cable limiting device speed notification if it
+// has already been clicked by the user.
+const char kUsbPeripheralCableSpeedNotificationShown[] =
+    "ash.usb_peripheral_cable_speed_notification_shown";
+
 // An integer pref that specifies how many times the Suggested Content privacy
 // info has been shown in Launcher. This value will increment by one every time
 // when Launcher changes state from Peeking to Half or FullscreenSearch up to a

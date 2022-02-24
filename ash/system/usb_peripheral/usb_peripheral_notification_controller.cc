@@ -4,12 +4,15 @@
 
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -37,6 +40,18 @@ const char kNotificationDisplayLandingPageUrl[] =
 const char kNotificationDeviceLandingPageUrl[] =
     "https://support.google.com/chromebook?p=cable_notification_2";
 
+bool GetCableSpeedNotificationShownPref() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return prefs->GetBoolean(prefs::kUsbPeripheralCableSpeedNotificationShown);
+}
+
+void SetCableSpeedNotificationShownPref(bool pref) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetBoolean(prefs::kUsbPeripheralCableSpeedNotificationShown, pref);
+}
+
 bool ShouldDisplayNotification() {
   return Shell::Get()->session_controller()->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
@@ -46,6 +61,9 @@ bool ShouldDisplayNotification() {
 void OnCableNotificationClicked(const std::string& notification_id,
                                 const std::string& landing_page,
                                 absl::optional<int> button_index) {
+  if (notification_id == kUsbPeripheralSpeedLimitingCableNotificationId)
+    SetCableSpeedNotificationShownPref(true);
+
   if (button_index) {
     NewWindowDelegate::GetInstance()->OpenUrl(
         GURL(landing_page), NewWindowDelegate::OpenUrlFrom::kUserInteraction);
@@ -66,6 +84,13 @@ UsbPeripheralNotificationController::UsbPeripheralNotificationController(
 UsbPeripheralNotificationController::~UsbPeripheralNotificationController() {
   if (ash::PeripheralNotificationManager::IsInitialized())
     ash::PeripheralNotificationManager::Get()->RemoveObserver(this);
+}
+
+// static
+void UsbPeripheralNotificationController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kUsbPeripheralCableSpeedNotificationShown, false);
 }
 
 void UsbPeripheralNotificationController::
@@ -207,7 +232,7 @@ void UsbPeripheralNotificationController::OnInvalidTBTCableWarning() {
 
 // Notify the user that the cable limits USB device performance.
 void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
-  if (!ShouldDisplayNotification())
+  if (!ShouldDisplayNotification() || GetCableSpeedNotificationShownPref())
     return;
 
   message_center::RichNotificationData optional;

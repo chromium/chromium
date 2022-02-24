@@ -4,8 +4,10 @@
 
 #include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;
@@ -29,7 +31,9 @@ const char kUsbPeripheralSpeedLimitingCableNotificationId[] =
 
 class UsbPeripheralNotificationControllerTest : public AshTestBase {
  public:
-  UsbPeripheralNotificationControllerTest() {}
+  UsbPeripheralNotificationControllerTest() {
+    feature_list_.InitAndEnableFeature(features::kUsbNotificationController);
+  }
   UsbPeripheralNotificationControllerTest(
       const UsbPeripheralNotificationControllerTest&) = delete;
   UsbPeripheralNotificationControllerTest& operator=(
@@ -39,6 +43,9 @@ class UsbPeripheralNotificationControllerTest : public AshTestBase {
   UsbPeripheralNotificationController* controller() {
     return Shell::Get()->usb_peripheral_notification_controller();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UsbPeripheralNotificationControllerTest, InvalidDpCableNotification) {
@@ -116,6 +123,26 @@ TEST_F(UsbPeripheralNotificationControllerTest,
   EXPECT_EQ(notification->buttons().size(), 1u);
   controller()->OnSpeedLimitingCableWarning();
   EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+}
+
+TEST_F(UsbPeripheralNotificationControllerTest,
+       SpeedLimitingCableNotificationWithClick) {
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnSpeedLimitingCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 1u);
+
+  message_center::Notification* notification =
+      MessageCenter::Get()->FindVisibleNotificationById(
+          kUsbPeripheralSpeedLimitingCableNotificationId);
+  ASSERT_TRUE(notification);
+
+  // Click the notification to close it.
+  notification->delegate()->Click(absl::nullopt, absl::nullopt);
+
+  // Resend the notification, but expect it not to show after being clicked.
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
+  controller()->OnSpeedLimitingCableWarning();
+  EXPECT_EQ(MessageCenter::Get()->NotificationCount(), 0u);
 }
 
 }  // namespace ash
