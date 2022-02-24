@@ -848,6 +848,9 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
   base::Time time_2015_9_0_21_11_25_0_0 =
       CreateTime({2015, 9, 0, 21, 11, 25, 0, 0});
 
+  base::Time time_2015_9_0_21_11_25_1_0 =
+      CreateTime({2015, 9, 0, 21, 11, 25, 1, 0});
+
   base::Time time_2016_3_0_25_11_25_0_0 =
       CreateTime({2016, 3, 0, 25, 11, 25, 0, 0});
 
@@ -859,8 +862,10 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
                     time_2016_3_0_25_11_25_0_0, time_2015_3_0_25_11_25_0_0, 2},
                    {// Cert valid for 179 days, needs 2 SCTs.
                     time_2015_3_0_25_11_25_0_0, time_2015_9_0_20_11_25_0_0, 2},
-                   {// Cert valid for exactly 180 days, needs 3 SCTs.
-                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 3},
+                   {// Cert valid for exactly 180 days, needs only 2 SCTs.
+                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_0_0, 2},
+                   {// Cert valid for barely over 180 days, needs 3 SCTs.
+                    time_2015_3_0_25_11_25_0_0, time_2015_9_0_21_11_25_1_0, 3},
                    {// Cert valid for over 180 days, needs 3 SCTs.
                     time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3}};
 
@@ -880,7 +885,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
     ASSERT_TRUE(cert);
 
     std::map<std::string, OperatorHistoryEntry> operator_history;
-    for (size_t j = 0; j <= scts_required - 1; ++j) {
+    for (size_t j = 0; j <= scts_required; ++j) {
       SCTList scts;
       FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED, j,
                                std::vector<std::string>(), false, &scts);
