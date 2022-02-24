@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "chrome/browser/lacros/crosapi_pref_observer.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #include "components/prefs/pref_service.h"
 
 // Observes ash-chrome for changes in the secure DNS preferences.

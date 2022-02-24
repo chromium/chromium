@@ -51,7 +51,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/crosapi_pref_observer.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
 #endif
 
 namespace {
