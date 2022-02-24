@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -97,6 +98,7 @@ public class AssistantVoiceSearchServiceRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/1300480")
     public void testAssistantColorfulMic() throws IOException {
         setAssistantVoiceSearchEnabled(true);
         setColorfulMicEnabled(true);
