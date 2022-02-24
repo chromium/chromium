@@ -429,19 +429,23 @@ void ClientTagBasedModelTypeProcessor::Put(
       metadata_change_list->ClearMetadata(entity->storage_key());
       entity_tracker_->UpdateOrOverrideStorageKey(data->client_tag_hash,
                                                   storage_key);
+      entity->MakeLocalChange(std::move(data));
     } else {
       if (data->creation_time.is_null())
         data->creation_time = base::Time::Now();
       if (data->modification_time.is_null())
         data->modification_time = data->creation_time;
-      entity = CreateEntity(storage_key, *data);
+      entity = entity_tracker_->AddUnsyncedLocal(storage_key, std::move(data));
     }
   } else if (entity->MatchesData(*data)) {
     // Ignore changes that don't actually change anything.
     return;
+  } else {
+    entity->MakeLocalChange(std::move(data));
   }
 
-  entity->MakeLocalChange(std::move(data));
+  DCHECK(entity->IsUnsynced());
+
   metadata_change_list->UpdateMetadata(storage_key, entity->metadata());
 
   NudgeForCommitIfNeeded();
@@ -892,7 +896,9 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
                   << " for " << ModelTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
-    ProcessorEntity* entity = CreateEntity(storage_key, update.entity);
+    ProcessorEntity* entity = entity_tracker_->AddRemote(
+        storage_key, update.entity, update.response_version);
+    // TODO(crbug.com/1296159): Remove once create flow is refactored.
     entity->RecordAcceptedUpdate(update);
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
@@ -1013,15 +1019,6 @@ void ClientTagBasedModelTypeProcessor::CommitLocalChanges(
     }
   }
   std::move(callback).Run(std::move(commit_requests));
-}
-
-ProcessorEntity* ClientTagBasedModelTypeProcessor::CreateEntity(
-    const std::string& storage_key,
-    const EntityData& data) {
-  DCHECK(!bridge_->SupportsGetStorageKey() || !storage_key.empty());
-  DCHECK(entity_tracker_);
-  ProcessorEntity* entity_ptr = entity_tracker_->Add(storage_key, data);
-  return entity_ptr;
 }
 
 size_t ClientTagBasedModelTypeProcessor::EstimateMemoryUsage() const {

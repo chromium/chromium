@@ -161,7 +161,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (entity == nullptr) {
     // Remote creation.
     DCHECK(!data.is_deleted());
-    entity = CreateEntity(data);
+    entity = CreateEntity(data, update.response_version);
     // TODO(crbug.com/1296159): Remove this call once create flow is updated.
     entity->RecordAcceptedUpdate(update);
     entity_changes->push_back(EntityChange::CreateAdd(
@@ -277,7 +277,8 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
 }
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
-    const EntityData& data) {
+    const EntityData& data,
+    int64_t server_version) {
   DCHECK(!data.client_tag_hash.value().empty());
   if (bridge_->SupportsGetClientTag()) {
     DCHECK_EQ(data.client_tag_hash,
@@ -288,7 +289,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
     storage_key = bridge_->GetStorageKey(data);
     DCHECK(!storage_key.empty());
   }
-  return entity_tracker_->Add(storage_key, data);
+  return entity_tracker_->AddRemote(storage_key, data, server_version);
 }
 
 }  // namespace syncer

@@ -68,7 +68,7 @@ class ClientTagBasedRemoteUpdateHandler {
   // Creates an entity in the entity tracker for |storage_key| queried from the
   // bridge for the given |data|. Provided |storage_key| (if any, i.e. if
   // non-empty) must not exist in the entity tracker.
-  ProcessorEntity* CreateEntity(const EntityData& data);
+  ProcessorEntity* CreateEntity(const EntityData& data, int64_t server_version);
 
   // The model type this object syncs.
   const ModelType type_;

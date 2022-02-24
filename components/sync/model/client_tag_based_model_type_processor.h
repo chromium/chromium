@@ -36,7 +36,6 @@ class ModelTypeState;
 namespace syncer {
 
 class CommitQueue;
-class ProcessorEntity;
 
 // A sync component embedded on the model type's thread that tracks entity
 // metadata in the model store and coordinates communication between sync and
@@ -201,13 +200,6 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // client tag hash mapping.
   ClientTagHash GetClientTagHash(const std::string& storage_key,
                                  const EntityData& data) const;
-
-  // Create an entity in the entity map for |storage_key| and return a pointer
-  // to it.
-  // Requires that no entity for |storage_key| already exists in the map.
-  // Never returns nullptr.
-  ProcessorEntity* CreateEntity(const std::string& storage_key,
-                                const EntityData& data);
 
   // Removes metadata for all entries unless they are unsynced.
   // This is used to limit the amount of data stored in sync, and this does not
