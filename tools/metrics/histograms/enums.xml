@@ -73589,7 +73589,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="PriorityChanged"/>
 </enum>
 
-<enum name="PrivacySandboxAggregationServiceReportStatus">
+<enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Download error"/>
+  <int value="2" label="Json parse error"/>
+  <int value="3" label="Invalid key error"/>
+</enum>
+
+<enum name="PrivacySandboxAggregationServiceReportAssemblerStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Public key fetch error"/>
+  <int value="2" label="Assembly error"/>
+  <int value="3" label="Too many requests error"/>
+</enum>
+
+<enum name="PrivacySandboxAggregationServiceReportSenderStatus">
   <int value="0" label="Ok"/>
   <int value="1" label="Network error"/>
   <int value="2" label="Server error"/>

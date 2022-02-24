@@ -37,17 +37,19 @@ class StoragePartition;
 // appropriate public keys, and generating and returning the AggregatableReport.
 class CONTENT_EXPORT AggregatableReportAssembler {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AssemblyStatus {
-    kOk,
+    kOk = 0,
 
     // The attempt to fetch a public key failed.
-    kPublicKeyFetchFailed,
+    kPublicKeyFetchFailed = 1,
 
     // An internal error occurred while attempting to construct the report.
-    kAssemblyFailed,
+    kAssemblyFailed = 2,
 
     // The limit on the number of simultenous requests has been reached.
-    kTooManySimultaneousRequests,
+    kTooManySimultaneousRequests = 3,
     kMaxValue = kTooManySimultaneousRequests,
   };
 

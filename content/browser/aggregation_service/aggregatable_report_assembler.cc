@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -26,6 +27,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+
+namespace {
+
+void RecordAssemblyStatus(AggregatableReportAssembler::AssemblyStatus status) {
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.AggregationService.ReportAssembler.Status", status);
+}
+
+}  // namespace
 
 AggregatableReportAssembler::AggregatableReportAssembler(
     AggregationServiceStorageContext* storage_context,
@@ -111,6 +121,8 @@ void AggregatableReportAssembler::AssembleReport(
             AggregationServicePayloadContents::Operation::kHistogram);
 
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
+    RecordAssemblyStatus(AssemblyStatus::kTooManySimultaneousRequests);
+
     std::move(callback).Run(absl::nullopt,
                             AssemblyStatus::kTooManySimultaneousRequests);
     return;
@@ -164,6 +176,8 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
   std::vector<PublicKey> public_keys;
   for (absl::optional<PublicKey> elem : pending_request.processing_url_keys) {
     if (!elem.has_value()) {
+      RecordAssemblyStatus(AssemblyStatus::kPublicKeyFetchFailed);
+
       std::move(pending_request.callback)
           .Run(absl::nullopt, AssemblyStatus::kPublicKeyFetchFailed);
       pending_requests_.erase(report_id);
@@ -178,6 +192,8 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
           std::move(pending_request.report_request), std::move(public_keys));
   AssemblyStatus assembly_status =
       assembled_report ? AssemblyStatus::kOk : AssemblyStatus::kAssemblyFailed;
+  RecordAssemblyStatus(assembly_status);
+
   std::move(pending_request.callback)
       .Run(std::move(assembled_report), assembly_status);
 

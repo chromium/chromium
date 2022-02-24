@@ -10054,9 +10054,78 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.AggregationService.KeyFetcher.HttpResponseOrNetErrorCode"
+    enum="NetErrorCodes" expires_after="2022-08-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Error info for fetching public keys from the processing server. Recorded for
+    each fetch request. The HTTP response code is recorded if there is no net
+    error code for the request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status"
+    enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
+    expires_after="2022-08-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each key network fetch request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ReportAssembler.Status"
+    enum="PrivacySandboxAggregationServiceReportAssemblerStatus"
+    expires_after="2022-08-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level status of each aggregatable report assembly request.
+    Recorded for reports requested from any API (e.g. Attribution Reporting
+    API).
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Error info for sending an aggregatable report to a reporting endpoint,
+    recorded for every aggregatable report sent. The HTTP response code is
+    recorded if there is no net error code for the request.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.AggregationService.ReportSender.Status"
+    enum="PrivacySandboxAggregationServiceReportSenderStatus"
+    expires_after="2022-08-23">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.ReportSender.Status,
+    02/2022.
+  </obsolete>
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the high level request status for each aggregatable report being
+    sent to a reporting endpoint. Recorded for reports requested from any API
+    (e.g. Attribution Reporting API).
+
+    Recorded for every aggregatable report sent. It might retry in case of
+    failure but only the final status will be counted for each report.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.AggregationService.ReportStatus"
-    enum="PrivacySandboxAggregationServiceReportStatus"
+    enum="PrivacySandboxAggregationServiceReportSenderStatus"
     expires_after="2022-07-16">
+  <obsolete>
+    Replaced with PrivacySandbox.AggregationService.ReportSender.Status,
+    02/2022.
+  </obsolete>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -10069,9 +10138,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime"
+    units="ms" expires_after="2022-08-23">
+  <owner>alexmt@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the time it took to initialize a new aggregation service database
+    from scratch. Recorded when the aggregation service database finishes
+    initialization. Note that 0 is recorded if `ThreadTicks` is not supported.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2022-07-16">
+    expires_after="2022-08-23">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

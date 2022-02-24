@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -42,6 +43,9 @@ using FetchCallback = AggregationServiceKeyFetcher::FetchCallback;
 using AssemblyCallback = AggregatableReportAssembler::AssemblyCallback;
 using PublicKeyFetchStatus = AggregationServiceKeyFetcher::PublicKeyFetchStatus;
 using AssemblyStatus = AggregatableReportAssembler::AssemblyStatus;
+
+constexpr char kReportAssemblerStatusHistogramName[] =
+    "PrivacySandbox.AggregationService.ReportAssembler.Status";
 
 auto MoveRequestAndReturnReport(absl::optional<AggregatableReportRequest>* out,
                                 AggregatableReport report) {
@@ -107,6 +111,8 @@ class AggregatableReportAssemblerTest : public testing::Test {
 };
 
 TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   std::vector<GURL> processing_urls = request.processing_urls();
@@ -124,9 +130,15 @@ TEST_F(AggregatableReportAssemblerTest, BothKeyFetchesFail_ErrorReturned) {
       .Times(0);
 
   assembler()->AssembleReport(std::move(request), callback().Get());
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kPublicKeyFetchFailed, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   std::vector<GURL> processing_urls = request.processing_urls();
@@ -145,9 +157,15 @@ TEST_F(AggregatableReportAssemblerTest, FirstKeyFetchFails_ErrorReturned) {
       .Times(0);
 
   assembler()->AssembleReport(std::move(request), callback().Get());
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kPublicKeyFetchFailed, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest, SecondKeyFetchFails_ErrorReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   std::vector<GURL> processing_urls = request.processing_urls();
@@ -166,10 +184,16 @@ TEST_F(AggregatableReportAssemblerTest, SecondKeyFetchFails_ErrorReturned) {
       .Times(0);
 
   assembler()->AssembleReport(std::move(request), callback().Get());
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kPublicKeyFetchFailed, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        BothKeyFetchesSucceed_ValidReportReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
 
@@ -202,10 +226,16 @@ TEST_F(AggregatableReportAssemblerTest,
   ASSERT_TRUE(actual_request.has_value());
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(actual_request.value(),
                                                        request));
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kOk, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        SingleServerKeyFetchSucceeds_ValidReportReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
       AggregationServicePayloadContents::ProcessingType::kSingleServer);
 
@@ -232,10 +262,16 @@ TEST_F(AggregatableReportAssemblerTest,
   ASSERT_TRUE(actual_request.has_value());
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(actual_request.value(),
                                                        request));
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kOk, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        SingleServerKeyFetchFails_ErrorReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
       AggregationServicePayloadContents::ProcessingType::kSingleServer);
 
@@ -249,10 +285,16 @@ TEST_F(AggregatableReportAssemblerTest,
       .Times(0);
 
   assembler()->AssembleReport(std::move(request), callback().Get());
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kPublicKeyFetchFailed, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        KeyFetchesReturnInSwappedOrder_ValidReportReturned) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
 
@@ -287,10 +329,16 @@ TEST_F(AggregatableReportAssemblerTest,
       .Run(public_keys[1], PublicKeyFetchStatus::kOk);
   std::move(pending_callbacks.front())
       .Run(public_keys[0], PublicKeyFetchStatus::kOk);
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kOk, 1);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        AssemblerDeleted_PendingRequestsNotRun) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
   std::vector<GURL> processing_urls = request.processing_urls();
@@ -299,10 +347,14 @@ TEST_F(AggregatableReportAssemblerTest,
   assembler()->AssembleReport(std::move(request), callback().Get());
 
   ResetAssembler();
+
+  histograms.ExpectTotalCount(kReportAssemblerStatusHistogramName, 0);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        MultipleSimultaneousRequests_BothSucceed) {
+  base::HistogramTester histograms;
+
   AggregatableReportRequest request =
       aggregation_service::CreateExampleRequest();
 
@@ -357,10 +409,16 @@ TEST_F(AggregatableReportAssemblerTest,
   ASSERT_TRUE(second_request.has_value());
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(second_request.value(),
                                                        request));
+
+  histograms.ExpectUniqueSample(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kOk, 2);
 }
 
 TEST_F(AggregatableReportAssemblerTest,
        TooManySimultaneousRequests_ErrorCausedForNewRequests) {
+  base::HistogramTester histograms;
+
   std::vector<PublicKey> public_keys = {
       aggregation_service::GenerateKey("id123").public_key,
       aggregation_service::GenerateKey("456abc").public_key};
@@ -425,6 +483,15 @@ TEST_F(AggregatableReportAssemblerTest,
         .Run(aggregation_service::GenerateKey("id123").public_key,
              PublicKeyFetchStatus::kOk);
   }
+
+  histograms.ExpectBucketCount(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kOk,
+      AggregatableReportAssembler::kMaxSimultaneousRequests);
+  histograms.ExpectBucketCount(
+      kReportAssemblerStatusHistogramName,
+      AggregatableReportAssembler::AssemblyStatus::kTooManySimultaneousRequests,
+      1);
 }
 
 }  // namespace content

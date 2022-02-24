@@ -54,10 +54,22 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
-  enum class FetchError {
-    kDownload = 0,
-    kJsonParse = 1,
-    kMaxValue = kJsonParse,
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FetchStatus {
+    // The public key was fetched successfully.
+    kSuccess = 0,
+
+    // Failed to download the JSON file.
+    kDownloadError = 1,
+
+    // Failed to parse the JSON string.
+    kJsonParseError = 2,
+
+    // Invalid format or invalid keys were specified in the JSON string.
+    kInvalidKeyError = 3,
+
+    kMaxValue = kInvalidKeyError,
   };
 
   // This is a std::list so that iterators remain valid during modifications.
@@ -84,8 +96,10 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
 
   void OnError(const GURL& url,
                NetworkFetchCallback callback,
-               FetchError error,
+               FetchStatus status,
                const std::string& error_msg);
+
+  void RecordFetchStatus(FetchStatus status) const;
 
   // Download requests that are in progress.
   UrlLoaderList loaders_in_progress_;

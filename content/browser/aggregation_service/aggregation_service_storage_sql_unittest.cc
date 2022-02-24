@@ -96,6 +96,8 @@ TEST_F(AggregationServiceStorageSqlTest,
 
 TEST_F(AggregationServiceStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
+  base::HistogramTester histograms;
+
   OpenDatabase();
   CloseDatabase();
 
@@ -113,12 +115,20 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   EXPECT_FALSE(base::PathExists(db_path()));
 
+  // DB creation UMA should not be recorded.
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 0);
+
   // Storing a public key should create and initialize the database.
   OpenDatabase();
   PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
   storage_->SetPublicKeys(url, keyset);
   CloseDatabase();
+
+  // DB creation UMA should be recorded.
+  histograms.ExpectTotalCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime", 1);
 
   {
     sql::Database raw_db;

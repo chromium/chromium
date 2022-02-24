@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "sql/database.h"
@@ -456,6 +457,8 @@ bool AggregationServiceStorageSql::InitializeSchema(bool db_empty) {
 }
 
 bool AggregationServiceStorageSql::CreateSchema() {
+  base::ElapsedThreadTimer timer;
+
   // All of the columns in this table are designed to be "const".
   // `url` is the helper server url.
   // `fetch_time` is when the key is fetched and inserted into database, and
@@ -510,6 +513,10 @@ bool AggregationServiceStorageSql::CreateSchema() {
                         kCompatibleVersionNumber)) {
     return false;
   }
+
+  base::UmaHistogramMediumTimes(
+      "PrivacySandbox.AggregationService.Storage.Sql.CreationTime",
+      timer.Elapsed());
 
   return true;
 }

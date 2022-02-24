@@ -146,18 +146,26 @@ void AggregatableReportSender::OnReportSent(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   RequestStatus status;
 
+  int http_response_code = headers ? headers->response_code() : 1;
+
   network::SimpleURLLoader* loader = it->get();
   if (loader->NetError() != net::OK) {
     status = RequestStatus::kNetworkError;
-  } else if (headers &&
-             headers->response_code() == net::HttpStatusCode::HTTP_OK) {
+  } else if (http_response_code == net::HTTP_OK) {
     status = RequestStatus::kOk;
   } else {
     status = RequestStatus::kServerError;
   }
 
   base::UmaHistogramEnumeration(
-      "PrivacySandbox.AggregationService.ReportStatus", status);
+      "PrivacySandbox.AggregationService.ReportSender.Status", status);
+
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  base::UmaHistogramSparse(
+      "PrivacySandbox.AggregationService.ReportSender."
+      "HttpResponseOrNetErrorCode",
+      loader->NetError() != net::OK ? loader->NetError() : http_response_code);
 
   loaders_in_progress_.erase(it);
   std::move(callback).Run(status);
