@@ -3213,7 +3213,7 @@
   {
     "name": "extension-workflow-justification",
     "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "extensions-menu-access-control",
