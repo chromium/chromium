@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * Helper class for recording password check UKM metrics
@@ -53,7 +54,7 @@ public class PasswordCheckUkmRecorder extends EmptyTabObserver {
     }
 
     @Override
-    public void onInitialized(Tab tab, String appId) {
+    public void onPageLoadFinished(Tab tab, GURL url) {
         // Record UKMs
         if (tab.getWebContents() == null) {
             return;

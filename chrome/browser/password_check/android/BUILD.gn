@@ -52,6 +52,7 @@ android_library("public_java") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_check/PasswordChangeType.java",
