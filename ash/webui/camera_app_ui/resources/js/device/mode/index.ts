@@ -214,7 +214,7 @@ export class Modes {
 
           let minFrameRate = 0;
           let maxFrameRate = 0;
-          if (constraints.video && constraints.video.frameRate) {
+          if (constraints.video?.frameRate) {
             const frameRate = constraints.video.frameRate;
             if (typeof frameRate === 'number') {
               minFrameRate = frameRate;

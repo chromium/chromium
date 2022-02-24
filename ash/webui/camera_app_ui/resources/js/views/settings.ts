@@ -464,7 +464,7 @@ export class ResolutionSettings extends BaseSettings {
     // recreate all other items from current list.
     const prevFocus = this.resMenu.querySelector<HTMLElement>(
         '.menu-item.external-camera:focus');
-    const prevFId = prevFocus && prevFocus.dataset['deviceId'];
+    const prevFId = prevFocus?.dataset['deviceId'] ?? null;
     const focusIdx =
         this.externalSettings.findIndex(({deviceId}) => deviceId === prevFId);
     const fTitle = this.resMenu.querySelector<HTMLElement>(

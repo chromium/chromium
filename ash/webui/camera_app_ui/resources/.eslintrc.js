@@ -547,6 +547,8 @@ module.exports = {
         },
       },
     ],
+
+    '@typescript-eslint/prefer-optional-chain': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
