@@ -32,6 +32,9 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
                TabHoverCardController* hover_card_controller_);
   ~TabContainer() override;
 
+  void SetAvailableWidthCallback(
+      base::RepeatingCallback<int()> available_width_callback);
+
   Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
   void MoveTab(Tab* tab, int from_model_index, int to_model_index);
 
@@ -79,6 +82,14 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
   // currently set in ideal_bounds.
   void AnimateToIdealBounds();
+
+  // Calculates the width that can be occupied by the tabs in the container.
+  // This can differ from GetAvailableWidthForTabContainer() when in tab closing
+  // mode.
+  int CalculateAvailableWidthForTabs() const;
+
+  // Returns the total width available for the TabContainer's use.
+  int GetAvailableWidthForTabContainer() const;
 
   // Teleports the tabs to their ideal bounds.
   // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
@@ -178,6 +189,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // true, remove animations preserve current tab bounds, making tabs move more
   // predictably in case the user wants to perform more mouse-based actions.
   bool in_tab_close_ = false;
+
+  base::RepeatingCallback<int()> available_width_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_H_

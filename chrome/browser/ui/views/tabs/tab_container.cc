@@ -256,6 +256,11 @@ TabContainer::~TabContainer() {
   RemoveAllChildViews();
 }
 
+void TabContainer::SetAvailableWidthCallback(
+    base::RepeatingCallback<int()> available_width_callback) {
+  available_width_callback_ = available_width_callback;
+}
+
 Tab* TabContainer::AddTab(std::unique_ptr<Tab> tab,
                           int model_index,
                           TabPinned pinned) {
@@ -475,6 +480,20 @@ void TabContainer::AnimateToIdealBounds() {
   // existing preferred size and layout (which may now be incorrect), we need to
   // signal this explicitly.
   PreferredSizeChanged();
+}
+
+int TabContainer::CalculateAvailableWidthForTabs() const {
+  return override_available_width_for_tabs_.value_or(
+      GetAvailableWidthForTabContainer());
+}
+
+int TabContainer::GetAvailableWidthForTabContainer() const {
+  // Falls back to views::View::GetAvailableSize() when
+  // |available_width_callback_| is not defined, e.g. when tab scrolling is
+  // disabled.
+  return available_width_callback_
+             ? available_width_callback_.Run()
+             : parent()->GetAvailableSize(this).width().value();
 }
 
 void TabContainer::SnapToIdealBounds() {
@@ -772,4 +791,5 @@ bool TabContainer::IsValidModelIndex(int model_index) const {
 }
 
 BEGIN_METADATA(TabContainer, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, AvailableWidthForTabContainer)
 END_METADATA

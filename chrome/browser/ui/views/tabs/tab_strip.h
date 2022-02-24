@@ -326,6 +326,7 @@ class TabStrip : public views::View,
   void MouseMovedOutOfHost() override;
 
   // views::View:
+  views::SizeBounds GetAvailableSize(const View* child) const override;
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
   gfx::Size GetMinimumSize() const override;
@@ -523,13 +524,6 @@ class TabStrip : public views::View,
   // use this information for other purposes - see AnimateToIdealBounds.
   void UpdateIdealBounds();
 
-  // Calculates the width that can be occupied by the tabs in the strip. This
-  // can differ from GetAvailableWidthForTabStrip() when in tab closing mode.
-  int CalculateAvailableWidthForTabs() const;
-
-  // Returns the total width available for the TabStrip's use.
-  int GetAvailableWidthForTabStrip() const;
-
   // Starts various types of TabStrip animations.
   void StartResizeLayoutAnimation();
   void StartPinnedTabAnimation();
@@ -585,8 +579,6 @@ class TabStrip : public views::View,
 
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
-
-  base::RepeatingCallback<int()> available_width_callback_;
 
   // Responsible for animating the scroll of the tab strip.
   std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;

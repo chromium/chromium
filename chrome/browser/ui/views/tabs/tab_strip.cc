@@ -383,8 +383,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // 2) If the tabstrip is wider than the tab strip region (and thus is
     // scrollable), returning the tabstrip width allows tabs to be dragged
     // anywhere within the tabstrip, not just in the leftmost region of it.
-    return std::max(tab_strip_->GetAvailableWidthForTabStrip(),
-                    tab_strip_->width());
+    return std::max(
+        tab_strip_->tab_container_->GetAvailableWidthForTabContainer(),
+        tab_strip_->width());
   }
 
   int TabDragAreaBeginX() const override {
@@ -823,7 +824,7 @@ TabStrip::~TabStrip() {
 
 void TabStrip::SetAvailableWidthCallback(
     base::RepeatingCallback<int()> available_width_callback) {
-  available_width_callback_ = available_width_callback;
+  tab_container_->SetAvailableWidthCallback(available_width_callback);
 }
 
 // static
@@ -1003,7 +1004,8 @@ void TabStrip::ScrollTabToVisible(int model_index) {
 
   // If the tab strip won't be scrollable after the current tabstrip animations
   // complete, scroll animation wouldn't be meaningful.
-  if (ideal_bounds(GetTabCount() - 1).right() <= GetAvailableWidthForTabStrip())
+  if (ideal_bounds(GetTabCount() - 1).right() <=
+      tab_container_->GetAvailableWidthForTabContainer())
     return;
 
   if (tab_scrolling_animation_)
@@ -1190,9 +1192,9 @@ bool TabStrip::ShouldTabBeVisible(const Tab* tab) const {
   // tabstrip were resized to its greatest possible width, it shouldn't be
   // visible.
   int right_edge = tab->bounds().right();
-  const int tabstrip_right = tab->dragging()
-                                 ? drag_context_->GetTabDragAreaWidth()
-                                 : GetAvailableWidthForTabStrip();
+  const int tabstrip_right =
+      tab->dragging() ? drag_context_->GetTabDragAreaWidth()
+                      : tab_container_->GetAvailableWidthForTabContainer();
   if (right_edge > tabstrip_right)
     return false;
 
@@ -1812,7 +1814,14 @@ SkColor TabStrip::GetPaintedGroupColor(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// TabStrip, views::AccessiblePaneView overrides:
+// TabStrip, views::View overrides:
+
+views::SizeBounds TabStrip::GetAvailableSize(const views::View* child) const {
+  // We can only reach here if SetAvailableWidthCallback() was never called,
+  // e.g. if tab scrolling is disabled. Defer to our parent.
+  DCHECK(child == tab_container_);
+  return parent()->GetAvailableSize(this);
+}
 
 void TabStrip::Layout() {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -1823,7 +1832,8 @@ void TabStrip::Layout() {
     // It should never be smaller than its minimum width.
     const int min_width = GetMinimumSize().width();
     // If it can, it should fit within the tab strip region.
-    const int available_width = available_width_callback_.Run();
+    const int available_width =
+        tab_container_->GetAvailableWidthForTabContainer();
     // It should be as wide as possible subject to the above constraints.
     const int width = std::min(max_width, std::max(min_width, available_width));
     SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
@@ -1839,7 +1849,8 @@ void TabStrip::Layout() {
   }
 
   // Only do a layout if our size or the available width changed.
-  const int available_width = GetAvailableWidthForTabStrip();
+  const int available_width =
+      tab_container_->GetAvailableWidthForTabContainer();
   if (last_layout_size_ == size() && last_available_width_ == available_width)
     return;
   if (drag_context_->IsDragSessionActive())
@@ -2125,7 +2136,7 @@ bool TabStrip::TitlebarBackgroundIsTransparent() const {
 }
 
 void TabStrip::CompleteAnimationAndLayout() {
-  last_available_width_ = GetAvailableWidthForTabStrip();
+  last_available_width_ = tab_container_->GetAvailableWidthForTabContainer();
   last_layout_size_ = size();
 
   tab_container_->bounds_animator().Cancel();
@@ -2659,21 +2670,11 @@ void TabStrip::UpdateIdealBounds() {
   // Update |last_available_width_| in case there is a different amount of
   // available width than there was in the last layout (e.g. if the tabstrip
   // is currently hidden).
-  last_available_width_ = GetAvailableWidthForTabStrip();
+  last_available_width_ = tab_container_->GetAvailableWidthForTabContainer();
 
-  const int available_width_for_tabs = CalculateAvailableWidthForTabs();
+  const int available_width_for_tabs =
+      tab_container_->CalculateAvailableWidthForTabs();
   tab_container_->layout_helper()->UpdateIdealBounds(available_width_for_tabs);
-}
-
-int TabStrip::CalculateAvailableWidthForTabs() const {
-  return tab_container_->override_available_width_for_tabs().value_or(
-      GetAvailableWidthForTabStrip());
-}
-
-int TabStrip::GetAvailableWidthForTabStrip() const {
-  return available_width_callback_
-             ? available_width_callback_.Run()
-             : parent()->GetAvailableSize(this).width().value();
 }
 
 void TabStrip::StartResizeLayoutAnimation() {
@@ -2821,5 +2822,4 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
 ADD_READONLY_PROPERTY_METADATA(float, HoverOpacityForRadialHighlight)
 ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
 ADD_READONLY_PROPERTY_METADATA(int, InactiveTabWidth)
-ADD_READONLY_PROPERTY_METADATA(int, AvailableWidthForTabStrip)
 END_METADATA
