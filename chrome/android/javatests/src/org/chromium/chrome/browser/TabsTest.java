@@ -68,7 +68,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
@@ -255,19 +254,18 @@ public class TabsTest {
             Assert.assertEquals("Data file for TabsTest", title);
         });
         final int tabCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        OverviewModeBehaviorWatcher overviewModeWatcher = new OverviewModeBehaviorWatcher(
-                mActivityTestRule.getActivity().getLayoutManager(), true, false);
         View tabSwitcherButton =
                 mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button);
         Assert.assertNotNull("'tab_switcher_button' view is not found", tabSwitcherButton);
         TouchCommon.singleClickView(tabSwitcherButton);
-        overviewModeWatcher.waitForBehavior();
-        overviewModeWatcher = new OverviewModeBehaviorWatcher(
-                mActivityTestRule.getActivity().getLayoutManager(), false, true);
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
+
         View newTabButton = mActivityTestRule.getActivity().findViewById(R.id.new_tab_button);
         Assert.assertNotNull("'new_tab_button' view is not found", newTabButton);
         TouchCommon.singleClickView(newTabButton);
-        overviewModeWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> Assert.assertEquals("The tab count is wrong", tabCount + 1,

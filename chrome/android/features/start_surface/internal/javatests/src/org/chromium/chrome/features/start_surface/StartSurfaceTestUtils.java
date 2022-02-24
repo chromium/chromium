@@ -74,7 +74,6 @@ import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -386,7 +385,6 @@ public class StartSurfaceTestUtils {
      */
     public static void launchFirstMVTile(ChromeTabbedActivity cta, int currentTabCount) {
         TabUiTestHelper.verifyTabModelTabCount(cta, currentTabCount, 0);
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
                 .perform(new ViewAction() {
                     @Override
@@ -405,7 +403,7 @@ public class StartSurfaceTestUtils {
                         mvTilesContainer.getChildAt(0).performClick();
                     }
                 });
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
         // Verifies a new Tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, currentTabCount + 1, 0);

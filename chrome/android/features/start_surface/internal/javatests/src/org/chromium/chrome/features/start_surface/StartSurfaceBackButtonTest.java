@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -66,7 +67,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -251,11 +251,9 @@ public class StartSurfaceBackButtonTest {
                         -> Assert.assertTrue(StartSurfaceUserData.getKeepTab(
                                 cta.getTabModelSelector().getCurrentTab())));
 
-        OverviewModeBehaviorWatcher overviewModeWatcher =
-                new OverviewModeBehaviorWatcher(cta.getLayoutManager(), true, false);
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         // Verifies the new Tab isn't deleted, and Start surface is shown.
-        overviewModeWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         // Verifies Chrome is closed.
@@ -295,12 +293,11 @@ public class StartSurfaceBackButtonTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
                 .perform(replaceText("about:blank"));
         onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
                 .perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
 
         TabUiTestHelper.mergeAllNormalTabsToAGroup(cta);

@@ -57,6 +57,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -65,7 +67,6 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
@@ -107,12 +108,11 @@ public class TabUiTestHelper {
      * @param cta  The current running activity.
      */
     public static void enterTabSwitcher(ChromeTabbedActivity cta) {
-        OverviewModeBehaviorWatcher showWatcher = createOverviewShowWatcher(cta);
         assertFalse(cta.getLayoutManager().overviewVisible());
         // TODO(crbug.com/1145271): Replace this with clicking tab switcher button via espresso.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
-        showWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 
     /**
@@ -120,10 +120,9 @@ public class TabUiTestHelper {
      * @param cta  The current running activity.
      */
     public static void leaveTabSwitcher(ChromeTabbedActivity cta) {
-        OverviewModeBehaviorWatcher hideWatcher = createOverviewHideWatcher(cta);
         assertTrue(cta.getLayoutManager().overviewVisible());
         pressBack();
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     /**
@@ -162,10 +161,9 @@ public class TabUiTestHelper {
      * @param index The index of the target tab.
      */
     static void clickNthTabInDialog(ChromeTabbedActivity cta, int index) {
-        OverviewModeBehaviorWatcher hideWatcher = createOverviewHideWatcher(cta);
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.dialog_container_view))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(index, click()));
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     /**
@@ -387,20 +385,6 @@ public class TabUiTestHelper {
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> filter.mergeTabsToGroup(tab.getId(), rootTab.getId()));
         }
-    }
-
-    /**
-     * Create a {@link OverviewModeBehaviorWatcher} to inspect overview show.
-     */
-    public static OverviewModeBehaviorWatcher createOverviewShowWatcher(ChromeTabbedActivity cta) {
-        return new OverviewModeBehaviorWatcher(cta.getLayoutManager(), true, false);
-    }
-
-    /**
-     * Create a {@link OverviewModeBehaviorWatcher} to inspect overview hide.
-     */
-    public static OverviewModeBehaviorWatcher createOverviewHideWatcher(ChromeTabbedActivity cta) {
-        return new OverviewModeBehaviorWatcher(cta.getLayoutManager(), false, true);
     }
 
     /**

@@ -28,10 +28,11 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -173,10 +174,6 @@ public class ContentViewFocusTest {
     public void testHideSelectionOnPhoneTabSwitcher() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         // Setup
-        OverviewModeBehaviorWatcher showWatcher = new OverviewModeBehaviorWatcher(
-                mActivityTestRule.getActivity().getLayoutManager(), true, false);
-        OverviewModeBehaviorWatcher hideWatcher = new OverviewModeBehaviorWatcher(
-                mActivityTestRule.getActivity().getLayoutManager(), false, true);
         View currentView = mActivityTestRule.getActivity().getActivityTab().getContentView();
         addFocusChangedListener(currentView);
 
@@ -186,7 +183,8 @@ public class ContentViewFocusTest {
         Assert.assertNotNull("'tab_switcher_button' view is not found.", tabSwitcherButton);
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button));
-        showWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         // Make sure the view loses focus. It is immediately given focus back
         // because it's the only focusable view.
@@ -197,7 +195,8 @@ public class ContentViewFocusTest {
         Assert.assertNotNull("'tab_switcher_button' view is not found.", tabSwitcherButton);
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button));
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
 
         Assert.assertTrue("Content view didn't regain focus", blockForFocusChanged());
         Assert.assertFalse("Unexpected focus change", haveFocusChanges());

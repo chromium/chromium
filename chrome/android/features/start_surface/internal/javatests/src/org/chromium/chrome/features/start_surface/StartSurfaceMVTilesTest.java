@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -56,7 +57,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -164,9 +164,8 @@ public class StartSurfaceMVTilesTest {
             return;
         }
         // Press back button should close the tab opened from the Start surface.
-        OverviewModeBehaviorWatcher showWatcher = TabUiTestHelper.createOverviewShowWatcher(cta);
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        showWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
     }
 
@@ -300,9 +299,8 @@ public class StartSurfaceMVTilesTest {
 
         // Open the incognito tile using the context menu.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         invokeContextMenu(tileView, ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB);
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
         // Verifies a new incognito tab is created.
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 1);

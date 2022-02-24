@@ -95,7 +95,6 @@ import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -224,9 +223,8 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         StartSurfaceTestUtils.clickFirstTabInCarousel();
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test
@@ -280,9 +278,8 @@ public class StartSurfaceTest {
         onView(withId(org.chromium.chrome.tab_ui.R.id.incognito_toggle_tabs))
                 .check(matches(withEffectiveVisibility(GONE)));
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         StartSurfaceTestUtils.clickFirstTabInCarousel();
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test
@@ -331,9 +328,8 @@ public class StartSurfaceTest {
             return;
         }
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         StartSurfaceTestUtils.clickFirstTabInCarousel();
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test
@@ -385,9 +381,8 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressBack(mActivityTestRule);
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.single_tab_view)).perform(click());
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test
@@ -450,10 +445,9 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.waitForTabModel(cta);
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
         onViewWaiting(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(2));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabCreator(false).launchNTP());
@@ -492,10 +486,9 @@ public class StartSurfaceTest {
         }
         assertTrue(cta.getTabModelSelector().isIncognitoSelected());
 
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onViewWaiting(withId(R.id.search_box_text)).perform(replaceText("about:blank"));
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(1));
     }
 

@@ -131,7 +131,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -1735,11 +1734,10 @@ public class StartSurfaceLayoutTest {
 
         // Click the chip and check the tab navigates back to the search result page.
         assertEquals(mUrl, ChromeTabUtils.getUrlStringOnUiThread(currentTab));
-        OverviewModeBehaviorWatcher hideWatcher = TabUiTestHelper.createOverviewHideWatcher(cta);
         onView(withId(R.id.page_info_button))
                 .check(waitForView(allOf(withText(expectedTerm), isDisplayed())));
         onView(withId(R.id.page_info_button)).perform(click());
-        hideWatcher.waitForBehavior();
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
         ChromeTabUtils.waitForTabPageLoaded(currentTab, searchUrl.get());
 
         // Verify the chip is gone.
