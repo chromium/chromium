@@ -206,7 +206,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldClearStorageKeyForTombstone) {
   ASSERT_EQ(kStorageKey1, entity->storage_key());
 
   // Mark the entity as removed.
-  entity->Delete();
+  entity->RecordLocalDeletion();
   ASSERT_EQ(1u, entity_tracker_.size());
   ASSERT_EQ(0u, entity_tracker_.CountNonTombstoneEntries());
 
@@ -226,7 +226,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldOverrideTombstone) {
   ASSERT_EQ(kStorageKey1, entity->storage_key());
 
   // Mark the entity as removed.
-  entity->Delete();
+  entity->RecordLocalDeletion();
   ASSERT_EQ(1u, entity_tracker_.size());
   ASSERT_EQ(0u, entity_tracker_.CountNonTombstoneEntries());
 
@@ -290,7 +290,7 @@ TEST_F(ProcessorEntityTrackerTest, ShouldReturnLocalChanges) {
       entity_tracker_.GetEntitiesWithLocalChanges(/*max_entries=*/1).empty());
 
   // Make some local changes.
-  entity->MakeLocalChange(std::make_unique<EntityData>(
+  entity->RecordLocalUpdate(std::make_unique<EntityData>(
       GenerateEntityData(kStorageKey1, kClientTagHash1)));
   entity_tracker_.IncrementSequenceNumberForAllExcept({});
   EXPECT_TRUE(entity->IsUnsynced());

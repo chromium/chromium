@@ -73,7 +73,7 @@ ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
 
   ProcessorEntity* entity =
       AddInternal(storage_key, *data, kUncommittedVersion);
-  entity->MakeLocalChange(std::move(data));
+  entity->RecordLocalUpdate(std::move(data));
   return entity;
 }
 

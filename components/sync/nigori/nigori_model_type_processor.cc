@@ -144,7 +144,7 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
       entity_ = ProcessorEntity::CreateNew(
           kNigoriStorageKey, ClientTagHash::FromHashed(kRawNigoriClientTagHash),
           updates[0].entity.id, updates[0].entity.creation_time);
-      entity_->RecordAcceptedUpdate(updates[0]);
+      entity_->RecordAcceptedRemoteUpdate(updates[0]);
       error = bridge_->MergeSyncData(std::move(updates[0].entity));
     }
     if (error) {
@@ -172,11 +172,11 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
   if (entity_->IsUnsynced()) {
     // Remote update always win in case of conflict, because bridge takes care
     // of reapplying pending local changes after processing the remote update.
-    entity_->RecordForcedUpdate(updates[0]);
+    entity_->RecordForcedRemoteUpdate(updates[0]);
     error = bridge_->ApplySyncChanges(std::move(updates[0].entity));
   } else if (!entity_->MatchesData(updates[0].entity)) {
     // Inform the bridge of the new or updated data.
-    entity_->RecordAcceptedUpdate(updates[0]);
+    entity_->RecordAcceptedRemoteUpdate(updates[0]);
     error = bridge_->ApplySyncChanges(std::move(updates[0].entity));
   }
 
@@ -339,7 +339,7 @@ void NigoriModelTypeProcessor::Put(std::unique_ptr<EntityData> entity_data) {
     return;
   }
 
-  entity_->MakeLocalChange(std::move(entity_data));
+  entity_->RecordLocalUpdate(std::move(entity_data));
   NudgeForCommitIfNeeded();
 }
 

@@ -76,21 +76,21 @@ class ProcessorEntity {
   bool UpdateIsReflection(int64_t update_version) const;
 
   // Records that an update from the server was received but ignores its data.
-  void RecordIgnoredUpdate(const UpdateResponseData& response_data);
+  void RecordIgnoredRemoteUpdate(const UpdateResponseData& response_data);
 
   // Records an update from the server assuming its data is the new data for
   // this entity.
-  void RecordAcceptedUpdate(const UpdateResponseData& response_data);
+  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data);
 
   // Squashes a pending commit with an update from the server.
-  void RecordForcedUpdate(const UpdateResponseData& response_data);
+  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data);
 
   // Applies a local change to this item.
-  void MakeLocalChange(std::unique_ptr<EntityData> data);
+  void RecordLocalUpdate(std::unique_ptr<EntityData> data);
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.
-  bool Delete();
+  bool RecordLocalDeletion();
 
   // Initializes a message representing this item's uncommitted state
   // and assumes that it is forwarded to the sync engine for commiting.

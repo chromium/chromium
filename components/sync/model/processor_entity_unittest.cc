@@ -121,7 +121,7 @@ class ProcessorEntityTest : public ::testing::Test {
     std::unique_ptr<ProcessorEntity> entity = CreateNew();
     UpdateResponseData update =
         GenerateUpdate(*entity, kHash, kId, kName, kValue1, ctime_, 1);
-    entity->RecordAcceptedUpdate(update);
+    entity->RecordAcceptedRemoteUpdate(update);
     DCHECK(!entity->IsUnsynced());
     return entity;
   }
@@ -162,7 +162,7 @@ TEST_F(ProcessorEntityTest, DefaultEntity) {
 // Test creating and commiting a new local item.
 TEST_F(ProcessorEntityTest, NewLocalItem) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1));
 
   EXPECT_EQ("", entity->metadata().server_id());
   EXPECT_FALSE(entity->metadata().is_deleted());
@@ -237,7 +237,7 @@ TEST_F(ProcessorEntityTest, NewServerItem) {
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
       GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
-  entity->RecordAcceptedUpdate(update);
+  entity->RecordAcceptedRemoteUpdate(update);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
   EXPECT_FALSE(entity->metadata().is_deleted());
@@ -268,7 +268,7 @@ TEST_F(ProcessorEntityTest, NewServerItem_EmptyStorageKey) {
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
       GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
-  entity->RecordAcceptedUpdate(update);
+  entity->RecordAcceptedRemoteUpdate(update);
   entity->SetStorageKey(kKey);
   EXPECT_EQ(kKey, entity->storage_key());
 }
@@ -280,7 +280,7 @@ TEST_F(ProcessorEntityTest, NewServerTombstone) {
   const base::Time mtime = base::Time::Now();
   UpdateResponseData tombstone =
       GenerateTombstone(*entity, kHash, kId, kName, mtime, 1);
-  entity->RecordAcceptedUpdate(tombstone);
+  entity->RecordAcceptedRemoteUpdate(tombstone);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
   EXPECT_TRUE(entity->metadata().is_deleted());
@@ -308,7 +308,7 @@ TEST_F(ProcessorEntityTest, ServerTombstone) {
   const base::Time mtime = base::Time::Now();
   UpdateResponseData tombstone =
       GenerateTombstone(*entity, kHash, kId, kName, mtime, 2);
-  entity->RecordAcceptedUpdate(tombstone);
+  entity->RecordAcceptedRemoteUpdate(tombstone);
 
   EXPECT_TRUE(entity->metadata().is_deleted());
   EXPECT_EQ(0, entity->metadata().sequence_number());
@@ -334,7 +334,7 @@ TEST_F(ProcessorEntityTest, LocalChange) {
   const std::string specifics_hash_v0 = entity->metadata().specifics_hash();
 
   // Make a local change with different specifics.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue2));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2));
 
   const int64_t mtime_v1 = entity->metadata().modification_time();
   const std::string specifics_hash_v1 = entity->metadata().specifics_hash();
@@ -384,7 +384,7 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
   const std::string specifics_hash = entity->metadata().specifics_hash();
 
   // Make a local delete.
-  entity->Delete();
+  entity->RecordLocalDeletion();
 
   EXPECT_TRUE(entity->metadata().is_deleted());
   EXPECT_EQ(1, entity->metadata().sequence_number());
@@ -449,13 +449,13 @@ TEST_F(ProcessorEntityTest, LocalUndeletion) {
   std::unique_ptr<ProcessorEntity> entity = CreateSynced();
   const std::string specifics_hash = entity->metadata().specifics_hash();
 
-  entity->Delete();
+  entity->RecordLocalDeletion();
   ASSERT_TRUE(entity->metadata().is_deleted());
   ASSERT_TRUE(entity->IsUnsynced());
   ASSERT_EQ(1, entity->metadata().sequence_number());
 
   // Undelete the entity with different specifics.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue2));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2));
 
   const std::string specifics_hash_v1 = entity->metadata().specifics_hash();
   ASSERT_NE(specifics_hash_v1, specifics_hash);
@@ -501,7 +501,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   const std::string specifics_hash_v0 = entity->metadata().specifics_hash();
 
   // Make the first change.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue2));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2));
   const std::string specifics_hash_v1 = entity->metadata().specifics_hash();
 
   EXPECT_EQ(1, entity->metadata().sequence_number());
@@ -514,7 +514,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   entity->InitializeCommitRequestData(&request_v1);
 
   // Make the second change.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue3));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue3));
   const std::string specifics_hash_v2 = entity->metadata().specifics_hash();
 
   EXPECT_EQ(2, entity->metadata().sequence_number());
@@ -568,14 +568,14 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
 TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   // Create new local change. Make sure initial id is empty.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1));
 
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
   EXPECT_TRUE(request.entity->id.empty());
 
   // Before receiving commit response make local modification to the entity.
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue2));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2));
   entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false);
 
   // Receiving commit response with valid id should update
@@ -587,11 +587,11 @@ TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
 }
 
 // Tests that entity restored after restart accepts specifics that don't match
-// the ones passed originally to MakeLocalChange.
+// the ones passed originally to RecordLocalUpdate.
 TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
   // Create new entity and preserver its metadata.
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1));
   sync_pb::EntityMetadata entity_metadata = entity->metadata();
 
   // Restore entity from metadata and emulate bridge passing different specifics
@@ -609,7 +609,7 @@ TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
 // should be ignored but the server IDs should be updated.
 TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1));
 
   ASSERT_TRUE(entity->IsUnsynced());
   ASSERT_TRUE(entity->RequiresCommitRequest());
@@ -622,7 +622,7 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   // would usually win so the remote update is ignored.
   UpdateResponseData tombstone =
       GenerateTombstone(*entity, kHash, kId, kName, base::Time::Now(), 2);
-  entity->RecordIgnoredUpdate(tombstone);
+  entity->RecordIgnoredRemoteUpdate(tombstone);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
   EXPECT_TRUE(entity->IsUnsynced());
@@ -646,7 +646,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
       GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
-  entity->RecordAcceptedUpdate(update);
+  entity->RecordAcceptedRemoteUpdate(update);
   EXPECT_EQ(
       entity->metadata().possibly_trimmed_base_specifics().preference().name(),
       kName);
@@ -660,7 +660,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
   feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
 
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1));
   EXPECT_EQ(
       entity->metadata().possibly_trimmed_base_specifics().preference().name(),
       kName);
