@@ -221,6 +221,10 @@ void HistoryClustersService::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
+bool HistoryClustersService::ShouldNotifyDebugMessage() const {
+  return !observers_.empty();
+}
+
 void HistoryClustersService::NotifyDebugMessage(
     const std::string& message) const {
   for (Observer& obs : observers_) {
@@ -276,13 +280,15 @@ void HistoryClustersService::QueryClusters(
     base::Time end_time,
     QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
-  NotifyDebugMessage("HistoryClustersService::QueryClusters()");
-  NotifyDebugMessage(
-      "  begin_time = " +
-      (begin_time.is_null() ? "null" : base::TimeToISO8601(begin_time)));
-  NotifyDebugMessage("  end_time = " + (end_time.is_null()
-                                            ? "null"
-                                            : base::TimeToISO8601(end_time)));
+  if (ShouldNotifyDebugMessage()) {
+    NotifyDebugMessage("HistoryClustersService::QueryClusters()");
+    NotifyDebugMessage(
+        "  begin_time = " +
+        (begin_time.is_null() ? "null" : base::TimeToISO8601(begin_time)));
+    NotifyDebugMessage("  end_time = " + (end_time.is_null()
+                                              ? "null"
+                                              : base::TimeToISO8601(end_time)));
+  }
 
   if (!backend_) {
     NotifyDebugMessage(
@@ -452,8 +458,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   // via the constructor for efficiency (as recommended by the flat_set docs).
   // De-duplication is handled by the flat_set itself.
   *cache = KeywordSet(*keyword_accumulator);
-  NotifyDebugMessage("Cache construction complete:");
-  NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));
+  if (ShouldNotifyDebugMessage()) {
+    NotifyDebugMessage("Cache construction complete:");
+    NotifyDebugMessage(GetDebugJSONForKeywordSet(*cache));
+  }
 
   // Record keyword phrase & keyword counts for the appropriate cache.
   if (cache == &all_keywords_cache_) {
@@ -484,13 +492,15 @@ void HistoryClustersService::OnGotHistoryVisits(
     QueryClustersCallback callback,
     std::vector<history::AnnotatedVisit> annotated_visits,
     base::Time continuation_end_time) const {
-  NotifyDebugMessage("HistoryClustersService::OnGotHistoryVisits()");
-  NotifyDebugMessage(base::StringPrintf("  annotated_visits.size() = %zu",
-                                        annotated_visits.size()));
-  NotifyDebugMessage("  continuation_end_time = " +
-                     (continuation_end_time.is_null()
-                          ? "null (i.e. exhausted history)"
-                          : base::TimeToISO8601(continuation_end_time)));
+  if (ShouldNotifyDebugMessage()) {
+    NotifyDebugMessage("HistoryClustersService::OnGotHistoryVisits()");
+    NotifyDebugMessage(base::StringPrintf("  annotated_visits.size() = %zu",
+                                          annotated_visits.size()));
+    NotifyDebugMessage("  continuation_end_time = " +
+                       (continuation_end_time.is_null()
+                            ? "null (i.e. exhausted history)"
+                            : base::TimeToISO8601(continuation_end_time)));
+  }
 
   base::UmaHistogramTimes(
       "Histogram.Clusters.Backend.QueryAnnotatedVisitsLatency",
@@ -502,10 +512,11 @@ void HistoryClustersService::OnGotHistoryVisits(
     return;
   }
 
-  NotifyDebugMessage("  Visits JSON follows:");
-  NotifyDebugMessage(GetDebugJSONForVisits(annotated_visits));
-
-  NotifyDebugMessage("Calling backend_->GetClusters()");
+  if (ShouldNotifyDebugMessage()) {
+    NotifyDebugMessage("  Visits JSON follows:");
+    NotifyDebugMessage(GetDebugJSONForVisits(annotated_visits));
+    NotifyDebugMessage("Calling backend_->GetClusters()");
+  }
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
                                static_cast<int>(annotated_visits.size()));
 
@@ -522,15 +533,16 @@ void HistoryClustersService::OnGotRawClusters(
     base::TimeTicks cluster_start_time,
     QueryClustersCallback callback,
     std::vector<history::Cluster> clusters) const {
-  NotifyDebugMessage("HistoryClustersService::OnGotRawClusters()");
-
   base::UmaHistogramTimes("History.Clusters.Backend.GetClustersLatency",
                           base::TimeTicks::Now() - cluster_start_time);
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
                                clusters.size());
 
-  NotifyDebugMessage("  Raw Clusters from Backend JSON follows:");
-  NotifyDebugMessage(GetDebugJSONForClusters(clusters));
+  if (ShouldNotifyDebugMessage()) {
+    NotifyDebugMessage("HistoryClustersService::OnGotRawClusters()");
+    NotifyDebugMessage("  Raw Clusters from Backend JSON follows:");
+    NotifyDebugMessage(GetDebugJSONForClusters(clusters));
+  }
 
   std::move(callback).Run(clusters, continuation_end_time);
 }

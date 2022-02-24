@@ -110,6 +110,9 @@ class HistoryClustersService : public KeyedService {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
+  // Returns whether observers are registered to notify the debug messages.
+  bool ShouldNotifyDebugMessage() const;
+
   // Notifies the observers of a debug message being available.
   void NotifyDebugMessage(const std::string& message) const;
 
