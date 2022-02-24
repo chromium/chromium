@@ -29,11 +29,8 @@
 # pylint: disable=R0201
 # pylint: disable=C0301
 
-from __future__ import print_function
-
 import os.path
 import sys
-import time
 
 # Can't use relative imports if we don't have a parent package.
 if __package__:
@@ -1316,7 +1313,6 @@ def ParseFile(parser, filename):
   with open(filename) as fileobject:
     try:
       out = parser.ParseText(filename, fileobject.read())
-      out.SetProperty('DATETIME', time.ctime(os.path.getmtime(filename)))
       out.SetProperty('ERRORS', parser.GetErrors())
       return out
 

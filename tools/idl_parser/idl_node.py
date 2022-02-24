@@ -77,8 +77,8 @@ class IDLAttribute(object):
 #
 class IDLNode(object):
   VERBOSE_PROPS = [
-      'PROD', 'NAME', 'VALUE', 'TYPE',
-      'ERRORS', 'WARNINGS', 'FILENAME', 'LINENO', 'POSITION', 'DATETIME',
+      'PROD', 'NAME', 'VALUE', 'TYPE', 'ERRORS', 'WARNINGS', 'FILENAME',
+      'LINENO', 'POSITION'
   ]
 
   def __init__(self, cls, filename, lineno, pos, children=None):
