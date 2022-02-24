@@ -63,9 +63,10 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
     virtual void InvalidateRect(const gfx::Rect& rect) = 0;
 
     // Notifies the FrameSource that another frame should be captured and have
-    // its VideoCaptureOverlay re-rendered soon to reflect an updated overlay
-    // image and/or position.
-    virtual void RequestRefreshFrame() = 0;
+    // its VideoCaptureOverlay re-rendered to reflect an updated overlay
+    // image and/or position. The overlay image and position may change often,
+    // so this method may be called frequently.
+    virtual void RefreshNow() = 0;
 
     // Notifies the FrameSource that the VideoCaptureOverlay has lost its mojo
     // binding.

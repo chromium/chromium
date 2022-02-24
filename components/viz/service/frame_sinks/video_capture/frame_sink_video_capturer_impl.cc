@@ -181,7 +181,7 @@ void FrameSinkVideoCapturerImpl::SetResolvedTarget(
   resolved_target_ = target;
   if (resolved_target_) {
     resolved_target_->AttachCaptureClient(this);
-    RefreshEntireSourceSoon();
+    RefreshEntireSourceNow();
   } else {
     // The capturer will remain idle until either: 1) the requested target is
     // re-resolved by the |frame_sink_manager_|, or 2) a new target is set via a
@@ -227,7 +227,7 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
         GetVideoFramePoolForFormat(pixel_format_, kFramePoolCapacity,
                                    gmb_video_frame_pool_context_provider_);
 
-    RefreshEntireSourceSoon();
+    RefreshEntireSourceNow();
   }
 }
 
@@ -260,7 +260,7 @@ void FrameSinkVideoCapturerImpl::SetMinCapturePeriod(
   if (refresh_frame_retry_timer_->IsRunning()) {
     // With the change in the minimum capture period, a pending refresh might
     // be ready to execute now (or sooner than it would have been).
-    RefreshSoon();
+    RefreshNow();
   }
 }
 
@@ -301,7 +301,7 @@ void FrameSinkVideoCapturerImpl::SetResolutionConstraints(
 
   oracle_->SetCaptureSizeConstraints(min_size, max_size,
                                      use_fixed_aspect_ratio);
-  RefreshEntireSourceSoon();
+  RefreshEntireSourceNow();
 }
 
 void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
@@ -353,7 +353,7 @@ void FrameSinkVideoCapturerImpl::Start(
   // Stop(), make that call on its behalf.
   consumer_.set_disconnect_handler(base::BindOnce(
       &FrameSinkVideoCapturerImpl::Stop, base::Unretained(this)));
-  RefreshEntireSourceSoon();
+  RefreshEntireSourceNow();
 }
 
 void FrameSinkVideoCapturerImpl::Stop() {
@@ -393,8 +393,9 @@ void FrameSinkVideoCapturerImpl::RequestRefreshFrame() {
     // then the retry timer should have already been destructed.
     refresh_frame_retry_timer_->Start(
         FROM_HERE, GetDelayBeforeNextRefreshAttempt(),
-        base::BindOnce(&FrameSinkVideoCapturerImpl::RefreshSoon,
-                       base::Unretained(this)));
+        base::BindOnce(&FrameSinkVideoCapturerImpl::RefreshInternal,
+                       base::Unretained(this),
+                       VideoCaptureOracle::kRefreshRequest));
   }
 }
 
@@ -407,6 +408,39 @@ void FrameSinkVideoCapturerImpl::CreateOverlay(
   // dropped, per mojom-documented behavior.
   overlays_.emplace(stacking_index, std::make_unique<VideoCaptureOverlay>(
                                         this, std::move(receiver)));
+}
+
+gfx::Size FrameSinkVideoCapturerImpl::GetSourceSize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return oracle_->source_size();
+}
+
+void FrameSinkVideoCapturerImpl::InvalidateRect(const gfx::Rect& rect) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  gfx::Rect positive_rect = rect;
+  positive_rect.Intersect(kMaxRect);
+  dirty_rect_.Union(positive_rect);
+  content_version_++;
+}
+
+void FrameSinkVideoCapturerImpl::OnOverlayConnectionLost(
+    VideoCaptureOverlay* overlay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::EraseIf(overlays_,
+                [&overlay](const decltype(overlays_)::value_type& entry) {
+                  return entry.second.get() == overlay;
+                });
+}
+
+void FrameSinkVideoCapturerImpl::RefreshNow() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RefreshInternal(VideoCaptureOracle::kRefreshDemand);
+}
+
+void FrameSinkVideoCapturerImpl::InvalidateEntireSource() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  dirty_rect_ = kMaxRect;
+  content_version_++;
 }
 
 base::TimeDelta FrameSinkVideoCapturerImpl::GetDelayBeforeNextRefreshAttempt()
@@ -425,16 +459,15 @@ base::TimeDelta FrameSinkVideoCapturerImpl::GetDelayBeforeNextRefreshAttempt()
                                oracle_->min_capture_period()));
 }
 
-void FrameSinkVideoCapturerImpl::RefreshEntireSourceSoon() {
+void FrameSinkVideoCapturerImpl::RefreshEntireSourceNow() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   InvalidateEntireSource();
-  RefreshSoon();
+  RefreshNow();
 }
 
-void FrameSinkVideoCapturerImpl::RefreshSoon() {
+void FrameSinkVideoCapturerImpl::RefreshInternal(
+    VideoCaptureOracle::Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // If consumption is stopped, cancel the refresh.
   if (!consumer_) {
     return;
@@ -469,14 +502,13 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
     InvalidateEntireSource();
     if (log_to_webrtc_) {
       consumer_->OnLog(
-          base::StringPrintf("FrameSinkVideoCapturerImpl::RefreshSoon() "
+          base::StringPrintf("FrameSinkVideoCapturerImpl::RefreshInternal() "
                              "changed active frame size: %s",
                              capture_region.size().ToString().c_str()));
     }
   }
 
-  MaybeCaptureFrame(VideoCaptureOracle::kRefreshRequest, gfx::Rect(),
-                    clock_->NowTicks(),
+  MaybeCaptureFrame(event, gfx::Rect(), clock_->NowTicks(),
                     *resolved_target_->GetLastActivatedFrameMetadata());
 }
 
@@ -526,45 +558,9 @@ bool FrameSinkVideoCapturerImpl::IsVideoCaptureStarted() {
   return video_capture_started_;
 }
 
-gfx::Size FrameSinkVideoCapturerImpl::GetSourceSize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return oracle_->source_size();
-}
-
-void FrameSinkVideoCapturerImpl::InvalidateRect(const gfx::Rect& rect) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  gfx::Rect positive_rect = rect;
-  positive_rect.Intersect(kMaxRect);
-  dirty_rect_.Union(positive_rect);
-  content_version_++;
-}
-
-void FrameSinkVideoCapturerImpl::InvalidateEntireSource() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  dirty_rect_ = kMaxRect;
-  content_version_++;
-}
-
-void FrameSinkVideoCapturerImpl::OnOverlayConnectionLost(
-    VideoCaptureOverlay* overlay) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const auto it =
-      std::find_if(overlays_.begin(), overlays_.end(),
-                   [&overlay](const decltype(overlays_)::value_type& entry) {
-                     return entry.second.get() == overlay;
-                   });
-  DCHECK(it != overlays_.end());
-  overlays_.erase(it);
-}
-
 std::vector<VideoCaptureOverlay*>
 FrameSinkVideoCapturerImpl::GetOverlaysInOrder() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   std::vector<VideoCaptureOverlay*> list;
   list.reserve(overlays_.size());
   for (const auto& entry : overlays_) {
@@ -787,6 +783,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
           frame->visible_rect().ToString().c_str(),
           frame->natural_size().ToString().c_str(), strides.c_str()));
     }
+
     OnFrameReadyForDelivery(capture_frame_number, oracle_frame_number,
                             content_rect, std::move(frame));
     return;

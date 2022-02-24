@@ -27,7 +27,17 @@ class CAPTURE_EXPORT VideoCaptureOracle {
  public:
   enum Event {
     kCompositorUpdate,
+
+    // A "refresh request" means that we want to update to keep things
+    // relatively fresh and in sync, and thus should capture a frame as long as
+    // it's not happening too frequently (in practice this ends up being 1-5
+    // frames per second).
     kRefreshRequest,
+
+    // A "refresh demand" means that we know we have new information, such as a
+    // mouse cursor location change, and thus generating a frame is higher
+    // priority than a "refresh request."
+    kRefreshDemand,
     kNumEvents,
   };
 
@@ -139,7 +149,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // Clients are expected to set a better minimum capture period after
   // VideoCaptureOracle is constructed.
   static constexpr base::TimeDelta kDefaultMinCapturePeriod =
-      base::Microseconds(1000000 / 5);  // 5 FPS
+      base::Milliseconds(200);  // 5 FPS
 
   // Default minimum size change period if SetMinSizeChangePeriod is not called.
   static constexpr base::TimeDelta kDefaultMinSizeChangePeriod =

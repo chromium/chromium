@@ -51,7 +51,7 @@ void VideoCaptureOverlay::SetImageAndBounds(const SkBitmap& image,
   if (!new_rect.IsEmpty() || !old_rect.IsEmpty()) {
     frame_source_->InvalidateRect(old_rect);
     frame_source_->InvalidateRect(new_rect);
-    frame_source_->RequestRefreshFrame();
+    frame_source_->RefreshNow();
   }
 }
 
@@ -63,7 +63,7 @@ void VideoCaptureOverlay::SetBounds(const gfx::RectF& bounds) {
     if (!new_rect.IsEmpty() || !old_rect.IsEmpty()) {
       frame_source_->InvalidateRect(old_rect);
       frame_source_->InvalidateRect(new_rect);
-      frame_source_->RequestRefreshFrame();
+      frame_source_->RefreshNow();
     }
   }
 }

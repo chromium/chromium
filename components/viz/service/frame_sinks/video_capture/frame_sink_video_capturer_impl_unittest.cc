@@ -1080,10 +1080,60 @@ TEST_F(FrameSinkVideoCapturerTest, EventuallySendsARefreshFrame) {
   StopCapture();
 }
 
+// Tests that refresh demands result in a frame being delivered to
+// the consumer in a timely fashion.
+TEST_F(FrameSinkVideoCapturerTest, RefreshDemandsAreProperlyHandled) {
+  frame_sink_.SetCopyOutputColor(YUVColor{0x80, 0x80, 0x80});
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  capturer_->ChangeTarget(kVideoCaptureTarget, /*crop_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(3);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+  StartCapture(&consumer);
+
+  // With the start, an immediate refresh occurred. Simulate a copy result and
+  // expect to see the refresh frame delivered to the consumer.
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // Demand a refresh frame. We should be past the minimum time to add one, so
+  // it should be done immediately.
+  AdvanceClockToNextVsync();
+  PropagateMojoTasks();
+  capturer_->RefreshNow();
+  PropagateMojoTasks();
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  ASSERT_EQ(2, consumer.num_frames_received());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
+  // Demand again. Because we just got a frame, the refresh timer should be
+  // started instead of capturing immediately.
+  PropagateMojoTasks();
+  capturer_->RefreshNow();
+  PropagateMojoTasks();
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  ASSERT_EQ(2, consumer.num_frames_received());
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+  AdvanceClockForRefreshTimer();
+
+  PropagateMojoTasks();
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  ASSERT_EQ(3, consumer.num_frames_received());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
+  StopCapture();
+}
+
 // Tests that full capture happens on capture resolution change due to oracle,
 // but only once and resurrected frames are used after that.
 TEST_F(FrameSinkVideoCapturerTest,
-       RessurectsFramesForChangingCaptureResolution) {
+       ResurrectsFramesForChangingCaptureResolution) {
   frame_sink_.SetCopyOutputColor(YUVColor{0x80, 0x80, 0x80});
   EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
       .WillRepeatedly(Return(&frame_sink_));
