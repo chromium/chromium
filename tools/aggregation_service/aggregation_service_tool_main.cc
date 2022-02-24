@@ -189,9 +189,8 @@ int main(int argc, char* argv[]) {
   std::vector<GURL> processing_urls;
   static constexpr char kDefaultEndpointPath[] = "keys.json";
   for (auto& kv : kv_pairs) {
-    url::Replacements<char> replacements;
-    replacements.SetPath(kDefaultEndpointPath,
-                         url::Component(0, strlen(kDefaultEndpointPath)));
+    GURL::Replacements replacements;
+    replacements.SetPathStr(kDefaultEndpointPath);
     GURL url = url::Origin::Create(GURL(kv.first))
                    .GetURL()
                    .ReplaceComponents(replacements);
