@@ -2209,7 +2209,16 @@ static_library("test_support") {
 
   allow_circular_includes_from = [ "//net/dns:test_support" ]
 
-  data = [ "data/" ]
+  # Data dependencies shared with suites other than net_unittests.
+  data = [
+    "data/cert_net_fetcher_impl_unittest/",
+    "data/dns/",
+    "data/ov_name_constraints/",
+    "data/parse_certificate_unittest/",
+    "data/ssl/",
+    "data/url_request_unittest/",
+    "data/websocket/",
+  ]
 
   if (is_mac) {
     frameworks = [ "Security.framework" ]
@@ -4563,7 +4572,30 @@ test("net_unittests") {
     ]
   }
 
-  data = []
+  data = [
+    "data/cache_tests/",
+    "data/certificate_policies_unittest/",
+    "data/cert_issuer_source_aia_unittest/",
+    "data/cert_issuer_source_static_unittest/",
+    "data/crl_unittest/",
+    "data/embedded_test_server/",
+    "data/file_stream_unittest/",
+    "data/filter_unittests/",
+    "data/gencerts/",
+    "data/name_constraints_unittest/",
+    "data/ocsp_unittest/",
+    "data/pac_file_fetcher_unittest/",
+    "data/path_builder_unittest/",
+    "data/quic_http_response_cache_data/",
+    "data/quic_http_response_cache_data_with_push/",
+    "data/spdy_tests/",
+    "data/test.html",
+    "data/trial_comparison_cert_verifier_unittest/",
+    "data/url_fetcher_impl_unittest/",
+    "data/verify_certificate_chain_unittest/",
+    "data/verify_name_match_unittest/",
+    "data/verify_signed_data_unittest/",
+  ]
   data_deps = [
     "third_party/nist-pkits/",
     "//testing/buildbot/filters:net_unittests_filters",
@@ -4890,6 +4922,10 @@ if (use_fuzzing_engine) {
       "//base",
       "//base:i18n",
       "//net",
+    ]
+    data = [
+      "fuzzer_data",
+      "fuzzer_dictionaries",
     ]
     allow_circular_includes_from = [ "//net/dns:fuzzer_test_support" ]
   }
