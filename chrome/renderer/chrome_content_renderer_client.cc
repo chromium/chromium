@@ -340,7 +340,7 @@ void MaybeEnableWebShare() {
 #if BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS) && \
     BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsTerminalSystemWebAppNaClPage(GURL url) {
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearQuery();
   replacements.ClearRef();
   url = url.ReplaceComponents(replacements);
