@@ -225,8 +225,8 @@ void MessageStreamLookupImpl::OnConnected(
     base::TimeTicks connect_to_service_start_time,
     const CreateMessageStreamAttemptType& type,
     scoped_refptr<device::BluetoothSocket> socket) {
-  QP_LOG(VERBOSE) << __func__ << ": device = " << device_address
-                  << " Type = " << CreateMessageStreamAttemptTypeToString(type);
+  QP_LOG(INFO) << __func__ << ": device = " << device_address
+               << " Type = " << CreateMessageStreamAttemptTypeToString(type);
   RecordMessageStreamConnectToServiceResult(/*success=*/true);
   RecordMessageStreamConnectToServiceTime(base::TimeTicks::Now() -
                                           connect_to_service_start_time);
@@ -246,8 +246,8 @@ void MessageStreamLookupImpl::OnConnectError(
   // Because we need to attempt to create MessageStreams at many different
   // iterations due to the variability of Bluetooth APIs, we can expect to
   // see errors here frequently, along with errors followed by a success.
-  QP_LOG(VERBOSE) << __func__ << ": Error = [ " << error_message << "]. Type = "
-                  << CreateMessageStreamAttemptTypeToString(type);
+  QP_LOG(INFO) << __func__ << ": Error = [ " << error_message
+               << "]. Type = " << CreateMessageStreamAttemptTypeToString(type);
   RecordMessageStreamConnectToServiceResult(/*success=*/false);
   RecordMessageStreamConnectToServiceError(error_message);
 }
