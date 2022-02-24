@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VECTOR_ICONS_CC_MACROS_H_
 #define COMPONENTS_VECTOR_ICONS_CC_MACROS_H_
 
-#include "base/cxx17_backports.h"  // For base::size().
+#include <iterator>
 
 // This file holds macros that are common to each vector icon target's
 // vector_icons.cc.template file.
@@ -30,7 +30,7 @@
   constexpr char icon_name##Id[] = VECTOR_ICON_ID_PREFIX #icon_name;   \
   static constexpr gfx::VectorIconRep rep_list_name[] = {__VA_ARGS__}; \
   VECTOR_ICON_EXPORT constexpr gfx::VectorIcon icon_name = {           \
-      rep_list_name, base::size(rep_list_name), icon_name##Id};
+      rep_list_name, std::size(rep_list_name), icon_name##Id};
 
 #else  // !COMPONENTS_VECTOR_ICONS_CC_MACROS_H_
 #error This file should only be included once.

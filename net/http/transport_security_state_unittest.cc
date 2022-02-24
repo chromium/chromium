@@ -7,13 +7,13 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"

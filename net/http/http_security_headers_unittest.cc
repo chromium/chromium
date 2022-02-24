@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <iterator>
+
 #include "base/base64.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"

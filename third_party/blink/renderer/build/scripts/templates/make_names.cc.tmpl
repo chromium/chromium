@@ -5,7 +5,8 @@
 
 #include "{{this_include_path}}"
 
-#include "base/cxx17_backports.h"  // for base::size()
+#include <iterator>
+
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -34,7 +35,7 @@ void Init{{suffix}}() {
   {% endfor %}
   };
 
-  for (size_t i = 0; i < base::size(kNames); ++i) {
+  for (size_t i = 0; i < std::size(kNames); ++i) {
     StringImpl* impl = StringImpl::CreateStatic(kNames[i].name, kNames[i].length, kNames[i].hash);
     void* address = reinterpret_cast<AtomicString*>(&{{suffix|lower}}names_storage) + i;
     new (address) AtomicString(impl);

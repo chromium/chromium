@@ -24,7 +24,8 @@
 
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
-#include "base/cxx17_backports.h"  // for base::size()
+#include <iterator>
+
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 {% macro define_shorthand(property, expansion) -%}
@@ -35,7 +36,7 @@
   };
 
   static const StylePropertyShorthand shorthand(
-      CSSPropertyID::{{property.enum_key}}, longhands, base::size(longhands));
+      CSSPropertyID::{{property.enum_key}}, longhands, std::size(longhands));
 {%- endmacro %}
 
 namespace blink {

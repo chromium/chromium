@@ -188,7 +188,7 @@ def write_disabled_extension_list(entry_kind, entry_id, data, data_file,
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # use the list
-    data_file.write('base::size(%s),  // %s size\n' % (var_name, entry_kind))
+    data_file.write('std::size(%s),  // %s size\n' % (var_name, entry_kind))
     data_file.write('%s,  // %s\n' % (var_name, entry_kind))
   else:
     data_file.write('0,  // %s size\n' % entry_kind)
@@ -294,7 +294,7 @@ def write_number_list(entry_id, data_type, name_tag, data, is_exception,
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('base::size(%s),  // %s size\n' % (var_name, name_tag))
+    data_file.write('std::size(%s),  // %s size\n' % (var_name, name_tag))
     data_file.write('%s,  // %s\n' % (var_name, name_tag))
   else:
     data_file.write('0,  // %s size\n' % name_tag)
@@ -350,7 +350,7 @@ def write_device_list(entry_id, device_id, device_revision, is_exception,
                              (device_id[ii], device_revision[ii]))
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('base::size(%s),  // Devices size\n' % var_name)
+    data_file.write('std::size(%s),  // Devices size\n' % var_name)
     data_file.write('%s,  // Devices\n' % var_name)
   else:
     assert not device_revision
@@ -382,7 +382,7 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     data_helper_file.write(
       'const GpuControlList::MachineModelInfo %s = {\n' % var_name)
     if machine_model_name:
-      data_helper_file.write('base::size(%s),  // machine model name size\n' %
+      data_helper_file.write('std::size(%s),  // machine model name size\n' %
                              model_name_var_name)
       data_helper_file.write('%s,  // machine model names\n' %
                              model_name_var_name)
@@ -691,7 +691,7 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
                              intel_gpu_series_map[series])
     data_helper_file.write('};\n\n')
 
-    data_file.write('base::size(%s),  // intel_gpu_series size\n' % var_name)
+    data_file.write('std::size(%s),  // intel_gpu_series size\n' % var_name)
     data_file.write('%s,  // intel_gpu_series\n' % var_name)
   else:
     data_file.write('0,  // intel_gpu_series size\n')
@@ -753,7 +753,7 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     var_name = 'kFeatureListFor%sEntry%d' % (unique_symbol_id, entry_id)
     features = entry['features']
     feature_set = get_feature_set(features, total_feature_set)
-    data_file.write('base::size(%s),  // features size\n' % var_name)
+    data_file.write('std::size(%s),  // features size\n' % var_name)
     data_file.write('%s,  // features\n' % var_name)
     write_features(feature_set, feature_name_prefix, var_name, data_helper_file)
   else:
@@ -796,7 +796,7 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
                        data_exception_file, data_helper_file, None)
       data_exception_file.write('},\n')
     data_exception_file.write('};\n\n')
-    data_file.write('base::size(%s),  // exceptions count\n' % exception_var)
+    data_file.write('std::size(%s),  // exceptions count\n' % exception_var)
     data_file.write('%s,  // exceptions\n' % exception_var)
   else:
     data_file.write('0,  // exceptions count\n')
@@ -837,6 +837,7 @@ def process_json_file(json_filepath, list_tag,
   data_file.write(_LICENSE)
   data_file.write(_DO_NOT_EDIT_WARNING)
   data_file.write('#include "%s/%s"\n\n' % (path, output_header_filename))
+  data_file.write('#include <iterator>\n\n')
   data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
   data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
   data_helper_file = open(output_helper_filepath, 'w')

@@ -63,7 +63,7 @@ extern const size_t kTheRcHeaderSize;''', output)
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
@@ -72,14 +72,14 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"IDS_LANGUAGESPECIFIC", IDS_LANGUAGESPECIFIC},
   {"IDS_THIRDPRESENT", IDS_THIRDPRESENT},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
@@ -88,7 +88,7 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"ghi", IDS_LANGUAGESPECIFIC},
   {"mno", IDS_THIRDPRESENT},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
   def testFormatResourceMapWithGeneratedFile(self):
     os.environ["root_gen_dir"] = "gen"
@@ -170,7 +170,7 @@ extern const size_t kTheRcHeaderSize;''', output)
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
@@ -178,14 +178,14 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_METEOR", IDR_METEOR},
   {"IDR_LAST", IDR_LAST},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_map_source')(grd, 'en', '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_KLONKMENU", IDR_KLONKMENU},
@@ -193,7 +193,7 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"IDR_METEOR", IDR_METEOR},
   {"IDR_LAST", IDR_LAST},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
   def testFormatResourceMapWithOutputAllEqualsFalseForIncludes(self):
     grd = util.ParseGrdForUnittest('''
@@ -246,7 +246,7 @@ extern const size_t kTheRcHeaderSize;''', output)
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"IDC_KLONKMENU", IDC_KLONKMENU},
@@ -256,14 +256,14 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"IDS_METEOR", IDS_METEOR},
   {"IDS_LAST", IDS_LAST},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
     output = util.StripBlankLinesAndComments(''.join(
         resource_map.GetFormatter('resource_file_map_source')(grd, 'en', '.')))
     self.assertEqual(
         '''\
 #include "the_resource_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"grit/testdata/klonk.rc", IDC_KLONKMENU},
@@ -273,7 +273,7 @@ const webui::ResourcePath kTheRcHeader[] = {
   {"meteor", IDS_METEOR},
   {"xyz", IDS_LAST},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
   def testFormatStringResourceMap(self):
     grd = util.ParseGrdForUnittest('''
@@ -316,13 +316,13 @@ extern const size_t kTheRcHeaderSize;''', output)
         '''\
 #include "the_rc_map_header.h"
 #include <stddef.h>
-#include "base/cxx17_backports.h"
+#include <iterator>
 #include "the_rc_header.h"
 const webui::ResourcePath kTheRcHeader[] = {
   {"IDS_PRODUCT_NAME", IDS_PRODUCT_NAME},
   {"IDS_DEFAULT_TAB_TITLE_TITLE_CASE", IDS_DEFAULT_TAB_TITLE_TITLE_CASE},
 };
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
+const size_t kTheRcHeaderSize = std::size(kTheRcHeader);''', output)
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@
 // See transport_security_state_static.template for more information on the data
 // in this file.
 
-// Note that consumers must include <stdint.h>, "base/cxx17_backports.h", and
+// Note that consumers must include <stdint.h>, "<iterator>", and
 // "net/http/transport_security_state_source.h", which this file cannot do
 // itself, since it's always included in a nested namespace.
 
@@ -15,7 +15,7 @@
 static const char* const kExpectCTReportURIs[] = [[EXPECT_CT_REPORT_URIS]];
 
 static const char* const kNoRejectedPublicKeys[] = {
-    NULL,
+    nullptr,
 };
 
 [[ACCEPTABLE_CERTS]]
@@ -37,5 +37,5 @@ static const net::TransportSecurityStateSource kHSTSSource = {
   kHSTSRootPosition,
   kExpectCTReportURIs,
   kPinsets,
-  base::size(kPinsets)
+  std::size(kPinsets)
 };

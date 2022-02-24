@@ -327,10 +327,10 @@ EXPECTED_POLICY_CONSTANTS_SOURCE = '''\
 
 #include <algorithm>
 #include <climits>
+#include <iterator>
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"  // base::size()
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "components/policy/core/common/policy_types.h"
@@ -437,7 +437,7 @@ const PolicyDetails* GetChromePolicyDetails(const std::string& policy) {
   // Offsetting |it| from |begin| here obtains the index we're
   // looking for.
   size_t index = it - begin;
-  CHECK_LT(index, base::size(kChromePolicyDetails));
+  CHECK_LT(index, std::size(kChromePolicyDetails));
   return kChromePolicyDetails + index;
 }
 

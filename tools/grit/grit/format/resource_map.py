@@ -85,7 +85,7 @@ def _FormatSourceHeader(root, output_dir):
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 #include "%(rc_header_file)s"
 
@@ -102,8 +102,10 @@ def _FormatSourceFooter(root):
   return '''\
 };
 
-const size_t %(map_name)sSize = base::size(%(map_name)s);
-''' % { 'map_name': GetMapName(root) }
+const size_t %(map_name)sSize = std::size(%(map_name)s);
+''' % {
+      'map_name': GetMapName(root)
+  }
 
 
 def _FormatSource(get_key, root, lang, output_dir):

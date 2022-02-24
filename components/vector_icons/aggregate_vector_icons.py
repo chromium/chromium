@@ -182,7 +182,7 @@ def AggregateVectorIcons(working_directory, file_list, output_cc, output_h):
         output_cc.write("VECTOR_ICON_REP_TEMPLATE({}, {})\n".format(
             icon_path_name, vector_commands))
         icon_representation_strings.append(
-            "{{{0}, base::size({0})}}".format(icon_path_name))
+            "{{{0}, std::size({0})}}".format(icon_path_name))
 
       # Another temporary variable kFooBarRepList is used to create all the
       # VectorIconReps inline, with a pointer to it in the final VectorIcon.

@@ -5,7 +5,8 @@
 
 #include "third_party/blink/renderer/core/{{namespace|lower}}_element_factory.h"
 
-#include "base/cxx17_backports.h"  // for base::size()
+#include <iterator>
+
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 {% for header in tags|groupby('interface_header') %}
 #include "{{header[0]}}"
@@ -56,7 +57,7 @@ static void Create{{namespace}}FunctionMap() {
     { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor },
   {% endfor %}
   };
-  for (size_t i = 0; i < base::size(data); i++)
+  for (size_t i = 0; i < std::size(data); i++)
     g_{{namespace|lower}}_constructors->Set(data[i].tag.LocalName(), data[i].func);
 }
 

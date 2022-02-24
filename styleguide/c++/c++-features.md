@@ -661,6 +661,37 @@ require default-constructibility of the mapped type.
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/Uv2tUfIwUfQ/m/ffMxCk9uAAAJ)
 ***
 
+### Non-member std::size/std::empty/std::data <sup>[allowed]</sup>
+
+```c++
+char buffer[260];
+memcpy(std::data(buffer), source_str.data(), std::size(buffer));
+
+if (!std::empty(container)) { ... }
+```
+
+**Description:** Non-member versions of what are often member functions on STL
+containers. Primarily useful when:
+- using `std::size()` as a replacement for the old `arraysize()` macro.
+- writing code that needs to generically operate across things like
+  `std::vector` and `std::list` (which provide `size()`, `empty()`, and `data()
+  member functions), `std::array` and `std::initialize_list` (which only provide
+  a subset of the aforementioned member functions), and regular arrays (which
+  have no member functions at all).
+
+**Documentation:**
+[std::size](https://en.cppreference.com/w/cpp/iterator/size),
+[std::empty](https://en.cppreference.com/w/cpp/iterator/empty),
+[std::data](https://en.cppreference.com/w/cpp/iterator/data)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/58qlA3zk5ZI/m/7kKok65xAAAJ)
+
+Prefer range-based for loops over `std::size()`: range-based for loops work even
+for regular arrays.
+***
+
 ## C++17 Banned Library Features {#library-blocklist-17}
 
 The following C++17 library features are not allowed in the Chromium codebase.
@@ -1388,27 +1419,6 @@ static_assert(std::lcm(12, 18) == 36);
 **Notes:**
 *** promo
 None
-***
-
-### Non-member std::size/std::empty/std::data <sup>[tbd]</sup>
-
-```c++
-for (std::size_t i = 0; i < std::size(c); ++i) { ...
-if (!std::empty(c)) { ...
-std::strcpy(arr, std::data(str));
-```
-
-**Description:** Non-member versions of what are normally member functions, for
-symmetrical use with things like arrays and initializer_lists.
-
-**Documentation:**
-[std::size](https://en.cppreference.com/w/cpp/iterator/size),
-[std::empty](https://en.cppreference.com/w/cpp/iterator/empty),
-[std::data](https://en.cppreference.com/w/cpp/iterator/data)
-
-**Notes:**
-*** promo
-See `base::size`, `base::empty`, and `base::data`.
 ***
 
 ### Mathematical special functions <sup>[tbd]</sup>

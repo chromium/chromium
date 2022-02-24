@@ -5124,7 +5124,7 @@ def _make_operation_registration_table(table_name, operation_entries):
                "}}, ")
     if no_alloc_direct_call_enabled:
         pattern = ("{{" + pattern + "{v8_cfunction_table}, "
-                   "base::size({v8_cfunction_table})}}, ")
+                   "std::size({v8_cfunction_table})}}, ")
     for entry in operation_entries:
         if no_alloc_direct_call_enabled:
             nadc_overload_table_name = name_style.constant(
