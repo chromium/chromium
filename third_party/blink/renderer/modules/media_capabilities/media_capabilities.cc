@@ -276,6 +276,7 @@ bool IsValidMediaConfiguration(const MediaConfiguration* configuration) {
 }
 
 bool IsValidVideoConfiguration(const VideoConfiguration* configuration,
+                               bool is_decode,
                                bool is_webrtc) {
   DCHECK(configuration->hasContentType());
   if (!IsValidMimeType(configuration->contentType(), kVideoMimeTypePrefix,
@@ -284,6 +285,13 @@ bool IsValidVideoConfiguration(const VideoConfiguration* configuration,
 
   DCHECK(configuration->hasFramerate());
   if (!IsValidFrameRate(configuration->framerate()))
+    return false;
+
+  // scalabilityMode only valid for WebRTC encode configuration.
+  if ((!is_webrtc || is_decode) && configuration->hasScalabilityMode())
+    return false;
+  // spatialScalability only valid for WebRTC decode configuration.
+  if ((!is_webrtc || !is_decode) && configuration->hasSpatialScalability())
     return false;
 
   return true;
@@ -337,7 +345,8 @@ bool IsValidMediaDecodingConfiguration(
   }
 
   if (configuration->hasVideo() &&
-      !IsValidVideoConfiguration(configuration->video(), is_webrtc)) {
+      !IsValidVideoConfiguration(configuration->video(), /*is_decode=*/true,
+                                 is_webrtc)) {
     *message = "The video configuration dictionary is not valid.";
     return false;
   }
@@ -363,7 +372,8 @@ bool IsValidMediaEncodingConfiguration(
   }
 
   if (configuration->hasVideo() &&
-      !IsValidVideoConfiguration(configuration->video(), is_webrtc)) {
+      !IsValidVideoConfiguration(configuration->video(), /*is_decode=*/false,
+                                 is_webrtc)) {
     *message = "The video configuration dictionary is not valid.";
     return false;
   }
@@ -818,7 +828,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
               : absl::nullopt;
 
       absl::optional<webrtc::SdpVideoFormat> sdp_video_format;
-      absl::optional<String> scalability_mode;
+      bool spatial_scalability = false;
       media::VideoCodecProfile codec_profile =
           media::VIDEO_CODEC_PROFILE_UNKNOWN;
       int video_pixels = 0;
@@ -826,10 +836,9 @@ ScriptPromise MediaCapabilities::decodingInfo(
       if (config->hasVideo()) {
         sdp_video_format =
             absl::make_optional(ToSdpVideoFormat(config->video()));
-        scalability_mode =
-            config->video()->hasScalabilityMode()
-                ? absl::make_optional(config->video()->scalabilityMode())
-                : absl::nullopt;
+        spatial_scalability = config->video()->hasSpatialScalability()
+                                  ? config->video()->spatialScalability()
+                                  : false;
 
         // Additional information needed for lookup in WebrtcVideoPerfHistory.
         codec_profile =
@@ -845,7 +854,7 @@ ScriptPromise MediaCapabilities::decodingInfo(
               video_pixels, /*hardware_accelerated=*/false);
 
       handler->DecodingInfo(sdp_audio_format, sdp_video_format,
-                            scalability_mode,
+                            spatial_scalability,
                             WTF::Bind(&MediaCapabilities::OnWebrtcSupportInfo,
                                       WrapPersistent(this), callback_id,
                                       std::move(features), frames_per_second));

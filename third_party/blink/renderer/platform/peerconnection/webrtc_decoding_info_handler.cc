@@ -12,7 +12,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
-#include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
@@ -54,7 +53,7 @@ WebrtcDecodingInfoHandler::~WebrtcDecodingInfoHandler() = default;
 void WebrtcDecodingInfoHandler::DecodingInfo(
     const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
     const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
-    const absl::optional<String> video_scalability_mode,
+    const bool video_spatial_scalability,
     OnMediaCapabilitiesDecodingInfoCallback callback) const {
   DCHECK(sdp_audio_format || sdp_video_format);
 
@@ -75,30 +74,11 @@ void WebrtcDecodingInfoHandler::DecodingInfo(
   // Only check video configuration if the audio configuration was supported (or
   // not specified).
   if (sdp_video_format && supported) {
-    bool reference_scaling = false;
-    if (video_scalability_mode) {
-      absl::optional<int> dependent_spatial_layers =
-          WebRtcScalabilityModeDependentSpatialLayers(
-              video_scalability_mode->Utf8());
-      if (dependent_spatial_layers) {
-        // Reference scaling must be supported to be able to decode a stream
-        // with more than one dependent spatial layers.
-        reference_scaling = *dependent_spatial_layers > 1;
-      } else {
-        // We were not able to decode the scalability mode string. Return
-        // unsupported.
-        supported = false;
-        power_efficient = false;
-      }
-    }
-
-    if (supported) {
-      webrtc::VideoDecoderFactory::CodecSupport support =
-          video_decoder_factory_->QueryCodecSupport(*sdp_video_format,
-                                                    reference_scaling);
-      supported = support.is_supported;
-      power_efficient = support.is_power_efficient;
-    }
+    webrtc::VideoDecoderFactory::CodecSupport support =
+        video_decoder_factory_->QueryCodecSupport(*sdp_video_format,
+                                                  video_spatial_scalability);
+    supported = support.is_supported;
+    power_efficient = support.is_power_efficient;
     DVLOG(1) << "Video:" << sdp_video_format->name << " supported:" << supported
              << " power_efficient:" << power_efficient;
   }

@@ -1250,6 +1250,37 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingUnsupportedVideo) {
   EXPECT_FALSE(info->powerEfficient());
 }
 
+TEST(MediaCapabilitiesTests, WebrtcDecodingSpatialScalability) {
+  MediaCapabilitiesTestContext context;
+  auto* decoding_config = CreateWebrtcDecodingConfig();
+  auto* video_config = decoding_config->getVideoOr(nullptr);
+  video_config->setSpatialScalability(false);
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/true);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = DecodingInfo(decoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat test with spatialScalability=true.
+  video_config->setSpatialScalability(true);
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/false));
+  info = DecodingInfo(decoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
 // WebRTC encodingInfo tests.
 TEST(MediaCapabilitiesTests, WebrtcEncodingBasicAudio) {
   MediaCapabilitiesTestContext context;
@@ -1321,6 +1352,35 @@ TEST(MediaCapabilitiesTests, WebrtcEncodingUnsupportedVideo) {
       CreateVideoConfig<MediaEncodingConfiguration>("video/FooCodec", "webrtc");
 
   MediaCapabilitiesInfo* info = EncodingInfo(kEncodingConfig, &context);
+  EXPECT_FALSE(info->supported());
+  EXPECT_FALSE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+}
+
+TEST(MediaCapabilitiesTests, WebrtcEncodingScalabilityMode) {
+  MediaCapabilitiesTestContext context;
+  auto* encoding_config = CreateWebrtcEncodingConfig();
+  auto* video_config = encoding_config->getVideoOr(nullptr);
+  video_config->setScalabilityMode("L3T3_KEY");
+  const media::mojom::blink::WebrtcPredictionFeatures kFeatures =
+      CreateWebrtcFeatures(/*is_decode=*/false);
+
+  // WebrtcPerfHistoryService should be queried for smoothness. Signal
+  // smooth=true.
+  EXPECT_CALL(*context.GetWebrtcPerfHistoryService(), GetPerfInfo(_, _, _))
+      .WillOnce(WebrtcDbCallback(kFeatures, kFramerate, /*is_smooth=*/true));
+  MediaCapabilitiesInfo* info = EncodingInfo(encoding_config, &context);
+  EXPECT_TRUE(info->supported());
+  EXPECT_TRUE(info->smooth());
+  EXPECT_FALSE(info->powerEfficient());
+
+  // Verify DB call was made.
+  testing::Mock::VerifyAndClearExpectations(
+      context.GetWebrtcPerfHistoryService());
+
+  // Repeat with unsupported mode.
+  video_config->setScalabilityMode("L3T2_Foo");
+  info = EncodingInfo(encoding_config, &context);
   EXPECT_FALSE(info->supported());
   EXPECT_FALSE(info->smooth());
   EXPECT_FALSE(info->powerEfficient());
