@@ -10,8 +10,8 @@
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 #include "ash/components/phonehub/find_my_device_controller.h"
 #include "ash/components/phonehub/message_receiver.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
-#include "ash/components/phonehub/notification_access_manager.h"
 #include "ash/components/phonehub/notification_processor.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/screen_lock_manager_impl.h"
@@ -86,33 +86,46 @@ PhoneStatusModel::BatterySaverState GetBatterySaverStateFromProto(
   }
 }
 
-NotificationAccessManager::AccessStatus ComputeNotificationAccessState(
+MultideviceFeatureAccessManager::AccessStatus ComputeNotificationAccessState(
     const proto::PhoneProperties& phone_properties) {
   // If the user has a Work Profile active, notification access is not allowed
   // by Android. See https://crbug.com/1155151.
   if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE)
-    return NotificationAccessManager::AccessStatus::kProhibited;
+    return MultideviceFeatureAccessManager::AccessStatus::kProhibited;
 
   if (phone_properties.notification_access_state() ==
       proto::NotificationAccessState::ACCESS_GRANTED) {
-    return NotificationAccessManager::AccessStatus::kAccessGranted;
+    return MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
   }
 
-  return NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
+  return MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted;
 }
 
-NotificationAccessManager::AccessProhibitedReason
+// User has to consent and agree for phoneHub to have storage permission on the
+// phone
+MultideviceFeatureAccessManager::AccessStatus ComputeCameraRollAccessState(
+    const proto::PhoneProperties& phone_properties) {
+  if (phone_properties.camera_roll_access_state().feature_enabled()) {
+    return MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
+  } else {
+    return MultideviceFeatureAccessManager::AccessStatus::
+        kAvailableButNotGranted;
+  }
+}
+
+MultideviceFeatureAccessManager::AccessProhibitedReason
 ComputeNotificationAccessProhibitedReason(
     const proto::PhoneProperties& phone_properties) {
   if (phone_properties.profile_disable_reason() ==
       proto::ProfileDisableReason::DISABLE_REASON_DISABLED_BY_POLICY) {
-    return NotificationAccessManager::AccessProhibitedReason::
+    return MultideviceFeatureAccessManager::AccessProhibitedReason::
         kDisabledByPhonePolicy;
   }
   if (phone_properties.profile_type() == proto::ProfileType::WORK_PROFILE) {
-    return NotificationAccessManager::AccessProhibitedReason::kWorkProfile;
+    return MultideviceFeatureAccessManager::AccessProhibitedReason::
+        kWorkProfile;
   }
-  return NotificationAccessManager::AccessProhibitedReason::kUnknown;
+  return MultideviceFeatureAccessManager::AccessProhibitedReason::kUnknown;
 }
 
 ScreenLockManager::LockStatus ComputeScreenLockState(
@@ -174,7 +187,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     FeatureStatusProvider* feature_status_provider,
     MessageReceiver* message_receiver,
     FindMyDeviceController* find_my_device_controller,
-    NotificationAccessManager* notification_access_manager,
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager,
     ScreenLockManager* screen_lock_manager,
     NotificationProcessor* notification_processor_,
     MultiDeviceSetupClient* multidevice_setup_client,
@@ -184,7 +197,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
       feature_status_provider_(feature_status_provider),
       message_receiver_(message_receiver),
       find_my_device_controller_(find_my_device_controller),
-      notification_access_manager_(notification_access_manager),
+      multidevice_feature_access_manager_(multidevice_feature_access_manager),
       screen_lock_manager_(screen_lock_manager),
       notification_processor_(notification_processor_),
       multidevice_setup_client_(multidevice_setup_client),
@@ -194,7 +207,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(feature_status_provider_);
   DCHECK(message_receiver_);
   DCHECK(find_my_device_controller_);
-  DCHECK(notification_access_manager_);
+  DCHECK(multidevice_feature_access_manager_);
   DCHECK(notification_processor_);
   DCHECK(multidevice_setup_client_);
   DCHECK(phone_model_);
@@ -251,9 +264,14 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
           proto::NotificationMode::DO_NOT_DISTURB_ON,
       phone_properties.profile_type() != proto::ProfileType::WORK_PROFILE);
 
-  notification_access_manager_->SetAccessStatusInternal(
+  multidevice_feature_access_manager_->SetNotificationAccessStatusInternal(
       ComputeNotificationAccessState(phone_properties),
       ComputeNotificationAccessProhibitedReason(phone_properties));
+
+  if (features::IsPhoneHubCameraRollEnabled()) {
+    multidevice_feature_access_manager_->SetCameraRollAccessStatusInternal(
+        ComputeCameraRollAccessState(phone_properties));
+  }
 
   if (screen_lock_manager_) {
     screen_lock_manager_->SetLockStatusInternal(

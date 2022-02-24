@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/notification_access_manager.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/camera_roll_view.h"
-#include "ash/system/phonehub/notification_opt_in_view.h"
+#include "ash/system/phonehub/multidevice_feature_opt_in_view.h"
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/phone_status_view.h"
@@ -44,8 +44,8 @@ PhoneConnectedView::PhoneConnectedView(
       gfx::Insets(0, kBubbleHorizontalSidePaddingDip)));
   layout->SetDefaultFlex(1);
 
-  AddChildView(std::make_unique<NotificationOptInView>(
-      phone_hub_manager->GetNotificationAccessManager()));
+  AddChildView(std::make_unique<MultideviceFeatureOptInView>(
+      phone_hub_manager->GetMultideviceFeatureAccessManager()));
 
   setup_layered_view(
       AddChildView(std::make_unique<QuickActionsView>(phone_hub_manager)));

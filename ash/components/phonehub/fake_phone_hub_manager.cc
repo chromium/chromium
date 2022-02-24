@@ -34,8 +34,9 @@ FindMyDeviceController* FakePhoneHubManager::GetFindMyDeviceController() {
   return &fake_find_my_device_controller_;
 }
 
-NotificationAccessManager* FakePhoneHubManager::GetNotificationAccessManager() {
-  return &fake_notification_access_manager_;
+MultideviceFeatureAccessManager*
+FakePhoneHubManager::GetMultideviceFeatureAccessManager() {
+  return &fake_multidevice_feature_access_manager_;
 }
 
 NotificationInteractionHandler*

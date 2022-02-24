@@ -9,6 +9,7 @@ namespace ash {
 namespace phonehub {
 namespace prefs {
 
+extern const char kCameraRollAccessStatus[];
 extern const char kNotificationAccessStatus[];
 extern const char kNotificationAccessProhibitedReason[];
 extern const char kHideOnboardingUi[];

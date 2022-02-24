@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/components/phonehub/camera_roll_manager.h"
-#include "ash/system/phonehub/camera_roll_opt_in_view.h"
 #include "base/gtest_prod_util.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
@@ -81,7 +80,6 @@ class ASH_EXPORT CameraRollView : public views::View,
 
   phonehub::CameraRollManager* camera_roll_manager_ = nullptr;
   phonehub::UserActionRecorder* user_action_recorder_ = nullptr;
-  CameraRollOptInView* opt_in_view_ = nullptr;
   CameraRollItemsView* items_view_ = nullptr;
 };
 

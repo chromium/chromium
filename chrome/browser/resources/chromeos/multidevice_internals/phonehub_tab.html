@@ -32,8 +32,7 @@
         Services" to off in Apps & notifications > Special app access >
         Notification access.
       </div>
-      <cr-button class="internals-button"
-          on-click="onResetHasNotificationSetupUiBeenDismissedButtonClick_">
+      <cr-button class="internals-button" on-click="onResetHasMultideviceFeatureSetupUiBeenDismissedButtonClick_">
         Reset
       </cr-button>
     </div>
@@ -44,8 +43,7 @@
         onboarding UI. Note that the user must have not started the opt-in flow
         yet.
       </div>
-      <cr-button class="internals-button"
-          on-click="onResetShouldShowOnboardingUiButtonClick_">
+      <cr-button class="internals-button" on-click="onResetShouldShowOnboardingUiButtonClick_">
         Reset
       </cr-button>
     </div>
@@ -57,8 +55,7 @@
         Photos from the settings page in order for the onboarding UI to
         reappear.
       </div>
-      <cr-button class="internals-button"
-          on-click="onResetCameraRollOnboardingUiDismissedButtonClick_">
+      <cr-button class="internals-button" on-click="onResetCameraRollOnboardingUiDismissedButtonClick_">
         Reset
       </cr-button>
     </div>
@@ -68,8 +65,7 @@
       <div class="cr-padded-text">
         Select feature status
       </div>
-      <select id="featureStatusList" class="md-select"
-          on-change="onFeatureStatusSelected_">
+      <select id="featureStatusList" class="md-select" on-change="onFeatureStatusSelected_">
         <template is="dom-repeat" items="[[featureStatusList_]]">
           <option selected="[[isEqual_(item, featureStatus_)]]">
             [[getFeatureStatusName_(item)]]

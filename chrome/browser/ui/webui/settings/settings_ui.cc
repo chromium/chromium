@@ -406,8 +406,9 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
         profile->GetPrefs(),
         ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             profile),
-        phone_hub_manager ? phone_hub_manager->GetNotificationAccessManager()
-                          : nullptr,
+        phone_hub_manager
+            ? phone_hub_manager->GetMultideviceFeatureAccessManager()
+            : nullptr,
         android_sms_service
             ? android_sms_service->android_sms_pairing_state_tracker()
             : nullptr,

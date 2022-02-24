@@ -11,7 +11,7 @@
 #include "ash/components/phonehub/fake_do_not_disturb_controller.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_find_my_device_controller.h"
-#include "ash/components/phonehub/fake_notification_access_manager.h"
+#include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/fake_notification_interaction_handler.h"
 #include "ash/components/phonehub/fake_notification_manager.h"
 #include "ash/components/phonehub/fake_onboarding_ui_tracker.h"
@@ -43,8 +43,9 @@ class FakePhoneHubManager : public PhoneHubManager {
     return &fake_find_my_device_controller_;
   }
 
-  FakeNotificationAccessManager* fake_notification_access_manager() {
-    return &fake_notification_access_manager_;
+  FakeMultideviceFeatureAccessManager*
+  fake_multidevice_feature_access_manager() {
+    return &fake_multidevice_feature_access_manager_;
   }
 
   FakeNotificationInteractionHandler* fake_notification_interaction_handler() {
@@ -96,7 +97,8 @@ class FakePhoneHubManager : public PhoneHubManager {
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
-  NotificationAccessManager* GetNotificationAccessManager() override;
+  MultideviceFeatureAccessManager* GetMultideviceFeatureAccessManager()
+      override;
   NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
@@ -110,7 +112,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
   FakeFindMyDeviceController fake_find_my_device_controller_;
-  FakeNotificationAccessManager fake_notification_access_manager_;
+  FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
   FakeNotificationInteractionHandler fake_notification_interaction_handler_;
   FakeNotificationManager fake_notification_manager_;
   FakeOnboardingUiTracker fake_onboarding_ui_tracker_;

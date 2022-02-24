@@ -79,7 +79,7 @@ class NotificationAccessSetupOperation {
   virtual ~NotificationAccessSetupOperation();
 
  private:
-  friend class NotificationAccessManager;
+  friend class MultideviceFeatureAccessManager;
 
   NotificationAccessSetupOperation(Delegate* delegate,
                                    base::OnceClosure destructor_callback);

@@ -1589,12 +1589,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_SUB_FEATURE_OPT_IN_DISMISS_BUTTON" desc="Label for the dismiss the dialog that allows the user to opt in to a sub feature of Phone Hub.">
         Dismiss
       </message>
-      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_DESCRIPTION" desc="Description for the camera roll opt in view.">
-        View recent photos from your phone‘s camera roll on <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_TURN_ON_BUTTON" desc="Label for button to turn on the setting to show recent photo from the phone.">
-        Turn on
-      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>

@@ -17,9 +17,9 @@
 #include "ash/components/phonehub/invalid_connection_disconnector.h"
 #include "ash/components/phonehub/message_receiver_impl.h"
 #include "ash/components/phonehub/message_sender_impl.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager_impl.h"
 #include "ash/components/phonehub/multidevice_setup_state_updater.h"
 #include "ash/components/phonehub/mutable_phone_model.h"
-#include "ash/components/phonehub/notification_access_manager_impl.h"
 #include "ash/components/phonehub/notification_interaction_handler_impl.h"
 #include "ash/components/phonehub/notification_manager_impl.h"
 #include "ash/components/phonehub/notification_processor.h"
@@ -88,8 +88,8 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       find_my_device_controller_(std::make_unique<FindMyDeviceControllerImpl>(
           message_sender_.get(),
           user_action_recorder_.get())),
-      notification_access_manager_(
-          std::make_unique<NotificationAccessManagerImpl>(
+      multidevice_feature_access_manager_(
+          std::make_unique<MultideviceFeatureAccessManagerImpl>(
               pref_service,
               feature_status_provider_.get(),
               message_sender_.get(),
@@ -118,14 +118,14 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               ? std::make_unique<RecentAppsInteractionHandlerImpl>(
                     pref_service,
                     multidevice_setup_client,
-                    notification_access_manager_.get())
+                    multidevice_feature_access_manager_.get())
               : nullptr),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),
           feature_status_provider_.get(),
           message_receiver_.get(),
           find_my_device_controller_.get(),
-          notification_access_manager_.get(),
+          multidevice_feature_access_manager_.get(),
           screen_lock_manager_.get(),
           notification_processor_.get(),
           multidevice_setup_client,
@@ -145,7 +145,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           std::make_unique<MultideviceSetupStateUpdater>(
               pref_service,
               multidevice_setup_client,
-              notification_access_manager_.get())),
+              multidevice_feature_access_manager_.get())),
       invalid_connection_disconnector_(
           std::make_unique<InvalidConnectionDisconnector>(
               connection_manager_.get(),
@@ -186,8 +186,9 @@ FindMyDeviceController* PhoneHubManagerImpl::GetFindMyDeviceController() {
   return find_my_device_controller_.get();
 }
 
-NotificationAccessManager* PhoneHubManagerImpl::GetNotificationAccessManager() {
-  return notification_access_manager_.get();
+MultideviceFeatureAccessManager*
+PhoneHubManagerImpl::GetMultideviceFeatureAccessManager() {
+  return multidevice_feature_access_manager_.get();
 }
 
 NotificationInteractionHandler*
@@ -240,7 +241,7 @@ void PhoneHubManagerImpl::Shutdown() {
   notification_manager_.reset();
   notification_interaction_handler_.reset();
   screen_lock_manager_.reset();
-  notification_access_manager_.reset();
+  multidevice_feature_access_manager_.reset();
   find_my_device_controller_.reset();
   connection_scheduler_.reset();
   do_not_disturb_controller_.reset();

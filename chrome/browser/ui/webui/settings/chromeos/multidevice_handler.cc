@@ -35,6 +35,7 @@ namespace settings {
 
 namespace {
 
+const char kCameraRollAccessStatus[] = "cameraRollAccessStatus";
 const char kPageContentDataModeKey[] = "mode";
 const char kPageContentDataHostDeviceNameKey[] = "hostDeviceName";
 const char kPageContentDataBetterTogetherStateKey[] = "betterTogetherState";
@@ -78,7 +79,8 @@ void OnRetrySetHostNowResult(bool success) {
 MultideviceHandler::MultideviceHandler(
     PrefService* prefs,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    phonehub::NotificationAccessManager* notification_access_manager,
+    phonehub::MultideviceFeatureAccessManager*
+        multidevice_feature_access_manager,
     multidevice_setup::AndroidSmsPairingStateTracker*
         android_sms_pairing_state_tracker,
     android_sms::AndroidSmsAppManager* android_sms_app_manager,
@@ -86,7 +88,7 @@ MultideviceHandler::MultideviceHandler(
     ash::phonehub::CameraRollManager* camera_roll_manager)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
-      notification_access_manager_(notification_access_manager),
+      multidevice_feature_access_manager_(multidevice_feature_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       android_sms_app_manager_(android_sms_app_manager),
       apps_access_manager_(apps_access_manager),
@@ -161,9 +163,9 @@ void MultideviceHandler::OnJavascriptAllowed() {
   if (multidevice_setup_client_)
     multidevice_setup_observation_.Observe(multidevice_setup_client_);
 
-  if (notification_access_manager_)
-    notification_access_manager_observation_.Observe(
-        notification_access_manager_);
+  if (multidevice_feature_access_manager_)
+    multidevice_feature_access_manager_observation_.Observe(
+        multidevice_feature_access_manager_);
 
   if (android_sms_pairing_state_tracker_) {
     android_sms_pairing_state_tracker_observation_.Observe(
@@ -207,10 +209,10 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     multidevice_setup_observation_.Reset();
   }
 
-  if (notification_access_manager_) {
-    DCHECK(notification_access_manager_observation_.IsObservingSource(
-        notification_access_manager_));
-    notification_access_manager_observation_.Reset();
+  if (multidevice_feature_access_manager_) {
+    DCHECK(multidevice_feature_access_manager_observation_.IsObservingSource(
+        multidevice_feature_access_manager_));
+    multidevice_feature_access_manager_observation_.Reset();
     notification_access_operation_.reset();
   }
 
@@ -261,6 +263,10 @@ void MultideviceHandler::OnFeatureStatesChanged(
 }
 
 void MultideviceHandler::OnNotificationAccessChanged() {
+  UpdatePageContent();
+}
+
+void MultideviceHandler::OnCameraRollAccessChanged() {
   UpdatePageContent();
 }
 
@@ -456,17 +462,19 @@ void MultideviceHandler::HandleAttemptNotificationSetup(
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!notification_access_operation_);
 
-  phonehub::NotificationAccessManager::AccessStatus access_status =
-      notification_access_manager_->GetAccessStatus();
-  if (access_status != phonehub::NotificationAccessManager::AccessStatus::
-                           kAvailableButNotGranted) {
+  phonehub::MultideviceFeatureAccessManager::AccessStatus
+      notification_access_status =
+          multidevice_feature_access_manager_->GetNotificationAccessStatus();
+  if (notification_access_status != phonehub::MultideviceFeatureAccessManager::
+                                        AccessStatus::kAvailableButNotGranted) {
     PA_LOG(WARNING) << "Cannot request notification access setup flow; current "
-                    << "status: " << access_status;
+                    << "status: " << notification_access_status;
     return;
   }
 
   notification_access_operation_ =
-      notification_access_manager_->AttemptNotificationSetup(/*delegate=*/this);
+      multidevice_feature_access_manager_->AttemptNotificationSetup(
+          /*delegate=*/this);
   DCHECK(notification_access_operation_);
 }
 
@@ -603,18 +611,33 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
           ? android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete()
           : false);
 
-  phonehub::NotificationAccessManager::AccessStatus access_status = phonehub::
-      NotificationAccessManager::AccessStatus::kAvailableButNotGranted;
-  phonehub::NotificationAccessManager::AccessProhibitedReason reason =
-      phonehub::NotificationAccessManager::AccessProhibitedReason::kUnknown;
-  if (notification_access_manager_) {
-    access_status = notification_access_manager_->GetAccessStatus();
-    reason = notification_access_manager_->GetAccessProhibitedReason();
+  phonehub::MultideviceFeatureAccessManager::AccessStatus
+      notification_access_status = phonehub::MultideviceFeatureAccessManager::
+          AccessStatus::kAvailableButNotGranted;
+  phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason reason =
+      phonehub::MultideviceFeatureAccessManager::AccessProhibitedReason::
+          kUnknown;
+  if (multidevice_feature_access_manager_) {
+    notification_access_status =
+        multidevice_feature_access_manager_->GetNotificationAccessStatus();
+    reason = multidevice_feature_access_manager_
+                 ->GetNotificationAccessProhibitedReason();
   }
-  page_content_dictionary->SetIntKey(kNotificationAccessStatus,
-                                     static_cast<int32_t>(access_status));
+
+  page_content_dictionary->SetInteger(
+      kNotificationAccessStatus,
+      static_cast<int32_t>(notification_access_status));
   page_content_dictionary->SetIntKey(kNotificationAccessProhibitedReason,
                                      static_cast<int32_t>(reason));
+
+  phonehub::MultideviceFeatureAccessManager::AccessStatus
+      camera_roll_access_status = phonehub::MultideviceFeatureAccessManager::
+          AccessStatus::kAvailableButNotGranted;
+  if (multidevice_feature_access_manager_)
+    camera_roll_access_status =
+        multidevice_feature_access_manager_->GetCameraRollAccessStatus();
+  page_content_dictionary->SetInteger(
+      kCameraRollAccessStatus, static_cast<int32_t>(camera_roll_access_status));
 
   ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
       ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted;

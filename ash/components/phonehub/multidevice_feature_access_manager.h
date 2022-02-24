@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_H_
-#define ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_H_
+#ifndef ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
+#define ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
 
 #include <ostream>
 
@@ -16,8 +16,12 @@
 namespace ash {
 namespace phonehub {
 
-// Tracks the status of whether the user has enabled notification access on
-// their phone. While Phone Hub can be enabled via Chrome OS, access to
+// Tracks the status of whether the user has granted permissions for the
+// following features to be enabled on the host device:
+// 1. Notification
+// 2. Camera roll
+//
+// While Phone Hub can be enabled via Chrome OS, access to
 // notifications requires that the user grant access via Android settings. If a
 // Phone Hub connection to the phone has never succeeded, we assume that access
 // has not yet been granted. If there is no active Phone Hub connection, we
@@ -25,13 +29,18 @@ namespace phonehub {
 //
 // Additionally, this class provides an API for requesting the notification
 // access setup flow via AttemptNotificationSetup().
-class NotificationAccessManager {
+//
+// In order for user to use camera roll feature, users need to explicit give
+// consent for the feature to be enabled on the phone via the feature setup
+// dialog.
+class MultideviceFeatureAccessManager {
  public:
-  // Status of notification access. Numerical values are stored in prefs and
+  // Status of a feature's access. Numerical values are stored in prefs and
   // should not be changed or reused.
   enum class AccessStatus {
     // Access has not been granted and is prohibited from being granted (e.g.,
-    // if the phone is using a Work Profile).
+    // if the phone is using a Work Profile when trying to use notification
+    // fearture).
     kProhibited = 0,
 
     // Access has not been granted, but the user is free to grant access.
@@ -56,25 +65,32 @@ class NotificationAccessManager {
    public:
     ~Observer() override = default;
 
-    // Called when notification access has changed; use GetAccessStatus()
-    // for the new status.
-    virtual void OnNotificationAccessChanged() = 0;
+    // Called when notification access has changed; use
+    // GetNotificationAccessStatus() for the new status.
+    virtual void OnNotificationAccessChanged();
+
+    // Called when camera roll access has changed; use
+    // GetCameraRollAccessStatus() for the new status.
+    virtual void OnCameraRollAccessChanged();
   };
 
-  NotificationAccessManager(const NotificationAccessManager&) = delete;
-  NotificationAccessManager& operator=(const NotificationAccessManager&) =
+  MultideviceFeatureAccessManager(MultideviceFeatureAccessManager&) = delete;
+  MultideviceFeatureAccessManager& operator=(MultideviceFeatureAccessManager&) =
       delete;
-  virtual ~NotificationAccessManager();
+  virtual ~MultideviceFeatureAccessManager();
 
-  virtual AccessStatus GetAccessStatus() const = 0;
+  virtual AccessStatus GetNotificationAccessStatus() const = 0;
+
+  virtual AccessStatus GetCameraRollAccessStatus() const = 0;
 
   // Returns the reason notification access status is prohibited. The return
   // result is valid if the current access status (from GetAccessStatus())
   // is AccessStatus::kProhibited. Otherwise, the result is undefined and should
   // not be used.
-  virtual AccessProhibitedReason GetAccessProhibitedReason() const = 0;
+  virtual AccessProhibitedReason GetNotificationAccessProhibitedReason()
+      const = 0;
 
-  virtual bool HasNotificationSetupUiBeenDismissed() const = 0;
+  virtual bool HasMultideviceFeatureSetupUiBeenDismissed() const = 0;
 
   // Disables the ability to show the banner within the PhoneHub UI.
   virtual void DismissSetupRequiredUi() = 0;
@@ -96,9 +112,10 @@ class NotificationAccessManager {
   void RemoveObserver(Observer* observer);
 
  protected:
-  NotificationAccessManager();
+  MultideviceFeatureAccessManager();
 
   void NotifyNotificationAccessChanged();
+  void NotifyCameraRollAccessChanged();
   void SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status new_status);
 
@@ -107,31 +124,37 @@ class NotificationAccessManager {
   virtual void OnSetupRequested() {}
 
  private:
-  friend class NotificationAccessManagerImplTest;
+  friend class MultideviceFeatureAccessManagerImplTest;
   friend class PhoneStatusProcessor;
 
-  // Sets the internal AccessStatus but does not send a request for a new
-  // status to the remote phone device.
-  virtual void SetAccessStatusInternal(AccessStatus access_status,
-                                       AccessProhibitedReason reason) = 0;
+  // Sets the internal AccessStatus but does not send a request for
+  // a new status to the remote phone device.
+  virtual void SetNotificationAccessStatusInternal(
+      AccessStatus access_status,
+      AccessProhibitedReason reason) = 0;
+  // Sets the internal AccessStatus but does not send a request for
+  // a new status to the remote phone device.
+  virtual void SetCameraRollAccessStatusInternal(
+      AccessStatus camera_roll_access_status) = 0;
 
   void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
   base::flat_map<int, NotificationAccessSetupOperation*> id_to_operation_map_;
   base::ObserverList<Observer> observer_list_;
-  base::WeakPtrFactory<NotificationAccessManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MultideviceFeatureAccessManager> weak_ptr_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& stream,
-                         NotificationAccessManager::AccessStatus status);
+                         MultideviceFeatureAccessManager::AccessStatus status);
 std::ostream& operator<<(
     std::ostream& stream,
-    NotificationAccessManager::AccessProhibitedReason reason);
+    MultideviceFeatureAccessManager::AccessProhibitedReason reason);
 std::ostream& operator<<(
     std::ostream& stream,
-    std::pair<NotificationAccessManager::AccessStatus,
-              NotificationAccessManager::AccessProhibitedReason> status_reason);
+    std::pair<MultideviceFeatureAccessManager::AccessStatus,
+              MultideviceFeatureAccessManager::AccessProhibitedReason>
+        status_reason);
 
 }  // namespace phonehub
 }  // namespace ash
@@ -139,8 +162,8 @@ std::ostream& operator<<(
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
 namespace chromeos {
 namespace phonehub {
-using ::ash::phonehub::NotificationAccessManager;
+using ::ash::phonehub::MultideviceFeatureAccessManager;
 }
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_PHONEHUB_NOTIFICATION_ACCESS_MANAGER_H_
+#endif  // ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_

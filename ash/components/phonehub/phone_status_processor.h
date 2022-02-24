@@ -20,7 +20,7 @@ using ::google::protobuf::RepeatedPtrField;
 class DoNotDisturbController;
 class FindMyDeviceController;
 class MutablePhoneModel;
-class NotificationAccessManager;
+class MultideviceFeatureAccessManager;
 class NotificationProcessor;
 class ScreenLockManager;
 class RecentAppsInteractionHandler;
@@ -37,7 +37,7 @@ class PhoneStatusProcessor
       FeatureStatusProvider* feature_status_provider,
       MessageReceiver* message_receiver,
       FindMyDeviceController* find_my_device_controller,
-      NotificationAccessManager* notification_access_manager,
+      MultideviceFeatureAccessManager* multidevice_feature_access_manager,
       ScreenLockManager* screen_lock_manager,
       NotificationProcessor* notification_processor_,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
@@ -80,7 +80,7 @@ class PhoneStatusProcessor
   FeatureStatusProvider* feature_status_provider_;
   MessageReceiver* message_receiver_;
   FindMyDeviceController* find_my_device_controller_;
-  NotificationAccessManager* notification_access_manager_;
+  MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
   ScreenLockManager* screen_lock_manager_;
   NotificationProcessor* notification_processor_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;

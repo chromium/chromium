@@ -14,7 +14,7 @@ class ConnectionScheduler;
 class DoNotDisturbController;
 class FeatureStatusProvider;
 class FindMyDeviceController;
-class NotificationAccessManager;
+class MultideviceFeatureAccessManager;
 class NotificationInteractionHandler;
 class NotificationManager;
 class OnboardingUiTracker;
@@ -40,7 +40,8 @@ class PhoneHubManager {
   virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
   virtual FindMyDeviceController* GetFindMyDeviceController() = 0;
-  virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
+  virtual MultideviceFeatureAccessManager*
+  GetMultideviceFeatureAccessManager() = 0;
   virtual NotificationInteractionHandler*
   GetNotificationInteractionHandler() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;

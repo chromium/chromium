@@ -8,16 +8,22 @@ namespace ash {
 namespace phonehub {
 namespace prefs {
 
+// The last provided camera roll access status provided by the phone. This pref
+// stores the numerical value associated with the
+// MultideviceFeatureAccessManager::CameraRollAccessStatus enum.
+const char kCameraRollAccessStatus[] =
+    "cros.phonehub.camera_roll_access_status";
+
 // The last provided notification access status provided by the phone. This pref
 // stores the numerical value associated with the
-// NotificationAccessManager::AccessStatus enum.
+// MultideviceFeatureAccessManager::AccessStatus enum.
 const char kNotificationAccessStatus[] =
     "cros.phonehub.notification_access_status";
 
 // The last provided reason for notification access being prohibited. This pref
 // stores the numerical value associated with the
-// NotificationAccessManager::AccessProhibitedReason enum. This pref may be left
-// in an undefined state if notification access is not prohibited.
+// MultideviceFeatureAccessManager::AccessProhibitedReason enum. This pref may
+// be left in an undefined state if notification access is not prohibited.
 const char kNotificationAccessProhibitedReason[] =
     "cros.phonehub.notification_access_prohibited_reason";
 

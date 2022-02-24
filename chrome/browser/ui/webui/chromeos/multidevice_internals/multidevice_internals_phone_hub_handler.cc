@@ -210,10 +210,11 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
           base::Unretained(this)));
 
   web_ui()->RegisterDeprecatedMessageCallback(
-      "resetHasNotificationSetupUiBeenDismissed",
-      base::BindRepeating(&MultidevicePhoneHubHandler::
-                              HandleResetHasNotificationSetupUiBeenDismissed,
-                          base::Unretained(this)));
+      "resetHasMultideviceFeatureSetupUiBeenDismissed",
+      base::BindRepeating(
+          &MultidevicePhoneHubHandler::
+              HandleResetHasMultideviceFeatureSetupUiBeenDismissed,
+          base::Unretained(this)));
 
   web_ui()->RegisterDeprecatedMessageCallback(
       "resetCameraRollOnboardingUiDismissed",
@@ -600,8 +601,9 @@ void MultidevicePhoneHubHandler::HandleResetShouldShowOnboardingUi(
   PA_LOG(VERBOSE) << "Reset kHideOnboardingUi pref";
 }
 
-void MultidevicePhoneHubHandler::HandleResetHasNotificationSetupUiBeenDismissed(
-    const base::ListValue* args) {
+void MultidevicePhoneHubHandler::
+    HandleResetHasMultideviceFeatureSetupUiBeenDismissed(
+        const base::ListValue* args) {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   prefs->SetBoolean(phonehub::prefs::kHasDismissedSetupRequiredUi, false);
   PA_LOG(VERBOSE) << "Reset kHasDismissedSetupRequiredUi pref";

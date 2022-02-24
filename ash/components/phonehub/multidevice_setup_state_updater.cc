@@ -31,22 +31,22 @@ void MultideviceSetupStateUpdater::RegisterPrefs(PrefRegistrySimple* registry) {
 MultideviceSetupStateUpdater::MultideviceSetupStateUpdater(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    NotificationAccessManager* notification_access_manager)
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
-      notification_access_manager_(notification_access_manager) {
+      multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   multidevice_setup_client_->AddObserver(this);
-  notification_access_manager_->AddObserver(this);
+  multidevice_feature_access_manager_->AddObserver(this);
 }
 
 MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
   multidevice_setup_client_->RemoveObserver(this);
-  notification_access_manager_->RemoveObserver(this);
+  multidevice_feature_access_manager_->RemoveObserver(this);
 }
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
-  switch (notification_access_manager_->GetAccessStatus()) {
-    case NotificationAccessManager::AccessStatus::kAccessGranted:
+  switch (multidevice_feature_access_manager_->GetNotificationAccessStatus()) {
+    case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
       if (IsWaitingForAccessToInitiallyEnableNotifications()) {
         PA_LOG(INFO) << "Enabling PhoneHubNotifications for the first time now "
                      << "that access has been granted by the phone.";
@@ -56,14 +56,34 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       }
       break;
 
-    case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
+    case MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted:
       [[fallthrough]];
-    case NotificationAccessManager::AccessStatus::kProhibited:
+    case MultideviceFeatureAccessManager::AccessStatus::kProhibited:
       // Disable kPhoneHubNotifications if notification access has been revoked
       // by the phone.
       PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
       multidevice_setup_client_->SetFeatureEnabledState(
           Feature::kPhoneHubNotifications, /*enabled=*/false,
+          /*auth_token=*/absl::nullopt, base::DoNothing());
+      break;
+  }
+}
+
+void MultideviceSetupStateUpdater::OnCameraRollAccessChanged() {
+  switch (multidevice_feature_access_manager_->GetCameraRollAccessStatus()) {
+    case MultideviceFeatureAccessManager::AccessStatus::kAccessGranted:
+      if (IsWaitingForAccessToInitiallyEnableCameraRoll()) {
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubCameraRoll, /*enabled=*/true,
+            /*auth_token=*/absl::nullopt, base::DoNothing());
+      }
+      break;
+
+    case MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted:
+      [[fallthrough]];
+    case MultideviceFeatureAccessManager::AccessStatus::kProhibited:
+      multidevice_setup_client_->SetFeatureEnabledState(
+          Feature::kPhoneHubCameraRoll, /*enabled=*/false,
           /*auth_token=*/absl::nullopt, base::DoNothing());
       break;
   }
@@ -87,10 +107,24 @@ bool MultideviceSetupStateUpdater::
   // should enable it after
   //   1. the top-level Phone Hub feature is enabled, and
   //   2. the phone has granted access.
-  // We do *not* want disrupt the feature state if it was already explicitly set
-  // by the user.
+  // We do *not* want to automatically enable the feature unless the opt-in flow
+  // was triggered from this device
   return chromeos::multidevice_setup::IsDefaultFeatureEnabledValue(
              Feature::kPhoneHubNotifications, pref_service_) &&
+         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+             FeatureState::kEnabledByUser;
+}
+
+bool MultideviceSetupStateUpdater::
+    IsWaitingForAccessToInitiallyEnableCameraRoll() const {
+  // If the Phone Hub camera roll feature has never been explicitly set, we
+  // should enable it after
+  //   1. the top-level Phone Hub feature is enabled, and
+  //   2. the phone has granted access.
+  // We do *not* want to automatically enable the feature unless the opt-in flow
+  // was triggered from this device
+  return chromeos::multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubCameraRoll, pref_service_) &&
          multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
              FeatureState::kEnabledByUser;
 }

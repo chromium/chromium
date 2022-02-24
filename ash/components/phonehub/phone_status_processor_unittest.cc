@@ -13,7 +13,7 @@
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_find_my_device_controller.h"
 #include "ash/components/phonehub/fake_message_receiver.h"
-#include "ash/components/phonehub/fake_notification_access_manager.h"
+#include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/fake_notification_manager.h"
 #include "ash/components/phonehub/fake_recent_apps_interaction_handler.h"
 #include "ash/components/phonehub/fake_screen_lock_manager.h"
@@ -83,8 +83,8 @@ class PhoneStatusProcessorTest : public testing::Test {
     fake_message_receiver_ = std::make_unique<FakeMessageReceiver>();
     fake_find_my_device_controller_ =
         std::make_unique<FakeFindMyDeviceController>();
-    fake_notification_access_manager_ =
-        std::make_unique<FakeNotificationAccessManager>();
+    fake_multidevice_feature_access_manager_ =
+        std::make_unique<FakeMultideviceFeatureAccessManager>();
     fake_screen_lock_manager_ = std::make_unique<FakeScreenLockManager>();
     fake_notification_manager_ = std::make_unique<FakeNotificationManager>();
     fake_notification_processor_ = std::make_unique<FakeNotificationProcessor>(
@@ -95,7 +95,8 @@ class PhoneStatusProcessorTest : public testing::Test {
     fake_recent_apps_interaction_handler_ =
         std::make_unique<FakeRecentAppsInteractionHandler>();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPhoneHubRecentApps},
+        /*enabled_features=*/{features::kPhoneHubRecentApps,
+                              features::kPhoneHubCameraRoll},
         /*disabled_features=*/{});
   }
 
@@ -104,7 +105,7 @@ class PhoneStatusProcessorTest : public testing::Test {
         fake_do_not_disturb_controller_.get(),
         fake_feature_status_provider_.get(), fake_message_receiver_.get(),
         fake_find_my_device_controller_.get(),
-        fake_notification_access_manager_.get(),
+        fake_multidevice_feature_access_manager_.get(),
         fake_screen_lock_manager_.get(), fake_notification_processor_.get(),
         fake_multidevice_setup_client_.get(), mutable_phone_model_.get(),
         fake_recent_apps_interaction_handler_.get());
@@ -139,8 +140,8 @@ class PhoneStatusProcessorTest : public testing::Test {
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
   std::unique_ptr<FakeMessageReceiver> fake_message_receiver_;
   std::unique_ptr<FakeFindMyDeviceController> fake_find_my_device_controller_;
-  std::unique_ptr<FakeNotificationAccessManager>
-      fake_notification_access_manager_;
+  std::unique_ptr<FakeMultideviceFeatureAccessManager>
+      fake_multidevice_feature_access_manager_;
   std::unique_ptr<FakeScreenLockManager> fake_screen_lock_manager_;
   std::unique_ptr<FakeNotificationManager> fake_notification_manager_;
   std::unique_ptr<FakeNotificationProcessor> fake_notification_processor_;
@@ -176,6 +177,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
       proto::MobileConnectionState::SIM_WITH_RECEPTION);
   expected_phone_properties->set_screen_lock_state(
       proto::ScreenLockState::SCREEN_LOCK_UNKNOWN);
+  proto::CameraRollAccessState* access_state =
+      expected_phone_properties->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(true);
 
   expected_phone_properties->add_user_states();
   proto::UserState* mutable_user_state =
@@ -205,8 +209,12 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_EQ(NotificationAccessManager::AccessStatus::kAvailableButNotGranted,
-            fake_notification_access_manager_->GetAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
+      fake_multidevice_feature_access_manager_->GetCameraRollAccessStatus());
   EXPECT_EQ(ScreenLockManager::LockStatus::kUnknown,
             fake_screen_lock_manager_->GetLockStatus());
 
@@ -262,6 +270,9 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
       proto::MobileConnectionState::SIM_WITH_RECEPTION);
   expected_phone_properties->set_screen_lock_state(
       proto::ScreenLockState::SCREEN_LOCK_OFF);
+  proto::CameraRollAccessState* access_state =
+      expected_phone_properties->mutable_camera_roll_access_state();
+  access_state->set_feature_enabled(false);
 
   expected_phone_properties->add_user_states();
   proto::UserState* mutable_user_state =
@@ -290,8 +301,12 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingNotAvailable,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
-            fake_notification_access_manager_->GetAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetCameraRollAccessStatus());
   EXPECT_EQ(ScreenLockManager::LockStatus::kLockedOff,
             fake_screen_lock_manager_->GetLockStatus());
 
@@ -331,8 +346,12 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_TRUE(fake_do_not_disturb_controller_->CanRequestNewDndState());
   EXPECT_EQ(FindMyDeviceController::Status::kRingingOn,
             fake_find_my_device_controller_->GetPhoneRingingStatus());
-  EXPECT_EQ(NotificationAccessManager::AccessStatus::kAccessGranted,
-            fake_notification_access_manager_->GetAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAccessGranted,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kAvailableButNotGranted,
+      fake_multidevice_feature_access_manager_->GetCameraRollAccessStatus());
   EXPECT_EQ(ScreenLockManager::LockStatus::kLockedOn,
             fake_screen_lock_manager_->GetLockStatus());
 
@@ -375,10 +394,13 @@ TEST_F(PhoneStatusProcessorTest, PhoneNotificationAccessProhibitedReason) {
       Feature::kPhoneHubNotifications, FeatureState::kDisabledByUser);
 
   EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
-  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
-            fake_notification_access_manager_->GetAccessStatus());
-  EXPECT_EQ(NotificationAccessManager::AccessProhibitedReason::kWorkProfile,
-            fake_notification_access_manager_->GetAccessProhibitedReason());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile,
+      fake_multidevice_feature_access_manager_
+          ->GetNotificationAccessProhibitedReason());
 
   // Verify that adding a reason properly gets processed even when the current
   // profile type does not change.
@@ -387,10 +409,13 @@ TEST_F(PhoneStatusProcessorTest, PhoneNotificationAccessProhibitedReason) {
   fake_message_receiver_->NotifyPhoneStatusUpdateReceived(expected_update);
 
   EXPECT_FALSE(fake_do_not_disturb_controller_->CanRequestNewDndState());
-  EXPECT_EQ(NotificationAccessManager::AccessStatus::kProhibited,
-            fake_notification_access_manager_->GetAccessStatus());
-  EXPECT_EQ(NotificationAccessManager::AccessProhibitedReason::kWorkProfile,
-            fake_notification_access_manager_->GetAccessProhibitedReason());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessStatus::kProhibited,
+      fake_multidevice_feature_access_manager_->GetNotificationAccessStatus());
+  EXPECT_EQ(
+      MultideviceFeatureAccessManager::AccessProhibitedReason::kWorkProfile,
+      fake_multidevice_feature_access_manager_
+          ->GetNotificationAccessProhibitedReason());
 }
 
 TEST_F(PhoneStatusProcessorTest, PhoneName) {

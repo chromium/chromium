@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 
 #include "ash/components/phonehub/camera_roll_manager_impl.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager_impl.h"
 #include "ash/components/phonehub/multidevice_setup_state_updater.h"
-#include "ash/components/phonehub/notification_access_manager_impl.h"
 #include "ash/components/phonehub/onboarding_ui_tracker_impl.h"
 #include "ash/components/phonehub/phone_hub_manager_impl.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler_impl.h"
@@ -166,7 +166,7 @@ void PhoneHubManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   MultideviceSetupStateUpdater::RegisterPrefs(registry);
   CameraRollManagerImpl::RegisterPrefs(registry);
-  NotificationAccessManagerImpl::RegisterPrefs(registry);
+  MultideviceFeatureAccessManagerImpl::RegisterPrefs(registry);
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);
   RecentAppsInteractionHandlerImpl::RegisterPrefs(registry);

@@ -59,7 +59,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   FindMyDeviceController* GetFindMyDeviceController() override;
-  NotificationAccessManager* GetNotificationAccessManager() override;
+  MultideviceFeatureAccessManager* GetMultideviceFeatureAccessManager()
+      override;
   NotificationInteractionHandler* GetNotificationInteractionHandler() override;
   NotificationManager* GetNotificationManager() override;
   OnboardingUiTracker* GetOnboardingUiTracker() override;
@@ -83,7 +84,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<ConnectionScheduler> connection_scheduler_;
   std::unique_ptr<FindMyDeviceController> find_my_device_controller_;
-  std::unique_ptr<NotificationAccessManager> notification_access_manager_;
+  std::unique_ptr<MultideviceFeatureAccessManager>
+      multidevice_feature_access_manager_;
   std::unique_ptr<ScreenLockManager> screen_lock_manager_;
   std::unique_ptr<NotificationInteractionHandler>
       notification_interaction_handler_;

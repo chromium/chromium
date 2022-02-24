@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification.h"
-#include "ash/components/phonehub/notification_access_manager.h"
 #include "ash/components/phonehub/recent_app_click_observer.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -26,14 +26,14 @@ namespace phonehub {
 class RecentAppsInteractionHandlerImpl
     : public RecentAppsInteractionHandler,
       public multidevice_setup::MultiDeviceSetupClient::Observer,
-      public NotificationAccessManager::Observer {
+      public MultideviceFeatureAccessManager::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   explicit RecentAppsInteractionHandlerImpl(
       PrefService* pref_service,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-      NotificationAccessManager* notification_access_manager);
+      MultideviceFeatureAccessManager* multidevice_feature_access_manager);
   ~RecentAppsInteractionHandlerImpl() override;
 
   // RecentAppsInteractionHandler:
@@ -54,7 +54,7 @@ class RecentAppsInteractionHandlerImpl
       const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
           host_device_with_status) override;
 
-  // NotificationAccessManager::Observer:
+  // MultideviceFeatureAccessManager::Observer:
   void OnNotificationAccessChanged() override;
 
  private:
@@ -75,7 +75,7 @@ class RecentAppsInteractionHandlerImpl
       recent_app_metadata_list_;
   PrefService* pref_service_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
-  NotificationAccessManager* notification_access_manager_;
+  MultideviceFeatureAccessManager* multidevice_feature_access_manager_;
 };
 
 }  // namespace phonehub

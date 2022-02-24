@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/phonehub/notification_access_manager_impl.h"
+#include "ash/components/phonehub/multidevice_feature_access_manager_impl.h"
 
 #include "ash/components/phonehub/connection_scheduler.h"
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "pref_names.h"
 
 namespace ash {
 namespace phonehub {
 
 // static
-void NotificationAccessManagerImpl::RegisterPrefs(
+void MultideviceFeatureAccessManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kCameraRollAccessStatus,
+      static_cast<int>(AccessStatus::kAvailableButNotGranted));
   registry->RegisterIntegerPref(
       prefs::kNotificationAccessStatus,
       static_cast<int>(AccessStatus::kAvailableButNotGranted));
@@ -28,7 +33,7 @@ void NotificationAccessManagerImpl::RegisterPrefs(
                                 true);
 }
 
-NotificationAccessManagerImpl::NotificationAccessManagerImpl(
+MultideviceFeatureAccessManagerImpl::MultideviceFeatureAccessManagerImpl(
     PrefService* pref_service,
     FeatureStatusProvider* feature_status_provider,
     MessageSender* message_sender,
@@ -44,33 +49,40 @@ NotificationAccessManagerImpl::NotificationAccessManagerImpl(
   feature_status_provider_->AddObserver(this);
 }
 
-NotificationAccessManagerImpl::~NotificationAccessManagerImpl() {
+MultideviceFeatureAccessManagerImpl::~MultideviceFeatureAccessManagerImpl() {
   feature_status_provider_->RemoveObserver(this);
 }
 
-bool NotificationAccessManagerImpl::HasNotificationSetupUiBeenDismissed()
-    const {
+bool MultideviceFeatureAccessManagerImpl::
+    HasMultideviceFeatureSetupUiBeenDismissed() const {
   return pref_service_->GetBoolean(prefs::kHasDismissedSetupRequiredUi);
 }
 
-void NotificationAccessManagerImpl::DismissSetupRequiredUi() {
+void MultideviceFeatureAccessManagerImpl::DismissSetupRequiredUi() {
   pref_service_->SetBoolean(prefs::kHasDismissedSetupRequiredUi, true);
 }
 
-NotificationAccessManagerImpl::AccessStatus
-NotificationAccessManagerImpl::GetAccessStatus() const {
+MultideviceFeatureAccessManagerImpl::AccessStatus
+MultideviceFeatureAccessManagerImpl::GetNotificationAccessStatus() const {
   int status = pref_service_->GetInteger(prefs::kNotificationAccessStatus);
   return static_cast<AccessStatus>(status);
 }
 
-NotificationAccessManagerImpl::AccessProhibitedReason
-NotificationAccessManagerImpl::GetAccessProhibitedReason() const {
+MultideviceFeatureAccessManagerImpl::AccessStatus
+MultideviceFeatureAccessManagerImpl::GetCameraRollAccessStatus() const {
+  int status = pref_service_->GetInteger(prefs::kCameraRollAccessStatus);
+  return static_cast<AccessStatus>(status);
+}
+
+MultideviceFeatureAccessManagerImpl::AccessProhibitedReason
+MultideviceFeatureAccessManagerImpl::GetNotificationAccessProhibitedReason()
+    const {
   int reason =
       pref_service_->GetInteger(prefs::kNotificationAccessProhibitedReason);
   return static_cast<AccessProhibitedReason>(reason);
 }
 
-void NotificationAccessManagerImpl::SetAccessStatusInternal(
+void MultideviceFeatureAccessManagerImpl::SetNotificationAccessStatusInternal(
     AccessStatus access_status,
     AccessProhibitedReason reason) {
   // TODO(http://crbug.com/1215559): Deprecate when there are no more active
@@ -95,7 +107,8 @@ void NotificationAccessManagerImpl::SetAccessStatusInternal(
                             false);
 
   PA_LOG(INFO) << "Notification access: "
-               << std::make_pair(GetAccessStatus(), GetAccessProhibitedReason())
+               << std::make_pair(GetNotificationAccessStatus(),
+                                 GetNotificationAccessProhibitedReason())
                << " => " << std::make_pair(access_status, reason);
 
   pref_service_->SetInteger(prefs::kNotificationAccessStatus,
@@ -123,7 +136,14 @@ void NotificationAccessManagerImpl::SetAccessStatusInternal(
   }
 }
 
-void NotificationAccessManagerImpl::OnSetupRequested() {
+void MultideviceFeatureAccessManagerImpl::SetCameraRollAccessStatusInternal(
+    AccessStatus camera_roll_access_status) {
+  pref_service_->SetInteger(prefs::kCameraRollAccessStatus,
+                            static_cast<int>(camera_roll_access_status));
+  NotifyCameraRollAccessChanged();
+}
+
+void MultideviceFeatureAccessManagerImpl::OnSetupRequested() {
   PA_LOG(INFO) << "Notification access setup flow started.";
 
   switch (feature_status_provider_->GetStatus()) {
@@ -150,7 +170,7 @@ void NotificationAccessManagerImpl::OnSetupRequested() {
   }
 }
 
-void NotificationAccessManagerImpl::OnFeatureStatusChanged() {
+void MultideviceFeatureAccessManagerImpl::OnFeatureStatusChanged() {
   if (!IsSetupOperationInProgress())
     return;
 
@@ -184,20 +204,21 @@ void NotificationAccessManagerImpl::OnFeatureStatusChanged() {
   }
 }
 
-void NotificationAccessManagerImpl::SendShowNotificationAccessSetupRequest() {
+void MultideviceFeatureAccessManagerImpl::
+    SendShowNotificationAccessSetupRequest() {
   message_sender_->SendShowNotificationAccessSetupRequest();
   SetNotificationSetupOperationStatus(
       NotificationAccessSetupOperation::Status::
           kSentMessageToPhoneAndWaitingForResponse);
 }
 
-bool NotificationAccessManagerImpl::HasAccessStatusChanged(
+bool MultideviceFeatureAccessManagerImpl::HasAccessStatusChanged(
     AccessStatus access_status,
     AccessProhibitedReason reason) {
-  if (access_status != GetAccessStatus())
+  if (access_status != GetNotificationAccessStatus())
     return true;
   if (access_status == AccessStatus::kProhibited &&
-      reason != GetAccessProhibitedReason()) {
+      reason != GetNotificationAccessProhibitedReason()) {
     return true;
   }
   return false;

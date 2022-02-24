@@ -33,17 +33,17 @@ void RecentAppsInteractionHandlerImpl::RegisterPrefs(
 RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     PrefService* pref_service,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
-    NotificationAccessManager* notification_access_manager)
+    MultideviceFeatureAccessManager* multidevice_feature_access_manager)
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
-      notification_access_manager_(notification_access_manager) {
+      multidevice_feature_access_manager_(multidevice_feature_access_manager) {
   multidevice_setup_client_->AddObserver(this);
-  notification_access_manager_->AddObserver(this);
+  multidevice_feature_access_manager_->AddObserver(this);
 }
 
 RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() {
   multidevice_setup_client_->RemoveObserver(this);
-  notification_access_manager_->RemoveObserver(this);
+  multidevice_feature_access_manager_->RemoveObserver(this);
 }
 
 void RecentAppsInteractionHandlerImpl::AddRecentAppClickObserver(
@@ -204,8 +204,8 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
         multidevice_setup_client_->GetFeatureState(
             Feature::kPhoneHubNotifications) == FeatureState::kEnabledByUser;
     bool grant_notification_access_on_host =
-        notification_access_manager_->GetAccessStatus() ==
-        phonehub::NotificationAccessManager::AccessStatus::kAccessGranted;
+        multidevice_feature_access_manager_->GetNotificationAccessStatus() ==
+        phonehub::MultideviceFeatureAccessManager::AccessStatus::kAccessGranted;
     if (notifications_enabled && grant_notification_access_on_host)
       ui_state_ = RecentAppsUiState::PLACEHOLDER_VIEW;
   } else {

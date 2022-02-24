@@ -18,10 +18,7 @@ enum PhoneHubViewID {
   kTaskContinuationView,
 
   // Notification opt in view and its components.
-  kNotificationOptInView,
-
-  // Camera Roll opt in view and its components.
-  kCameraRollOptInView,
+  kMultideviceFeatureOptInView,
 
   // Sub feature opt in view buttons
   kSubFeatureOptInConfirmButton,

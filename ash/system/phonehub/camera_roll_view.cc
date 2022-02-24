@@ -94,9 +94,6 @@ CameraRollView::CameraRollView(
   AddChildView(std::make_unique<HeaderView>());
   items_view_ = AddChildView(std::make_unique<CameraRollItemsView>());
 
-  opt_in_view_ =
-      AddChildView(std::make_unique<CameraRollOptInView>(camera_roll_manager_));
-
   Update();
   camera_roll_manager_->AddObserver(this);
 }
@@ -221,24 +218,16 @@ void CameraRollView::Update() {
   switch (current_ui_state) {
     case phonehub::CameraRollManager::CameraRollUiState::SHOULD_HIDE:
     case phonehub::CameraRollManager::CameraRollUiState::NO_STORAGE_PERMISSION:
+    case phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:
       SetVisible(false);
       break;
-    case phonehub::CameraRollManager::CameraRollUiState::CAN_OPT_IN:
-      opt_in_view_->SetVisible(true);
-      items_view_->SetVisible(false);
-      SetVisible(true);
-      LogCameraRollOptInEvent(
-          phone_hub_metrics::InterstitialScreenEvent::kShown);
-      break;
     case phonehub::CameraRollManager::CameraRollUiState::LOADING_VIEW:
-      opt_in_view_->SetVisible(false);
       items_view_->SetVisible(true);
       SetVisible(true);
       items_view_->AddLoadingAnimatedItem(
           should_disable_annimator_timer_for_test_);
       break;
     case phonehub::CameraRollManager::CameraRollUiState::ITEMS_VISIBLE:
-      opt_in_view_->SetVisible(false);
       items_view_->SetVisible(true);
       SetVisible(true);
       const std::vector<phonehub::CameraRollItem> camera_roll_items =

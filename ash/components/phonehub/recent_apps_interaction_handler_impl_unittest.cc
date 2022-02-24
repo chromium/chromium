@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/phonehub/fake_notification_access_manager.h"
+#include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -55,7 +55,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
     interaction_handler_ = std::make_unique<RecentAppsInteractionHandlerImpl>(
         &pref_service_, fake_multidevice_setup_client_.get(),
-        &fake_notification_access_manager_);
+        &fake_multidevice_feature_access_manager_);
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -107,10 +107,12 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   }
 
   void SetNotificationAccess(bool enabled) {
-    fake_notification_access_manager_.SetAccessStatusInternal(
-        enabled
-            ? NotificationAccessManager::AccessStatus::kAccessGranted
-            : NotificationAccessManager::AccessStatus::kAvailableButNotGranted);
+    fake_multidevice_feature_access_manager_
+        .SetNotificationAccessStatusInternal(
+            enabled
+                ? MultideviceFeatureAccessManager::AccessStatus::kAccessGranted
+                : MultideviceFeatureAccessManager::AccessStatus::
+                      kAvailableButNotGranted);
   }
 
   std::vector<RecentAppsInteractionHandler::UserState> GetDefaultUserStates() {
@@ -178,7 +180,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   FakeClickHandler fake_click_handler_;
   std::unique_ptr<RecentAppsInteractionHandlerImpl> interaction_handler_;
   TestingPrefServiceSimple pref_service_;
-  FakeNotificationAccessManager fake_notification_access_manager_;
+  FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
 };
 
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {

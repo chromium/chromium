@@ -624,7 +624,7 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<chromeos::settings::MultideviceHandler>(
           pref_service_, multidevice_setup_client_,
           phone_hub_manager_
-              ? phone_hub_manager_->GetNotificationAccessManager()
+              ? phone_hub_manager_->GetMultideviceFeatureAccessManager()
               : nullptr,
           android_sms_service_
               ? android_sms_service_->android_sms_pairing_state_tracker()

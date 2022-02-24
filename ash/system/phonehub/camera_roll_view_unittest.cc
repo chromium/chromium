@@ -126,15 +126,6 @@ class CameraRollViewTest : public AshTestBase {
   std::unique_ptr<phonehub::FakeCameraRollManager> fake_camera_roll_manager_;
 };
 
-TEST_F(CameraRollViewTest, DisplayOptInView) {
-  PresetCameraRollOptInState(/*has_been_dismissed=*/false,
-                             /*can_be_enabled=*/true);
-
-  fake_camera_roll_manager()->ClearCurrentItems();
-  EXPECT_TRUE(camera_roll_view()->GetVisible());
-  EXPECT_TRUE(camera_roll_view()->opt_in_view_->GetVisible());
-}
-
 TEST_F(CameraRollViewTest, OptInAlready) {
   PresetCameraRollOptInState(/*has_been_dismissed=*/false,
                              /*can_be_enabled=*/false);
@@ -144,7 +135,6 @@ TEST_F(CameraRollViewTest, OptInAlready) {
 
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(1));
   EXPECT_TRUE(camera_roll_view()->GetVisible());
-  EXPECT_FALSE(camera_roll_view()->opt_in_view_->GetVisible());
   EXPECT_TRUE(camera_roll_view()->items_view_->GetVisible());
 }
 
@@ -154,7 +144,6 @@ TEST_F(CameraRollViewTest, RightAfterOptIn) {
   fake_camera_roll_manager()->EnableCameraRollFeatureInSystemSetting();
 
   EXPECT_TRUE(camera_roll_view()->GetVisible());
-  EXPECT_FALSE(camera_roll_view()->opt_in_view_->GetVisible());
   EXPECT_TRUE(camera_roll_view()->items_view_->GetVisible());
   // There should be 4 camera roll item placeholder.
   size_t expected_placeholder_seize = 4;
