@@ -27,6 +27,8 @@ import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
 // <if expr="chromeos_ash or chromeos_lacros">
@@ -124,6 +126,13 @@ export class PasswordsListHandlerElement extends
 
       showPasswordRemoveDialog_: {type: Boolean, value: false},
 
+      showPasswordSendButton_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSendPasswords');
+        }
+      },
+
       /**
        * The element to return focus to, when the currently active dialog is
        * closed.
@@ -162,6 +171,7 @@ export class PasswordsListHandlerElement extends
   private showPasswordEditDialog_: boolean;
   private showPasswordMoveToAccountDialog_: boolean;
   private showPasswordRemoveDialog_: boolean;
+  private showSendPasswordButton_: boolean;
   private activeDialogAnchor_: HTMLElement|null;
   private removalNotification_: string;
   private firstSignedInAccountEmail_: string;
@@ -282,6 +292,10 @@ export class PasswordsListHandlerElement extends
     focusWithoutInk(assert(this.activeDialogAnchor_!));
     this.activeDialogAnchor_ = null;
     this.activePassword_ = null;
+  }
+
+  private onMenuSendPasswordTap_() {
+    // TODO(crbug.com/1298608): Implement the logic.
   }
 
   /**
