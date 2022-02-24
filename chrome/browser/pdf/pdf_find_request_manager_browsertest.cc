@@ -180,10 +180,8 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-
-// TODO(crbug.com/1247167): Flaky.
 IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
-                       DISABLED_FindInChunkedPDF) {
+                       FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
 
