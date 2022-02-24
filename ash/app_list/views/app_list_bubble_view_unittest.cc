@@ -62,7 +62,7 @@ using views::Widget;
 namespace ash {
 namespace {
 
-constexpr int kBorderSize = 2;
+constexpr int kBorderInset = 1;
 
 SearchModel* GetSearchModel() {
   return AppListModelProvider::Get()->search_model();
@@ -218,7 +218,7 @@ TEST_F(AppListBubbleViewTest, Layout) {
   auto* search_icon = search_box_view->search_icon();
   gfx::Rect search_icon_bounds =
       search_icon->ConvertRectToWidget(search_icon->GetLocalBounds());
-  EXPECT_EQ("18,18 24x24", search_icon_bounds.ToString());
+  EXPECT_EQ("17,17 24x24", search_icon_bounds.ToString());
 
   // Check height of search box view.
   EXPECT_EQ(56, search_box_view->height());
@@ -226,8 +226,8 @@ TEST_F(AppListBubbleViewTest, Layout) {
   // The separator is immediately under the search box.
   gfx::Point separator_origin;
   views::View::ConvertPointToWidget(GetSearchBoxSeparator(), &separator_origin);
-  EXPECT_EQ(kBorderSize, separator_origin.x());
-  EXPECT_EQ(kBorderSize + search_box_view->height(), separator_origin.y());
+  EXPECT_EQ(kBorderInset, separator_origin.x());
+  EXPECT_EQ(kBorderInset + search_box_view->height(), separator_origin.y());
 }
 
 TEST_F(AppListBubbleViewTest,
@@ -614,7 +614,7 @@ TEST_F(AppListBubbleViewTest, AssistantPageLayout) {
   // at the bottom.
   auto* app_list_bubble_view = GetAppListTestHelper()->GetBubbleView();
   gfx::Rect expected_bounds = app_list_bubble_view->bounds();
-  expected_bounds.Inset(kBorderSize);
+  expected_bounds.Inset(kBorderInset);
   EXPECT_EQ(GetAssistantPage()->bounds(), expected_bounds);
 }
 

@@ -525,7 +525,8 @@ void AppListBubbleView::OnThemeChanged() {
       kBubbleCornerRadius));
   SetBorder(std::make_unique<HighlightBorder>(
       kBubbleCornerRadius, HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/false));
+      /*use_light_colors=*/false,
+      /*insets_type=*/HighlightBorder::InsetsType::kHalfInsets));
 }
 
 void AppListBubbleView::Layout() {

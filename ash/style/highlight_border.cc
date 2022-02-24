@@ -16,10 +16,12 @@ constexpr int kHighlightBorderThickness = 1;
 
 HighlightBorder::HighlightBorder(int corner_radius,
                                  Type type,
-                                 bool use_light_colors)
+                                 bool use_light_colors,
+                                 InsetsType insets_type)
     : corner_radius_(corner_radius),
       type_(type),
-      use_light_colors_(use_light_colors) {}
+      use_light_colors_(use_light_colors),
+      insets_type_(insets_type) {}
 
 void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
   AshColorProvider* color_provider = AshColorProvider::Get();
@@ -61,7 +63,14 @@ void HighlightBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
 }
 
 gfx::Insets HighlightBorder::GetInsets() const {
-  return gfx::Insets(2 * kHighlightBorderThickness);
+  switch (insets_type_) {
+    case InsetsType::kNoInsets:
+      return gfx::Insets();
+    case InsetsType::kHalfInsets:
+      return gfx::Insets(kHighlightBorderThickness);
+    case InsetsType::kFullInsets:
+      return gfx::Insets(2 * kHighlightBorderThickness);
+  }
 }
 
 gfx::Size HighlightBorder::GetMinimumSize() const {

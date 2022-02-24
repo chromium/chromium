@@ -23,7 +23,26 @@ class ASH_EXPORT HighlightBorder : public views::Border {
     kHighlightBorder2,
   };
 
-  HighlightBorder(int corner_radius, Type type, bool use_light_colors);
+  // The type of insets created by this highlight border. The insets shrink the
+  // content view.
+  enum class InsetsType {
+    // The border does not add insets that shrink the content, so the content
+    // around the edge of the view can be overlapped with the border.
+    kNoInsets,
+    // Insetting by half of the border size pushes the content inside the outer
+    // color of the border so the content bounds is surrounded by outer color
+    // of the border.
+    kHalfInsets,
+    // Insetting by full border size makes sure that contents in the view
+    // start inside the inner color of the highlight border, so there is no
+    // overlap between content.
+    kFullInsets,
+  };
+
+  HighlightBorder(int corner_radius,
+                  Type type,
+                  bool use_light_colors,
+                  InsetsType insets_type = InsetsType::kNoInsets);
 
   HighlightBorder(const HighlightBorder&) = delete;
   HighlightBorder& operator=(const HighlightBorder&) = delete;
@@ -42,6 +61,9 @@ class ASH_EXPORT HighlightBorder : public views::Border {
   // True if the border should use light colors when the D/L mode feature is
   // not enabled.
   const bool use_light_colors_;
+
+  // Used by `GetInsets()` to calculate the insets.
+  const InsetsType insets_type_;
 };
 
 }  // namespace ash
