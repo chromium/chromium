@@ -161,10 +161,9 @@ bool IncrementAuthUserIndex(GURL* url) {
     return false;
   new_query_parts.push_back(
       base::StringPrintf("%s=%d", kAuthUserQueryKey, user_index + 1));
-  std::string new_query_string = base::JoinString(new_query_parts, "&");
-  url::Component new_query(0, new_query_string.size());
-  url::Replacements<char> replacements;
-  replacements.SetQuery(new_query_string.c_str(), new_query);
+  std::string new_query = base::JoinString(new_query_parts, "&");
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(new_query);
   *url = url->ReplaceComponents(replacements);
   return true;
 }
