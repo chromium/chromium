@@ -466,11 +466,12 @@ bool NGPhysicalFragment::IsBlockFlow() const {
 }
 
 bool NGPhysicalFragment::IsTextControlContainer() const {
-  return blink::IsTextControlContainer(layout_object_->GetNode());
+  return IsCSSBox() && blink::IsTextControlContainer(layout_object_->GetNode());
 }
 
 bool NGPhysicalFragment::IsTextControlPlaceholder() const {
-  return blink::IsTextControlPlaceholder(layout_object_->GetNode());
+  return IsCSSBox() &&
+         blink::IsTextControlPlaceholder(layout_object_->GetNode());
 }
 
 NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
