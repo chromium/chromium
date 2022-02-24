@@ -62,16 +62,26 @@ async function main() {
       let msg = '';
 
       if ('error' in histograms) {
-        msg = 'some error happened.';
-      } else if ((oldh in histograms) && (newh in histograms)) {
-        const newv = histograms[newh].avg;
-        const oldv = histograms[oldh].avg;
-        const diff = Math.abs(newv - oldv);
-        msg = `Difference: ${diff.toFixed(2)} (${newv.toFixed(2)} vs ${
-            oldv.toFixed(2)}).`;
-        rows.push([f, oldv, newv]);
-      } else {
+        msg = 'some error happened: ' + histograms.error;
+      } else if (!(oldh in histograms) && !(newh in histograms)) {
         msg = 'no metrics.';
+      } else {
+        if (!(newh in histograms)) {
+          const oldv = histograms[oldh].avg;
+          msg = `No new metric, old metric: ${oldv.toFixed(2)}`;
+          rows.push([f, oldv, -1]);
+        } else if (!(oldh in histograms)) {
+          const newv = histograms[newh].avg;
+          msg = `No old metric, new metric: ${newv.toFixed(2)}`;
+          rows.push([f, -1, newv]);
+        } else {
+          const newv = histograms[newh].avg;
+          const oldv = histograms[oldh].avg;
+          const diff = Math.abs(newv - oldv);
+          msg = `Difference: ${diff.toFixed(2)} (${newv.toFixed(2)} vs ${
+              oldv.toFixed(2)}).`;
+          rows.push([f, oldv, newv]);
+        }
       }
 
       console.log(`${counter++}/${filenames.length} ${f}: ${msg}`);

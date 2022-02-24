@@ -40,11 +40,16 @@ class Pinpoint {
   listJobs(useremail) {
     const args =
         ['pinpoint', 'list-jobs', '--json', '--filter', `user=${useremail}`];
-    const stdout = process.execSync(args.join(' ')).toString().trim();
-    const json = JSON.parse(stdout);
-    if (json) {
-      const jobs = json.map(j => new PinpointJob(j));
-      return jobs;
+    for (let tries = 0; tries < 3; ++tries) {
+      try {
+        const stdout = process.execSync(args.join(' ')).toString().trim();
+        const json = JSON.parse(stdout);
+        if (json) {
+          const jobs = json.map(j => new PinpointJob(j));
+          return jobs;
+        }
+      } catch (ex) {
+      }
     }
     return [];
   }
