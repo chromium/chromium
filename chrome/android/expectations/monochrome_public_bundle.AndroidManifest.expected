@@ -642,6 +642,7 @@
     </activity>  # DIFF-ANCHOR: 66a0be05
     <activity  # DIFF-ANCHOR: a1fac31f
         android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
+        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
         android:excludeFromRecents="true"
         android:exported="true"
         android:label="@string/cablev2_activity_title"

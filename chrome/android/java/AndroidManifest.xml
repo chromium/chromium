@@ -896,13 +896,19 @@ by a child template that "extends" this file.
             </intent-filter>
         </activity>
 
-        <activity android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:label="@string/cablev2_activity_title"
-            android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
-            android:exported="true"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTop">
+        <!-- configChanges is set here to prevent the destruction of the
+             activity after configuration changes. Since the bulk of this
+             activity's logic is in a feature module, restoring the activity
+             via a Bundle doesn't work. -->
+        <activity
+        android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
+        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:label="@string/cablev2_activity_title"
+        android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
+        android:exported="true"
+        android:excludeFromRecents="true"
+        android:launchMode="singleTop">
             <!-- This activity can be started by GMSCore, and is thus exported
             with a permission set, or can be started by the Android system in
             the case that a USB device is attached. -->
