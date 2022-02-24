@@ -1179,14 +1179,16 @@ TEST_F(
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
+  bookmarks::BookmarkNode parent(/*id=*/1, base::GUID::GenerateRandomV4(),
+                                 GURL());
+
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_done(true);
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kBookmarkGuid.AsLowercaseString());
-  bookmark_specifics->set_parent_guid(
-      bookmarks::BookmarkNode::kBookmarkBarNodeGuid);
+  bookmark_specifics->set_parent_guid(parent.guid().AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =
@@ -1194,8 +1196,6 @@ TEST_F(
 
   ASSERT_TRUE(IsValidBookmarkSpecifics(*bookmark_specifics));
 
-  bookmarks::BookmarkNode parent(/*id=*/1, base::GUID::GenerateRandomV4(),
-                                 GURL());
   bookmarks::BookmarkNode* node =
       parent.Add(std::make_unique<bookmarks::BookmarkNode>(
                      /*id=*/2, kBookmarkGuid, GURL()),
@@ -1221,6 +1221,7 @@ TEST_F(
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =
       RandomUniquePosition().ToProto();
+  ASSERT_TRUE(IsValidBookmarkSpecifics(data.specifics.bookmark()));
 
   syncer::UpdateResponseData response_data;
   response_data.entity = std::move(data);

@@ -630,10 +630,9 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
   }
   // Node update could be either in the node data (e.g. title or
   // unique_position), or it could be that the node has moved under another
-  // parent without any data change. Should check both the data and the parent
-  // to confirm that no updates to the model are needed.
-  if (tracked_entity->MatchesDataPossiblyIncludingParent(update_entity) &&
-      new_parent == old_parent) {
+  // parent without any data change.
+  if (tracked_entity->MatchesData(update_entity)) {
+    DCHECK_EQ(new_parent, old_parent);
     bookmark_tracker_->Update(tracked_entity, update.response_version,
                               update_entity.modification_time,
                               update_entity.specifics);
@@ -750,10 +749,9 @@ BookmarkRemoteUpdatesHandler::ProcessConflict(
 
   // Node update could be either in the node data (e.g. title or
   // unique_position), or it could be that the node has moved under another
-  // parent without any data change. Should check both the data and the parent
-  // to confirm that no updates to the model are needed.
-  if (tracked_entity->MatchesDataPossiblyIncludingParent(update_entity) &&
-      new_parent == old_parent) {
+  // parent without any data change.
+  if (tracked_entity->MatchesData(update_entity)) {
+    DCHECK_EQ(new_parent, old_parent);
     bookmark_tracker_->Update(tracked_entity, update.response_version,
                               update_entity.modification_time,
                               update_entity.specifics);

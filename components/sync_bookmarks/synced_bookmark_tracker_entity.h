@@ -49,10 +49,8 @@ class SyncedBookmarkTrackerEntity {
   bool IsUnsynced() const;
 
   // Check whether |data| matches the stored specifics hash. It also compares
-  // parent information, but only if present in specifics (M94 and above).
-  // TODO(crbug.com/1274122): Remove Possibly from the name, since it's now
-  // guaranteed and update comment.
-  bool MatchesDataPossiblyIncludingParent(const syncer::EntityData& data) const;
+  // parent information (which is included in specifics).
+  bool MatchesData(const syncer::EntityData& data) const;
 
   // Check whether |specifics| matches the stored specifics_hash.
   bool MatchesSpecificsHash(const sync_pb::EntitySpecifics& specifics) const;

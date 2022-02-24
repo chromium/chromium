@@ -50,7 +50,7 @@ bool SyncedBookmarkTrackerEntity::IsUnsynced() const {
   return metadata_->sequence_number() > metadata_->acked_sequence_number();
 }
 
-bool SyncedBookmarkTrackerEntity::MatchesDataPossiblyIncludingParent(
+bool SyncedBookmarkTrackerEntity::MatchesData(
     const syncer::EntityData& data) const {
   if (metadata_->is_deleted() || data.is_deleted()) {
     // In case of deletion, no need to check the specifics.
