@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,16 +33,35 @@ class AutofillPaymentMethodsDelegate {
      * process.
      * @param instrumentId The instrument ID of the {@link
      *         org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard} to enroll.
+     * @param virtualCardEnrollmentFieldsLoadedCallback The callback to be triggered when the {@link
+     *         VirtualCardEnrollmentFields} are fetched from the server.
      * @throws IllegalStateException when called after the native delegate has been cleaned up, or
      *         if an error occurred during initialization.
      */
-    public void offerVirtualCardEnrollment(long instrumentId) {
+    public void offerVirtualCardEnrollment(long instrumentId,
+            Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsLoadedCallback) {
         if (mNativeAutofillPaymentMethodsDelegate == 0) {
             throw new IllegalStateException(
                     "The native delegate was cleaned up or not initialized.");
         }
         AutofillPaymentMethodsDelegateJni.get().offerVirtualCardEnrollment(
-                mNativeAutofillPaymentMethodsDelegate, instrumentId);
+                mNativeAutofillPaymentMethodsDelegate, instrumentId,
+                virtualCardEnrollmentFieldsLoadedCallback);
+    }
+
+    /**
+     * Enroll the card into virtual cards feature.
+     * Note: This should only be called after the OfferVirtualCardEnrollment is triggered. This is
+     * because the VirtualCardEnrollmentManager stores some state when offerVirtualCardEnrollment is
+     * called, which is then reused for enrolling into the virtual cards feature.
+     */
+    public void enrollOfferedVirtualCard() {
+        if (mNativeAutofillPaymentMethodsDelegate == 0) {
+            throw new IllegalStateException(
+                    "The native delegate was cleaned up or not initialized.");
+        }
+        AutofillPaymentMethodsDelegateJni.get().enrollOfferedVirtualCard(
+                mNativeAutofillPaymentMethodsDelegate);
     }
 
     /**
@@ -76,8 +96,10 @@ class AutofillPaymentMethodsDelegate {
     interface Natives {
         long init(Profile profile);
         void cleanup(long nativeAutofillPaymentMethodsDelegate);
-        void offerVirtualCardEnrollment(
-                long nativeAutofillPaymentMethodsDelegate, long instrumentId);
+        void offerVirtualCardEnrollment(long nativeAutofillPaymentMethodsDelegate,
+                long instrumentId,
+                Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback);
+        void enrollOfferedVirtualCard(long nativeAutofillPaymentMethodsDelegate);
         void unenrollVirtualCard(long nativeAutofillPaymentMethodsDelegate, long instrumentId);
     }
 }
