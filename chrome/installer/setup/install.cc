@@ -249,7 +249,7 @@ std::string GenerateVisualElementsManifest(const base::Version& version) {
       "      Square70x70Logo='%ls\\SmallLogo%ls.png'\r\n"
       "      Square44x44Logo='%ls\\SmallLogo%ls.png'\r\n"
       "      ForegroundText='light'\r\n"
-      "      BackgroundColor='transparent'/>\r\n"
+      "      BackgroundColor='#5F6368'/>\r\n"
       "</Application>\r\n";
 
   // Construct the relative path to the versioned VisualElements directory.
