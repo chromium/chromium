@@ -140,7 +140,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
    * allows the iron-list to delete sublists of items which preserves scroll and
    * focus on incremental update.
    */
-  private async onDisplayedIdsChanged_(newValue: string[], oldValue: string[]) {
+  private async onDisplayedIdsChanged_(
+      newValue: string[], _oldValue: string[]) {
     const updatedList = newValue.map(id => ({id: id}));
     let skipFocus = false;
     let selectIndex = -1;

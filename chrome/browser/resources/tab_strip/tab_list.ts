@@ -299,7 +299,6 @@ export class TabListElement extends CustomElement implements
     let startTime: number;
 
     const onAnimationFrame = (currentTime: number) => {
-      const startScroll = this.scrollLeft;
       if (!startTime) {
         startTime = currentTime;
       }
@@ -644,7 +643,7 @@ export class TabListElement extends CustomElement implements
     }
   }
 
-  private onScroll_(e: Event) {
+  private onScroll_(_e: Event) {
     this.clearScrollTimeout_();
     this.scrollingTimeoutId_ = setTimeout(() => {
       this.flushThumbnailTracker_();

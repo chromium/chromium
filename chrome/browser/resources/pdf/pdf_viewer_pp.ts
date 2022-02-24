@@ -9,7 +9,6 @@ import './elements/viewer-zoom-toolbar.js';
 import './pdf_viewer_shared_style.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

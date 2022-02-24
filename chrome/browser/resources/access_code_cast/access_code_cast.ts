@@ -24,8 +24,6 @@ import {CodeInputElement} from './code_input/code_input.js';
 import {ErrorMessageElement} from './error_message/error_message.js';
 import {RouteRequestResultCode} from './route_request_result_code.mojom-webui.js';
 
-declare const chrome: any;
-
 enum PageState {
   CODE_INPUT,
   QR_INPUT,

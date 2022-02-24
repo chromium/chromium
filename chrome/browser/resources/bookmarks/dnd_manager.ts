@@ -23,8 +23,6 @@ type NormalizedDragData = {
   sameProfile: boolean,
 };
 
-const DRAG_THRESHOLD: number = 15;
-
 function isBookmarkItem(element: Element): boolean {
   return element.tagName === 'BOOKMARKS-ITEM';
 }
@@ -152,7 +150,7 @@ class AutoExpander {
     });
   }
 
-  update(e: Event, overElement: BookmarkElement|null) {
+  update(_e: Event, overElement: BookmarkElement|null) {
     const itemId = overElement ? overElement.itemId : null;
     const store = Store.getInstance();
 
@@ -396,9 +394,6 @@ export class DNDManager {
     if (!this.dragInfo_!.isDragValid()) {
       return;
     }
-
-    const state = Store.getInstance().data;
-    const items = this.dragInfo_!.dragData!.elements;
 
     const overElement = getBookmarkElement(e.composedPath());
     this.autoExpander_!.update(e, overElement);

@@ -221,7 +221,7 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     }
   }
 
-  private onDblClick_(e: MouseEvent) {
+  private onDblClick_(_e: MouseEvent) {
     if (!this.isSelectedItem_) {
       this.selectThisItem_();
     }

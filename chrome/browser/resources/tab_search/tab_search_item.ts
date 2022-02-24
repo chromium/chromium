@@ -154,11 +154,9 @@ export class TabSearchItem extends TabSearchItemBase {
         });
 
     // Show chrome:// if it's a chrome internal url
-    let secondaryLabel = data.hostname;
     const protocol = new URL(data.tab.url.url).protocol;
     if (protocol === 'chrome:') {
       this.$.secondaryText.prepend(document.createTextNode('chrome://'));
-      secondaryLabel = `chrome://${secondaryLabel}`;
     }
 
     if (data.tabGroup) {

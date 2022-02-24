@@ -42,7 +42,7 @@ function selectItems(
   }) as SelectionState);
 }
 
-function deselectAll(selectionState: SelectionState): SelectionState {
+function deselectAll(_selectionState: SelectionState): SelectionState {
   return {
     items: new Set(),
     anchor: null,

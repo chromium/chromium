@@ -21,11 +21,6 @@ enum CloudDestinationField {
 }
 
 /**
- * Special tag that denotes whether the destination has been recently used.
- */
-const RECENT_TAG: string = '^recent';
-
-/**
  * Special tag that denotes whether the destination is owned by the user.
  */
 const OWNED_TAG: string = '^own';

@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.js';
 import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';

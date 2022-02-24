@@ -161,7 +161,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     }
     this.sidebarWidth_ = getComputedStyle(splitterTarget).width;
 
-    splitter.addEventListener('resize', (e) => {
+    splitter.addEventListener('resize', (_e: Event) => {
       window.localStorage[LOCAL_STORAGE_TREE_WIDTH_KEY] =
           splitterTarget.style.width;
       this.updateSidebarWidth_();

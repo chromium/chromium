@@ -289,7 +289,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return loadTimeData.getString('mixedContentDownloadDesc');
 
       case States.DANGEROUS:
-        const fileName = data.fileName;
         switch (data.dangerType) {
           case DangerType.DANGEROUS_FILE:
             return loadTimeData.getString('dangerFileDesc');

@@ -94,7 +94,7 @@ export class BookmarksRouterElement extends BookmarksRouterElementBase {
     }
   }
 
-  private onQueryChanged_(current: (string|null), previous: (string|null)) {
+  private onQueryChanged_(_current: (string|null), previous: (string|null)) {
     if (previous !== undefined) {
       this.urlQuery_ = this.query_;
     }

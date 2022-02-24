@@ -366,9 +366,7 @@ export class ModulesElement extends PolymerElement {
       const dropIndex =
           moduleContainers.indexOf((e.target as HTMLElement).parentElement!);
 
-      const positionType = dragIndex > dropIndex ? 'beforebegin' : 'afterend';
       const dragContainer = moduleContainers[dragIndex];
-      const dropContainer = moduleContainers[dropIndex];
 
       // To animate the modules as they are reordered we use the FLIP
       // (First, Last, Invert, Play) animation approach by @paullewis.

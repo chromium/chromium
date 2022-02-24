@@ -68,7 +68,7 @@ export class DialogFocusManager {
 
   private getCloseListener_(dialog: (HTMLDialogElement|CrDialogElement)):
       ((p1: Event) => void) {
-    const closeListener = (e: Event) => {
+    const closeListener = (_e: Event) => {
       // If the dialog is open, then it got reshown immediately and we
       // shouldn't clear it until it is closed again.
       if (dialog.open) {

@@ -102,7 +102,7 @@ export class TabElement extends CustomElement {
 
     this.tabSwiper_ = new TabSwiper(this);
 
-    this.onTabActivating_ = (tabId: number) => {};
+    this.onTabActivating_ = (_tabId: number) => {};
   }
 
   get tab(): Tab {

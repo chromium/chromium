@@ -1171,12 +1171,6 @@ export class DestinationStore extends EventTarget {
 }
 
 /**
- * Maximum amount of time spent searching for extension destinations, in
- * milliseconds.
- */
-const EXTENSION_SEARCH_DURATION_: number = 5000;
-
-/**
  * Human readable names for media sizes in the cloud print CDD.
  * https://developers.google.com/cloud-print/docs/cdd
  */

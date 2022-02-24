@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 import {Cdd} from './data/cdd.js';
 import {ProvisionalDestinationInfo} from './data/local_parsers.js';

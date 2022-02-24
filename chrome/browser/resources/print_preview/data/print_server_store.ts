@@ -6,7 +6,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 
 import {NativeLayerCros, NativeLayerCrosImpl, PrintServer, PrintServersConfig} from '../native_layer_cros.js';
 
-import {PrinterType} from './destination_match.js';
 import {DestinationStore} from './destination_store.js';
 
 export class PrintServerStore extends EventTarget {

@@ -18,7 +18,7 @@ import '../strings.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination.js';
+import {CloudOrigins, Destination, DestinationOrigin, GooglePromotedDestinationId, PDF_DESTINATION_KEY} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 
 import {PrintPreviewDestinationDropdownCrosElement} from './destination_dropdown_cros.js';
