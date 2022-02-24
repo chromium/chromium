@@ -455,8 +455,7 @@ export class Camera extends View implements CameraViewUI {
             return 0;
           }
           assert(this.activeDeviceId !== null);
-          return await deviceOperator.getCameraFrameRotation(
-              this.activeDeviceId);
+          return deviceOperator.getCameraFrameRotation(this.activeDeviceId);
         })();
         // Translate the camera frame rotation back to the UI rotation, which is
         // what we need to rotate the captured video with.

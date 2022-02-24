@@ -576,6 +576,8 @@ module.exports = {
 
       // go/tsstyle#optimization-compatibility-for-property-access
       '@typescript-eslint/dot-notation': 'error',
+
+      '@typescript-eslint/return-await': 'error',
     },
   }],
 };

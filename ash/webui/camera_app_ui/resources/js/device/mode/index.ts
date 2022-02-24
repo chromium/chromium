@@ -287,7 +287,7 @@ export class Modes {
           if (deviceOperator === null) {
             return false;
           }
-          return await deviceOperator.isPortraitModeSupported(deviceId);
+          return deviceOperator.isPortraitModeSupported(deviceId);
         },
         isSupportPTZ: checkSupportPTZForPhotoMode,
         prepareDevice: async (constraints, resolution) => prepareDeviceForPhoto(

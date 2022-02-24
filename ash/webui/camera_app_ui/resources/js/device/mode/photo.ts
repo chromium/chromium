@@ -67,7 +67,7 @@ export class Photo extends ModeBase {
     const {blob, metadata} = await (async () => {
       let hasError = false;
       try {
-        return this.takePhoto();
+        return await this.takePhoto();
       } catch (e) {
         hasError = true;
         this.handler.onPhotoError();
