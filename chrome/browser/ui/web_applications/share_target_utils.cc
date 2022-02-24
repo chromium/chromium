@@ -193,9 +193,8 @@ NavigateParams NavigateParamsForShareTarget(
       nav_params.post_data = network::ResourceRequestBody::CreateFromBytes(
           serialization.c_str(), serialization.length());
     } else {
-      url::Replacements<char> replacements;
-      replacements.SetQuery(serialization.c_str(),
-                            url::Component(0, serialization.length()));
+      GURL::Replacements replacements;
+      replacements.SetQueryStr(serialization);
       nav_params.url = nav_params.url.ReplaceComponents(replacements);
     }
   }
