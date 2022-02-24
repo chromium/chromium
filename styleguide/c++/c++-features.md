@@ -606,7 +606,7 @@ requirements exceed `__STDCPP_DEFAULT_NEW_ALIGNMENT__`.
 None
 ***
 
-### Type trait variable templates <sup>[tbd]</sup>
+### Type trait variable templates <sup>[allowed]</sup>
 
 ```c++
 bool b = std::is_same_v<int, std::int32_t>;
