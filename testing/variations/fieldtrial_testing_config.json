@@ -1726,6 +1726,24 @@
             ]
         }
     ],
+    "ClankStartupOptimizationsWebViewAndWebLayer": [
+        {
+            "platforms": [
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "NoPreloadOrPri_1",
+                    "enable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
+                        "TreatBootstrapAsDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "CleanUndecryptablePasswordsLinuxDuringInitialSync": [
         {
             "platforms": [
