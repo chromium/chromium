@@ -348,7 +348,8 @@ PlaybackParams::PlaybackParams(ImageProvider* image_provider,
     : image_provider(image_provider),
       original_ctm(original_ctm),
       custom_callback(custom_callback),
-      did_draw_op_callback(did_draw_op_callback) {}
+      did_draw_op_callback(did_draw_op_callback),
+      raw_draw_analysis(false) {}
 
 PlaybackParams::~PlaybackParams() {}
 
@@ -782,10 +783,12 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x);
   helper.Write(op->y);
-  helper.Write(op->blob);
   helper.Write(options.raw_draw);
-  if (options.raw_draw)
-    helper.Write(current_ctm.asM33());
+  if (options.raw_draw) {
+    helper.Write(op->slug);
+  } else {
+    helper.Write(op->blob);
+  }
   return helper.size();
 }
 
@@ -1350,13 +1353,12 @@ PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
   deserializer.AlignMemory(alignof(SkScalar));
   deserializer.Read(&deserializer->x);
   deserializer.Read(&deserializer->y);
-  deserializer.Read(&deserializer->blob);
   bool raw_draw = false;
   deserializer.Read(&raw_draw);
   if (raw_draw) {
-    SkMatrix hint;
-    deserializer.Read(&hint);
-    deserializer->hint = hint;
+    deserializer.Read(&deserializer->slug);
+  } else {
+    deserializer.Read(&deserializer->blob);
   }
   return deserializer.FinalizeOp();
 }
@@ -1806,18 +1808,15 @@ void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
                                      const PlaybackParams& params) {
   if (op->node_id)
     SkPDF::SetNodeId(canvas, op->node_id);
-  flags->DrawToSk(canvas, [op](SkCanvas* c, const SkPaint& p) {
-    if (op->hint) {
-      sk_sp<GrSlug> slug;
-      {
-        SkAutoCanvasRestore auto_save(c, true);
-        c->setMatrix(*op->hint);
-        slug = GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
-      }
-      if (slug)
-        slug->draw(c);
-    } else {
+  flags->DrawToSk(canvas, [op, &params](SkCanvas* c, const SkPaint& p) {
+    if (op->blob) {
       c->drawTextBlob(op->blob.get(), op->x, op->y, p);
+      if (params.raw_draw_analysis) {
+        const_cast<DrawTextBlobOp*>(op)->slug =
+            GrSlug::ConvertBlob(c, *op->blob, {op->x, op->y}, p);
+      }
+    } else if (op->slug) {
+      op->slug->draw(c);
     }
   });
   if (op->node_id)

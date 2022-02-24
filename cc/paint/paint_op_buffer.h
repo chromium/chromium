@@ -151,6 +151,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   CustomDataRasterCallback custom_callback;
   DidDrawOpCallback did_draw_op_callback;
   absl::optional<bool> save_layer_alpha_should_preserve_lcd_text;
+  bool raw_draw_analysis;
 };
 
 class CC_PAINT_EXPORT PaintOp {
@@ -884,11 +885,11 @@ class CC_PAINT_EXPORT DrawTextBlobOp final : public PaintOpWithFlags {
   HAS_SERIALIZATION_FUNCTIONS();
 
   sk_sp<SkTextBlob> blob;
+  sk_sp<GrSlug> slug;
   SkScalar x;
   SkScalar y;
   // This field isn't serialized.
   NodeId node_id = kInvalidNodeId;
-  absl::optional<SkMatrix> hint;
 
  private:
   DrawTextBlobOp();

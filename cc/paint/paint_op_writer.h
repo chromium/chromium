@@ -65,6 +65,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(const SkColorSpace* data);
   void Write(const SkSamplingOptions&);
   void Write(const sk_sp<SkTextBlob>& blob);
+  void Write(const sk_sp<GrSlug>& slug);
   void Write(SkYUVColorSpace yuv_color_space);
   void Write(SkYUVAInfo::PlaneConfig plane_config);
   void Write(SkYUVAInfo::Subsampling subsampling);

@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
+#include "third_party/skia/include/private/chromium/GrSlug.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -383,6 +384,28 @@ void PaintOpWriter::Write(const SkColorSpace* color_space) {
 
   memory_ += written;
   remaining_bytes_ -= written;
+}
+
+void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
+  if (!valid_)
+    return;
+
+  AlignMemory(4);
+  uint64_t* size_memory = WriteSize(0u);
+  size_t bytes_written = 0;
+  if (slug) {
+    // TODO(penghuang): should we use a unique id to avoid sending the same
+    // slug?
+    bytes_written = slug->serialize(
+        memory_, base::bits::AlignDown(remaining_bytes_, kSkiaAlignment));
+    if (bytes_written == 0u) {
+      valid_ = false;
+      return;
+    }
+  }
+  *size_memory = bytes_written;
+  memory_ += bytes_written;
+  remaining_bytes_ -= bytes_written;
 }
 
 void PaintOpWriter::Write(const sk_sp<SkTextBlob>& blob) {
