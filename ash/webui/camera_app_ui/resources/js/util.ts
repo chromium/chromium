@@ -89,7 +89,7 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
  * Sets up i18n messages on DOM subtree by i18n attributes.
  * @param rootElement Root of DOM subtree to be set up with.
  */
-export function setupI18nElements(rootElement: Element|DocumentFragment): void {
+export function setupI18nElements(rootElement: DocumentFragment|Element): void {
   const getElements = (attr: string) =>
       dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement);
   const getMessage = (element: HTMLElement, attr: string) =>
@@ -235,7 +235,7 @@ export function sleep(ms: number): Promise<void> {
  * Gets value in px of a property in a StylePropertyMapReadOnly
  */
 export function getStyleValueInPx(
-    style: (StylePropertyMapReadOnly|StylePropertyMap), prop: string): number {
+    style: (StylePropertyMap|StylePropertyMapReadOnly), prop: string): number {
   return assertInstanceof(style.get(prop), CSSNumericValue).to('px').value;
 }
 

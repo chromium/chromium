@@ -549,6 +549,8 @@ module.exports = {
     ],
 
     '@typescript-eslint/prefer-optional-chain': 'error',
+
+    '@typescript-eslint/sort-type-union-intersection-members': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],

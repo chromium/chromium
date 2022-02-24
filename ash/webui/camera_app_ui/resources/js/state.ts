@@ -72,7 +72,7 @@ export enum State {
   USE_FAKE_CAMERA = 'use-fake-camera',
 }
 
-export type StateUnion = State|Mode|ViewName|PerfEvent;
+export type StateUnion = Mode|PerfEvent|State|ViewName;
 
 const stateValues = new Set<StateUnion>(
     [State, Mode, ViewName, PerfEvent].flatMap((s) => Object.values(s)));

@@ -60,7 +60,7 @@ export {
 export type DoSwitchMode = () => Promise<boolean>;
 
 export type CaptureHandler =
-    PhotoHandler&VideoHandler&PortraitHandler&ScanHandler;
+    PhotoHandler&PortraitHandler&ScanHandler&VideoHandler;
 
 /**
  * Parameters for capture settings.

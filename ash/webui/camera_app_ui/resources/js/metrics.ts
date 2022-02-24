@@ -26,7 +26,7 @@ import {WaitableEvent} from './waitable_event.js';
  */
 const GA_ID = 'UA-134822711-1';
 
-let baseDimen: Map<number, string|number>|null = null;
+let baseDimen: Map<number, number|string>|null = null;
 
 const ready = new WaitableEvent();
 
@@ -141,7 +141,7 @@ export async function initMetrics(): Promise<void> {
     }
     return match[1];
   })();
-  baseDimen = new Map<MetricDimension, string|number>([
+  baseDimen = new Map<MetricDimension, number|string>([
     [MetricDimension.BOARD, boardName],
     [MetricDimension.OS_VERSION, osVer],
     [MetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],

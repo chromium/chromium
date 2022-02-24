@@ -36,7 +36,7 @@ interface FileSystemHandleBase {
   readonly name: string;
 }
 
-type FileSystemWriteChunkType = BufferSource|Blob|string;
+type FileSystemWriteChunkType = Blob|BufferSource|string;
 
 interface FileSystemWritableFileStream extends WritableStream {
   seek(position: number): Promise<void>;
@@ -73,7 +73,7 @@ interface FileSystemDirectoryHandle extends FileSystemHandleBase {
   values(): IterableIterator<FileSystemHandle>;
 }
 
-type FileSystemHandle = FileSystemFileHandle|FileSystemDirectoryHandle;
+type FileSystemHandle = FileSystemDirectoryHandle|FileSystemFileHandle;
 
 interface StorageManager {
   getDirectory(): Promise<FileSystemDirectoryHandle>;
@@ -201,8 +201,8 @@ interface DetectedBarcode {
 }
 
 type BarcodeFormat =
-    'aztec'|'code_128'|'code_39'|'code_93'|'codabar'|'data_matrix'|'ean_13'|
-    'ean_8'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
+    'aztec'|'codabar'|'code_39'|'code_93'|'code_128'|'data_matrix'|'ean_8'|
+    'ean_13'|'itf'|'pdf417'|'qr_code'|'unknown'|'upc_a'|'upc_e';
 
 // Trusted Types, this spec is still in draft stage.
 // https://w3c.github.io/webappsec-trusted-types/dist/spec/

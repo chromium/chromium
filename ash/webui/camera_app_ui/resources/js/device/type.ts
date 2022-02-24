@@ -66,7 +66,7 @@ export interface CameraConfig {
 export interface CameraUI {
   onUpdateCapability?(cameraInfo: CameraInfo): void;
   onTryingNewConfig?(config: CameraConfig): void;
-  onUpdateConfig?(config: CameraConfig): void|Promise<void>;
+  onUpdateConfig?(config: CameraConfig): Promise<void>|void;
   onCameraUnavailable?(): void;
   onCameraAvailble?(): void;
 }
