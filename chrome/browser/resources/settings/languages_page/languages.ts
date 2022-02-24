@@ -897,7 +897,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     }
 
     if (enable) {
-      const spellCheckPref = this.getPref('spellcheck.dictionaries');
+      this.getPref('spellcheck.dictionaries');
       this.appendPrefListItem('spellcheck.dictionaries', languageCode);
     } else {
       this.deletePrefListItem('spellcheck.dictionaries', languageCode);

@@ -18,7 +18,7 @@ import '../settings_shared_css.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 

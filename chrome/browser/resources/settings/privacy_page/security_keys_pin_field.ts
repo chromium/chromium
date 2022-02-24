@@ -202,7 +202,7 @@ export class SettingsSecurityKeysPinFieldElement extends
     // code-point.) Therefore, iterate over the string (which does yield
     // codepoints) and check that four or more were seen.
     let length = 0;
-    for (const codepoint of pin) {
+    for (const _codepoint of pin) {
       length++;
     }
 

@@ -9,7 +9,7 @@ import '../settings_shared_css.js';
 
 import {CrRadioButtonBehavior} from '//resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
 import {assert} from '//resources/js/assert.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {prefToString} from '../prefs/pref_util.js';
 

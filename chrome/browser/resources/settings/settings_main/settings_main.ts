@@ -19,7 +19,6 @@ import '../search_settings.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

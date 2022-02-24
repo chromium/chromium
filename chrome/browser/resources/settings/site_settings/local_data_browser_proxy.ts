@@ -17,14 +17,6 @@ export type LocalDataItem = {
   site: string,
 };
 
-/**
- * Number of cookies attached to a given domain / eTLD+1.
- */
-type EtldPlus1CookieNumber = {
-  etldPlus1: string,
-  numCookies: number,
-};
-
 export interface LocalDataBrowserProxy {
   getDisplayList(filter: string): Promise<Array<LocalDataItem>>;
 

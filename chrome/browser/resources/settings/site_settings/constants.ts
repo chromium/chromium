@@ -115,11 +115,6 @@ export enum NotificationSetting {
 }
 
 /**
- * A category value to use for the All Sites list.
- */
-const ALL_SITES: string = 'all-sites';
-
-/**
  * An invalid subtype value.
  */
 export const INVALID_CATEGORY_SUBTYPE: string = '';

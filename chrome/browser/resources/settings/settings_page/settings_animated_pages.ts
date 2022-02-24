@@ -23,7 +23,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 // </if>
 
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
-import {DomIf, FlattenedNodesObserver, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 // <if expr="chromeos">

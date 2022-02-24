@@ -12,7 +12,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './media_picker.html.js';
 
 import {SiteSettingsMixin} from './site_settings_mixin.js';

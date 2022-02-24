@@ -16,12 +16,12 @@ import '../site_favicon.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {DomRepeatEvent, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -212,8 +212,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
     }
     this.button_ =
         this.shadowRoot!.querySelector('#toggleButton *:not([hidden])');
+    assert(this.button_);
     this.eventTracker_.add(
-        assert(this.button_!), 'keydown',
+        this.button_, 'keydown',
         (e: KeyboardEvent) => this.onButtonKeydown_(e));
 
     if (!this.grouped_(siteGroup)) {
@@ -489,7 +490,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
       };
     }
     assertNotReached();
-    return (_origin1, _origin2) => 0;
   }
 }
 

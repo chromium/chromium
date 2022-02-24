@@ -291,7 +291,7 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private updateTotalUsage_() {
     let usageSum = 0;
-    for (const [etldPlus1, siteGroup] of this.siteGroupMap) {
+    for (const [_etldPlus1, siteGroup] of this.siteGroupMap) {
       siteGroup.origins.forEach(origin => {
         usageSum += origin.usage;
       });
@@ -310,7 +310,7 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupMap: Map<string, SiteGroup>,
       searchQuery: string): Array<SiteGroup> {
     const result = [];
-    for (const [etldPlus1, siteGroup] of siteGroupMap) {
+    for (const [_etldPlus1, siteGroup] of siteGroupMap) {
       if (siteGroup.origins.find(
               originInfo => originInfo.origin.includes(searchQuery))) {
         result.push(siteGroup);

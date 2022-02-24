@@ -156,11 +156,6 @@ export type MediaPickerEntry = {
   id: string,
 };
 
-type ProtocolHandlerEntry = {
-  protocol: string,
-  spec: string,
-};
-
 export type ZoomLevelEntry = {
   displayName: string,
   origin: string,
