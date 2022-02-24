@@ -380,7 +380,7 @@ void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
       !render_frame_host_->GetBrowserContext()->IsOffTheRecord()
           ? std::make_unique<ui::DataTransferEndpoint>(
-                render_frame_host_->GetMainFrame()->GetLastCommittedOrigin())
+                render_frame_host_->GetMainFrame()->GetLastCommittedURL())
           : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,

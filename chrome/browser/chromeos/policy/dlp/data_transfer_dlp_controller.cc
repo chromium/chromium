@@ -72,7 +72,7 @@ bool IsFilesApp(const ui::DataTransferEndpoint* const data_dst) {
   if (!data_dst || !data_dst->IsUrlType())
     return false;
 
-  GURL url = data_dst->GetOrigin()->GetURL();
+  GURL url = *data_dst->GetURL();
   // TODO(b/207576430): Once Files Extension is removed, remove this condition.
   bool is_files_extension =
       url.has_scheme() && url.SchemeIs(extensions::kExtensionScheme) &&
@@ -124,7 +124,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     return DlpRulesManager::Level::kAllow;
   }
 
-  const GURL src_url = data_src->GetOrigin()->GetURL();
+  const GURL src_url = *data_src->GetURL();
   ui::EndpointType dst_type =
       data_dst ? data_dst->type() : ui::EndpointType::kDefault;
 
@@ -173,7 +173,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     }
 
     case ui::EndpointType::kUrl: {
-      GURL dst_url = data_dst->GetOrigin()->GetURL();
+      GURL dst_url = *data_dst->GetURL();
       level = dlp_rules_manager.IsRestrictedDestination(
           src_url, dst_url, DlpRulesManager::Restriction::kClipboard,
           src_pattern, dst_pattern);

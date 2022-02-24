@@ -167,7 +167,7 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
 
   const std::string kTestText = "TestData";
   const std::string kEncodedTestDte =
-      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
+      R"({"endpoint_type":"url","url":"https://www.google.com"})";
 
   const std::string kTextMimeType = "text/plain;charset=utf-8";
   const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
@@ -198,10 +198,9 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
   ASSERT_TRUE(source_dte);
   EXPECT_EQ(ui::EndpointType::kUrl, source_dte->type());
 
-  const ui::DataTransferEndpoint expected_dte = ui::DataTransferEndpoint(
-      url::Origin::Create(GURL("https://www.google.com")));
-  EXPECT_TRUE(
-      expected_dte.GetOrigin()->IsSameOriginWith(*source_dte->GetOrigin()));
+  const ui::DataTransferEndpoint expected_dte =
+      ui::DataTransferEndpoint((GURL("https://www.google.com")));
+  EXPECT_EQ(*expected_dte.GetURL(), *source_dte->GetURL());
 }
 
 TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
@@ -214,7 +213,7 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
 
   const std::string kTestText = "TestData";
   const std::string kEncodedTestDte =
-      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
+      R"({"endpoint_type":"url","url":"https://www.google.com"})";
 
   const std::string kTextMimeType = "text/plain;charset=utf-8";
   const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";

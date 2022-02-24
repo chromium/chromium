@@ -47,8 +47,8 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   original.MarkOriginatedFromRenderer();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  url::Origin origin(url::Origin::Create(GURL("www.example.com")));
-  original.SetSource(std::make_unique<DataTransferEndpoint>(origin));
+  GURL url("www.example.com");
+  original.SetSource(std::make_unique<DataTransferEndpoint>(url));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
   std::u16string copy_string;
@@ -88,7 +88,7 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   DataTransferEndpoint* data_endpoint = copy->GetSource();
   EXPECT_TRUE(data_endpoint);
   EXPECT_TRUE(data_endpoint->IsUrlType());
-  EXPECT_EQ(origin, *data_endpoint->GetOrigin());
+  EXPECT_EQ(url, *data_endpoint->GetURL());
 }
 
 TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {

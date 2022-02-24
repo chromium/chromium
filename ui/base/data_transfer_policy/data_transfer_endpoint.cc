@@ -7,20 +7,20 @@
 #include "base/check_op.h"
 #include "base/stl_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace ui {
 
-DataTransferEndpoint::DataTransferEndpoint(const url::Origin& origin,
+DataTransferEndpoint::DataTransferEndpoint(const GURL& url,
                                            bool notify_if_restricted)
     : type_(EndpointType::kUrl),
-      origin_(origin),
+      url_(url),
       notify_if_restricted_(notify_if_restricted) {}
 
 DataTransferEndpoint::DataTransferEndpoint(EndpointType type,
                                            bool notify_if_restricted)
     : type_(type),
-      origin_(absl::nullopt),
+      url_(absl::nullopt),
       notify_if_restricted_(notify_if_restricted) {
   DCHECK_NE(type, EndpointType::kUrl);
 }
@@ -38,19 +38,19 @@ DataTransferEndpoint& DataTransferEndpoint::operator=(
     DataTransferEndpoint&& other) = default;
 
 bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
-  return origin_ == other.origin_ && type_ == other.type_ &&
+  return url_ == other.url_ && type_ == other.type_ &&
          notify_if_restricted_ == other.notify_if_restricted_;
 }
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;
 
-const url::Origin* DataTransferEndpoint::GetOrigin() const {
-  return base::OptionalOrNullptr(origin_);
+const GURL* DataTransferEndpoint::GetURL() const {
+  return base::OptionalOrNullptr(url_);
 }
 
-bool DataTransferEndpoint::IsSameOriginWith(
+bool DataTransferEndpoint::IsSameURLWith(
     const DataTransferEndpoint& other) const {
-  return IsUrlType() && (type_ == other.type_) && (origin_ == other.origin_);
+  return IsUrlType() && (type_ == other.type_) && (url_ == other.url_);
 }
 
 }  // namespace ui

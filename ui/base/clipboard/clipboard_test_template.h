@@ -52,7 +52,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -620,7 +619,7 @@ void WriteBitmap(Clipboard* clipboard,
   {
     ScopedClipboardWriter clipboard_writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(GURL()));
     SkBitmap bitmap;
     ASSERT_TRUE(bitmap.setInfo(info));
     bitmap.setPixels(const_cast<void*>(bitmap_data));
@@ -1302,8 +1301,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(
-            url::Origin::Create(GURL("https://www.google.com"))));
+        std::make_unique<DataTransferEndpoint>(GURL("https://www.google.com")));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1321,8 +1319,9 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
       ui::ClipboardFormatType::DataTransferEndpointDataType(),
       /* data_dst = */ nullptr, &actual_json);
 
-  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
-            actual_json);
+  EXPECT_EQ(
+      R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})",
+      actual_json);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
@@ -1336,7 +1335,7 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
-        std::make_unique<DataTransferEndpoint>(url::Origin()));
+        std::make_unique<DataTransferEndpoint>(GURL()));
     writer.WriteText(kTestText);
   }
   EXPECT_CALL(*policy_controller, IsClipboardReadAllowed)
@@ -1373,7 +1372,7 @@ TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
   auto policy_controller = std::make_unique<MockPolicyController>();
   const std::u16string kTestText(u"World");
   const std::string kDteJson(
-      R"({"endpoint_type":"url","url_origin":"https://www.google.com"})");
+      R"({"endpoint_type":"url","url":"https://www.google.com"})");
   {
     // No source DTE provided directly to the Lacros clipboard.
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
@@ -1382,14 +1381,14 @@ TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
     writer.WriteEncodedDataTransferEndpointForTesting(kDteJson);
   }
 
-  EXPECT_CALL(
-      *policy_controller,
-      IsClipboardReadAllowed(
-          Pointee(AllOf(Property(&DataTransferEndpoint::IsUrlType, true),
-                        Property(&DataTransferEndpoint::GetOrigin,
-                                 Pointee(Property(&url::Origin::Serialize,
-                                                  "https://www.google.com"))))),
-          _, _))
+  EXPECT_CALL(*policy_controller,
+              IsClipboardReadAllowed(
+                  Pointee(AllOf(
+                      Property(&DataTransferEndpoint::IsUrlType, true),
+                      Property(&DataTransferEndpoint::GetURL,
+                               Pointee(Property(&GURL::spec,
+                                                "https://www.google.com/"))))),
+                  _, _))
       .WillRepeatedly(testing::Return(true));
 
   std::u16string read_result;

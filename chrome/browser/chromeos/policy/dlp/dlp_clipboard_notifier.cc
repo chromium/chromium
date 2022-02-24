@@ -85,7 +85,7 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
     if (ept.type() == endpoint_type) {
       if (endpoint_type != ui::EndpointType::kUrl)
         return true;
-      else if (ept.IsSameOriginWith(*endpoint))
+      else if (ept == *endpoint)
         return true;
     }
   }
@@ -114,9 +114,9 @@ void DlpClipboardNotifier::NotifyBlockedAction(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
-  DCHECK(data_src->GetOrigin());
+  DCHECK(data_src->GetURL());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetOrigin()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
@@ -154,12 +154,12 @@ void DlpClipboardNotifier::WarnOnPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
   DCHECK(data_src);
-  DCHECK(data_src->GetOrigin());
+  DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetOrigin()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->host());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (data_dst) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
@@ -207,12 +207,12 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> paste_cb) {
   DCHECK(data_src);
-  DCHECK(data_src->GetOrigin());
+  DCHECK(data_src->GetURL());
 
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetOrigin()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->host());
 
   blink_paste_cb_ = std::move(paste_cb);
   Observe(web_contents);

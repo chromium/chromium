@@ -44,7 +44,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace ash {
 
@@ -420,8 +419,8 @@ std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
   std::vector<ui::FileInfo> file_info;
   // We only promote 'fs/sources' custom data pickle to be filenames which can
   // be shared and read by clients if it came from the trusted FilesApp.
-  if (!source || !source->IsSameOriginWith(ui::DataTransferEndpoint(
-                     file_manager::util::GetFilesAppOrigin()))) {
+  if (!source || !source->IsSameURLWith(ui::DataTransferEndpoint(
+                     file_manager::util::GetFileManagerURL()))) {
     return file_info;
   }
 

@@ -20,7 +20,7 @@ constexpr char kExampleUrl[] = "https://example.com";
 
 ui::DataTransferEndpoint CreateEndpoint(ui::EndpointType type) {
   if (type == ui::EndpointType::kUrl)
-    return ui::DataTransferEndpoint(url::Origin::Create(GURL(kExampleUrl)));
+    return ui::DataTransferEndpoint((GURL(kExampleUrl)));
   else
     return ui::DataTransferEndpoint(type);
 }
@@ -59,7 +59,7 @@ class DragDropBubbleTestWithParam
 
 TEST_P(DragDropBubbleTestWithParam, NotifyBlocked) {
   ::testing::StrictMock<MockDlpDragDropNotifier> notifier;
-  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
+  ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
   absl::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
@@ -72,7 +72,7 @@ TEST_P(DragDropBubbleTestWithParam, NotifyBlocked) {
 
 TEST_P(DragDropBubbleTestWithParam, ProceedWarnOnDrop) {
   ::testing::StrictMock<MockDlpDragDropNotifier> notifier;
-  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
+  ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
   absl::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())
@@ -96,7 +96,7 @@ TEST_P(DragDropBubbleTestWithParam, ProceedWarnOnDrop) {
 
 TEST_P(DragDropBubbleTestWithParam, CancelWarnOnDrop) {
   ::testing::StrictMock<MockDlpDragDropNotifier> notifier;
-  ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExampleUrl)));
+  ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
   absl::optional<ui::DataTransferEndpoint> data_dst;
   auto param = GetParam();
   if (param.has_value())

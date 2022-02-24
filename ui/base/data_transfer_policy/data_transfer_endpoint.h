@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -42,8 +42,8 @@ enum class EndpointType {
 class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
  public:
   // In case DataTransferEndpoint is constructed from a RenderFrameHost object,
-  // please use the origin of its main frame.
-  explicit DataTransferEndpoint(const url::Origin& origin,
+  // please use the url of its main frame.
+  explicit DataTransferEndpoint(const GURL& url,
                                 bool notify_if_restricted = true);
   // This constructor shouldn't be used if |type| == EndpointType::kUrl.
   explicit DataTransferEndpoint(EndpointType type,
@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   bool IsUrlType() const { return type_ == EndpointType::kUrl; }
 
-  const url::Origin* GetOrigin() const;
+  const GURL* GetURL() const;
 
   EndpointType type() const { return type_; }
 
@@ -72,14 +72,14 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   // Returns true if both of the endpoints have the same origin_ and type_ ==
   // kUrl.
-  bool IsSameOriginWith(const DataTransferEndpoint& other) const;
+  bool IsSameURLWith(const DataTransferEndpoint& other) const;
 
  private:
   // This variable should always have a value representing the object type.
   EndpointType type_;
-  // The url::Origin of the data endpoint. It always has a value if `type_` ==
+  // The URL of the data endpoint. It always has a value if `type_` ==
   // EndpointType::kUrl, otherwise it's empty.
-  absl::optional<url::Origin> origin_;
+  absl::optional<GURL> url_;
   // This variable should be set to true, if paste is initiated by the user.
   // Otherwise it should be set to false, so the user won't see a notification
   // when the data is restricted by the rules of data leak prevention policy

@@ -38,7 +38,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace ui {
 class DataTransferEndpoint;
@@ -482,7 +481,7 @@ TEST_F(ClipboardHostImplScanTest, IsPastePolicyAllowed_Allowed) {
   EXPECT_TRUE(is_policy_callback_called);
 }
 
-TEST_F(ClipboardHostImplScanTest, MainFrameOrigin) {
+TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
   GURL gurl1("https://example.com");
   GURL gurl2("http://test.org");
   GURL gurl3("http://google.com");
@@ -514,8 +513,7 @@ TEST_F(ClipboardHostImplScanTest, MainFrameOrigin) {
                    content::RenderFrameHost* rfh,
                    base::OnceCallback<void(bool)> callback) {
             ASSERT_TRUE(data_dst);
-            EXPECT_TRUE(data_dst->GetOrigin()->IsSameOriginWith(
-                url::Origin::Create(gurl1)));
+            EXPECT_EQ(*data_dst->GetURL(), gurl1);
             std::move(callback).Run(true);
           }));
 

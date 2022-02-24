@@ -45,7 +45,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
-#include "url/origin.h"
 
 // TODO(crbug.com/1262948): Enable and modify for lacros.
 namespace policy {
@@ -250,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_EmptyPolicy) {
 
   SetClipboardText(kClipboardText116, nullptr);
 
-  ui::DataTransferEndpoint data_dst(
-      url::Origin::Create(GURL("https://google.com")));
+  ui::DataTransferEndpoint data_dst((GURL("https://google.com")));
   std::u16string result;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
@@ -295,34 +293,34 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, BlockDestination) {
 
   SetDlpRulesPolicy(std::move(rules));
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
-  ui::DataTransferEndpoint data_dst1(url::Origin::Create(GURL(kMailUrl)));
+  ui::DataTransferEndpoint data_dst1((GURL(kMailUrl)));
   std::u16string result1;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result1);
   EXPECT_EQ(kClipboardText116, result1);
 
-  ui::DataTransferEndpoint data_dst2(url::Origin::Create(GURL(kDocsUrl)));
+  ui::DataTransferEndpoint data_dst2((GURL(kDocsUrl)));
   std::u16string result2;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst2, &result2);
   EXPECT_EQ(kClipboardText116, result2);
 
-  ui::DataTransferEndpoint data_dst3(url::Origin::Create(GURL(kExampleUrl)));
+  ui::DataTransferEndpoint data_dst3((GURL(kExampleUrl)));
   std::u16string result3;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst3, &result3);
   EXPECT_EQ(std::u16string(), result3);
   ASSERT_TRUE(dlp_controller.ObserveWidget());
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kExampleUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kExampleUrl))));
 
-  ui::DataTransferEndpoint data_dst4(url::Origin::Create(GURL(kMailUrl)));
+  ui::DataTransferEndpoint data_dst4((GURL(kMailUrl)));
   std::u16string result4;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, &data_dst1, &result4);
@@ -361,9 +359,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_BlockComponent) {
   SetDlpRulesPolicy(rules);
 
   {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
-                                     std::make_unique<ui::DataTransferEndpoint>(
-                                         url::Origin::Create(GURL(kMailUrl))));
+    ui::ScopedClipboardWriter writer(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
     writer.WriteText(kClipboardText116);
   }
   ui::DataTransferEndpoint data_dst1(ui::EndpointType::kDefault);
@@ -426,9 +424,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   SetupTextfield();
   // Initiate a paste on textfield_.
@@ -447,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnDestination) {
   EXPECT_EQ(kClipboardText116, textfield_->GetText());
 
   SetClipboardText(kClipboardText2, std::make_unique<ui::DataTransferEndpoint>(
-                                        url::Origin::Create(GURL(kMailUrl))));
+                                        (GURL(kMailUrl))));
 
   // Initiate a paste on textfield_.
   textfield_->SetText(std::u16string());
@@ -514,9 +512,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBrowserTest, MAYBE_WarnComponent) {
   }
 
   {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
-                                     std::make_unique<ui::DataTransferEndpoint>(
-                                         url::Origin::Create(GURL(kMailUrl))));
+    ui::ScopedClipboardWriter writer(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
     writer.WriteText(kClipboardText116);
   }
 
@@ -629,9 +627,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_ProceedOnWarn) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   EXPECT_TRUE(
       ExecJs(GetActiveWebContents(),
@@ -723,9 +721,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_CancelWarn) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   EXPECT_TRUE(
       ExecJs(GetActiveWebContents(),
@@ -814,9 +812,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   EXPECT_TRUE(
       ExecJs(GetActiveWebContents(),
@@ -898,9 +896,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
     update->Append(std::move(rule));
   }
 
-  SetClipboardText(kClipboardText116,
-                   std::make_unique<ui::DataTransferEndpoint>(
-                       url::Origin::Create(GURL(kMailUrl))));
+  SetClipboardText(
+      kClipboardText116,
+      std::make_unique<ui::DataTransferEndpoint>((GURL(kMailUrl))));
 
   EXPECT_TRUE(
       ExecJs(GetActiveWebContents(),

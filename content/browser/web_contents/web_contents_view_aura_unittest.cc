@@ -749,8 +749,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   EXPECT_TRUE(exchange_data);
   EXPECT_TRUE(exchange_data->GetSource());
   EXPECT_TRUE(exchange_data->GetSource()->IsUrlType());
-  EXPECT_TRUE(exchange_data->GetSource()->GetOrigin()->IsSameOriginWith(
-      url::Origin::Create(GURL(kGmailUrl))));
+  EXPECT_EQ(*(exchange_data->GetSource()->GetURL()), GURL(kGmailUrl));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

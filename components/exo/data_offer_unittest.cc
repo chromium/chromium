@@ -500,7 +500,7 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        url::Origin::Create(GURL("https://www.google.com"))));
+        (GURL("https://www.google.com"))));
     writer.WriteText(u"Test data");
   }
 
@@ -532,8 +532,9 @@ TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
                      std::move(write_pipe));
   std::string dte_json_result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
-  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
-            dte_json_result);
+  EXPECT_EQ(
+      R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})",
+      dte_json_result);
 }
 
 TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
@@ -545,7 +546,7 @@ TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
     writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
-        url::Origin::Create(GURL("https://www.google.com"))));
+        (GURL("https://www.google.com"))));
     writer.WriteText(u"Test data");
   }
 
@@ -589,7 +590,7 @@ TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      url::Origin::Create(GURL("https://www.google.com"))));
+      (GURL("https://www.google.com"))));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -630,8 +631,9 @@ TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
                      std::move(write_pipe));
   std::string dte_json_result;
   ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
-  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
-            dte_json_result);
+  EXPECT_EQ(
+      R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})",
+      dte_json_result);
 }
 
 TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
@@ -642,7 +644,7 @@ TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
   ui::OSExchangeData data;
   data.SetString(std::u16string(u"Test data"));
   data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      url::Origin::Create(GURL("https://www.google.com"))));
+      (GURL("https://www.google.com"))));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);

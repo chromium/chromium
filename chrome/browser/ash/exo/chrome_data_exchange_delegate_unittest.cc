@@ -48,7 +48,6 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/rect.h"
-#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -496,7 +495,7 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
           {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
       &pickle);
 
-  ui::DataTransferEndpoint files_app(url::Origin::Create(file_manager_url));
+  ui::DataTransferEndpoint files_app(file_manager_url);
   std::vector<ui::FileInfo> file_info =
       data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
   EXPECT_EQ(2u, file_info.size());

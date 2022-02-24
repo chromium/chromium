@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace ui {
 
@@ -25,12 +24,12 @@ TEST(DataTransferEndpointTest, Clone) {
   EXPECT_EQ(original1.type(), clone1.type());
   EXPECT_EQ(original1.notify_if_restricted(), clone1.notify_if_restricted());
 
-  DataTransferEndpoint original2(url::Origin::Create(GURL(kExample1Url)),
+  DataTransferEndpoint original2(GURL(kExample1Url),
                                  /*notify_if_restricted=*/false);
   DataTransferEndpoint clone2(original2);
 
   EXPECT_EQ(original2.type(), clone2.type());
-  EXPECT_TRUE(clone2.GetOrigin()->IsSameOriginWith(*original2.GetOrigin()));
+  EXPECT_EQ(*clone2.GetURL(), *original2.GetURL());
   EXPECT_EQ(original2.notify_if_restricted(), clone2.notify_if_restricted());
 }
 
@@ -44,28 +43,28 @@ TEST(DataTransferEndpointTest, Equal) {
 
   EXPECT_FALSE(default_endpoint1 == default_endpoint2);
 
-  DataTransferEndpoint url_endpoint1(url::Origin::Create(GURL(kExample1Url)),
+  DataTransferEndpoint url_endpoint1(GURL(kExample1Url),
                                      /*notify_if_restricted=*/true);
-  DataTransferEndpoint url_endpoint2(url::Origin::Create(GURL(kExample1Url)),
+  DataTransferEndpoint url_endpoint2(GURL(kExample1Url),
                                      /*notify_if_restricted=*/true);
 
   EXPECT_TRUE(url_endpoint1 == url_endpoint2);
 }
 
 // Tests DataTransferEndpoint::IsSameOriginWith.
-TEST(DataTransferEndpointTest, IsSameOriginWith) {
+TEST(DataTransferEndpointTest, IsSameURLWith) {
   DataTransferEndpoint default_endpoint(EndpointType::kDefault,
                                         /*notify_if_restricted=*/true);
-  DataTransferEndpoint url_endpoint1(url::Origin::Create(GURL(kExample1Url)),
+  DataTransferEndpoint url_endpoint1(GURL(kExample1Url),
                                      /*notify_if_restricted=*/false);
-  DataTransferEndpoint url_endpoint2(url::Origin::Create(GURL(kExample2Url)),
+  DataTransferEndpoint url_endpoint2(GURL(kExample2Url),
                                      /*notify_if_restricted=*/true);
-  DataTransferEndpoint url_endpoint3(url::Origin::Create(GURL(kExample1Url)),
+  DataTransferEndpoint url_endpoint3(GURL(kExample1Url),
                                      /*notify_if_restricted=*/true);
 
-  EXPECT_FALSE(url_endpoint2.IsSameOriginWith(default_endpoint));
-  EXPECT_FALSE(url_endpoint1.IsSameOriginWith(url_endpoint2));
-  EXPECT_TRUE(url_endpoint1.IsSameOriginWith(url_endpoint3));
+  EXPECT_FALSE(url_endpoint2.IsSameURLWith(default_endpoint));
+  EXPECT_FALSE(url_endpoint1.IsSameURLWith(url_endpoint2));
+  EXPECT_TRUE(url_endpoint1.IsSameURLWith(url_endpoint3));
 }
 
 }  // namespace ui

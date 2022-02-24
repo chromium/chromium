@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace ui {
 
@@ -16,8 +15,8 @@ namespace {
 
 constexpr char kExampleUrl[] = "https://www.google.com";
 constexpr char kExampleJsonUrlType[] =
-    R"({"endpoint_type":"url","url_origin":"https://www.google.com"})";
-constexpr char kExampleJsonUrlTypeNoOrigin[] = R"({"endpoint_type":"url"})";
+    R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})";
+constexpr char kExampleJsonUrlTypeNoUrl[] = R"({"endpoint_type":"url"})";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/1280545): Enable test when VM DataTransferEndpoint endpoint
@@ -28,27 +27,27 @@ constexpr char kExampleJsonNonUrlType[] = R"({"endpoint_type":"crostini"})";
 }  // namespace
 
 TEST(DataTransferEndpointSerializerTest, DataTransferEndpointToJsonUrl) {
-  const DataTransferEndpoint example(url::Origin::Create(GURL(kExampleUrl)),
+  const DataTransferEndpoint example(GURL(kExampleUrl),
                                      /*notify_if_restricted=*/true);
   std::string actual = ConvertDataTransferEndpointToJson(example);
   EXPECT_EQ(kExampleJsonUrlType, actual);
 }
 
 TEST(DataTransferEndpointSerializerTest, JsonToDataTransferEndpointUrl) {
-  DataTransferEndpoint expected(url::Origin::Create(GURL(kExampleUrl)),
+  DataTransferEndpoint expected(GURL(kExampleUrl),
                                 /*notify_if_restricted=*/true);
   std::unique_ptr<DataTransferEndpoint> actual =
       ConvertJsonToDataTransferEndpoint(kExampleJsonUrlType);
 
   ASSERT_TRUE(actual);
   EXPECT_EQ(expected.type(), actual->type());
-  EXPECT_TRUE(expected.GetOrigin()->IsSameOriginWith(*actual->GetOrigin()));
+  EXPECT_EQ(*expected.GetURL(), *actual->GetURL());
 }
 
 TEST(DataTransferEndpointSerializerTest,
-     JsonToDataTransferEndpointUrlTypeNoOrigin) {
+     JsonToDataTransferEndpointUrlTypeNoUrl) {
   std::unique_ptr<DataTransferEndpoint> actual =
-      ConvertJsonToDataTransferEndpoint(kExampleJsonUrlTypeNoOrigin);
+      ConvertJsonToDataTransferEndpoint(kExampleJsonUrlTypeNoUrl);
 
   EXPECT_EQ(nullptr, actual);
 }
@@ -70,7 +69,7 @@ TEST(DataTransferEndpointSerializerTest, JsonToDataTransferEndpointNonUrl) {
 
   ASSERT_TRUE(actual);
   EXPECT_EQ(EndpointType::kCrostini, actual->type());
-  EXPECT_EQ(nullptr, actual->GetOrigin());
+  EXPECT_EQ(nullptr, actual->GetURL());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
