@@ -1999,12 +1999,14 @@
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
+      'lacros-amd64-generic-rel-fyi',
     ]
   },
   'interactive_ui_tests_eve': {
     'remove_from': [
       # TODO(crbug.com/1204231): Re-enable.
       'lacros-amd64-generic-rel',
+      'lacros-amd64-generic-rel-fyi',
     ]
   },
   'ipc_tests': {
