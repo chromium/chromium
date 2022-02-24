@@ -630,7 +630,8 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume.get())
-    return RespondNow(Error("Volume not found"));
+    return RespondNow(
+        Error("GetSizeStats: volume with ID %s not found", params->volume_id));
 
   if (volume->type() == file_manager::VOLUME_TYPE_MTP) {
     // Resolve storage_name.
@@ -790,7 +791,8 @@ FileManagerPrivateFormatVolumeFunction::Run() {
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume)
-    return RespondNow(Error("Volume not found"));
+    return RespondNow(
+        Error("FormatVolume: volume with ID %s not found", params->volume_id));
 
   DiskMountManager::GetInstance()->FormatMountedDevice(
       volume->mount_path().AsUTF8Unsafe(),
@@ -850,7 +852,8 @@ FileManagerPrivateRenameVolumeFunction::Run() {
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume)
-    return RespondNow(Error("Volume not found"));
+    return RespondNow(
+        Error("RenameVolume: volume with ID %s not found", params->volume_id));
 
   DiskMountManager::GetInstance()->RenameMountedDevice(
       volume->mount_path().AsUTF8Unsafe(), params->new_name);

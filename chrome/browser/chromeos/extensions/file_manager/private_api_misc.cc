@@ -773,7 +773,8 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume.get())
-    return RespondNow(Error("Volume not found."));
+    return RespondNow(
+        Error("ConfigureVolume: volume with ID not found.", params->volume_id));
   if (!volume->configurable())
     return RespondNow(Error("Volume not configurable."));
 
