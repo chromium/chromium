@@ -42,7 +42,7 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
       inspector.GetRoot().CreateString(ax_tree_id().ToString(),
                                        ax_tree()->ToString(), &inspector);
 
-      return fit::make_ok_promise(inspector);
+      return fpromise::make_ok_promise(inspector);
     });
   }
 }
