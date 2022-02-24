@@ -43,6 +43,7 @@
 namespace content {
 
 class AggregatableHistogramContribution;
+class AttributionObserver;
 class AttributionTrigger;
 
 struct AggregatableAttribution;
@@ -289,8 +290,8 @@ class MockAttributionManager : public AttributionManager {
                base::OnceClosure done),
               (override));
 
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(AttributionObserver* observer) override;
+  void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
@@ -308,7 +309,7 @@ class MockAttributionManager : public AttributionManager {
 
  private:
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
-  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  base::ObserverList<AttributionObserver, /*check_empty=*/true> observers_;
 };
 
 // Helper class to construct a StorableSource for tests using default data.

@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
@@ -241,11 +242,11 @@ AttributionManagerImpl::~AttributionManagerImpl() {
                 std::move(session_only_origin_predicate));
 }
 
-void AttributionManagerImpl::AddObserver(Observer* observer) {
+void AttributionManagerImpl::AddObserver(AttributionObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void AttributionManagerImpl::RemoveObserver(Observer* observer) {
+void AttributionManagerImpl::RemoveObserver(AttributionObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -278,7 +279,7 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
             if (!manager)
               return;
 
-            for (Observer& observer : manager->observers_)
+            for (auto& observer : manager->observers_)
               observer.OnSourceHandled(source, result.status);
 
             manager->scheduler_.ScheduleSend(result.min_fake_report_time);
@@ -414,7 +415,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     NotifySourceDeactivated(*source);
   }
 
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnTriggerHandled(result);
 }
 
@@ -634,23 +635,23 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
     return;
   }
 
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnReportSent(report, info);
 }
 
 void AttributionManagerImpl::NotifySourcesChanged() {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnSourcesChanged();
 }
 
 void AttributionManagerImpl::NotifyReportsChanged() {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnReportsChanged();
 }
 
 void AttributionManagerImpl::NotifySourceDeactivated(
     const AttributionStorage::DeactivatedSource& source) {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnSourceDeactivated(source);
 }
 

@@ -22,8 +22,8 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_default_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -142,7 +142,7 @@ class SentReportAccumulator : public AttributionReportSender {
 
 // Registers sources and triggers in the `AttributionManagerImpl` and records
 // rejected sources in a JSON list.
-class AttributionEventHandler : public AttributionManager::Observer {
+class AttributionEventHandler : public AttributionObserver {
  public:
   AttributionEventHandler(AttributionManagerImpl* manager,
                           base::Value::ListStorage& rejected_sources,
@@ -175,7 +175,7 @@ class AttributionEventHandler : public AttributionManager::Observer {
   }
 
  private:
-  // AttributionManager::Observer:
+  // AttributionObserver:
 
   void OnSourceHandled(const StorableSource& source,
                        StorableSource::Result result) override {
@@ -234,7 +234,7 @@ class AttributionEventHandler : public AttributionManager::Observer {
     rejected_triggers_.push_back(std::move(dict));
   }
 
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+  base::ScopedObservation<AttributionManagerImpl, AttributionObserver>
       observation_{this};
 
   base::raw_ptr<AttributionManagerImpl> manager_;

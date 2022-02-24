@@ -401,6 +401,7 @@ source_set("browser") {
     "attribution_reporting/attribution_manager.h",
     "attribution_reporting/attribution_manager_impl.cc",
     "attribution_reporting/attribution_manager_impl.h",
+    "attribution_reporting/attribution_observer.h",
     "attribution_reporting/attribution_page_metrics.cc",
     "attribution_reporting/attribution_page_metrics.h",
     "attribution_reporting/attribution_policy.cc",

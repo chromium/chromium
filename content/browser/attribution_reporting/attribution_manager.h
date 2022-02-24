@@ -8,9 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/observer_list_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 
 namespace base {
 class Time;
@@ -24,11 +22,10 @@ namespace content {
 
 class AttributionTrigger;
 class AttributionDataHostManager;
+class AttributionObserver;
 class StorableSource;
 class StoredSource;
 class WebContents;
-
-struct SendResult;
 
 // Interface that mediates data flow between the network, storage layer, and
 // blink.
@@ -48,32 +45,11 @@ class AttributionManager {
     virtual AttributionManager* GetManager(WebContents* web_contents) const = 0;
   };
 
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-
-    virtual void OnSourcesChanged() {}
-
-    virtual void OnReportsChanged() {}
-
-    virtual void OnSourceHandled(const StorableSource& source,
-                                 StorableSource::Result result) {}
-
-    virtual void OnSourceDeactivated(
-        const AttributionStorage::DeactivatedSource& source) {}
-
-    virtual void OnReportSent(const AttributionReport& report,
-                              const SendResult& info) {}
-
-    virtual void OnTriggerHandled(
-        const AttributionStorage::CreateReportResult& result) {}
-  };
-
   virtual ~AttributionManager() = default;
 
-  virtual void AddObserver(Observer* observer) = 0;
+  virtual void AddObserver(AttributionObserver* observer) = 0;
 
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(AttributionObserver* observer) = 0;
 
   // Gets manager responsible for tracking pending data hosts targeting `this`.
   virtual AttributionDataHostManager* GetDataHostManager() = 0;

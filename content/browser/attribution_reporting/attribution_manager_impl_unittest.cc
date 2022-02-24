@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -72,7 +73,7 @@ using ::testing::UnorderedElementsAre;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
-class MockAttributionManagerObserver : public AttributionManager::Observer {
+class MockAttributionObserver : public AttributionObserver {
  public:
   MOCK_METHOD(void, OnSourcesChanged, (), (override));
 
@@ -517,9 +518,9 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   // Ensure that observers are notified after the report is deleted.
@@ -610,9 +611,9 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   base::HistogramTester histograms;
 
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   EXPECT_CALL(observer, OnReportSent(ReportSourceIs(SourceEventIdIs(1u)), _));
@@ -655,9 +656,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
 }
 
 TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   Checkpoint checkpoint;
@@ -960,9 +961,9 @@ TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   // Ensure that deleting a report notifies observers.
@@ -976,9 +977,9 @@ TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
 }
 
 TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   SourceBuilder builder;
@@ -1022,9 +1023,9 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   SourceBuilder builder;
@@ -1089,9 +1090,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 }
 
 TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   EXPECT_CALL(observer, OnSourcesChanged);
@@ -1124,9 +1125,9 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   EXPECT_CALL(observer, OnReportSent(_, Field(&SendResult::status,
@@ -1411,9 +1412,9 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
 
 TEST_F(AttributionManagerImplTest,
        HandleSource_NotifiesObservers_SourceHandled) {
-  MockAttributionManagerObserver observer;
-  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
-      observation(&observer);
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
   observation.Observe(attribution_manager_.get());
 
   const StorableSource source = SourceBuilder().Build();

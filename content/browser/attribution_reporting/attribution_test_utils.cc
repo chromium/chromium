@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner_util.h"
 #include "base/test/bind.h"
+#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "url/gurl.h"
 
@@ -170,11 +171,11 @@ MockAttributionManager::MockAttributionManager() = default;
 
 MockAttributionManager::~MockAttributionManager() = default;
 
-void MockAttributionManager::AddObserver(Observer* observer) {
+void MockAttributionManager::AddObserver(AttributionObserver* observer) {
   observers_.AddObserver(observer);
 }
 
-void MockAttributionManager::RemoveObserver(Observer* observer) {
+void MockAttributionManager::RemoveObserver(AttributionObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -183,37 +184,37 @@ AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
 }
 
 void MockAttributionManager::NotifySourcesChanged() {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnSourcesChanged();
 }
 
 void MockAttributionManager::NotifyReportsChanged() {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnReportsChanged();
 }
 
 void MockAttributionManager::NotifySourceDeactivated(
     const DeactivatedSource& source) {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnSourceDeactivated(source);
 }
 
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result) {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnSourceHandled(source, result);
 }
 
 void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
                                               const SendResult& info) {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnReportSent(report, info);
 }
 
 void MockAttributionManager::NotifyTriggerHandled(
     const AttributionStorage::CreateReportResult& result) {
-  for (Observer& observer : observers_)
+  for (auto& observer : observers_)
     observer.OnTriggerHandled(result);
 }
 

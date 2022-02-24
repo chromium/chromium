@@ -98,8 +98,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   ~AttributionManagerImpl() override;
 
   // AttributionManager:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(AttributionObserver* observer) override;
+  void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;
   void HandleSource(StorableSource source) override;
   void HandleTrigger(AttributionTrigger trigger) override;
@@ -179,7 +179,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // Holds pending sources and triggers in the order they were received by the
   // browser. For the time being, they must be processed in this order in order
   // to ensure that behavioral requirements are met and to ensure that
-  // `AttributionManager::Observer`s are notified in the correct order, which
+  // `AttributionObserver`s are notified in the correct order, which
   // the simulator currently depends on. We may be able to loosen this
   // requirement in the future so that there are conceptually separate queues
   // per <source origin, destination origin, reporting origin>.
@@ -203,7 +203,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // is expected to be small, so a `flat_set` is used.
   base::flat_set<AttributionReport::EventLevelData::Id> reports_being_sent_;
 
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<AttributionObserver> observers_;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_;
 };
