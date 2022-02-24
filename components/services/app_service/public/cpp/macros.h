@@ -65,10 +65,10 @@ namespace apps {
   return delta_ && !delta_->VALUE.CHECK() &&      \
          (!state_ || (delta_->VALUE != state_->VALUE));
 
-#define MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(VALUE)                        \
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) { \
-    return delta_ && delta_->VALUE.has_value() &&                         \
-           (!state_ || (delta_->VALUE != state_->VALUE));                 \
+#define MAYBE_RETURN_OPTIONAL_VALUE_CHANGED(VALUE)        \
+  if (ShouldUseNonMojom()) {                              \
+    return delta_ && delta_->VALUE.has_value() &&         \
+           (!state_ || (delta_->VALUE != state_->VALUE)); \
   }
 
 }  // namespace apps

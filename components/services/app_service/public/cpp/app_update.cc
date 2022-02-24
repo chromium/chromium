@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/macros.h"
@@ -265,7 +264,7 @@ AppUpdate::AppUpdate(const App* state,
 }
 
 bool AppUpdate::StateIsNull() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     return state_ == nullptr;
   }
 
@@ -300,7 +299,7 @@ apps::mojom::Readiness AppUpdate::Readiness() const {
 }
 
 apps::Readiness AppUpdate::PriorReadiness() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     return state_ ? state_->readiness : apps::Readiness::kUnknown;
   }
 
@@ -313,7 +312,7 @@ apps::Readiness AppUpdate::GetReadiness() const {
     GET_VALUE_WITH_DEFAULT_VALUE(readiness, apps::Readiness::kUnknown)}
 
 bool AppUpdate::ReadinessChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(readiness, Readiness::kUnknown)
   }
 
@@ -324,7 +323,7 @@ bool AppUpdate::ReadinessChanged() const {
 }
 
 const std::string& AppUpdate::Name() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     GET_VALUE_WITH_FALLBACK(name, base::EmptyString())
   }
 
@@ -345,7 +344,7 @@ bool AppUpdate::NameChanged() const {
 }
 
 const std::string& AppUpdate::ShortName() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     GET_VALUE_WITH_FALLBACK(short_name, base::EmptyString())
   }
 
@@ -451,7 +450,7 @@ std::vector<std::string> AppUpdate::GetAdditionalSearchTerms() const {
 }
 
 bool AppUpdate::AdditionalSearchTermsChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     IS_VALUE_CHANGED_WITH_CHECK(additional_search_terms, empty)
   }
 
@@ -557,7 +556,7 @@ apps::Permissions AppUpdate::GetPermissions() const {
 }
 
 bool AppUpdate::PermissionsChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     return delta_ && !delta_->permissions.empty() &&
            (!state_ || !IsEqual(delta_->permissions, state_->permissions));
   }
@@ -583,7 +582,7 @@ apps::InstallReason AppUpdate::GetInstallReason() const {
 }
 
 bool AppUpdate::InstallReasonChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(install_reason, InstallReason::kUnknown)
   }
 
@@ -610,7 +609,7 @@ apps::InstallSource AppUpdate::GetInstallSource() const {
 }
 
 bool AppUpdate::InstallSourceChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown)
   }
 
@@ -951,7 +950,7 @@ apps::IntentFilters AppUpdate::GetIntentFilters() const {
 }
 
 bool AppUpdate::IntentFiltersChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     return delta_ && !delta_->intent_filters.empty() &&
            (!state_ ||
             !IsEqual(delta_->intent_filters, state_->intent_filters));
@@ -1001,7 +1000,7 @@ apps::WindowMode AppUpdate::GetWindowMode() const {
 }
 
 bool AppUpdate::WindowModeChanged() const {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+  if (ShouldUseNonMojom()) {
     IS_VALUE_CHANGED_WITH_DEFAULT_VALUE(window_mode, WindowMode::kUnknown)
   }
 
@@ -1041,6 +1040,12 @@ bool AppUpdate::RunOnOsLoginChanged() const {
 
 const ::AccountId& AppUpdate::AccountId() const {
   return account_id_;
+}
+
+bool AppUpdate::ShouldUseNonMojom() const {
+  // `state_` or `delta_` being non-null means exclusively non-mojom updates are
+  // being sent.
+  return state_ || delta_;
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {

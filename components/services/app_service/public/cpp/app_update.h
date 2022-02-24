@@ -20,6 +20,7 @@
 
 namespace apps {
 
+class AppRegistryCacheTest;
 struct IconKey;
 struct RunOnOsLogin;
 
@@ -206,6 +207,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const ::AccountId& AccountId() const;
 
  private:
+  friend class AppRegistryCacheTest;
+
+  bool ShouldUseNonMojom() const;
+
   raw_ptr<const apps::mojom::App> mojom_state_ = nullptr;
   raw_ptr<const apps::mojom::App> mojom_delta_ = nullptr;
 

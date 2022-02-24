@@ -291,10 +291,8 @@ class AppRegistryCacheTest : public testing::Test,
   }
 
   void CallForAllApps(AppRegistryCache& cache) {
-    if (IsOnAppUpdateWithoutMojomEnabled()) {
-      cache.ForAllApps(
-          [this](const AppUpdate& update) { OnAppUpdate(update); });
-    } else {
+    cache.ForAllApps([this](const AppUpdate& update) { OnAppUpdate(update); });
+    if (!IsOnAppUpdateWithoutMojomEnabled()) {
       cache.ForEachApp(
           [this](const AppUpdate& update) { OnAppUpdate(update); });
     }
@@ -304,7 +302,7 @@ class AppRegistryCacheTest : public testing::Test,
   void OnAppUpdate(const AppUpdate& update) override {
     EXPECT_EQ(account_id_, update.AccountId());
 
-    if (IsOnAppUpdateWithoutMojomEnabled()) {
+    if (update.state_ || update.delta_) {
       EXPECT_NE("", update.Name());
       if (!apps_util::IsInstalled(update.GetReadiness())) {
         return;
@@ -338,13 +336,8 @@ class AppRegistryCacheTest : public testing::Test,
 
   std::string GetName(AppRegistryCache& cache, const std::string& app_id) {
     std::string name;
-    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
-      cache.ForApp(app_id,
-                   [&name](const AppUpdate& update) { name = update.Name(); });
-    } else {
-      cache.ForOneApp(
-          app_id, [&name](const AppUpdate& update) { name = update.Name(); });
-    }
+    cache.ForApp(app_id,
+                 [&name](const AppUpdate& update) { name = update.Name(); });
     return name;
   }
 
