@@ -403,46 +403,46 @@ void AXTableInfo::UpdateExtraMacNodes() {
   // Delete old extra nodes.
   ClearExtraMacNodes();
 
-  // TODO(accessibility): tree_->SetTreeUpdateInProgressState(true); but only if
-  // not already set by caller.
-
-  // One node for each column, and one more for the table header container.
+  // There is one node for each column, and one more for the table header
+  // container.
   size_t extra_node_count = col_count + 1;
-  // Resize.
-  extra_mac_nodes.resize(extra_node_count);
-
+  std::vector<AXNode*> new_extra_mac_nodes;
+  new_extra_mac_nodes.reserve(extra_node_count);
   std::vector<AXTreeObserver::Change> changes;
-  changes.reserve(extra_node_count +
-                  1);  // Room for extra nodes + table itself.
+  // Reserve room for the extra Mac nodes plus for the table itself.
+  changes.reserve(extra_node_count + 1);
 
-  // Create column nodes.
   for (size_t i = 0; i < col_count; i++) {
-    extra_mac_nodes[i] = CreateExtraMacColumnNode(i);
+    new_extra_mac_nodes.push_back(CreateExtraMacColumnNode(i));
     changes.push_back(AXTreeObserver::Change(
-        extra_mac_nodes[i], AXTreeObserver::ChangeType::NODE_CREATED));
+        new_extra_mac_nodes[i], AXTreeObserver::ChangeType::NODE_CREATED));
   }
+  new_extra_mac_nodes.push_back(CreateExtraMacTableHeaderNode());
+  changes.push_back(
+      AXTreeObserver::Change(new_extra_mac_nodes[col_count],
+                             AXTreeObserver::ChangeType::NODE_CREATED));
 
-  // Create table header container node.
-  extra_mac_nodes[col_count] = CreateExtraMacTableHeaderNode();
-  changes.push_back(AXTreeObserver::Change(
-      extra_mac_nodes[col_count], AXTreeObserver::ChangeType::NODE_CREATED));
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*tree_);
 
-  // Update the columns to reflect current state of the table.
-  for (size_t i = 0; i < col_count; i++)
-    UpdateExtraMacColumnNodeAttributes(i);
+    // Add the newly created columns to the accessibility tree.
+    extra_mac_nodes.swap(new_extra_mac_nodes);
 
-  // Update the table header container to contain all headers.
-  AXNodeData data = extra_mac_nodes[col_count]->data();
-  data.intlist_attributes.clear();
-  data.AddIntListAttribute(ax::mojom::IntListAttribute::kIndirectChildIds,
-                           all_headers);
-  extra_mac_nodes[col_count]->SetData(data);
+    // Update the newly added columns to reflect the current state of the table.
+    for (size_t i = 0; i < col_count; i++)
+      UpdateExtraMacColumnNodeAttributes(i);
+
+    // Update the table header container to contain all headers.
+    AXNodeData data = extra_mac_nodes[col_count]->data();
+    data.intlist_attributes.clear();
+    data.AddIntListAttribute(ax::mojom::IntListAttribute::kIndirectChildIds,
+                             all_headers);
+    extra_mac_nodes[col_count]->SetData(data);
+
+  }  // tree_update_in_progress.
 
   changes.push_back(AXTreeObserver::Change(
       table_node_, AXTreeObserver::ChangeType::NODE_CHANGED));
-
-  // TODO(accessibility): tree_->SetTreeUpdateInProgressState(false); but only
-  // if not already set by caller.
 
   for (AXNode* node : extra_mac_nodes) {
     for (AXTreeObserver& observer : tree_->observers())
@@ -519,18 +519,19 @@ void AXTableInfo::ClearExtraMacNodes() {
       observer.OnNodeWillBeDeleted(tree_, extra_mac_node);
   }
 
-  // TODO(accessibility): tree_->SetTreeUpdateInProgressState(true); but only if
-  // not already set by caller.
   std::vector<AXNodeID> deleted_ids;
-  for (AXNode* extra_mac_node : extra_mac_nodes) {
-    AXNodeID deleted_id = extra_mac_node->id();
-    deleted_ids.push_back(deleted_id);
-    delete extra_mac_node;
-  }
+  {
+    ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*tree_);
 
-  extra_mac_nodes.clear();
-  // TODO(accessibility): tree_->SetTreeUpdateInProgressState(false); but only
-  // if not already set by caller.
+    for (AXNode* extra_mac_node : extra_mac_nodes) {
+      AXNodeID deleted_id = extra_mac_node->id();
+      deleted_ids.push_back(deleted_id);
+      delete extra_mac_node;
+    }
+
+    extra_mac_nodes.clear();
+
+  }  // tree_update_in_progress.
 
   for (AXNodeID deleted_id : deleted_ids) {
     for (AXTreeObserver& observer : tree_->observers())
