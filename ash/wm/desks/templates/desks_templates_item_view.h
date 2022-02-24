@@ -85,6 +85,12 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   // `DesksTemplatesNameView` has the focus).
   bool IsTemplateNameBeingModified() const;
 
+  // To prevent duplications when creating template from the same desk, check if
+  // there's a existing template shares the same name as current active desk, if
+  // so, remove auto added number.
+  void MaybeRemoveNameNumber();
+  // Show replace dialog when found a name duplication.
+  bool MaybeShowReplaceDialog();
   // Rename current template with new name, delete old template with same name
   // by uuid. Used for callback functions for Replace Dialog.
   void ReplaceTemplate(const std::string& uuid);
@@ -117,6 +123,11 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
 
  private:
   friend class DesksTemplatesItemViewTestApi;
+
+  // Return the duplicated template item if there is a name duplication in saved
+  // templates.
+  DesksTemplatesItemView* FindOtherTemplateWithName(
+      const std::u16string& name) const;
 
   void OnDeleteTemplate();
   void OnDeleteButtonPressed();

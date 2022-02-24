@@ -5,7 +5,10 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_NAME_VIEW_H_
 
+#include <string>
+
 #include "ash/wm/desks/desks_textfield.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -28,6 +31,11 @@ class DesksTemplatesNameView : public DesksTextfield {
   // grid widget.
   static void CommitChanges(views::Widget* widget);
 
+  void SetViewName(const std::u16string& name);
+  void SetTemporaryName(const std::u16string& new_name) {
+    temporary_name_ = new_name;
+  }
+
   // Called when the contents in the textfield change. Updates the preferred
   // size of `this`, which invalidates the layout.
   void OnContentsChanged();
@@ -41,6 +49,9 @@ class DesksTemplatesNameView : public DesksTextfield {
   // based on the parent's and visible sibling's preferred sizes. Will always
   // return a value greater than or equal to one.
   int GetAvailableWidth() const;
+
+  // Store the modified text view name if name nudge is removed.
+  absl::optional<std::u16string> temporary_name_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, DesksTextfield)

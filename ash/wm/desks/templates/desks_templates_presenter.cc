@@ -251,6 +251,8 @@ void DesksTemplatesPresenter::OnGetAllEntries(
             // name view.
             DCHECK(!item_view->name_view()->GetReadOnly());
             item_view->name_view()->RequestFocus();
+            // Check if name nudge needs to be removed.
+            item_view->MaybeRemoveNameNumber();
             cached_saved_template_uuid_.reset();
             break;
           }

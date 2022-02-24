@@ -78,6 +78,7 @@ void DesksTemplatesNameView::CommitChanges(views::Widget* widget) {
 
 void DesksTemplatesNameView::OnContentsChanged() {
   PreferredSizeChanged();
+  temporary_name_.reset();
 }
 
 gfx::Size DesksTemplatesNameView::CalculatePreferredSize() const {
@@ -93,6 +94,11 @@ void DesksTemplatesNameView::OnGestureEvent(ui::GestureEvent* event) {
   // Stop propagating this event so that the parent of `this`, which is a button
   // does not get the event.
   event->StopPropagation();
+}
+
+void DesksTemplatesNameView::SetViewName(const std::u16string& name) {
+  SetText(temporary_name_.value_or(name));
+  PreferredSizeChanged();
 }
 
 int DesksTemplatesNameView::GetAvailableWidth() const {
