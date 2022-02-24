@@ -165,6 +165,7 @@ int SandboxedVfsFile::Read(void* buffer, int size, sqlite3_int64 offset) {
   DCHECK_GE(offset, 0);
 
 #if DCHECK_IS_ON()
+  // See http://www.sqlite.org/fileformat2.html#database_header
   constexpr int kSqliteDatabaseHeaderOffset = 0;
   constexpr int kSqliteDatabaseHeaderSize = 100;
   // SQLite's locking protocol only acquires locks on the database file. The
