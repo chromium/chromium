@@ -1000,7 +1000,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="6594121454516132231">查看 Chrome 计划如何在保护开放网络的同时使您免受跨网站跟踪</translation>
 <translation id="6595046016124923392">系统会将图片发送给 Google 以便为您改进说明。</translation>
 <translation id="6600954340915313787">已复制到 Chrome</translation>
-<translation id="661266467055912436">为您以及网络上的所有人提供更好的安全保障。</translation>
+<translation id="661266467055912436">为您和网络上的所有人提供更好的安全保障。</translation>
 <translation id="6618554661997243500">若要查看为您推荐的热门网站和报道，请点按“主屏幕”按钮</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6633067410344541938">解锁无痕模式</translation>
@@ -1107,7 +1107,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7177873915659574692">无法创建二维码。网址长度超出了 <ph name="CHARACTER_LIMIT" /> 个字符（上限）。</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="718226107353899806">您最多只能添加 <ph name="MAX_NUM_REACTIONS" /> 个表情符号</translation>
-<translation id="7187993566681480880">会保护您在 Chrome 中免受安全威胁；如果您是处于已登录状态，还可让您更安全地使用其他 Google 应用。</translation>
+<translation id="7187993566681480880">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="718926126787620637">书签文件夹列表已全屏打开</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
 <translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>
@@ -1248,7 +1248,7 @@ Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部�
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{正在下载 1 个文件。}other{正在下载 # 个文件。}}</translation>
 <translation id="7926975587469166629">卡的昵称</translation>
 <translation id="7929962904089429003">打开菜单</translation>
-<translation id="7930998711684428189">在密码遭遇数据泄露时向您发出警告。</translation>
+<translation id="7930998711684428189">密码遭遇数据泄露时向您发出警告。</translation>
 <translation id="7939485076072265087">使用突出显示的文本创建风格化卡片</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
