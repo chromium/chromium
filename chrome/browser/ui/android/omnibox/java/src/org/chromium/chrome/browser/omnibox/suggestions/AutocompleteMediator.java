@@ -450,6 +450,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             assert tabModel != null;
 
             int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
+            // In the event the user deleted the tab as part during the interaction with the
+            // Omnibox, reject the switch to tab action.
+            if (tabIndex < 0) {
+                onSuggestionClicked(suggestion, position, suggestion.getUrl());
+                return;
+            }
+
             tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
         } else {
             mBringTabToFrontCallback.onResult(tab);
