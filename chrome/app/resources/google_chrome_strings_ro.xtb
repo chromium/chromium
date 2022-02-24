@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">Chrome nu se poate actualiza</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
 <translation id="1182414570724401860">Chrome recomandă să nu descarci sau deschizi acest fișier</translation>
+<translation id="1201241595274620956">Condițiile CloudReady 2.0</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile Google Chrome OS.</translation>
 <translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
@@ -35,11 +36,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="1812689907177901597">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chrome</translation>
+<translation id="1847459800604232346">Repornește CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome are nevoie de permisiune ca să acceseze camera foto pentru acest site</translation>
+<translation id="1865667134297225786">CloudReady 2.0 nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="1873233029667955273">Google Chrome nu este browserul prestabilit</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome nu este actualizat</translation>
+<translation id="1887927549935943139">CloudReady 2.0 nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="1919130412786645364">Permite conectarea la Chrome</translation>
+<translation id="1938037793394697191">CloudReady 2.0 de la Google</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
 <translation id="2063848847527508675">Pentru a se aplica actualizarea, sistemul de operare Chrome trebuie să fie repornit.</translation>
 <translation id="2094919256425865063">Ieși din Chrome oricum?</translation>
@@ -50,12 +55,14 @@
 <translation id="2258103955319320201">Pentru a accesa informațiile din Chrome pe toate dispozitivele, conectează-te, apoi activează sincronizarea</translation>
 <translation id="2290014774651636340">Lipsesc chei pentru API-ul Google. Unele funcționalități Google Chrome vor fi dezactivate.</translation>
 <translation id="2290095356545025170">Sigur vrei să dezinstalezi Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Aceasta este o instalare secundară a browserului Google Chrome și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="2345992953227471816">Chrome a descoperit că următoarele extensii conțin programe malware:</translation>
 <translation id="2348335408836342058">Chrome are nevoie de permisiune ca să acceseze camera foto și microfonul pentru acest site</translation>
 <translation id="234869673307233423">Chrome nu îți poate verifica parolele. Încearcă din nou mai târziu.</translation>
 <translation id="235650106824528204">Toate datele Chrome generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="2371517829376452747">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />setările CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniul dvs.</translation>
 <translation id="2467438592969358367">Google Chrome vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
@@ -84,6 +91,7 @@
 <translation id="2926676257163822632">Parolele slabe sunt ușor de ghicit. Permite browserului Chrome <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome are nevoie de acces la cameră pentru acest site</translation>
 <translation id="2929907241665500097">Chrome nu s-a actualizat. A apărut o eroare. <ph name="BEGIN_LINK" />Remediază problemele de actualizare și actualizările nereușite în Chrome.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Relansează pentru a actualiza &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – conectare la rețea – Chrome</translation>
 <translation id="303514781271618814">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține date despre tine</translation>
 <translation id="3037838751736561277">Google Chrome este în modul fundal.</translation>
@@ -110,6 +118,7 @@
 <translation id="3533694711092285624">Nu există parole salvate. Chrome îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="3541482654983822893">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore.</translation>
 <translation id="3576528680708590453">Administratorul sistemului a configurat Google Chrome astfel încât să deschidă un browser secundar pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței CloudReady 2.0, trimițând automat la Google date de diagnosticare și de utilizare.</translation>
 <translation id="3582972582564653026">Sincronizează și personalizează Chrome pe toate dispozitivele</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
@@ -130,6 +139,7 @@
 <translation id="4149882025268051530">Programul de instalare nu a putut decomprima arhiva. Descarcă din nou Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relansează Chrome în cel mult o zi}few{Relansează Chrome în cel mult # zile}other{Relansează Chrome în cel mult # de zile}}</translation>
 <translation id="4205939740494406371">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Sistemul CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251615635259297716">Vă conectați datele Chrome cu acest cont?</translation>
@@ -147,7 +157,9 @@
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4480040274068703980">Sistemul de operare Chrome nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="4521185804071812304">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chrome, trimițând automat date de diagnosticare și de utilizare la Google.</translation>
+<translation id="4539063627668028557">Versiunea CloudReady 2.0</translation>
 <translation id="4561051373932531560">Cu Google Chrome, poți să dai clic pe un număr de telefon de pe web pentru a-l apela cu Skype!</translation>
+<translation id="4562712242781620537">Sistemul CloudReady 2.0</translation>
 <translation id="4567424176335768812">V-ați conectat ca <ph name="USER_EMAIL_ADDRESS" />. Acum vă puteți accesa marcajele, istoricul și alte setări de pe toate dispozitivele pe care v-ați conectat.</translation>
 <translation id="4571503333518166079">Accesează setările pentru notificări Chrome</translation>
 <translation id="459622048091363950">Odată ce Chrome are acces, site-urile web îți vor putea solicita accesul.</translation>
@@ -171,6 +183,7 @@
 <translation id="5170938038195470297">Profilul dvs. nu poate fi utilizat, deoarece provine de la o versiune Google Chrome mai recentă. Este posibil ca unele funcții să nu fie disponibile. Specificați un director de profil diferit sau utilizați o versiune Chrome mai nouă.</translation>
 <translation id="521447420733633466">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc</translation>
 <translation id="5251420635869119124">Invitații pot folosi Chrome fără a lăsa nicio urmă.</translation>
+<translation id="5307623274346663914">Pentru a se aplica actualizarea, CloudReady 2.0 trebuie să fie repornit.</translation>
 <translation id="5334487786912937552">Pentru a descărca fișiere, Chrome necesită permisiunea de acces la stocare</translation>
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
@@ -179,8 +192,10 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome va reporni într-o secundă}few{Google Chrome va reporni în # secunde}other{Google Chrome va reporni în # de secunde}}</translation>
 <translation id="5736850870166430177">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
 <translation id="573759479754913123">Despre sistemul de operare Chrome</translation>
@@ -213,14 +228,18 @@
 <translation id="6679975945624592337">Permite Google Chrome să ruleze în fundal</translation>
 <translation id="6696915334902295848">Chrome are nevoie de acces la microfon pentru acest site</translation>
 <translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>
+<translation id="6749459139769042303">Primește ajutor pentru CloudReady 2.0</translation>
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
+<translation id="6814748008107187409">Dacă o setare nu apare în pagină, încearcă <ph name="LINK_BEGIN" />setările sistemului de operare Chrome<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Regula de intrare pentru Google Chrome Canary pentru a permite traficul mDNS.</translation>
 <translation id="6881299373831449287">Se actualizează Chrome</translation>
 <translation id="6885412569789873916">Aplicații Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> îți solicită să citești și să accepți Termenii și condițiile următoare înainte de a folosi acest dispozitiv. Aceste condiții nu extind, nu modifică și nu limitează Condițiile CloudReady 2.0 de la Google.</translation>
 <translation id="6943584222992551122">Datele de navigare ale acestei persoane vor fi șterse de pe dispozitiv. Pentru a recupera datele, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regula de intrare pentru Google Chrome Beta pentru a permite traficul mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome a fost actualizat, dar nu l-ai folosit cel puțin 30 de zile.</translation>
+<translation id="700644001690392105">Despre CloudReady 2.0</translation>
 <translation id="7025800014283535195">Aici poți comuta între profilurile Chrome</translation>
 <translation id="7036251913954633326">Dacă vrei să folosești contul o singură dată, poți utiliza <ph name="GUEST_LINK_BEGIN" />modul pentru invitați<ph name="GUEST_LINK_END" /> în browserul Chrome. Dacă vrei să adaugi un cont pentru altcineva, <ph name="LINK_BEGIN" />adaugă o nouă persoană<ph name="LINK_END" /> pe <ph name="DEVICE_TYPE" />.
 
@@ -248,6 +267,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7486227612705979895">Chrome îți va accesa spațiul de stocare Drive pentru a face sugestii în bara de adrese</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Pentru a verifica dacă dispozitivul este actualizat, accesează <ph name="LINK_BEGIN" />Setările sistemului de operare Chrome<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Pentru a verifica dacă dispozitivul este actualizat, accesează <ph name="LINK_BEGIN" />Setările CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul dvs. nu sunt actualizate.</translation>
 <translation id="7626032353295482388">Bun venit la Chrome</translation>
 <translation id="7629695634924605473">Chrome te anunță dacă parolele tale sunt compromise</translation>

@@ -372,6 +372,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">naka-link sa</translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
@@ -873,7 +874,6 @@ Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available a
 <translation id="6138832295072039549">Baguhin ang mga setting ng iyong site dito</translation>
 <translation id="6140709049082532940">Pinaigting na proteksyon:</translation>
 <translation id="6140912465461743537">Bansa/Rehiyon</translation>
-<translation id="6141988275892716286">Kumpirmahin ang pag-download</translation>
 <translation id="614940544461990577">Subukang:</translation>
 <translation id="6150320133806434356">Na-save ang bookmark</translation>
 <translation id="6154478581116148741">I-on ang lock ng screen sa Mga Setting upang i-export ang iyong mga password mula sa device na ito</translation>
@@ -1055,7 +1055,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7093803425429738190">Magdagdag ng emosyon</translation>
 <translation id="7105047059074518658">Mag-sign in para mag-browse nang mas madali sa lahat ng device</translation>
 <translation id="7106762743910369165">Pinapamahalaan ng iyong organisasyon ang browser mo</translation>
-<translation id="7121362699166175603">Kini-clear ang history at mga autocompletion sa address bar. Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Iba pa</translation>
 <translation id="7143462160780459030">Hindi makakuha ng screenshot. Subukan ulit.</translation>
 <translation id="7146622961999026732">Mukhang mahalaga sa iyo ang mga site at app na ito:</translation>
@@ -1129,7 +1128,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="752220631458524187">Magdiskonekta kapag tapos ka na</translation>
 <translation id="7523960634226602883">Maghanap sa pamamagitan ng iyong camera gamit ang Google Lens</translation>
 <translation id="753225086557513863">Nakaiskedyul para sa ibang pagkakataon</translation>
-<translation id="7560448309733608642">Kini-clear ang history sa lahat ng naka-sync na device. Posibleng may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Kini-clear ang data sa pag-browse</translation>
 <translation id="756809126120519699">Na-clear ang data ng Chrome</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>

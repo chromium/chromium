@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="3634910711516114487">Chrome imkoniyatlaridan maksimal foydalanish uchun Chromega Google hisobingiz bilan kiring</translation>
+<translation id="3655656110921623717">Bunda Chrome har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="3706101708757577809">Siz endi Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="3720541637541300822">Chrome yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
@@ -49,6 +50,7 @@
 <translation id="4099578267706723511">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali Chrome’ning takomillashtirishga yordam bering</translation>
 <translation id="417201473131094001">Chrome Canary nashrida ishlamaydi</translation>
 <translation id="4214277427269650960">Bu sayt va Chrome hisobiga kiring. Sinxronizatsiyani keyinroq yoqish mumkin.</translation>
+<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4249068189593983585">Chrome maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="4523886039239821078">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
@@ -116,4 +118,5 @@
 <translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
 <translation id="8788269841521769222">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>
+<translation id="9122931302567044771">Bunda Chrome har safar saytning kompyuter versiyasini talab qiladi.</translation>
 </translationbundle>

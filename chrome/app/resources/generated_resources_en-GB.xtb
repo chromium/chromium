@@ -286,6 +286,7 @@
 <translation id="1276994519141842946">Couldn't uninstall <ph name="APP_NAME" /></translation>
 <translation id="1277020343994096713">Create a new PIN that's different from your current PIN</translation>
 <translation id="1278859221870828664">Review Google Play apps and services</translation>
+<translation id="1279024913354609713">Don't allow</translation>
 <translation id="127946606521051357">Device nearby is sharing</translation>
 <translation id="1280965841156951489">Edit files</translation>
 <translation id="1282465000333679776">Share system audio</translation>
@@ -679,7 +680,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1644852018355792105">Enter Bluetooth passkey for device <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527">To keep your <ph name="DEVICE_TYPE" /> safe, Smart Lock requires a screen lock on your phone.</translation>
 <translation id="1646982517418478057">Please enter a password to encrypt this certificate</translation>
-<translation id="1647408325348388858">Open and edit <ph name="FILE_NAME" /> in this web app?</translation>
 <translation id="1648528859488547844">Use Wi-Fi or mobile networks to determine location</translation>
 <translation id="164936512206786300">Unpair Bluetooth device</translation>
 <translation id="1651008383952180276">You must enter the same passphrase twice</translation>
@@ -1199,6 +1199,8 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2154502158735983655">Read Chrome OS device information and device data.</translation>
 <translation id="2155772377859296191">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">Don't ask again when opening this file format in this app:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">Run safety check again</translation>
 <translation id="2157474325782140681">To get additional features, use a Dell docking station designed to work with this Chromebook.</translation>
 <translation id="215753907730220065">Exit Full Screen</translation>
@@ -1250,6 +1252,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2203088913459920044">Name can use letters, numbers and special characters</translation>
 <translation id="220321590587754225">Couldn't connect. Try again.</translation>
 <translation id="2204034823255629767">Read and change anything that you type</translation>
+<translation id="2207115382329026341">Enable apps streaming settings from your phone.</translation>
 <translation id="220858061631308971">Please enter this PIN code on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
@@ -1443,6 +1446,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2367972762794486313">Show apps</translation>
 <translation id="236939127352773362">When devices are sharing nearby</translation>
 <translation id="2371076942591664043">Open when &amp;done</translation>
+<translation id="237307274687369010">Could not launch <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Fit to paper</translation>
 <translation id="2375406435414127095">Connect to your phone</translation>
 <translation id="2377588536920405462">You can turn off location by turning off the main location setting on your device. You can also turn off the use of Wi-Fi, mobile networks and sensors for location in location settings.</translation>
@@ -1628,7 +1632,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2553440850688409052">Hide This Plug-in</translation>
 <translation id="2554553592469060349">Selected file is too big (max size: 3mb).</translation>
 <translation id="2558896001721082624">Always show accessibility options in the system menu</translation>
-<translation id="2564407282561292919">Clears history in the search box. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Enhanced spell check</translation>
 <translation id="2568774940984945469">Infobar Container</translation>
@@ -2316,6 +2319,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3277691515294482687">Back up my apps and files to the My Files folder before upgrading Linux.</translation>
 <translation id="3278001907972365362">Your Google Account(s) need attention</translation>
 <translation id="3278800075417428224">Manage languages in CloudReady 2.0 settings</translation>
+<translation id="3278928434075969895">This profile uses Chrome OS proxy settings.</translation>
 <translation id="3279092821516760512">Selected contacts can share with you when nearby. Transfers won't start until you accept.</translation>
 <translation id="3279230909244266691">This process may take a few minutes. Starting the virtual machine.</translation>
 <translation id="3280237271814976245">Save &amp;as...</translation>
@@ -2340,7 +2344,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="33022249435934718">GDI Handles</translation>
 <translation id="3302388252085547855">Enter justification…</translation>
 <translation id="3303260552072730022">An extension triggered full screen.</translation>
-<translation id="3303795387212510132">Allow app to open <ph name="PROTOCOL_SCHEME" /> links?</translation>
 <translation id="3303818374450886607">Copies</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> off</translation>
@@ -2632,7 +2635,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3596012367874587041">App settings</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3599221874935822507">Raised</translation>
-<translation id="3599863153486145794">Clears history from all signed-in devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3600051066689725006">Web request info</translation>
 <translation id="3600792891314830896">Mute sites that play sound</translation>
 <translation id="360180734785106144">Offer new features as they become available</translation>
@@ -3121,7 +3123,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4033963223187371752">Secure sites might embed content like images or web frames that aren't secure</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
-<translation id="4035877632587724847">Don't allow</translation>
 <translation id="4036778507053569103">The policy downloaded from the server is invalid.</translation>
 <translation id="4037084878352560732">Horse</translation>
 <translation id="403725336528835653">Try it first</translation>
@@ -3163,7 +3164,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4079140982534148664">Use Enhanced Spell Check</translation>
 <translation id="4081242589061676262">Unable to cast file.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> sent a notification to your phone. To confirm that it's you, follow the steps there.</translation>
-<translation id="4083599409544993198">Remember my choice for this file type: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Close <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">Ask when a site wants to access serial ports</translation>
@@ -3193,7 +3193,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4101352914005291489">Hidden SSID</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xport...</translation>
-<translation id="410547683402570632">Remember my choice for these file types: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">Identify and eject storage devices</translation>
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restore warning</translation>
@@ -3247,6 +3246,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4167686856635546851">Sites usually use Javascript to display interactive features, like video games or web forms</translation>
 <translation id="4168015872538332605">Some settings belonging to <ph name="PRIMARY_EMAIL" /> are being shared with you. These settings only affect your account when using multiple sign-in.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ending in <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">Don't allow</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="417096670996204801">Choose a profile</translation>
 <translation id="4175137578744761569">Light purple and white</translation>
@@ -3318,6 +3318,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="425573743389990240">Battery Discharge Rate in Watts (Negative value means battery is charging)</translation>
 <translation id="4256316378292851214">Sa&amp;ve Video As...</translation>
 <translation id="4258348331913189841">File System</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> wants to open these files:</translation>
 <translation id="4259388776256904261">This may take a while</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> may be dangerous. Send to Google Advanced Protection for scanning? Press Shift + F6 to cycle to the downloads bar area.</translation>
 <translation id="4261429981378979799">Extension permissions</translation>
@@ -3793,7 +3794,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="475088594373173692">First user</translation>
 <translation id="4756378406049221019">Stop/Reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
-<translation id="4759202969060787081">Don’t open</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
 <translation id="4762718786438001384">Device disk space critically low</translation>
@@ -4878,7 +4878,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5889282057229379085">Maximum number of intermediate CAs: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Preferred Wi-Fi networks</translation>
 <translation id="5895138241574237353">Restart</translation>
-<translation id="5896436821193322561">Don't allow</translation>
 <translation id="5900302528761731119">Google Profile photo</translation>
 <translation id="590036993063074298">Mirroring quality details</translation>
 <translation id="5901069264981746702">Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -4893,6 +4892,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5909379458939060601">Delete this profile and browsing data?</translation>
 <translation id="5910363049092958439">Sa&amp;ve Image As...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
+<translation id="5911505723657992440">Use Chrome OS proxy settings for this profile.</translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
@@ -5494,6 +5494,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
 <translation id="6499143127267478107">Resolving host in proxy script...</translation>
 <translation id="6499764981457476645">No devices found nearby</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> wants to open this file:</translation>
 <translation id="65017764184991091">Backing up Linux apps and files failed. This can happen if your device doesn't have enough free storage space. Try freeing some space on your device, or picking a different location to back up to.</translation>
 <translation id="6501957628055559556">All containers</translation>
 <translation id="650266656685499220">To create albums, go to Google Photos</translation>
@@ -6484,7 +6485,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 more}other{{NUM_DOWNLOADS} more}}</translation>
 <translation id="7526989658317409655">Placeholder</translation>
 <translation id="7527758104894292229">Update it in your Google Account, <ph name="ACCOUNT" /></translation>
-<translation id="7528224636098571080">Don’t open</translation>
 <translation id="7529411698175791732">Check your Internet connection. If the problem continues, try signing out and signing in again.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Close guest}other{Close guest}}</translation>
 <translation id="7530016656428373557">Discharge Rate in Watts</translation>
@@ -6510,6 +6510,8 @@ You can assign multiple switches to this action.</translation>
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7553012839257224005">Checking the Linux container</translation>
 <translation id="7553242001898162573">Enter your password</translation>
+<translation id="7553347517399115470">Don't ask again when opening these file formats in this app:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7556033326131260574">Smart Lock couldn’t verify your account. Type your password to enter.</translation>

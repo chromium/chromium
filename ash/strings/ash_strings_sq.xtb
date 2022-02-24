@@ -334,6 +334,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3105917916468784889">Nxirr një pamje të ekranit</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Hiq sugjerimin</translation>
+<translation id="3120421559657122717">Të fiket pajisja?</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
@@ -354,6 +355,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
 <translation id="3269597722229482060">Kliko me butonin djathtas</translation>
+<translation id="3289544412142055976">Aplikacionet për Linux nuk mbështeten aktualisht</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3294437725009624529">Vizitor</translation>
@@ -705,6 +707,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5400461572260843123">Cilësimet e shpejta, shtyp "kërko" + tastin "majtas" për të pasur qasje te qendra e njoftimeve.</translation>
 <translation id="5426063383988017631">Menyja e "Cilësimeve" është e mbyllur</translation>
 <translation id="5428899915242071344">Fillo përzgjedhjen</translation>
+<translation id="5429993543155113935">Dritaret "E fshehta" nuk mbështeten për momentin</translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
 <translation id="5433020815079095860">Hyrja e audios</translation>
@@ -820,6 +823,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6166852626429024716">Kërko në pajisjen tënde, aplikacione, cilësime, ueb...</translation>
 <translation id="6179832488876878285">Mund t'i gozhdosh skedarët e tu të rëndësishëm këtu. Hap aplikacionin "Skedarët" për të filluar.</translation>
+<translation id="6220928844947387476">Tani mund të regjistrosh veten dhe ekranin në të njëjtën kohë</translation>
 <translation id="622484624075952240">Poshtë</translation>
 <translation id="6231419273573514727">Cilësia e funksionimit të pajisjeve periferike mund të jetë e kufizuar</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -846,6 +850,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6431865393913628856">Regjistrimi i ekranit</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ngjarje</translation>
+<translation id="6449483711453944360">Aplikacionet për Linux dhe dritaret "E fshehta" nuk mbështeten aktualisht</translation>
 <translation id="6452181791372256707">Refuzo</translation>
 <translation id="6453179446719226835">Gjuha është ndryshuar</translation>
 <translation id="6459472438155181876">Po zgjeron ekranin në <ph name="DISPLAY_NAME" /></translation>
@@ -945,6 +950,7 @@ Instalim i ri</translation>
 <translation id="7025533177575372252">Lidhe <ph name="DEVICE_NAME" /> me telefonin tënd</translation>
 <translation id="7026338066939101231">Zvogëlim</translation>
 <translation id="7029814467594812963">Dil nga sesioni</translation>
+<translation id="7032161822340700104">Lejohen vetëm 6 shabllone. Hiq një shabllon për të ruajtur një të ri.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, "Asistenti i Google"</translation>
 <translation id="7042322267639375032">Palos zonën e statusit</translation>
 <translation id="7045033600005038336">Të zëvendësohet shablloni?</translation>

@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4008040567710660924">Povolit soubory cookie pro konkrétní web.</translation>
+<translation id="4040330681741629921">Oznámit, když lze web zobrazit ve zjednodušeném zobrazení</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Tímto vymažete <ph name="DATASIZE" /> dat a souborů cookie, které uložily weby.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 další)}few{(+ # další)}many{(+ # další)}other{(+ # dalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
+<translation id="5412236728747081950">Tento web získává z Chromu vaše zájmy, aby vám mohl zobrazovat relevantnější reklamy</translation>
 <translation id="5438097262470833822">Výběrem této možnosti resetujete oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovat reklamy na webech, které zobrazují obtěžující nebo zavádějící reklamy</translation>

@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">यो डिभाइसको दायाँपट्टिको बडमा <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
+<translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
@@ -232,6 +233,7 @@
 <translation id="4145784616224233563">HTTP फायरवाल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">स्क्यानर अन छ र उक्त स्क्यानर तपाईंको नेटवर्क वा कुनै डाइरेक्ट कनेक्सनमार्फत प्रयोग गर्न मिल्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="4170180284036919717">फोटो खिच्नुहोस्</translation>
 <translation id="4170700058716978431">असफल भयो</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
 <translation id="4213104098953699324">USB किबोर्ड</translation>
@@ -262,6 +264,7 @@
 <translation id="4511264077854731334">पोर्टल</translation>
 <translation id="4521826082652183069">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो</translation>
 <translation id="4536864596629708641">IP कन्फिगुरेसन</translation>
+<translation id="4546131424594385779">लुपिङ भिडियो बनाउनुहोस्</translation>
 <translation id="4548483925627140043">सिग्नल फेला परेन</translation>
 <translation id="4556753742174065117">सबै फर्मवेयर अप टु डेट छन्</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ब्याट्री</translation>
@@ -442,6 +445,7 @@
 <translation id="6566314079205407217">एकभन्दा बढी पेज स्क्यान गर्नुहोस्</translation>
 <translation id="6574762126505704998">भर्नुहोस्</translation>
 <translation id="6575134580692778371">विन्यास गरिएको छैन</translation>
+<translation id="6579509898032828423">यो फोटो प्रयोग गर्नुहोस्</translation>
 <translation id="6596816719288285829">IP ​​ठेगाना</translation>
 <translation id="6618744767048954150">जाँच हुँदै छ</translation>
 <translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
@@ -488,6 +492,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> कन्फिगर गर्नुहोस्</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
+<translation id="7212734716605298123">बाह्य डिभाइसहरूका लागि फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
 <translation id="7271040990581020067">स्क्यानर हाल प्रयोग भइरहेको छ। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -640,6 +645,7 @@
 <translation id="9062831201344759865">DNS रिजोल्युसनमा उच्च विलम्बता छ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
+<translation id="9082718469794970195">यो भिडियो प्रयोग गर्नुहोस्</translation>
 <translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
 <translation id="9095415590198785865">डिभाइस सोही मालिकको स्वामित्वमा रहने छ</translation>

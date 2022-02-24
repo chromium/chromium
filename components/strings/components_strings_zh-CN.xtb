@@ -746,6 +746,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要采取额外措施来验证您的付款</translation>
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
+<translation id="3303795387212510132">允许应用打开 <ph name="PROTOCOL_SCHEME" /> 链接？</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3304073249511302126">蓝牙扫描</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
@@ -1263,6 +1264,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901778704868714008">保存…</translation>
+<translation id="4905659621780993806">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 自动重启您的设备。请在设备重启前保存所有已打开的内容。</translation>
 <translation id="4913987521957242411">打孔（左上角）</translation>
 <translation id="4918221908152712722">安装<ph name="APP_NAME" />（不需要下载）</translation>
 <translation id="4923459931733593730">付款</translation>
@@ -1676,6 +1678,7 @@
 <translation id="6290238015253830360">为您推荐的文章会显示在此处</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
+<translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6302269476990306341">Chrome 中的 Google 助理即将停止工作</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
@@ -2000,6 +2003,7 @@
 <translation id="7378627244592794276">否</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">不适用</translation>
+<translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
 <translation id="7390545607259442187">确认信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7399802613464275309">安全检查</translation>
@@ -2357,6 +2361,7 @@
 <translation id="8507227106804027148">命令行</translation>
 <translation id="8508648098325802031">搜索图标</translation>
 <translation id="8511402995811232419">管理 Cookie</translation>
+<translation id="8519753333133776369">您的管理员允许使用的 HID 设备</translation>
 <translation id="8522552481199248698">Chrome 可以帮助您保护您的 Google 帐号和更改密码。</translation>
 <translation id="8530813470445476232">请在 Chrome 设置中清除您的浏览记录、Cookie、缓存及其他数据</translation>
 <translation id="8533619373899488139">请访问 &lt;strong&gt;chrome://policy&lt;/strong&gt;，查看被屏蔽的网址列表以及您的系统管理员强制执行的其他政策。</translation>

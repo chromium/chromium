@@ -17,6 +17,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1625909126243026060">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chromium</translation>
+<translation id="1632539827495546968">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund të përdorësh <ph name="GUEST_LINK_BEGIN" />modalitetin "Vizitor"<ph name="GUEST_LINK_END" /> në shfletuesin Chromium. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
+
+Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. "Llogaritë e tua të Google" mund t'i menaxhosh te <ph name="SETTINGS_LINK_BEGIN" />Cilësimet<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Ofrohet një version i ri më i sigurt i Chromium.</translation>
 <translation id="1774152462503052664">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
@@ -25,6 +28,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1881322772814446296">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontrollin mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, si aplikacionet, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të bëhen të lidhura përgjithmonë me <ph name="USER_NAME" />. Do të mund t'i fshish këto të dhëna nëpërmjet "Panelit të llogarive të Google", por nuk do të mund t'i lidhësh këto të dhëna me një llogari tjetër. Mund të krijosh si opsion një profil të ri për t'i mbajtur më vete të dhënat ekzistuese të Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chromium</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
+<translation id="1940680973325097484">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund të përdorësh modalitetin "Vizitor" në shfletuesin Chromium. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
+
+Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për këtë llogari. "Llogaritë e tua të Google" mund t'i menaxhosh te <ph name="SETTINGS_LINK_BEGIN" />Cilësimet<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium nuk mund të përcaktojë ose caktojë shfletuesin e parazgjedhur</translation>
 <translation id="1981611865800294956">Nise përsëri për të përditësuar &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>

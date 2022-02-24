@@ -372,6 +372,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3091010850649238832">Inhalte der Zwischenablage anzeigen</translation>
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">verknüpft mit</translation>
 <translation id="3123734510202723619">Ankündigungen</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Chrome-Startseite</translation>
@@ -873,7 +874,6 @@ Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur
 <translation id="6138832295072039549">Hier können Sie Ihre Websiteeinstellungen ändern</translation>
 <translation id="6140709049082532940">Erweiterter Schutz</translation>
 <translation id="6140912465461743537">Land/Region</translation>
-<translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="614940544461990577">Versuchen Sie Folgendes:</translation>
 <translation id="6150320133806434356">Lesezeichen ist gespeichert</translation>
 <translation id="6154478581116148741">Aktivieren Sie die Displaysperre unter "Einstellungen", um Ihre Passwörter aus dem Gerät zu exportieren</translation>
@@ -1055,7 +1055,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7093803425429738190">Emotion hinzufügen</translation>
 <translation id="7105047059074518658">Anmelden, um Chrome noch einfacher auf mehreren Geräten zu nutzen</translation>
 <translation id="7106762743910369165">Ihr Browser wird von Ihrer Organisation verwaltet</translation>
-<translation id="7121362699166175603">Löscht den Verlauf und Autovervollständigungen in der Adressleiste. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
 <translation id="7138678301420049075">Sonstiges</translation>
 <translation id="7143462160780459030">Es konnte kein Screenshot aufgenommen werden. Versuchen Sie es noch einmal.</translation>
 <translation id="7146622961999026732">Diese Websites und Apps scheinen Ihnen wichtig zu sein:</translation>
@@ -1129,7 +1128,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="752220631458524187">Wenn Sie fertig sind, können Sie die Verbindung trennen</translation>
 <translation id="7523960634226602883">Mit Ihrer Kamera über Google Lens suchen</translation>
 <translation id="753225086557513863">Für später geplant</translation>
-<translation id="7560448309733608642">Löscht den Verlauf auf allen synchronisierten Geräten. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für Ihr Google-Konto gespeichert.</translation>
 <translation id="7562080006725997899">Browserdaten werden gelöscht</translation>
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7577900504646297215">Interessen verwalten</translation>

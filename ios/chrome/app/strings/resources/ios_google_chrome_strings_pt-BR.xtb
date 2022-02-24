@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Para ver suas guias em qualquer lugar onde você usar o Chrome, ative a sincronização</translation>
 <translation id="3533694711092285624">Nenhuma senha salva. O Chrome poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="3634910711516114487">Para aproveitar o Chrome ao máximo, faça login na sua Conta do Google</translation>
+<translation id="3655656110921623717">Isso significa que o Chrome vai solicitar sempre o site para dispositivo móvel.</translation>
 <translation id="3706101708757577809">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="3720541637541300822">Bloquear guias anônimas ao fechar o Chrome</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
 <translation id="9112744793181547300">Definir o Chrome como padrão?</translation>
+<translation id="9122931302567044771">Isso significa que o Chrome vai solicitar sempre o site para computador.</translation>
 </translationbundle>

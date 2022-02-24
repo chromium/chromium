@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
+<translation id="1632539827495546968">Hvis du kun vil bruge denne konto én gang, kan du anvende <ph name="GUEST_LINK_BEGIN" />Gæstetilstand<ph name="GUEST_LINK_END" /> i Chromium-browseren. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
+
+De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Der findes en ny og mere sikker version af Chromium.</translation>
 <translation id="1774152462503052664">Lad Chromium køre i baggrunden</translation>
 <translation id="1779356040007214683">For at gøre Chromium sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine Chromium-data adskilt. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
+<translation id="1940680973325097484">Hvis du kun vil bruge denne konto én gang, kan du anvende Gæstetilstand i Chromium-browseren. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
+
+De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Du kan administrere dine Google-konti under <ph name="SETTINGS_LINK_BEGIN" />Indstillinger<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="1981611865800294956">Genstart og opdater &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chromium som <ph name="USER_EMAIL" />.</translation>

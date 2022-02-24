@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
+<translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> में से <ph name="PRINTED_PAGES" /> पेज प्रिंट किए गए.</translation>
@@ -497,6 +498,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
+<translation id="7212734716605298123">बाहरी डिवाइसों के लिए फ़र्मवेयर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7271040990581020067">स्कैनर पहले से इस्तेमाल में है. कुछ देर बाद कोशिश करें.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

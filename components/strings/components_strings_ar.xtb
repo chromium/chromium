@@ -752,6 +752,7 @@
 <translation id="3288238092761586174">قد يُطلب من <ph name="URL" /> تنفيذ خطوات إضافية للتحقّق من عملية الدفع التي تجريها.</translation>
 <translation id="3293642807462928945">مزيد من المعلومات عن سياسة <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏عرض كلمات المرور وإدارتها في إعدادات متصفِّح Chrome</translation>
+<translation id="3303795387212510132">هل تريد السماح للتطبيق بفتح روابط <ph name="PROTOCOL_SCHEME" />؟</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
 <translation id="3304073249511302126">البحث عن أجهزة تتضمن بلوتوث</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
@@ -1278,6 +1279,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">اللفافة التاسعة</translation>
 <translation id="4901778704868714008">حفظ...</translation>
+<translation id="4905659621780993806">سيعيد المشرف تشغيل الجهاز تلقائيًا عند الساعة <ph name="TIME" /> في <ph name="DATE" />. عليك حفظ أي نوافذ مفتوحة قبل إعادة تشغيل الجهاز.</translation>
 <translation id="4913987521957242411">عمل ثقب أعلى اليسار</translation>
 <translation id="4918221908152712722">تثبيت <ph name="APP_NAME" /> (لا يتطلَّب تنزيلاً)</translation>
 <translation id="4923459931733593730">الدفع</translation>
@@ -1692,6 +1694,7 @@
 <translation id="6290238015253830360">ستظهر المقالات المقترحة هنا</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{ستتم إعادة تشغيل جهازك الآن}=1{ستتم إعادة تشغيل جهازك بعد ثانية واحدة}two{ستتم إعادة تشغيل جهازك بعد ثانيتين}few{ستتم إعادة تشغيل جهازك بعد # ثوانٍ}many{ستتم إعادة تشغيل جهازك بعد # ثانية}other{ستتم إعادة تشغيل جهازك بعد # ثانية}}</translation>
 <translation id="6302269476990306341">‏جارٍ إيقاف "مساعد Google" على Chrome</translation>
 <translation id="6305205051461490394">يتعذر الوصول إلى <ph name="URL" />.</translation>
 <translation id="6312113039770857350">صفحة الويب غير متاحة</translation>
@@ -2016,6 +2019,7 @@
 <translation id="7378627244592794276">لا</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">غير سارٍ</translation>
+<translation id="7388594495505979117">{0,plural, =1{ستتم إعادة تشغيل جهازك بعد دقيقة واحدة}zero{ستتم إعادة تشغيل جهازك بعد # دقيقة}two{ستتم إعادة تشغيل جهازك بعد دقيقتين}few{ستتم إعادة تشغيل جهازك بعد # دقائق}many{ستتم إعادة تشغيل جهازك بعد # دقيقة}other{ستتم إعادة تشغيل جهازك بعد # دقيقة}}</translation>
 <translation id="7390545607259442187">التأكد من البطاقة</translation>
 <translation id="7392089738299859607">تعديل العنوان</translation>
 <translation id="7399802613464275309">تأكيد السلامة</translation>
@@ -2277,7 +2281,8 @@
 <translation id="8202097416529803614">ملخص الطلب</translation>
 <translation id="8202370299023114387">تعارض</translation>
 <translation id="8206978196348664717">‏Prc4 (مغلف)</translation>
-<translation id="8211406090763984747">الاتصال بموقع الويب هذا آمن</translation>
+<translation id="8211406090763984747">الاتصال بهذا الموقع الإلكتروني آمن
+</translation>
 <translation id="8217240300496046857">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت. وقد تتعطّل بعض الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>
 <translation id="8220146938470311105">‏C7/C6 (مغلف)</translation>
@@ -2374,6 +2379,7 @@
 <translation id="8507227106804027148">سطر الأوامر</translation>
 <translation id="8508648098325802031">رمز البحث</translation>
 <translation id="8511402995811232419">إدارة ملفات تعريف الارتباط</translation>
+<translation id="8519753333133776369">‏جهاز HID سمحَ به مشرفك</translation>
 <translation id="8522552481199248698">‏يمكن أن يساعدك Chrome على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="8530813470445476232">‏محو سجلّ التصفُّح وملفات تعريف الارتباط وذاكرة التخزين المؤقت وغير ذلك في إعدادات متصفِّح Chrome</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>

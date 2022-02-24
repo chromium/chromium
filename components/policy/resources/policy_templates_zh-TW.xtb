@@ -190,6 +190,7 @@
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
 <translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
+<translation id="1239411164172567974">啟用 Direct Sockets API。</translation>
 <translation id="1239526922294123540">控管是否允許網站以不安全的方式，向更私密的網路端點傳送要求。如果將這項政策設為 True，系統會為所有來源停用<ph name="PRIVATE_NETWORK_ACCESS" />檢查。這可能會讓攻擊者有機會對私人網路伺服器執行 <ph name="CSRF" /> 攻擊。
 
           如果不設定這項政策或設為 False，向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> 和 <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> 功能旗標的個人設定，使用者可以透過實際測試或指令列來進行設定。
@@ -773,6 +774,17 @@
 
       請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 瞭解如何將應用程式固定到 <ph name="PRODUCT_OS_NAME" /> 檔案櫃。</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
+<translation id="1869688072690234823">你可以透過這項政策，控管可使用哪些 WebAuthn 要素。
+
+      如要設定：
+
+      * 允許每個 WebAuthn 要素 (包括日後新增的要素)，請使用 ["all"]。
+
+      * 只允許 PIN 碼，請使用 ["PIN"]。
+
+      * 允許 PIN 碼和指紋，請使用 ["PIN", "FINGERPRINT"]。
+
+      如果不設定這項政策或設為空白清單，則受管理的裝置不可使用任何 WebAuthn 要素。</translation>
 <translation id="1881649377321404593">
       這項政策已在 M80 版中遭到移除，因為 WebDriver 現階段與所有現有政策相容，因此不再需要使用這項政策。
 
@@ -1405,6 +1417,8 @@
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2512972020817284317">允許合併使用者層級的雲端政策。</translation>
 <translation id="2515699738406900920">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
+<translation id="251594860034549963">如果將這項政策設為 Enabled，系統就會在登入時自動從目前使用者上次使用的裝置上啟動瀏覽器視窗。
+      如果將這項政策設為 Disabled 或不設定，登入時啟動的項目便取決於完整還原設定。</translation>
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
 <translation id="2518231489509538392">允許播放音訊</translation>
 <translation id="2520551905471951523">以高優先順序執行音訊程序</translation>
@@ -1517,6 +1531,7 @@
 <translation id="2664391398878045611">即使中間版位公告可供存取，新分頁也不會顯示</translation>
 <translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
+<translation id="2667894101494585925">啟用最佳化指南擷取功能</translation>
 <translation id="2672012807430078509">控管是否要為 SMB 掛接功能啟用 NTLM 驗證通訊協定</translation>
 <translation id="2678503605767349615">必須提供裝置通用用戶端憑證</translation>
 <translation id="268577405881275241">啟用資料壓縮 Proxy 功能</translation>
@@ -1939,6 +1954,7 @@
       這項功能取決於要啟用的 <ph name="CHROME_SYNC_NAME" />功能中的 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" /> 資料類型。如果在 <ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" /> 政策中停用 <ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />，或是在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策中停用 <ph name="CHROME_SYNC_NAME" />功能，這項功能將無法啟用。
 
       如果未設定這項政策，在預設情況下，受管理的使用者將無法使用這項功能。</translation>
+<translation id="3138514192363246220">停用網頁載入中繼資料擷取功能和強化瀏覽體驗的機器學習模型</translation>
 <translation id="3142410959002029864">如果設定這項政策，將覆寫預設的雙面列印模式。如果系統不支援設定的模式，將會忽略這項政策。</translation>
 <translation id="3144173889708944482">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
@@ -2039,6 +2055,8 @@
 <translation id="3219421230122020860">可使用無痕模式</translation>
 <translation id="3220624000494482595">如果資訊站應用程式是 Android 應用程式，即使將這項政策設為 <ph name="TRUE" />，仍無法控制 <ph name="PRODUCT_OS_NAME" />版本。</translation>
 <translation id="322359555555487980">指定變化版本在 <ph name="PRODUCT_OS_NAME" />上的可用性</translation>
+<translation id="3229163415739929305">如果將這項政策設為啟用或不設定，系統會啟用網頁載入中繼資料擷取功能和強化瀏覽體驗的機器學習模型。
+      如果將這項政策設為停用，則可能會造成部分功能無法正常運作。</translation>
 <translation id="3231837273069128027">你可以透過這項政策來設定 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新的可用性和行為。
 
       指定 JSON 屬性中的個別設定：
@@ -2364,6 +2382,7 @@
 
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
 <translation id="3606571057705314194">瀏覽器啟動時不顯示設定檔選擇畫面</translation>
+<translation id="3608206578291537084">啟用加密報告管道</translation>
 <translation id="3612809274815536412">視窗放置設定</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
@@ -2490,6 +2509,7 @@
 
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
 <translation id="3791179836066841809">政策說明文件</translation>
+<translation id="3791556154364029875">啟用浮動工作區，並在登入時啟動遠端瀏覽器視窗</translation>
 <translation id="3794413118360704299">這項政策可讓管理員針對已安裝的網頁應用程式指定設定。
 
       這項政策可將網頁應用程式對應至特定的設定。查看 <ph name="WEB_APP_ID_REFERENCE_URL" /> 操作說明，瞭解系統如何決定已安裝網頁應用程式的 ID。
@@ -2710,6 +2730,7 @@
       如果不設定這項政策，使用者可自行決定是否要允許快速解答功能存取所選內容。</translation>
 <translation id="4016700865356669962">如果將這項政策設為 Enabled，使用者就能使用桌面版面配置範本。如果將這項政策設為 Disabled 或不設定，則會導致使用者無法使用這些範本。</translation>
 <translation id="4020682745012723568">Android 應用程式無法存取傳輸到該使用者設定檔的 Cookie。</translation>
+<translation id="4025176296532430931">停用浮動工作區，而且不在登入時啟動遠端瀏覽器視窗</translation>
 <translation id="4025500273782820766">如有外部通訊協定對話方塊詢問使用者是否要略過日後的確認提示，允許使用者選取 [一律允許]</translation>
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
@@ -3960,6 +3981,7 @@
 <translation id="5586942249556966598">不要處理</translation>
 <translation id="5598417829613725146">畫布 (自 90 版開始支援)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
+<translation id="5601503069213153581">PIN 碼</translation>
 <translation id="5614865701790130558">記錄以政策為根據的擴充功能安裝事件</translation>
 <translation id="5618398258385745432">我們先前曾以類似設定來控管使用者是否可查看密碼，但在新增重新驗證功能後，該設定與這項政策已不再適用於 Chrome 的運作方式。目前 Chrome 的運作方式，相當於這項政策禁止在密碼管理員設定頁面以純文字顯示密碼。也就是說，設定頁面只會顯示預留位置，使用者必須點選 [顯示] 並重新驗證 (如果適用)，Chrome 才會顯示密碼。這項政策的原始說明如下：
 
@@ -4110,11 +4132,13 @@
 <translation id="5766438888216077649">不要為目標是 <ph name="BLANK_PAGE_NAME" /> 的連結設定 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
 <translation id="5767776869128458023">停用替代的錯誤網頁</translation>
 <translation id="5770738360657678870">開發頻道 (可能不穩定)</translation>
+<translation id="5774345930803672932">如果將這項政策設為 True 或不設定，系統就會將事件、遙測和資訊回報至加密報告管道。如果將這項政策設為 False，則會停用加密報告管道。</translation>
 <translation id="5774856474228476867">預設搜尋引擎搜尋網址</translation>
 <translation id="5775235485119094648">當電量位於特定範圍內時進行充電。</translation>
 <translation id="5776485039795852974">每當網站要顯示桌面通知時詢問我</translation>
 <translation id="5783009211970309878">列印頁首和頁尾</translation>
 <translation id="5790763087505467169">減少顯示受管理訪客工作階段的自動啟動通知</translation>
+<translation id="5802931736499687181">停用加密報告管道</translation>
 <translation id="5806128552675651249">只允許不使用背景圖形的列印模式</translation>
 <translation id="5809210507920527553">控管 Linux 容器 (Crostini) 的設定。</translation>
 <translation id="5809728392451418079">設定裝置本機帳戶的顯示名稱</translation>
@@ -4264,6 +4288,7 @@
        有效值：• 0 = 停用 • 1 = 啟用 • 2 = 啟用置頂放大鏡
 
           注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" />，這項政策會遭到覆寫。</translation>
+<translation id="6011193465932186973">指紋</translation>
 <translation id="6011969832398368671">允許網站要求使用者授予檔案和目錄的寫入權限</translation>
 <translation id="6012952794649558174">使用預設的瀏覽器行為。</translation>
 <translation id="6015281292796053435">這項政策可控管系統是否要回報安全瀏覽資訊，包含安全瀏覽警告訊息數以及安全瀏覽警告訊息點閱數。
@@ -5431,6 +5456,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7258823566580374486">啟用遠端存取主機遮幕</translation>
 <translation id="7260204423892780600">控管 Google 助理的設定。</translation>
+<translation id="7261140115553020049">啟用浮動工作區服務</translation>
 <translation id="7261252191178797385">裝置桌布圖片</translation>
 <translation id="7264704483008663819">這項政策自 M68 起已淘汰，請改用 DeveloperToolsAvailability。
 
@@ -5568,6 +5594,9 @@
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
+<translation id="7466522266556143347">如果將這項政策設為 Enabled，在滿足所有其他必要條件的情況下，使用者就能使用 Direct Sockets API。
+      如果將這項政策設為 Enabled，代表使用者將無法存取這個 API。
+      如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用這項功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
@@ -5632,6 +5661,7 @@
       當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「learn_more_url」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「language」欄位為選填，包含訊息所用語言。如果將「language」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「custom_messages」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
 
       這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
+<translation id="7482768039644066614">啟用網頁載入中繼資料擷取功能和強化瀏覽體驗的機器學習模型</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
 <translation id="7486205887492534734">當有多個憑證相符時，在登入畫面中顯示提示訊息</translation>
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
@@ -6637,6 +6667,7 @@
       如果將這項政策設為停用，系統會關閉 NTLMv2。
 
       近期的所有 Samba 和 <ph name="MS_WIN_NAME" /> 伺服器版本都支援 NTLMv2。除非是為了回溯相容性的緣故，否則請勿關閉這項功能，因為驗證功能的安全性會因此下降。</translation>
+<translation id="8605627672203601098">設定允許的 WebAuthn 要素</translation>
 <translation id="8606263947930257189">控管 <ph name="PRODUCT_NAME" />是否可凍結在背景執行五分鐘以上的分頁。
 
       如果將這項政策設為 True，系統可能會凍結在背景執行 5 分鐘以上的分頁。凍結分頁可降低 CPU、電力和記憶體的使用量。<ph name="PRODUCT_NAME" /> 會根據經驗法則判斷，不會凍結在背景執行實用作業 (例如顯示通知、播放音效、串流播放影片) 的分頁。網站開發人員也可以將自己的網站設為禁止凍結 (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md)。
@@ -6690,6 +6721,7 @@
       如果將這項政策設為停用或不設定，遠端存取主機即可與任何本機使用者建立關聯。</translation>
 <translation id="867708016260789630">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="8677853537025397834">允許這些網站上的 WebHID API</translation>
+<translation id="8684781382594546769">停用 Direct Sockets API。</translation>
 <translation id="8685024486845674965">密碼遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8685680544554917389">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 即可自動播放媒體。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 不會自動播放媒體。
 
@@ -6936,6 +6968,12 @@
       這項政策只適用於 Family Link 使用者。</translation>
 <translation id="8947415621777543415">回報裝置位置</translation>
 <translation id="8948062138228904066">驗證伺服器許可清單</translation>
+<translation id="8949511380888040821">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從適用於 <ph name="MAC_OS_NAME" /> 104 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
+      </translation>
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>

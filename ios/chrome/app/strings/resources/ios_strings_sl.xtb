@@ -12,6 +12,7 @@
 
         
 Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
+<translation id="1054045277222934172">V razdelku »Nastavitve &gt; Nastavitve vsebine« lahko spremenite privzeti pogled spletnega mesta na pogled za namizni računalnik.</translation>
 <translation id="1063454504051558093">Uporaba drugega gesla …</translation>
 <translation id="1066060668811609597">Upravljanje sinhronizacije</translation>
 <translation id="1076421457278169141">Koda je bila optično prebrana</translation>
@@ -182,6 +183,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2690858294534178585">Kamera je v uporabi</translation>
 <translation id="2691653761409724435">Ni na voljo brez povezave</translation>
 <translation id="2695507686909505111">Stran je prevedena</translation>
+<translation id="2700241355396984822">Možnosti za nastavitev dovoljenj</translation>
 <translation id="2702801445560668637">Reading List</translation>
 <translation id="2704491540504985681">Prenosi</translation>
 <translation id="2704606927547763573">Kopirano</translation>
@@ -318,6 +320,8 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3861486700625780712">Ne spremljaj več</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
+<translation id="3904829425754749514">Vaša organizacija je izklopila sinhronizacijo. Še vedno si lahko ogledate zaznamke, zgodovino, gesla in druge nastavitve v tej napravi. Če naredite spremembe, ne bodo sinhronizirane z računom.</translation>
+<translation id="3905353503976611311">Iskanje v spletu</translation>
 <translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
 <translation id="3915450441834151894">Podatki o spletnem mestu</translation>
 <translation id="3922310737605261887">Iskanje besedila, ki ste ga kopirali</translation>
@@ -347,6 +351,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
 <translation id="418156467088430727">Ogled različice brez povezave na novem zavihku</translation>
 <translation id="4181841719683918333">Jeziki</translation>
+<translation id="4223967053752765281">Organizacija je izklopila prijavo. Še vedno si lahko ogledate zaznamke, zgodovino, gesla in druge nastavitve v tej napravi. Če naredite spremembe, ne bodo sinhronizirane z računom.</translation>
 <translation id="4237377247299956313">Dotaknite se možnosti za <ph name="BEGIN_BOLD" />privzeto aplikacijo za brskanje<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Vnos gesla</translation>
 <translation id="4249955472157341256">Razvrsti glede na najnovejše</translation>
@@ -371,6 +376,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="4469418912670346607">Nadaljuj nastavitev</translation>
 <translation id="4474494258097106883">Ustvarjeno za vaš iPhone</translation>
 <translation id="4476574785019001431">Nastavitve</translation>
+<translation id="448433063499977729">Sinhronizacija je izklopljena</translation>
 <translation id="4496373720959965247">Dodajte zavihke in preklapljate med stranmi</translation>
 <translation id="4502566650163919158">Preveri</translation>
 <translation id="4505980578794259603">Nazadnje preverjeno: <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5580834567471114021">Želite dodati na bralni seznam za pozneje?</translation>
 <translation id="5592679540098330836">Vklopite sinhronizacijo za uporabnika <ph name="NAME" /></translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
+<translation id="560999923643681074">Dostop za urejanje</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
 <translation id="5626245204502895507">Datoteke trenutno ni mogoče prenesti.</translation>
 <translation id="5631164295104953411">Dodajanje plačilnega sredstva</translation>
@@ -594,7 +601,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6389470377220713856">Name on Card</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6410883413783534063">Odprite zavihke, če želite obiskati različne strani hkrati</translation>
-<translation id="6417838470969808600">Iz računa <ph name="USER_EMAIL1" /> imate zaznamke, zgodovino, gesla in druge nastavitve.</translation>
 <translation id="641799622251403418">Prijavljeni ste kot <ph name="EMAIL" />.
 
 Podatki so bili šifrirani z vašim geslom za sinhronizacijo <ph name="TIME" />. Vnesite ga, če želite začeti sinhronizacijo.</translation>
@@ -759,6 +765,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7840771868269352570">Izbrani elementi bodo odstranjeni.</translation>
 <translation id="7856733331829174190">Prenos ni uspel</translation>
 <translation id="7859704718976024901">Zgodovina brskanja</translation>
+<translation id="7884694604461143138">Zgodovina iskanja (najdeno: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Chrome zaradi varovanja vaše zasebnosti ne bo samodejno izpolnil tega polja.</translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8076014560081431679">Shranjene nastavitve spletnih mest ne bodo izbrisane in morda odražajo vaše brskalne navade. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ta nastavitev je upravljana; dvakrat se dotaknite, če želite več informacij.</translation>
 <translation id="8080028325999236607">Zapri vse zavihke</translation>
+<translation id="809543534949702122">Zgodovina iskanja</translation>
 <translation id="8101409298456377967">Ustvarite, shranite in upravljajte gesla, tako da se lahko preprosto prijavite na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Izklop</translation>
 <translation id="8114753159095730575">Prenos datotek je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
@@ -811,6 +819,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8323906514956095947">Pridržite za več možnosti zavihkov</translation>
 <translation id="8328777765163860529">Zapri vse</translation>
+<translation id="8364085047956854021">Dovoljenja za spletno mesto »<ph name="SITE_NAME" />« bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
 <translation id="8378714024927312812">Upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Ponastavi</translation>
 <translation id="8407669440184693619">Za to spletno mesto ni najdenih gesel</translation>
@@ -897,6 +906,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9152539721251340337">Ustvari kodo QR</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
+<translation id="9177438225260810839">Iskanje po odprtih zavihkih</translation>
 <translation id="9188680907066685419">Odjava iz upravljanega računa</translation>
 <translation id="9200875785104711666">pred <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>

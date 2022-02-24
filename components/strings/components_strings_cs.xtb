@@ -515,6 +515,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2523886232349826891">Uloženo pouze do tohoto zařízení</translation>
 <translation id="2524461107774643265">Přidání dalších informací</translation>
 <translation id="2529899080962247600">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou ignorovány.</translation>
+<translation id="2535585790302968248">Otevřete novou anonymní kartu a prohlížejte v soukromí</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{a 1 další}few{a # další}many{a # další}other{a # dalších}}</translation>
 <translation id="2536110899380797252">Přidat adresu</translation>
 <translation id="2539524384386349900">Rozpoznat</translation>
@@ -581,6 +582,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2709516037105925701">Automatické vyplňování</translation>
 <translation id="2713444072780614174">Bílá</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter můžete spravovat údaje o platbách a platebních kartách v nastavení Chromu</translation>
+<translation id="271663710482723385">Režim celé obrazovky ukončíte stisknutím kláves |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2721148159707890343">Požadavek byl úspěšný</translation>
 <translation id="2723669454293168317">Spusťte v nastavení Chromu bezpečnostní kontrolu</translation>
 <translation id="2726001110728089263">Boční zásobník</translation>
@@ -743,6 +745,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3288238092761586174"><ph name="URL" /> zřejmě bude muset vaši platbu ověřit pomocí dodatečných kroků</translation>
 <translation id="3293642807462928945">Další informace o zásadě <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Zobrazte a spravujte svá hesla v nastavení Chromu</translation>
+<translation id="3303795387212510132">Povolit aplikaci otevírat odkazy <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
 <translation id="3304073249511302126">vyhledávání bluetooth</translation>
 <translation id="3308006649705061278">Organizační jednotka (OU)</translation>
@@ -1247,6 +1250,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4854362297993841467">Tento způsob doručení není k dispozici. Zkuste použít jiný způsob.</translation>
 <translation id="4854853140771946034">Rychle vytvořit novou poznámku v aplikaci Google Keep</translation>
 <translation id="485902285759009870">Ověřování kódu…</translation>
+<translation id="4866506163384898554">Kurzor zobrazíte stisknutím kláves |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4876188919622883022">Zjednodušené zobrazení</translation>
 <translation id="4876305945144899064">Žádné uživatelské jméno</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Žádné}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1260,6 +1264,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Devátá role</translation>
 <translation id="4901778704868714008">Uložit...</translation>
+<translation id="4905659621780993806">V <ph name="TIME" /> dne <ph name="DATE" /> administrátor zařízení automaticky restartuje. Před restartováním zařízení uložte všechny otevřené položky.</translation>
 <translation id="4913987521957242411">Děrování vlevo nahoře</translation>
 <translation id="4918221908152712722">Nainstalujte si aplikaci <ph name="APP_NAME" /> (není potřeba nic stahovat)</translation>
 <translation id="4923459931733593730">Platba</translation>
@@ -1469,6 +1474,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5560088892362098740">Datum vypršení platnosti</translation>
 <translation id="55635442646131152">Osnova dokumentu</translation>
+<translation id="5565613213060953222">Otevřít anonymní kartu</translation>
 <translation id="5565735124758917034">Aktivní</translation>
 <translation id="5570825185877910964">Ochránit účet</translation>
 <translation id="5571083550517324815">Vyzvednutí na této adrese není možné. Vyberte jinou adresu.</translation>
@@ -1672,6 +1678,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6290238015253830360">Zde se zobrazí navrhované články</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Bezpečnostní kód kreditní karty (CVC):</translation>
+<translation id="6300452962057769623">{0,plural, =0{Zařízení se teď restartuje}=1{Zařízení se za 1 sekundu restartuje}few{Zařízení se za # sekundy restartuje}many{Zařízení se za # sekundy restartuje}other{Zařízení se za # sekund restartuje}}</translation>
 <translation id="6302269476990306341">Zastavování Asistenta Google v Chromu</translation>
 <translation id="6305205051461490394">Web <ph name="URL" /> není dostupný.</translation>
 <translation id="6312113039770857350">Webová stránka není k dispozici</translation>
@@ -1933,6 +1940,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7192203810768312527">Uvolní <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Administrátor má přístup k následujícím údajům:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Web <ph name="HOST_NAME" /> nevyhovuje bezpečnostním standardům.</translation>
 <translation id="7210993021468939304">Aktivita systému Linux v rámci kontejneru, může instalovat a spouštět aplikace Linux v kontejneru</translation>
@@ -1994,6 +2002,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7378627244592794276">Ne</translation>
 <translation id="7378810950367401542"> / </translation>
 <translation id="7386364858855961704">Nelze použít</translation>
+<translation id="7388594495505979117">{0,plural, =1{Zařízení se za 1 minutu restartuje}few{Zařízení se za # minuty restartuje}many{Zařízení se za # minuty restartuje}other{Zařízení se za # minut restartuje}}</translation>
 <translation id="7390545607259442187">Ověření karty</translation>
 <translation id="7392089738299859607">Aktualizovat adresu</translation>
 <translation id="7399802613464275309">Bezpečnostní kontrola</translation>
@@ -2196,6 +2205,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="799149739215780103">Vazba</translation>
 <translation id="7992044431894087211">Sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" /> bylo obnoveno</translation>
 <translation id="7995512525968007366">Není zadáno</translation>
+<translation id="7998269595945679889">Tlačítko Otevřít anonymní kartu, stisknutím klávesy Enter otevřete novou anonymní kartu, abyste mohli prohlížet v soukromí</translation>
 <translation id="800218591365569300">Zkuste uvolnit paměť tím, že zavřete ostatní karty nebo programy.</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Tato karta a její fakturační adresa se uloží. Budete ji moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}few{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}many{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}other{Tyto karty a jejich fakturační adresy se uloží. Budete je moci používat, když budete přihlášeni k účtu <ph name="USER_EMAIL" />.}}</translation>
@@ -2350,6 +2360,7 @@ Další podrobnosti:
 <translation id="8507227106804027148">Příkazový řádek</translation>
 <translation id="8508648098325802031">Ikona Vyhledávání</translation>
 <translation id="8511402995811232419">Spravovat soubory cookie</translation>
+<translation id="8519753333133776369">Zařízení HID povolené administrátorem</translation>
 <translation id="8522552481199248698">Chrome vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
 <translation id="8530813470445476232">Vymažte historii prohlížení, soubory cookie, mezipaměť a další data v nastavení Chromu</translation>
 <translation id="8533619373899488139">Na stránce &lt;strong&gt;chrome://policy&lt;/strong&gt; naleznete seznam blokovaných adres URL a další zásady vynucené vaším administrátorem systému.</translation>

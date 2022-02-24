@@ -519,6 +519,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2523886232349826891">Gemmes kun på denne enhed</translation>
 <translation id="2524461107774643265">Tilføj flere oplysninger</translation>
 <translation id="2529899080962247600">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster ignoreres.</translation>
+<translation id="2535585790302968248">Åbn en ny inkognitofane for at browse privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 mere}one{og # mere}other{og # mere}}</translation>
 <translation id="2536110899380797252">Tilføj adresse</translation>
 <translation id="2539524384386349900">Registrer</translation>
@@ -585,6 +586,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2709516037105925701">AutoFyld</translation>
 <translation id="2713444072780614174">Hvid</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at administrere oplysninger om dine betalinger og betalingskort i Chrome-indstillingerne</translation>
+<translation id="271663710482723385">Tryk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for at afslutte visning i fuld skærm</translation>
 <translation id="2721148159707890343">Anmodning lykkedes</translation>
 <translation id="2723669454293168317">Kør et sikkerhedstjek i Chrome-indstillingerne</translation>
 <translation id="2726001110728089263">Sidebakke</translation>
@@ -750,6 +752,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3288238092761586174"><ph name="URL" /> er muligvis nødt til at gennemføre yderligere trin for at bekræfte din betaling</translation>
 <translation id="3293642807462928945">Få flere oplysninger om politikken <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer dine adgangskoder i Chrome-indstillingerne</translation>
+<translation id="3303795387212510132">Vil du tillade, at appen åbner <ph name="PROTOCOL_SCHEME" />-links?</translation>
 <translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
 <translation id="3304073249511302126">Bluetooth-scanning</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
@@ -1260,6 +1263,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4854362297993841467">Denne leveringsmetode er ikke tilgængelig. Prøv en anden metode.</translation>
 <translation id="4854853140771946034">Opret hurtigt en ny note i Google Keep</translation>
 <translation id="485902285759009870">Bekræfter koden...</translation>
+<translation id="4866506163384898554">Tryk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for at se din markør</translation>
 <translation id="4876188919622883022">Enkel visning</translation>
 <translation id="4876305945144899064">Intet brugernavn</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ingen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1273,6 +1277,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Niende papirrulle</translation>
 <translation id="4901778704868714008">Gem...</translation>
+<translation id="4905659621780993806">Din administrator genstarter automatisk din enhed <ph name="TIME" /> <ph name="DATE" />. Gem eventuelle åbne elementer, inden din enhed genstarter.</translation>
 <translation id="4913987521957242411">Hul øverst til venstre</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (kræver ikke download)</translation>
 <translation id="4923459931733593730">Betaling</translation>
@@ -1482,6 +1487,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5560088892362098740">Udløbsdato</translation>
 <translation id="55635442646131152">Indholdsfortegnelse</translation>
+<translation id="5565613213060953222">Åbn inkognitofane</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5570825185877910964">Beskyt konto</translation>
 <translation id="5571083550517324815">Der kan ikke afhentes på denne adresse. Vælg en anden adresse.</translation>
@@ -1686,6 +1692,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6290238015253830360">Forslag til artikler til dig vises her</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Din enhed genstarter nu}=1{Din enhed genstarter om 1 sekund}one{Din enhed genstarter om # sekund}other{Din enhed genstarter om # sekunder}}</translation>
 <translation id="6302269476990306341">Google Assistent i Chrome stopper</translation>
 <translation id="6305205051461490394"><ph name="URL" /> kan ikke nås.</translation>
 <translation id="6312113039770857350">Websiden er ikke tilgængelig</translation>
@@ -1947,6 +1954,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7192203810768312527">Frigør <ph name="SIZE" />. Nogle websites indlæses muligvis langsommere, næste gang du besøger websitet.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Din administrator kan se:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> overholder ikke sikkerhedsstandarderne.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i containeren. Kan også installere og køre Linux-apps i containeren.</translation>
@@ -2009,6 +2017,7 @@ Yderligere oplysninger:
 <translation id="7378627244592794276">Nej</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Ikke relevant</translation>
+<translation id="7388594495505979117">{0,plural, =1{Din enhed genstarter om 1 minut}one{Din enhed genstarter om # minut}other{Din enhed genstarter om # minutter}}</translation>
 <translation id="7390545607259442187">Bekræft kort</translation>
 <translation id="7392089738299859607">Opdater adresse</translation>
 <translation id="7399802613464275309">Sikkerhedstjek</translation>
@@ -2211,6 +2220,7 @@ Yderligere oplysninger:
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Skærmdelingen med <ph name="APPLICATION_TITLE" /> blev genoptaget</translation>
 <translation id="7995512525968007366">Ikke angivet</translation>
+<translation id="7998269595945679889">Knappen Åbn inkognitofane – tryk på Enter for at åbne en ny inkognitofane, så du kan browse privat</translation>
 <translation id="800218591365569300">Prøv at lukke andre faner eller programmer for at frigøre hukommelse.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}one{Kortet og faktureringsadressen gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}other{Kortene og faktureringsadresserne gemmes. Du kan bruge dem, når du er logget ind på <ph name="USER_EMAIL" />.}}</translation>
@@ -2365,6 +2375,7 @@ Yderligere oplysninger:
 <translation id="8507227106804027148">Kommandolinje</translation>
 <translation id="8508648098325802031">Søgeikon</translation>
 <translation id="8511402995811232419">Administrer cookies</translation>
+<translation id="8519753333133776369">Din administrator har tilladt HID-enheden</translation>
 <translation id="8522552481199248698">Chrome kan hjælpe dig med at beskytte din Google-konto og ændre din adgangskode.</translation>
 <translation id="8530813470445476232">Ryd browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for at se listen over blokerede webadresser og andre politikker, der håndhæves af din systemadministrator.</translation>

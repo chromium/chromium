@@ -187,6 +187,7 @@
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
 <translation id="123018742985150697">Exigir correspondência entre o usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
+<translation id="1239411164172567974">Ativar a API Direct Sockets.</translation>
 <translation id="1239526922294123540">Controla se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura.
 
           Quando esta política é definida como verdadeira, todas as verificações de <ph name="PRIVATE_NETWORK_ACCESS" /> são desativadas para todas as origens. Isso pode permitir que invasores realizem ataques <ph name="CSRF" /> a servidores de rede particular.
@@ -1447,6 +1448,8 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2509919237512982967">Usar controles de formulários legados até a M84.</translation>
 <translation id="2512972020817284317">Ativar a mesclagem de políticas da nuvem no nível do usuário.</translation>
 <translation id="2515699738406900920">Disponibilidade do seletor de perfil na inicialização</translation>
+<translation id="251594860034549963">Se a política for definida como "Ativada", as janelas do navegador do último dispositivo usado pelo usuário atual serão abertas automaticamente no login.
+      Se a política for definida como "Desativada" ou não for definida, as configurações de restauração completa vão determinar o que será iniciado no login.</translation>
 <translation id="2517466659416174529">Permitir congelamento das guias em segundo plano</translation>
 <translation id="2518231489509538392">Permitir a reprodução de áudio</translation>
 <translation id="2520551905471951523">Usar a prioridade alta para o processo de áudio</translation>
@@ -2419,6 +2422,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
+<translation id="3608206578291537084">Ativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="3612809274815536412">Configurações do posicionamento de janelas</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
@@ -2545,6 +2549,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3791179836066841809">Documentação da política</translation>
+<translation id="3791556154364029875">Ativar o Workspace flutuante e abrir janelas do navegador remoto ao fazer login</translation>
 <translation id="3794413118360704299">Esta política permite que um administrador especifique configurações para apps da Web instalados.
 
       Esta política mapeia um ID de app da Web para a própria configuração específica. Consulte <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver instruções sobre como determinar o ID de um app da Web instalado.
@@ -2767,6 +2772,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
 <translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
+<translation id="4025176296532430931">Desativar o Workspace flutuante e não abrir janelas do navegador remoto ao fazer login</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
@@ -4202,11 +4208,14 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5767776869128458023">Desativar páginas de erro alternativas</translation>
 <translation id="5770738360657678870">Canal de desenvolvedores (pode ser instável)</translation>
+<translation id="5774345930803672932">Se a política for definida como verdadeira ou for deixada sem definição, isso vai permitir que eventos, telemetria e informações sejam
+      reportados para o pipeline de geração de relatórios criptografados. Se a política for definida como falsa, o pipeline de geração de relatórios criptografados será desativado.</translation>
 <translation id="5774856474228476867">URL de pesquisa do provedor de pesquisa padrão</translation>
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
+<translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="5806128552675651249">Permitir impressão apenas sem gráficos de segundo plano</translation>
 <translation id="5809210507920527553">Controla configurações do contêiner Linux (Crostini).</translation>
 <translation id="5809728392451418079">Definir o nome de exibição das contas locais de dispositivo</translation>
@@ -5542,6 +5551,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="7258823566580374486">Ativar cortinas de hosts de acesso remoto</translation>
 <translation id="7260204423892780600">Controla as configurações do Google Assistente.</translation>
+<translation id="7261140115553020049">Ativar serviço do Workspace flutuante</translation>
 <translation id="7261252191178797385">Imagem de plano de fundo do dispositivo</translation>
 <translation id="7264704483008663819">O uso desta política foi suspenso no M68. Substitua-a por DeveloperToolsAvailability.
 
@@ -5678,6 +5688,9 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7459601923199346224">Controla as políticas do usuário e dispositivo para o gerenciamento de certificados.</translation>
 <translation id="7459633275230216698">Permitir caixas de diálogo para seleção de arquivo</translation>
 <translation id="7464991223784276288">Limita cookies de URLs correspondentes à sessão atual</translation>
+<translation id="7466522266556143347">Se a política for definida como "Ativada", os usuários vão poder usar a API Direct Sockets (desde que todas as outras condições obrigatórias sejam atendidas).
+      Se a política for definida como 'Desativada", os usuários não vão poder acessar a API.
+      Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
 <translation id="7468182772656807573">Se a política for definida, a frequência do envio de pacotes de monitoramento de rede será determinada, em milissegundos. Os intervalos variam de 30 segundos a 24 horas. Valores fora desse intervalo serão ajustados dentro dessa faixa.
 
       Se a política não for definida, o intervalo padrão será de 3 minutos.</translation>
@@ -6824,6 +6837,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida como "Desativada" ou deixada sem definição, o host de acesso remoto poderá ser associado com qualquer usuário local.</translation>
 <translation id="867708016260789630">Forçar o Modo restrito do YouTube pelo menos no nível moderado</translation>
 <translation id="8677853537025397834">Autorizar o uso da API WebHID nestes sites</translation>
+<translation id="8684781382594546769">Desativar a API Direct Sockets.</translation>
 <translation id="8685024486845674965">O aviso de proteção de senha é acionado pela reutilização da senha</translation>
 <translation id="8685680544554917389">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> poderá tocar mídia automaticamente. Se a política for definida como falsa, o <ph name="PRODUCT_NAME" /> será impedido de tocar mídia automaticamente.
 
@@ -7073,6 +7087,12 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Esta política é usada apenas para usuários do Family Link.</translation>
 <translation id="8947415621777543415">Informar a localização do dispositivo</translation>
 <translation id="8948062138228904066">Lista de permissões do servidor de autenticação</translation>
+<translation id="8949511380888040821">Quando esta configuração estiver ativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador integrado de certificados.
+      Quando ela estiver desativada, o <ph name="PRODUCT_NAME" /> vai verificar os certificados do servidor usando o verificador legado disponibilizado pela plataforma.
+      Quando esta configuração não for definida, tanto o verificador de certificados integrado quanto o legado vão poder ser usados.
+
+      Esta política será removida no <ph name="PRODUCT_NAME" /> para <ph name="MAC_OS_NAME" /> versão 104, quando o suporte para o verificador de certificados legado no <ph name="MAC_OS_NAME" /> também será removido.
+      </translation>
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>

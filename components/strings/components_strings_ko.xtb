@@ -515,6 +515,7 @@
 <translation id="2523886232349826891">이 기기에만 저장됨</translation>
 <translation id="2524461107774643265">자세한 정보 추가</translation>
 <translation id="2529899080962247600">입력란에 항목이 <ph name="MAX_ITEMS_LIMIT" />개 넘게 있으면 안 됩니다. 이후 항목은 모두 무시됩니다.</translation>
+<translation id="2535585790302968248">비공개로 탐색하려면 새 시크릿 탭을 여세요.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="2536110899380797252">주소 추가</translation>
 <translation id="2539524384386349900">감지</translation>
@@ -581,6 +582,7 @@
 <translation id="2709516037105925701">자동 완성</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="271663710482723385">전체화면을 종료하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="2721148159707890343">요청 성공</translation>
 <translation id="2723669454293168317">Chrome 설정의 안전 확인 실행</translation>
 <translation id="2726001110728089263">측면 트레이</translation>
@@ -746,6 +748,7 @@
 <translation id="3288238092761586174">결제 인증을 위해 <ph name="URL" />에서 추가 단계를 진행해야 할 수 있습니다.</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> 정책에 관해 자세히 알아보기</translation>
 <translation id="3295444047715739395">Chrome 설정에서 비밀번호를 확인하고 관리하세요.</translation>
+<translation id="3303795387212510132">앱에서 <ph name="PROTOCOL_SCHEME" /> 링크를 열도록 허용하시겠습니까?</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
 <translation id="3304073249511302126">블루투스 검색</translation>
 <translation id="3308006649705061278">조직 구성 단위(OU)</translation>
@@ -1251,6 +1254,7 @@
 <translation id="4854362297993841467">사용할 수 없는 배달 방법입니다. 다른 방법을 선택하세요.</translation>
 <translation id="4854853140771946034">Google Keep에서 빠르게 새 메모 만들기</translation>
 <translation id="485902285759009870">코드 인증 중...</translation>
+<translation id="4866506163384898554">커서를 표시하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="4876188919622883022">간단히 보기</translation>
 <translation id="4876305945144899064">사용자 이름 없음</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{없음}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1264,6 +1268,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">9번째 롤</translation>
 <translation id="4901778704868714008">저장...</translation>
+<translation id="4905659621780993806">관리자가 <ph name="DATE" /> <ph name="TIME" />에 기기를 자동으로 다시 시작합니다. 기기가 다시 시작되기 전에 실행 중인 항목을 저장하세요.</translation>
 <translation id="4913987521957242411">왼쪽 상단 펀칭</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> 설치(다운로드 필요 없음)</translation>
 <translation id="4923459931733593730">결제</translation>
@@ -1473,6 +1478,7 @@
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5560088892362098740">만료일</translation>
 <translation id="55635442646131152">문서 개요</translation>
+<translation id="5565613213060953222">시크릿 탭 열기</translation>
 <translation id="5565735124758917034">활성</translation>
 <translation id="5570825185877910964">계정 보호</translation>
 <translation id="5571083550517324815">이 주소에서 수령할 수 없습니다. 다른 주소를 선택하세요.</translation>
@@ -1677,6 +1683,7 @@
 <translation id="6290238015253830360">추천 콘텐츠가 여기에 표시됩니다.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{지금 기기가 다시 시작됩니다}=1{1초 후에 기기가 다시 시작됩니다}other{#초 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="6302269476990306341">Chrome의 Google 어시스턴트 중지하는 중</translation>
 <translation id="6305205051461490394"><ph name="URL" />에 연결할 수 없습니다.</translation>
 <translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
@@ -1938,6 +1945,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" />의 저장용량을 확보합니다. 일부 사이트는 다음에 방문할 때 로드 속도가 느려질 수도 있습니다.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">관리자가 볼 수 있는 항목은 다음과 같습니다.</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, 새 시크릿 탭을 열어 비공개로 탐색하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />에서 보안 기준을 준수하지 않습니다.</translation>
 <translation id="7210993021468939304">컨테이너 내 Linux 활동 및 컨테이너 내에서 Linux 앱 설치 및 실행 가능</translation>
@@ -2000,6 +2008,7 @@
 <translation id="7378627244592794276">안함</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">해당 사항 없음</translation>
+<translation id="7388594495505979117">{0,plural, =1{1분 후에 기기가 다시 시작됩니다}other{#분 후에 기기가 다시 시작됩니다}}</translation>
 <translation id="7390545607259442187">카드 확인</translation>
 <translation id="7392089738299859607">주소 업데이트</translation>
 <translation id="7399802613464275309">안전 확인</translation>
@@ -2201,6 +2210,7 @@
 <translation id="799149739215780103">바인드</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />과(와)의 화면 공유가 재개되었습니다.</translation>
 <translation id="7995512525968007366">지정되지 않음</translation>
+<translation id="7998269595945679889">시크릿 탭 열기 버튼, 새 시크릿 탭을 열어 비공개로 탐색하려면 Enter 누르기</translation>
 <translation id="800218591365569300">다른 탭이나 프로그램을 종료하여 메모리를 확보하세요.</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}other{이 카드와 청구서 수신 주소가 저장됩니다. <ph name="USER_EMAIL" /> 계정으로 로그인하면 카드를 사용할 수 있습니다.}}</translation>
@@ -2355,6 +2365,7 @@
 <translation id="8507227106804027148">명령줄</translation>
 <translation id="8508648098325802031">검색 아이콘</translation>
 <translation id="8511402995811232419">쿠키 관리</translation>
+<translation id="8519753333133776369">관리자가 허용한 HID 기기</translation>
 <translation id="8522552481199248698">Chrome을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
 <translation id="8530813470445476232">Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하세요.</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>

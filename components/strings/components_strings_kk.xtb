@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">Тек осы құрылғыда сақталады</translation>
 <translation id="2524461107774643265">Қосымша ақпарат енгізу</translation>
 <translation id="2529899080962247600">Бұл өрістегі жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />. Қалған жазбалар еленбейтін болады.</translation>
+<translation id="2535585790302968248">Құпия шарлау үшін жаңа инкогнито қойындысын ашыңыз.</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{және тағы 1}other{және тағы #}}</translation>
 <translation id="2536110899380797252">Мекенжай енгізу</translation>
 <translation id="2539524384386349900">Анықтау</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">Автотолтыру</translation>
 <translation id="2713444072780614174">Ақ</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде төлемдеріңіз және несиелік картаңыз туралы ақпаратты басқару үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
+<translation id="271663710482723385">Толық экран режимінен шығу үшін |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| пернелерін басыңыз.</translation>
 <translation id="2721148159707890343">Сұрау сәтті жіберілді</translation>
 <translation id="2723669454293168317">Chrome параметрлерінен қауіпсіздік тексерісін іске қосу</translation>
 <translation id="2726001110728089263">Бүйірлік науа</translation>
@@ -749,6 +751,7 @@
 <translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
+<translation id="3303795387212510132">Қолданбаға <ph name="PROTOCOL_SCHEME" /> сілтемелерін ашуға рұқсат берілсін бе?</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
 <translation id="3304073249511302126">Bluetooth құрылғыларын іздеу</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
@@ -1259,6 +1262,7 @@
 <translation id="4854362297993841467">Бұл жеткізу әдісі қолжетімді емес. Басқа әдісті қолданып көріңіз.</translation>
 <translation id="4854853140771946034">Google Keep-те жылдам жаңа ескертпе жасау</translation>
 <translation id="485902285759009870">Код тексерілуде…</translation>
+<translation id="4866506163384898554">Курсорды көрсету үшін |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| пернелерін басыңыз.</translation>
 <translation id="4876188919622883022">Қарапайым көрініс</translation>
 <translation id="4876305945144899064">Пайдаланушы аты жоқ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Жоқ}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1272,6 +1276,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Тоғызыншы орам</translation>
 <translation id="4901778704868714008">Сақтау...</translation>
+<translation id="4905659621780993806">Әкімші құрылғыңызды автоматты түрде қайта қосатын уақыт: <ph name="DATE" /> <ph name="TIME" />. Құрылғыны қайта қоспас бұрын, барлық ашық элементті сақтаңыз.</translation>
 <translation id="4913987521957242411">Жоғарғы сол жақты тесу</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> қолданбасын орнатыңыз (жүктеп алудың қажеті жоқ).</translation>
 <translation id="4923459931733593730">Төлем</translation>
@@ -1481,6 +1486,7 @@
 <translation id="5556459405103347317">Қайта жүктеу</translation>
 <translation id="5560088892362098740">Мерзімі бітетін күні</translation>
 <translation id="55635442646131152">Тақырыптар тізімдемесі</translation>
+<translation id="5565613213060953222">Инкогнито қойындысын ашу</translation>
 <translation id="5565735124758917034">Белсенді</translation>
 <translation id="5570825185877910964">Аккаунтты қорғау</translation>
 <translation id="5571083550517324815">Бұл мекенжайдан таңдалмайды. Басқа мекенжайды таңдаңыз.</translation>
@@ -1685,6 +1691,7 @@
 <translation id="6290238015253830360">Сізге ұсынылған мақалалар осы жерге шығады.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Құрылғыңыз қазір қайта қосылады}=1{Құрылғыңыз 1 секундтан кейін қайта қосылады}other{Құрылғыңыз # секундтан кейін қайта қосылады}}</translation>
 <translation id="6302269476990306341">Chrome браузеріндегі Google Assistant тоқтатылуда</translation>
 <translation id="6305205051461490394"><ph name="URL" /> мекенжайына кіру мүмкін емес.</translation>
 <translation id="6312113039770857350">Веб-бет қол жетімді емес</translation>
@@ -1946,6 +1953,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> дейін босатады. Кейбір сайттар келесі рет кірген кезіңізде баяу жүктелуі мүмкін.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Әкімші келесілерді көреді:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Жаңа инкогнито қойындысын ашу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> қауіпсіздік стандарттарына сай емес.</translation>
 <translation id="7210993021468939304">Linux-тің контейнердегі әрекетін көреді, сондай-ақ контейнерден Linux қолданбаларын орната және іске қоса алады.</translation>
@@ -2008,6 +2016,7 @@
 <translation id="7378627244592794276">Жоқ</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Қатысты емес</translation>
+<translation id="7388594495505979117">{0,plural, =1{Құрылғыңыз 1 минуттан кейін қайта қосылады}other{Құрылғыңыз # минуттан кейін қайта қосылады}}</translation>
 <translation id="7390545607259442187">Картаны растау</translation>
 <translation id="7392089738299859607">Мекенжайды жаңарту</translation>
 <translation id="7399802613464275309">Қауіпсіздік шарасы</translation>
@@ -2210,6 +2219,7 @@
 <translation id="799149739215780103">Байлау</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> веб-сайтына экранды көрсету жалғастырылды.</translation>
 <translation id="7995512525968007366">Көрсетілмеген</translation>
+<translation id="7998269595945679889">"Инкогнито қойындысын ашу" түймесі. Жаңа инкогнито қойындысын ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="800218591365569300">Жадты босату үшін басқа қойындылары не бағдарламаларды жауып көріңіз</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Осы карта мен оның төлем мекенжайы сақталады. Оны <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}other{Осы карталар мен олардың төлем мекенжайлары сақталады. Оларды <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}}</translation>
@@ -2364,6 +2374,7 @@
 <translation id="8507227106804027148">Пәрмен жолы</translation>
 <translation id="8508648098325802031">Іздеу белгішесі</translation>
 <translation id="8511402995811232419">Cookie файлдарын басқару</translation>
+<translation id="8519753333133776369">Әкімші рұқсат берген HID құрылғысы</translation>
 <translation id="8522552481199248698">Chrome браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="8530813470445476232">Chrome параметрлерінен браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. деректерді өшіріңіз.</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>

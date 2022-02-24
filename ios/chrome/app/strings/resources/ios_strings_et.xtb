@@ -601,7 +601,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6389470377220713856">Nimi kaardil</translation>
 <translation id="6406506848690869874">Sünkroonimine</translation>
 <translation id="6410883413783534063">Avage vahelehti, et samal ajal eri lehti külastada</translation>
-<translation id="6417838470969808600">Teil on järjehoidjad, ajalugu, paroolid ja muud seaded e-posti aadressilt <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Sisse logitud kasutajana <ph name="EMAIL" />.
 
 Teie andmed krüpteeriti <ph name="TIME" /> teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>

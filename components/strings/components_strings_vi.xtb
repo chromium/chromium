@@ -519,6 +519,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2523886232349826891">Chỉ lưu trên thiết bị này</translation>
 <translation id="2524461107774643265">Thêm thông tin khác</translation>
 <translation id="2529899080962247600">Trường này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục. Tất cả mục thừa sẽ bị bỏ qua.</translation>
+<translation id="2535585790302968248">Mở một thẻ ẩn danh mới để duyệt web ở chế độ riêng tư</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{và 1 miền khác}other{và # miền khác}}</translation>
 <translation id="2536110899380797252">Thêm địa chỉ</translation>
 <translation id="2539524384386349900">Phát hiện</translation>
@@ -585,6 +586,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2709516037105925701">Tự động điền</translation>
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để quản lý thông tin thanh toán và thẻ tín dụng trong phần cài đặt của Chrome</translation>
+<translation id="271663710482723385">Nhấn |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| để thoát chế độ toàn màn hình</translation>
 <translation id="2721148159707890343">Yêu cầu đã thành công</translation>
 <translation id="2723669454293168317">Chạy quy trình kiểm tra an toàn trong phần Cài đặt của Chrome</translation>
 <translation id="2726001110728089263">Khay bên</translation>
@@ -750,6 +752,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3288238092761586174"><ph name="URL" /> có thể cần thực hiện các bước bổ sung để xác minh khoản thanh toán của bạn</translation>
 <translation id="3293642807462928945">Hãy tìm hiểu thêm về chính sách <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Xem và quản lý mật khẩu của bạn trong phần cài đặt của Chrome</translation>
+<translation id="3303795387212510132">Cho phép ứng dụng mở liên kết <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
 <translation id="3304073249511302126">quét tìm Bluetooth</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
@@ -1260,6 +1263,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4854362297993841467">Phương thức phân phối này không có sẵn. Hãy thử một phương thức khác.</translation>
 <translation id="4854853140771946034">Tạo nhanh một ghi chú mới trong Google Keep</translation>
 <translation id="485902285759009870">Đang xác minh mã...</translation>
+<translation id="4866506163384898554">Nhấn |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| để con trỏ xuất hiện</translation>
 <translation id="4876188919622883022">Chế độ xem đơn giản</translation>
 <translation id="4876305945144899064">Không có tên người dùng</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Không có}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1273,6 +1277,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Cuộn thứ chín</translation>
 <translation id="4901778704868714008">Lưu...</translation>
+<translation id="4905659621780993806">Quản trị viên của bạn sẽ tự động khởi động lại thiết bị của bạn vào lúc <ph name="TIME" /> <ph name="DATE" /> Hãy lưu mọi mục đang mở trước khi thiết bị của bạn khởi động lại.</translation>
 <translation id="4913987521957242411">Đục lỗ trên cùng bên trái</translation>
 <translation id="4918221908152712722">Cài đặt <ph name="APP_NAME" /> (không cần tải xuống)</translation>
 <translation id="4923459931733593730">Thanh toán</translation>
@@ -1482,6 +1487,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5560088892362098740">Ngày hết hạn</translation>
 <translation id="55635442646131152">Đường viền tài liệu</translation>
+<translation id="5565613213060953222">Mở thẻ ẩn danh</translation>
 <translation id="5565735124758917034">Đang hoạt động</translation>
 <translation id="5570825185877910964">Bảo vệ tài khoản</translation>
 <translation id="5571083550517324815">Không thể nhận hàng từ địa chỉ này. Chọn một địa chỉ khác.</translation>
@@ -1686,6 +1692,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6290238015253830360">Bài viết đề xuất cho bạn sẽ xuất hiện ở đây</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Thiết bị của bạn sẽ khởi động lại ngay bây giờ}=1{Thiết bị của bạn sẽ khởi động lại sau 1 giây}other{Thiết bị của bạn sẽ khởi động lại sau # giây}}</translation>
 <translation id="6302269476990306341">Trợ lý Google trong Chrome đang dừng</translation>
 <translation id="6305205051461490394">Không thể truy cập <ph name="URL" />.</translation>
 <translation id="6312113039770857350">Trang web hiện không khả dụng</translation>
@@ -1947,6 +1954,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7192203810768312527">Giải phóng <ph name="SIZE" />. Một số trang web có thể tải chậm hơn trong lần tiếp theo bạn truy cập.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Quản trị viên của bạn có thể xem:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn Tab rồi nhấn Enter để mở một thẻ ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> không tuân thủ các tiêu chuẩn bảo mật.</translation>
 <translation id="7210993021468939304">Hoạt động của Linux trong vùng chứa, đồng thời có thể cài đặt và chạy các ứng dụng Linux trong vùng chứa</translation>
@@ -2009,6 +2017,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7378627244592794276">Không</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Không áp dụng</translation>
+<translation id="7388594495505979117">{0,plural, =1{Thiết bị của bạn sẽ khởi động lại sau 1 phút}other{Thiết bị của bạn sẽ khởi động lại sau # phút}}</translation>
 <translation id="7390545607259442187">Xác nhận thẻ</translation>
 <translation id="7392089738299859607">Cập nhật địa chỉ</translation>
 <translation id="7399802613464275309">Kiểm tra an toàn</translation>
@@ -2211,6 +2220,7 @@ Thông tin chi tiết bổ sung:
 <translation id="799149739215780103">Đóng gáy</translation>
 <translation id="7992044431894087211">Đã tiếp tục chia sẻ màn hình với <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Không chỉ định</translation>
+<translation id="7998269595945679889">Mở nút thẻ ẩn danh rồi nhấn Enter để mở một thẻ ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
 <translation id="800218591365569300">Thử đóng các thẻ hoặc chương trình khác để giải phóng bộ nhớ.</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng thẻ khi đăng nhập vào <ph name="USER_EMAIL" />.}other{Các thẻ này và địa chỉ thanh toán của thẻ sẽ được lưu. Bạn có thể sử dụng các thẻ này khi đăng nhập vào <ph name="USER_EMAIL" />.}}</translation>
@@ -2365,6 +2375,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8507227106804027148">Dòng lệnh</translation>
 <translation id="8508648098325802031">Biểu tượng Tìm kiếm</translation>
 <translation id="8511402995811232419">Quản lý cookie</translation>
+<translation id="8519753333133776369">Quản trị viên của bạn đã cho phép thiết bị HID</translation>
 <translation id="8522552481199248698">Chrome có thể giúp bạn bảo vệ Tài khoản Google của mình và đổi mật khẩu.</translation>
 <translation id="8530813470445476232">Xóa lịch sử duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="8533619373899488139">Hãy truy cập vào &lt;strong&gt;chrome://policy&lt;/strong&gt; để xem danh sách các URL bị chặn và những chính sách khác do quản trị viên hệ thống thực thi.</translation>

@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium treba dopuštenje za pristup kameri radi izrade 3D karte vašeg okruženja</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja}=1{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Anonimni se prozor neće ponovno otvoriti.}one{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Vaš administrator zahtijeva da ponovno pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i sigurnosti u Chromiumu</translation>
+<translation id="1632539827495546968">Ako ovaj račun želite upotrijebiti samo jednom, možete upotrijebiti <ph name="GUEST_LINK_BEGIN" />način rada za goste<ph name="GUEST_LINK_END" /> u pregledniku Chromium. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
+
+Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Svojim Google računima možete upravljati u <ph name="SETTINGS_LINK_BEGIN" />postavkama<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Dostupna je nova, sigurnija verzija preglednika Chromium.</translation>
 <translation id="1774152462503052664">Neka Chromium radi u pozadini</translation>
 <translation id="1779356040007214683">Kako bismo Chromium učinili sigurnijim, onemogućili smo neka proširenja koja nisu navedena u trgovini <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i možda su dodana bez vašeg znanja.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Chromium. Vaši podaci u sustavu Chromium, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. Ako želite, možete izraditi novi profil kako biste zadržali postojeće podatke u sustavu Chromium zasebno. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Ako isključite tu opciju, možete se prijaviti na Googleove web-lokacije kao što je Gmail bez prijavljivanja u Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
+<translation id="1940680973325097484">Ako ovaj račun želite upotrijebiti samo jednom, možete upotrijebiti način rada za goste u pregledniku Chromium. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
+
+Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Svojim Google računima možete upravljati u <ph name="SETTINGS_LINK_BEGIN" />postavkama<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium ne može utvrditi niti postaviti zadani preglednik</translation>
 <translation id="1981611865800294956">Ponovo pokrenite da biste ažurirali OS &amp;Chromium</translation>
 <translation id="2008474315282236005">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>

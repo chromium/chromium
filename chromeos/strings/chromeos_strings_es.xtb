@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1310380015393971138">No hay redes <ph name="NETWORK_NAME" /> disponibles</translation>
+<translation id="131421566576084655">Fecha del último reinicio de datos no disponible</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Red doméstica, sin roaming</translation>
 <translation id="1327977588028644528">Pasarela</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">No se ha podido imprimir - Error de filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tengo un par de claves</translation>
+<translation id="1435763214710588005">Reinicia automáticamente el uso de datos cada mes en el día seleccionado</translation>
 <translation id="1442433966118452622">Fuente de la imagen</translation>
 <translation id="1451536289672181509">El dispositivo es un teclado.</translation>
 <translation id="1459693405370120464">Información meteorológica</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">No se puede actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbumes</translation>
 <translation id="1572585716423026576">Configurar como fondo de pantalla</translation>
+<translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">Nivel de batería del auricular derecho del dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresión? Los trabajos de impresión en curso no se borrarán.</translation>
+<translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">Cortafuegos de HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Comprueba que el escáner esté activado y que esté disponible a través de tu red o de una conexión directa</translation>
+<translation id="4170180284036919717">Hacer foto</translation>
 <translation id="4170700058716978431">ERROR</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
@@ -390,6 +395,7 @@
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Generar par de claves aleatorio</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Habilitar el reinicio mensual automático</translation>
 <translation id="6037291330010597344">El alimentador de documentos del escáner está vacío. Añade documentos y vuelve a intentarlo.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6040852767465482106">Identidad anónima</translation>
@@ -413,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hay escáneres disponibles</translation>
 <translation id="6232017090690406397">Batería</translation>
+<translation id="6235460611964961764">Reiniciar uso de datos manualmente</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -488,6 +495,7 @@
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7212734716605298123">Actualizaciones de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7271040990581020067">El escáner se está usando en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -624,6 +632,7 @@
 <translation id="8910721771319628100">La red predeterminada supera el umbral de latencia</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">No se ha podido imprimir - Falta una bandeja</translation>
+<translation id="8923267550422472772">Día del mes en el que se reiniciará</translation>
 <translation id="8928727111548978589">No se ha podido imprimir - Sin papel</translation>
 <translation id="8930521118335213258">Emparejamiento</translation>
 <translation id="8930622219860340959">Conexión inalámbrica</translation>

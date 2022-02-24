@@ -236,6 +236,7 @@
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google ຮູບພາບ</translation>
 <translation id="4155551848414053977">ກວດໃຫ້ແນ່ໃຈວ່າເຄື່ອງສະແກນເປີດຢູ່ ແລະ ມີໃຫ້ຜ່ານເຄືອຂ່າຍຂອງທ່ານ ຫຼື ການເຊື່ອມຕໍ່ໂດຍກົງ</translation>
+<translation id="4170180284036919717">ຖ່າຍຮູບ</translation>
 <translation id="4170700058716978431">ບໍ່ສຳເລັດ</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
@@ -266,6 +267,7 @@
 <translation id="4511264077854731334">ໜ້າເວັບ</translation>
 <translation id="4521826082652183069">ຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້</translation>
 <translation id="4536864596629708641">ການຕັ້ງຄ່າ IP</translation>
+<translation id="4546131424594385779">ສ້າງວິດີໂອແບບສາຍຊ້ຳໆ</translation>
 <translation id="4548483925627140043">ບໍ່ພົບສັນຍານ</translation>
 <translation id="4556753742174065117">ອັບເດດເຟີມແວທັງໝົດແລ້ວ</translation>
 <translation id="455835558791489930">ແບັດເຕີຣີ <ph name="CHARGE_VALUE" />mAh</translation>
@@ -449,6 +451,7 @@
 <translation id="6566314079205407217">ການສະແກນຫຼາຍໜ້າ</translation>
 <translation id="6574762126505704998">ຕື່ມສີ</translation>
 <translation id="6575134580692778371">ບໍ່ໄດ້ປັບຕັ້ງຄ່າ</translation>
+<translation id="6579509898032828423">ໃຊ້ຮູບພາບນີ້</translation>
 <translation id="6596816719288285829">ທີ່​ຢູ່ IP</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6620487321149975369">ວຽກພິມຈະປາກົດໃນປະຫວັດ ເວັ້ນເສຍແຕ່ຜູ້ໃຊ້ຈະລຶບພວກມັນອອກດ້ວຍຕົນເອງ</translation>
@@ -650,6 +653,7 @@
 <translation id="9062831201344759865">DNS resolution ມີເວລາຕອບສະໜອງສູງ</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">ໃຊ້ວິດີໂອ</translation>
 <translation id="9087578468327036362">ລາຍງານຄຳຊອກຫານີ້</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
 <translation id="9095415590198785865">ອຸປະກອນຈະໄປຫາເຈົ້າຂອງດຽວກັນ</translation>

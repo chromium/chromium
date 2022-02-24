@@ -519,6 +519,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2523886232349826891">Shranjena samo v tej napravi</translation>
 <translation id="2524461107774643265">Dodajanje več podatkov</translation>
 <translation id="2529899080962247600">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo prezrti.</translation>
+<translation id="2535585790302968248">Odpiranje novega anonimnega zavihka za zasebno brskanje</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
 <translation id="2536110899380797252">Dodaj naslov</translation>
 <translation id="2539524384386349900">Zaznava</translation>
@@ -585,6 +586,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2709516037105925701">Samodejno izpolnjevanje</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati plačila in podatke o kreditnih karticah v Chromovih nastavitvah</translation>
+<translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za zapiranje celozaslonskega načina</translation>
 <translation id="2721148159707890343">Zahteva je uspela</translation>
 <translation id="2723669454293168317">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
 <translation id="2726001110728089263">Stranski pladenj</translation>
@@ -750,6 +752,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3288238092761586174">Gostitelj <ph name="URL" /> bo morda moral opraviti dodatne korake za preverjanje vašega plačila.</translation>
 <translation id="3293642807462928945">Preberite več o pravilniku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Ogled in upravljanje gesel v nastavitvah v Chromu</translation>
+<translation id="3303795387212510132">Želite aplikaciji omogočiti odpiranje povezav <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Ni rezultatov iskanja</translation>
 <translation id="3304073249511302126">iskanje naprav Bluetooth</translation>
 <translation id="3308006649705061278">Organizacijska enota (OU)</translation>
@@ -1260,6 +1263,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4854362297993841467">Ta način pošiljanja ni na voljo. Poskusite uporabiti drugega.</translation>
 <translation id="4854853140771946034">Hitro ustvarjanje novega zapiska v Googlu Keep</translation>
 <translation id="485902285759009870">Preverjanje kode …</translation>
+<translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za prikaz kazalca</translation>
 <translation id="4876188919622883022">Poenostavljen pogled</translation>
 <translation id="4876305945144899064">Ni uporabniškega imena</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Nič}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}two{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1483,6 +1487,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5560088892362098740">Datum poteka</translation>
 <translation id="55635442646131152">Oris dokumenta</translation>
+<translation id="5565613213060953222">Odpri anonimni zavihek</translation>
 <translation id="5565735124758917034">Aktivno</translation>
 <translation id="5570825185877910964">Zaščita računa</translation>
 <translation id="5571083550517324815">Prevzem na tem naslovu ni mogoč. Izberite drugega.</translation>
@@ -1949,6 +1954,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7192203810768312527">Sprosti <ph name="SIZE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Skrbniku je prikazano to:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Spletno mesto <ph name="HOST_NAME" /> ne upošteva varnostnih standardov.</translation>
 <translation id="7210993021468939304">Dejavnost Linuxa v vsebniku in omogočeno nameščanje ter izvajanje aplikacij za Linux v vsebniku</translation>
@@ -2214,6 +2220,7 @@ Dodatne podrobnosti:
 <translation id="799149739215780103">Vezava</translation>
 <translation id="7992044431894087211">Deljenje zaslona z aplikacijo <ph name="APPLICATION_TITLE" /> se nadaljuje.</translation>
 <translation id="7995512525968007366">Ni navedeno</translation>
+<translation id="7998269595945679889">Gumb za odpiranje anonimnega zavihka, pritisnite Enter, če želite odpreti nov anonimni zavihek za zasebno brskanje</translation>
 <translation id="800218591365569300">Poskusite zapreti druge zavihke ali programe, da boste tako sprostili pomnilnik.</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Shranjena bosta ta kartica in njen naslov za izstavitev računa. Uporabljali jo boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}one{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}two{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}few{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}other{Shranjene bodo te kartice in njihovi naslovi za izstavitev računa. Uporabljali jih boste lahko, ko boste prijavljeni v račun <ph name="USER_EMAIL" />.}}</translation>

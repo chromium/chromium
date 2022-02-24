@@ -331,6 +331,7 @@
 <translation id="3105917916468784889">生成屏幕截图</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（蓝牙）</translation>
 <translation id="3113926042639749131">移除推荐内容</translation>
+<translation id="3120421559657122717">要关机吗？</translation>
 <translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -351,6 +352,7 @@
 <translation id="3249513730522716925">窗口“<ph name="WINDOW_TITLE" />”已由桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你能做些什么？</translation>
 <translation id="3269597722229482060">右键点击</translation>
+<translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
 <translation id="3290356915286466215">无保护</translation>
 <translation id="3294437725009624529">访客</translation>
@@ -702,6 +704,7 @@
 <translation id="5400461572260843123">快捷设置，按搜索键 + 向左箭头键可访问通知中心。</translation>
 <translation id="5426063383988017631">已关闭“设置”菜单</translation>
 <translation id="5428899915242071344">开始选择</translation>
+<translation id="5429993543155113935">尚不支持无痕式窗口</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433020815079095860">音频输入</translation>
@@ -844,6 +847,7 @@
 <translation id="6431865393913628856">屏幕录制</translation>
 <translation id="6445835306623867477">正在将“<ph name="ROUTE_TITLE" />”投射至“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
+<translation id="6449483711453944360">尚不支持 Linux 应用和无痕式窗口</translation>
 <translation id="6452181791372256707">拒绝</translation>
 <translation id="6453179446719226835">语言已更改</translation>
 <translation id="6459472438155181876">正在将屏幕扩展到<ph name="DISPLAY_NAME" /></translation>
@@ -943,6 +947,7 @@
 <translation id="7025533177575372252">将您的<ph name="DEVICE_NAME" />连接到手机</translation>
 <translation id="7026338066939101231">减少</translation>
 <translation id="7029814467594812963">退出会话</translation>
+<translation id="7032161822340700104">最多只能保存 6 个模板。若要保存新模板，请先移除一个已存模板。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收起状态区</translation>
 <translation id="7045033600005038336">替换此模板？</translation>

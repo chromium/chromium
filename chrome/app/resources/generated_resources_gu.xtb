@@ -285,6 +285,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />ને અનઇન્સ્ટૉલ કરી શક્યાં નહીં</translation>
 <translation id="1277020343994096713">એક નવો પિન બનાવો જે તમારા વર્તમાન પિનથી અલગ હોય</translation>
 <translation id="1278859221870828664">Google Play ઍપ અને સેવાઓનો રિવ્યૂ કરો</translation>
+<translation id="1279024913354609713">મંજૂરી આપશો નહીં</translation>
 <translation id="127946606521051357">નજીકનું ડિવાઇસ શેર કરી રહ્યું છે</translation>
 <translation id="1280965841156951489">ફાઇલોમાં ફેરફાર કરો</translation>
 <translation id="1282465000333679776">સિસ્ટમ ઑડિયો શેર કરો</translation>
@@ -673,7 +674,6 @@
 <translation id="1644852018355792105"><ph name="DEVICE" /> ડિવાઇસ માટે બ્લૂટૂથ પાસકી દાખલ કરો</translation>
 <translation id="1645516838734033527">તમારા <ph name="DEVICE_TYPE" />ને સુરક્ષિત રાખવા માટે, Smart Lockને તમારા ફોન પર સ્ક્રીન લૉકની જરૂર છે.</translation>
 <translation id="1646982517418478057">આ પ્રમાણપત્રને એન્ક્રિપ્ટ કરવા માટે કૃપા કરીને પાસવર્ડ દાખલ કરો</translation>
-<translation id="1647408325348388858"><ph name="FILE_NAME" />ને આ વેબ ઍપમાં ખોલીને તેમાં ફેરફાર કરીએ?</translation>
 <translation id="1648528859488547844">સ્થાન નક્કી કરવા માટે વાઇ-ફાઇ અથવા મોબાઇલ નેટવર્કનો ઉપયોગ કરો</translation>
 <translation id="164936512206786300">બ્લૂટૂથ ડિવાઇસ સાથેનું જોડાણ તોડો</translation>
 <translation id="1651008383952180276">તમારે તે જ પાસફ્રેઝ બે વાર દાખલ કરવો આવશ્યક છે</translation>
@@ -1184,6 +1184,8 @@
 <translation id="2154502158735983655">Chrome OS ડિવાઇસની માહિતી અને ડિવાઇસ ડેટા વાંચો.</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે</translation>
 <translation id="2156294658807918600">સર્વિસ વર્કર: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">ઍપમાં આ ફૉર્મેટની ફાઇલ ખોલતી વખતે, ફરીથી પૂછશો નહીં:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">ફરીથી સલામતી માટે તપાસ ચલાવો</translation>
 <translation id="2157474325782140681">વધારાની સુવિધાઓ મેળવવા માટે, આ Chromebookમાં કામ કરવા માટે ડિઝાઇન કરવામાં આવેલા Dell ડૉકિંગ સ્ટેશનનો ઉપયોગ કરો.</translation>
 <translation id="215753907730220065">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
@@ -1611,7 +1613,6 @@
 <translation id="2553440850688409052">આ પ્લગિન છુપાવો </translation>
 <translation id="2554553592469060349">પસંદ કરેલ ફાઇલ ખૂબ મોટી છે (મહત્તમ કદ: 3mb).</translation>
 <translation id="2558896001721082624">સિસ્ટમ મેનૂમાં હંમેશાં ઍક્સેસિબિલિટી વિકલ્પો બતાવો</translation>
-<translation id="2564407282561292919">શોધ બૉક્સમાંનો ઇતિહાસ સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે.</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">વધારેલ જોડણીની તપાસ</translation>
 <translation id="2568774940984945469">માહિતી બાર સંગ્રહક</translation>
@@ -2323,7 +2324,6 @@
 <translation id="33022249435934718">GDI હેન્ડલ્સ</translation>
 <translation id="3302388252085547855">કારણ દાખલ કરો...</translation>
 <translation id="3303260552072730022">એક્સટેંશને પૂર્ણ સ્ક્રીન ટ્રિગર કરેલી છે.</translation>
-<translation id="3303795387212510132">શું ઍપને <ph name="PROTOCOL_SCHEME" /> લિંક ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="3303818374450886607">કોપિસ</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />ની છૂટ</translation>
@@ -2615,7 +2615,6 @@
 <translation id="3596012367874587041">ઍપ સેટિંગ</translation>
 <translation id="3596414637720633074">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
 <translation id="3599221874935822507">ઉપસેલા</translation>
-<translation id="3599863153486145794">બધા સાઇન ઇન કરેલ ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="3600051066689725006">વેબ વિનંતી વિશે માહિતી</translation>
 <translation id="3600792891314830896">જે સાઇટ સાઉન્ડ ચલાવતી હોય તેઓને મ્યૂટ કરો</translation>
 <translation id="360180734785106144">નવી સુવિધાઓ ઉપલબ્ધ થતાની સાથે જ તેને ઑફર કરો</translation>
@@ -3104,7 +3103,6 @@
 <translation id="4033963223187371752">સુરક્ષિત સાઇટ છબીઓ અથવા વેબ ફ્રેમ જેવું અસુરક્ષિત કન્ટેન્ટ શામેલ કરી શકે છે</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
-<translation id="4035877632587724847">મંજૂરી આપશો નહીં</translation>
 <translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે.</translation>
 <translation id="4037084878352560732">ઘોડો</translation>
 <translation id="403725336528835653">પહેલાં તેને અજમાવી જુઓ</translation>
@@ -3146,7 +3144,6 @@
 <translation id="4079140982534148664">વધુ સારી બનાવાયેલી જોડણીની તપાસનો ઉપયોગ કરો</translation>
 <translation id="4081242589061676262">ફાઇલ કાસ્ટ કરવામાં અસમર્થ.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> દ્વારા તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું. આ તમે જ છો તે કન્ફર્મ કરવા માટે, તેમાં આપેલા પગલાં અનુસરો.</translation>
-<translation id="4083599409544993198">આ પ્રકારની ફાઇલ માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> બંધ કરો</translation>
 <translation id="4085270836953633510">જ્યારે કોઈ સાઇટ સીરિયલ પોર્ટને ઍક્સેસ કરવા માગે ત્યારે પૂછો</translation>
@@ -3176,7 +3173,6 @@
 <translation id="4101352914005291489">છુપાયેલા SSID</translation>
 <translation id="4102906002417106771">પાવરવોશ માટે ફરી શરૂ કરો</translation>
 <translation id="4104163789986725820">નિ&amp;કાસ કરો...</translation>
-<translation id="410547683402570632">આ પ્રકારની ફાઇલો માટેની મારી પસંદગી યાદ રાખો: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">સ્ટોરેજ ઉપકરણોને ઓળખો અને તેને બહાર કાઢો</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) પર વિંડો ખસેડો</translation>
 <translation id="4110485659976215879">ચેતવણી રિસ્ટોર કરો</translation>
@@ -3230,6 +3226,7 @@
 <translation id="4167686856635546851">વીડિયો ગેમ અથવા વેબ ફોર્મ જેવી ક્રિયાપ્રતિક્રિયાત્મક સુવિધાઓ બતાવવા માટે, સાઇટ સામાન્ય રીતે JavaScriptનો ઉપયોગ કરે છે</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ની કેટલીક સેટિંગ તમારી સાથે શેર કરવામાં આવી રહી છે. એકથી વધુ સાઇન ઇનનો ઉપયોગ કરવા પર જ આ સેટિંગ તમારા એકાઉન્ટને પ્રભાવિત કરે છે.</translation>
 <translation id="4168651806173792090">અંતમાં <ph name="LAST_FOUR_DIGITS" /> ધરાવતું <ph name="NETWORK_NAME" /></translation>
+<translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4170314459383239649">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="417096670996204801">કોઈ પ્રોફાઇલ પસંદ કરો</translation>
 <translation id="4175137578744761569">આછો જાંબલી અને સફેદ</translation>
@@ -3301,6 +3298,7 @@
 <translation id="425573743389990240">બેટરી ડિસ્ચાર્જ દર વોટ્સમાં (ઋણ મૂલ્યનો અર્થ છે બેટરી ચાર્જ થઈ રહી છે)</translation>
 <translation id="4256316378292851214">વીડિયોને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="4258348331913189841">ફાઇલ સિસ્ટમ્સ</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" />, આ ફાઇલો ખોલવા માગે છે:</translation>
 <translation id="4259388776256904261">આમાં થોડો સમય લાગી શકે છે</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleની વિગતવાર સુરક્ષાને મોકલીએ? ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="4261429981378979799">એક્સ્ટેન્શનની પરવાનગીઓ</translation>
@@ -3775,7 +3773,6 @@
 <translation id="475088594373173692">પ્રથમ વપરાશકર્તા</translation>
 <translation id="4756378406049221019">રોકો/ફરીથી લોડ કરો</translation>
 <translation id="4756388243121344051">&amp;ઇતિહાસ</translation>
-<translation id="4759202969060787081">ખોલશો નહીં</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
 <translation id="4762718786438001384">ઉપકરણ ડિસ્ક સ્થાન અત્યંત ઓછું છે</translation>
@@ -4861,7 +4858,6 @@
 <translation id="5889282057229379085">ઇન્ટરમિડિયેટ CA ની મહત્તમ સંખ્યા: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">પસંદ કરેલા વાઇ-ફાઇ નેટવર્ક</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
-<translation id="5896436821193322561">મંજૂરી આપશો નહીં</translation>
 <translation id="5900302528761731119">Google પ્રોફાઇલ ફોટો</translation>
 <translation id="590036993063074298">મીરરીંગ ક્વૉલિટીની વિગતો</translation>
 <translation id="5901069264981746702">તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -5478,6 +5474,7 @@ USB ડિવાઇસ</translation>
 <translation id="6498249116389603658">&amp;તમારી બધી ભાષાઓ</translation>
 <translation id="6499143127267478107">પ્રૉક્સી સ્ક્રિપ્ટમાં હોસ્ટને ઉકેલી રહ્યા છે...</translation>
 <translation id="6499764981457476645">નજીકમાં કોઈ ડિવાઇસ મળ્યા નથી</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" />, આ ફાઇલ ખોલવા માગે છે:</translation>
 <translation id="65017764184991091">Linux ઍપ અને ફાઇલોનું બૅકઅપ લઈ રહ્યાં છીએ. જો તમારા ડિવાઇસમાં પર્યાપ્ત સ્ટોરેજ સ્પેસ ખાલી ન હોય, તો આવું થઈ શકે છે. તમારા ડિવાઇસ પર થોડી સ્પેસ ખાલી કરવાનો અથવા બૅકઅપ લેવા માટે અલગ સ્થાન પસંદ કરવાનો પ્રયાસ કરી જુઓ.</translation>
 <translation id="6501957628055559556">તમામ કન્ટેનર</translation>
 <translation id="650266656685499220">આલ્બમ બનાવવા માટે, Google Photos પર જાઓ</translation>
@@ -6468,7 +6465,6 @@ USB ડિવાઇસ</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{અન્ય 1}one{અન્ય {NUM_DOWNLOADS}}other{અન્ય {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">પ્લેસહોલ્ડર</translation>
 <translation id="7527758104894292229">તેને તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માં અપડેટ કરો</translation>
-<translation id="7528224636098571080">ખોલશો નહીં</translation>
 <translation id="7529411698175791732">તમારું ઇન્ટરનેટ કનેક્શન તપાસો. જો સમસ્યા ચાલુ રહે, તો સાઇન આઉટ કરો અને ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7529876053219658589">{0,plural, =1{અતિથિ વિન્ડો બંધ કરો}one{અતિથિ વિન્ડો બંધ કરો}other{અતિથિ વિન્ડો બંધ કરો}}</translation>
 <translation id="7530016656428373557">ડિસ્ચાર્જ દર વોટ્સમાં</translation>
@@ -6494,6 +6490,8 @@ USB ડિવાઇસ</translation>
 <translation id="7552846755917812628">નીચેની ટિપને અજમાવો:</translation>
 <translation id="7553012839257224005">Linux કન્ટેનર ચેક કરી રહ્યાં છીએ</translation>
 <translation id="7553242001898162573">તમારો પાસવર્ડ દાખલ કરો</translation>
+<translation id="7553347517399115470">ઍપમાં આ ફૉર્મેટની ફાઇલો ખોલતી વખતે, ફરીથી પૂછશો નહીં:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">તમારા વ્યવસ્થાપક આ ભાષાની મંજૂરી આપતા નથી</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
 <translation id="7556033326131260574">Smart Lock તમારા એકાઉન્ટને ચકાસી શક્યું નથી. દાખલ થવા માટે તમારો પાસવર્ડ ટાઇપ કરો.</translation>

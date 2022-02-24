@@ -177,6 +177,7 @@
 <translation id="5354152178998424783">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
+<translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>
 <translation id="5438097262470833822">S to izbiro bodo ponastavljena dovoljenja za spletno mesto <ph name="WEBSITE" />.</translation>
 <translation id="5489227211564503167">Pretečeni čas: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiranje oglasov na spletnih mestih, ki prikazujejo vsiljive ali zavajajoče oglase</translation>

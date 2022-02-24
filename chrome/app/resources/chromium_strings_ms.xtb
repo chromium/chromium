@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini}=1{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="1625909126243026060">Semak privasi dan kawalan keselamatan utama dalam Chromium</translation>
+<translation id="1632539827495546968">Jika anda ingin menggunakan akaun ini sekali sahaja, anda boleh menggunakan <ph name="GUEST_LINK_BEGIN" />Mod Tetamu<ph name="GUEST_LINK_END" /> dalam penyemak imbas Chromium. Jika anda ingin menambah akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
+
+Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Terdapat versi Chromium baharu yang lebih selamat tersedia.</translation>
 <translation id="1774152462503052664">Benarkan Chromium dijalankan dalam latar belakang</translation>
 <translation id="1779356040007214683">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan beberapa sambungan yang tidak disenaraikan dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Anda log masuk menggunakan akaun yang terurus dan memberikan pentadbirnya kawalan ke atas profil Chromium anda. Data Chromium anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Akaun Google, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih untuk membuat profil baharu untuk mengasingkan data Chromium anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak responsif. Lancarkan semula sekarang?</translation>
+<translation id="1940680973325097484">Jika anda ingin menggunakan akaun ini sekali sahaja, anda boleh menggunakan Mod Tetamu dalam penyemak imbas Chromium. Jika anda ingin menambah akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
+
+Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pada akaun ini. Anda boleh mengurus Google Account anda dalam <ph name="SETTINGS_LINK_BEGIN" />Tetapan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium tidak dapat menentukan atau menetapkan penyemak imbas lalai</translation>
 <translation id="1981611865800294956">Lancarkan semula untuk mengemas kini &amp;OS Chromium</translation>
 <translation id="2008474315282236005">Tindakan ini akan memadamkan 1 item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>

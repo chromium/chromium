@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4008040567710660924">Дазвол выкарыстання файлаў cookie ад канкрэтнага сайта.</translation>
+<translation id="4040330681741629921">Апавяшчаць, калі сайт можна адкрыць у спрошчаным выглядзе</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
 <translation id="4165986682804962316">Налады сайта</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
 <translation id="5403592356182871684">Імёны</translation>
+<translation id="5412236728747081950">Гэты сайт выкарыстоўвае інфармацыю пра вашы дзеянні ў Chrome, каб паказваць вам больш адпаведную вашым інтарэсам рэкламу</translation>
 <translation id="5438097262470833822">Будуць скінуты дазволы для вэб-сайта <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Прайшло часу: <ph name="ELAPSED_TIME" /> з <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блакіраваць рэкламу на сайтах, якія паказваюць назойлівую рэкламу або рэкламу, якая ўводзіць у зман</translation>

@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Гэта папка абагулена з Linux</translation>
 <translation id="1864756863218646478">Не ўдалося знайсці файл.</translation>
 <translation id="1884013283844450420">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, падключыцца</translation>
+<translation id="1914901738028575085">Прылада з CloudReady 2.0</translation>
 <translation id="1920670151694390848">Малаялам (транслітарацыя)</translation>
 <translation id="1920798810075583923">Кавун</translation>
 <translation id="1924372192547904021">Дыск "<ph name="DRIVE_NAME" />" адфармаціраваны</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Веласіпед</translation>
 <translation id="8719721339511222681">Выбрана: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Харвацкая</translation>
+<translation id="873847021056608403">Прылады з CloudReady 2.0</translation>
 <translation id="8743164338060742337">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, знаходзіцца пад кіраваннем адміністратара, падключыцеся да сеткі</translation>
 <translation id="8750438273876807512">Каб атрымаць хуткі доступ да файла праз паліцу, дакраніцеся да файла і ўтрымлівайце яго, затым націсніце на значок <ph name="ICON" /> і выберыце пункт "Замацаваць на паліцы".</translation>
 <translation id="8787254343425541995">Дазволіць проксі-серверы для абагуленых сетак</translation>

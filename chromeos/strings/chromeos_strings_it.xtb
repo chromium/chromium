@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aggiornamento in corso (percentuale di completamento: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Nessuna rete <ph name="NETWORK_NAME" /> disponibile</translation>
+<translation id="131421566576084655">La data dell'ultima reimpostazione dei dati non è disponibile</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rete domestica, roaming non attivo</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ho una coppia di chiavi</translation>
+<translation id="1435763214710588005">Reimposta automaticamente l'utilizzo dei dati ogni mese nel giorno selezionato</translation>
 <translation id="1442433966118452622">Origine immagine</translation>
 <translation id="1451536289672181509">Il dispositivo è una tastiera.</translation>
 <translation id="1459693405370120464">Meteo</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Impossibile aggiornare <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Imposta come sfondo</translation>
+<translation id="1615335640928990664">Utilizzo dei dati da <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Esegui test ricarica</translation>
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369013195428705271">Vuoi cancellare l'intera cronologia di stampa? I processi di stampa in corso non verranno cancellati.</translation>
+<translation id="3413935475507503304">Per continuare con l'aggiornamento, fai clic su Avanti.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> pagina stampata su <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Assicurati che lo scanner sia acceso e disponibile tramite la tua rete o una connessione diretta</translation>
+<translation id="4170180284036919717">Scatta una foto</translation>
 <translation id="4170700058716978431">OPERAZIONE NON RIUSCITA</translation>
 <translation id="4176463684765177261">Disattivato</translation>
 <translation id="4213104098953699324">Tastiera USB</translation>
@@ -262,6 +267,7 @@
 <translation id="4511264077854731334">Portale</translation>
 <translation id="4521826082652183069">Corrispondenza nome alternativo del soggetto</translation>
 <translation id="4536864596629708641">Configurazione IP</translation>
+<translation id="4546131424594385779">Crea un video in loop</translation>
 <translation id="4548483925627140043">segnale non trovato</translation>
 <translation id="4556753742174065117">Tutto il firmware è aggiornato</translation>
 <translation id="455835558791489930">Batteria da <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -391,6 +397,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Attiva la reimpostazione mensile automatica</translation>
 <translation id="6037291330010597344">L'alimentatore di documenti dello scanner è vuoto. Aggiungi documenti e riprova.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6040852767465482106">Identità anonima</translation>
@@ -414,6 +421,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nessuno scanner disponibile</translation>
 <translation id="6232017090690406397">Batteria</translation>
+<translation id="6235460611964961764">Reimposta manualmente l'utilizzo dei dati</translation>
 <translation id="6243280677745499710">Attualmente impostato</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -443,6 +451,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6566314079205407217">Scansione di più pagine</translation>
 <translation id="6574762126505704998">Riempi</translation>
 <translation id="6575134580692778371">Non configurata</translation>
+<translation id="6579509898032828423">Utilizza questa foto</translation>
 <translation id="6596816719288285829">Indirizzo IP</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
@@ -489,6 +498,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
+<translation id="7212734716605298123">Aggiornamenti del firmware per dispositivi esterni</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -625,6 +635,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8910721771319628100">la rete predefinita è al di sopra della soglia di latenza</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> di <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Operazione non riuscita - Vassoio mancante</translation>
+<translation id="8923267550422472772">Giorno del mese per la reimpostazione</translation>
 <translation id="8928727111548978589">Operazione non riuscita - Carta esaurita</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
@@ -641,6 +652,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9062831201344759865">La risoluzione DNS ha una latenza elevata</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Utilizza questo video</translation>
 <translation id="9087578468327036362">Segnala questa query</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
 <translation id="9095415590198785865">Il dispositivo resterà dello stesso proprietario</translation>

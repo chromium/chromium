@@ -515,6 +515,7 @@
 <translation id="2523886232349826891">僅儲存在這部裝置</translation>
 <translation id="2524461107774643265">新增詳細資訊</translation>
 <translation id="2529899080962247600">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，超過的項目會遭到忽略。</translation>
+<translation id="2535585790302968248">開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{和另外 1 個網域}other{和另外 # 個網域}}</translation>
 <translation id="2536110899380797252">新增地址</translation>
 <translation id="2539524384386349900">偵測</translation>
@@ -581,6 +582,7 @@
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中管理付款和信用卡資訊</translation>
+<translation id="271663710482723385">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可結束全螢幕模式</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
 <translation id="2726001110728089263">側匣</translation>
@@ -746,6 +748,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
+<translation id="3303795387212510132">要允許應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結嗎？</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3304073249511302126">藍牙掃描</translation>
 <translation id="3308006649705061278">組織單位 (OU)</translation>
@@ -1251,6 +1254,7 @@
 <translation id="4854362297993841467">不支援所選的快遞方式，請改選其他方式。</translation>
 <translation id="4854853140771946034">在 Google Keep 中快速建立新記事</translation>
 <translation id="485902285759009870">正在驗證動態密碼...</translation>
+<translation id="4866506163384898554">按下 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 即可顯示游標</translation>
 <translation id="4876188919622883022">簡易檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{無}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1474,6 +1478,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5560088892362098740">到期日</translation>
 <translation id="55635442646131152">文件大綱</translation>
+<translation id="5565613213060953222">開啟無痕分頁</translation>
 <translation id="5565735124758917034">管理中</translation>
 <translation id="5570825185877910964">保護帳戶</translation>
 <translation id="5571083550517324815">無法在這個地址取件，請改用其他地址。</translation>
@@ -1940,6 +1945,7 @@
 <translation id="7192203810768312527">釋出 <ph name="SIZE" />。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">系統管理員可以查看以下項目：</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> 不符合安全性標準。</translation>
 <translation id="7210993021468939304">容器內的 Linux 活動，並可在容器內安裝及執行 Linux 應用程式</translation>
@@ -2205,6 +2211,7 @@
 <translation id="799149739215780103">裝訂</translation>
 <translation id="7992044431894087211">已重新啟用與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面的功能</translation>
 <translation id="7995512525968007366">未指定</translation>
+<translation id="7998269595945679889">「開啟無痕分頁」按鈕；按下 Enter 鍵即可開啟新的無痕分頁以進行私密瀏覽</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或程式，以釋出記憶體。</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統會儲存這張卡片和相應的帳單地址。只要登入 <ph name="USER_EMAIL" /> 即可使用。}other{系統會儲存這些卡片和相應的帳單地址。只要登入 <ph name="USER_EMAIL" /> 即可使用。}}</translation>

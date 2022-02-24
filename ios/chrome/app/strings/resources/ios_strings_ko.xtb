@@ -12,6 +12,7 @@
 
         
 현재 사용 중인 검색엔진은 <ph name="DSE_NAME" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
+<translation id="1054045277222934172">설정 &gt; 콘텐츠 설정에서 기본 사이트 보기를 데스크톱으로 변경할 수 있습니다.</translation>
 <translation id="1063454504051558093">다른 비밀번호를 사용하세요...</translation>
 <translation id="1066060668811609597">동기화 관리</translation>
 <translation id="1076421457278169141">코드 스캔됨</translation>
@@ -182,6 +183,7 @@
 <translation id="2690858294534178585">카메라 사용 중</translation>
 <translation id="2691653761409724435">오프라인에서 사용할 수 없음</translation>
 <translation id="2695507686909505111">페이지 번역됨</translation>
+<translation id="2700241355396984822">권한 설정 옵션</translation>
 <translation id="2702801445560668637">읽기 목록</translation>
 <translation id="2704491540504985681">다운로드</translation>
 <translation id="2704606927547763573">복사됨</translation>
@@ -318,6 +320,8 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3861486700625780712">팔로우 해제</translation>
 <translation id="3892144330757387737">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="3897092660631435901">메뉴</translation>
+<translation id="3904829425754749514">조직에서 동기화를 사용 중지했습니다. 북마크, 방문 기록, 비밀번호, 기타 설정은 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
+<translation id="3905353503976611311">웹에서 검색</translation>
 <translation id="3913386780052199712">Chrome에 로그인됨</translation>
 <translation id="3915450441834151894">사이트 정보</translation>
 <translation id="3922310737605261887">복사한 텍스트 검색</translation>
@@ -347,6 +351,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4172051516777682613">항상 표시</translation>
 <translation id="418156467088430727">새 탭에서 오프라인 버전 보기</translation>
 <translation id="4181841719683918333">언어</translation>
+<translation id="4223967053752765281">조직에서 로그인을 사용 중지했습니다. 북마크, 방문 기록, 비밀번호, 기타 설정은 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Default Browser App(기본 브라우저 앱)<ph name="END_BOLD" />을 탭합니다.</translation>
 <translation id="424315890655130736">암호 입력</translation>
 <translation id="4249955472157341256">최신순 정렬</translation>
@@ -371,6 +376,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4469418912670346607">설정 계속하기</translation>
 <translation id="4474494258097106883">iPhone을 위한 웹브라우저</translation>
 <translation id="4476574785019001431">설정</translation>
+<translation id="448433063499977729">동기화가 사용 중지되었습니다</translation>
 <translation id="4496373720959965247">탭 추가 및 페이지 간에 전환</translation>
 <translation id="4502566650163919158">지금 확인</translation>
 <translation id="4505980578794259603"><ph name="TIME" />에 마지막으로 확인함</translation>
@@ -489,6 +495,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5580834567471114021">읽기 목록에 추가하여 나중에 읽으시겠습니까?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> 동기화 사용</translation>
 <translation id="560322036295180549">조직에서 사용 중지했습니다.</translation>
+<translation id="560999923643681074">수정 액세스</translation>
 <translation id="5614553682702429503">비밀번호를 저장하시겠습니까?</translation>
 <translation id="5626245204502895507">현재 파일을 다운로드할 수 없습니다.</translation>
 <translation id="5631164295104953411">결제 수단 추가</translation>
@@ -594,7 +601,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6389470377220713856">카드 명의</translation>
 <translation id="6406506848690869874">동기화</translation>
 <translation id="6410883413783534063">탭을 열어 동시에 다른 페이지를 방문합니다.</translation>
-<translation id="6417838470969808600"><ph name="USER_EMAIL1" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>
 <translation id="641799622251403418"><ph name="EMAIL" />(으)로 로그인되었습니다.
 
 <ph name="TIME" />에 동기화 암호로 데이터가 암호화되었습니다. 동기화를 시작하려면 입력하세요.</translation>
@@ -759,6 +765,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7840771868269352570">선택한 항목 삭제</translation>
 <translation id="7856733331829174190">다운로드할 수 없음</translation>
 <translation id="7859704718976024901">인터넷 사용 기록</translation>
+<translation id="7884694604461143138">검색 기록(<ph name="COUNT" />개 찾음)</translation>
 <translation id="7887198238286927132">Chrome에서는 개인정보 보호를 위해 이 입력란을 자동 완성하지 않습니다.</translation>
 <translation id="7911190106180361398">조직에서 모든 항목을 동기화하도록 허용하지 않습니다.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8076014560081431679">저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">관리자가 관리하는 설정입니다, 자세한 정보를 보려면 두 번 탭하세요</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
+<translation id="809543534949702122">검색 기록</translation>
 <translation id="8101409298456377967">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
@@ -811,6 +819,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8319076807703933069">새 검색</translation>
 <translation id="8323906514956095947">더 많은 탭 옵션을 보려면 길게 터치하세요.</translation>
 <translation id="8328777765163860529">모두 닫기</translation>
+<translation id="8364085047956854021">사이트를 떠나면 "<ph name="SITE_NAME" />" 권한이 사용 안함으로 재설정됩니다.</translation>
 <translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8386068868580335421">재설정</translation>
 <translation id="8407669440184693619">이 사이트의 비밀번호를 찾을 수 없음</translation>
@@ -897,6 +906,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9148126808321036104">다시 로그인</translation>
 <translation id="9152539721251340337">QR 코드 만들기</translation>
 <translation id="9157836665414082580">대화상자 숨기기</translation>
+<translation id="9177438225260810839">열린 탭 검색</translation>
 <translation id="9188680907066685419">관리 계정에서 로그아웃</translation>
 <translation id="9200875785104711666"><ph name="TIME" />일 전</translation>
 <translation id="9203116392574189331">Handoff</translation>

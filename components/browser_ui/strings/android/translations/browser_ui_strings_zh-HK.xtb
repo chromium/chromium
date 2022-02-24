@@ -122,7 +122,7 @@
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站存取 Cookie。</translation>
-<translation id="4040330681741629921">在網站能以簡易檢視模式顯示時通知我</translation>
+<translation id="4040330681741629921">在網站能以簡化檢視模式顯示時接收通知</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
 <translation id="4165986682804962316">網站設定</translation>
@@ -177,7 +177,7 @@
 <translation id="5354152178998424783">此操作會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
-<translation id="5412236728747081950">這個網站會取得你在 Chrome 設定的興趣喜好，為你顯示更貼近需求的廣告</translation>
+<translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
 <translation id="5438097262470833822">此選項將會清除 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5489227211564503167">播咗嘅時間係 <ph name="ELAPSED_TIME" />，影片總長度係 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">在顯示滋擾或誤導廣告的網站上封鎖廣告</translation>

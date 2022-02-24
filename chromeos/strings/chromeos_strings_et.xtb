@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
+<translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3456078764689556234">Prinditi <ph name="PRINTED_PAGES" />. leht <ph name="TOTAL_PAGES" />-st.</translation>
@@ -495,6 +496,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7175037578838465313">Võrgu <ph name="NAME" /> seadistamine</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
+<translation id="7212734716605298123">Välisseadmete püsivaravärskendused</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7271040990581020067">Skanner on kasutuses. Proovige hiljem uuesti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

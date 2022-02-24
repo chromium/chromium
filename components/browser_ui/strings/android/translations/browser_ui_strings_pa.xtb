@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">ਸਿਰਲੇਖ</translation>
 <translation id="4008040567710660924">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਨੂੰ ਕੁਕੀਜ਼ ਨੂੰ ਵਰਤਣ ਦਿਓ।</translation>
+<translation id="4040330681741629921">ਕਿਸੇ ਸਾਈਟ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼ ਦੀ ਸੁਵਿਧਾ ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4046123991198612571">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="4149994727733219643">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼</translation>
 <translation id="4165986682804962316">ਸਾਈਟ ਸੈਟਿੰਗਾਂ</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">ਇੰਝ ਕਰਨ ਨਾਲ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ <ph name="DATASIZE" /> ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ਹੋਰ)}one{(+ # ਹੋਰ)}other{(+ # ਹੋਰ)}}</translation>
 <translation id="5403592356182871684">ਨਾਮ</translation>
+<translation id="5412236728747081950">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ</translation>
 <translation id="5438097262470833822">ਇਹ ਚੋਣ <ph name="WEBSITE" /> ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰ ਦੇਵੇਗੀ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ਵਿੱਚੋਂ ਬੀਤਿਆ ਸਮਾਂ <ph name="ELAPSED_TIME" />।</translation>
 <translation id="5494752089476963479">ਉਹਨਾਂ ਸਾਈਟਾਂ 'ਤੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ, ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>

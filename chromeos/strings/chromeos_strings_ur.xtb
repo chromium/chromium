@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">اپ ڈیٹ ہو رہا ہے (<ph name="PERCENTAGE_VALUE" />% مکمل)</translation>
 <translation id="1310380015393971138">کوئی <ph name="NETWORK_NAME" /> نیٹ ورک دستیاب نہیں</translation>
+<translation id="131421566576084655">آخری ڈیٹا ری سیٹ کی تاریخ دستیاب نہیں ہے</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ہوم نیٹ ورک، رومنگ نہیں</translation>
 <translation id="1327977588028644528">گیٹ وے</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">ناکام ہو گیا - فلٹر ناکام ہو گیا</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">میرے پاس کلیدوں کا ایک جوڑا ہے</translation>
+<translation id="1435763214710588005">ہر ماہ منتخب کردہ دن پر ڈیٹا کے استعمال کو خودکار طور پر ری سیٹ کرتا ہے</translation>
 <translation id="1442433966118452622">تصویر کا ماخذ</translation>
 <translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
 <translation id="1459693405370120464">موسم</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> کو اپ ڈیٹ نہیں کر سکتے</translation>
 <translation id="1567064801249837505">البمز</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
 <translation id="1641857168437328880">دستاویز فیڈر (یک طرفہ)</translation>
@@ -264,6 +267,7 @@
 <translation id="4511264077854731334">پورٹل</translation>
 <translation id="4521826082652183069">موضوع کا متبادل نام مماثل کریں</translation>
 <translation id="4536864596629708641">‏IP کنفیگریشن</translation>
+<translation id="4546131424594385779">ایک لوپنگ ویڈیو تخلیق کریں</translation>
 <translation id="4548483925627140043">سگنل نہیں ملا</translation>
 <translation id="4556753742174065117">سبھی فرم ویئر اپ ٹو ڈیٹ ہے</translation>
 <translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
@@ -392,6 +396,7 @@
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="594552776027197022">رینڈم کلیدوں کا جوڑا بنائیں</translation>
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
+<translation id="6034694447310538551">خودکار ماہانہ ری سیٹ فعال کریں</translation>
 <translation id="6037291330010597344">اسکینر کا دستاویز فیڈر خالی ہے۔ دستاویزات شامل کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6040852767465482106">گمنام شناخت</translation>
@@ -415,6 +420,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
 <translation id="6232017090690406397">بیٹری</translation>
+<translation id="6235460611964961764">ڈیٹا کے استعمال کو دستی طور پر ری سیٹ کریں</translation>
 <translation id="6243280677745499710">فی الحال سیٹ ہے</translation>
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -444,6 +450,7 @@
 <translation id="6566314079205407217">کثیر صفحاتی اسکین</translation>
 <translation id="6574762126505704998">بھریں</translation>
 <translation id="6575134580692778371">کنفیگر نہیں ہے</translation>
+<translation id="6579509898032828423">یہ تصویر استعمال کریں</translation>
 <translation id="6596816719288285829">‏IP پتہ</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
@@ -627,6 +634,7 @@
 <translation id="8910721771319628100">تاخیر کی حد کے اوپر ڈیفالٹ نیٹ ورک</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> کا <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ناکام ہو گیا - ٹرے موجود نہیں ہے</translation>
+<translation id="8923267550422472772">ری سیٹ کرنے کے لیے مہینے کا دن</translation>
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="8930521118335213258">پیئر</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
@@ -643,6 +651,7 @@
 <translation id="9062831201344759865">‏DNS ریزولیوشن کی تاخیر بہت زیادہ ہے</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
+<translation id="9082718469794970195">یہ ویڈیو استعمال کریں</translation>
 <translation id="9087578468327036362">اس استفسار کی اطلاع دیں</translation>
 <translation id="9088306295921699330">حالیہ استعمال</translation>
 <translation id="9095415590198785865">آلہ اسی مالک کے پاس جائے گا</translation>

@@ -17,6 +17,9 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1553461853655228091">Chromium-ek kamera atzitzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="1625909126243026060">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chromium-en</translation>
+<translation id="1632539827495546968">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chromium arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
+
+Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="1708666629004767631">Chromium-en bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
@@ -25,6 +28,9 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1881322772814446296">Kontu kudeatu batekin hasten ari zara saioa eta kontuaren administratzaileari zure Chromium profila kontrolatzeko ahalmena ematera zoaz. Chromium aplikazioan dituzun datuak, esaterako, aplikazioak, laster-markak, historia, pasahitzak eta beste ezarpen batzuk betiko lotuko zaizkio <ph name="USER_NAME" /> erabiltzaileari. Google-ko kontuetako Panelaren bidez ezabatu ahalko dituzu datu horiek, baina ezingo dituzu beste kontu batekin lotu. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chromium-en saioa hasi beharrik gabe</translation>
 <translation id="1929939181775079593">Chromium-ek ez du eranzuten. Berrabiarazi nahi duzu?</translation>
+<translation id="1940680973325097484">Kontu hau behin bakarrik erabili nahi baduzu, gonbidatu modua erabil dezakezu Chromium arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
+
+Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="1966382378801805537">Chromium-ek ezin du ezarri edo zehaztu arakatzaile lehenetsia</translation>
 <translation id="1981611865800294956">Abiaraz ezazu berriro &amp;Chromium OS eguneratzeko</translation>
 <translation id="2008474315282236005">Gailuko elementu bat ezabatuko da. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>

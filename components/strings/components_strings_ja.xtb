@@ -515,6 +515,7 @@
 <translation id="2523886232349826891">カードはこのデバイスのみに保存されます</translation>
 <translation id="2524461107774643265">その他の情報の追加</translation>
 <translation id="2529899080962247600">このフィールドで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。それ以降のエントリはすべて無視されます。</translation>
+<translation id="2535585790302968248">新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{、他 1 件}other{、他 # 件}}</translation>
 <translation id="2536110899380797252">住所を追加</translation>
 <translation id="2539524384386349900">検出</translation>
@@ -581,6 +582,7 @@
 <translation id="2709516037105925701">自動入力</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でお支払いとクレジット カードの情報を管理します</translation>
+<translation id="271663710482723385">全画面表示を終了するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="2721148159707890343">リクエストを正常に送信しました</translation>
 <translation id="2723669454293168317">Chrome の設定で安全確認を実行</translation>
 <translation id="2726001110728089263">サイドトレイ</translation>
@@ -746,6 +748,7 @@
 <translation id="3288238092761586174">お客様のお支払い情報を検証するため、<ph name="URL" /> は追加の手順を必要とする場合があります</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理する</translation>
+<translation id="3303795387212510132">アプリに <ph name="PROTOCOL_SCHEME" /> リンクの表示を許可しますか？</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3304073249511302126">Bluetooth のスキャン</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
@@ -1251,6 +1254,7 @@
 <translation id="4854362297993841467">この配達方法はご利用いただけません。別の方法を選択してください。</translation>
 <translation id="4854853140771946034">Google Keep で新しいメモをすばやく作成します</translation>
 <translation id="485902285759009870">コードを確認しています...</translation>
+<translation id="4866506163384898554">カーソルを表示するには |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| を押します</translation>
 <translation id="4876188919622883022">簡易表示</translation>
 <translation id="4876305945144899064">ユーザー名が指定されていません</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{なし}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />、<ph name="AND_MORE" />}}</translation>
@@ -1473,6 +1477,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5560088892362098740">有効期限</translation>
 <translation id="55635442646131152">ドキュメントの概要</translation>
+<translation id="5565613213060953222">シークレット タブを開く</translation>
 <translation id="5565735124758917034">有効</translation>
 <translation id="5570825185877910964">アカウントを保護</translation>
 <translation id="5571083550517324815">この住所での受け取りはできません。別の住所を選択してください。</translation>
@@ -1938,6 +1943,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みがこれまでより遅くなる可能性があります。</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">管理者は、以下の情報を確認できます。</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ではセキュリティ規格が遵守されていません。</translation>
 <translation id="7210993021468939304">コンテナ内の Linux アクティビティ、コンテナ内での Linux アプリのインストールと実行</translation>
@@ -2202,6 +2208,7 @@
 <translation id="799149739215780103">製本</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> との画面共有が再開されました</translation>
 <translation id="7995512525968007366">指定なし</translation>
+<translation id="7998269595945679889">シークレット タブを開くボタンです。Enter キーを押すと、新しいシークレット タブを開いてシークレット モードでブラウジングします</translation>
 <translation id="800218591365569300">メモリを解放するために、他のタブやプログラムを閉じてみてください。</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{このカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}other{これらのカードと請求先住所は保存され、<ph name="USER_EMAIL" /> にログインすると使用できます。}}</translation>

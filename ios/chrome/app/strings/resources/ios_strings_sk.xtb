@@ -12,6 +12,7 @@
 
         
 Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
+<translation id="1054045277222934172">Predvolené zobrazenie webu môžete zmeniť na verziu pre počítače v sekcii Nastavenia, Nastavenia obsahu</translation>
 <translation id="1063454504051558093">Použiť iné heslo…</translation>
 <translation id="1066060668811609597">Správa synchronizácie</translation>
 <translation id="1076421457278169141">Kód bol naskenovaný</translation>
@@ -182,6 +183,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2690858294534178585">Kamera sa používa</translation>
 <translation id="2691653761409724435">Nie je k dispozícii offline</translation>
 <translation id="2695507686909505111">Preložená stránka</translation>
+<translation id="2700241355396984822">Možnosti na nastavenie povolení</translation>
 <translation id="2702801445560668637">Čitateľský zoznam</translation>
 <translation id="2704491540504985681">Stiahnuté súbory</translation>
 <translation id="2704606927547763573">Skopírované</translation>
@@ -318,6 +320,8 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="3861486700625780712">Prestať sledovať</translation>
 <translation id="3892144330757387737">Tu nájdete svoju históriu</translation>
 <translation id="3897092660631435901">Ponuka</translation>
+<translation id="3904829425754749514">Vaša organizácia vypla synchronizáciu. Naďalej uvidíte všetky svoje záložky, históriu, heslá a ďalšie nastavenia v tomto zariadení. Ak vykonáte zmeny, nebudú synchronizované do vášho účtu.</translation>
+<translation id="3905353503976611311">Hľadať na internete</translation>
 <translation id="3913386780052199712">Prihlásený/-á do Chromu</translation>
 <translation id="3915450441834151894">Informácie o webe</translation>
 <translation id="3922310737605261887">Vyhľadať skopírovaný text</translation>
@@ -347,6 +351,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4172051516777682613">Vždy zobraziť</translation>
 <translation id="418156467088430727">Zobraziť offline verziu na novej karte</translation>
 <translation id="4181841719683918333">Jazyky</translation>
+<translation id="4223967053752765281">Vaša organizácia vypla prihlasovanie. Naďalej uvidíte všetky svoje záložky, históriu, heslá a ďalšie nastavenia v tomto zariadení. Ak vykonáte zmeny, nebudú synchronizované do vášho účtu.</translation>
 <translation id="4237377247299956313">Klepnite na položku <ph name="BEGIN_BOLD" />Predvolená aplikácia prehliadača<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Zadajte prístupovú frázu</translation>
 <translation id="4249955472157341256">Zoradiť od najnovších</translation>
@@ -371,6 +376,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4469418912670346607">Pokračovať v nastavovaní</translation>
 <translation id="4474494258097106883">Vytvorené pre váš iPhone</translation>
 <translation id="4476574785019001431">Nastavenia</translation>
+<translation id="448433063499977729">Synchronizácia bola vypnutá</translation>
 <translation id="4496373720959965247">Pridajte karty a prepínajte medzi stránkami</translation>
 <translation id="4502566650163919158">Skontrolovať</translation>
 <translation id="4505980578794259603">Posledná kontrola: <ph name="TIME" /></translation>
@@ -489,6 +495,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5580834567471114021">Pridať do čitateľského zoznamu na neskôr?</translation>
 <translation id="5592679540098330836">Zapnúť synchronizáciu pre používateľa <ph name="NAME" /></translation>
 <translation id="560322036295180549">Vypnuté vašou organizáciou</translation>
+<translation id="560999923643681074">Prístup na úpravy</translation>
 <translation id="5614553682702429503">Uložiť heslo?</translation>
 <translation id="5626245204502895507">Súbor sa momentálne nedá stiahnuť.</translation>
 <translation id="5631164295104953411">Pridať spôsob platby</translation>
@@ -594,7 +601,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6389470377220713856">Meno na karte</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
 <translation id="6410883413783534063">Otvorte karty a navštívte tak rôzne stránky naraz</translation>
-<translation id="6417838470969808600">Máte záložky, históriu, heslá a ďalšie nastavenia z účtu <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Prihlásený používateľ: <ph name="EMAIL" />.
 
 Vaše údaje boli <ph name="TIME" /> zašifrované pomocou vlastnej prístupovej frázy synchronizácie. Keď ju zadáte, synchronizácia sa spustí.</translation>
@@ -759,6 +765,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7840771868269352570">Vybrané položky budú odstránené.</translation>
 <translation id="7856733331829174190">Sťahovanie zlyhalo</translation>
 <translation id="7859704718976024901">História prehliadania</translation>
+<translation id="7884694604461143138">Hľadať v histórii (počet nájdených: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Chrome automaticky nedoplní toho pole, čím ochráni vaše súkromie.</translation>
 <translation id="7911190106180361398">Vaša organizácia vám nepovoľuje synchronizovať všetko.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8076014560081431679">Uložené nastavenia webov sa neodstránia a môžu odrážať vaše návyky prehliadania. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Toto nastavenie je spravované. Viac sa dozviete po dvojitom klepnutí.</translation>
 <translation id="8080028325999236607">Zavrieť všetky karty</translation>
+<translation id="809543534949702122">Hľadať v histórii</translation>
 <translation id="8101409298456377967">Vytvárajte, ukladajte a spravujte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Vypnúť</translation>
 <translation id="8114753159095730575">Súbor je k dispozícii na stiahnutie. Možnosti sú k dispozícii v dolnej časti obrazovky.</translation>
@@ -811,6 +819,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8319076807703933069">Nové vyhľadávanie</translation>
 <translation id="8323906514956095947">Pridržaním zobrazíte ďalšie možnosti karty</translation>
 <translation id="8328777765163860529">Zavrieť všetky</translation>
+<translation id="8364085047956854021">Keď tento web <ph name="SITE_NAME" /> opustíte, povolenia preň sa resetujú na možnosť Vypnuté.</translation>
 <translation id="8378714024927312812">Spravované vašou organizáciou</translation>
 <translation id="8386068868580335421">Resetovať</translation>
 <translation id="8407669440184693619">Nenašli sa žiadne heslá tohto webu</translation>
@@ -897,6 +906,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9152539721251340337">Vytvoriť QR kód</translation>
 <translation id="9157836665414082580">Obmedziť dialógové okná</translation>
+<translation id="9177438225260810839">Hľadať otvorené karty</translation>
 <translation id="9188680907066685419">Odhlásenie zo spravovaného účtu</translation>
 <translation id="9200875785104711666">Pred <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>

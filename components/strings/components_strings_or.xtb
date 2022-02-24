@@ -515,6 +515,7 @@
 <translation id="2523886232349826891">କେବଳ ଏହି ଡିଭାଇସ୍‍ରେ ସେଭ୍ କରାଯାଇଛି</translation>
 <translation id="2524461107774643265">ଅଧିକ ସୂଚନା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2529899080962247600">ଏହି ଫିଲ୍ଡରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ। ସମସ୍ତ ପରବର୍ତ୍ତୀ ଏଣ୍ଟ୍ରିକୁ ଅଣଦେଖା କରାଯିବ।</translation>
+<translation id="2535585790302968248">ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ଏବଂ ଅଧିକ 1ଟି}other{ଏବଂ ଅଧିକ #ଟି}}</translation>
 <translation id="2536110899380797252">ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2539524384386349900">ଚିହ୍ନଟ କରନ୍ତୁ</translation>
@@ -581,6 +582,7 @@
 <translation id="2709516037105925701">ସ୍ୱତଃପୂରଣ</translation>
 <translation id="2713444072780614174">ଧଳା</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପେମେଣ୍ଟ ଏବଂ କ୍ରେଡିଟ୍ କାର୍ଡ ସୂଚନା ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="271663710482723385">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
 <translation id="2721148159707890343">ଅନୁରୋଧ ସଫଳ ହୋଇଛି</translation>
 <translation id="2723669454293168317">Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
 <translation id="2726001110728089263">ସାଇଡ୍ ଟ୍ରେ</translation>
@@ -744,6 +746,7 @@
 <translation id="3288238092761586174">ଆପଣଙ୍କ ପେମେଣ୍ଟ ଯାଞ୍ଚ କରିବା ପାଇଁ <ph name="URL" />କୁ ଅତିରିକ୍ତ ଷ୍ଟେପ୍ ନେବାର ଆବଶ୍ୟକତା ହୋଇପାରେ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ନୀତି ସମ୍ଵନ୍ଧରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="3295444047715739395">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> ଲିଙ୍କଗୁଡ଼ିକ ଖୋଲିବା ପାଇଁ ଆପକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="3303855915957856445">କୌଣସି ସନ୍ଧାନ ଫଳାଫଳଗୁଡିକ ଖୋଜି ପାଇଲା ନାହିଁ</translation>
 <translation id="3304073249511302126">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
@@ -1248,6 +1251,7 @@
 <translation id="4854362297993841467">ଏହି ବିତରଣ ପଦ୍ଧତି ଉପଲବ୍ଧ ନାହିଁ। ଏକ ଭିନ୍ନ ପଦ୍ଧତି ଚେଷ୍ଠା କରନ୍ତୁ।</translation>
 <translation id="4854853140771946034">Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="485902285759009870">କୋଡ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
+<translation id="4866506163384898554">ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
 <translation id="4876188919622883022">ସରଳିକୃତ ଭ୍ୟୁ</translation>
 <translation id="4876305945144899064">କୌଣସି ଉପଯୋଗକର୍ତ୍ତାନାମ ନାହିଁ</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1261,6 +1265,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">ନବମ ରୋଲ୍</translation>
 <translation id="4901778704868714008">ସେଭ୍ କରନ୍ତୁ...</translation>
+<translation id="4905659621780993806">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ଡିଭାଇସକୁ <ph name="DATE" />ରେ <ph name="TIME" /> ବେଳେ ସ୍ୱଚାଳିତ ଭାବେ ରିଷ୍ଟାର୍ଟ କରିବେ। ଆପଣଙ୍କ ଡିଭାଇସ ରିଷ୍ଟାର୍ଟ ହେବା ପୂର୍ବରୁ ଖୋଲା ଥିବା ଯେ କୌଣସି ଆଇଟମକୁ ସେଭ କରନ୍ତୁ।</translation>
 <translation id="4913987521957242411">ଉପର ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ (ଡାଉନ୍‌ଲୋଡ୍‌ର ଆବଶ୍ୟକତା ନାହିଁ)</translation>
 <translation id="4923459931733593730">ପେମେଣ୍ଟ</translation>
@@ -1470,6 +1475,7 @@
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5560088892362098740">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ</translation>
 <translation id="55635442646131152">ଡକ୍ୟୁମେଣ୍ଟ ଆଉଟଲାଇନ୍</translation>
+<translation id="5565613213060953222">ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ</translation>
 <translation id="5565735124758917034">ସକ୍ରିୟ ଅଛି</translation>
 <translation id="5570825185877910964">ଆକାଉଣ୍ଟର ସୁରକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="5571083550517324815">ଏହି ଠିକଣାରୁ ପିକ୍ ଅପ୍ କରିହେବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
@@ -1673,6 +1679,7 @@
 <translation id="6290238015253830360">ଆପଣଙ୍କ ଦ୍ୱାରା ପରାମର୍ଶିତ ନିବନ୍ଧଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯାଏ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{ଆପଣଙ୍କ ଡିଭାଇସ ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ ହେବ}=1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ସେକେଣ୍ଡରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="6302269476990306341">Chromeରେ Google ଆସିଷ୍ଟାଣ୍ଟ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="6305205051461490394"><ph name="URL" />ରେ ପହଞ୍ଚି ହେଉନାହିଁ।</translation>
 <translation id="6312113039770857350">ୱେବ୍ ପୃଷ୍ଠା ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -1934,6 +1941,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> ଜାଗା ଖାଲି କରିଥାଏ। କିଛି ସାଇଟ୍‍ ଆପଣଙ୍କର ପରବର୍ତ୍ତୀ ଭ୍ରମଣ ସମୟରେ ଆହୁରି ଧୀରେ ଲୋଡ୍ ହୋଇପାରନ୍ତି।</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">ଏହା ଆପଣଙ୍କର ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ ଦେଖିପାରିବେ:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବ୍ୟକ୍ତିଗତ ଭାବରେ ବ୍ରାଉଜ କରିବା ପାଇଁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="7202346780273620635">ଲେଟର୍-ଏକ୍ସଟ୍ରା</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ସୁରକ୍ଷା ମାନାଙ୍କର ପାଳନ କରୁନାହିଁ।</translation>
 <translation id="7210993021468939304">କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux କାର୍ଯ୍ୟକଳାପ ଏବଂ କଣ୍ଟେନର୍ ମଧ୍ୟରେ Linux ଆପ୍ସ ଇନଷ୍ଟଲ୍ କରି ଚଲାଇପାରେ</translation>
@@ -1996,6 +2004,7 @@
 <translation id="7378627244592794276">ନାହିଁ</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">ପ୍ରଯୁଜ୍ୟ ନୁହେଁ</translation>
+<translation id="7388594495505979117">{0,plural, =1{ଆପଣଙ୍କ ଡିଭାଇସ 1 ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}other{ଆପଣଙ୍କ ଡିଭାଇସ # ମିନିଟରେ ରିଷ୍ଟାର୍ଟ ହେବ}}</translation>
 <translation id="7390545607259442187">କାର୍ଡ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7392089738299859607">ଠିକଣା ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="7399802613464275309">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
@@ -2198,6 +2207,7 @@
 <translation id="799149739215780103">ବାଇଣ୍ଡ</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ସହ ସ୍କ୍ରିନ୍ ସେୟାରିଂକୁ ପୁଣି ଆରମ୍ଭ କରାଯାଇଛି</translation>
 <translation id="7995512525968007366">ନିର୍ଦ୍ଦିଷ୍ଟ ହୋଇନାହିଁ</translation>
+<translation id="7998269595945679889">"ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲନ୍ତୁ" ବଟନ, ବ୍ୟକ୍ତିଗତ ଭାବେ ବ୍ରାଉଜ କରିବାକୁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ ଖୋଲିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="800218591365569300">ମେମୋରୀ ଖାଲି କରିବା ପାଇଁ ଅନ୍ୟାନ୍ୟ ଟାବ୍ ବା ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକୁ ବନ୍ଦ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଏବଂ ଏହାର ବିଲିଂ ଠିକଣା ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ଏହାକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}other{ଏହି କାର୍ଡଗୁଡ଼ିକ ଏବଂ ସେମାନଙ୍କର ବିଲିଂ ଠିକଣାଗୁଡ଼ିକ ସେଭ୍‌ କରାଯିବ। <ph name="USER_EMAIL" />ରେ ସାଇନ୍‌ ଇନ୍‌ ରହିବା ଦ୍ୱାରା ଆପଣ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ସକ୍ଷମ ହେବେ।}}</translation>
@@ -2352,6 +2362,7 @@
 <translation id="8507227106804027148">କମାଣ୍ଡ ଲାଇନ୍</translation>
 <translation id="8508648098325802031">ଆଇକନ୍‌ ଖୋଜନ୍ତୁ</translation>
 <translation id="8511402995811232419">କୁକୀଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="8519753333133776369">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଅନୁମତି ପ୍ରାପ୍ତ HID ଡିଭାଇସ</translation>
 <translation id="8522552481199248698">Chrome ଆପଣଙ୍କୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟକୁ ସୁରକ୍ଷିତ ରଖିବା ଏବଂ ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡ ବଦଳାଇବାରେ ସାହାଯ୍ୟ କରିପାରିବ।</translation>
 <translation id="8530813470445476232">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, କୁକୀ, କ୍ୟାଶ୍ ଏବଂ ଆହୁରି ଅନେକ କିଛି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8533619373899488139">ବ୍ଲକ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଆପଣଙ୍କ ସିଷ୍ଟମ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ଵାରା ଲାଗୁ କରାଯାଇଥିବା ଅନ୍ୟ ନୀତିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ &lt;strong&gt;chrome://policy&lt;/strong&gt; କୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>

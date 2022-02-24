@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">यासह लिंक केलेले</translation>
 <translation id="3123734510202723619">घोषणा</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">येथे तुमच्या साइटची सेटिंग्ज बदला</translation>
 <translation id="6140709049082532940">वर्धित संरक्षण:</translation>
 <translation id="6140912465461743537">देश/प्रदेश</translation>
-<translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="614940544461990577">हे करून पहा:</translation>
 <translation id="6150320133806434356">बुकमार्क सेव्ह केला</translation>
 <translation id="6154478581116148741">तुमचे पासवर्ड या डिव्हाइसवरून एक्सपोर्ट करण्यासाठी सेटिंग्जमधील लॉक स्क्रीन सुरू करा</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">भावना जोडा</translation>
 <translation id="7105047059074518658">सर्व डिव्हाइसवर सहजरीत्या ब्राउझ करण्यासाठी साइन इन करा</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
-<translation id="7121362699166175603">अ‍ॅड्रेस बारवरील इतिहास आणि आपोआप पूर्ण करण्याचे दाखले साफ करते. तुमच्या Google खात्यामध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर कदाचित ब्राउझिंगचे इतर फॉर्म असतील.</translation>
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7143462160780459030">स्क्रीनशॉट घेऊ शकत नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="7146622961999026732">या साइट आणि ही अ‍ॅप्स तुमच्यासाठी महत्त्वाची आहेत असे दिसते:</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">तुमचे पूर्ण झाल्यावर फोन डिस्कनेक्ट करा</translation>
 <translation id="7523960634226602883">Google Lens वापरून तुमच्या कॅमेरासह शोधा</translation>
 <translation id="753225086557513863">नंतर सुरू करण्यासाठी शेड्युल केलेले</translation>
-<translation id="7560448309733608642">सिंक केलेल्या सर्व डिव्हाइसवरून इतिहास साफ करते. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथे तुमच्या Google खाते चा इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो.</translation>
 <translation id="7562080006725997899">ब्राउझिंग डेटा साफ करत आहे</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
 <translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>

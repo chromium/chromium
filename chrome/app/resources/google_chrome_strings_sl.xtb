@@ -13,6 +13,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1142745911746664600">Chroma ni mogoče posodobiti</translation>
 <translation id="1154147086299354128">&amp;Odpri v Chromu</translation>
 <translation id="1182414570724401860">Chrome priporoča, da te datoteke ne prenesete ali odprete.</translation>
+<translation id="1201241595274620956">Pogoji za CloudReady 2.0</translation>
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Google Chrome OS.</translation>
 <translation id="1302523850133262269">Počakajte, da Chrome namesti najnovejše sistemske posodobitve.</translation>
@@ -40,11 +41,15 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
 <translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
+<translation id="1847459800604232346">Znova zaženite CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
+<translation id="1865667134297225786">CloudReady 2.0 ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="1873233029667955273">Google Chrome ni privzeti brskalnik</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
+<translation id="1887927549935943139">CloudReady 2.0 ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Vsak profil ima svoje podatke v Chromu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
 <translation id="2063848847527508675">Če želite namestiti posodobitev, morate znova zagnati OS Chrome.</translation>
 <translation id="2094919256425865063">Želite vseeno zapreti Chrome?</translation>
@@ -55,12 +60,15 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2258103955319320201">Če želite do stvari v brskalniku Chrome dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="2290014774651636340">Manjkajo ključi za Google API. Nekatere funkcije Google Chroma bodo onemogočene.</translation>
 <translation id="2290095356545025170">Ali ste prepričani, da želite odstraniti Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">To je sekundarna namestitev Google Chroma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="2345992953227471816">Chrome je ugotovil, da te razširitve vsebujejo zlonamerno programsko opremo:</translation>
 <translation id="2348335408836342058">Chrome potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto</translation>
 <translation id="234869673307233423">Chrome ne more preveriti vaših gesel. Poskusite pozneje.</translation>
 <translation id="235650106824528204">Podatke v Chromu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Naprej</translation>
+<translation id="2371517829376452747">Če nastavitev ni prikazana na tej strani, preverite <ph name="LINK_BEGIN" />
+        nastavitve sistema CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="2467438592969358367">Google Chrome želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
@@ -89,6 +97,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2926676257163822632">Šibka gesla je preprosto ugotoviti. Chromu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="2929907241665500097">Chrome se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chroma in neuspelimi posodobitvami Chroma.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Znova zaženi za posodobitev sistema &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Prijava v omrežje – Chrome</translation>
 <translation id="303514781271618814">Chrome raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
@@ -115,6 +124,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3533694711092285624">Ni shranjenih gesel. Chrome lahko preveri gesla, če jih shranite.</translation>
 <translation id="3541482654983822893">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur.</translation>
 <translation id="3576528680708590453">Skrbnik sistema je Google Chrome nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre drug brskalnik.</translation>
+<translation id="3582634744482121096">Izbirno: Pomagajte izboljšati funkcije sistema CloudReady 2.0 ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="3582972582564653026">V vseh svojih napravah sinhronizirajte in prilagodite Chrome</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
@@ -135,6 +145,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4149882025268051530">Namestitvenemu programu ni uspelo razširiti arhiva. Ponovno prenesite program Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova zaženite v enem dnevu}one{Chrome znova zaženite v # dnevu}two{Chrome znova zaženite v # dnevih}few{Chrome znova zaženite v # dnevih}other{Chrome znova zaženite v # dnevih}}</translation>
 <translation id="4205939740494406371">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur ali <ph name="BEGIN_LINK" />preverite gesla v računu Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Sistem CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251615635259297716">Želite svoje podatke v Chromu povezati s tem računom?</translation>
@@ -152,7 +163,9 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4458462641685292929">Poteka druga operacija v Google Chromu. Poskusite znova pozneje.</translation>
 <translation id="4480040274068703980">Chrome OS ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="4521185804071812304">Izbirno: Pomagajte izboljšati funkcije sistema Chrome OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
+<translation id="4539063627668028557">Različica sistema CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome vam omogoča, da na spletu kliknete telefonsko številko in jo pokličete prek Skypa.</translation>
+<translation id="4562712242781620537">Sistem CloudReady 2.0</translation>
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="4571503333518166079">Odpri nastavitve obvestil v Chromu</translation>
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
@@ -178,6 +191,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali uporabite novejšo različico Google Chroma.</translation>
 <translation id="521447420733633466">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
 <translation id="5251420635869119124">Gostje lahko uporabljajo Chrome, ne da bi za seboj pustili kar koli.</translation>
+<translation id="5307623274346663914">Za uveljavitev posodobitve je treba znova zagnati CloudReady 2.0.</translation>
 <translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
@@ -188,8 +202,10 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik prosi, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Prilagajanje in nadziranje Google Chroma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome se bo znova zagnal čez 1 sekundo}one{Google Chrome se bo znova zagnal čez # sekundo}two{Google Chrome se bo znova zagnal čez # sekundi}few{Google Chrome se bo znova zagnal čez # sekunde}other{Google Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="5736850870166430177">Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="573759479754913123">O sistemu Chrome OS</translation>
@@ -222,14 +238,19 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6679975945624592337">Naj se Google Chrome izvaja v ozadju</translation>
 <translation id="6696915334902295848">Chrome potrebuje dovoljenje za mikrofon za to spletno mesto.</translation>
 <translation id="6739177684496155661">Želite nadaljevati v novem profilu v Chromu?</translation>
+<translation id="6749459139769042303">Pomoč s sistemom CloudReady 2.0</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="677276454032249905">Želite vseeno zapreti Chrome?</translation>
+<translation id="6814748008107187409">Če nastavitev ni prikazana na tej strani, preverite <ph name="LINK_BEGIN" />
+        nastavitve sistema Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Pravilo za dohodni promet za Google Chrome Canary, ki dovoli promet mDNS.</translation>
 <translation id="6881299373831449287">Posodabljanje Chroma</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome je posodobljen, a ga niste uporabljali že vsaj 30 dni.</translation>
+<translation id="700644001690392105">O sistemu CloudReady 2.0</translation>
 <translation id="7025800014283535195">Med profili v Chromu lahko preklapljate tukaj</translation>
 <translation id="7036251913954633326">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chrome uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
 
@@ -257,6 +278,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7486227612705979895">Chrome bo dostopal do Googla Drive zaradi ponujanja predlogov v naslovni vrstici</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Če želite preveriti, ali je naprava posodobljena, odprite <ph name="LINK_BEGIN" />nastavitve sistema OS Chrome<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Če želite preveriti, ali je naprava posodobljena, odprite <ph name="LINK_BEGIN" />nastavitve sistema CloudReady 2.0<ph name="LINK_END" />.</translation>
 <translation id="7592736734348559088">Google Chrome ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="7626032353295482388">Dobrodošli v Chromu</translation>
 <translation id="7629695634924605473">Chrome vam sporoči, ali so gesla ogrožena</translation>

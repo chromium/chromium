@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
+<translation id="311958134571892113">इससे जोड़ा गया</translation>
 <translation id="3123734510202723619">एलान</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome का होम पेज</translation>
@@ -733,6 +734,7 @@
 <translation id="5329858041417644019">आपका ब्राउज़र प्रबंधित नहीं है</translation>
 <translation id="5342314432463739672">अनुमति से जुड़े अनुरोध</translation>
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
+<translation id="5368227114232678694">इस डिवाइस पर निजी रूप से ब्राउज़ करने के लिए, गुप्त टैब का इस्तेमाल करें</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> टैब खुला है, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}one{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}other{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}}</translation>
 <translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
@@ -872,7 +874,6 @@
 <translation id="6138832295072039549">साइट की सेटिंग यहां बदलें</translation>
 <translation id="6140709049082532940">बेहतर सुरक्षा मोड:</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
-<translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
 <translation id="614940544461990577">यह आज़माकर देखें:</translation>
 <translation id="6150320133806434356">बुकमार्क सेव किया गया</translation>
 <translation id="6154478581116148741">इस डिवाइस से अपने पासवर्ड निर्यात करने के लिए सेटिंग में स्क्रीन लॉक चालू करें</translation>
@@ -1054,7 +1055,6 @@
 <translation id="7093803425429738190">भावना जोड़ें</translation>
 <translation id="7105047059074518658">सभी डिवाइसों पर आसानी से ब्राउज़ करने के लिए, साइन इन करें</translation>
 <translation id="7106762743910369165">आपका संगठन आपके ब्राउज़र को मैनेज करता है</translation>
-<translation id="7121362699166175603">पता बार मेंअपने-आपपूर्णता और इतिहास को हटाता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य प्रकार के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7143462160780459030">स्क्रीनशॉट नहीं लिया जा सकता. फिर से कोशिश करें.</translation>
 <translation id="7146622961999026732">शायद ये साइटें और ऐप्लिकेशन आपके लिए अहम हैं:</translation>
@@ -1128,7 +1128,6 @@
 <translation id="752220631458524187">काम हो जाने के बाद डिसकनेक्ट कर दें</translation>
 <translation id="7523960634226602883">Google Lens के ज़रिए अपने कैमरे और फ़ोटो की मदद से खोजें</translation>
 <translation id="753225086557513863">बाद में शुरू करने के लिए शेड्यूल किया गया</translation>
-<translation id="7560448309733608642">सिंक किए हुए सभी डिवाइसों से इतिहास मिटा देता है. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर किसी और तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="7562080006725997899">ब्राउज़िंग डेटा साफ़ हो रहा है</translation>
 <translation id="756809126120519699">साफ़ किया गया Chrome डेटा</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>

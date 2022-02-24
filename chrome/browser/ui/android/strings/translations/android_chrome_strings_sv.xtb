@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1202892408424955784">Bevakade produkter</translation>
 <translation id="1204037785786432551">Ladda ned länk</translation>
+<translation id="1204692632633423444">Knapp för Chrome-åtgärd: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiera länktext</translation>
 <translation id="1208340532756947324">Aktivera synkronisering om du vill synkronisera och anpassa alla dina enheter</translation>
 <translation id="1209206284964581585">Dölj för tillfället</translation>
@@ -201,6 +202,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2172688499998841696">Bildbeskrivningar har inaktiverats</translation>
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
 <translation id="2175927920773552910">QR-kod</translation>
+<translation id="2176767904800337188">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Delar</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
@@ -213,6 +215,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
+<translation id="2279146068164892489">Vill du öppna appen för <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
 <translation id="228704530595896923">Lista över delningsalternativ.</translation>
 <translation id="230115972905494466">Inga kompatibla enheter hittades</translation>
@@ -330,6 +333,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2923908459366352541">Namnet är ogiltigt</translation>
 <translation id="2932150158123903946">Lagring för Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tangentbordet ändras inte</translation>
+<translation id="2936980480904111527">Chrome-aviseringar gör saker enklare</translation>
 <translation id="2942036813789421260">Fliken Förhandsgranskning har stängts</translation>
 <translation id="2946420957526726953">Uppdatera Chrome för att ansluta till andra enheter</translation>
 <translation id="2951071800649516099">Lägg till sidor som du vill läsa senare i läslistan</translation>
@@ -368,6 +372,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">länkat till</translation>
 <translation id="3123734510202723619">Meddelanden</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
@@ -672,6 +677,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4961107849584082341">Översätt den här sidan till vilket språk som helst</translation>
 <translation id="4971735654804503942">Snabbare, proaktivt skydd mot farliga webbplatser, nedladdningar och tillägg. Du får varningar om lösenordsläckor. Kräver att webbinformationen skickas till Google.</translation>
 <translation id="497421865427891073">Fortsätt</translation>
+<translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
 <translation id="5004416275253351869">Googles aktivitetsinställningar</translation>
@@ -869,7 +875,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6138832295072039549">Ändra webbplatsinställningarna här</translation>
 <translation id="6140709049082532940">Förbättrat skydd</translation>
 <translation id="6140912465461743537">Land/region</translation>
-<translation id="6141988275892716286">Bekräfta nedladdning</translation>
 <translation id="614940544461990577">Testa att</translation>
 <translation id="6150320133806434356">Bokmärket har sparats</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>
@@ -877,6 +882,7 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6162892189396105610">Sidor som du kanske vill besöka läses in i förväg i Chrome.</translation>
 <translation id="6186394685773237175">Inga utsatta lösenord hittades</translation>
 <translation id="6192907950379606605">Få bildbeskrivningar</translation>
+<translation id="620197886010707372">Vill du öppna appen för <ph name="APPNAME" /> med Google Play?</translation>
 <translation id="6203593061661911168">Nedladdningen påbörjas när du ansluter till wifi</translation>
 <translation id="6210748933810148297">Inte <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Förhandsgranskar sidan</translation>
@@ -1050,7 +1056,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7093803425429738190">Lägg till uttryckssymbol</translation>
 <translation id="7105047059074518658">Logga in och surfa enklare på olika enheter</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
-<translation id="7121362699166175603">Historik och autoslutföranden i adressfältet rensas. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7143462160780459030">Det gick inte att ta en skärmbild. Försök igen.</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
@@ -1066,6 +1071,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7191430249889272776">Fliken öppnades i bakgrunden.</translation>
 <translation id="7196215469483532480">Förklaringen till integritetsguiden har öppnats över hela skärmen</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
+<translation id="7237045078887540010">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>
 <translation id="7242755609445462077">Stiliserad markering <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Kontrollera att synkronisering har aktiverats i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Lägg telefonen nära datorn</translation>
@@ -1123,7 +1129,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="752220631458524187">Koppla från när du är klar</translation>
 <translation id="7523960634226602883">Sök med kameran med hjälp av Google Lens</translation>
 <translation id="753225086557513863">Schemalagd till senare</translation>
-<translation id="7560448309733608642">Historiken rensas från alla synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Tar bort webbinformation</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
@@ -1272,6 +1277,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8352996530981010042">Det gick inte att ladda ned reaktionerna. Försök igen.</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
+<translation id="8356078935982976590">Det blir enkelt att hantera mediastyrning, inkognitosessioner, nedladdningar och mycket annat</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
 <translation id="8364299278605033898">Visa populära webbplatser</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>
@@ -1429,6 +1435,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>
+<translation id="9205933215779845960">Sidan hittades inte. Kontrollera stavningen eller testa att söka på <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Det går inte att ringa</translation>
 <translation id="9212845824145208577">Markeringen kan inte utökas mer i riktning nedåt. Testa att börja någonstans längre ned på sidan.</translation>

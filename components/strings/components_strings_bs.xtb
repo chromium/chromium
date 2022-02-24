@@ -752,6 +752,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3288238092761586174"><ph name="URL" /> možda mora poduzeti dodatne korake da potvrdi vaše plaćanje</translation>
 <translation id="3293642807462928945">Saznajte više o pravilu <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u postavkama Chromea</translation>
+<translation id="3303795387212510132">Dozvoliti da aplikacija otvori linkove <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>
 <translation id="3304073249511302126">skeniranje Bluetootha</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
@@ -1276,6 +1277,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Deveta rolna</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
+<translation id="4905659621780993806">Vaš administrator će ponovo pokrenuti uređaj automatski u <ph name="TIME" /> <ph name="DATE" />. Sačuvajte sve otvorene stavke prije ponovnog pokretanja uređaja.</translation>
 <translation id="4913987521957242411">Bušenje gornjeg lijevog ugla</translation>
 <translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (nije potrebno preuzeti)</translation>
 <translation id="4923459931733593730">Plaćanje</translation>
@@ -1690,6 +1692,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6290238015253830360">Predloženi članci će se pojaviti ovdje</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Uređaj će se sada ponovo pokrenuti}=1{Uređaj će se ponovo pokrenuti za 1 s}one{Uređaj će se ponovo pokrenuti za # s}few{Uređaj će se ponovo pokrenuti za # s}other{Uređaj će se ponovo pokrenuti za # s}}</translation>
 <translation id="6302269476990306341">Zaustavljanje Google Asistenta u Chromeu</translation>
 <translation id="6305205051461490394"><ph name="URL" /> je nedostupan.</translation>
 <translation id="6312113039770857350">Web stranica nije dostupna</translation>
@@ -2014,6 +2017,7 @@ Dodatni detalji:
 <translation id="7378627244592794276">Ne</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Nije primjenjivo</translation>
+<translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7390545607259442187">Potvrdite karticu</translation>
 <translation id="7392089738299859607">Ažurirajte adresu</translation>
 <translation id="7399802613464275309">Sigurnosna provjera</translation>
@@ -2371,6 +2375,7 @@ Dodatni detalji:
 <translation id="8507227106804027148">Komandna linija</translation>
 <translation id="8508648098325802031">Ikona pretraživanja</translation>
 <translation id="8511402995811232419">Upravljajte kolačićima</translation>
+<translation id="8519753333133776369">HID uređaj koji je dozvolio vaš administrator</translation>
 <translation id="8522552481199248698">Chrome vam može pomoći da zaštitite svoj Google račun i promijenite lozinku.</translation>
 <translation id="8530813470445476232">Izbrišite historiju pregledanja, kolačiće, keš memoriju i drugo u postavkama Chromea</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da vidite listu blokiranih URL-ova i druga pravila koja je nametnuo vaš administrator sistema.</translation>

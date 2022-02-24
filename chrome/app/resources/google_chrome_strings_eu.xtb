@@ -13,6 +13,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1142745911746664600">Ezin da eguneratu Chrome</translation>
 <translation id="1154147086299354128">&amp;Ireki Chrome-n</translation>
 <translation id="1182414570724401860">Fitxategia ez deskargatzea eta ez irekitzea gomendatzen dizu Chrome-k</translation>
+<translation id="1201241595274620956">CloudReady 2.0-ren baldintzak</translation>
 <translation id="1278833599417554002">Abiaraz ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="1293325835983155583">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS-n Baldintzak.</translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
@@ -39,11 +40,15 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Ziurtatu Chrome-ko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="1812689907177901597">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chrome-n saioa hasi beharrik gabe</translation>
+<translation id="1847459800604232346">Berrabiarazi CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome-k webgune honen izenean kamera atzitzeko baimena behar du</translation>
+<translation id="1865667134297225786">CloudReady 2.0-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak iraungi egin direlako.</translation>
 <translation id="1873233029667955273">Google Chrome ez da arakatzaile lehenetsia</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome zaharkituta dago</translation>
+<translation id="1887927549935943139">CloudReady 2.0-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
+<translation id="1938037793394697191">Google-ren CloudReady 2.0</translation>
 <translation id="2018528049276128029">Profil bakoitzak Chrome-ko informazio propioa dauka; adibidez, laster-markak, historia, pasahitzak eta beste</translation>
 <translation id="2063848847527508675">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chrome OS.</translation>
 <translation id="2094919256425865063">Chrome-tik irten nahi duzu hala ere?</translation>
@@ -54,12 +59,14 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2258103955319320201">Chrome arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="2290014774651636340">Google APIko gakoak falta dira. Agian Google Chrome-ren funtzio batzuk desgaituta egongo dira.</translation>
 <translation id="2290095356545025170">Ziur Google Chrome desinstalatu nahi duzula?</translation>
+<translation id="2297776811548050971"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible CloudReady 2.0; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="2309047409763057870">Google Chrome-ren bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="2345992953227471816">Luzapenok malwarea dutela hauteman du Chrome-k:</translation>
 <translation id="2348335408836342058">Chrome-k webgune honen izenean kamera eta mikrofonoa atzitzeko baimena behar du</translation>
 <translation id="234869673307233423">Chrome-k ezin ditu egiaztatu pasahitzak. Saiatu geroago.</translation>
 <translation id="235650106824528204">Laneko profilaren administratzaileak kendu egin ditzake profil hau erabiltzean sortutako Chrome-ko datuak (adibidez, sortutako laster-markak, historia, pasahitzak eta bestelako ezarpenak). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
+<translation id="2371517829376452747">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />CloudReady 2.0-ren ezarpenetan<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="2467438592969358367">Google Chrome-k pasahitzak esportatu nahi ditu. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -88,6 +95,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2926676257163822632">Seguruak ez diren pasahitzak erraz asmatzen dira. Utzi Chrome-ri <ph name="BEGIN_LINK" />pasahitz seguruak sortzen eta gogoratzen<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome-k kamera atzitzeko baimena behar du webgune honetan</translation>
 <translation id="2929907241665500097">Chrome ez da eguneratu arazoren bat izan delako. <ph name="BEGIN_LINK" />Konpondu Chrome eguneratzeko arazoak eta huts egindako eguneratzeak.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0 eguneratzeko, abiaraz ezazu berriro</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Hasi saioa sarean - Chrome</translation>
 <translation id="303514781271618814">Chrome eginbide berriak probatzen ari da; haiei esker, datu gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
 <translation id="3037838751736561277">Google Chrome atzeko planoko moduan dago.</translation>
@@ -114,6 +122,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3533694711092285624">Ez dago pasahitzik gordeta. Chrome-k pasahitzak egiazta ditzake gorde ondoren.</translation>
 <translation id="3541482654983822893">Chrome-k ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru.</translation>
 <translation id="3576528680708590453">Sistemaren administratzailearen konfigurazioaren arabera, Google Chrome-k beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
+<translation id="3582634744482121096">Aukerakoa: lagundu CloudReady 2.0-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
 <translation id="3582972582564653026">Sinkronizatu eta pertsonalizatu Chrome gailu guztietan</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3622797965165704966">Errazagoa da Chrome erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
@@ -134,6 +143,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4149882025268051530">Instalatzaileak ezin izan du artxiboa deskonprimitu. Deskargatu berriro Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Berrabiarazi Chrome egun bateko epean}other{Berrabiarazi Chrome # eguneko epean}}</translation>
 <translation id="4205939740494406371">Chrome-k ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0-ren sistema</translation>
 <translation id="4242034826641750751">Chrome-k kamera eta mikrofonoa atzitzeko baimenak behar ditu webgune honetan</translation>
 <translation id="424864128008805179">Chrome-ko saioa amaitu nahi duzu?</translation>
 <translation id="4251615635259297716">Chrome-n dituzun datuak kontu honi lotu nahi dizkiozu?</translation>
@@ -151,7 +161,9 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4458462641685292929">Beste eragiketa bat ari da egiten Google Chrome. Saiatu berriro geroago.</translation>
 <translation id="4480040274068703980">Saioa hastean gertatu den errore bat dela-eta, Chrome OS-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="4521185804071812304">Aukerakoa: lagundu Chrome OS-n eginbideak eta funtzionamendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
+<translation id="4539063627668028557">CloudReady 2.0-ren bertsioa</translation>
 <translation id="4561051373932531560">Google Chrome-rekin, telefono-zenbakietan klik egin dezakezu Skype bidez horietara deitzeko!</translation>
+<translation id="4562712242781620537">CloudReady 2.0-ren sistema</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Laster-markak, historia eta bestelako ezarpenak atzi ditzakezu saioa hasita daukaten gailu guztien bidez.</translation>
 <translation id="4571503333518166079">Joan Chrome-ren jakinarazpen-ezarpenetara</translation>
 <translation id="459622048091363950">Chrome-k sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
@@ -177,6 +189,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direktorio bat edo erabili Chrome-ren bertsio berriagoa.</translation>
 <translation id="521447420733633466">Gailu bat partekatzen baduzu, lagunak eta familiako kideak beren kontuak erabilita ibil daitezke Interneten, eta Chrome nahi duten moduan konfiguratu</translation>
 <translation id="5251420635869119124">Gonbidatuek Chrome erabil dezakete aztarnarik utzi gabe.</translation>
+<translation id="5307623274346663914">Eguneratzea aplikatzeko, berrabiarazi egin behar da CloudReady 2.0.</translation>
 <translation id="5334487786912937552">Chrome-k biltegia atzitzeko baimena behar du fitxategiak deskargatu ahal izateko</translation>
 <translation id="5386244825306882791">Chrome hastean edo Omnibox bidez bilatzean erakutsiko den orria ere kontrolatzen du.</translation>
 <translation id="5394833366792865639">Partekatu Chrome-ko fitxa bat</translation>
@@ -187,8 +200,10 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko}=1{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
+<translation id="5685161537284117504"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible CloudReady 2.0.</translation>
 <translation id="5686916850681061684">Pertsonalizatu eta kontrolatu Google Chrome. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">Saioa hastean gertatu den errore bat dela-eta, CloudReady 2.0-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{1 segundo barru berrabiaraziko da Google Chrome}other{# segundo barru berrabiaraziko da Google Chrome}}</translation>
 <translation id="5736850870166430177">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chrome-k URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="573759479754913123">Chrome OS-i buruz</translation>
@@ -221,15 +236,22 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6679975945624592337">Utzi Google Chrome-ri atzeko planoan abiarazten</translation>
 <translation id="6696915334902295848">Chrome-k mikrofonoa atzitzeko baimena behar du webgune honetan</translation>
 <translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
+<translation id="6749459139769042303">Lortu CloudReady 2.0-ri buruzko laguntza</translation>
 <translation id="6750954913813541382">Ortografia-akatsak konpontzeko, Chrome-k Google-ri bidaltzen dio arakatzailean idazten duzun testua</translation>
 <translation id="677276454032249905">Chrome-tik irten nahi duzu hala ere?</translation>
+<translation id="6814748008107187409">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />Chrome OS-ren ezarpenetan<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Google Chrome Canary kanalean mDNS trafikoa baimentzeko sarrera-araua.</translation>
 <translation id="6881299373831449287">Chrome eguneratzen</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
+<translation id="6919064686744569862">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google-ren CloudReady 2.0-ren Baldintzak.</translation>
 <translation id="6943584222992551122">Pertsona honen arakatze-datuak gailutik ezabatuko dira. Datuak berreskuratzeko, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="6967962315388095737">Google Chrome Beta-k mDNS trafikoa baimentzeko sarrerako araua.</translation>
 <translation id="6989339256997917931">Google Chrome eguneratu egin da, baina ez duzu 30 egunetan erabili.</translation>
+<translation id="700644001690392105">CloudReady 2.0-ri buruz</translation>
 <translation id="7025800014283535195">Aldatu Chrome-ko profila hemen</translation>
+<translation id="7036251913954633326">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chrome arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
+
+Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="7062128746136194023">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chrome-n. Ezin da gehitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7085332316435785646">Aukeratu ea Chrome-ko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="7088681679121566888">Eguneratuta dago Chrome</translation>
@@ -243,6 +265,9 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7296210096911315575">Erabilerari eta segurtasunari buruzko informazio garrantzitsua</translation>
 <translation id="7308322188646931570">Chrome-k fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
+<translation id="7388770099345495132">Kontu hau behin bakarrik erabili nahi baduzu, gonbidatu modua erabil dezakezu Chrome arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
+
+Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Google-ko kontuak kudeatzeko, joan <ph name="SETTINGS_LINK_BEGIN" />Ezarpenak<ph name="SETTINGS_LINK_END" /> atalera.</translation>
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
 <translation id="7408085963519505752">Chrome OS-n baldintzak</translation>
 <translation id="7419046106786626209">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
@@ -250,6 +275,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7486227612705979895">Chrome-k zure Drive unitatea atzituko du helbide-barran iradokizunak egiteko</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />Chrome OS-n ezarpenetara<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />CloudReady 2.0-ren ezarpenetara<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome-k ezin izan ditu zure datuak sinkronizatu kontuan saioa asteko datuak zaharkituta daudelako.</translation>
 <translation id="7626032353295482388">Ongi etorri Chrome-ra</translation>
 <translation id="7629695634924605473">Chrome-k abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>

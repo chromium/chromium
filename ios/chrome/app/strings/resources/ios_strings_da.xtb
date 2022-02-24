@@ -12,6 +12,7 @@
 
         
 Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
+<translation id="1054045277222934172">Du kan også ændre websitets standardvisning på en computer ved at gå til Indstillinger efterfulgt af Indstillinger for indhold</translation>
 <translation id="1063454504051558093">Brug en anden adgangskode...</translation>
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
@@ -182,6 +183,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
 <translation id="2695507686909505111">Siden blev oversat</translation>
+<translation id="2700241355396984822">Valgmuligheder for konfiguration af tilladelser</translation>
 <translation id="2702801445560668637">Læseliste</translation>
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Kopieret</translation>
@@ -318,6 +320,8 @@ Følg vejledningen nedenfor:</translation>
 <translation id="3861486700625780712">Følg ikke</translation>
 <translation id="3892144330757387737">Her kan du se din historik</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3904829425754749514">Din organisation har deaktiveret synkronisering. Du kan stadig se din historik samt dine bogmærker, adgangskoder og andre indstillinger på din enhed. Hvis du foretager nogen ændringer, bliver de dog ikke synkroniseret med din konto.</translation>
+<translation id="3905353503976611311">Søg på nettet</translation>
 <translation id="3913386780052199712">Logget ind på Chrome</translation>
 <translation id="3915450441834151894">Websiteoplysninger</translation>
 <translation id="3922310737605261887">Søg efter kopieret tekst</translation>
@@ -347,6 +351,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4172051516777682613">Vis altid</translation>
 <translation id="418156467088430727">Se offlineversion på en ny fane</translation>
 <translation id="4181841719683918333">Sprog</translation>
+<translation id="4223967053752765281">Din organisation har deaktiveret login. Du kan stadig se din historik samt dine bogmærker, adgangskoder og andre indstillinger på din enhed. Hvis du foretager nogen ændringer, bliver de dog ikke synkroniseret med din konto.</translation>
 <translation id="4237377247299956313">Tryk på <ph name="BEGIN_BOLD" />Standardbrowserapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Angiv adgangssætning</translation>
 <translation id="4249955472157341256">Sortér efter seneste</translation>
@@ -371,6 +376,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4469418912670346607">Fortsæt konfiguration</translation>
 <translation id="4474494258097106883">Udviklet til din iPhone</translation>
 <translation id="4476574785019001431">Indstillinger</translation>
+<translation id="448433063499977729">Synkronisering er blevet deaktiveret</translation>
 <translation id="4496373720959965247">Tilføj faner, og skift mellem sider</translation>
 <translation id="4502566650163919158">Tjek nu</translation>
 <translation id="4505980578794259603">Senest tjekket <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5580834567471114021">Vil du føje siden til læselisten?</translation>
 <translation id="5592679540098330836">Aktivér synkronisering for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Deaktiveret af din organisation</translation>
+<translation id="560999923643681074">Redigeringsadgang</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>
 <translation id="5626245204502895507">Filen kunne ikke downloades på nuværende tidspunkt.</translation>
 <translation id="5631164295104953411">Tilføj betalingsmetode</translation>
@@ -594,7 +601,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6389470377220713856">Navn på kort</translation>
 <translation id="6406506848690869874">Synkronisering</translation>
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
-<translation id="6417838470969808600">Du har bogmærker, historik, adgangskoder og andre indstillinger fra <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Logget ind som <ph name="EMAIL" />.
 
 Dine data blev krypteret med din adgangssætning til synkronisering d. <ph name="TIME" />. Angiv adgangssætningen for at starte synkroniseringen.</translation>
@@ -759,6 +765,7 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7840771868269352570">De valgte elementer fjernes.</translation>
 <translation id="7856733331829174190">Downloaden mislykkedes</translation>
 <translation id="7859704718976024901">Browserhistorik</translation>
+<translation id="7884694604461143138">Søgehistorik (<ph name="COUNT" /> blev fundet)</translation>
 <translation id="7887198238286927132">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke dette felt.</translation>
 <translation id="7911190106180361398">Din organisation tillader ikke, at du synkroniserer alt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8076014560081431679">Gemte websiteindstillinger slettes ikke og kan afspejle dine søgevaner. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne indstilling er administreret. Tryk to gange for at få flere oplysninger.</translation>
 <translation id="8080028325999236607">Luk alle faner</translation>
+<translation id="809543534949702122">Søgehistorik</translation>
 <translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiver</translation>
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
@@ -811,6 +819,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8319076807703933069">Ny søgning</translation>
 <translation id="8323906514956095947">Tryk og hold nede for at se flere faneindstillinger</translation>
 <translation id="8328777765163860529">Luk alt</translation>
+<translation id="8364085047956854021">Tilladelser for "<ph name="SITE_NAME" />" nulstilles til deres deaktiverede tilstand, når du forlader dette website.</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8386068868580335421">Nulstil</translation>
 <translation id="8407669440184693619">Der blev ikke fundet nogen adgangskoder til dette website</translation>
@@ -897,6 +906,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9148126808321036104">Log ind igen</translation>
 <translation id="9152539721251340337">Opret en QR-kode</translation>
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
+<translation id="9177438225260810839">Søg i åbne faner</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>
 <translation id="9200875785104711666">For <ph name="TIME" /> d. siden</translation>
 <translation id="9203116392574189331">Handoff</translation>

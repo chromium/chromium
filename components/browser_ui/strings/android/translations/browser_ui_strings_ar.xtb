@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4008040567710660924">السماح لموقع إلكتروني معيّن بتشغيل ملفات تعريف الارتباط</translation>
+<translation id="4040330681741629921">تلقّي إشعارات في حال كان خيار العرض المبسَّط متاحًا لموقع إلكتروني</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
 <translation id="4149994727733219643">عرض مبسَّط لصفحات الويب</translation>
 <translation id="4165986682804962316">إعدادات المواقع الإلكترونية</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">سيؤدي هذا الإجراء إلى محو <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط المُخزّنة من خلال المواقع الإلكترونية.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 آخر)}zero{(+ # آخر)}two{(+ اثنين (#) آخرين)}few{(+ # أخرى)}many{(+ # آخر)}other{(+ # آخر)}}</translation>
 <translation id="5403592356182871684">الأسماء</translation>
+<translation id="5412236728747081950">‏يتعرّف هذا الموقع الإلكتروني على اهتماماتك من خلال متصفّح Chrome ويعرض لك إعلانات تناسبك أكثر.</translation>
 <translation id="5438097262470833822">سيؤدي هذا الخيار إلى إعادة ضبط أذونات الموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="5489227211564503167">الوقت المنقضي <ph name="ELAPSED_TIME" /> من <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">حظر الإعلانات في المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها</translation>
@@ -295,7 +297,8 @@
 <translation id="8197286292360124385">تم السماح بالوصول إلى <ph name="PERMISSION_1" />.</translation>
 <translation id="8200772114523450471">استئناف</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
-<translation id="8211406090763984747">الاتصال بموقع الويب هذا آمن</translation>
+<translation id="8211406090763984747">الاتصال بهذا الموقع الإلكتروني آمن
+</translation>
 <translation id="8249310407154411074">نقل إلى الأعلى</translation>
 <translation id="8261506727792406068">حذف</translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>

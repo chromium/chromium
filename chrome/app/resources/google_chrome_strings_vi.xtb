@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">Không thể cập nhật Chrome</translation>
 <translation id="1154147086299354128">&amp;Mở trong Chrome</translation>
 <translation id="1182414570724401860">Chrome khuyên bạn không nên mở hoặc tải tệp này xuống</translation>
+<translation id="1201241595274620956">Điều khoản của CloudReady 2.0</translation>
 <translation id="1278833599417554002">Chạy lại để cập nhật &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> yêu cầu bạn phải đọc và chấp nhận Điều khoản dịch vụ sau đây trước khi sử dụng thiết bị này. Những điều khoản này không mở rộng, sửa đổi hoặc giới hạn Điều khoản của Google Chrome OS.</translation>
 <translation id="1302523850133262269">Vui lòng đợi khi Chrome cài đặt các bản cập nhật hệ thống mới nhất.</translation>
@@ -38,11 +39,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Đảm bảo bạn đã đăng nhập vào Chrome trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="1812689907177901597">Bằng việc tắt tính năng này, bạn có thể đăng nhập vào các trang web của Google, chẳng hạn như Gmail mà không cần đăng nhập vào Chrome</translation>
+<translation id="1847459800604232346">Khởi động lại CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome cần có quyền truy cập vào máy ảnh của bạn cho trang web này</translation>
+<translation id="1865667134297225786">CloudReady 2.0 không đồng bộ hoá được dữ liệu của bạn vì thông tin đăng nhập tài khoản của bạn đã cũ.</translation>
 <translation id="1873233029667955273">Google Chrome không phải là trình duyệt mặc định của bạn</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
+<translation id="1887927549935943139">CloudReady 2.0 không đồng bộ hoá được dữ liệu của bạn vì miền của bạn không dùng được tính năng đồng bộ hoá.</translation>
 <translation id="1919130412786645364">Cho phép đăng nhập vào Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Mỗi hồ sơ đều có thông tin riêng trên Chrome, chẳng hạn như dấu trang, các trang web đã truy cập, mật khẩu và nhiều thông tin khác</translation>
 <translation id="2063848847527508675">Chrome OS cần được khởi động lại để áp dụng bản cập nhật.</translation>
 <translation id="2094919256425865063">Bạn vẫn muốn thoát khỏi Chrome?</translation>
@@ -53,12 +58,14 @@
 <translation id="2258103955319320201">Để truy cập vào nội dung của bạn trên trình duyệt Chrome bằng mọi thiết bị, hãy đăng nhập rồi bật tính năng đồng bộ hóa</translation>
 <translation id="2290014774651636340">Khóa API của Google bị thiếu. Một số chức năng của Google Chrome sẽ bị tắt.</translation>
 <translation id="2290095356545025170">Bạn có chắc chắn muốn gỡ cài đặt Google Chrome không?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Đây là cài đặt thứ cấp của Google Chrome và không thể trở thành trình duyệt mặc định của bạn.</translation>
 <translation id="2345992953227471816">Chrome nhận thấy rằng các tiện ích này chứa phần mềm độc hại:</translation>
 <translation id="2348335408836342058">Chrome cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>
 <translation id="234869673307233423">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau.</translation>
 <translation id="235650106824528204">Quản trị viên hồ sơ công việc có thể xóa mọi dữ liệu trên Chrome được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các tùy chọn cài đặt khác). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="2371517829376452747">Nếu bạn không thấy một chế độ cài đặt nào đó trên trang này, hãy xem phần <ph name="LINK_BEGIN" />Cài đặt CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome không thể đồng bộ hóa dữ liệu của bạn vì Đồng bộ hóa không khả dụng cho miền của bạn.</translation>
 <translation id="2467438592969358367">Google Chrome muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
@@ -87,6 +94,7 @@
 <translation id="2926676257163822632">Mật khẩu yếu thường dễ đoán. Chrome có thể <ph name="BEGIN_LINK" />tạo mật khẩu mạnh và ghi nhớ mật khẩu này cho bạn<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome cần có quyền truy cập máy ảnh đối với trang web này</translation>
 <translation id="2929907241665500097">Đã xảy ra lỗi nên Chrome chưa cập nhật được. <ph name="BEGIN_LINK" />Hãy khắc phục các vấn đề cập nhật và các bản cập nhật không thành công của Chrome.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Chạy lại để cập nhật &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng – Chrome</translation>
 <translation id="303514781271618814">Chrome đang khám phá các tính năng mới cho phép các trang web mang lại trải nghiệm duyệt web như nhau nhưng tiêu tốn ít dữ liệu hơn</translation>
 <translation id="3037838751736561277">Google Chrome đang chạy trong nền.</translation>
@@ -113,6 +121,7 @@
 <translation id="3533694711092285624">Bạn chưa lưu mật khẩu nào. Chrome có thể kiểm tra các mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="3541482654983822893">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ.</translation>
 <translation id="3576528680708590453">Quản trị viên hệ thống của bạn đã định cấu hình Google Chrome để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Không bắt buộc: Giúp cải thiện các tính năng và hiệu suất của CloudReady 2.0 bằng cách tự động gửi dữ liệu sử dụng và thông tin chẩn đoán cho Google.</translation>
 <translation id="3582972582564653026">Đồng bộ hóa và cá nhân hóa Chrome trên các thiết bị của bạn</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="3622797965165704966">Giờ đây, việc sử dụng Chrome bằng tài khoản Google của bạn và trên máy tính được chia sẻ trở nên dễ dàng hơn.</translation>
@@ -133,6 +142,7 @@
 <translation id="4149882025268051530">Trình cài đặt không thể giải nén lưu trữ được. Vui lòng tải xuống lại Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Khởi động lại Chrome trong vòng một ngày}other{Khởi động lại Chrome trong vòng # ngày}}</translation>
 <translation id="4205939740494406371">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Hệ thống CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome cần có quyền truy cập máy ảnh và micrô đối với trang web này</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4251615635259297716">Bạn muốn liên kết dữ liệu Chrome của bạn với tài khoản này?</translation>
@@ -150,7 +160,9 @@
 <translation id="4458462641685292929">Một hoạt động khác trên Google Chrome đang diễn ra. Vui lòng thử lại sau.</translation>
 <translation id="4480040274068703980">Chrome OS không thể đồng bộ hóa dữ liệu của bạn do lỗi khi đăng nhập.</translation>
 <translation id="4521185804071812304">Không bắt buộc: Giúp cải thiện hiệu suất và các tính năng của Chrome OS bằng cách tự động gửi dữ liệu sử dụng và chẩn đoán cho Google.</translation>
+<translation id="4539063627668028557">Phiên bản CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome cho phép bạn nhấp vào số điện thoại trên web và gọi tới số đó bằng Skype!</translation>
+<translation id="4562712242781620537">Hệ thống CloudReady 2.0</translation>
 <translation id="4567424176335768812">Bạn đã đăng nhập với tên <ph name="USER_EMAIL_ADDRESS" />. Bây giờ, bạn có thể truy cập dấu trang, lịch sử và các cài đặt khác trên tất cả những thiết bị đã đăng nhập của bạn.</translation>
 <translation id="4571503333518166079">Chuyển đến cài đặt thông báo của Chrome</translation>
 <translation id="459622048091363950">Sau khi Chrome có quyền truy cập, các trang web sẽ có thể yêu cầu bạn cấp quyền truy cập.</translation>
@@ -176,6 +188,7 @@
 Một số tính năng có thể không khả dụng. Vui lòng chỉ định thư mục hồ sơ khác hoặc sử dụng phiên bản Chrome mới hơn.</translation>
 <translation id="521447420733633466">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chrome theo ý muốn</translation>
 <translation id="5251420635869119124">Khách có thể sử dụng Chrome mà không phải thoát khỏi bất cứ nội dung nào.</translation>
+<translation id="5307623274346663914">Bạn cần khởi động lại CloudReady 2.0 để áp dụng bản cập nhật.</translation>
 <translation id="5334487786912937552">Chrome cần có quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="5386244825306882791">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome hoặc tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="5394833366792865639">Chia sẻ một thẻ Chrome</translation>
@@ -184,8 +197,10 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="5686916850681061684">Tùy chỉnh và kiểm soát Google Chrome. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 không đồng bộ hoá được dữ liệu của bạn do xảy ra lỗi khi đăng nhập.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome sẽ khởi động lại sau 1 giây}other{Google Chrome sẽ khởi động lại sau # giây}}</translation>
 <translation id="5736850870166430177">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
 <translation id="573759479754913123">Giới thiệu về Chrome OS</translation>
@@ -218,15 +233,22 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6679975945624592337">Cho phép Google Chrome chạy trong nền</translation>
 <translation id="6696915334902295848">Chrome cần có quyền truy cập micrô đối với trang web này</translation>
 <translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
+<translation id="6749459139769042303">Nhận trợ giúp liên quan đến CloudReady 2.0</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
 <translation id="677276454032249905">Bạn vẫn muốn thoát khỏi Chrome?</translation>
+<translation id="6814748008107187409">Nếu bạn không thấy một chế độ cài đặt nào đó trên trang này, hãy tìm trong phần <ph name="LINK_BEGIN" />Cài đặt Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Quy tắc kết nối để Google Chrome Canary cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="6881299373831449287">Đang cập nhật Chrome</translation>
 <translation id="6885412569789873916">Ứng dụng Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> yêu cầu bạn đọc và chấp nhận Điều khoản dịch vụ sau đây trước khi dùng thiết bị này. Những điều khoản này không mở rộng, sửa đổi hay giới hạn Điều khoản của Google CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chrome bằng <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Quy tắc kết nối để Google Chrome Beta cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome đã được cập nhật, nhưng bạn đã không sử dụng chương trình này ít nhất 30 ngày.</translation>
+<translation id="700644001690392105">Giới thiệu về CloudReady 2.0</translation>
 <translation id="7025800014283535195">Bạn có thể chuyển đổi giữa các hồ sơ trên Chrome tại đây</translation>
+<translation id="7036251913954633326">Nếu chỉ muốn dùng tài khoản này một lần, thì bạn có thể sử dụng <ph name="GUEST_LINK_BEGIN" />Chế độ khách<ph name="GUEST_LINK_END" /> trên trình duyệt Chrome. Nếu bạn muốn thêm tài khoản cho người khác, hãy <ph name="LINK_BEGIN" />thêm người dùng mới<ph name="LINK_END" /> trên <ph name="DEVICE_TYPE" /> của bạn.
+
+Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể quản lý Tài khoản Google trong phần <ph name="SETTINGS_LINK_BEGIN" />Cài đặt<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Cha mẹ bạn đã tắt tùy chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chrome. Bạn không được phép thêm <ph name="EXTENSION_TYPE_PARAMETER" /> này.</translation>
 <translation id="7085332316435785646">Chọn xem có bao gồm nhật ký duyệt web trên Chrome hay không để mang lại trải nghiệm phù hợp hơn trong các dịch vụ của Google</translation>
 <translation id="7088681679121566888">Chrome đã được cập nhật</translation>
@@ -240,6 +262,9 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
+<translation id="7388770099345495132">Nếu chỉ muốn dùng tài khoản này một lần, thì bạn có thể sử dụng Chế độ khách trên trình duyệt Chrome. Nếu bạn muốn thêm tài khoản cho người khác, hãy <ph name="LINK_BEGIN" />thêm người dùng mới<ph name="LINK_END" /> trên <ph name="DEVICE_TYPE" /> của bạn.
+
+Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp dụng cho cả tài khoản này. Bạn có thể quản lý Tài khoản Google trong phần <ph name="SETTINGS_LINK_BEGIN" />Cài đặt<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7408085963519505752">Điều khoản của Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS không thể đồng bộ hóa dữ liệu của bạn vì Đồng bộ hóa không khả dụng với miền của bạn.</translation>
@@ -247,6 +272,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7486227612705979895">Chrome sẽ truy cập vào Drive của bạn để đưa ra đề xuất trên thanh địa chỉ</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Để kiểm tra xem thiết bị của bạn đã cập nhật hay chưa, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chrome OS<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Để kiểm tra xem thiết bị của bạn đã cập nhật hay chưa, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome không thể đồng bộ hóa dữ liệu của bạn vì chi tiết đăng nhập tài khoản của bạn đã cũ.</translation>
 <translation id="7626032353295482388">Chào mừng bạn đến với Chrome</translation>
 <translation id="7629695634924605473">Chrome cho bạn biết mật khẩu của bạn có bị đánh cắp hay không</translation>

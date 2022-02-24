@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Ta datoteka je deljena z Linuxom</translation>
 <translation id="1864756863218646478">Datoteke ni bilo mogoče najti.</translation>
 <translation id="1884013283844450420">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, vzpostavitev povezave</translation>
+<translation id="1914901738028575085">Naprava CloudReady 2.0</translation>
 <translation id="1920670151694390848">malajalščina (transkripcija)</translation>
 <translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Pogon <ph name="DRIVE_NAME" /> je bil formatiran</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Kolo</translation>
 <translation id="8719721339511222681">Izbran je vnos <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvaščina</translation>
+<translation id="873847021056608403">Naprave CloudReady 2.0</translation>
 <translation id="8743164338060742337">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, vzpostavitev povezave</translation>
 <translation id="8750438273876807512">Pridržite datoteko in se dotaknite <ph name="ICON" /> ter izberite »Pripni na polico« za hiter dostop do datotek na polici.</translation>
 <translation id="8787254343425541995">Dovoli proxyje za omrežja v skupni rabi</translation>

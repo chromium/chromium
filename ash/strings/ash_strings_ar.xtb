@@ -335,6 +335,7 @@
 <translation id="3105917916468784889">أخذ لقطة شاشة</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3113926042639749131">إزالة الاقتراح</translation>
+<translation id="3120421559657122717">هل تريد إيقاف تشغيل الجهاز؟</translation>
 <translation id="3126069444801937830">إعادة التشغيل للتحديث</translation>
 <translation id="3139942575505304791">مكتب 1</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
@@ -355,6 +356,7 @@
 <translation id="3249513730522716925">تم نقل النافذة <ph name="WINDOW_TITLE" /> من سطح المكتب <ph name="ACTIVE_DESK" /> إلى سطح المكتب <ph name="TARGET_DESK" />.</translation>
 <translation id="3255483164551725916">ما الإجراء المطلوب؟</translation>
 <translation id="3269597722229482060">النقر بزر الماوس الأيمن</translation>
+<translation id="3289544412142055976">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux.</translation>
 <translation id="3289674678944039601">جارٍ الشحن عبر المحوِّل.</translation>
 <translation id="3290356915286466215">غير مؤمّن</translation>
 <translation id="3294437725009624529">ضيف</translation>
@@ -706,6 +708,7 @@
 <translation id="5400461572260843123">الإعدادات السريعة: اضغط على مفتاح البحث + السهم المتجه لليسار للوصول إلى مركز الإشعارات.</translation>
 <translation id="5426063383988017631">تم إغلاق قائمة الإعدادات.</translation>
 <translation id="5428899915242071344">بدء التحديد</translation>
+<translation id="5429993543155113935">هذا الخيار غير متوفّر حاليًا لنوافذ التصفّح المتخفي.</translation>
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5433020815079095860">إدخال الصوت</translation>
@@ -821,6 +824,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166852626429024716">البحث في الجهاز والتطبيقات والإعدادات والويب...</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
+<translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -847,6 +851,7 @@
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />، حدث واحد (<ph name="NUMBER" />)</translation>
+<translation id="6449483711453944360">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux ونوافذ التصفّح المتخفي.</translation>
 <translation id="6452181791372256707">رفض</translation>
 <translation id="6453179446719226835">تم تغيير اللغة</translation>
 <translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
@@ -946,6 +951,7 @@
 <translation id="7025533177575372252">يمكنك ربط الجهاز <ph name="DEVICE_NAME" /> بهاتفك</translation>
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
+<translation id="7032161822340700104">يجب ألا يزيد عدد النماذج عن 6 نماذج. يُرجى إزالة أحدها لحفظ نموذج جديد.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>

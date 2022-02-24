@@ -13,6 +13,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1142745911746664600">Chrome nelze aktualizovat</translation>
 <translation id="1154147086299354128">&amp;Otevřít v Chromu</translation>
 <translation id="1182414570724401860">Chrome doporučuje nestahovat a neotvírat tento soubor</translation>
+<translation id="1201241595274620956">Smluvní podmínky systému CloudReady 2.0</translation>
 <translation id="1278833599417554002">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="1293325835983155583">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému Google Chrome OS.</translation>
 <translation id="1302523850133262269">Počkejte prosím, než Chrome nainstaluje nejnovější aktualizace systému.</translation>
@@ -40,11 +41,15 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do Chromu, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="1812689907177901597">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do Chromu</translation>
+<translation id="1847459800604232346">Restartujte systém CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
+<translation id="1865667134297225786">Systém CloudReady 2.0 nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="1873233029667955273">Google Chrome není vaším výchozím prohlížečem</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastaralý</translation>
+<translation id="1887927549935943139">Systém CloudReady 2.0 nemůže synchronizovat data, protože ve vaší doméně není k dispozici Synchronizace.</translation>
 <translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">V každém profilu jsou uloženy soukromé údaje z Chromu, například záložky, historie, hesla a další</translation>
 <translation id="2063848847527508675">Aktualizace se použije po restartování systému Chrome OS.</translation>
 <translation id="2094919256425865063">Přesto Chrome ukončit?</translation>
@@ -55,12 +60,14 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2258103955319320201">Pokud ke svým údajům v Chromu chcete mít přístup na všech zařízeních, přihlaste se a poté zapněte synchronizaci</translation>
 <translation id="2290014774651636340">Chybí klíče rozhraní Google API. Některé funkce Google Chrome nebudou k dispozici.</translation>
 <translation id="2290095356545025170">Opravdu chcete odinstalovat Google Chrome?</translation>
+<translation id="2297776811548050971">Systém CloudReady 2.0 by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Toto je druhá instalace prohlížeče Google Chrome. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="2345992953227471816">Prohlížeč Chrome zjistil, že tato rozšíření obsahují malware:</translation>
 <translation id="2348335408836342058">Chrome pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>
 <translation id="234869673307233423">Chrome nemůže zkontrolovat vaše hesla. Zkuste to později.</translation>
 <translation id="235650106824528204">Veškerá data prohlížeče Chrome vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor pracovního profilu odstranit. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Pokračovat</translation>
+<translation id="2371517829376452747">Pokud některé nastavení na této stránce není zobrazeno, podívejte se do <ph name="LINK_BEGIN" />nastavení systému CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="2467438592969358367">Google Chrome chce exportovat vaše hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
@@ -89,6 +96,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2926676257163822632">Slabá hesla lze snadno uhodnout. Chrome vám může <ph name="BEGIN_LINK" />vytvářet a ukládat silná hesla<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome pro tento web potřebuje přístup k fotoaparátu</translation>
 <translation id="2929907241665500097">Prohlížeč Chrome se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací Chromu a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Spustit znovu a aktualizovat &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="303514781271618814">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
@@ -115,6 +123,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3533694711092285624">Nemáte žádná uložená hesla. Chrome může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="3541482654983822893">Chrome nemůže zkontrolovat vaše hesla. Zkuste to znovu za 24 hodin.</translation>
 <translation id="3576528680708590453">Administrátor systému nakonfiguroval prohlížeč Google Chrome tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
+<translation id="3582634744482121096">Volitelné: Pomozte se zlepšováním funkcí a výkonu systému CloudReady 2.0 tím, že budete do Googlu automaticky odesílat diagnostická data a údaje o využití.</translation>
 <translation id="3582972582564653026">Synchronizujte a upravte si Chrome na různých zařízeních</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chrome restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chrome restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chrome restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chrome restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chrome restartovali. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="3622797965165704966">Používání Chromu se spravovaným účtem Google a sdílenými počítači je teď snazší.</translation>
@@ -135,6 +144,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4149882025268051530">Instalačnímu programu se nepodařilo rozbalit archiv. Stáhněte prosím Google Chrome ještě jednou.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Do jednoho dne Chrome restartujte}few{Do # dní Chrome restartujte}many{Do # dne Chrome restartujte}other{Do # dní Chrome restartujte}}</translation>
 <translation id="4205939740494406371">Chrome nemůže zkontrolovat vaše hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Systém CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4251615635259297716">Chcete propojit údaje prohlížeče Chrome s tímto účtem?</translation>
@@ -152,7 +162,9 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4458462641685292929">V prohlížeči Google Chrome právě probíhá jiná operace. Zkuste to znovu později.</translation>
 <translation id="4480040274068703980">Chrome OS vaše data nemohl synchronizovat z důvodu chyby při přihlášení.</translation>
 <translation id="4521185804071812304">Volitelné: Pomozte se zlepšováním funkcí a výkonu operačního systému Chrome OS tím, že budete do Googlu automaticky odesílat diagnostické údaje a údaje o využití.</translation>
+<translation id="4539063627668028557">Verze systému CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome umožňuje kliknout na telefonní číslo na webu a volat na něj prostřednictvím aplikace Skype.</translation>
+<translation id="4562712242781620537">Systém CloudReady 2.0</translation>
 <translation id="4567424176335768812">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Nyní můžete přistupovat ke všem svým záložkám, historii a dalším nastavením ve všech přihlášených zařízeních.</translation>
 <translation id="4571503333518166079">Přejít na nastavení oznámení prohlížeče Chrome</translation>
 <translation id="459622048091363950">Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.</translation>
@@ -178,6 +190,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu, nebo používejte novější verzi aplikace Chrome.</translation>
 <translation id="521447420733633466">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet nezávisle a nastavit si Chrome tak, jak potřebuje</translation>
 <translation id="5251420635869119124">Hosté mohou Chrome používat, aniž by po nich zůstaly jakékoliv stopy.</translation>
+<translation id="5307623274346663914">Aktualizace se použije po restartování systému CloudReady 2.0.</translation>
 <translation id="5334487786912937552">Ke stahování souborů potřebuje Chrome přístup k úložišti</translation>
 <translation id="5386244825306882791">Také řídí, která stránka se zobrazí, když spustíte Chrome nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5394833366792865639">Sdílet kartu prohlížeče Chrome</translation>
@@ -188,8 +201,10 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Soubor <ph name="FILE_NAME" /> může být nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali}=1{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vás žádá, abyste kvůli použití této aktualizace Chrome restartovali. # anonymních oken se neotevře znovu.}}</translation>
+<translation id="5685161537284117504">Systém CloudReady 2.0 by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Přizpůsobte si Google Chrome a ovládejte jej. Něco vyžaduje vaši pozornost – podrobnosti zobrazíte kliknutím.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">Systém CloudReady 2.0 nemůže synchronizovat data kvůli chybě při přihlašování.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome se za 1 sekundu restartuje}few{Google Chrome se za # sekundy restartuje}many{Google Chrome se za # sekundy restartuje}other{Google Chrome se za # sekund restartuje}}</translation>
 <translation id="5736850870166430177">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="573759479754913123">O operačním systému Chrome OS</translation>
@@ -222,15 +237,22 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6679975945624592337">Nechat Google Chrome běžet na pozadí</translation>
 <translation id="6696915334902295848">Chrome pro tento web potřebuje přístup k mikrofonu</translation>
 <translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>
+<translation id="6749459139769042303">Pomoc se systémem CloudReady 2.0</translation>
 <translation id="6750954913813541382">Text zadaný v prohlížeči odesílá Chrome kvůli opravě pravopisných chyb do Googlu</translation>
 <translation id="677276454032249905">Přesto Chrome ukončit?</translation>
+<translation id="6814748008107187409">Pokud některé nastavení na této stránce není zobrazeno, podívejte se do <ph name="LINK_BEGIN" />nastavení systému Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Pravidlo příchozího provozu pro aplikaci Google Chrome Canary, které povolí provoz mDNS.</translation>
 <translation id="6881299373831449287">Aktualizace Chromu</translation>
 <translation id="6885412569789873916">Chrome Beta – aplikace</translation>
+<translation id="6919064686744569862">Doména <ph name="MANAGER" /> vyžaduje, abyste si před použitím tohoto zařízení přečetli následující smluvní podmínky a odsouhlasili je. Tyto smluvní podmínky nerozšiřují, neupravují ani neomezují smluvní podmínky systému CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Ze zařízení budou smazány údaje této osoby o prohlížení. Budete-li je chtít znovu získat, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravidlo příchozího provozu pro aplikaci Google Chrome Beta, které povolí provoz mDNS.</translation>
 <translation id="6989339256997917931">Prohlížeč Google Chrome byl aktualizován, ale minimálně po 30 dnů jste jej nepoužili.</translation>
+<translation id="700644001690392105">Informace o systému CloudReady 2.0</translation>
 <translation id="7025800014283535195">Zde můžete přepínat mezi profily Chrome</translation>
+<translation id="7036251913954633326">Pokud tento účet chcete použít pouze jednorázově, můžete v prohlížeči Chrome použít <ph name="GUEST_LINK_BEGIN" />režim hosta<ph name="GUEST_LINK_END" />. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
+
+Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Tvůj rodič pro Chrome vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Přidání tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povoleno.</translation>
 <translation id="7085332316435785646">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii Chromu</translation>
 <translation id="7088681679121566888">Chrome je aktuální</translation>
@@ -244,6 +266,9 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>
 <translation id="7339898014177206373">Nové okno</translation>
+<translation id="7388770099345495132">Pokud tento účet chcete použít pouze jednorázově, můžete v prohlížeči Chrome použít režim hosta. Pokud chcete přidat účet někoho dalšího, přidejte do zařízení <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />novou osobu<ph name="LINK_END" />.
+
+Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Své účty Google můžete spravovat v <ph name="SETTINGS_LINK_BEGIN" />Nastavení<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7408085963519505752">Smluvní podmínky systému Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
@@ -251,6 +276,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7486227612705979895">Chrome bude za účelem zobrazování návrhů v adresním řádku číst váš obsah na Disku</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Chcete-li se podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení operačního systému Chrome<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Pokud se chcete podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení systému CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome vaše data nemohl synchronizovat, protože vaše přihlašovací údaje nejsou aktuální.</translation>
 <translation id="7626032353295482388">Vítá vás Chrome</translation>
 <translation id="7629695634924605473">Pokud vaše hesla někdo prolomí, Chrome vás o tom bude informovat</translation>

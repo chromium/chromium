@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Tu administrador necesita que reinicies Chromium para aplicar una actualización}=1{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="1625909126243026060">Revisa los controles de seguridad y privacidad más importantes en Chromium</translation>
+<translation id="1632539827495546968">Si deseas usar esta cuenta solo una vez, puedes usar el <ph name="GUEST_LINK_BEGIN" />Modo de Invitado<ph name="GUEST_LINK_END" /> en el navegador Chromium. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Puedes administrar tus Cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Hay una versión nueva y más segura de Chromium disponible.</translation>
 <translation id="1774152462503052664">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="1779356040007214683">Para que Chromium sea más seguro, inhabilitamos algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que posiblemente se hayan agregado sin tu conocimiento.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Chromium. Tus datos de Chromium, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chromium</translation>
 <translation id="1929939181775079593">Chromium no responde. ¿Quieres reiniciarlo ahora?</translation>
+<translation id="1940680973325097484">Si deseas usar esta cuenta solo una vez, puedes usar el Modo de Invitado en el navegador Chromium. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Puedes administrar tus Cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="1981611865800294956">Reiniciar para actualizar &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Esta acción borrará 1 elemento de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chromium como <ph name="USER_EMAIL" />.</translation>

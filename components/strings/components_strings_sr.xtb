@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">Сачувано је само на овом уређају</translation>
 <translation id="2524461107774643265">Додајте још информација</translation>
 <translation id="2529899080962247600">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви будући уноси ће се занемарити.</translation>
+<translation id="2535585790302968248">Отворите нову картицу без архивирања да бисте прегледали приватно</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{и још 1}one{и још #}few{и још #}other{и још #}}</translation>
 <translation id="2536110899380797252">Додај адресу</translation>
 <translation id="2539524384386349900">Откриј</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">Аутоматско попуњавање</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали плаћањима и информацијама о кредитним картицама у подешавањима Chrome-а</translation>
+<translation id="271663710482723385">Притисните |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| да бисте изашли из режима целог екрана</translation>
 <translation id="2721148159707890343">Захтев је успео</translation>
 <translation id="2723669454293168317">Покрените проверу безбедности у Chrome подешавањима</translation>
 <translation id="2726001110728089263">Бочна фиока</translation>
@@ -750,6 +752,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
+<translation id="3303795387212510132">Желите ли да дозволите да апликација отвара <ph name="PROTOCOL_SCHEME" /> линкове?</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
 <translation id="3304073249511302126">Bluetooth скенирање</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
@@ -1260,6 +1263,7 @@
 <translation id="4854362297993841467">Овај начин испоруке није доступан. Испробајте неки други начин.</translation>
 <translation id="4854853140771946034">Брзо направите нову белешку у Google Keep-у</translation>
 <translation id="485902285759009870">Кôд се верификује...</translation>
+<translation id="4866506163384898554">Притисните |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| да би се показивач приказао</translation>
 <translation id="4876188919622883022">Поједностављени приказ</translation>
 <translation id="4876305945144899064">Нема корисничког имена</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ниједна}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1483,6 +1487,7 @@
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5560088892362098740">Датум истека</translation>
 <translation id="55635442646131152">Структура документа</translation>
+<translation id="5565613213060953222">Отвори картицу без архивирања</translation>
 <translation id="5565735124758917034">Активно</translation>
 <translation id="5570825185877910964">Заштити налог</translation>
 <translation id="5571083550517324815">Преузимање са ове адресе није могуће. Изаберите другу адресу.</translation>
@@ -1948,6 +1953,7 @@
 <translation id="7192203810768312527">Ослободиће се <ph name="SIZE" />. Неки сајтови ће се спорије учитавати при следећој посети.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Администратор може да види:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не поштује безбедносне стандарде.</translation>
 <translation id="7210993021468939304">Linux активности унутар контејнера и може да инсталира и покреће Linux апликације унутар контејнера</translation>
@@ -2213,6 +2219,7 @@
 <translation id="799149739215780103">Повезивање</translation>
 <translation id="7992044431894087211">Настављено је дељење садржаја екрана са апликацијом <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Није наведено</translation>
+<translation id="7998269595945679889">Притисните дугме Отвори картицу без архивирања, па Enter да бисте отворили нову картицу без архивирања и прегледали приватно</translation>
 <translation id="800218591365569300">Пробајте да затворите друге картице или програме да бисте ослободили меморију.</translation>
 <translation id="8004582292198964060">Прегледач</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Та картица и њена адреса за обрачун ће бити сачуване. Моћи ћете да је користите када сте пријављени на <ph name="USER_EMAIL" />.}one{Те картице и њихове адресе за обрачун ће бити сачуване. Моћи ћете да их користите када сте пријављени на <ph name="USER_EMAIL" />.}few{Те картице и њихове адресе за обрачун ће бити сачуване. Моћи ћете да их користите када сте пријављени на <ph name="USER_EMAIL" />.}other{Те картице и њихове адресе за обрачун ће бити сачуване. Моћи ћете да их користите када сте пријављени на <ph name="USER_EMAIL" />.}}</translation>

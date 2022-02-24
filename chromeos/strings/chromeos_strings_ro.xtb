@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Se actualizează (<ph name="PERCENTAGE_VALUE" /> % finalizat)</translation>
 <translation id="1310380015393971138">Nicio rețea <ph name="NETWORK_NAME" /> disponibilă</translation>
+<translation id="131421566576084655">Data ultimei resetări a datelor nu este disponibilă</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Rețeaua de domiciliu, nu de roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Am o pereche de chei</translation>
+<translation id="1435763214710588005">Resetează automat utilizarea datelor în fiecare lună, în ziua selectată</translation>
 <translation id="1442433966118452622">Sursa imaginii</translation>
 <translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
 <translation id="1459693405370120464">Meteo</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Nu se poate actualiza <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albume</translation>
 <translation id="1572585716423026576">Setează ca imagine de fundal</translation>
+<translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
 <translation id="1641857168437328880">Alimentator de documente (o singură față)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
+<translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3456078764689556234">S-a printat pagina <ph name="PRINTED_PAGES" /> din <ph name="TOTAL_PAGES" />.</translation>
@@ -263,6 +267,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Potrivire a numelui alternativ al subiectului</translation>
 <translation id="4536864596629708641">Configurația adresei IP</translation>
+<translation id="4546131424594385779">Creează un videoclip în buclă</translation>
 <translation id="4548483925627140043">Nu s-a detectat semnal</translation>
 <translation id="4556753742174065117">Firmware-ul este actualizat</translation>
 <translation id="455835558791489930">Baterie de <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -392,6 +397,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="594552776027197022">Generează o pereche de chei aleatorie</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Activează resetarea lunară automată</translation>
 <translation id="6037291330010597344">Alimentatorul de documente al scanerului este gol. Adaugă documente și încearcă din nou.</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6040852767465482106">Identitate anonimă</translation>
@@ -415,6 +421,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Niciun scaner disponibil</translation>
 <translation id="6232017090690406397">Baterie</translation>
+<translation id="6235460611964961764">Resetează manual utilizarea datelor</translation>
 <translation id="6243280677745499710">Setată în prezent</translation>
 <translation id="6278428485366576908">Temă</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -444,6 +451,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6566314079205407217">Scanare pentru mai multe pagini</translation>
 <translation id="6574762126505704998">Umplere</translation>
 <translation id="6575134580692778371">Nu este configurată</translation>
+<translation id="6579509898032828423">Folosește fotografia</translation>
 <translation id="6596816719288285829">Adresă IP</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6620487321149975369">Sarcinile de printare vor apărea în istoric dacă nu sunt eliminate manual</translation>
@@ -490,6 +498,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7175037578838465313">Configurează <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
+<translation id="7212734716605298123">Actualizări de firmware pentru dispozitive externe</translation>
 <translation id="7216409898977639127">Furnizor de date mobile</translation>
 <translation id="7271040990581020067">Scanerul este în uz. Încearcă din nou mai târziu.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -626,6 +635,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8910721771319628100">Rețeaua prestabilită depășește pragul de latență</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> utilizatorului <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Nereușită – Tavă lipsă</translation>
+<translation id="8923267550422472772">Ziua din lună pentru resetare</translation>
 <translation id="8928727111548978589">Nereușită – Hârtie epuizată</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
@@ -642,6 +652,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="9062831201344759865">Rezolvarea DNS are latență mare</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Folosește videoclipul</translation>
 <translation id="9087578468327036362">Raportează interogarea</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>
 <translation id="9095415590198785865">Dispozitivul va avea același proprietar</translation>

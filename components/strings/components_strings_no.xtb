@@ -519,6 +519,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2523886232349826891">Kun lagret på denne enheten</translation>
 <translation id="2524461107774643265">Legg til mer informasjon</translation>
 <translation id="2529899080962247600">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer. Eventuelle oppføringer som overskrider dette, ignoreres.</translation>
+<translation id="2535585790302968248">Åpne en ny inkognitofane for å surfe privat</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2536110899380797252">Legg til adresse</translation>
 <translation id="2539524384386349900">Oppdag</translation>
@@ -585,6 +586,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="2713444072780614174">Hvit</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
+<translation id="271663710482723385">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å avslutte fullskjerm</translation>
 <translation id="2721148159707890343">Forespørselen var vellykket</translation>
 <translation id="2723669454293168317">Kjør en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="2726001110728089263">Sideskuff</translation>
@@ -750,6 +752,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3288238092761586174"><ph name="URL" /> må kanskje utføre flere trinn for å bekrefte betalingen din</translation>
 <translation id="3293642807462928945">Finn ut mer om regelen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
+<translation id="3303795387212510132">Vil du la appen åpne <ph name="PROTOCOL_SCHEME" />-linker?</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3304073249511302126">Bluetooth-skanning</translation>
 <translation id="3308006649705061278">Organisasjonsenhet (OU)</translation>
@@ -1260,6 +1263,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4854362297993841467">Denne leveringsmetoden er ikke tilgjengelig. Prøv en annen metode.</translation>
 <translation id="4854853140771946034">Opprett et nytt notat i Google Keep raskt</translation>
 <translation id="485902285759009870">Bekrefter koden …</translation>
+<translation id="4866506163384898554">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å vise markøren</translation>
 <translation id="4876188919622883022">Forenklet visning</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ingen}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1483,6 +1487,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5560088892362098740">Utløpsdato</translation>
 <translation id="55635442646131152">Dokumentoversikt</translation>
+<translation id="5565613213060953222">Åpne en inkognitofane</translation>
 <translation id="5565735124758917034">Aktiv</translation>
 <translation id="5570825185877910964">Beskytt kontoen</translation>
 <translation id="5571083550517324815">Kan ikke hente på denne adressen. Velg en annen adresse.</translation>
@@ -1949,6 +1954,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7192203810768312527">Frigjør <ph name="SIZE" />. Det kan hende noen nettsteder lastes inn tregere neste gang du besøker dem.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Administratoren kan se</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å åpne en ny inkognitofane for privat surfing</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> retter seg ikke etter sikkerhetsstandardene.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i beholderen, og kan installere og kjøre Linux-apper i beholderen</translation>
@@ -2213,6 +2219,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="799149739215780103">Innbinding</translation>
 <translation id="7992044431894087211">Skjermdeling med <ph name="APPLICATION_TITLE" /> er gjenopptatt</translation>
 <translation id="7995512525968007366">Ikke spesifisert</translation>
+<translation id="7998269595945679889">Knappen «Åpne en inkognitofane» – trykk på Enter for å åpne en ny inkognitofane for privat surfing</translation>
 <translation id="800218591365569300">Prøv å lukke andre faner eller programmer for å frigjøre minne.</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Dette kortet og den tilknyttede faktureringsadressen lagres. Du kan bruke det når du er logget på <ph name="USER_EMAIL" />.}other{Disse kortene og de tilknyttede faktureringsadressene lagres. Du kan bruke dem når du er logget på <ph name="USER_EMAIL" />.}}</translation>

@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">無法連上<ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">無法取得上次重設數據用量的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家用網路，非漫遊狀態</translation>
 <translation id="1327977588028644528">閘道</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">失敗 - 無法使用過濾器</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">我有金鑰組</translation>
+<translation id="1435763214710588005">系統會在每月指定日期自動重設數據用量</translation>
 <translation id="1442433966118452622">圖片來源</translation>
 <translation id="1451536289672181509">裝置類型為鍵盤。</translation>
 <translation id="1459693405370120464">天氣</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">無法更新「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1567064801249837505">相簿</translation>
 <translation id="1572585716423026576">設為桌布</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
@@ -264,6 +267,7 @@
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4521826082652183069">主體替代名稱比對</translation>
 <translation id="4536864596629708641">IP 設定</translation>
+<translation id="4546131424594385779">建立循環播放的影片</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="4556753742174065117">所有的韌體都是最新版本</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
@@ -393,6 +397,7 @@
 <translation id="5939518447894949180">重設</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">啟用每月自動重設功能</translation>
 <translation id="6037291330010597344">掃描器的文件送紙器是空的。請新增文件，然後再試一次。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6040852767465482106">匿名身分</translation>
@@ -416,6 +421,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃描器</translation>
 <translation id="6232017090690406397">電池</translation>
+<translation id="6235460611964961764">手動重設數據用量</translation>
 <translation id="6243280677745499710">目前設定的桌布</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -445,6 +451,7 @@
 <translation id="6566314079205407217">多頁掃描</translation>
 <translation id="6574762126505704998">填滿</translation>
 <translation id="6575134580692778371">未設定</translation>
+<translation id="6579509898032828423">使用這張相片</translation>
 <translation id="6596816719288285829">IP 位址</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6620487321149975369">除非手動移除列印工作，否則這項資料會顯示在歷史記錄中</translation>
@@ -628,6 +635,7 @@
 <translation id="8910721771319628100">預設網路超過延遲門檻</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">失敗 - 缺少紙匣</translation>
+<translation id="8923267550422472772">每月重設日</translation>
 <translation id="8928727111548978589">失敗 - 紙張用盡</translation>
 <translation id="8930521118335213258">對等節點</translation>
 <translation id="8930622219860340959">無線</translation>
@@ -644,6 +652,7 @@
 <translation id="9062831201344759865">DNS 解析延遲時間過長</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
+<translation id="9082718469794970195">使用這部影片</translation>
 <translation id="9087578468327036362">請回報這項查詢</translation>
 <translation id="9088306295921699330">目前用量</translation>
 <translation id="9095415590198785865">裝置的擁有者不會變更</translation>

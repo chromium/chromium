@@ -372,6 +372,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
 <translation id="3098745985164956033">Vaizdai siunčiami „Google“ norint patobulinti jums teikiamus aprašus</translation>
 <translation id="3114507951000454849">Skaitykite šiandienos naujienas <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">susieta su</translation>
 <translation id="3123734510202723619">Pranešimai</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Pagrindinis „Chrome“ puslapis</translation>
@@ -733,6 +734,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5329858041417644019">Jūsų naršyklė nėra tvarkoma</translation>
 <translation id="5342314432463739672">Leidimų užklausos</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
+<translation id="5368227114232678694">Jei norite naršyti privačiai šiame įrenginyje, išbandykite inkognito režimą</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}one{<ph name="OPEN_TABS_MANY" /> atidarytas skirtukas; palieskite, kad perjungtumėte skirtukus}few{<ph name="OPEN_TABS_MANY" /> atidaryti skirtukai; palieskite, kad perjungtumėte skirtukus}many{<ph name="OPEN_TABS_MANY" /> atidaryto skirtuko; palieskite, kad perjungtumėte skirtukus}other{<ph name="OPEN_TABS_MANY" /> atidarytų skirtukų; palieskite, kad perjungtumėte skirtukus}}</translation>
 <translation id="5375577065097716013">Ieškoti vaizdo su „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Leisti tik konkrečias svetaines</translation>
@@ -872,7 +874,6 @@ Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyv
 <translation id="6138832295072039549">Pakeiskite svetainės nustatymus čia</translation>
 <translation id="6140709049082532940">Sustiprinta apsauga:</translation>
 <translation id="6140912465461743537">Šalis / regionas</translation>
-<translation id="6141988275892716286">Atsisiuntimo patvirtinimas</translation>
 <translation id="614940544461990577">Pabandykite atlikti toliau nurodytus veiksmus.</translation>
 <translation id="6150320133806434356">Žymė išsaugota</translation>
 <translation id="6154478581116148741">Norėdami iš šio įrenginio eksportuoti slaptažodžius, nustatymuose įjunkite ekrano užraktą</translation>
@@ -1054,7 +1055,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7093803425429738190">Pridėti emociją</translation>
 <translation id="7105047059074518658">Prisijunkite, kad galėtumėte lengviau naršyti skirtingais įrenginiais</translation>
 <translation id="7106762743910369165">Jūsų naršyklę tvarko jūsų organizacija</translation>
-<translation id="7121362699166175603">Išvaloma istorija ir automatiniai užbaigimai adreso juostoje. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Kitas</translation>
 <translation id="7143462160780459030">Nepavyko padaryti ekrano kopijos. Bandykite dar kartą.</translation>
 <translation id="7146622961999026732">Panašu, kad toliau nurodytos svetainės ir programos jums yra svarbios.</translation>
@@ -1128,7 +1128,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="752220631458524187">Baigę atsijunkite</translation>
 <translation id="7523960634226602883">Ieškoti naudojant fotoaparatą ir „Google Lens“</translation>
 <translation id="753225086557513863">Suplanuota atsisiųsti vėliau</translation>
-<translation id="7560448309733608642">Išvaloma visų sinchronizuotų įrenginių istorija. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Naršymo duomenų išvalymas</translation>
 <translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
 <translation id="7577900504646297215">Tvarkyti pomėgius</translation>

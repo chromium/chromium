@@ -601,7 +601,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6389470377220713856">Nom sur carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410883413783534063">Ouvrez des onglets pour visiter différentes pages en même temps</translation>
-<translation id="6417838470969808600">Vous avez les favoris, l'historique, les mots de passe et d'autres paramètres de <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Connecté en tant que <ph name="EMAIL" />.
 
 Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" />. Veuillez l'entrer pour commencer la synchronisation.</translation>

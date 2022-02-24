@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Per visualizzare le tue schede su tutti i dispositivi su cui utilizzi Chrome, attiva la sincronizzazione</translation>
 <translation id="3533694711092285624">Nessuna password salvata. Chrome può controllare le password quando le salvi.</translation>
 <translation id="3634910711516114487">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser</translation>
+<translation id="3655656110921623717">Ciò significa che Chrome richiederà ogni volta il sito per dispositivi mobili.</translation>
 <translation id="3706101708757577809">Ora puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="3720541637541300822">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
 <translation id="384394811301901750">Google Chrome non può utilizzare la videocamera al momento</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
+<translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>
 </translationbundle>

@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour (effectuée à <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> disponible</translation>
+<translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
 <translation id="1327977588028644528">Passerelle</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Échec – Problème au niveau du filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">J'ai une paire de clés</translation>
+<translation id="1435763214710588005">Réinitialise automatiquement la consommation des données chaque mois, le jour sélectionné</translation>
 <translation id="1442433966118452622">Source de l'image</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1459693405370120464">Météo</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
+<translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
+<translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3456078764689556234">Page imprimée : <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Assurez-vous que le scanner est allumé et disponible pour la connexion réseau ou filaire.</translation>
+<translation id="4170180284036919717">Prendre une photo</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
@@ -391,6 +396,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="594552776027197022">Générer une paire de clés aléatoire</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Activer la réinitialisation mensuelle automatique</translation>
 <translation id="6037291330010597344">Le chargeur de document du scanner est vide. Ajoutez des documents, puis réessayez.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
@@ -414,6 +420,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6213737986933151570">CDMA 1xRTT</translation>
 <translation id="6223752125779001553">Aucun scanner disponible</translation>
 <translation id="6232017090690406397">Batterie</translation>
+<translation id="6235460611964961764">Réinitialiser manuellement la consommation des données</translation>
 <translation id="6243280677745499710">Actuellement défini</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -489,6 +496,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent le configurer à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
 <translation id="7271040990581020067">Le scanner est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -625,6 +633,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
+<translation id="8923267550422472772">Jour du mois de la réinitialisation</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>

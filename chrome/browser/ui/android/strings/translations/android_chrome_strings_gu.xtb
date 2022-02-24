@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
 <translation id="3098745985164956033">તમારા માટે વર્ણનોને બહેતર બનાવવા માટે કેટલીક છબીઓ Googleને મોકલવામાં આવે છે</translation>
 <translation id="3114507951000454849">આજના સમાચાર વાંચો <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">આની સાથે લિંક કર્યું</translation>
 <translation id="3123734510202723619">ઘોષણાઓ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeનું હોમપેજ</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">તમારા સાઇટ સેટિંગમાં અહીંથી ફેરફાર કરો</translation>
 <translation id="6140709049082532940">વધારેલું સંરક્ષણ:</translation>
 <translation id="6140912465461743537">દેશ/પ્રદેશ</translation>
-<translation id="6141988275892716286">ડાઉનલોડની પુષ્ટિ કરો</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
 <translation id="6150320133806434356">બુકમાર્ક સાચવ્યું</translation>
 <translation id="6154478581116148741">આ ઉપકરણ પરથી તમારા બધા પાસવર્ડને નિકાસ કરવા માટે સેટિંગમાંથી સ્ક્રીન લૉક ચાલુ કરો</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">મનોભાવ ઉમેરો</translation>
 <translation id="7105047059074518658">તમામ ડિવાઇસ પર વધુ સરળતાથી બ્રાઉઝ કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="7106762743910369165">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
-<translation id="7121362699166175603">ઍડ્રેસ બારમાં ઇતિહાસ અને ઑટોમૅટિક રીતે પૂર્ણતા સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="7138678301420049075">અન્ય</translation>
 <translation id="7143462160780459030">સ્ક્રીનશૉટ લઈ શકાતો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7146622961999026732">આ સાઇટ અને ઍપ તમારા માટે મહત્ત્વના લાગી રહ્યાં છે:</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">તમારું કામ પૂર્ણ થાય ત્યારે એટલે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
 <translation id="753225086557513863">પછી માટે શેડ્યૂલ કરેલું</translation>
-<translation id="7560448309733608642">સિંક કરેલા બધા ડિવાઇસમાંથી ઇતિહાસ સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે.</translation>
 <translation id="7562080006725997899">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>

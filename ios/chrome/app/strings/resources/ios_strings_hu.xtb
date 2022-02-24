@@ -601,7 +601,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6389470377220713856">A kártyán szereplő név</translation>
 <translation id="6406506848690869874">Szinkronizálás</translation>
 <translation id="6410883413783534063">Lapok megnyitásával egyszerre több oldalt is felkereshet.</translation>
-<translation id="6417838470969808600">Vannak könyvjelzői, előzményei, jelszavai és más beállításai a(z) <ph name="USER_EMAIL1" /> fiókból.</translation>
 <translation id="641799622251403418"><ph name="EMAIL" /> e-mail-címmel bejelentkezve.
 
 Adatainak titkosítása megtörtént összetett szinkronizálási jelszavával a következő időpontban: <ph name="TIME" />. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>

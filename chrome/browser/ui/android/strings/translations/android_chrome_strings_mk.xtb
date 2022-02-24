@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">поврзана со</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">Променете ги поставките за сајтот тука</translation>
 <translation id="6140709049082532940">Подобрена заштита:</translation>
 <translation id="6140912465461743537">Држава/регион</translation>
-<translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="614940544461990577">Обидете се:</translation>
 <translation id="6150320133806434356">Обележувачот е зачуван</translation>
 <translation id="6154478581116148741">Вклучете го заклучувањето на екранот во „Поставки“ за да ги извезете лозинките од уредов</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">Додајте емоција</translation>
 <translation id="7105047059074518658">Најавете се за да прелистувате полесно на уредите</translation>
 <translation id="7106762743910369165">Вашата организација управува со прелистувачот</translation>
-<translation id="7121362699166175603">Ја чисти историјата и автоматските довршувања во лентата за адреси. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7143462160780459030">Не може да се направи слика од екранот. Обидете се повторно.</translation>
 <translation id="7146622961999026732">Изгледа дека сајтовиве и апликацииве ви се важни:</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">Прекинете ја врската кога ќе завршите</translation>
 <translation id="7523960634226602883">Пребарувајте со камерата со Google Lens</translation>
 <translation id="753225086557513863">Закажано за подоцна</translation>
-<translation id="7560448309733608642">Ќе ја исчисти историјата од сите синхронизирани уреди. Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Чистење податоци од прелистување</translation>
 <translation id="756809126120519699">Податоците на Chrome се исчистени</translation>
 <translation id="7577900504646297215">Управувајте со она што ве интересира</translation>

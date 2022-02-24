@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
+<translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="3456078764689556234">அச்சிடப்பட்ட பக்கங்கள்: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +233,7 @@
 <translation id="4145784616224233563">HTTP ஃபயர்வால்</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ஸ்கேனர் இயக்கப்பட்டிருப்பதையும் அது உங்கள் நெட்வொர்க் மூலமாகவோ நேரடியாகவோ இணைக்கப்பட்டிருப்பதையும் உறுதிசெய்துகொள்ளவும்</translation>
+<translation id="4170180284036919717">படமெடு</translation>
 <translation id="4170700058716978431">தோல்வியடைந்தது</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
 <translation id="4213104098953699324">USB கீபோர்டு</translation>
@@ -262,6 +264,7 @@
 <translation id="4511264077854731334">போர்ட்டல்</translation>
 <translation id="4521826082652183069">சான்றிதழின் மாற்றுப் பெயர் பொருத்தம்</translation>
 <translation id="4536864596629708641">IP உள்ளமைவு</translation>
+<translation id="4546131424594385779">தொடர்ந்து இயங்கக்கூடிய வீடியோவை உருவாக்கு</translation>
 <translation id="4548483925627140043">சிக்னல் கிடைக்கவில்லை</translation>
 <translation id="4556753742174065117">அனைத்து நிலைபொருளும் புதுப்பிக்கப்பட்டுள்ளது</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh பேட்டரி</translation>
@@ -443,6 +446,7 @@
 <translation id="6566314079205407217">பல பக்கத்தை ஸ்கேன் செய்தல்</translation>
 <translation id="6574762126505704998">முழுத் திரை</translation>
 <translation id="6575134580692778371">உள்ளமைக்கப்படவில்லை</translation>
+<translation id="6579509898032828423">இந்தப் படத்தைப் பயன்படுத்து</translation>
 <translation id="6596816719288285829">IP முகவரி</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
@@ -489,6 +493,7 @@
 <translation id="7175037578838465313"><ph name="NAME" />ஐ உள்ளமை</translation>
 <translation id="7177485034254901881">இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. நிர்வாகிகள் இந்தச் சாதனத்தைத் தொலைநிலையிலிருந்து உள்ளமைக்கக்கூடும்.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
+<translation id="7212734716605298123">வெளிப்புறச் சாதனங்களுக்கான நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="7216409898977639127">செல்லுலார் வழங்குநர்</translation>
 <translation id="7271040990581020067">ஸ்கேனர் தற்போது உபயோகத்தில் உள்ளது. பிறகு முயலவும்.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -641,6 +646,7 @@
 <translation id="9062831201344759865">DNS ரெசல்யூஷனில் அதிகளவு தாமதம் ஏற்படுகிறது</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">புளூடூத்</translation>
+<translation id="9082718469794970195">இந்த வீடியோவைப் பயன்படுத்து</translation>
 <translation id="9087578468327036362">இந்த வினவல் குறித்துப் புகாரளிக்கலாம்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
 <translation id="9095415590198785865">அதே உரிமையாளர் சாதனத்தைப் பயன்படுத்துவார்</translation>

@@ -17,6 +17,9 @@
 <translation id="1553461853655228091">Chromium necesita permiso para acceder á cámara co fin de crear un mapa 3D do que te rodea</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1625909126243026060">Revisa os controis clave de privacidade e seguranza en Chromium</translation>
+<translation id="1632539827495546968">Se queres usar esta conta unha soa vez, podes utilizar o <ph name="GUEST_LINK_BEGIN" />modo de convidado<ph name="GUEST_LINK_END" /> no navegador Chromium. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
+
+Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web e ás aplicacións. Podes xestionar as túas Contas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Hai unha versión nova e máis segura de Chromium dispoñible.</translation>
 <translation id="1774152462503052664">Deixar que Chromium se execute en segundo plano</translation>
 <translation id="1779356040007214683">Para conseguir que Chromium resulte máis seguro, desactivamos algunhas extensións que non aparecen en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e que é posible que se engadisen sen o teu coñecemento.</translation>
@@ -25,6 +28,9 @@
 <translation id="1881322772814446296">Estás iniciando sesión cunha conta xestionada e outorgando control ao seu administrador sobre o teu perfil de Chromium. Os teus datos de Chromium, como as túas aplicacións, marcadores, historial, contrasinais e outras configuracións ligaranse permanentemente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control das contas de Google, pero non poderás asociar estes datos a outra conta. Tamén podes crear un perfil novo para manter separados os teus datos de Chromium existentes. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chromium</translation>
 <translation id="1929939181775079593">Chromium non responde. Queres volver inicialo agora?</translation>
+<translation id="1940680973325097484">Se queres usar esta conta unha soa vez, podes utilizar o modo de convidado no navegador Chromium. Se queres engadir unha conta para outra persoa, <ph name="LINK_BEGIN" />engade unha persoa nova<ph name="LINK_END" /> ao teu dispositivo (<ph name="DEVICE_TYPE" />).
+
+Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web e ás aplicacións. Podes xestionar as túas Contas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium non pode determinar nin establecer o navegador predeterminado</translation>
 <translation id="1981611865800294956">Reiniciar para actualizar &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>

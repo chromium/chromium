@@ -368,6 +368,7 @@
 <translation id="3091010850649238832">क्लिपबोर्डमा भएका सामग्री देखाइयोस्</translation>
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">लिंक गरिएको कार्ड:</translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
@@ -727,6 +728,7 @@
 <translation id="5329858041417644019">तपाईंको ब्राउजरको व्यवस्थापन गरिएको छैन</translation>
 <translation id="5342314432463739672">अनुमतिसम्बन्धी अनुरोधहरू</translation>
 <translation id="5355191726083956201">'उन्नत सुरक्षा' सक्रिय छ</translation>
+<translation id="5368227114232678694">तपाईं यो डिभाइसमार्फत गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्कोग्निटो मोड प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ट्याब खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}other{<ph name="OPEN_TABS_MANY" /> ट्याबहरू खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}}</translation>
 <translation id="5375577065097716013">Google लेन्समार्फत फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
@@ -866,7 +868,6 @@
 <translation id="6138832295072039549">यहाँ गई आफ्नो साइटसम्बन्धी सेटिङ परिवर्तन गर्नुहोस्</translation>
 <translation id="6140709049082532940">सुदृढ सुरक्षा:</translation>
 <translation id="6140912465461743537">देश/क्षेत्र</translation>
-<translation id="6141988275892716286">डाउनलोड गर्ने पुष्टि गर्नुहोस्</translation>
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
 <translation id="6150320133806434356">बुकमार्क सेभ गरियो</translation>
 <translation id="6154478581116148741">यो यन्त्रबाट आफ्ना पासवर्डहरू निर्यात गर्न सेटिङहरूमा गई स्क्रिन लक सक्रिय गर्नुहोस्</translation>
@@ -1047,7 +1048,6 @@
 <translation id="7093803425429738190">इमोटिकन हाल्नुहोस्</translation>
 <translation id="7105047059074518658">तपाईं विभिन्न डिभाइसमा सजिलै ब्राउज गर्न चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
-<translation id="7121362699166175603">ठेगाना पट्टीका इतिहास र स्वतः पूर्णताहरूलाई खाली गर्छ। तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य किसिमका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7143462160780459030">स्क्रिनसट लिन सकिँदैन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
@@ -1120,7 +1120,6 @@
 <translation id="752220631458524187">आफ्नो काम सकिएपछि डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="7523960634226602883">Google लेन्स प्रयोग गरी आफ्नो क्यामेरामार्फत खोज्नुहोस्</translation>
 <translation id="753225086557513863">पछि डाउनलोड सुरु गर्ने गरी समयतालिका निर्धारण गरिएको</translation>
-<translation id="7560448309733608642">यसले सिंक गरिएका सबै डिभाइसबाट इतिहास मेटाउँछ। तपाईंको Google खातामा रहेको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य स्वरूपमा ब्राउजिङ इतिहास सेभ गरिएको हुन सक्छ।</translation>
 <translation id="7562080006725997899">ब्राउजिङ डेटा मेटाउँदै</translation>
 <translation id="756809126120519699">Chrome को डेटालाई खाली गरियो</translation>
 <translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>

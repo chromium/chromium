@@ -12,6 +12,7 @@
 
         
 Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um að eyða leitarferlinum ef það á við.</translation>
+<translation id="1054045277222934172">Þú getur breytt sjálfgefinni birtingu vefsvæðis í skjáborðsútgáfu í „Stillingar“ og svo „Efnisstillingar"</translation>
 <translation id="1063454504051558093">Nota annað aðgangsorð...</translation>
 <translation id="1066060668811609597">Stjórna samstillingu</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
@@ -182,6 +183,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2690858294534178585">Myndavélin er í notkun</translation>
 <translation id="2691653761409724435">Ekki í boði án nettengingar</translation>
 <translation id="2695507686909505111">Síða þýdd</translation>
+<translation id="2700241355396984822">Valkostir fyrir stillingu heimilda</translation>
 <translation id="2702801445560668637">Leslisti</translation>
 <translation id="2704491540504985681">Niðurhal</translation>
 <translation id="2704606927547763573">Afritað</translation>
@@ -318,6 +320,8 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3861486700625780712">Hætta að fylgjast með</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
 <translation id="3897092660631435901">Valmynd</translation>
+<translation id="3904829425754749514">Fyrirtækið þitt slökkti á samstillingu. Þú getur áfram séð bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við reikninginn þinn.</translation>
+<translation id="3905353503976611311">Leita á vefnum</translation>
 <translation id="3913386780052199712">Skráð(ur) inn á Chrome</translation>
 <translation id="3915450441834151894">Upplýsingar um vefsvæði</translation>
 <translation id="3922310737605261887">Leita að afrituðum texta</translation>
@@ -347,6 +351,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>
 <translation id="418156467088430727">Skoða skrá án nettengingar í nýjum flipa</translation>
 <translation id="4181841719683918333">Tungumál</translation>
+<translation id="4223967053752765281">Fyrirtækið þitt slökkti á innskráningu. Þú getur áfram séð bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við reikninginn þinn.</translation>
 <translation id="4237377247299956313">Ýttu á <ph name="BEGIN_BOLD" />Sjálfgefið vafraforrit<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
 <translation id="4249955472157341256">Raða eftir nýjasta</translation>
@@ -371,6 +376,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4469418912670346607">Halda uppsetningu áfram</translation>
 <translation id="4474494258097106883">Sérhannað fyrir iPhone</translation>
 <translation id="4476574785019001431">Stillingar</translation>
+<translation id="448433063499977729">Slökkt hefur verið á samstillingu</translation>
 <translation id="4496373720959965247">Bæta við flipum og skipta á milli síðna</translation>
 <translation id="4502566650163919158">Athuga núna</translation>
 <translation id="4505980578794259603">Síðast skoðað <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5580834567471114021">Bæta við leslista til síðari nota?</translation>
 <translation id="5592679540098330836">Kveikja á samstillingu fyrir <ph name="NAME" /></translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
+<translation id="560999923643681074">Skrifaðgangur</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
 <translation id="5626245204502895507">Ekki var hægt að sækja skrána.</translation>
 <translation id="5631164295104953411">Bæta við greiðslumáta</translation>
@@ -594,7 +601,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6389470377220713856">Nafn á korti</translation>
 <translation id="6406506848690869874">Samstilling</translation>
 <translation id="6410883413783534063">Opnaðu flipa til að skoða mismunandi síður samtímis</translation>
-<translation id="6417838470969808600">Þú ert með bókamerki, feril, aðgangsorð og aðrar stillingar frá <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Innskráð(ur) sem <ph name="EMAIL" />.
 
 Gögnin þín voru dulkóðuð með aðgangsorði samstillingar <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
@@ -759,6 +765,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7840771868269352570">Atriðin sem þú valdir verða fjarlægð.</translation>
 <translation id="7856733331829174190">Tókst ekki að sækja</translation>
 <translation id="7859704718976024901">Vafraferill</translation>
+<translation id="7884694604461143138">Leitarferill (<ph name="COUNT" /> fannst/fundust)</translation>
 <translation id="7887198238286927132">Til að tryggja öryggi þitt fyllir Chrome ekki sjálfkrafa út í þennan reit.</translation>
 <translation id="7911190106180361398">Fyrirtækið leyfir þér ekki að samstilla allt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8076014560081431679">Vistuðum stillingum vefsvæða verður ekki eytt og þær kunna að endurspegla vefnotkun þína. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Þessari stillingu er stjórnað, ýttu tvisvar til að fá frekari upplýsingar</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
+<translation id="809543534949702122">Leitarferill</translation>
 <translation id="8101409298456377967">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slökkva</translation>
 <translation id="8114753159095730575">Hægt er að sækja skrá. Valkostir eru í boði neðarlega á skjánum.</translation>
@@ -811,6 +819,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8319076807703933069">Ný leit</translation>
 <translation id="8323906514956095947">Haltu inni til að sjá fleiri valkosti fyrir flipa</translation>
 <translation id="8328777765163860529">Loka öllu</translation>
+<translation id="8364085047956854021">Þegar þú yfirgefur vefsvæðið verða heimildir „<ph name="SITE_NAME" />“ endurstilltar á „slökkt“.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8386068868580335421">Endurstilla</translation>
 <translation id="8407669440184693619">Engin aðgangsorð fundust fyrir þetta vefsvæði</translation>
@@ -897,6 +906,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9148126808321036104">Skrá inn aftur</translation>
 <translation id="9152539721251340337">Búa til QR-kóða</translation>
 <translation id="9157836665414082580">Hindra nýja glugga</translation>
+<translation id="9177438225260810839">Leita í opnum flipum</translation>
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>
 <translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>

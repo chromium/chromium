@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Opdaterer (<ph name="PERCENTAGE_VALUE" /> % gennemført)</translation>
 <translation id="1310380015393971138">Der er ikke noget tilgængeligt <ph name="NETWORK_NAME" />-netværk</translation>
+<translation id="131421566576084655">Datoen for sidste nulstilling af data er ikke tilgængelig</translation>
 <translation id="1314565355471455267">VPN for Android</translation>
 <translation id="131461803491198646">Hjemmenetværk, uden roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Jeg har et nøglepar</translation>
+<translation id="1435763214710588005">Nulstiller automatisk dataforbruget hver måned på en angivet dag</translation>
 <translation id="1442433966118452622">Billedkilde</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1459693405370120464">Vejr</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> kan ikke opdateres</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
+<translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
 <translation id="1639239467298939599">Indlæser...</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
@@ -233,6 +236,7 @@
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Tjek, at scanneren er tændt og tilgængelig via dit netværk eller en direkte forbindelse</translation>
+<translation id="4170180284036919717">Tag et billede</translation>
 <translation id="4170700058716978431">MISLYKKET</translation>
 <translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
@@ -263,6 +267,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Match af alternativt emnenavn</translation>
 <translation id="4536864596629708641">IP-konfiguration</translation>
+<translation id="4546131424594385779">Opret en video, der gentages</translation>
 <translation id="4548483925627140043">Der blev ikke fundet noget signal</translation>
 <translation id="4556753742174065117">Al firmware er opdateret</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh batteri</translation>
@@ -391,6 +396,7 @@
 <translation id="5939518447894949180">Nulstil</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
 <translation id="5972388717451707488">Opdater maskine</translation>
+<translation id="6034694447310538551">Aktivér automatisk månedlig nulstilling</translation>
 <translation id="6037291330010597344">Scannerens dokumentføder er tom. Tilføj dokumenter, og prøv igen.</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6040852767465482106">Anonym identitet</translation>
@@ -414,6 +420,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
 <translation id="6232017090690406397">Batteri</translation>
+<translation id="6235460611964961764">Nulstil dataforbrug manuelt</translation>
 <translation id="6243280677745499710">Nuværende</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -443,6 +450,7 @@
 <translation id="6566314079205407217">Scanning af flere sider</translation>
 <translation id="6574762126505704998">Udfyld</translation>
 <translation id="6575134580692778371">Ikke konfigureret</translation>
+<translation id="6579509898032828423">Brug dette billede</translation>
 <translation id="6596816719288285829">IP-adresse</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
@@ -626,6 +634,7 @@
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> tilhørende <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Handlingen mislykkedes – Bakke mangler</translation>
+<translation id="8923267550422472772">Dag i måneden, hvor der nulstilles</translation>
 <translation id="8928727111548978589">Handlingen mislykkedes – Papirbakken er tom</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådløs</translation>
@@ -642,6 +651,7 @@
 <translation id="9062831201344759865">Der er stor forsinkelse på DNS-oversættelse</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Brug denne video</translation>
 <translation id="9087578468327036362">Rapportér denne forespørgsel</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
 <translation id="9095415590198785865">Enheden bliver hos den samme ejer</translation>

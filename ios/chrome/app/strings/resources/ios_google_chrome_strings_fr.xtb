@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, activez la synchronisation</translation>
 <translation id="3533694711092285624">Aucun mot de passe enregistré. Chrome ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="3634910711516114487">Pour profiter pleinement de Chrome, connectez-vous avec votre compte Google</translation>
+<translation id="3655656110921623717">Cela signifie que Chrome demandera la version pour mobile à chaque fois.</translation>
 <translation id="3706101708757577809">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
+<translation id="9122931302567044771">Cela signifie que Chrome demandera la version pour ordinateur à chaque fois.</translation>
 </translationbundle>

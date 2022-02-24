@@ -519,6 +519,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2523886232349826891">Sačuvano je samo na ovom uređaju</translation>
 <translation id="2524461107774643265">Dodajte još informacija</translation>
 <translation id="2529899080962247600">Ovo polje ne sme da ima više od <ph name="MAX_ITEMS_LIMIT" /> unosa. Svi budući unosi će se zanemariti.</translation>
+<translation id="2535585790302968248">Otvorite novu karticu bez arhiviranja da biste pregledali privatno</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="2536110899380797252">Dodaj adresu</translation>
 <translation id="2539524384386349900">Otkrij</translation>
@@ -585,6 +586,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste upravljali plaćanjima i informacijama o kreditnim karticama u podešavanjima Chrome-a</translation>
+<translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="2721148159707890343">Zahtev je uspeo</translation>
 <translation id="2723669454293168317">Pokrenite proveru bezbednosti u Chrome podešavanjima</translation>
 <translation id="2726001110728089263">Bočna fioka</translation>
@@ -750,6 +752,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3288238092761586174"><ph name="URL" /> treba da obavi dodatne korake radi potvrde plaćanja</translation>
 <translation id="3293642807462928945">Saznajte više o smernicama <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u podešavanjima Chrome-a</translation>
+<translation id="3303795387212510132">Želite li da dozvolite da aplikacija otvara <ph name="PROTOCOL_SCHEME" /> linkove?</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretrage</translation>
 <translation id="3304073249511302126">Bluetooth skeniranje</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
@@ -1260,6 +1263,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4854362297993841467">Ovaj način isporuke nije dostupan. Isprobajte neki drugi način.</translation>
 <translation id="4854853140771946034">Brzo napravite novu belešku u Google Keep-u</translation>
 <translation id="485902285759009870">Kôd se verifikuje...</translation>
+<translation id="4866506163384898554">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da bi se pokazivač prikazao</translation>
 <translation id="4876188919622883022">Pojednostavljeni prikaz</translation>
 <translation id="4876305945144899064">Nema korisničkog imena</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Nijedna}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1483,6 +1487,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5560088892362098740">Datum isteka</translation>
 <translation id="55635442646131152">Struktura dokumenta</translation>
+<translation id="5565613213060953222">Otvori karticu bez arhiviranja</translation>
 <translation id="5565735124758917034">Aktivno</translation>
 <translation id="5570825185877910964">Zaštiti nalog</translation>
 <translation id="5571083550517324815">Preuzimanje sa ove adrese nije moguće. Izaberite drugu adresu.</translation>
@@ -1948,6 +1953,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7192203810768312527">Oslobodiće se <ph name="SIZE" />. Neki sajtovi će se sporije učitavati pri sledećoj poseti.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Administrator može da vidi:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste otvorili novu karticu bez arhiviranja i pregledali privatno</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Host <ph name="HOST_NAME" /> ne poštuje bezbednosne standarde.</translation>
 <translation id="7210993021468939304">Linux aktivnosti unutar kontejnera i može da instalira i pokreće Linux aplikacije unutar kontejnera</translation>
@@ -2213,6 +2219,7 @@ Dodatni detalji:
 <translation id="799149739215780103">Povezivanje</translation>
 <translation id="7992044431894087211">Nastavljeno je deljenje sadržaja ekrana sa aplikacijom <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Nije navedeno</translation>
+<translation id="7998269595945679889">Pritisnite dugme Otvori karticu bez arhiviranja, pa Enter da biste otvorili novu karticu bez arhiviranja i pregledali privatno</translation>
 <translation id="800218591365569300">Probajte da zatvorite druge kartice ili programe da biste oslobodili memoriju.</translation>
 <translation id="8004582292198964060">Pregledač</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta kartica i njena adresa za obračun će biti sačuvane. Moći ćete da je koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}one{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}few{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}other{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}}</translation>

@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">ਡੀਵਾਈਸ ਦੇ ਸੱਜੇ ਪਾਸੇ ਵਾਲੇ ਬੱਡ ਦਾ ਬੈਟਰੀ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369013195428705271">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਆਪਣਾ ਸਾਰਾ ਪ੍ਰਿੰਟ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੀਆਂ ਚੱਲ ਰਹੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="3413935475507503304">ਅੱਪਡੇਟ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> ਵਿੱਚੋਂ ਪੰਨਾ <ph name="PRINTED_PAGES" /> ਨੂੰ ਪ੍ਰਿੰਟ ਕੀਤਾ ਗਿਆ।</translation>
@@ -235,6 +236,7 @@
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨਰ ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਜਾਂ ਕਿਸੇ ਸਿੱਧੇ ਕਨੈਕਸ਼ਨ ਰਾਹੀਂ ਉਪਲਬਧ ਹੈ</translation>
+<translation id="4170180284036919717">ਇੱਕ ਫ਼ੋਟੋ ਖਿੱਚੋ</translation>
 <translation id="4170700058716978431">ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4213104098953699324">USB ਕੀ-ਬੋਰਡ</translation>
@@ -495,6 +497,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> ਨੂੰ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਪ੍ਰਸ਼ਾਸਕ ਰਿਮੋਟਲੀ ਡੀਵਾਈਸ ਦਾ ਸੰਰੂਪਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
+<translation id="7212734716605298123">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

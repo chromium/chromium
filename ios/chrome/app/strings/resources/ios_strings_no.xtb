@@ -12,6 +12,7 @@
 
         
 Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
+<translation id="1054045277222934172">Du kan endre standard nettstedsvisning til datamaskin i Innstillinger og deretter Innholdsinnstillinger</translation>
 <translation id="1063454504051558093">Bruk et annet passord</translation>
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
@@ -182,6 +183,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2695507686909505111">Siden er oversatt</translation>
+<translation id="2700241355396984822">Alternativer for konfigurering av tillatelser</translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="2704491540504985681">Nedlastinger</translation>
 <translation id="2704606927547763573">Kopiert</translation>
@@ -318,6 +320,8 @@ Følg fremgangsmåten under:</translation>
 <translation id="3861486700625780712">Slutt å følge</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
 <translation id="3897092660631435901">Meny</translation>
+<translation id="3904829425754749514">Organisasjonen din har slått av synkronisering. Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
+<translation id="3905353503976611311">Søk på nettet</translation>
 <translation id="3913386780052199712">Pålogget Chrome</translation>
 <translation id="3915450441834151894">Opplysninger om nettstedet</translation>
 <translation id="3922310737605261887">Søk etter teksten du kopierte</translation>
@@ -347,6 +351,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4172051516777682613">Vis alltid</translation>
 <translation id="418156467088430727">Se versjonen uten nett i en ny fane</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4223967053752765281">Organisasjonen din har slått av pålogging. Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
 <translation id="4237377247299956313">Trykk på <ph name="BEGIN_BOLD" />Standard nettleserapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Skriv inn passordfrasen</translation>
 <translation id="4249955472157341256">Sorter etter nyeste</translation>
@@ -371,6 +376,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4469418912670346607">Fortsett konfigureringen</translation>
 <translation id="4474494258097106883">Laget for iPhonen din</translation>
 <translation id="4476574785019001431">Innstillinger</translation>
+<translation id="448433063499977729">Synkronisering er avslått</translation>
 <translation id="4496373720959965247">Legg til faner, og bytt mellom sider</translation>
 <translation id="4502566650163919158">Sjekk nå</translation>
 <translation id="4505980578794259603">Sist sjekket <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5580834567471114021">Vil du legge til siden på leselisten for å lese den senere?</translation>
 <translation id="5592679540098330836">Slå på synkronisering for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Organisasjonen din har slått av denne funksjonen</translation>
+<translation id="560999923643681074">Redigeringstilgang</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>
 <translation id="5626245204502895507">Filen kan ikke lastes ned for øyeblikket.</translation>
 <translation id="5631164295104953411">Legg til betalingsmåte</translation>
@@ -594,7 +601,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6389470377220713856">Navn som er oppført på kortet</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
 <translation id="6410883413783534063">Åpne faner for å besøke ulike sider samtidig</translation>
-<translation id="6417838470969808600">Du har bokmerker, loggen, passord og andre innstillinger fra <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Logget på som <ph name="EMAIL" />.
 
 Dataene dine er kryptert med passordfrasen din for synkronisering <ph name="TIME" />. Skriv den inn for å starte synkroniseringen.</translation>
@@ -759,6 +765,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7840771868269352570">De valgte elementene blir fjernet.</translation>
 <translation id="7856733331829174190">Kunne ikke laste ned</translation>
 <translation id="7859704718976024901">Nettleserlogg</translation>
+<translation id="7884694604461143138">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">For å beskytte personvernet ditt fyller ikke Chrome automatisk ut dette feltet.</translation>
 <translation id="7911190106180361398">Organisasjonen din lar deg ikke synkronisere alt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8076014560081431679">Lagrede nettstedsinnstillinger slettes ikke og kan gjenspeile nettleserbruken din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne innstillingen er administrert – dobbelttrykk for mer informasjon</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
+<translation id="809543534949702122">Søkelogg</translation>
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slå av</translation>
 <translation id="8114753159095730575">Filnedlasting er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
@@ -811,6 +819,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8319076807703933069">Nytt søk</translation>
 <translation id="8323906514956095947">Trykk og hold inne for flere fanealternativer</translation>
 <translation id="8328777765163860529">Lukk alle</translation>
+<translation id="8364085047956854021">Tillatelsene for «<ph name="SITE_NAME" />» blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8386068868580335421">Tilbakestill</translation>
 <translation id="8407669440184693619">Fant ingen passord for dette nettstedet</translation>
@@ -897,6 +906,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9148126808321036104">Logg på igjen</translation>
 <translation id="9152539721251340337">Lag en QR-kode</translation>
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
+<translation id="9177438225260810839">Søk i åpne faner</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>
 <translation id="9200875785104711666">for <ph name="TIME" /> d siden</translation>
 <translation id="9203116392574189331">Handoff</translation>

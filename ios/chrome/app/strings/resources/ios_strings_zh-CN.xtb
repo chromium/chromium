@@ -601,7 +601,6 @@
 <translation id="6389470377220713856">持卡人姓名</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
-<translation id="6417838470969808600">您有来自 <ph name="USER_EMAIL1" /> 的书签、历史记录、密码及其他设置。</translation>
 <translation id="641799622251403418">目前登录的帐号是 <ph name="EMAIL" />。
 
 您的数据已于 <ph name="TIME" />使用您的同步密码加密。输入该密码即可开始同步。</translation>

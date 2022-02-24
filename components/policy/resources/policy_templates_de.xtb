@@ -104,6 +104,7 @@
 <translation id="1122089575901325963">Durch diese Richtlinie wird der <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) konfiguriert, wenn er auf dem Gerät vorhanden ist. Die Konfiguration darf nicht größer als 1 MB (1.000.000 Byte) sein und muss im JSON-Format vorliegen. Der <ph name="WILCO_NAME" /> DTC übernimmt die Verwaltung. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Konfiguration wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden.</translation>
+<translation id="1123650965531933634">Die Berechtigung für die Fensterpositionierung wird standardmäßig auf allen Websites verweigert</translation>
 <translation id="1133622335785078255">Diese Einstellung erlaubt Nutzern, sekundäre Profile zu erstellen und zu verwenden sowie den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="1133814529606590009">Ist diese Richtlinie aktiviert, ist die anonymisierte URL-Datenerfassung immer aktiv. Das heißt, URLs der von Nutzern besuchten Seiten werden an Google gesendet, um Suchanfragen und das Surfen zu verbessern.
 
@@ -208,6 +209,7 @@
 <translation id="1240722269871366886">Diese Richtlinie ermöglicht <ph name="PRODUCT_OS_NAME" />, Emojis vorzuschlagen, wenn Nutzer Text mit ihrer Bildschirmtastatur oder physischen Tastatur eingeben.
       Wenn diese Richtlinie auf "true" gesetzt ist, wird die Funktion aktiviert und kann vom Nutzer geändert werden.
       Standardmäßig ist diese Richtlinie auf "false" gesetzt. Es werden keine Emojis vorgeschlagen und Nutzer können diese Einstellung nicht ändern.</translation>
+<translation id="1241536186320046498">Jedes Mal nachfragen, wenn eine Website um die Berechtigung für die Fensterpositionierung bittet</translation>
 <translation id="1243570869342663665">Filterung von Inhalten nur für Erwachsene durch "SafeSites" konfigurieren.</translation>
 <translation id="1244309789361056660">Diese Richtlinie wurde in Version M87 entfernt und Basisverzeichnisse werden bei der Anmeldung automatisch auf ext4 umgestellt.
       Das Festlegen der Richtlinie gibt an, welche Aktion durchgeführt werden soll, wenn das Basisverzeichnis des Nutzers mit eCryptfs-Verschlüsselung erstellt wurde. Sofern eCryptfs-verschlüsselte Basisverzeichnisse nicht auf die ext4-Verschlüsselung umgestellt werden, wird die Ausführung von Android-Apps möglicherweise beendet.
@@ -479,6 +481,11 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
       Ist diese Richtlinie deaktiviert, dürfen nicht sichere HTTP-Anfragen das <ph name="BASIC_AUTH" />-Authentifizierungsschema nicht verwenden; nur HTTPS ist zulässig.
 
       Diese Richtlinieneinstellung wird ignoriert (und <ph name="BASIC_AUTH" /> ist immer verboten), wenn die Richtlinie <ph name="AUTH_SCHEMES_POLICY_NAME" /> konfiguriert ist und das <ph name="BASIC_AUTH" />-Schema nicht enthält.</translation>
+<translation id="1573444493980402757">Mit dieser Richtlinie können Sie eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterpositionierung automatisch verweigert wird. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+      Genaue Informationen zu gültigen URL-Mustern für Websites finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.
+
+      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
@@ -779,6 +786,15 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Siehe „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ für das Anpinnen von Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage.</translation>
 <translation id="186719019195685253">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Wechselstrombetriebs</translation>
+<translation id="1869688072690234823">Durch die Konfiguration der Richtlinie wird festgelegt, welche WebAuthn-Faktoren verwendet werden können.
+
+      * Alle WebAuthn-Faktoren zulassen: ["all"] (umfasst auch zukünftige Faktoren).
+
+      * Nur PIN zulassen: ["PIN"].
+
+      * PIN und Fingerabdruck zulassen: ["PIN", "FINGERPRINT"].
+
+      Wenn diese Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen auf verwalteten Geräten keine WebAuthn-Faktoren zur Verfügung.</translation>
 <translation id="1881649377321404593">
       Diese Richtlinie wurde in M80 entfernt, da WebDriver mittlerweile mit allen vorhandenen Richtlinien kompatibel ist und sie deshalb nicht mehr gebraucht wird.
 
@@ -1526,6 +1542,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
 <translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665422249821137126">Großen Cursor auf der Anmeldeseite aktivieren</translation>
+<translation id="2667894101494585925">Abruf von Daten zur Optimierung aktivieren</translation>
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2678503605767349615">Erforderliche geräteübergreifende Clientzertifikate</translation>
 <translation id="268577405881275241">Funktion für Datenkomprimierungs-Proxy aktivieren</translation>
@@ -1950,6 +1967,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Für diese Funktion muss der Datentyp „<ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />“ in der <ph name="CHROME_SYNC_NAME" /> aktiviert sein. Wenn „<ph name="WIFI_CONFIGURATIONS_DATATYPE_NAME" />“ in der Richtlinie „<ph name="SYNC_TYPES_LIST_DISABLED_POLICY_NAME" />“ deaktiviert ist oder die <ph name="CHROME_SYNC_NAME" /> in der Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ deaktiviert ist, ist diese Funktion nicht aktiviert.
 
       Ist diese Richtlinie nicht konfiguriert, kann die Funktion nicht standardmäßig von verwalteten Nutzern verwendet werden.</translation>
+<translation id="3138514192363246220">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung deaktivieren</translation>
 <translation id="3142410959002029864">Durch die Richtlinie wird der standardmäßige Duplexmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
 <translation id="3144173889708944482">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="DEVICE_PRINTERS_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="3146711617256415776">Stimmen für die Sprachausgabe bei Enhanced Network nicht zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
@@ -2052,6 +2070,8 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3219421230122020860">Inkognitomodus verfügbar</translation>
 <translation id="3220624000494482595">Wenn die Kiosk-App eine Android-App ist, hat sie keine Kontrolle über die <ph name="PRODUCT_OS_NAME" />-Version, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
 <translation id="322359555555487980">Verfügbarkeit von Variationen auf <ph name="PRODUCT_OS_NAME" /> festlegen</translation>
+<translation id="3229163415739929305">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Metadaten zum Seitenaufbau und Modelle zum maschinellen Lernen abgerufen, die die Browsernutzung verbessern.
+      Ist sie deaktiviert, funktionieren einige Funktionen eventuell nicht richtig.</translation>
 <translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates konfiguriert.
 
       Geben Sie einzelne Einstellungen in den JSON-Eigenschaften an:
@@ -2389,6 +2409,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
 <translation id="3606571057705314194">Profil-Picker beim Start deaktiviert</translation>
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
+<translation id="3612809274815536412">Einstellungen für die Fensterpositionierung</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
 <translation id="3634125384445314047">Zulassen, dass Fotos und Videos, die kürzlich mit dem Smartphone aufgenommen wurden, über Phone Hub abgerufen werden können.</translation>
@@ -2996,6 +3017,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="4389073105055031853">Nutzern erlauben, alle Zertifikate zu verwalten</translation>
 <translation id="4389091865841123886">Konfiguriert die Remote-Bestätigung mit TPM-Mechanismus</translation>
+<translation id="4397464099112037398">Standardeinstellung für die Berechtigung für die Fensterpositionierung</translation>
 <translation id="4401496838830169080">Mit dieser Richtlinie können Sie festlegen, ob die Safe Browsing-Funktion von <ph name="PRODUCT_NAME" /> aktiviert ist und in welchem Modus sie ausgeführt wird.
 
       Wird die Richtlinie auf "NoProtection" (Wert 0) gesetzt, ist Safe Browsing nie aktiv.
@@ -3292,6 +3314,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4812714598405913256">Meldung zum Ablaufdatum für die automatische Aktualisierung für die Richtlinie DeviceMinimumVersion konfigurieren</translation>
 <translation id="4816674326202173458">Unternehmensnutzer sowohl als primären als auch als sekundären Nutzer zulassen (Standardverhalten für nicht verwaltete Nutzer)</translation>
 <translation id="4820432864264617413">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer verhindern</translation>
+<translation id="4821987881803903281">Berechtigung für die Fensterpositionierung auf diesen Websites blockieren</translation>
 <translation id="4826326557828204741">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Akkubetriebs</translation>
 <translation id="482803100714220060">Vollständige URLs anzeigen</translation>
 <translation id="4832852360828533362">Berichte zu Nutzern und Geräten</translation>
@@ -3988,6 +4011,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 <translation id="5586942249556966598">Nichts tun</translation>
 <translation id="5598417829613725146">Canvas (wird seit Version 90 unterstützt)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" />-Verwaltungseinstellungen</translation>
+<translation id="5601503069213153581">PIN</translation>
 <translation id="5614865701790130558">Ereignisse für richtlinienbasierte Erweiterungsinstallationen protokollieren</translation>
 <translation id="5618398258385745432">Die entsprechende Einstellung wurde verwendet, bevor die erneute Authentifizierung bei der Ansicht von Passwörtern aktiviert wurde. Seither haben die Einstellung und folglich auch diese Richtlinie keinen Einfluss auf das Verhalten von Chrome. Aktuell werden Passwörter auf der Einstellungsseite des Passwortmanagers nicht als Klartext angezeigt. Dies bedeutet, dass die Einstellungsseite nur einen Platzhalter enthält und das Passwort in Chrome nur dann angezeigt wird, wenn der Nutzer auf "Anzeigen" klickt und sich gegebenenfalls noch einmal authentifiziert. Die ursprüngliche Beschreibung der Richtlinie finden Sie unten.
 
@@ -4307,6 +4331,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
        Gültige Werte: • 0 = Aus • 1 = An • 2 = Bedienungshilfe "Angedockte Lupe" an
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" />" diese Richtlinie.</translation>
+<translation id="6011193465932186973">Fingerabdruck</translation>
 <translation id="6011969832398368671">Websites dürfen den Nutzer um Schreibzugriff auf Dateien und Verzeichnisse bitten</translation>
 <translation id="6012952794649558174">Standard-Browserverhalten verwenden.</translation>
 <translation id="6015281292796053435">Mit dieser Richtlinie wird festgelegt, ob Safe Browsing-Daten gesendet werden, z. B. die Anzahl der Safe Browsing-Warnungen und die Anzahl der Klicks auf Safe Browsing-Warnungen.
@@ -4427,6 +4452,14 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6144046700495610112">Wenn die Richtlinie aktiviert ist, werden Formulardaten zum automatischen Ausfüllen bei der ersten Ausführung aus dem Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Formulardaten zum automatischen Ausfüllen importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Formulardaten zum automatischen Ausfüllen wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
+<translation id="614522356524762803">
+      Diese Richtlinie legt die Häufigkeit fest, mit der Chrome-Statusberichte hochgeladen werden.
+
+      Dazu zählen auch Berichte, die durch <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> aktiviert sind.
+
+      Ist diese Richtlinie nicht konfiguriert, werden Berichte alle 24 Stunden hochgeladen.
+      Wenn die Richtlinie konfiguriert ist, wird durch sie die Anzahl der Stunden zwischen den Uploads von Berichten festgelegt.
+      </translation>
 <translation id="614616930188030377">Muster in dieser Liste werden mit der Sicherheitsherkunft der anfragenden URL abgeglichen.
       Wenn Übereinstimmungen gefunden werden oder chrome://flags/#enable-webrtc-hide-local-ips-with-mdns deaktiviert ist, werden die lokalen IP-Adressen in WebRTC ICE-Kandidaten angezeigt.
       Andernfalls werden lokale IP-Adressen mit mDNS-Hostnamen verborgen.
@@ -5454,6 +5487,11 @@ Wenn ein Nutzer ein primäres Browserkonto mit einem Nutzernamen einrichten will
 Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, kann der Nutzer in <ph name="PRODUCT_NAME" /> jedes Google-Konto als primäres Browserkonto festlegen.</translation>
 <translation id="723103540848640830">Minimale Länge der Sperrbildschirm-PIN festlegen</translation>
 <translation id="7234280155140786597">Namen der unzulässigen Hosts für natives Messaging (oder "*" für alle)</translation>
+<translation id="723621412149834592">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterpositionierung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+      Wenn die Richtlinie auf <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (Wert 3) gesetzt ist, wird dem Nutzer eine Benachrichtigung angezeigt, wenn standardmäßig die Berechtigung für die Fensterpositionierung angefragt wird. Wenn Nutzer die Berechtigung gewähren, können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="7246767840750730334">Aktivieren von Phone Hub-Benachrichtigungen zulassen.</translation>
 <translation id="7249828445670652637"><ph name="PRODUCT_OS_NAME" />-CA-Zertifikate für ARC-Apps aktivieren</translation>
 <translation id="7251825257294351251">Systembenachrichtigungen zulassen</translation>
@@ -5540,6 +5578,11 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7340034977315324840">Aktivitätszeit von Geräten melden</translation>
 <translation id="7343004974628511824">DNS-Abfangprüfungen ausführen</translation>
 <translation id="7343497214039883642">Unternehmensdrucker-Konfigurationsdatei für Geräte</translation>
+<translation id="7358012133037776875">Mit dieser Richtlinie können Sie eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterpositionierung automatisch gewährt wird. Dadurch können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+      Genaue Informationen zu gültigen URL-Mustern für Websites finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand der Quelle ab, daher werden alle Pfade des URL-Musters ignoriert.
+
+      Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> aktivieren</translation>
 <translation id="7358744897221281073">Durch Aktivieren dieser Einstellung können Nutzer, die der Verwendung von Phone Hub zugestimmt haben, Aufgaben auf Chrome OS fortsetzen, wie etwa das Ansehen von Websites ihres Smartphones.
 
@@ -5671,6 +5714,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" />“ wird festgelegt, welche Meldung der Nutzer sieht, wenn eine Warnung angezeigt wird, nachdem beim Scan ein potenzielles Problem gefunden wurde. Das Nachrichtenfeld enthält den Text, den der Nutzer sieht (maximal 200 Zeichen). Das Feld „learn_more_url“ enthält eine vom Administrator festgelegte URL, die der Nutzer anklicken kann, um weitere benutzerdefinierte Informationen darüber zu erhalten, warum die Aktion blockiert wurde. Das Feld für die Sprache ist optional und enthält die Sprache der Meldung. Wenn das Feld leer oder auf „default“ festgelegt ist, wird die entsprechende Nachricht angezeigt, wenn es für die Sprache des Nutzers keine eigene Meldung gibt. Das Tag-Feld gibt an, für welche Arten von Scans die Meldung angezeigt wird. Die Liste „custom_messages“ kann keine oder mehrere Einträge haben – das Nachrichten- und das Tag-Feld der einzelnen Einträge dürfen dabei nicht leer sein.
 
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu finden Sie unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
+<translation id="7482768039644066614">Abruf von Metadaten zum Seitenaufbau und Modellen zum maschinellen Lernen zum Verbessern der Browsernutzung aktivieren</translation>
 <translation id="7485481791539008776">Regeln zur Auswahl des Standarddruckers</translation>
 <translation id="7486205887492534734">Aufforderung auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen</translation>
 <translation id="7491720878670299691">Häufigkeit, mit der Netzwerkdaten gepollt und auf Ereignisse geprüft werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
@@ -6117,6 +6161,7 @@ werden abgelehnt.</translation>
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.</translation>
+<translation id="7992613144342460685">Berechtigung für die Fensterpositionierung auf diesen Websites zulassen</translation>
 <translation id="7995610550667275367">Scannen (wird seit Version 87 unterstützt)</translation>
 <translation id="7999023147219236247">Richtlinie für die Gewährung von Berechtigungen für Apps. PERMISSION_POLICY_UNSPECIFIED: Die Richtlinie ist nicht konfiguriert. Wenn für eine Berechtigung auf keiner Ebene eine Richtlinie konfiguriert ist, wird standardmäßig das Verhalten „PROMPT“ verwendet. PROMPT: Der Nutzer wird aufgefordert, eine Berechtigung zu gewähren. GRANT: Die Berechtigung wird automatisch gewährt. DENY: Die Berechtigung wird automatisch verweigert.</translation>
 <translation id="7999818120028621358">Berichte zur Verhinderung von Datenlecks aktivieren</translation>
@@ -6705,6 +6750,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Wenn die Richtlinie deaktiviert ist, wird NTLMv2 deaktiviert.
 
       Alle aktuellen Versionen der Samba- und <ph name="MS_WIN_NAME" />-Server unterstützen NTLMv2. Eine Deaktivierung sollte nur zum Zweck der Abwärtskompatibilität erfolgen und verringert die Sicherheit der Authentifizierung.</translation>
+<translation id="8605627672203601098">Zugelassene WebAuthn-Faktoren konfigurieren</translation>
 <translation id="8606263947930257189">Mit dieser Richtlinie kann festgelegt werden, ob <ph name="PRODUCT_NAME" /> Tabs, die mindestens fünf Minuten lang im Hintergrund waren, deaktivieren darf.
 
       Wenn sie auf "true" gesetzt ist, können diese Tabs deaktiviert werden. Durch die Deaktivierung von Tabs werden CPU, Akku und Arbeitsspeicher entlastet. Bei <ph name="PRODUCT_NAME" /> wird eine Heuristik genutzt, um Tabs zu erkennen, die zwar im Hintergrund ausgeführt werden, jedoch aktiviert bleiben sollten, weil auf ihnen beispielsweise Benachrichtigungen angezeigt, Ton wiedergegeben oder Videos gestreamt werden. Webentwickler können die Deaktivierung ihrer Website auch unterbinden (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
@@ -6955,6 +7001,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8892783613915541293">Verzögerungen und Aktionen, die ausgeführt werden sollen, wenn das Gerät im Netzbetrieb inaktiv ist</translation>
 <translation id="8897796778265450949">Zeit beschränken, während der sich ein über GAIA ohne SAML authentifizierter Nutzer offline anmelden kann</translation>
 <translation id="889814528399907891">Nutzern erlauben, <ph name="LACROS_NAME" /> zu aktivieren und als primären Browser festzulegen</translation>
+<translation id="8900312706328930425">Häufigkeit der Cloud-Berichterstellung in Stunden</translation>
 <translation id="8903283771634816230">Wenn die Richtlinie aktiviert ist, verwendet <ph name="PRODUCT_NAME" /> den Standarddrucker des Betriebssystems als Standardziel für die Druckvorschau.
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, verwendet <ph name="PRODUCT_NAME" /> den zuletzt genutzten Drucker als Standardziel für die Druckvorschau.</translation>

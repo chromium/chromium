@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
+<translation id="1632539827495546968">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan <ph name="GUEST_LINK_BEGIN" />mode Tamu<ph name="GUEST_LINK_END" /> di browser Chromium. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
+
+Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Anda dapat mengelola Akun Google Anda di <ph name="SETTINGS_LINK_BEGIN" />Setelan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Tersedia versi Chromium yang baru dan lebih aman.</translation>
 <translation id="1774152462503052664">Jalankan Chromium di latar belakang</translation>
 <translation id="1779356040007214683">Agar Chromium lebih aman, kami menonaktifkan beberapa ekstensi yang tidak tercantum dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa sepengetahuan Anda.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Chromium Anda. Data Chromium Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Secara opsional, Anda dapat membuat profil untuk menjaga data Chromium Anda yang sudah ada tetap terpisah. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak merespons. Luncurkan ulang sekarang?</translation>
+<translation id="1940680973325097484">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan mode Tamu di browser Chromium. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
+
+Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Anda dapat mengelola Akun Google Anda di <ph name="SETTINGS_LINK_BEGIN" />Setelan<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium tidak dapat menentukan atau menyetel browser default</translation>
 <translation id="1981611865800294956">Luncurkan kembali untuk mengupdate &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Tindakan ini akan menghapus 1 item dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>

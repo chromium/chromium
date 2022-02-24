@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">የቅንጥብ ሰሌዳ ይዘቶችን አሳይ</translation>
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
 <translation id="3114507951000454849">የዛሬውን ዜና ያንብቡ <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">ተገናኝቷል ከ</translation>
 <translation id="3123734510202723619">ማስታወቂያዎች</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">የChrome መነሻ ገጽ</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">የእርስዎን የጣቢያ ቅንብሮች እዚህ ላይ ይለውጡ</translation>
 <translation id="6140709049082532940">የላቀ ጥበቃ</translation>
 <translation id="6140912465461743537">አገር/ክልል</translation>
-<translation id="6141988275892716286">ማውረድ ያረጋግጡ</translation>
 <translation id="614940544461990577">ይሞክሩ፦</translation>
 <translation id="6150320133806434356">ዕልባት ተቀምጧል</translation>
 <translation id="6154478581116148741">የይለፍ ቃላትዎን ከዚህ መሣሪያ ወደ ውጭ ለመላክ በቅንብሮች ውስጥ የማያ ገጽ ቁልፍን ያብሩ</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">ሳቂታን ያክሉ</translation>
 <translation id="7105047059074518658">በመሳሪያዎች ላይ በቀላሉ ለማሰስ በመለያ ይግቡ</translation>
 <translation id="7106762743910369165">የእርስዎ አሳሽ በእርስዎ ድርጅት የሚተዳደር ነው</translation>
-<translation id="7121362699166175603">በአድራሻ አሞሌው ላይ ታሪክን እና ራስ-ማጠናቀቆችን ያጸዳል። የእርስዎ Google መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ አይነቶች ሊኖሩት ይችላል።</translation>
 <translation id="7138678301420049075">ሌላ</translation>
 <translation id="7143462160780459030">ቅጽበታዊ ገጽ እይታዎችን ማንሳት አይችሉም። እንደገና ይሞክሩ።</translation>
 <translation id="7146622961999026732">እነዚህ ጣቢያዎች እና መተግበሪያዎች ለእርስዎ አስፈላጊ ይመስላሉ፦</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">ሲጨርሱ ግንኙነቱን ያቋርጡ</translation>
 <translation id="7523960634226602883">Google ሌንስን በመጠቀም በካሜራዎ ይፈልጉ</translation>
 <translation id="753225086557513863">ለበኋላ መርሐግብር ተይዞለታል</translation>
-<translation id="7560448309733608642">ታሪክን ከሁሉም ከተመሳሰሉ መሣሪያዎች ያጸዳል። የእርስዎ Google መለያ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="7562080006725997899">የአሰሳ ውሂብን በማጽዳት ላይ</translation>
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
 <translation id="7577900504646297215">ፍላጎቶችን አቀናብር</translation>

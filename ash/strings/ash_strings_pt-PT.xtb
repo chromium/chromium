@@ -334,6 +334,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3105917916468784889">Fazer captura de ecrã</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Remover sugestão</translation>
+<translation id="3120421559657122717">Encerrar dispositivo?</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
 <translation id="315116470104423982">Dados móveis</translation>
@@ -354,6 +355,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">O que podes fazer?</translation>
 <translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
+<translation id="3289544412142055976">De momento, as apps para Linux não são suportadas</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3294437725009624529">Convidado</translation>
@@ -705,6 +707,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5400461572260843123">Nas Definições rápidas, prima Pesquisa + seta para a esquerda para aceder ao centro de notificações.</translation>
 <translation id="5426063383988017631">Menu de definições fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
+<translation id="5429993543155113935">De momento, as janelas de navegação anónima não são suportadas</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
@@ -847,6 +850,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6431865393913628856">Gravação de ecrã</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
+<translation id="6449483711453944360">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
 <translation id="6453179446719226835">O idioma foi alterado</translation>
 <translation id="6459472438155181876">A prolongar ecrã para <ph name="DISPLAY_NAME" /></translation>
@@ -946,6 +950,7 @@ Nova instalação</translation>
 <translation id="7025533177575372252">Ligue o dispositivo <ph name="DEVICE_NAME" /> ao telemóvel.</translation>
 <translation id="7026338066939101231">Diminuir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
+<translation id="7032161822340700104">Apenas são permitidos 6 modelos. Remova um modelo para guardar um novo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
 <translation id="7045033600005038336">Pretende substituir o modelo?</translation>

@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">дараахтай холбогдсон</translation>
 <translation id="3123734510202723619">Зарлал</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
@@ -872,7 +873,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6138832295072039549">Сайтын тохиргоогоо энд өөрчлөөрэй</translation>
 <translation id="6140709049082532940">Сайжруулсан хамгаалалт:</translation>
 <translation id="6140912465461743537">Улс/бүс</translation>
-<translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
 <translation id="614940544461990577">Оролдож үзэх:</translation>
 <translation id="6150320133806434356">Хавчуургыг хадгалсан</translation>
 <translation id="6154478581116148741">Энэ төхөөрөмжөөс нууц үгээ экспортлох бол дэлгэцийн түгжээг Тохиргоо хэсэгт асаах</translation>
@@ -1054,7 +1054,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7093803425429738190">Сэтгэл хөдлөл нэмэх</translation>
 <translation id="7105047059074518658">Төхөөрөмжүүд дээр хялбархан үзэхийн тулд нэвтэрнэ үү</translation>
 <translation id="7106762743910369165">Танай байгууллага таны хөтчийг удирддаг</translation>
-<translation id="7121362699166175603">Tүүх болон хаяг оруулах хэсгийн автомат гүйцээлтийг устгана. Таны Google бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="7138678301420049075">Бусад</translation>
 <translation id="7143462160780459030">Дэлгэцийн агшин авах боломжгүй. Дахин оролдоно уу.</translation>
 <translation id="7146622961999026732">Эдгээр сайт болон апп танд чухал бололтой:</translation>
@@ -1128,7 +1127,6 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="752220631458524187">Дууссан үедээ салгана уу</translation>
 <translation id="7523960634226602883">Google Дуран ашиглан камераараа хайгаарай</translation>
 <translation id="753225086557513863">Дараа эхлэхээр хуваарилсан</translation>
-<translation id="7560448309733608642">Синк хийсэн бүх төхөөрөмжөөс түүхийг арилгана. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр хөтчийн түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
 <translation id="7562080006725997899">Хөтөчийн мэдээллийг арилгаж байна</translation>
 <translation id="756809126120519699">Chrome-н өгөгдлийг устгасан</translation>
 <translation id="7577900504646297215">Сонирхлыг удирдах</translation>

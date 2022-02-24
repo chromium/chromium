@@ -331,6 +331,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3105917916468784889">Screenshot aufnehmen</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Vorschlag entfernen</translation>
+<translation id="3120421559657122717">Gerät herunterfahren?</translation>
 <translation id="3126069444801937830">Zum Aktualisieren neu starten</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Mobile Daten</translation>
@@ -351,6 +352,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3249513730522716925">Das Fenster "<ph name="WINDOW_TITLE" />" wurde von Desktop <ph name="ACTIVE_DESK" /> zu Desktop <ph name="TARGET_DESK" /> verschoben</translation>
 <translation id="3255483164551725916">Was kannst du alles tun?</translation>
 <translation id="3269597722229482060">Rechtsklick</translation>
+<translation id="3289544412142055976">Linux-Apps werden derzeit nicht unterstützt</translation>
 <translation id="3289674678944039601">Aufladen über das Netzteil</translation>
 <translation id="3290356915286466215">Ungesichert</translation>
 <translation id="3294437725009624529">Gast</translation>
@@ -702,6 +704,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5400461572260843123">Schnelleinstellungen, drücken Sie Suchtaste + Linkspfeil, um das Benachrichtigungscenter zu öffnen.</translation>
 <translation id="5426063383988017631">Einstellungsmenü geschlossen</translation>
 <translation id="5428899915242071344">Auswahl starten</translation>
+<translation id="5429993543155113935">Inkognitofenster werden derzeit nicht unterstützt</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
 <translation id="5433020815079095860">Audioeingabe</translation>
@@ -844,6 +847,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6431865393913628856">Bildschirm aufzeichnen</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> auf <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> Termin</translation>
+<translation id="6449483711453944360">Linux-Apps und Inkognitofenster werden derzeit nicht unterstützt</translation>
 <translation id="6452181791372256707">Ablehnen</translation>
 <translation id="6453179446719226835">Die Sprache wurde geändert</translation>
 <translation id="6459472438155181876">Bildschirm wird auf <ph name="DISPLAY_NAME" /> erweitert...</translation>
@@ -943,6 +947,7 @@ Neuinstallation</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> mit Ihrem Smartphone verbinden</translation>
 <translation id="7026338066939101231">Verringern</translation>
 <translation id="7029814467594812963">Sitzung beenden</translation>
+<translation id="7032161822340700104">Es sind maximal sechs Vorlagen erlaubt. Entfernen Sie eine Vorlage, um eine neue zu speichern.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">Statusbereich minimieren</translation>
 <translation id="7045033600005038336">Vorlage ersetzen?</translation>

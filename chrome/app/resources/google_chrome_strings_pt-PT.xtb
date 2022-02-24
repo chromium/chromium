@@ -244,6 +244,9 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6989339256997917931">O Google Chrome foi atualizado, mas já não o utiliza há, pelo menos, 30 dias.</translation>
 <translation id="700644001690392105">Acerca do CloudReady 2.0</translation>
 <translation id="7025800014283535195">Pode alternar entre perfis do Chrome aqui</translation>
+<translation id="7036251913954633326">Se quiser utilizar esta conta apenas uma vez, pode utilizar o <ph name="GUEST_LINK_BEGIN" />Modo convidado<ph name="GUEST_LINK_END" /> no navegador Chrome. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao seu dispositivo <ph name="DEVICE_TYPE" />.
+
+As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta conta. Pode gerir as suas Contas Google nas <ph name="SETTINGS_LINK_BEGIN" />Definições<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chrome. Não é permitido adicionar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7085332316435785646">Escolha se pretende incluir o Histórico do Chrome para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado.</translation>
@@ -257,6 +260,9 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="7296210096911315575">Informações de utilização e segurança importantes</translation>
 <translation id="7308322188646931570">O Chrome necessita de acesso ao armazenamento para transferir ficheiros.</translation>
 <translation id="7339898014177206373">Nova janela</translation>
+<translation id="7388770099345495132">Se quiser utilizar esta conta apenas uma vez, pode utilizar o Modo convidado no navegador Chrome. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao seu dispositivo <ph name="DEVICE_TYPE" />.
+
+As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta conta. Pode gerir as suas Contas Google nas <ph name="SETTINGS_LINK_BEGIN" />Definições<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Iniciou sessão no Chrome com a conta <ph name="USER_EMAIL_ADDRESS" />. Utilize a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7408085963519505752">Termos do Chrome OS</translation>
 <translation id="7419046106786626209">O Chrome OS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>

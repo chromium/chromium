@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">Pajisja ka <ph name="BATTERY_PERCENTAGE" />% bateri në kufjen e djathtë.</translation>
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
+<translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3456078764689556234">U printua faqja <ph name="PRINTED_PAGES" /> nga <ph name="TOTAL_PAGES" />.</translation>
@@ -235,6 +236,7 @@
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4155551848414053977">Sigurohu që skaneri të jetë i ndezur dhe i disponueshëm përmes rrjetit tënd ose një lidhjeje të drejtpërdrejtë</translation>
+<translation id="4170180284036919717">Bëj një fotografi</translation>
 <translation id="4170700058716978431">DËSHTOI</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="4213104098953699324">Tastierë me USB</translation>
@@ -493,6 +495,7 @@
 <translation id="7175037578838465313">Konfiguro <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" />. Administratorët mund ta konfigurojnë në distancë pajisjen.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
+<translation id="7212734716605298123">Përditësimet e firmuerit për pajisjet e jashtme</translation>
 <translation id="7216409898977639127">Operatori celular</translation>
 <translation id="7271040990581020067">Skaneri është aktualisht në përdorim. Provo përsëri më vonë.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

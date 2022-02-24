@@ -12,6 +12,7 @@
 
         
 Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
+<translation id="1054045277222934172">Du kan ändra till datorvyn som standardvy för webbplatsen under Inställningar och sedan under Innehållsinställningar</translation>
 <translation id="1063454504051558093">Använd ett annat lösenord …</translation>
 <translation id="1066060668811609597">Hantera synkronisering</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
@@ -182,6 +183,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2690858294534178585">Kameran används</translation>
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
 <translation id="2695507686909505111">Sidan har översatts</translation>
+<translation id="2700241355396984822">Alternativ för att ställa in behörigheter</translation>
 <translation id="2702801445560668637">Läslista</translation>
 <translation id="2704491540504985681">Nedladdningar</translation>
 <translation id="2704606927547763573">Kopierat</translation>
@@ -318,6 +320,8 @@ Följ stegen nedan:</translation>
 <translation id="3861486700625780712">Sluta följa</translation>
 <translation id="3892144330757387737">Du hittar historiken här</translation>
 <translation id="3897092660631435901">Meny</translation>
+<translation id="3904829425754749514">Organisationen har inaktiverat synkronisering. Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
+<translation id="3905353503976611311">Sök på webben</translation>
 <translation id="3913386780052199712">Inloggad i Chrome</translation>
 <translation id="3915450441834151894">Webbplatsinformation</translation>
 <translation id="3922310737605261887">Sök efter kopierad text</translation>
@@ -347,6 +351,7 @@ Följ stegen nedan:</translation>
 <translation id="4172051516777682613">Visa alltid</translation>
 <translation id="418156467088430727">Visa offlineversionen i en ny flik</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4223967053752765281">Organisationen har inaktiverat inloggning. Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ange lösenfras</translation>
 <translation id="4249955472157341256">Sortera efter senaste</translation>
@@ -371,6 +376,7 @@ Följ stegen nedan:</translation>
 <translation id="4469418912670346607">Fortsätt konfigurationen</translation>
 <translation id="4474494258097106883">Byggd för iPhone</translation>
 <translation id="4476574785019001431">Inställningar</translation>
+<translation id="448433063499977729">Synkronisering har inaktiverats</translation>
 <translation id="4496373720959965247">Lägg till flikar och byt mellan sidor</translation>
 <translation id="4502566650163919158">Kontrollera nu</translation>
 <translation id="4505980578794259603">Kontrollerades senast <ph name="TIME" /></translation>
@@ -489,6 +495,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5580834567471114021">Vill du lägga till i läslistan för att läsa senare?</translation>
 <translation id="5592679540098330836">Aktivera synkronisering för <ph name="NAME" /></translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
+<translation id="560999923643681074">Redigeringsåtkomst</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
 <translation id="5626245204502895507">Det gick inte att ladda ned filen just nu.</translation>
 <translation id="5631164295104953411">Lägg till betalningsmetod</translation>
@@ -594,7 +601,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6389470377220713856">Namn på kort</translation>
 <translation id="6406506848690869874">Synkronisera</translation>
 <translation id="6410883413783534063">Öppna flikar för att besöka olika sidor samtidigt</translation>
-<translation id="6417838470969808600">Du har bokmärken, historik, lösenord och andra inställningar från <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Inloggad som <ph name="EMAIL" />.
 
 Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
@@ -759,6 +765,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7840771868269352570">De markerade objekten tas bort.</translation>
 <translation id="7856733331829174190">Nedladdning misslyckades</translation>
 <translation id="7859704718976024901">Webbhistorik</translation>
+<translation id="7884694604461143138">Sökhistorik (<ph name="COUNT" /> hittades)</translation>
 <translation id="7887198238286927132">Av integritetsskäl fylls det här fältet inte i automatiskt.</translation>
 <translation id="7911190106180361398">Organisationen tillåter inte att du synkroniserar allt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8076014560081431679">Sparade webbplatsinställningar raderas inte och kan visa dina surfvanor. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Den här inställningen hanteras – tryck snabbt två gånger för mer information</translation>
 <translation id="8080028325999236607">Stäng alla flikar</translation>
+<translation id="809543534949702122">Sökhistorik</translation>
 <translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Inaktivera</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
@@ -811,6 +819,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8323906514956095947">Tryck länge för fler flikalternatv</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
+<translation id="8364085047956854021">Behörigheterna för <ph name="SITE_NAME" /> inaktiveras igen när du lämnar webbplatsen.</translation>
 <translation id="8378714024927312812">Hanteras av organisationen</translation>
 <translation id="8386068868580335421">Återställ</translation>
 <translation id="8407669440184693619">Inga lösenord hittades för webbplatsen</translation>
@@ -897,6 +906,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9152539721251340337">Skapa en QR-kod</translation>
 <translation id="9157836665414082580">Visa inte dialogrutor</translation>
+<translation id="9177438225260810839">Sök på öppna flikar</translation>
 <translation id="9188680907066685419">Logga ut från hanterat konto</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d sedan</translation>
 <translation id="9203116392574189331">Handoff</translation>

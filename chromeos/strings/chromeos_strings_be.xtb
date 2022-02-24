@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ідзе абнаўленне (завершана <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Няма даступнай сеткі <ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">Дата апошняга скіду недаступная</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Хатняя сетка, не ў роўмінгу</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">У мяне ёсць пара ключоў</translation>
+<translation id="1435763214710588005">Аўтаматычна скідвае выкарыстанне трафіка штомесяц у выбраны дзень</translation>
 <translation id="1442433966118452622">Крыніца відарыса</translation>
 <translation id="1451536289672181509">Гэта клавіятура.</translation>
 <translation id="1459693405370120464">Надвор'е</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Не ўдалося абнавіць прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
+<translation id="1615335640928990664">Выкарыстанне трафіка з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1641857168437328880">Прылада для падачы дакументаў (адным бокам)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">Узровень зараду акумулятара ў правым навушніку: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369013195428705271">Сапраўды выдаліць гісторыю друку? Бягучыя заданні друку выдалены не будуць.</translation>
+<translation id="3413935475507503304">Каб працягнуць абнаўленне, націсніце "Далей".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="3456078764689556234">Надрукавана старонка <ph name="PRINTED_PAGES" /> з <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">Брандмаўар HTTP</translation>
 <translation id="4147897805161313378">Google Фота</translation>
 <translation id="4155551848414053977">Упэўніцеся, што сканер уключаны і даступны праз вашу сетку або прамое падключэнне.</translation>
+<translation id="4170180284036919717">Зрабіць фота</translation>
 <translation id="4170700058716978431">НЕ ПРОЙДЗЕНА</translation>
 <translation id="4176463684765177261">Выключана</translation>
 <translation id="4213104098953699324">Клавіятура з USB</translation>
@@ -391,6 +396,7 @@
 <translation id="5939518447894949180">Скінуць</translation>
 <translation id="594552776027197022">Стварэнне выпадковай пары ключоў</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Уключыць аўтаматычны штомесячны скід</translation>
 <translation id="6037291330010597344">Прыстасаванне сканера для падачы дакументаў не загружана. Пакладзіце ў яго дакументы і паўтарыце спробу.</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6040852767465482106">Ананімны ідэнтыфікатар</translation>
@@ -414,6 +420,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
+<translation id="6235460611964961764">Скідваць выкарыстанне трафіка ўручную</translation>
 <translation id="6243280677745499710">Цяпер зададзеныя</translation>
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -489,6 +496,7 @@
 <translation id="7175037578838465313">Наладка сеткі "<ph name="NAME" />"</translation>
 <translation id="7177485034254901881">Гэтай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />. Адміністратары могуць аддалена задаваць налады прылады.</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
+<translation id="7212734716605298123">Абнаўленні ўбудаванага праграмнага забеспячэння для знешніх прылад</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
 <translation id="7271040990581020067">Сканер зараз выкарыстоўваецца. Паўтарыце спробу пазней.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -625,6 +633,7 @@
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Збой: няма латка</translation>
+<translation id="8923267550422472772">Дзень месяца для скіду</translation>
 <translation id="8928727111548978589">Збой: скончылася папера</translation>
 <translation id="8930521118335213258">Вузел</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>

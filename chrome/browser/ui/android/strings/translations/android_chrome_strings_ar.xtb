@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">عرض محتوى الحافظة</translation>
 <translation id="3098745985164956033">‏يتم إرسال بعض الصور إلى Google لتحسين أوصاف الصور.</translation>
 <translation id="3114507951000454849">الاطّلاع على أخبار اليوم <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">مرتبطة بـ</translation>
 <translation id="3123734510202723619">الإعلامات</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
@@ -733,6 +734,7 @@
 <translation id="5329858041417644019">متصفِّحك غير مُدار</translation>
 <translation id="5342314432463739672">طلبات الإذن</translation>
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
+<translation id="5368227114232678694">للتصفّح بخصوصية تامّة على هذا الجهاز، يمكنك استخدام وضع التصفّح المتخفي.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}zero{<ph name="OPEN_TABS_MANY" /> علامات تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}two{علامتا تبويب مفتوحتان<ph name="OPEN_TABS_MANY" />، يُرجى النقر لتبديل علامات التبويب}few{<ph name="OPEN_TABS_MANY" /> علامات تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}many{<ph name="OPEN_TABS_MANY" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}other{<ph name="OPEN_TABS_MANY" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}}</translation>
 <translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">السماح بمواقع ويب معيّنة فقط</translation>
@@ -872,7 +874,6 @@
 <translation id="6138832295072039549">يمكنك تغيير إعدادات الموقع الإلكتروني من هنا.</translation>
 <translation id="6140709049082532940">الحماية المُحسَّنة:</translation>
 <translation id="6140912465461743537">الدولة/الإقليم</translation>
-<translation id="6141988275892716286">تأكيد التنزيل</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
 <translation id="6150320133806434356">تم حفظ الإشارة المرجعية</translation>
 <translation id="6154478581116148741">تشغيل قفل الشاشة في الإعدادات لتصدير كلمات المرور من هذا الجهاز</translation>
@@ -1054,7 +1055,6 @@
 <translation id="7093803425429738190">إضافة رمز تعبيري</translation>
 <translation id="7105047059074518658">تسجيل الدخول للتصفّح بشكل أسهل على الأجهزة المختلفة</translation>
 <translation id="7106762743910369165">تتولّى مؤسستك إدارة متصفِّحك.</translation>
-<translation id="7121362699166175603">‏يتم محو السجلّ وعمليات الإكمال التلقائي في شريط العناوين. وقد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7143462160780459030">يتعذّر أخذ لقطة شاشة. يُرجى إعادة المحاولة.</translation>
 <translation id="7146622961999026732">يبدو أن المواقع الإلكترونية والتطبيقات التالية مهمة بالنسبة إليك:</translation>
@@ -1065,7 +1065,7 @@
 <translation id="7177873915659574692">‏يتعذّر إنشاء رمز الاستجابة السريعة. يجب ألّا يزيد عدد أحرف عنوان URL عن <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="718226107353899806">الحدّ الأقصى لعدد التفاعلات التي يمكنك إضافتها: <ph name="MAX_NUM_REACTIONS" /></translation>
-<translation id="7187993566681480880">‏يوفِّر لك هذا الوضع حماية في Chrome، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول.</translation>
+<translation id="7187993566681480880">‏توفير الحماية على Chrome مع احتمالية استخدام هذا الخيار لتحسين مستوى أمانك على تطبيقات Google الأخرى عندما تكون مسجّلاً الدخول</translation>
 <translation id="718926126787620637">تم فتح قائمة مجلدات الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>
@@ -1128,7 +1128,6 @@
 <translation id="752220631458524187">‏يُرجي نزع كابل USB من الهاتف عند الانتهاء.</translation>
 <translation id="7523960634226602883">‏البحث من خلال الكاميرا باستخدام "عدسة Google"</translation>
 <translation id="753225086557513863">عمليات التنزيل المجدوَلة لوقتٍ لاحق</translation>
-<translation id="7560448309733608642">‏سيتم محو السجلّ من جميع الأجهزة التي تمت مزامنتها. قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">جارٍ محو بيانات التصفح</translation>
 <translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>

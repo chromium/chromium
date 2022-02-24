@@ -752,6 +752,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
 <translation id="3293642807462928945">Saiba mais acerca da política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e efetue a gestão das suas palavras-passe nas definições do Chrome.</translation>
+<translation id="3303795387212510132">Pretende permitir que a app abra os links <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
 <translation id="3304073249511302126">procura de bluetooth</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
@@ -1276,6 +1277,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Nono rolo</translation>
 <translation id="4901778704868714008">Guardar…</translation>
+<translation id="4905659621780993806">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" />. Guarde os itens abertos antes de o dispositivo ser reiniciado.</translation>
 <translation id="4913987521957242411">Perfurar na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -1690,6 +1692,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6290238015253830360">Os seus artigos sugeridos são apresentados aqui</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Código de segurança:</translation>
+<translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}one{O seu dispositivo será reiniciado dentro de # segundo(s)}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
 <translation id="6302269476990306341">Paragem do Assistente Google no Chrome</translation>
 <translation id="6305205051461490394"><ph name="URL" /> está inacessível.</translation>
 <translation id="6312113039770857350">Página Web não disponível</translation>
@@ -2014,6 +2017,7 @@ Detalhes adicionais:
 <translation id="7378627244592794276">Não</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Não aplicável</translation>
+<translation id="7388594495505979117">{0,plural, =1{O seu dispositivo será reiniciado dentro de 1 minuto}one{O seu dispositivo será reiniciado dentro de # minuto(s)}other{O seu dispositivo será reiniciado dentro de # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar cartão</translation>
 <translation id="7392089738299859607">Atualize o endereço</translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
@@ -2370,6 +2374,7 @@ Detalhes adicionais:
 <translation id="8507227106804027148">Linha de comandos</translation>
 <translation id="8508648098325802031">Ícone de pesquisa</translation>
 <translation id="8511402995811232419">Gerir cookies</translation>
+<translation id="8519753333133776369">Dispositivo HID permitido pelo seu administrador</translation>
 <translation id="8522552481199248698">O Chrome pode ajudá-lo a proteger a sua Conta Google e a alterar a palavra-passe.</translation>
 <translation id="8530813470445476232">Limpe o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome.</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>

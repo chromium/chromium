@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4008040567710660924">Omogućavanje kolačića za određenu web lokaciju.</translation>
+<translation id="4040330681741629921">Primajte obavještenja kada se web lokacija može prikazati u pojednostavljenom prikazu</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web lokacije</translation>
 <translation id="4165986682804962316">Postavke web-lokacije</translation>
@@ -176,7 +177,7 @@
 <translation id="5354152178998424783">Ovim će se obrisati <ph name="DATASIZE" /> podataka i kolačića koje su pohranile web lokacije.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
-<translation id="5412236728747081950">Ova web-lokacija prima podatke o vašim interesima iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
+<translation id="5412236728747081950">Ova web lokacija prikuplja vaša interesovanja iz Chromea da vam prikazuje relevantnije oglase</translation>
 <translation id="5438097262470833822">Ovim odabirom će se poništiti odobrenja za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Proteklo vrijeme <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiraj oglase na web lokacijama koje prikazuju nametljive ili obmanjujuće oglase</translation>

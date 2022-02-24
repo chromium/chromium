@@ -372,6 +372,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">povezano sa</translation>
 <translation id="3123734510202723619">Najave</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>
@@ -733,7 +734,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5329858041417644019">Vašim preglednikom se ne upravlja</translation>
 <translation id="5342314432463739672">Zahtjevi za odobrenje</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
-<translation id="5368227114232678694">Da biste pregledavali u privatnosti na ovom uređaju, isprobajte anonimni način.</translation>
+<translation id="5368227114232678694">Da privatno pregledate na ovom uređaju, isprobajte anonimni način rada</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{Otvorena je <ph name="OPEN_TABS_ONE" /> kartica. Dodirnite da pređete na drugu karticu}one{Otvorena je <ph name="OPEN_TABS_MANY" /> kartica. Dodirnite da pređete na drugu karticu}few{Otvorene su <ph name="OPEN_TABS_MANY" /> kartice. Dodirnite da pređete na drugu karticu}other{Otvoreno je <ph name="OPEN_TABS_MANY" /> kartica. Dodirnite da pređete na drugu karticu}}</translation>
 <translation id="5375577065097716013">Pretraži sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Dopusti samo određene web lokacije</translation>
@@ -873,7 +874,6 @@ Probni periodi Okruženja zaštićene privatnosti i dalje su u fazi aktivnog raz
 <translation id="6138832295072039549">Ovdje promijenite postavke web lokacije</translation>
 <translation id="6140709049082532940">Poboljšana zaštita:</translation>
 <translation id="6140912465461743537">Država/regija</translation>
-<translation id="6141988275892716286">Potvrdite lozinku</translation>
 <translation id="614940544461990577">Pokušajte:</translation>
 <translation id="6150320133806434356">Oznaka je sačuvana</translation>
 <translation id="6154478581116148741">Uključite zaključavanje ekrana u Postavkama da izvezete lozinke s ovog uređaja</translation>
@@ -1055,7 +1055,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7093803425429738190">Dodaj emociju</translation>
 <translation id="7105047059074518658">Prijavite se da lakše pregledate na svim uređajima</translation>
 <translation id="7106762743910369165">Preglednikom upravlja vaša organizacija</translation>
-<translation id="7121362699166175603">Briše historiju i automatsko dovršavanje na traci za adresu. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Drugo</translation>
 <translation id="7143462160780459030">Nije moguće napraviti snimak ekrana. Pokušajte ponovo.</translation>
 <translation id="7146622961999026732">Čini se da su vam ove web lokacije i aplikacije važne:</translation>
@@ -1129,7 +1128,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="752220631458524187">Prekinite vezu kada završite</translation>
 <translation id="7523960634226602883">Pretražujte kamerom pomoću Google Objektiva</translation>
 <translation id="753225086557513863">Zakazano za kasnije</translation>
-<translation id="7560448309733608642">Briše historiju sa svih sinhroniziranih uređaja. Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Brisanje podataka pregledanja</translation>
 <translation id="756809126120519699">Chromeovi podaci su obrisani</translation>
 <translation id="7577900504646297215">Upravljajte interesovanjima</translation>

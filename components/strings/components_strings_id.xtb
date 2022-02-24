@@ -515,6 +515,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2523886232349826891">Hanya disimpan di perangkat ini</translation>
 <translation id="2524461107774643265">Tambahkan Informasi Lainnya</translation>
 <translation id="2529899080962247600">Kolom ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
+<translation id="2535585790302968248">Buka tab Samaran baru untuk menjelajah secara pribadi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lainnya}other{dan # lainnya}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
 <translation id="2539524384386349900">Deteksi</translation>
@@ -581,6 +582,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2709516037105925701">Isi-Otomatis</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola info pembayaran dan kartu kredit di setelan Chrome</translation>
+<translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar dari mode layar penuh</translation>
 <translation id="2721148159707890343">Permintaan berhasil</translation>
 <translation id="2723669454293168317">Jalankan pemeriksaan keamanan di setelan Chrome</translation>
 <translation id="2726001110728089263">Baki Samping</translation>
@@ -746,6 +748,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3288238092761586174"><ph name="URL" /> mungkin perlu melakukan langkah tambahan untuk memverifikasi pembayaran Anda</translation>
 <translation id="3293642807462928945">Pelajari lebih lanjut tentang kebijakan <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan kelola sandi Anda di setelan Chrome</translation>
+<translation id="3303795387212510132">Izinkan aplikasi untuk membuka link <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
 <translation id="3304073249511302126">pemindaian bluetooth</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
@@ -1250,6 +1253,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4854362297993841467">Metode pengiriman tidak tersedia. Coba metode lain.</translation>
 <translation id="4854853140771946034">Buat catatan baru di Google Keep dengan cepat</translation>
 <translation id="485902285759009870">Memverifikasi kode ...</translation>
+<translation id="4866506163384898554">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk menampilkan kursor</translation>
 <translation id="4876188919622883022">Tampilan sederhana</translation>
 <translation id="4876305945144899064">Tidak ada nama pengguna</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Tidak ada}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1263,6 +1267,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Rol Kesembilan</translation>
 <translation id="4901778704868714008">Simpan...</translation>
+<translation id="4905659621780993806">Administrator akan memulai ulang perangkat Anda secara otomatis pada <ph name="DATE" /> pukul <ph name="TIME" />. Simpan item yang terbuka sebelum perangkat dimulai ulang.</translation>
 <translation id="4913987521957242411">Lubang di kiri atas</translation>
 <translation id="4918221908152712722">Instal <ph name="APP_NAME" /> (tidak perlu didownload)</translation>
 <translation id="4923459931733593730">Pembayaran</translation>
@@ -1472,6 +1477,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5560088892362098740">Tanggal Habis Masa Berlaku</translation>
 <translation id="55635442646131152">Kerangka dokumen</translation>
+<translation id="5565613213060953222">Buka tab Samaran</translation>
 <translation id="5565735124758917034">Aktif</translation>
 <translation id="5570825185877910964">Lindungi akun</translation>
 <translation id="5571083550517324815">Tidak dapat mengambil dari alamat ini. Pilih alamat lain.</translation>
@@ -1676,6 +1682,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6290238015253830360">Artikel yang disarankan ditampilkan di sini</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Perangkat akan dimulai ulang sekarang}=1{Perangkat akan dimulai ulang dalam 1 detik}other{Perangkat akan dimulai ulang dalam # detik}}</translation>
 <translation id="6302269476990306341">Asisten Google di Chrome sedang dihentikan</translation>
 <translation id="6305205051461490394"><ph name="URL" /> tidak dapat dijangkau.</translation>
 <translation id="6312113039770857350">Halaman web tidak tersedia</translation>
@@ -1937,6 +1944,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7192203810768312527">Sediakan ruang sebesar <ph name="SIZE" />. Sebagian situs mungkin dimuat lebih lambat pada kunjungan Anda berikutnya.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Administrator dapat melihat:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuka tab Samaran baru dan menjelajah secara pribadi</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi standar keamanan.</translation>
 <translation id="7210993021468939304">Aktivitas Linux berada dalam penampung, dan dapat menginstal dan menjalankan aplikasi Linux di dalam penampung</translation>
@@ -1997,6 +2005,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7378627244592794276">Tidak</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Tidak berlaku</translation>
+<translation id="7388594495505979117">{0,plural, =1{Perangkat Anda akan dimulai ulang dalam 1 menit}other{Perangkat Anda akan dimulai ulang dalam # menit}}</translation>
 <translation id="7390545607259442187">Konfirmasi Kartu</translation>
 <translation id="7392089738299859607">Perbarui Alamat</translation>
 <translation id="7399802613464275309">Pemeriksaan Keamanan</translation>
@@ -2199,6 +2208,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="799149739215780103">Jilid</translation>
 <translation id="7992044431894087211">Berbagi layar dengan <ph name="APPLICATION_TITLE" /> dilanjutkan</translation>
 <translation id="7995512525968007366">Tidak Ditentukan</translation>
+<translation id="7998269595945679889">Tombol Buka tab Samaran, tekan Enter untuk membuka tab Samaran baru dan menjelajah secara pribadi</translation>
 <translation id="800218591365569300">Coba tutup tab atau program lain untuk mengosongkan memori.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kartu ini dan alamat penagihannya akan disimpan. Anda dapat menggunakannya saat login ke <ph name="USER_EMAIL" />.}other{Semua kartu ini dan alamat penagihannya akan disimpan. Anda dapat menggunakannya saat login ke <ph name="USER_EMAIL" />.}}</translation>
@@ -2351,6 +2361,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8507227106804027148">Command line</translation>
 <translation id="8508648098325802031">Ikon penelusuran</translation>
 <translation id="8511402995811232419">Kelola cookie</translation>
+<translation id="8519753333133776369">Perangkat HID yang diizinkan oleh administrator Anda</translation>
 <translation id="8522552481199248698">Chrome dapat membantu Anda melindungi Akun Google dan mengubah sandi Anda.</translation>
 <translation id="8530813470445476232">Hapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
 <translation id="8533619373899488139">Buka &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat daftar URL yang diblokir dan kebijakan lainnya yang diterapkan oleh administrator sistem Anda.</translation>

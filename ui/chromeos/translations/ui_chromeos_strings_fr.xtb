@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Ce dossier est partagé avec Linux</translation>
 <translation id="1864756863218646478">Fichier introuvable.</translation>
 <translation id="1884013283844450420">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connexion</translation>
+<translation id="1914901738028575085">Appareil CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malayalam (translittération)</translation>
 <translation id="1920798810075583923">Pastèque</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> a bien été formaté</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Vélo</translation>
 <translation id="8719721339511222681">Élément <ph name="ENTRY_NAME" /> sélectionné.</translation>
 <translation id="872537912056138402">Croate</translation>
+<translation id="873847021056608403">Appareils CloudReady 2.0</translation>
 <translation id="8743164338060742337">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="8750438273876807512">Appuyez de manière prolongée sur un fichier, puis appuyez sur l'icône <ph name="ICON" />. Sélectionnez "Épingler sur l'étagère" pour accéder ensuite plus rapidement à ce fichier.</translation>
 <translation id="8787254343425541995">Autoriser les proxys pour les réseaux partagés</translation>

@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> no ?</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4008040567710660924">Atļaut sīkfailus konkrētai vietnei.</translation>
+<translation id="4040330681741629921">Saņemiet paziņojumu, kad vietnei var tikt parādīts vienkāršotais skats.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
 <translation id="4149994727733219643">Vienkāršots tīmekļa lapu skatījums</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Tiks dzēsti dati un vietnēs uzglabātie sīkfaili (<ph name="DATASIZE" />).</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(un vēl 1)}zero{(un vēl #)}one{(un vēl #)}other{(un vēl #)}}</translation>
 <translation id="5403592356182871684">Nosaukumi</translation>
+<translation id="5412236728747081950">Šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="5438097262470833822">Veicot šo darbību, tiks atiestatītas vietnes <ph name="WEBSITE" /> atļaujas.</translation>
 <translation id="5489227211564503167">Pagājušais laiks: <ph name="ELAPSED_TIME" /> (no <ph name="TOTAL_TIME" />)</translation>
 <translation id="5494752089476963479">Bloķēt reklāmas vietnēs, kurās tiek rādītas traucējošas vai maldinošas reklāmas</translation>

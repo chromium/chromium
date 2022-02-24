@@ -515,6 +515,7 @@
 <translation id="2523886232349826891">Карта будет сохранена только на этом устройстве</translation>
 <translation id="2524461107774643265">Укажите дополнительную информацию</translation>
 <translation id="2529899080962247600">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи будут игнорироваться.</translation>
+<translation id="2535585790302968248">Открыть новую вкладку в режиме инкогнито</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{и ещё 1}one{и ещё #}few{и ещё #}many{и ещё #}other{и ещё #}}</translation>
 <translation id="2536110899380797252">Добавить адрес</translation>
 <translation id="2539524384386349900">Определять</translation>
@@ -581,6 +582,7 @@
 <translation id="2709516037105925701">Автозаполнение</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
+<translation id="271663710482723385">Чтобы выйти из полноэкранного режима, нажмите |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|.</translation>
 <translation id="2721148159707890343">Запрос выполнен успешно</translation>
 <translation id="2723669454293168317">Запустите проверку безопасности в настройках Chrome</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
@@ -745,6 +747,7 @@
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
+<translation id="3303795387212510132">Разрешить приложению открывать ссылки <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3304073249511302126">поиск устройств Bluetooth</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
@@ -1250,6 +1253,7 @@
 <translation id="4854362297993841467">Этот способ доставки недоступен. Выберите другой.</translation>
 <translation id="4854853140771946034">Быстро создать заметку в Google Keep</translation>
 <translation id="485902285759009870">Проверка кода…</translation>
+<translation id="4866506163384898554">Чтобы увидеть курсор, нажмите |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|.</translation>
 <translation id="4876188919622883022">Упрощенный просмотр</translation>
 <translation id="4876305945144899064">Имя пользователя не указано</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Нет}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" /> и <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1263,6 +1267,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Девятый лоток</translation>
 <translation id="4901778704868714008">Сохранить</translation>
+<translation id="4905659621780993806">Администратор автоматически перезапустит устройство <ph name="DATE" /> в <ph name="TIME" />. Не забудьте сохранить открытые файлы.</translation>
 <translation id="4913987521957242411">Отверстие в левом верхнем углу</translation>
 <translation id="4918221908152712722">Установить приложение "<ph name="APP_NAME" />" (скачивание не требуется)</translation>
 <translation id="4923459931733593730">Платеж</translation>
@@ -1472,6 +1477,7 @@
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="5560088892362098740">Дата окончания срока действия</translation>
 <translation id="55635442646131152">Структура документа</translation>
+<translation id="5565613213060953222">Открыть вкладку инкогнито</translation>
 <translation id="5565735124758917034">Активен</translation>
 <translation id="5570825185877910964">Защитить аккаунт</translation>
 <translation id="5571083550517324815">Этот адрес не поддерживается. Выберите другой.</translation>
@@ -1676,6 +1682,7 @@
 <translation id="6290238015253830360">Здесь появятся рекомендуемые статьи.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Код CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Устройство сейчас перезапустится}=1{Устройство перезапустится через 1 секунду}one{Устройство перезапустится через # секунду}few{Устройство перезапустится через # секунды}many{Устройство перезапустится через # секунд}other{Устройство перезапустится через # секунды}}</translation>
 <translation id="6302269476990306341">Google Ассистент в Chrome отключится</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недоступен.</translation>
 <translation id="6312113039770857350">Не удалось открыть веб-страницу</translation>
@@ -1937,6 +1944,7 @@
 <translation id="7192203810768312527">Освободится <ph name="SIZE" /> пространства. После этого некоторые веб-страницы могут загружаться дольше обычного.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Администратор может отслеживать:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть новую вкладку в режиме инкогнито.</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Сайт <ph name="HOST_NAME" /> не соответствует стандартам безопасности.</translation>
 <translation id="7210993021468939304">Действия Linux в контейнере (также он может устанавливать и запускать приложения Linux из контейнера).</translation>
@@ -1999,6 +2007,7 @@
 <translation id="7378627244592794276">Нет</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Неприменимо</translation>
+<translation id="7388594495505979117">{0,plural, =1{Устройство перезапустится через 1 минуту}one{Устройство перезапустится через # минуту}few{Устройство перезапустится через # минуты}many{Устройство перезапустится через # минут}other{Устройство перезапустится через # минуты}}</translation>
 <translation id="7390545607259442187">Подтвердите карту</translation>
 <translation id="7392089738299859607">Изменить адрес</translation>
 <translation id="7399802613464275309">Проверка безопасности</translation>
@@ -2201,6 +2210,7 @@
 <translation id="799149739215780103">Скрепление</translation>
 <translation id="7992044431894087211">Демонстрация экрана для приложения <ph name="APPLICATION_TITLE" /> возобновлена.</translation>
 <translation id="7995512525968007366">Не указано</translation>
+<translation id="7998269595945679889">Кнопка "Открыть вкладку инкогнито". Нажмите Ввод, чтобы открыть такую вкладку.</translation>
 <translation id="800218591365569300">Закройте другие вкладки и программы, чтобы освободить память.</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Данные этой карты и ее платежный адрес будут сохранены. Вы сможете пользоваться ею после входа в аккаунт <ph name="USER_EMAIL" />.}one{Данные этих карт и их платежные адреса будут сохранены. Вы сможете пользоваться ими после входа в аккаунт <ph name="USER_EMAIL" />.}few{Данные этих карт и их платежные адреса будут сохранены. Вы сможете пользоваться ими после входа в аккаунт <ph name="USER_EMAIL" />.}many{Данные этих карт и их платежные адреса будут сохранены. Вы сможете пользоваться ими после входа в аккаунт <ph name="USER_EMAIL" />.}other{Данные этих карт и их платежные адреса будут сохранены. Вы сможете пользоваться ими после входа в аккаунт <ph name="USER_EMAIL" />.}}</translation>
@@ -2355,6 +2365,7 @@
 <translation id="8507227106804027148">Командная строка</translation>
 <translation id="8508648098325802031">Значок поиска</translation>
 <translation id="8511402995811232419">Открыть настройки файлов cookie</translation>
+<translation id="8519753333133776369">Разрешенное администратором HID-устройство</translation>
 <translation id="8522552481199248698">Защитите свой аккаунт Google и смените пароль с помощью Chrome.</translation>
 <translation id="8530813470445476232">Удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

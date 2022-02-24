@@ -12,6 +12,7 @@
 
         
 O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as súas instrucións para eliminar o historial de busca.</translation>
+<translation id="1054045277222934172">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder a Configuración e, logo, seleccionar Configuración de contido</translation>
 <translation id="1063454504051558093">Utilizar outro contrasinal…</translation>
 <translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
@@ -182,6 +183,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
 <translation id="2695507686909505111">Traduciuse a páxina</translation>
+<translation id="2700241355396984822">Opcións para configurar permisos</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704491540504985681">Descargas</translation>
 <translation id="2704606927547763573">Copiada</translation>
@@ -318,6 +320,8 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="3861486700625780712">Deixar de seguir</translation>
 <translation id="3892144330757387737">Aquí atoparás o teu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3904829425754749514">A túa organización desactivou a sincronización. Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
+<translation id="3905353503976611311">Realiza buscas na Web</translation>
 <translation id="3913386780052199712">Sesión iniciada en Chrome</translation>
 <translation id="3915450441834151894">Información sobre o sitio</translation>
 <translation id="3922310737605261887">Buscar texto copiado</translation>
@@ -347,6 +351,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
 <translation id="418156467088430727">Ver versión sen conexión nunha nova pestana</translation>
 <translation id="4181841719683918333">Idiomas</translation>
+<translation id="4223967053752765281">A túa organización desactivou o inicio de sesión. Podes seguir vendo os marcadores, o historial, os contrasinais e o resto das opcións de configuración que teñas neste dispositivo. Se fas cambios, non se sincronizarán coa túa conta.</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
 <translation id="424315890655130736">Introducir contrasinal</translation>
 <translation id="4249955472157341256">Ordenar por máis recente</translation>
@@ -371,6 +376,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="4469418912670346607">Continuar coa configuración</translation>
 <translation id="4474494258097106883">Deseñado para iPhone</translation>
 <translation id="4476574785019001431">Configuración</translation>
+<translation id="448433063499977729">Desactivouse a sincronización</translation>
 <translation id="4496373720959965247">Engade pestanas e cambia dunha páxina a outra</translation>
 <translation id="4502566650163919158">Comprobar agora</translation>
 <translation id="4505980578794259603">Última comprobación: <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5580834567471114021">Queres engadir esta páxina á lista de lectura para consultala máis tarde?</translation>
 <translation id="5592679540098330836">Activar a sincronización para <ph name="NAME" /></translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
+<translation id="560999923643681074">Acceso para editar</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
 <translation id="5626245204502895507">Non se puido descargar o ficheiro neste momento.</translation>
 <translation id="5631164295104953411">Engadir método de pago</translation>
@@ -594,7 +601,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6389470377220713856">Nome na tarxeta</translation>
 <translation id="6406506848690869874">Sincronización</translation>
 <translation id="6410883413783534063">Abre pestanas para visitar páxinas diferentes ao mesmo tempo</translation>
-<translation id="6417838470969808600">Tes os marcadores, o historial, os contrasinais e outras opcións de configuración de <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Iniciaches sesión como <ph name="EMAIL" />.
 
 Os teus datos encriptáronse co teu contrasinal de sincronización o <ph name="TIME" />. Introdúceo para comezar a sincronización.</translation>
@@ -759,6 +765,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7840771868269352570">Quitaranse os elementos seleccionados.</translation>
 <translation id="7856733331829174190">Non se puido descargar o ficheiro</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
+<translation id="7884694604461143138">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Para protexer a túa privacidade, Chrome non autocompletará este campo.</translation>
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8076014560081431679">As opcións de configuración dos sitios gardados non se eliminarán e quizais se reflictan os teus hábitos de navegación. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Esta opción de configuración está xestionada polo administrador. Toca dúas veces para obter máis información</translation>
 <translation id="8080028325999236607">Pechar pestanas</translation>
+<translation id="809543534949702122">Historial de busca</translation>
 <translation id="8101409298456377967">Crea, garda e xestiona os teus contrasinais para que poidas iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">Podes descargar ficheiros. Tes opcións dispoñibles na parte inferior da pantalla.</translation>
@@ -811,6 +819,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8323906514956095947">Mantén premido o botón para ver máis opcións da pestana</translation>
 <translation id="8328777765163860529">Pechar todo</translation>
+<translation id="8364085047956854021">Cando saias de "<ph name="SITE_NAME" />", os permisos deste sitio volverán desactivarse.</translation>
 <translation id="8378714024927312812">Xestionado pola túa organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="8407669440184693619">Non se atopou ningún contrasinal para este sitio</translation>
@@ -897,6 +906,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9152539721251340337">Crear código QR</translation>
 <translation id="9157836665414082580">Suprimir cadros de diálogos</translation>
+<translation id="9177438225260810839">Realiza buscas nas pestanas abertas</translation>
 <translation id="9188680907066685419">Pechar sesión na conta xestionada</translation>
 <translation id="9200875785104711666">Hai <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>

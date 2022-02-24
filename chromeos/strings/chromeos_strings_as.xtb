@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
+<translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> খনৰ ভিতৰত <ph name="PRINTED_PAGES" /> নম্বৰৰ পৃষ্ঠাখন প্ৰিণ্ট কৰা হৈছে।</translation>
@@ -235,6 +236,7 @@
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">নিশ্চিত কৰক যে স্কেনাৰটো অন কৰা আছে আৰু আপোনাৰ নেটৱৰ্ক অথবা এটা পোনপটীয়া সংযোগৰ জৰিয়তে উপলব্ধ হৈ আছে</translation>
+<translation id="4170180284036919717">এখন ফট’ তোলক</translation>
 <translation id="4170700058716978431">বিফল হৈছে</translation>
 <translation id="4176463684765177261">অক্ষম আছে</translation>
 <translation id="4213104098953699324">ইউএছবি কীব’ৰ্ড</translation>
@@ -494,6 +496,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> কনফিগাৰ কৰক</translation>
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="7212734716605298123">বাহ্যিক ডিভাইচৰ বাবে ফাৰ্মৱেৰৰ আপডে’ট</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
 <translation id="7271040990581020067">বৰ্তমান স্কেনাৰটো ব্যৱহাৰ কৰি থকা হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

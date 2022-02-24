@@ -601,7 +601,6 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6389470377220713856">Name auf Karte</translation>
 <translation id="6406506848690869874">Synchronisierung</translation>
 <translation id="6410883413783534063">Öffnen Sie Tabs, um mehrere Seiten gleichzeitig zu besuchen</translation>
-<translation id="6417838470969808600">Sie haben Lesezeichen, den Verlauf, Passwörter und andere Einstellungen von <ph name="USER_EMAIL1" /> übernommen.</translation>
 <translation id="641799622251403418">Angemeldet als <ph name="EMAIL" />.
 
 Ihre Daten wurden am <ph name="TIME" /> mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>

@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chrome</translation>
 <translation id="3533694711092285624">Der er ingen gemte adgangskoder. Chrome kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="3634910711516114487">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome</translation>
+<translation id="3655656110921623717">Det betyder, at Chrome anmoder om mobilwebsitet hver gang.</translation>
 <translation id="3706101708757577809">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner, når du lukker Chrome</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Viser anmodninger om at logge ind i Chrome.</translation>
 <translation id="8788269841521769222">Du behøver ikke at huske denne adgangskode. Den gemmes i Googles Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
+<translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>
 </translationbundle>

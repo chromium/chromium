@@ -753,6 +753,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3288238092761586174"><ph name="URL" /> gali reikėti imtis papildomų veiksmų, kad patvirtintų jūsų mokėjimą</translation>
 <translation id="3293642807462928945">Sužinokite daugiau apie „<ph name="POLICY_NAME" />“ politiką</translation>
 <translation id="3295444047715739395">Peržiūrėkite ir tvarkykite slaptažodžius „Chrome“ nustatymuose</translation>
+<translation id="3303795387212510132">Leisti programai atidaryti „<ph name="PROTOCOL_SCHEME" />“ nuorodas?</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
 <translation id="3304073249511302126">„Bluetooth“ nuskaitymas</translation>
 <translation id="3308006649705061278">Organizacinis vienetas (angl. „Organizational Unit“) (OU)</translation>
@@ -1277,6 +1278,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Devintas ritinėlis</translation>
 <translation id="4901778704868714008">Išsaugoti...</translation>
+<translation id="4905659621780993806">Jūsų administratorius automatiškai paleis jūsų įrenginį iš naujo <ph name="TIME" />, <ph name="DATE" />. Išsaugokite visus atidarytus elementus, prieš paleidžiant įrenginį iš naujo.</translation>
 <translation id="4913987521957242411">Skylė viršuje kairėje</translation>
 <translation id="4918221908152712722">Įdiekite „<ph name="APP_NAME" />“ (nereikia atsisiųsti)</translation>
 <translation id="4923459931733593730">Mokėjimas</translation>
@@ -1691,6 +1693,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6290238015253830360">Jūsų pasiūlyti straipsniai rodomi čia</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Kortelės patvirtinimo kodas CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Jūsų įrenginys dabar bus paleistas iš naujo}=1{Jūsų įrenginys bus paleistas iš naujo po vienos sekundės}one{Jūsų įrenginys bus paleistas iš naujo po # sekundės}few{Jūsų įrenginys bus paleistas iš naujo po # sekundžių}many{Jūsų įrenginys bus paleistas iš naujo po # sekundės}other{Jūsų įrenginys bus paleistas iš naujo po # sekundžių}}</translation>
 <translation id="6302269476990306341">„Google“ padėjėjas sistemoje „Chrome“ sustabdomas</translation>
 <translation id="6305205051461490394"><ph name="URL" /> nepasiekiama.</translation>
 <translation id="6312113039770857350">Tinklalapis nepasiekiamas</translation>
@@ -2015,6 +2018,7 @@ Papildoma išsami informacija:
 <translation id="7378627244592794276">Ne</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Netaikoma</translation>
+<translation id="7388594495505979117">{0,plural, =1{Įrenginys bus paleistas iš naujo po vienos minutės}one{Įrenginys bus paleistas iš naujo po # minutės}few{Įrenginys bus paleistas iš naujo po # minučių}many{Įrenginys bus paleistas iš naujo po # minutės}other{Įrenginys bus paleistas iš naujo po # minučių}}</translation>
 <translation id="7390545607259442187">Kortelės patvirtinimas</translation>
 <translation id="7392089738299859607">Adreso atnaujinimas</translation>
 <translation id="7399802613464275309">Saugos patikra</translation>
@@ -2372,6 +2376,7 @@ Papildoma išsami informacija:
 <translation id="8507227106804027148">Komandos eilutė</translation>
 <translation id="8508648098325802031">Paieškos piktograma</translation>
 <translation id="8511402995811232419">Tvarkyti slapukus</translation>
+<translation id="8519753333133776369">Administratorius leidžia naudoti HID įrenginį</translation>
 <translation id="8522552481199248698">„Chrome“ gali padėti apsaugoti „Google“ paskyrą ir pakeisti slaptažodį.</translation>
 <translation id="8530813470445476232">Išvalykite naršymo istoriją, slapukus, talpyklą ir kita „Chrome“ nustatymuose</translation>
 <translation id="8533619373899488139">Apsilankykite adresu &lt;strong&gt;chrome://policy&lt;/strong&gt;, kad peržiūrėtumėte užblokuotų URL sąrašą ir kitą politiką, kurią taiko sistemos administratoriaus.</translation>

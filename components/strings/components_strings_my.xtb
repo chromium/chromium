@@ -754,6 +754,7 @@
 <translation id="3288238092761586174">သင့်ပေးချေမှုကို အတည်ပြုရန်အတွက် <ph name="URL" /> က နောက်ထပ်အဆင့်များ လုပ်ဆောင်ရန် လိုအပ်နိုင်သည်</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> မူဝါဒအကြောင်း ပိုမိုလေ့လာပါ</translation>
 <translation id="3295444047715739395">Chrome ဆက်တင်များတွင် သင့်စကားဝှက်များကို ကြည့်ရှုစီမံပါ</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> လင့်ခ်များဖွင့်ရန် အက်ပ်ကိုခွင့်ပြုမလား။</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
 <translation id="3304073249511302126">ဘလူးတုသ် ရှာဖွေခြင်း</translation>
 <translation id="3308006649705061278">အဖွဲ့အစည်းဆိုင်ရာ ယူနစ် (OU)</translation>
@@ -1277,6 +1278,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">ကိုးခုမြောက်အလိပ်</translation>
 <translation id="4901778704868714008">သိမ်းရန်...</translation>
+<translation id="4905659621780993806">သင့်စီမံခန့်ခွဲသူက စက်ကို <ph name="DATE" />၊ <ph name="TIME" /> တွင် အလိုအလျောက်ပြန်စမည်။ ဖွင့်ထားသောဖိုင်အားလုံး သင့်စက်ပြန်မစမီ သိမ်းပါ။</translation>
 <translation id="4913987521957242411">ဘယ်ဘက်ထိပ်တွင် ဖောက်ရန်</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ကို ထည့်သွင်းပါ (ဒေါင်းလုဒ်လုပ်ရန် မလိုပါ)</translation>
 <translation id="4923459931733593730">ငွေပေးချေမှု</translation>
@@ -1690,6 +1692,7 @@
 <translation id="6290238015253830360">သင်အကြံပြုထားသည့် ဆောင်းပါးများ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC-</translation>
+<translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6302269476990306341">Chrome အတွင်းရှိ Google Assistant ရပ်တန့်နေသည်</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ကိုဆက်သွယ်၍မရနိုင်ပါ။</translation>
 <translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
@@ -2015,6 +2018,7 @@
 <translation id="7378627244592794276">မဟုတ်ပါ</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">မသက်ဆိုင်ပါ</translation>
+<translation id="7388594495505979117">{0,plural, =1{သင်၏စက်သည် 1 မိနစ်အတွင်း ပြန်စမည်}other{သင်၏စက်သည် # မိနစ်အတွင်း ပြန်စမည်}}</translation>
 <translation id="7390545607259442187">ကဒ်ကို အတည်ပြုပါ</translation>
 <translation id="7392089738299859607">လိပ်စာ အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="7399802613464275309">လုံခြုံရေး စစ်ဆေးမှု</translation>
@@ -2373,6 +2377,7 @@
 <translation id="8507227106804027148">ညွှန်ကြားချက် လိုင်း</translation>
 <translation id="8508648098325802031">ရှာဖွေမှု သင်္ကေတ</translation>
 <translation id="8511402995811232419">ကွတ်ကီးများ စီမံရန်</translation>
+<translation id="8519753333133776369">HID စက်ကို သင့်စီမံခန့်ခွဲသူက ခွင့်ပြုထားသည်</translation>
 <translation id="8522552481199248698">Chrome က သင်၏ Google အကောင့်ကို ကာကွယ်ရန်နှင့် စကားဝှက်ပြောင်းရန် ကူညီနိုင်ပါသည်။</translation>
 <translation id="8530813470445476232">Chrome ဆက်တင်များတွင် ကြည့်ရှုခြင်းမှတ်တမ်း၊ ကွတ်ကီးများ၊ ကက်ရှ်နှင့် အခြားအရာများကို ရှင်းပါ</translation>
 <translation id="8533619373899488139">သင်၏ စနစ်စီမံခန့်ခွဲသူက ပြဋ္ဌာန်းထားသည့် အခြား မူဝါဒများနှင့် ပိတ်ထားသော URL များစာရင်းကို ကြည့်ရန် &lt;strong&gt;chrome://policy&lt;/strong&gt; သို့ ဝင်ကြည့်ပါ။</translation>

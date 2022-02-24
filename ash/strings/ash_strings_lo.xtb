@@ -334,6 +334,7 @@
 <translation id="3105917916468784889">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">ລຶບການແນະນຳອອກ</translation>
+<translation id="3120421559657122717">ປິດອຸປະກອນບໍ?</translation>
 <translation id="3126069444801937830">ເລີ່ມການອັບເດດໃໝ່</translation>
 <translation id="3139942575505304791">ໂຕະ 1</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
@@ -354,6 +355,7 @@
 <translation id="3249513730522716925">ຍ້າຍໜ້າຈໍ <ph name="WINDOW_TITLE" /> ຈາກເດັສ <ph name="ACTIVE_DESK" /> ໄປຫາເດັສ <ph name="TARGET_DESK" /> ແລ້ວ</translation>
 <translation id="3255483164551725916">ທ່ານເຮັດຫຍັງໄດ້ແດ່?</translation>
 <translation id="3269597722229482060">ຄລິກຂວາ</translation>
+<translation id="3289544412142055976">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ</translation>
 <translation id="3289674678944039601">ກຳລັງສາກຜ່ານອະແດັບເຕີ</translation>
 <translation id="3290356915286466215">ບໍ່ປອດໄພ</translation>
 <translation id="3294437725009624529">ແຂກ</translation>
@@ -705,6 +707,7 @@
 <translation id="5400461572260843123">ການຕັ້ງຄ່າດ່ວນ, ກົດຊອກຫາ + ລູກສອນຊ້າຍເພື່ອເຂົ້າເຖິງສູນການແຈ້ງເຕືອນ.</translation>
 <translation id="5426063383988017631">ປິດເມນູການຕັ້ງຄ່າ</translation>
 <translation id="5428899915242071344">ເລີ່ມການເລືອກ</translation>
+<translation id="5429993543155113935">ຕອນນີ້ບໍ່ຮອງຮັບໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ</translation>
 <translation id="5430931332414098647">ການປ່ອຍສັນຍານທັນທີ</translation>
 <translation id="5431318178759467895">ສີ</translation>
 <translation id="5433020815079095860">ອິນພຸດສຽງ</translation>
@@ -847,6 +850,7 @@
 <translation id="6431865393913628856">ບັນທຶກໜ້າຈໍ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ໃນ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ນັດໝາຍ</translation>
+<translation id="6449483711453944360">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ແລະ ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ</translation>
 <translation id="6452181791372256707">ປະ​ຕິ​ເສດ</translation>
 <translation id="6453179446719226835">ປ່ຽນພາສາແລ້ວ</translation>
 <translation id="6459472438155181876">ກໍາລັງ​ຂະ​ຫຍາຍ​ຫນ້າ​ຈໍ​ເພື່ອ <ph name="DISPLAY_NAME" /></translation>
@@ -946,6 +950,7 @@
 <translation id="7025533177575372252">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="7026338066939101231">ການຫຼຸດລົງ</translation>
 <translation id="7029814467594812963">ອອກຈາກເຊດຊັນ</translation>
+<translation id="7032161822340700104">ອະນຸຍາດໃຫ້ມີແມ່ແບບ 6 ອັນເທົ່ານັ້ນ. ກະລຸນາລຶບແມ່ແບບໃດໜຶ່ງອອກເພື່ອບັນທຶກອັນໃໝ່.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, ຜູ້ຊ່ວຍ Google</translation>
 <translation id="7042322267639375032">ຍຸບພື້ນທີ່ສະແດງສະຖານະ</translation>
 <translation id="7045033600005038336">ແທນທີ່ແມ່ແບບບໍ?</translation>

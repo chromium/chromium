@@ -747,6 +747,7 @@
 <translation id="3288238092761586174">உங்கள் பேமெண்ட்டை உறுதிப்படுத்த <ph name="URL" /> தளத்தில் கூடுதல் படிகளைச் செய்ய வேண்டியிருக்கலாம்</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> கொள்கை குறித்து மேலும் அறிக</translation>
 <translation id="3295444047715739395">Chrome அமைப்புகளில் உங்கள் கடவுச்சொற்களைப் பார்த்தல் &amp; நிர்வகித்தல்</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> இணைப்புகளைத் திறக்க ஆப்ஸை அனுமதிக்கவா?</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
 <translation id="3304073249511302126">புளூடூத் ஸ்கேனிங்</translation>
 <translation id="3308006649705061278">நிறுவன யூனிட் (OU)</translation>
@@ -1269,6 +1270,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">ரோல் 9</translation>
 <translation id="4901778704868714008">சேமி...</translation>
+<translation id="4905659621780993806">உங்கள் நிர்வாகி <ph name="DATE" />, <ph name="TIME" />க்குத் தானாகவே உங்கள் சாதனத்தை மீண்டும் தொடங்குவார். நீங்கள் திறந்திருப்பவற்றைச் சாதனம் மீண்டும் தொடங்குவதற்கு முன் சேமிக்கவும்.</translation>
 <translation id="4913987521957242411">பஞ்ச் டாப் லெஃப்ட்</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ஐ நிறுவு (பதிவிறக்க வேண்டியதில்லை)</translation>
 <translation id="4923459931733593730">கட்டண முறை</translation>
@@ -1681,6 +1683,7 @@
 <translation id="6290238015253830360">நீங்கள் பரிந்துரைத்த கட்டுரைகள் இங்கே தோன்றும்</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{இப்போது சாதனம் மீண்டும் தொடங்கும்}=1{ஒரு வினாடியில் சாதனம் மீண்டும் தொடங்கும்}other{# வினாடிகளில் சாதனம் மீண்டும் தொடங்கும்}}</translation>
 <translation id="6302269476990306341">’Chromeமில் Google அசிஸ்டண்ட்’ நிறுத்தப்படுகிறது</translation>
 <translation id="6305205051461490394"><ph name="URL" />ஐ அடையமுடியவில்லை.</translation>
 <translation id="6312113039770857350">இணையப்பக்கம் கிடைக்கவில்லை</translation>
@@ -2004,6 +2007,7 @@
 <translation id="7378627244592794276">வேண்டாம்</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">பொருந்தாது</translation>
+<translation id="7388594495505979117">{0,plural, =1{ஒரு நிமிடத்தில் சாதனம் மீண்டும் தொடங்கும்}other{# நிமிடங்களில் சாதனம் மீண்டும் தொடங்கும்}}</translation>
 <translation id="7390545607259442187">கார்டை உறுதிசெய்</translation>
 <translation id="7392089738299859607">முகவரியை மாற்றுங்கள்</translation>
 <translation id="7399802613464275309">பாதுகாப்புச் சரிபார்ப்பு</translation>
@@ -2360,6 +2364,7 @@
 <translation id="8507227106804027148">கட்டளை வரி</translation>
 <translation id="8508648098325802031">தேடல் ஐகான்</translation>
 <translation id="8511402995811232419">குக்கீகளை நிர்வகியுங்கள்</translation>
+<translation id="8519753333133776369">உங்கள் நிர்வாகி அனுமதித்துள்ள HID சாதனம்</translation>
 <translation id="8522552481199248698">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chrome உதவும்.</translation>
 <translation id="8530813470445476232">Chrome அமைப்புகளில் உலாவல் வரலாறு, குக்கீகள் தற்காலிக சேமிப்பு ஆகியவற்றை அழி</translation>
 <translation id="8533619373899488139">தடைசெய்யப்பட்ட URLகளின் பட்டியலையும் உங்கள் சிஸ்டம் நிர்வாகி செயல்படுத்தியுள்ள பிற கொள்கைகளையும் பார்க்க &lt;strong&gt;chrome://policy&lt;/strong&gt; என்பதற்குச் செல்லவும்.</translation>

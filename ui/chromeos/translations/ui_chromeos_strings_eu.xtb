@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Karpeta hau Linux-ekin partekatuta dago</translation>
 <translation id="1864756863218646478">Ezin izan da aurkitu fitxategia.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Konektatu.</translation>
+<translation id="1914901738028575085">CloudReady 2.0 darabilen gailua</translation>
 <translation id="1920670151694390848">Malabareraren transliterazioa</translation>
 <translation id="1920798810075583923">Angurria</translation>
 <translation id="1924372192547904021">Formateatu da <ph name="DRIVE_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Bizikleta</translation>
 <translation id="8719721339511222681">Hautatu da <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroaziarra</translation>
+<translation id="873847021056608403">CloudReady 2.0 darabilten gailuak</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. <ph name="NETWORK_PROVIDER_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Konektatu.</translation>
 <translation id="8750438273876807512">Eduki sakatuta fitxategi bat eta sakatu <ph name="ICON" />. Gero, hautatu "Ainguratu apalean"; horrela, apalean dauden fitxategietarako sarbide bizkorra izango duzu.</translation>
 <translation id="8787254343425541995">Baimendu proxyak sare partekatuetan</translation>

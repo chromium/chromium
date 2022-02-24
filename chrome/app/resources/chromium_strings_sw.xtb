@@ -17,6 +17,9 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1553461853655228091">Chromium inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chromium tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chromium tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chromium tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="1625909126243026060">Kagua vidhibiti muhimu vya faragha na usalama katika Chromium</translation>
+<translation id="1632539827495546968">Iwapo unataka kutumia akaunti hii mara moja tu, unaweza kutumia kipengele cha <ph name="GUEST_LINK_BEGIN" />Matumizi ya Wageni<ph name="GUEST_LINK_END" /> katika kivinjari cha Chromium. Iwapo unataka kuongeza akaunti ya mtu mwingine, <ph name="LINK_BEGIN" />ongeza mtu mpya<ph name="LINK_END" /> kwenye <ph name="DEVICE_TYPE" /> yako.
+
+Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti hii. Unaweza kudhibiti Akaunti zako za Google katika <ph name="SETTINGS_LINK_BEGIN" />Mipangilio<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Kuna toleo jipya, na salama linalopatikana la Chromium.</translation>
 <translation id="1774152462503052664">Acha Chromium iendeshe katika mandharinyuma</translation>
 <translation id="1779356040007214683">Ili kufanya Chromium salama zaidi, tumezima baadhi ya viendelezi ambavyo havijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na ambavyo huendwa viliongezwa pasipo ridhaa yako.</translation>
@@ -25,6 +28,9 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1881322772814446296">Unaingia katika akaunti ukitumia akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Chromium. Data yako ya Chromium, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio nyingine itahusishwa na<ph name="USER_NAME" /> kabisa. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza  kuunganisha data hii na akaunti nyingine. Unaweza kwa hiari kuunda wasifu mpya ili kuweka data yako ya Chromium iliyo kando. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Kwa kuzima kipengele hiki, unaweza kuingia katika tovuti za Google kama vile Gmail bila kuingia katika akaunti ya Chromium</translation>
 <translation id="1929939181775079593">Chromium haiamiliki. Zindua upya sasa?</translation>
+<translation id="1940680973325097484">Iwapo unataka kutumia akaunti hii mara moja tu, unaweza kutumia kipengele cha Matumizi ya wageni katika kivinjari cha Chromium. Iwapo unataka kuongeza akaunti ya mtu mwingine, <ph name="LINK_BEGIN" />ongeza mtu mpya<ph name="LINK_END" /> kwenye <ph name="DEVICE_TYPE" /> yako.
+
+Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti hii. Unaweza kudhibiti Akaunti zako za Google katika <ph name="SETTINGS_LINK_BEGIN" />Mipangilio<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="1981611865800294956">Fungua tena ili usasishe &amp;Chromium OS</translation>
 <translation id="2008474315282236005">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>

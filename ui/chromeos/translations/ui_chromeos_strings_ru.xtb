@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Доступ к этой папке предоставлен Linux.</translation>
 <translation id="1864756863218646478">Не удалось найти файл.</translation>
 <translation id="1884013283844450420">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", подключение</translation>
+<translation id="1914901738028575085">Устройство с CloudReady 2.0</translation>
 <translation id="1920670151694390848">Малаялам, транслитерация</translation>
 <translation id="1920798810075583923">Арбуз</translation>
 <translation id="1924372192547904021">Внешнее хранилище "<ph name="DRIVE_NAME" />" отформатировано.</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="872537912056138402">Хорватский</translation>
+<translation id="873847021056608403">Устройства с CloudReady 2.0</translation>
 <translation id="8743164338060742337">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подключиться</translation>
 <translation id="8750438273876807512">Нажмите и удерживайте файл, затем нажмите на значок <ph name="ICON" /> и выберите "Закрепить на панели запуска".</translation>
 <translation id="8787254343425541995">Использовать прокси-серверы для общих сетей</translation>

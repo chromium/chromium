@@ -601,7 +601,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6389470377220713856">Nome no cartão</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6410883413783534063">Abra separadores para visitar várias páginas em simultâneo.</translation>
-<translation id="6417838470969808600">Tem marcadores, histórico, palavras-passe e outras definições de <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Sessão iniciada como <ph name="EMAIL" />.
 
 Os dados foram encriptados com a sua frase de acesso de sincronização em <ph name="TIME" />. Introduza-a para iniciar a sincronização.</translation>

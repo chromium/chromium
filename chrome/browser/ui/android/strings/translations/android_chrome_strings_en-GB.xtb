@@ -372,6 +372,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
@@ -461,6 +462,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
+<translation id="3699022356773522638">Download file?</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
 <translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
@@ -873,7 +875,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6138832295072039549">Change your site settings here</translation>
 <translation id="6140709049082532940">Enhanced protection:</translation>
 <translation id="6140912465461743537">Country/Region</translation>
-<translation id="6141988275892716286">Confirm download</translation>
 <translation id="614940544461990577">Try:</translation>
 <translation id="6150320133806434356">Bookmark saved</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
@@ -1055,7 +1056,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7093803425429738190">Add emotion</translation>
 <translation id="7105047059074518658">Sign in to browse across devices more easily.</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
-<translation id="7121362699166175603">Clears history and auto-completions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7143462160780459030">Can’t take a screenshot. Try again.</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
@@ -1129,7 +1129,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="753225086557513863">Scheduled for later</translation>
-<translation id="7560448309733608642">Clears history from all synced devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Clear browsing data</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7577900504646297215">Manage interests</translation>

@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">Збережено лише на цьому пристрої</translation>
 <translation id="2524461107774643265">Додайте більше інформації</translation>
 <translation id="2529899080962247600">Максимальна кількість записів у цьому полі: <ph name="MAX_ITEMS_LIMIT" />. Усі подальші записи ігноруватимуться.</translation>
+<translation id="2535585790302968248">Відкрийте нову анонімну вкладку</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{і ще 1}one{і ще #}few{і ще #}many{і ще #}other{і ще #}}</translation>
 <translation id="2536110899380797252">Додати адресу</translation>
 <translation id="2539524384386349900">Визначити</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">Автозаповнення</translation>
 <translation id="2713444072780614174">Білий</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
+<translation id="271663710482723385">Натисніть |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, щоб вийти з повноекранного режиму</translation>
 <translation id="2721148159707890343">Запит надіслано</translation>
 <translation id="2723669454293168317">Виконайте перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="2726001110728089263">Боковий лоток</translation>
@@ -750,6 +752,7 @@
 <translation id="3288238092761586174">Сайт <ph name="URL" /> може виконати додаткові дії, щоб підтвердити ваш платіж</translation>
 <translation id="3293642807462928945">Докладніше про правило <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
+<translation id="3303795387212510132">Дозволити додатку відкривати посилання <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3304073249511302126">пошук пристроїв із Bluetooth</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
@@ -1260,6 +1263,7 @@
 <translation id="4854362297993841467">Цей спосіб доставки недоступний. Виберіть інший спосіб.</translation>
 <translation id="4854853140771946034">Швидко створюйте нові нотатки в Google Keep</translation>
 <translation id="485902285759009870">Перевірка коду…</translation>
+<translation id="4866506163384898554">Натисніть |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, щоб показати курсор</translation>
 <translation id="4876188919622883022">Спрощений перегляд</translation>
 <translation id="4876305945144899064">Немає імені користувача</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Немає}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1483,6 +1487,7 @@
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5560088892362098740">Термін дії</translation>
 <translation id="55635442646131152">Структура документа</translation>
+<translation id="5565613213060953222">Відкрити анонімну вкладку</translation>
 <translation id="5565735124758917034">Активний клієнт</translation>
 <translation id="5570825185877910964">Захистити обліковий запис</translation>
 <translation id="5571083550517324815">Адреса отримання не підтримується. Укажіть іншу адресу.</translation>
@@ -1949,6 +1954,7 @@
 <translation id="7192203810768312527">Звільниться до <ph name="SIZE" /> простору. Після цього деякі сайти можуть завантажуватися довше.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Адміністратор може бачити:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити нову анонімну вкладку</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423">Хост <ph name="HOST_NAME" /> не відповідає стандартам безпеки.</translation>
 <translation id="7210993021468939304">Активність Linux у межах контейнера. Може встановлювати та запускати додатки Linux у межах контейнера</translation>
@@ -2214,6 +2220,7 @@
 <translation id="799149739215780103">Зшити</translation>
 <translation id="7992044431894087211">Показ екрана за допомогою додатка <ph name="APPLICATION_TITLE" /> відновлено</translation>
 <translation id="7995512525968007366">Не вказано</translation>
+<translation id="7998269595945679889">Кнопка "Відкрити анонімну вкладку"; натисніть Enter, щоб відкрити нову анонімну вкладку</translation>
 <translation id="800218591365569300">Щоб звільнити пам’ять, закрийте інші вкладки та програми.</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Цю картку та її платіжну адресу буде збережено. Ви зможете скористатися нею, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}one{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}few{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}many{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}other{Ці картки та їх платіжні адреси буде збережено. Ви зможете скористатися ними, коли ввійдете в обліковий запис <ph name="USER_EMAIL" />.}}</translation>

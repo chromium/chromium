@@ -334,6 +334,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3105917916468784889">Napravi snimak ekrana</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Ukloni prijedlog</translation>
+<translation id="3120421559657122717">Isključiti uređaj?</translation>
 <translation id="3126069444801937830">Ponovo pokrenite za ažuriranje</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -354,6 +355,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premješten s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
+<translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3294437725009624529">Gost</translation>
@@ -705,6 +707,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5400461572260843123">Brze postavke, pritisnite tipku za pretraživanje i strelicu ulijevo da pristupite centru za obavještenja.</translation>
 <translation id="5426063383988017631">Meni postavki je zatvoren</translation>
 <translation id="5428899915242071344">Započni odabir</translation>
+<translation id="5429993543155113935">Anonimni prozori trenutno nisu podržani</translation>
 <translation id="5430931332414098647">Trenutno povezivanje putem mobitela</translation>
 <translation id="5431318178759467895">Boja</translation>
 <translation id="5433020815079095860">Zvučni unos</translation>
@@ -820,7 +823,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>
 <translation id="6179832488876878285">Ovdje možete zakačiti važne fajlove. Otvorite aplikaciju Fajlovi da započnete.</translation>
-<translation id="6220928844947387476">Sad možete snimiti sebe i zaslon istovremeno.</translation>
+<translation id="6220928844947387476">Sada istovremeno možete snimati sebe i svoj ekran</translation>
 <translation id="622484624075952240">Dolje</translation>
 <translation id="6231419273573514727">Performanse perifernog uređaja su možda ograničene</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -847,6 +850,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6431865393913628856">Snimanje ekrana</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> – <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> događaj(a)</translation>
+<translation id="6449483711453944360">Linux aplikacije i anonimni prozori trenutno nisu podržani</translation>
 <translation id="6452181791372256707">Odbij</translation>
 <translation id="6453179446719226835">Promijenjen je jezik</translation>
 <translation id="6459472438155181876">Proširivanje zaslona na zaslon <ph name="DISPLAY_NAME" /></translation>
@@ -946,6 +950,7 @@ Nova instalacija</translation>
 <translation id="7025533177575372252">Povežite uređaj <ph name="DEVICE_NAME" /> sa svojim telefonom</translation>
 <translation id="7026338066939101231">Pomak unatrag</translation>
 <translation id="7029814467594812963">Napusti sesiju</translation>
+<translation id="7032161822340700104">Dozvoljeno je samo 6 šablona. Uklonite šablon da sačuvate novi.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Asistent</translation>
 <translation id="7042322267639375032">Suzi područje statusa</translation>
 <translation id="7045033600005038336">Zamijeniti šablon?</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="102360288709523007">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini yuborish</translation>
 <translation id="1047130070405668746">Chromium brauzerini tanlang</translation>
+<translation id="1091252999271033193">Bunda Chromium har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
 <translation id="1289216811211435351">Chromiumga almashish</translation>
@@ -25,6 +26,7 @@
 <translation id="2178608107313874732">Chromium hozir kamerangizdan foydalana olmaydi.</translation>
 <translation id="2195025571279539885">Chromium har doim bu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni taklif qilsinmi?</translation>
 <translation id="2218146227246548550">Chromium brauzeridan foydalanishingiz uchun tashkilotingiz hisobingizga kirishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Bunda Chromium har safar saytning kompyuter versiyasini talab qiladi.</translation>
 <translation id="2426113998523353159">Chromium brauzeridan foydalanishingiz uchun tashkilotingiz hisobingizga kirishni talab qiladi.</translation>
 <translation id="2450140762465183767">Siz endi Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> brauzerini tanlang.</translation>
@@ -41,6 +43,7 @@
 <translation id="3344973607274501920">Chromium parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="3472200483164753384">Chromium Canary nashrida ishlamaydi</translation>
 <translation id="3639997914391704523">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi.</translation>
+<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
 <translation id="3805899903892079518">Chromium rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasi orqali ruxsat bering.</translation>
 <translation id="4043291146360695975">Parollar faqat shu qurilmadagi Parollar menejeriga saqlanadi.</translation>
 <translation id="4099085513035183040">Chromium Beta nashrida ishlamaydi</translation>

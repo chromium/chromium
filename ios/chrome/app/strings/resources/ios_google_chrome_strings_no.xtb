@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="3634910711516114487">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din</translation>
+<translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="3706101708757577809">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
+<translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>
 </translationbundle>

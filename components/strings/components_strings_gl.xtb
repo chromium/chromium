@@ -518,6 +518,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
 <translation id="2524461107774643265">Engadir máis información</translation>
 <translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
+<translation id="2535585790302968248">Abrir unha nova pestana do modo de incógnito para navegar de forma privada</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{e 1 máis}other{e # máis}}</translation>
 <translation id="2536110899380797252">Engadir enderezo</translation>
 <translation id="2539524384386349900">Detectar</translation>
@@ -584,6 +585,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2709516037105925701">Autocompletar</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para xestionar os teus métodos de pago e a información das tarxetas de crédito desde a configuración de Chrome</translation>
+<translation id="271663710482723385">Para saír da pantalla completa, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2721148159707890343">Solicitude correcta</translation>
 <translation id="2723669454293168317">Executar unha comprobación de seguranza na configuración de Chrome</translation>
 <translation id="2726001110728089263">Bandexa lateral</translation>
@@ -749,6 +751,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3288238092761586174">Pode que <ph name="URL" /> teña que tomar outras medidas para verificar o pago</translation>
 <translation id="3293642807462928945">Máis información acerca da política de <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta e xestiona os teus contrasinais na configuración de Chrome</translation>
+<translation id="3303795387212510132">Queres darlle permiso á aplicación para que abra ligazóns <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3304073249511302126">busca de dispositivos Bluetooth</translation>
 <translation id="3308006649705061278">Unidade organizativa (UO)</translation>
@@ -1259,6 +1262,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4854362297993841467">Este método de entrega non está dispoñible. Proba cun diferente.</translation>
 <translation id="4854853140771946034">Crear rapidamente unha nota nova en Google Keep</translation>
 <translation id="485902285759009870">Verificando código…</translation>
+<translation id="4866506163384898554">Para que se mostre o cursor, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="4876188919622883022">Vista simplificada</translation>
 <translation id="4876305945144899064">Sen nome de usuario</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Ningún}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" /> e <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1272,6 +1276,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Noveno rolo</translation>
 <translation id="4901778704868714008">Gardar…</translation>
+<translation id="4905659621780993806">O teu administrador reiniciará o dispositivo automaticamente o <ph name="DATE" /> a esta hora: <ph name="TIME" />. Garda os elementos que teñas abertos antes de que se reinicie o dispositivo.</translation>
 <translation id="4913987521957242411">Perforación na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instala a aplicación <ph name="APP_NAME" /> (non require descarga)</translation>
 <translation id="4923459931733593730">Pago</translation>
@@ -1481,6 +1486,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5560088892362098740">Data de caducidade</translation>
 <translation id="55635442646131152">Esquema do documento</translation>
+<translation id="5565613213060953222">Abrir pestana do modo de incógnito</translation>
 <translation id="5565735124758917034">Activo</translation>
 <translation id="5570825185877910964">Protexer conta</translation>
 <translation id="5571083550517324815">Non se pode realizar a recollida neste enderezo. Selecciona un diferente.</translation>
@@ -1685,6 +1691,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6290238015253830360">Os teus artigos suxeridos aparecerán aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{O dispositivo reiniciarase agora}=1{O dispositivo reiniciarase en 1 segundo}other{O dispositivo reiniciarase en # segundos}}</translation>
 <translation id="6302269476990306341">Detendo o Asistente de Google en Chrome</translation>
 <translation id="6305205051461490394">Non se pode acceder a <ph name="URL" />.</translation>
 <translation id="6312113039770857350">A páxina web non está dispoñible</translation>
@@ -1946,6 +1953,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7192203810768312527">Libera ata <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">O teu administrador pode ver:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para abrir unha nova pestana do modo de incógnito e navegar de forma privada, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> non cumpre cos estándares de seguranza.</translation>
 <translation id="7210993021468939304">Actividade de Linux no contedor, e pode instalar e executar aplicacións de Linux no contedor.</translation>
@@ -2008,6 +2016,7 @@ Detalles adicionais:
 <translation id="7378627244592794276">Non</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Non aplicable</translation>
+<translation id="7388594495505979117">{0,plural, =1{O dispositivo reiniciarase en 1 minuto}other{O dispositivo reiniciarase en # minutos}}</translation>
 <translation id="7390545607259442187">Confirmar tarxeta</translation>
 <translation id="7392089738299859607">Actualizar enderezo</translation>
 <translation id="7399802613464275309">Revisión de seguranza</translation>
@@ -2210,6 +2219,7 @@ Detalles adicionais:
 <translation id="799149739215780103">Encadernación</translation>
 <translation id="7992044431894087211">Retomouse a pantalla compartida con <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Non especificado</translation>
+<translation id="7998269595945679889">Botón Abrir pestana do modo de incógnito. Preme Introducir para abrir unha nova pestana do modo de incógnito e navegar de forma privada</translation>
 <translation id="800218591365569300">Proba a pechar outras pestanas ou programas para liberar memoria.</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Gardarase esta tarxeta e o seu enderezo de facturación. Poderás utilizala ao iniciar sesión en <ph name="USER_EMAIL" />.}other{Gardaranse estas tarxetas e os seus enderezos de facturación. Poderás utilizalas ao iniciar sesión en <ph name="USER_EMAIL" />.}}</translation>
@@ -2364,6 +2374,7 @@ Detalles adicionais:
 <translation id="8507227106804027148">Liña de comandos</translation>
 <translation id="8508648098325802031">Icona de busca</translation>
 <translation id="8511402995811232419">Xestionar cookies</translation>
+<translation id="8519753333133776369">O teu administrador permite o uso do dispositivo HID</translation>
 <translation id="8522552481199248698">Chrome pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="8530813470445476232">Borra o historial de navegación, as cookies, a memoria caché e moito máis na configuración de Chrome</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas polo teu administrador do sistema.</translation>

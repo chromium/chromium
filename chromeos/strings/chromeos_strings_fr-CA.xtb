@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
+<translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3456078764689556234">Page imprimée <ph name="PRINTED_PAGES" /> sur <ph name="TOTAL_PAGES" />.</translation>
@@ -495,6 +496,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
 <translation id="7271040990581020067">Le numériseur est en cours d'utilisation. Réessayez plus tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" /> sur <ph name="TOTAL_PAGES_NUMBER" /></translation>

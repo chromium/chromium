@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">הכרטיס יישמר רק במכשיר הזה</translation>
 <translation id="2524461107774643265">הוספת עוד מידע</translation>
 <translation id="2529899080962247600">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. המערכת תתעלם מרשומות נוספות.</translation>
+<translation id="2535585790302968248">כדי לגלוש באופן פרטי, יש לפתוח כרטיסייה פרטית חדשה</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{ודומיין אחד נוסף}two{ו-# דומיינים נוספים}many{ו-# דומיינים נוספים}other{ו-# דומיינים נוספים}}</translation>
 <translation id="2536110899380797252">הוספת כתובת</translation>
 <translation id="2539524384386349900">זהה</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2715612312510870559">‏<ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לנהל את התשלומים ואת פרטי כרטיס האשראי שלך בהגדרות Chrome</translation>
+<translation id="271663710482723385">צריך ללחוץ על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי לצאת מהמסך המלא</translation>
 <translation id="2721148159707890343">הבקשה בוצעה בהצלחה</translation>
 <translation id="2723669454293168317">‏הרצה של בדיקת אבטחה בהגדרות Chrome</translation>
 <translation id="2726001110728089263">מגש צידי</translation>
@@ -750,6 +752,7 @@
 <translation id="3288238092761586174">ייתכן שיידרשו שלבים נוספים לאימות התשלום שלך על ידי <ph name="URL" /></translation>
 <translation id="3293642807462928945">מידע נוסף על המדיניות <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏הצגה וניהול של הסיסמאות שלך בהגדרות Chrome</translation>
+<translation id="3303795387212510132">לאשר לאפליקציה לפתוח קישורי <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3304073249511302126">‏סריקת Bluetooth</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
@@ -1262,6 +1265,7 @@ Del</translation>
 <translation id="4854362297993841467">שיטת המסירה הזו אינה זמינה. עליך לבחור שיטה אחרת.</translation>
 <translation id="4854853140771946034">‏יצירת הערה חדשה ב-Google Keep במהירות</translation>
 <translation id="485902285759009870">הקוד בתהליך אימות…</translation>
+<translation id="4866506163384898554">צריך להקיש על |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| כדי להציג את הסמן</translation>
 <translation id="4876188919622883022">תצוגה נקייה</translation>
 <translation id="4876305945144899064">אין שם משתמש</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{אין}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1275,6 +1279,7 @@ Del</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">הגליל התשיעי</translation>
 <translation id="4901778704868714008">שמירה...</translation>
+<translation id="4905659621780993806">המכשיר יופעל מחדש באופן אוטומטי על ידי האדמין בשעה <ph name="TIME" /> בתאריך <ph name="DATE" />. יש לשמור פריטים פתוחים לפני ההפעלה מחדש של המכשיר.</translation>
 <translation id="4913987521957242411">ניקוב בפינה השמאלית העליונה</translation>
 <translation id="4918221908152712722">התקנת <ph name="APP_NAME" /> (לא דרושה הורדה)</translation>
 <translation id="4923459931733593730">תשלום</translation>
@@ -1485,6 +1490,7 @@ Del</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5560088892362098740">תאריך תפוגה</translation>
 <translation id="55635442646131152">ראשי הפרקים של המסמך</translation>
+<translation id="5565613213060953222">פתיחת כרטיסייה פרטית</translation>
 <translation id="5565735124758917034">פעילה</translation>
 <translation id="5570825185877910964">הגנה על החשבון</translation>
 <translation id="5571083550517324815">לא ניתן לבצע איסוף מהכתובת הזו. עליך לבחור כתובת אחרת.</translation>
@@ -1689,6 +1695,7 @@ Del</translation>
 <translation id="6290238015253830360">הצעות של מאמרים עבורך מופיעות כאן</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{המכשיר יופעל מחדש עכשיו}=1{המכשיר יופעל מחדש בתוך שנייה}two{המכשיר יופעל מחדש בתוך # שניות}many{המכשיר יופעל מחדש בתוך # שניות}other{המכשיר יופעל מחדש בתוך # שניות}}</translation>
 <translation id="6302269476990306341">‏Google Assistant מופסקת ב-Chrome</translation>
 <translation id="6305205051461490394">לא ניתן לגשת אל <ph name="URL" />.</translation>
 <translation id="6312113039770857350">דף האינטרנט אינו זמין</translation>
@@ -1950,6 +1957,7 @@ Del</translation>
 <translation id="7192203810768312527">פינוי של <ph name="SIZE" /> מהנפח. תיתכן טעינה איטית יותר של אתרים מסוימים בביקור הבא שלך.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">מנהל המערכת יכול לראות:</translation>
+<translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לפתוח כרטיסייה פרטית חדשה לגלישה באופן פרטי</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> לא פועל בהתאם לתקני האבטחה.</translation>
 <translation id="7210993021468939304">‏קיימת פעילות של Linux בתוך המאגר וניתן להתקין ולהפעיל אפליקציות של Linux בתוך המאגר</translation>
@@ -2012,6 +2020,7 @@ Del</translation>
 <translation id="7378627244592794276">לא</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">לא רלוונטי</translation>
+<translation id="7388594495505979117">{0,plural, =1{המכשיר יופעל מחדש בתוך דקה}two{המכשיר יופעל מחדש בתוך # דקות}many{המכשיר יופעל מחדש בתוך # דקות}other{המכשיר יופעל מחדש בתוך # דקות}}</translation>
 <translation id="7390545607259442187">אישור הכרטיס</translation>
 <translation id="7392089738299859607">עדכון הכתובת</translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
@@ -2214,6 +2223,7 @@ Del</translation>
 <translation id="799149739215780103">כריכה</translation>
 <translation id="7992044431894087211">שיתוף המסך באמצעות <ph name="APPLICATION_TITLE" /> ממשיך</translation>
 <translation id="7995512525968007366">לא צוין</translation>
+<translation id="7998269595945679889">‏לחצן לפתיחת כרטיסייה פרטית, צריך להקיש על Enter כדי לפתוח כרטיסייה פרטית חדשה ולגלוש באופן פרטי</translation>
 <translation id="800218591365569300">מומלץ לסגור כרטיסיות או תוכניות אחרות וכך לפנות מקום בזיכרון.</translation>
 <translation id="8004582292198964060">דפדפן</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{הכרטיס הזה יישמר יחד עם הכתובת שלו לחיוב. יתאפשר לך להשתמש בו לאחר התחברות אל <ph name="USER_EMAIL" />.}two{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}many{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}other{הכרטיסים האלה יישמרו יחד עם הכתובות שלהם לחיוב. יתאפשר לך להשתמש בהם לאחר התחברות אל <ph name="USER_EMAIL" />.}}</translation>
@@ -2368,6 +2378,7 @@ Del</translation>
 <translation id="8507227106804027148">שורת פקודה</translation>
 <translation id="8508648098325802031">סמל החיפוש</translation>
 <translation id="8511402995811232419">‏ניהול קובצי Cookie</translation>
+<translation id="8519753333133776369">‏מכשיר HID שאושר על ידי האדמין</translation>
 <translation id="8522552481199248698">‏בעזרת Chrome אפשר להגן על חשבון Google ולשנות את הסיסמה.</translation>
 <translation id="8530813470445476232">‏בהגדרות Chrome, ניתן לנקות את היסטוריית הגלישה, את קובצי ה-cookie, את המטמון ועוד</translation>
 <translation id="8533619373899488139">‏בכתובת &lt;strong&gt;chrome://policy&lt;/strong&gt; מוצגת רשימה של כתובות אתרים שנחסמו ותקנונים אחרים שנאכפים על ידי מנהל המערכת.</translation>

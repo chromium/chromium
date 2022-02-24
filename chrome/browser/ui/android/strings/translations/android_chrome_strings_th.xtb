@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">แสดงเนื้อหาในคลิปบอร์ด</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">ลิงก์กับ</translation>
 <translation id="3123734510202723619">ประกาศ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">หน้าแรกของ Chrome</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">เปลี่ยนการตั้งค่าเว็บไซต์ที่นี่</translation>
 <translation id="6140709049082532940">การปกป้องที่ปรับปรุงแล้ว:</translation>
 <translation id="6140912465461743537">ประเทศ/ภูมิภาค</translation>
-<translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="614940544461990577">ลอง:</translation>
 <translation id="6150320133806434356">บันทึกบุ๊กมาร์กแล้ว</translation>
 <translation id="6154478581116148741">เปิดล็อกหน้าจอใน "การตั้งค่า" เพื่อส่งออกรหัสผ่านจากอุปกรณ์นี้</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">เพิ่มอารมณ์</translation>
 <translation id="7105047059074518658">ลงชื่อเข้าใช้เพื่อให้ท่องเว็บได้ง่ายขึ้นในอุปกรณ์ต่างๆ</translation>
 <translation id="7106762743910369165">เบราว์เซอร์ได้รับการจัดการโดยองค์กรของคุณ</translation>
-<translation id="7121362699166175603">ล้างประวัติการเข้าชมและการเติมข้อความอัตโนมัติในแถบที่อยู่เว็บ บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="7143462160780459030">ถ่ายภาพหน้าจอไม่ได้ ลองใหม่</translation>
 <translation id="7146622961999026732">ดูเหมือนว่าเว็บไซต์และแอปต่อไปนี้จะสำคัญกับคุณ</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">เลิกเชื่อมต่อเมื่อดำเนินการเสร็จแล้ว</translation>
 <translation id="7523960634226602883">ค้นหาด้วยกล้องโดยใช้ Google Lens</translation>
 <translation id="753225086557513863">ตั้งเวลาไว้ให้เริ่มภายหลัง</translation>
-<translation id="7560448309733608642">ล้างประวัติจากอุปกรณ์ที่ซิงค์ทั้งหมด บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="7562080006725997899">กำลังล้างข้อมูลการท่องเว็บ</translation>
 <translation id="756809126120519699">ล้างข้อมูล Chrome แล้ว</translation>
 <translation id="7577900504646297215">จัดการความสนใจ</translation>

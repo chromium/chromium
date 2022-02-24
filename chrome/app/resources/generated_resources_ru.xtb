@@ -105,6 +105,7 @@
 <translation id="1099383081182863812">Вы видите свое устройство Chromecast в <ph name="BEGIN_LINK" />приложении Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Изображение скопировано с устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1100504063505580045">Текущий значок</translation>
+<translation id="1102790815296970136">Показывать здесь "<ph name="PERSONALIZED_MEMORY_TITLE" />" и другие воспоминания</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Остановить</translation>
 <translation id="1108938384783527433">Синхронизация истории</translation>
@@ -162,6 +163,7 @@
 <translation id="1150490752229770117">Это последнее автоматическое обновление ПО и безопасности для устройства <ph name="DEVICE_TYPE" />. Если вы хотите получать обновления в дальнейшем, перейдите на более новую модель. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Солнцезащитные очки</translation>
 <translation id="1151917987301063366">Всегда разрешать сайту <ph name="HOST" /> использовать датчики</translation>
+<translation id="1152181876167086799">Разрешить всем расширениям читать и изменять <ph name="SITE_NAME" /></translation>
 <translation id="1152346050262092795">Чтобы подтвердить аккаунт, снова введите пароль.</translation>
 <translation id="1153356358378277386">Сопряженные устройства</translation>
 <translation id="1153636665119721804">Программа Дополнительной защиты от Google</translation>
@@ -265,6 +267,7 @@
 <translation id="125220115284141797">По умолчанию</translation>
 <translation id="1252987234827889034">Ошибка в профиле</translation>
 <translation id="1254593899333212300">Прямое подключение к Интернету</translation>
+<translation id="1258144502260926473">Компьютер оснащен модулем безопасности, с помощью которого в CloudReady 2.0 реализовано множество критически важных функций защиты. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="1258491128795710625">Что нового</translation>
 <translation id="1259152067760398571">Проверка безопасности выполнена вчера.</translation>
 <translation id="1260451001046713751">Всегда показывать всплывающие окна с сайта <ph name="HOST" /> и разрешить перенаправление с него</translation>
@@ -284,6 +287,7 @@
 <translation id="1276994519141842946">Не удалось удалить <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
+<translation id="1279024913354609713">Не разрешать</translation>
 <translation id="127946606521051357">Устройство поблизости передает файлы</translation>
 <translation id="1280965841156951489">Разрешить</translation>
 <translation id="1282465000333679776">Предоставить доступ к аудио в системе</translation>
@@ -451,6 +455,9 @@
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
 <translation id="144518587530125858">Не удалось загрузить "<ph name="IMAGE_PATH" />" для темы.</translation>
+<translation id="1448264954024227422">Этот аккаунт можно использовать в приложениях для Android. Если вы хотите добавить аккаунт для другого человека, <ph name="LINK_BEGIN" />создайте профиль пользователя<ph name="LINK_END" /> на <ph name="DEVICE_TYPE" />.
+
+Разрешения, предоставленные приложениям, могут применяться к этому аккаунту. Чтобы изменить их для приложений Android, перейдите в <ph name="APPS_LINK_BEGIN" />настройки приложений<ph name="APPS_LINK_END" />.</translation>
 <translation id="1448779317883494811">Инструмент "Кисть"</translation>
 <translation id="1449191289887455076">Чтобы подтвердить назначение и <ph name="RESPONSE" />, нажмите клавишу "<ph name="CURRENTKEY" />" ещё раз.</translation>
 <translation id="1451375123200651445">Веб-страница, один файл</translation>
@@ -488,6 +495,7 @@
 <translation id="1481537595330271162">При изменении размера диска произошла ошибка.</translation>
 <translation id="1482626744466814421">Добавить страницу в закладки...</translation>
 <translation id="1483493594462132177">Отправить</translation>
+<translation id="1484599694148543901">Включить встроенный в CloudReady 2.0 инструмент ChromeVox для чтения с экрана?</translation>
 <translation id="1484979925941077974">Сайт использует устройство Bluetooth</translation>
 <translation id="1485015260175968628">Разрешения:</translation>
 <translation id="1485141095922496924">Версия <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -1029,6 +1037,7 @@
 <translation id="2003130567827682533">Чтобы активировать службу передачи данных "<ph name="NAME" />", сначала подключитесь к сети Wi-Fi.</translation>
 <translation id="2004697686368036666">Функции некоторых сайтов могут стать недоступными</translation>
 <translation id="2005199804247617997">Другие профили</translation>
+<translation id="2005967212456643969">Настраивать разрешения для каждого расширения</translation>
 <translation id="2006638907958895361">Открыть ссылку в приложении "<ph name="APP" />"</translation>
 <translation id="2007404777272201486">Сообщить о проблеме...</translation>
 <translation id="2009590708342941694">Инструмент "Эмодзи"</translation>
@@ -1131,6 +1140,7 @@
 <translation id="2113921862428609753">Доступ к информации о полномочиях</translation>
 <translation id="2114326799768592691">Перезагрузить &amp;фрейм</translation>
 <translation id="2114413269775311385">Использовать этот аккаунт в приложениях для Android. Разрешениями для них можно управлять в <ph name="LINK_BEGIN" />настройках приложений<ph name="LINK_END" />.</translation>
+<translation id="2114820389966440614">Показывать здесь "Лучшие из недавних фото" и другие воспоминания</translation>
 <translation id="2114896190328250491">Фото: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Нет SIM-карты.</translation>
 <translation id="2116619964159595185">Обычно сайты подключаются к устройствам Bluetooth, чтобы использовать некоторые функции, например настраивать или синхронизировать маячок, фитнес-трекер или умную лампочку.</translation>
@@ -1179,6 +1189,8 @@
 <translation id="2154502158735983655">Чтение сведений об устройстве Chrome OS и данных на нем</translation>
 <translation id="2155772377859296191">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">Больше не спрашивать при открытии в этом приложении файлов этого формата:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">Снова запустить проверку безопасности</translation>
 <translation id="2157474325782140681">Чтобы получить доступ к дополнительным возможностям, используйте док-станцию Dell, предназначенную для этого устройства Chromebook.</translation>
 <translation id="215753907730220065">Выход из полноэкранного режима</translation>
@@ -1365,6 +1377,7 @@
 <translation id="2326188115274135041">Для включения автоматической разблокировки экрана введите PIN-код.</translation>
 <translation id="2326931316514688470">Пере&amp;загрузить приложение</translation>
 <translation id="2327492829706409234">Включить приложение</translation>
+<translation id="2327920026543055248">Введите символ <ph name="CHARACTER" /> из <ph name="TOTAL" /></translation>
 <translation id="2328561734797404498">Чтобы использовать <ph name="APP_NAME" />, перезапустите устройство.</translation>
 <translation id="2328636661627946415">В режиме инкогнито сайты могут использовать файлы cookie, только чтобы собирать данные о действиях на своих страницах. При выходе из режима инкогнито файлы cookie удаляются автоматически.</translation>
 <translation id="2329597144923131178">Войдите, чтобы синхронизировать закладки, пароли, историю и т. д. на всех устройствах.</translation>
@@ -1604,7 +1617,6 @@
 <translation id="2553440850688409052">Скрыть подключаемый модуль</translation>
 <translation id="2554553592469060349">Выбранный файл слишком большой (максимальный размер: 3 МБ).</translation>
 <translation id="2558896001721082624">Показывать специальные возможности в системном меню</translation>
-<translation id="2564407282561292919">История в окне поиска будет удалена. История браузера также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="2564520396658920462">Выполнение JavaScript через AppleScript отключено. Чтобы включить эту функцию, в строке меню выберите "Вид &gt; Разработчикам &gt; Разрешить JavaScript из событий Apple". Подробную информацию можно найти на этой странице: https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Расширенная проверка правописания</translation>
 <translation id="2568774940984945469">Контейнер панели информации</translation>
@@ -1834,6 +1846,7 @@
 <translation id="2791952154587244007">Не удалось разрешить автозапуск киоск-приложений на этом устройстве</translation>
 <translation id="2792290659606763004">Удалить приложения для Android?</translation>
 <translation id="2792465461386711506">Чтобы посмотреть вкладки, которые вы недавно открывали на телефоне, включите синхронизацию Chrome</translation>
+<translation id="2792697226874849938">Ограниченное изображение</translation>
 <translation id="2794233252405721443">Сайт заблокирован</translation>
 <translation id="2794522004398861033">Чтобы настроить eSIM, подключитесь к сети Wi-Fi или Ethernet.</translation>
 <translation id="2795716239552913152">Обычно сайты используют данные о местоположении, чтобы применять подходящие функции и показывать актуальную информацию, например местные новости или магазины поблизости.</translation>
@@ -2062,6 +2075,7 @@
 <translation id="3012804260437125868">Только безопасные соединения с тем же сайтом</translation>
 <translation id="3012917896646559015">Обратитесь к производителю, чтобы отправить компьютер в сервисный центр.</translation>
 <translation id="301525898020410885">Язык установлен вашей организацией</translation>
+<translation id="3015425363367310551">Включить встроенный в CloudReady 2.0 инструмент ChromeVox для чтения с экрана? Если да, нажмите и удерживайте обе кнопки регулировки громкости в течение пяти секунд.</translation>
 <translation id="3015639418649705390">Перезапустить</translation>
 <translation id="3016381065346027039">Записи в журнале отсутствуют.</translation>
 <translation id="3016641847947582299">Компонент обновлен</translation>
@@ -2093,6 +2107,7 @@
 <translation id="3039491566278747710">Не удалось применить к устройству политику работы в офлайн-режиме.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Откуда: <ph name="ORIGIN" /></translation>
+<translation id="304499331062371949">Запретить всем расширениям читать и изменять <ph name="SITE_NAME" /></translation>
 <translation id="3045447014237878114">Этот сайт автоматически скачал несколько файлов</translation>
 <translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="3046910703532196514">Веб-страница полностью</translation>
@@ -2184,6 +2199,7 @@
 <translation id="3142562627629111859">Новая группа</translation>
 <translation id="3143515551205905069">Отмена</translation>
 <translation id="3143754809889689516">Воспроизвести с начала</translation>
+<translation id="3144023778624018265">Синхронизация настроек CloudReady 2.0</translation>
 <translation id="3144647712221361880">Открыть ссылку как</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3150693969729403281">Запустить проверку безопасности</translation>
@@ -2286,6 +2302,7 @@
 <translation id="3275778913554317645">Открыть в отдельном окне</translation>
 <translation id="3277691515294482687">Сохранить резервную копию моих приложений и файлов в папке "Мои файлы" перед обновлением Linux</translation>
 <translation id="3278001907972365362">Требуются действия в аккаунте Google.</translation>
+<translation id="3278800075417428224">Управление языковыми параметрами в настройках CloudReady 2.0</translation>
 <translation id="3279092821516760512">Выбранные контакты могут обмениваться с вами контентом, когда находятся поблизости. Передача данных не начинается без вашего согласия.</translation>
 <translation id="3279230909244266691">Подождите несколько минут. Запуск виртуальной машины…</translation>
 <translation id="3280237271814976245">Сохранить &amp;как...</translation>
@@ -2310,12 +2327,12 @@
 <translation id="33022249435934718">GDI-дескрипторы</translation>
 <translation id="3302388252085547855">Обоснуйте свой запрос…</translation>
 <translation id="3303260552072730022">Неизвестное расширение запустило полноэкранный режим.</translation>
-<translation id="3303795387212510132">Разрешить приложению открывать ссылки <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копии</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3304212451103136496">Скидка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
+<translation id="3307176291962384345">Получайте скидки в магазине "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Попытка сохранить файл cookie заблокирована.</translation>
 <translation id="3308134619352333507">Скрыть кнопку</translation>
 <translation id="3308852433423051161">Загрузка Google Ассистента…</translation>
@@ -2432,6 +2449,7 @@
 <translation id="343115368966109153">Скачать файл <ph name="FILE_NAME" />? Он будет доступен всем пользователям этого устройства.</translation>
 <translation id="3432227430032737297">Удалить все показанные файлы cookie</translation>
 <translation id="3432762828853624962">Разделяемые объекты worker</translation>
+<translation id="3433507769937235446">Блокировать, если вас нет рядом</translation>
 <translation id="3433621910545056227">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте. Узнать больше об этой функции и о том, как изменить ее настройки, можно на странице families.google.com.</translation>
@@ -2453,6 +2471,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
 <translation id="3446274660183028131">Чтобы установить Windows, запустите Parallels Desktop.</translation>
+<translation id="3446286111407214190">Текст Условий использования Google CloudReady 2.0</translation>
 <translation id="344630545793878684">Просмотр данных на нескольких сайтах</translation>
 <translation id="3446650212859500694">Этот файл содержит конфиденциальный контент.</translation>
 <translation id="3447644283769633681">Заблокировать все сторонние файлы cookie</translation>
@@ -2599,7 +2618,6 @@
 <translation id="3596012367874587041">Настройки приложений</translation>
 <translation id="3596414637720633074">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="3599221874935822507">Приподнятая</translation>
-<translation id="3599863153486145794">Удаление истории со всех устройств, на которых выполнен вход в аккаунт. Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="3600051066689725006">Информация о веб-запросе</translation>
 <translation id="3600792891314830896">Отключить звуки на сайтах</translation>
 <translation id="360180734785106144">Предлагать новые функции по мере их появления.</translation>
@@ -2651,6 +2669,7 @@
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
+<translation id="3642699533549879077">Если другой человек посмотрит на экран вашего устройства, вы увидите предупреждение и содержание уведомления будет скрыто.</translation>
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3648348069317717750">Обнаружено устройство "<ph name="USB_DEVICE_NAME" />"</translation>
@@ -2680,6 +2699,7 @@
 <translation id="3672681487849735243">Обнаружен производственный брак</translation>
 <translation id="3673097791729989571">Вход через <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673622964532248901">Трансляция на это устройство недоступна.</translation>
+<translation id="3675511132463531771">Обновите CloudReady 2.0</translation>
 <translation id="367645871420407123">оставьте пустым, чтобы установить значение тестового изображения по умолчанию в качестве пароля суперпользователя</translation>
 <translation id="3677106374019847299">Введите название поставщика услуг</translation>
 <translation id="3677911431265050325">Мобильная версия</translation>
@@ -2696,6 +2716,24 @@
 <translation id="3688526734140524629">Выбрать другой канал</translation>
 <translation id="3688578402379768763">Обновление не требуется</translation>
 <translation id="3688794912214798596">Настройки перевода…</translation>
+<translation id="3688944113090948433"><ph name="BEGIN_H3" />Функции отладки<ph name="END_H3" />
+    <ph name="BR" />
+    Вы можете включить функции отладки на устройстве Chrome OS, чтобы устанавливать и тестировать пользовательский код. Это позволит вам:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />отключать проверку корневой файловой системы, чтобы изменять файлы ОС;
+        <ph name="LIST_ITEM" />включать SSH-доступ к устройству с помощью стандартных тестовых ключей, чтобы использовать для доступа к устройству такие инструменты, как <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" />;
+        <ph name="LIST_ITEM" />включать загрузку с USB, чтобы устанавливать образ ОС с USB-накопителя;
+        <ph name="LIST_ITEM" />менять пароли корневого уровня для системы и разработчиков, чтобы вручную настраивать SSH на устройстве.
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Многие функции отладки остаются включенными даже после использования Powerwash или удаления данных с корпоративного устройства. Чтобы отключить все функции отладки, выполните восстановление Chrome OS (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Подробнее о функциях отладки:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Система будет перезагружена.</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="3691231116639905343">Клавиатуры</translation>
 <translation id="3691267899302886494">Сайт <ph name="HOST" /> запрашивает доступ к вашему экрану.</translation>
@@ -2773,6 +2811,7 @@
 <translation id="3761556954875533505">Разрешить сайту изменять файлы?</translation>
 <translation id="3764314093345384080">Подробная информация о сборке</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
+<translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -2905,6 +2944,7 @@
 <translation id="3886446263141354045">Ваш запрос на доступ к сайту отправлен пользователю <ph name="NAME" /></translation>
 <translation id="3887022758415973389">Показать список устройств</translation>
 <translation id="3888053818972567950">Подключение к сервису "<ph name="WEB_DRIVE" />"</translation>
+<translation id="3888491127874785636">Средство записи образов системы CouldReady 2.0</translation>
 <translation id="3888550877729210209">Заметки в приложении "<ph name="LOCK_SCREEN_APP_NAME" />"</translation>
 <translation id="3888586133700543064">Эта информация поможет нам понять, в чем причина возникшей неполадки в работе Ассистента. Данные хранятся до 90 дней. Доступ к ним есть только у разработчиков и специалистов по работе с отзывами.</translation>
 <translation id="3888900458694486810">Закрыть боковую панель поиска</translation>
@@ -2996,6 +3036,7 @@
 <translation id="3962119236270174787">Стандартная защита от опасных сайтов, расширений и скачанных файлов.</translation>
 <translation id="3963721102035795474">Режим чтения</translation>
 <translation id="3964480518399667971">Отключить мобильную сеть</translation>
+<translation id="39650333289039736">Приложения и настройки будут синхронизироваться на всех устройствах с CloudReady 2.0, на которых вы вошли в аккаунт Google.</translation>
 <translation id="3965811923470826124">Использовать</translation>
 <translation id="3965965397408324205">Выйти из профиля пользователя <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Выбрать другую папку...</translation>
@@ -3065,7 +3106,6 @@
 <translation id="4033963223187371752">Безопасные сайты могут содержать небезопасный встроенный контент, например изображения или фреймы.</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">&amp;Диспетчер задач</translation>
-<translation id="4035877632587724847">Запретить</translation>
 <translation id="4036778507053569103">Скачанная с сервера политика недействительна.</translation>
 <translation id="4037084878352560732">Лошадь</translation>
 <translation id="403725336528835653">Попробовать</translation>
@@ -3144,6 +3184,7 @@
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4115002065223188701">Сеть вне зоны доступа</translation>
 <translation id="4115378294792113321">Пурпурный</translation>
+<translation id="4116704186509653070">Открыть</translation>
 <translation id="4117637339509843559">Тёмная тема</translation>
 <translation id="4117714603282104018">Виброотклик сенсорной панели</translation>
 <translation id="4118579674665737931">Перезагрузите устройство и повторите попытку.</translation>
@@ -3188,6 +3229,7 @@
 <translation id="4167686856635546851">Обычно сайты используют JavaScript, чтобы показывать интерактивный контент.</translation>
 <translation id="4168015872538332605">Некоторые настройки пользователя <ph name="PRIMARY_EMAIL" /> влияют на ваш аккаунт, когда используется система множественного входа.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (последние цифры номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
+<translation id="4169535189173047238">Запретить</translation>
 <translation id="4170314459383239649">Удалять при выходе</translation>
 <translation id="417096670996204801">Выберите профиль</translation>
 <translation id="4175137578744761569">Сиреневый с белым</translation>
@@ -3205,6 +3247,7 @@
 <translation id="4194570336751258953">Включить нажатие от прикосновения</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
+<translation id="4197917636330710075">Получайте скидки в магазинах "<ph name="MERCHANT_NAME" />" и "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="4198268995694216131">Другие сайты</translation>
 <translation id="4200689466366162458">Специальные слова</translation>
 <translation id="4200983522494130825">Новая &amp;вкладка</translation>
@@ -3258,6 +3301,7 @@
 <translation id="425573743389990240">Скорость разрядки батареи в ваттах (при зарядке значение отрицательное)</translation>
 <translation id="4256316378292851214">Сохранить видео как...</translation>
 <translation id="4258348331913189841">Файловые системы</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> запрашивает разрешение на открытие следующих файлов:</translation>
 <translation id="4259388776256904261">Это может занять несколько минут…</translation>
 <translation id="4260182282978351200">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
 <translation id="4261429981378979799">Разрешения для расширений</translation>
@@ -3293,6 +3337,7 @@
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4289732974614035569">Выберите PIN-код</translation>
 <translation id="4290791284969893584">После закрытия страницы активные задачи могут не завершиться</translation>
+<translation id="4291265871880246274">Диалоговое окно входа</translation>
 <translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="4295979599050707005">Если вы разрешаете сайтам, приложениям и расширениям в Chrome и Google Play использовать данные аккаунта <ph name="USER_EMAIL" />, войдите ещё раз. Вы также можете удалить этот аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Перезапустить и сбросить настройки</translation>
@@ -3360,6 +3405,7 @@
 <translation id="4369121877634339065">Для поиска выделите нужное изображение, перетащив курсор.</translation>
 <translation id="4369215744064167350">Запрос на доступ к сайту одобрен</translation>
 <translation id="4370975561335139969">Указан неправильный адрес или пароль</translation>
+<translation id="4371179719793593133">Приложения и настройки будут синхронизироваться на всех устройствах с CloudReady 2.0, на которых вы вошли в аккаунт Google. Изменить параметры синхронизации браузера можно в <ph name="LINK_BEGIN" />настройках Chrome<ph name="LINK_END" />.</translation>
 <translation id="4373966964907728675">Транслировать содержимое рабочего стола</translation>
 <translation id="4374831787438678295">Установщик Linux</translation>
 <translation id="4375035964737468845">Открывание скачанных файлов</translation>
@@ -3465,6 +3511,7 @@
 <translation id="4477015793815781985">Комбинация должна начинаться с Ctrl, Alt или ⌘</translation>
 <translation id="4478664379124702289">Сохранить ссылку как...</translation>
 <translation id="4479424953165245642">Настроить киоск-приложения</translation>
+<translation id="4479481745547029647">Дополнительные условия использования Chrome и CloudReady 2.0</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Идет настройка виртуальной машины. Это может занять несколько минут.</translation>
 <translation id="4480590691557335796">Браузер Chrome может найти вредоносные программы на вашем компьютере и удалить их.</translation>
@@ -3630,6 +3677,7 @@
 <translation id="4638930039313743000">Включить отладку с ADB</translation>
 <translation id="4641539339823703554">Браузеру не удалось установить системное время. Проверьте, правильно ли оно указано, и исправьте при необходимости.</translation>
 <translation id="4643612240819915418">Открыть видео в новой вкладке</translation>
+<translation id="4643833688073835173">Chromebook использует встроенный датчик, чтобы распознавать людей, находящихся перед экраном. Все полученные данные сразу обрабатываются и удаляются. Они не отправляются в Google.</translation>
 <translation id="4644205769234414680">Разрешить использование в режиме инкогнито</translation>
 <translation id="4645676300727003670">&amp;Сохранить</translation>
 <translation id="4646675363240786305">Порты</translation>
@@ -3643,6 +3691,7 @@
 <translation id="4653405415038586100">Ошибка при настройке Linux</translation>
 <translation id="4654236001025007561">Делитесь файлами с устройствами Chromebook и Android поблизости.</translation>
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
+<translation id="4658285806588491142">Защитите данные на экране</translation>
 <translation id="465878909996028221">Для переадресации в браузере поддерживаются только протоколы HTTP, HTTPS и файловые протоколы.</translation>
 <translation id="4659126640776004816">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Изображение}one{# изображение}few{# изображения}many{# изображений}other{# изображения}}</translation>
@@ -3691,6 +3740,7 @@
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
 <translation id="4701335814944566468">Просмотрено вчера</translation>
+<translation id="4701540735981103145">Администратор заблокировал вход в аккаунт</translation>
 <translation id="4707337002099455863">Разрешить на всех сайтах</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
@@ -3890,6 +3940,7 @@
 <translation id="4917385247580444890">Сильный</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> запрашивает доступ к расширению "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Принять</translation>
+<translation id="4918134162946436591">Показать оверлей подсказки</translation>
 <translation id="4921348630401250116">Озвучивание текста</translation>
 <translation id="4921809350408880559">Недавние и рекомендованные документы предложены с учетом ваших предыдущих действий в сервисе "Google Диск".
         <ph name="BREAK" />
@@ -3921,6 +3972,7 @@
 <translation id="4944310289250773232">Сервис аутентификации размещен в домене <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Чтобы настроить разблокировку по отпечатку, ребенок должен приложить палец к кнопке питания. Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946459324029651239">Будет использоваться стандартная защита.</translation>
+<translation id="4950993567860689081">Сеансом управляет ваша организация. Администраторы могут удалять профили и следить за сетевым трафиком.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
@@ -4060,6 +4112,7 @@
 <translation id="5111646998522066203">Выйти из режима инкогнито</translation>
 <translation id="5111692334209731439">Менеджер закладок</translation>
 <translation id="5112577000029535889">Инструменты разработчика</translation>
+<translation id="511313294362309725">Активировать Быстрое подключение</translation>
 <translation id="5113739826273394829">Нажав на этот значок, вы можете заблокировать устройство <ph name="DEVICE_TYPE" />. Чтобы разблокировать его, вам придется ввести пароль.</translation>
 <translation id="51143538739122961">Вставьте электронный ключ и нажмите кнопку на нем.</translation>
 <translation id="5115309401544567011">Подключите <ph name="DEVICE_TYPE" /> к источнику питания.</translation>
@@ -4507,6 +4560,7 @@
 <translation id="5571832155627049070">Настройте профиль</translation>
 <translation id="5572648434713976849">В адресной строке появятся улучшенные подсказки.</translation>
 <translation id="5572851009514199876">Выполните вход, чтобы Chrome определил, разрешен ли вам доступ к этому сайту.</translation>
+<translation id="557506220935336383">Показать разрешения для расширений на других сайтах</translation>
 <translation id="5575473780076478375">Расширение в режиме инкогнито: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Возникла проблема с запросом на регистрацию демонстрационного режима.</translation>
 <translation id="557722062034137776">Сброс устройства не повлияет на ваши аккаунты Google и синхронизируемые с ними данные. Но все сохраненные на устройстве файлы будут удалены.</translation>
@@ -4572,6 +4626,7 @@
 <translation id="5632566673632479864">Ваш аккаунт (<ph name="EMAIL" />) больше нельзя использовать в качестве основного. Поскольку этот аккаунт находится под управлением администраторов домена <ph name="DOMAIN" />, все закладки, пароли и настройки, а также история будут удалены с устройства.</translation>
 <translation id="5632592977009207922">Идет скачивание: осталось <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>
+<translation id="5634446357546764049">Просматривайте воспоминания о недавних путешествиях и не только</translation>
 <translation id="5635312199252507107">Разрешить на определенных сайтах</translation>
 <translation id="563535393368633106">Запрашивать разрешение на доступ (рекомендуется)</translation>
 <translation id="5636996382092289526">Чтобы подключиться к сети "<ph name="NETWORK_ID" />", <ph name="LINK_START" />перейдите на страницу входа<ph name="LINK_END" /> – она автоматически откроется через несколько секунд. Если этого не произойдет, значит использование сети невозможно.</translation>
@@ -4588,6 +4643,7 @@
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5651308944918885595">Обмен с окружением: параметры видимости</translation>
 <translation id="5653154844073528838">Сохраненных принтеров: <ph name="PRINTER_COUNT" />.</translation>
+<translation id="5654266266024827740">Включить встроенный в CloudReady 2.0 инструмент ChromeVox для чтения с экрана? Если да, нажмите Пробел.</translation>
 <translation id="5655296450510165335">Регистрация устройства</translation>
 <translation id="5656845498778518563">Отправка отзыва в Google</translation>
 <translation id="5657156137487675418">Разрешить все файлы сookie</translation>
@@ -4667,10 +4723,12 @@
 <translation id="5740709157181662145">Помогать нам повышать стабильность работы и улучшать поддержку аппаратного обеспечения в <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дублирование экрана</translation>
 <translation id="574209121243317957">Высота звука</translation>
+<translation id="5745316408658560138">Разрешить Chrome искать персональные скидки на товары в корзине?</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5747552184818312860">Срок действия</translation>
 <translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
 <translation id="5747809636523347288">Вс&amp;тавить и перейти на страницу <ph name="URL" /></translation>
+<translation id="5747845802829012825">Чтобы завершить настройку Linux, обновите CloudReady 2.0 и повторите попытку.</translation>
 <translation id="5755022574660047665">воспоминания из Google Фото</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
 <translation id="5757375109985023827">Выберите вкладку для предпросмотра</translation>
@@ -4797,6 +4855,8 @@
 <translation id="5883356647197510494">Автоматически отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
 <translation id="5884474295213649357">Эта вкладка подключена к USB-устройству</translation>
 <translation id="5886009770935151472">1-й палец</translation>
+<translation id="5886325049116255797">Сохраненные параметры и действия будут доступны на всех устройствах с CloudReady 2.0, на которых вы вошли в аккаунт Google. Вы всегда можете выбрать, что синхронизировать, в настройках.</translation>
+<translation id="5888843733007437002">Просмотр шаблонов. Для навигации по ним нажимайте Tab.</translation>
 <translation id="5889282057229379085">Максимальное количество промежуточных ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Предпочитаемые сети Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -4850,6 +4910,7 @@
 <translation id="5939719276406088041">Не удалось создать ярлык.</translation>
 <translation id="594048410531370124">Неизвестная клавиша. Нажмите любую клавишу, чтобы <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Добавить пользователя</translation>
+<translation id="5941176400377813459">Чтение серийных номеров устройства CloudReady 2.0 и его компонентов</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" />: необходимо войти.</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5942779427914696408">Кто видит устройство</translation>
@@ -4862,6 +4923,24 @@
 <translation id="5950819593680344519">Браузер Chrome не обнаружил на компьютере вредоносное ПО • Последняя проверка: вчера</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> запрашивает доступ к шрифтам на устройстве</translation>
 <translation id="5951624318208955736">Монитор</translation>
+<translation id="5953627503079109298"><ph name="BEGIN_H3" />Функции отладки<ph name="END_H3" />
+      <ph name="BR" />
+      Вы можете включить функции отладки на устройстве с CloudReady 2.0, чтобы устанавливать и тестировать пользовательский код. Это позволит вам:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />отключать проверку корневой файловой системы, чтобы изменять файлы ОС;
+        <ph name="LIST_ITEM" />включать SSH-доступ к устройству с помощью стандартных тестовых ключей, чтобы использовать для доступа к устройству такие инструменты, как <ph name="BEGIN_CODE" />cros flash<ph name="END_CODE" />;
+        <ph name="LIST_ITEM" />включать загрузку с USB, чтобы устанавливать образ ОС с USB-накопителя;
+        <ph name="LIST_ITEM" />менять пароли корневого уровня для системы и разработчиков, чтобы вручную настраивать SSH на устройстве.
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Многие функции отладки остаются включенными даже после использования Powerwash или удаления данных с корпоративного устройства. Чтобы отключить все функции отладки, выполните восстановление Chrome OS (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Подробнее о функциях отладки:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Примечание.<ph name="END_BOLD" /> Система будет перезагружена.</translation>
 <translation id="5955282598396714173">Срок действия пароля истек. Чтобы изменить пароль, выйдите из аккаунта и войдите снова.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955721306465922729">Один из сайтов собирается открыть это приложение.</translation>
@@ -4954,6 +5033,7 @@
     <ph name="BEGIN_PARAGRAPH3" />Отключение этой функции не повлияет на возможность устройства отправлять информацию, необходимую для обновления ОС и системы безопасности.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Если в аккаунте Google вашего ребенка включена история приложений и веб-поиска, данные ребенка могут сохраняться в его аккаунте. Узнать больше об этих параметрах и о том, как их настроить, можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052488962264772833">Чтобы начать трансляцию, введите код доступа</translation>
 <translation id="6052976518993719690">Центр сертификации SSL</translation>
 <translation id="6053401458108962351">&amp;Удаление данных о просмотренных страницах...</translation>
 <translation id="6054284857788651331">Недавно закрытая группа вкладок</translation>
@@ -4991,6 +5071,7 @@
 <translation id="6078769373519310690">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение на подключение к HID-устройству</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
 <translation id="6080689532560039067">Проверка системного времени</translation>
+<translation id="6082877069782862752">Привязка клавиш</translation>
 <translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
 <translation id="6085886413119427067">Определяет, как подключаться к сайтам, используя защищенное соединение.</translation>
@@ -5159,6 +5240,7 @@
 <translation id="6254503684448816922">Ключ скомпрометирован</translation>
 <translation id="6254892857036829079">Отличное</translation>
 <translation id="6257602895346497974">Включить синхронизацию</translation>
+<translation id="62586649943626337">Объединяйте вкладки в группы</translation>
 <translation id="625895209797312329">Не разрешать сайтам использовать шрифты, установленные на устройстве</translation>
 <translation id="6262371516389954471">Резервные копии загружаются в Google и шифруются с помощью пароля вашего аккаунта Google.</translation>
 <translation id="6263082573641595914">Версия ЦС Microsoft</translation>
@@ -5269,6 +5351,7 @@
 <translation id="6370021412472292592">Не удалось загрузить манифест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторить</translation>
+<translation id="6374635887697228982">Разрешить Chrome искать скидки?</translation>
 <translation id="6377268785556383139">1 результат поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Принять условия и продолжить</translation>
 <translation id="6382616130475191723">Разрешено чтение и изменение данных сайта "<ph name="SITE_NAME" />"</translation>
@@ -5392,6 +5475,7 @@
 <translation id="6498249116389603658">&amp;Все языки</translation>
 <translation id="6499143127267478107">Разрешение хоста в скрипте прокси-сервера...</translation>
 <translation id="6499764981457476645">Устройства не найдены</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> запрашивает разрешение на открытие следующего файла:</translation>
 <translation id="65017764184991091">Не удалось выполнить резервное копирование приложений и файлов Linux. Это могло произойти из-за того, что на устройстве недостаточно свободного места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="6501957628055559556">Все контейнеры</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
@@ -5480,6 +5564,7 @@
 <translation id="6586099239452884121">Гостевой режим</translation>
 <translation id="6586213706115310390">Включите, чтобы вызывать Ассистента голосовой командой "Окей, Google".</translation>
 <translation id="6586451623538375658">Поменять местами кнопки мыши</translation>
+<translation id="6587958707401001932">Выбрать параметр по умолчанию</translation>
 <translation id="6588043302623806746">Использовать безопасный DNS-сервер</translation>
 <translation id="659005207229852190">Проверка безопасности завершена.</translation>
 <translation id="6590458744723262880">Переименование папки</translation>
@@ -5503,6 +5588,7 @@
 <translation id="6606671997164410857">Похоже, вы уже настроили Google Ассистента на другом устройстве. Если разрешить доступ к содержимому экрана на этом устройстве, вы сможете пользоваться дополнительными возможностями Ассистента.</translation>
 <translation id="6607831829715835317">Дополнительные инстру&amp;менты</translation>
 <translation id="6607890859198268021">Аккаунт <ph name="USER_EMAIL" /> уже находится в домене <ph name="DOMAIN" />. Чтобы использовать родительский контроль в другом аккаунте Google, выйдите после настройки и на экране входа выберите "Добавить пользователя".</translation>
+<translation id="6608166463665411119">Сбросить eSIM</translation>
 <translation id="6609478180749378879">После выхода из режима инкогнито учетные данные сохранятся на устройстве. Вы сможете снова использовать их на этом сайте в будущем.</translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
 <translation id="6611972847767394631">Здесь находятся ваши вкладки</translation>
@@ -5535,6 +5621,7 @@
 <translation id="6644513150317163574">Неверный формат URL. Если используется система единого входа, то в качестве имени хоста необходимо указать сервер.</translation>
 <translation id="6644846457769259194">Обновление устройства (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6645437135153136856">Устройство, подключенное к сервису "Google Виртуальный принтер", больше не поддерживается.<ph name="BR" />Укажите новый принтер в системных настройках компьютера.</translation>
+<translation id="6646476869708241165">Отключить Быстрое подключение</translation>
 <translation id="6647228709620733774">URL отзыва ЦС Netscape</translation>
 <translation id="6647441008198474441">Чтобы предсказать ваши дальнейшие запросы, URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
@@ -5644,6 +5731,7 @@
 <translation id="6770602306803890733">Делает Интернет более безопасным для вас и других пользователей.</translation>
 <translation id="6771503742377376720">Является центром сертификации</translation>
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
+<translation id="6776729248872343918">Включить Быстрое подключение</translation>
 <translation id="6777817260680419853">Попытка переадресации заблокирована</translation>
 <translation id="6778737459546443941">Ещё не одобрено родителем</translation>
 <translation id="6779092717724412415">Чтобы задать такое же выделение, выберите текст и нажмите на него правой кнопкой мыши.</translation>
@@ -5701,7 +5789,9 @@
 <translation id="6813907279658683733">Весь экран</translation>
 <translation id="6817174620439930047">Уведомлять меня о сайтах, пытающихся использовать системные сообщения для доступа к MIDI-устройствам (рекомендуется)</translation>
 <translation id="6818198425579322765">Исходный язык страницы</translation>
+<translation id="6818640747323584611">Помогать повышать производительность и улучшать функции CloudReady 2.0</translation>
 <translation id="6818802132960437751">Встроенная защита от вирусов</translation>
+<translation id="6819741204334296334">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска CloudReady 2.0.</translation>
 <translation id="682123305478866682">Трансляция содержимого рабочего стола</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
 <translation id="6824564591481349393">Скопировать адрес электронной почты</translation>
@@ -5771,6 +5861,7 @@
 <translation id="6889957081990109136">Переключатель ещё не назначен</translation>
 <translation id="6892812721183419409">Открыть ссылку как <ph name="USER" /></translation>
 <translation id="6895032998810961280">Сообщать Google о вредоносном ПО, системных настройках и процессах, обнаруженных на компьютере при очистке</translation>
+<translation id="6895902329218596456">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="MANAGER" />. В этот аккаунт разрешено входить только как в основной.</translation>
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6897363604023044284">Выбрать сайты</translation>
 <translation id="6898440773573063262">Автозапуск киоск-приложений на этом устройстве разрешен</translation>
@@ -6100,6 +6191,7 @@
 <translation id="7243632151880336635">Стереть данные и выйти</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оптимальное)</translation>
 <translation id="7246230585855757313">Вставьте электронный ключ ещё раз и повторите попытку.</translation>
+<translation id="724835896049478274">Аккаунты, доступные для приложений Android</translation>
 <translation id="7249197363678284330">Измените эту настройку в адресной строке.</translation>
 <translation id="7250616558727237648">Устройство, на которое вы отправляете файлы, не отвечает. Повторите попытку.</translation>
 <translation id="725109152065019550">Администратор запретил использовать внешний накопитель для этого аккаунта.</translation>
@@ -6158,6 +6250,7 @@
 <translation id="730515362922783851">Обмен данными с любыми устройствами в локальной сети и Интернете</translation>
 <translation id="7306521477691455105">Чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к ВМ "<ph name="USB_VM_NAME" />", откройте настройки.</translation>
 <translation id="7307129035224081534">Приостановлена</translation>
+<translation id="7307719647623535470">Управление безопасным DNS-сервером в настройках CloudReady 2.0</translation>
 <translation id="7308643132139167865">Языки сайтов</translation>
 <translation id="7310598146671372464">Не удалось выполнить вход. Сервер не поддерживает выбранные типы шифрования Kerberos. Обратитесь к администратору.</translation>
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
@@ -6182,6 +6275,7 @@
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> отображается в полноэкранном режиме.</translation>
 <translation id="7340650977506865820">Сайт открывает доступ к вашему экрану</translation>
+<translation id="7340757554212515731">Автоматически отправлять в Google отчеты о сбоях и данные об использовании и диагностике</translation>
 <translation id="7341834142292923918">Расширение запрашивает доступ к этому сайту</translation>
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
 <translation id="7345706641791090287">Подтвердите пароль</translation>
@@ -6397,6 +6491,8 @@
 <translation id="7552846755917812628">Попробуйте сделать следующее:</translation>
 <translation id="7553012839257224005">Проверка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
+<translation id="7553347517399115470">Больше не спрашивать при открытии в этом приложении файлов следующих форматов:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">Администратор запретил использовать этот язык</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7556033326131260574">Не удается войти в аккаунт с помощью Smart Lock. Введите пароль.</translation>
@@ -6549,6 +6645,7 @@
 <translation id="7691163173018300413">Окей, Google</translation>
 <translation id="7691698019618282776">Обновить Crostini</translation>
 <translation id="769375405463525957">Когда вы отходите от своего устройства, его экран автоматически блокируется. Если вы перед экраном, он остается включенным.</translation>
+<translation id="7694052127939518600">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с CloudReady 2.0.</translation>
 <translation id="7694246789328885917">Инструмент "Маркер"</translation>
 <translation id="7696063401938172191">На устройстве <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Во время демонстрации экрана содержимое уведомлений скрыто.</translation>
@@ -6614,6 +6711,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Настройте границы экрана</translation>
 <translation id="7760004034676677601">Другая стартовая страница?</translation>
+<translation id="7762463735017901568">Синхронизация уведомлений отключена администратором телефона</translation>
 <translation id="7764225426217299476">Добавить адрес</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> с сайта <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Переместить</translation>
@@ -6798,6 +6896,7 @@
 <translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7938594894617528435">Сейчас не в Сети</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
+<translation id="7939321852721702336">Вы включаете функции отладки CloudReady 2.0. Будет настроен SSHD-демон и разрешена загрузка с USB-накопителей.</translation>
 <translation id="7939412583708276221">Все равно продолжить</translation>
 <translation id="7942349550061667556">Красный</translation>
 <translation id="7943368935008348579">Скачивать PDF-файлы</translation>
@@ -6818,6 +6917,7 @@
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
 <translation id="7957615753207896812">Открыть настройки клавиатуры</translation>
+<translation id="7958437133377816580">Получайте скидки в магазинах "<ph name="MERCHANT_NAME" />", "<ph name="MERCHANT_NAME" />" и др.</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
 <translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7961015016161918242">Нет</translation>
@@ -6945,6 +7045,7 @@
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8076835018653442223">Доступ к локальным файлам на вашем устройстве отключен администратором.</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081623398548615289">Сеансом управляет <ph name="MANAGER_NAME" />. Администраторы могут удалять профили и следить за сетевым трафиком.</translation>
 <translation id="8081989000209387414">Отключить отладку с ADB?</translation>
 <translation id="8082106343289440791">Подключиться к устройству "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Если вы отключите отладку с ADB, настройки этого устройства <ph name="DEVICE_TYPE" /> будут сброшены до заводских. Все аккаунты пользователей и локальные данные будут удалены.</translation>
@@ -7492,6 +7593,7 @@
 <translation id="8665110742939124773">Введен неверный код доступа. Повторите попытку.</translation>
 <translation id="8665180165765946056">Готово</translation>
 <translation id="866611985033792019">Доверять этому сертификату для идентификации адресов электронной почты</translation>
+<translation id="8666224701549693691">Запуск диагностики CloudReady 2.0</translation>
 <translation id="8666584013686199826">Запрашивать мое разрешение на доступ сайтов к USB-устройствам</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> работает в полноэкранном режиме и не показывает курсор.</translation>
 <translation id="8668052347555487755">Цвета</translation>
@@ -7544,6 +7646,7 @@
 <translation id="8719472795285728850">Прослушивание событий расширений…</translation>
 <translation id="8719653885894320876">Ошибка скачивания плагина <ph name="PLUGIN_NAME" /></translation>
 <translation id="8720200012906404956">Идет поиск мобильной сети. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="8720781020694544444">В настройках компьютера указан неверный аппаратный идентификатор устройства. CloudReady 2.0 не сможет устанавливать обновления системы безопасности для защиты компьютера от <ph name="BEGIN_BOLD" />вредоносных атак<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">Срок инициализации для атрибутов времени установки истек.</translation>
 <translation id="8722912030556880711">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти данные нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">Этот значок указывает, что вы можете подтверждать покупки и свою личность с помощью отпечатка пальца.</translation>
@@ -7732,6 +7835,7 @@
 <translation id="8890516388109605451">Источники</translation>
 <translation id="8890529496706615641">Не удалось переименовать профиль. Повторите попытку или обратитесь к своему оператору за технической поддержкой.</translation>
 <translation id="8892168913673237979">Все готово!</translation>
+<translation id="8893116021193670489">Компьютер оснащен доверенным платформенным модулем (TPM), с помощью которого в CloudReady 2.0 реализовано множество критически важных функций безопасности. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=tpm.</translation>
 <translation id="8893801527741465188">Приложение удалено</translation>
 <translation id="8893928184421379330">Не удалось распознать устройство <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Ограничение доступа к данным для периферийных устройств</translation>
@@ -7865,6 +7969,7 @@
 <translation id="9030855135435061269">Плагин "<ph name="PLUGIN_NAME" />" больше не поддерживается.</translation>
 <translation id="9031549947500880805">Сохранение резервных копий на Google Диске. Позволяет в любой момент восстанавливать данные (в том числе из приложений) или переносить их с одного устройства на другое.</translation>
 <translation id="9031811691986152304">повторить попытку</translation>
+<translation id="9032097289595078011">Выключить Быстрое подключение</translation>
 <translation id="9033765790910064284">Продолжить</translation>
 <translation id="9033857511263905942">&amp;Вставить</translation>
 <translation id="903480517321259405">Введите PIN-код ещё раз</translation>
@@ -7894,6 +7999,7 @@
 <translation id="9063208415146866933">Ошибка в строках <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Не удается сделать снимок конфиденциального контента</translation>
 <translation id="9064275926664971810">Включить автозаполнение для быстрого добавления данных в веб-формы</translation>
+<translation id="9064599787951583960">Чтение сведений об устройстве с CloudReady 2.0 и данных на нем</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9066394310994446814">Этот контент предложен с учетом ваших предыдущих действий в сервисах Google. Вы можете посмотреть записи в истории, удалить их и изменить настройки отслеживания действий на странице <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />
@@ -8069,6 +8175,7 @@
 <translation id="93766956588638423">Восстановить расширение</translation>
 <translation id="938568644810664664">Спросите "Окей, Google, что это за трек?" или "Окей, Google, что у меня на экране?".</translation>
 <translation id="939252827960237676">Не удалось сохранить скриншот</translation>
+<translation id="939401694733344652">Эти аккаунты сейчас не используются в приложениях для Android. После входа в аккаунт в этом приложении Android его можно будет использовать и в других. Чтобы изменить параметры доступа для приложений Android, выберите <ph name="LINK_BEGIN" />Настройки &gt; Аккаунты<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Введите кодовую фразу</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="942532530371314860">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome и к аудио.</translation>
@@ -8125,6 +8232,7 @@
 <translation id="994289308992179865">&amp;Повтор</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Создание безопасного подключения...</translation>
+<translation id="996803490569799917">Показывать воспоминания с выбранными вами людьми и не только</translation>
 <translation id="99731366405731005">Чтобы использовать функцию "Синхронизация Wi-Fi", включите <ph name="LINK1_BEGIN" />синхронизацию Chrome<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Подробнее…<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">П&amp;росмотреть код</translation>
 </translationbundle>

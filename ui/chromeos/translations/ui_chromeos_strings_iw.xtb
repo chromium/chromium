@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
 <translation id="1864756863218646478">הקובץ לא נמצא.</translation>
 <translation id="1884013283844450420">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, התחברות</translation>
+<translation id="1914901738028575085">‏מכשיר CloudReady 2.0</translation>
 <translation id="1920670151694390848">מליאלאם, תעתיק</translation>
 <translation id="1920798810075583923">אבטיח</translation>
 <translation id="1924372192547904021">הפרמוט של <ph name="DRIVE_NAME" /> הושלם</translation>
@@ -903,6 +904,7 @@
 <translation id="8714406895390098252">אופניים</translation>
 <translation id="8719721339511222681">בחרת את <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">קרואטית</translation>
+<translation id="873847021056608403">‏מכשירי CloudReady 2.0</translation>
 <translation id="8743164338060742337">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות של ‎<ph name="NETWORK_PROVIDER_NAME" />‎%<ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="8750438273876807512">כד לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ארוכה על הקובץ, להקיש על <ph name="ICON" /> ולבחור באפשרות "הצמדה למדף"</translation>
 <translation id="8787254343425541995">‏אפשר שרתי proxy עבור רשתות משותפות</translation>

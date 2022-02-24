@@ -519,6 +519,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2523886232349826891">Disimpan pada peranti ini sahaja</translation>
 <translation id="2524461107774643265">Tambahkan Maklumat Lanjut</translation>
 <translation id="2529899080962247600">Medan ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri. Semua entri berikutnya akan diabaikan.</translation>
+<translation id="2535585790302968248">Buka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dan 1 lagi}other{dan # lagi}}</translation>
 <translation id="2536110899380797252">Tambahkan Alamat</translation>
 <translation id="2539524384386349900">Kesan</translation>
@@ -585,6 +586,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2709516037105925701">Autoisi</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menguruskan maklumat kad kredit dan pembayaran anda dalam tetapan Chrome</translation>
+<translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar daripada skrin penuh</translation>
 <translation id="2721148159707890343">Permintaan berjaya</translation>
 <translation id="2723669454293168317">Jalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="2726001110728089263">Dulang Sisi</translation>
@@ -750,6 +752,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3288238092761586174"><ph name="URL" /> mungkin perlu mengambil langkah tambahan untuk mengesahkan pembayaran anda</translation>
 <translation id="3293642807462928945">Ketahui lebih lanjut tentang dasar <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan urus kata laluan anda dalam tetapan Chrome</translation>
+<translation id="3303795387212510132">Benarkan apl membuka pautan <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3304073249511302126">pengimbasan bluetooth</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
@@ -1261,6 +1264,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4854362297993841467">Kaedah penghantaran ini tidak tersedia. Cuba kaedah lain.</translation>
 <translation id="4854853140771946034">Buat nota baharu dalam Google Keep dengan pantas</translation>
 <translation id="485902285759009870">Mengesahkan kod...</translation>
+<translation id="4866506163384898554">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk memaparkan kursor anda</translation>
 <translation id="4876188919622883022">Paparan ringkas</translation>
 <translation id="4876305945144899064">Tiada nama pengguna</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Tiada}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1274,6 +1278,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Gulungan Kesembilan</translation>
 <translation id="4901778704868714008">Simpan...</translation>
+<translation id="4905659621780993806">Pentadbir anda akan memulakan semula peranti anda pada <ph name="DATE" /> jam <ph name="TIME" /> secara automatik. Simpan sebarang item terbuka sebelum peranti anda dimulakan semula.</translation>
 <translation id="4913987521957242411">Tebukan atas sebelah kiri</translation>
 <translation id="4918221908152712722">Pasang <ph name="APP_NAME" /> (tidak perlu dimuat turun)</translation>
 <translation id="4923459931733593730">Pembayaran</translation>
@@ -1483,6 +1488,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5560088892362098740">Tarikh Tamat Tempoh</translation>
 <translation id="55635442646131152">Rangka dokumen</translation>
+<translation id="5565613213060953222">Buka tap Inkognito</translation>
 <translation id="5565735124758917034">Aktif</translation>
 <translation id="5570825185877910964">Lindungi akaun</translation>
 <translation id="5571083550517324815">Tidak boleh mengambil dari alamat ini. Pilih alamat lain.</translation>
@@ -1687,6 +1693,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6290238015253830360">Artikel cadangan anda dipaparkan di sini</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Peranti anda akan dimulakan semula sekarang}=1{Peranti anda akan dimulakan semula dalam masa 1 saat}other{Peranti anda akan dimulakan semula dalam masa # saat}}</translation>
 <translation id="6302269476990306341">Google Assistant dalam Chrome berhenti</translation>
 <translation id="6305205051461490394"><ph name="URL" /> tidak dapat dicapai.</translation>
 <translation id="6312113039770857350">Halaman web tidak tersedia</translation>
@@ -1948,6 +1955,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7192203810768312527">Mengosongkan <ph name="SIZE" />. Sesetengah tapak mungkin dimuatkan dengan perlahan pada lawatan anda yang seterusnya.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Pentadbir anda dapat melihat:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tab Inkognito baharu untuk semak imbas secara peribadi</translation>
 <translation id="7202346780273620635">Surat-Ekstra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> tidak mematuhi piawaian keselamatan.</translation>
 <translation id="7210993021468939304">Aktiviti Linux dalam bekas dan boleh memasang serta menjalankan apl Linux dalam bekas</translation>
@@ -2010,6 +2018,7 @@ Butiran tambahan:
 <translation id="7378627244592794276">Tidak</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Tidak berkenaan</translation>
+<translation id="7388594495505979117">{0,plural, =1{Peranti anda akan dimulakan semula dalam masa 1 minit}other{Peranti anda akan dimulakan semula dalam masa # minit}}</translation>
 <translation id="7390545607259442187">Sahkan Kad</translation>
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
@@ -2212,6 +2221,7 @@ Butiran tambahan:
 <translation id="799149739215780103">Ikatan</translation>
 <translation id="7992044431894087211">Perkongsian skrin dengan <ph name="APPLICATION_TITLE" /> telah disambung semula</translation>
 <translation id="7995512525968007366">Tidak Ditentukan</translation>
+<translation id="7998269595945679889">Buka butang tab Inkognito, tekan Enter untuk membuka tab Inkognito baharu untuk menyemak imbas secara peribadi</translation>
 <translation id="800218591365569300">Cuba tutup tab atau atur cara lain untuk mengosongkan memori.</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}other{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}}</translation>
@@ -2366,6 +2376,7 @@ Butiran tambahan:
 <translation id="8507227106804027148">Baris perintah</translation>
 <translation id="8508648098325802031">Ikon Carian</translation>
 <translation id="8511402995811232419">Urus kuki</translation>
+<translation id="8519753333133776369">Peranti HID yang dibenarkan oleh pentadbir anda</translation>
 <translation id="8522552481199248698">Chrome boleh membantu anda melindungi Akaun Google anda dan menukar kata laluan anda.</translation>
 <translation id="8530813470445476232">Kosongkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>

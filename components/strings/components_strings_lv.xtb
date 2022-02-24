@@ -519,6 +519,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2523886232349826891">Tiks saglabāta tikai šajā ierīcē</translation>
 <translation id="2524461107774643265">Papildu informācijas pievienošana</translation>
 <translation id="2529899080962247600">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks ignorēti.</translation>
+<translation id="2535585790302968248">Atvērt jaunu inkognito cilni privātai pārlūkošanai</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{un vēl 1}zero{un vēl #}one{un vēl #}other{un vēl #}}</translation>
 <translation id="2536110899380797252">Pievienot adresi</translation>
 <translation id="2539524384386349900">Noteikt</translation>
@@ -585,6 +586,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2709516037105925701">Automātiskā aizpilde</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pārvaldītu savus maksājumus un kredītkaršu informāciju Chrome iestatījumos, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
+<translation id="271663710482723385">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai izietu no pilnekrāna režīma.</translation>
 <translation id="2721148159707890343">Pieprasījums bija veiksmīgs.</translation>
 <translation id="2723669454293168317">Veiciet drošības pārbaudi Chrome iestatījumos.</translation>
 <translation id="2726001110728089263">Sānu paplāte</translation>
@@ -750,6 +752,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3288238092761586174">Iespējams, vietnē <ph name="URL" /> būs jāveic papildu darbības, lai apstiprinātu maksājumu.</translation>
 <translation id="3293642807462928945">Uzzināt vairāk par politiku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Skatiet un pārvaldiet savas paroles Chrome iestatījumos.</translation>
+<translation id="3303795387212510132">Vai atļaut lietotnē atvērt <ph name="PROTOCOL_SCHEME" /> saites?</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3304073249511302126">Bluetooth meklēšana</translation>
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
@@ -1259,6 +1262,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4854362297993841467">Šis piegādes veids nav pieejams. Izmēģiniet citu veidu.</translation>
 <translation id="4854853140771946034">Ātri izveidot jaunu piezīmi lietotnē Google Keep</translation>
 <translation id="485902285759009870">Notiek koda verificēšana…</translation>
+<translation id="4866506163384898554">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai parādītu kursoru.</translation>
 <translation id="4876188919622883022">Vienkāršotais skats</translation>
 <translation id="4876305945144899064">Nav lietotājvārda</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Nav}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}zero{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1272,6 +1276,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Devītais rullis</translation>
 <translation id="4901778704868714008">Saglabāt...</translation>
+<translation id="4905659621780993806">Jūsu administrators automātiski restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />. Saglabājiet visus atvērtos failus, pirms ierīce tiek restartēta.</translation>
 <translation id="4913987521957242411">Caurums augšējā kreisajā malā</translation>
 <translation id="4918221908152712722">Instalējiet lietotni <ph name="APP_NAME" /> (nav nepieciešama lejupielāde)</translation>
 <translation id="4923459931733593730">Maksājums</translation>
@@ -1481,6 +1486,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5560088892362098740">Derīguma termiņš</translation>
 <translation id="55635442646131152">Dokumenta struktūrskats</translation>
+<translation id="5565613213060953222">Atvērt inkognito cilni</translation>
 <translation id="5565735124758917034">Aktīvs</translation>
 <translation id="5570825185877910964">Aizsargāt kontu</translation>
 <translation id="5571083550517324815">Nevar saņemt sūtījumu šajā adresē. Atlasiet citu adresi.</translation>
@@ -1685,6 +1691,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6290238015253830360">Ieteiktie raksti tiek parādīti šeit</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Jūsu ierīce tiks restartēta tūlīt}=1{Jūsu ierīce tiks restartēta pēc 1 sekundes}zero{Jūsu ierīce tiks restartēta # sekundēm}one{Jūsu ierīce tiks restartēta # sekundes}other{Jūsu ierīce tiks restartēta # sekundēm}}</translation>
 <translation id="6302269476990306341">Tiek pārtraukta Google asistenta darbība pārlūkprogrammā Chrome.</translation>
 <translation id="6305205051461490394">Vietne <ph name="URL" /> nav sasniedzama.</translation>
 <translation id="6312113039770857350">Tīmekļa lapa nav pieejama</translation>
@@ -1946,6 +1953,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7192203810768312527">Tiks atbrīvota vieta: <ph name="SIZE" />. Iespējams, nākamajā apmeklējuma reizē dažas vietnes tiks ielādētas lēnāk.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Administrators var redzēt:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai privātai pārlūkošanai atvērtu inkognito cilni, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> neatbilst drošības standartiem.</translation>
 <translation id="7210993021468939304">Linux darbība konteinerā; var instalēt un palaist Linux lietotnes konteinerā</translation>
@@ -2008,6 +2016,7 @@ Papildu informācija:
 <translation id="7378627244592794276">Nē</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Nav piemērojams</translation>
+<translation id="7388594495505979117">{0,plural, =1{Jūsu ierīce tiks restartēta pēc 1 minūtes}zero{Jūsu ierīce tiks restartēta pēc # minūtēm}one{Jūsu ierīce tiks restartēta pēc # minūtes}other{Jūsu ierīce tiks restartēta pēc # minūtēm}}</translation>
 <translation id="7390545607259442187">Kartes apstiprināšana</translation>
 <translation id="7392089738299859607">Adreses atjaunināšana</translation>
 <translation id="7399802613464275309">Drošības pārbaude</translation>
@@ -2210,6 +2219,7 @@ Papildu informācija:
 <translation id="799149739215780103">Iesējums</translation>
 <translation id="7992044431894087211">Ekrāna kopīgošana ar lietojumprogrammu <ph name="APPLICATION_TITLE" /> ir atsākta.</translation>
 <translation id="7995512525968007366">Nav norādīts</translation>
+<translation id="7998269595945679889">Poga “Atvērt inkognito cilni”. Lai privātai pārlūkošanai atvērtu jaunu inkognito cilni, nospiediet taustiņu Enter.</translation>
 <translation id="800218591365569300">Aizveriet citas cilnes vai programmas, lai atbrīvotu vietu atmiņā.</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Šī karte un tās norēķinu adrese tiks saglabāta. Jūs varēsiet to izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}zero{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}one{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}other{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}}</translation>
@@ -2364,6 +2374,7 @@ Papildu informācija:
 <translation id="8507227106804027148">Komandrinda</translation>
 <translation id="8508648098325802031">Meklēšanas ikona</translation>
 <translation id="8511402995811232419">Pārvaldīt sīkfailus</translation>
+<translation id="8519753333133776369">HID ierīce, ko atļāva jūsu administrators</translation>
 <translation id="8522552481199248698">Chrome var palīdzēt jums aizsargāt jūsu Google kontu un nomainīt paroli.</translation>
 <translation id="8530813470445476232">Notīriet savu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus Chrome iestatījumos.</translation>
 <translation id="8533619373899488139">Apmeklējiet vietni &lt;strong&gt;chrome://policy&lt;/strong&gt;, lai skatītu bloķēto URL sarakstu, kā arī citas politikas, ko noteicis sistēmas administrators.</translation>

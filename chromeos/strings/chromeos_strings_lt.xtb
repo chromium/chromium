@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">Įrenginio dešiniosios ausinės akumuliatoriaus energijos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
+<translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3456078764689556234">Atspausdinta <ph name="PRINTED_PAGES" /> iš <ph name="TOTAL_PAGES" /> psl.</translation>
@@ -235,6 +236,7 @@
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
+<translation id="4170180284036919717">Fotografuoti</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4176463684765177261">Išjungta</translation>
 <translation id="4213104098953699324">USB klaviatūra</translation>
@@ -494,6 +496,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7175037578838465313">„<ph name="NAME" />“ konfigūravimas</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
+<translation id="7212734716605298123">Išorinių įrenginių programinės aparatinės įrangos naujiniai</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

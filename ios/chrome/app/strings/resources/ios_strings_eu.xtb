@@ -12,6 +12,7 @@
 
         
 <ph name="DSE_NAME" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
+<translation id="1054045277222934172">Webgunearen ikuspegi lehenetsia ordenagailuetarako ikuspegira aldatzeko, sakatu Ezarpenak eta, gero, Edukiaren ezarpenak</translation>
 <translation id="1063454504051558093">Erabili beste pasahitz bat…</translation>
 <translation id="1066060668811609597">Kudeatu sinkronizazioa</translation>
 <translation id="1076421457278169141">Eskaneatu da kodea</translation>
@@ -182,6 +183,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2690858294534178585">Kamera abian da</translation>
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
 <translation id="2695507686909505111">Itzuli da orria</translation>
+<translation id="2700241355396984822">Baimenak ezartzeko aukerak</translation>
 <translation id="2702801445560668637">Zerrenda</translation>
 <translation id="2704491540504985681">Deskargak</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
@@ -318,6 +320,8 @@ Jarraitu beheko urratsei:</translation>
 <translation id="3861486700625780712">Utzi jarraitzeari</translation>
 <translation id="3892144330757387737">Historia aurkituko duzu hemen</translation>
 <translation id="3897092660631435901">Menua</translation>
+<translation id="3904829425754749514">Erakundeak sinkronizazioa desaktibatu du. Gailuan dituzu oraindik laster-markak, historia, pasahitzak eta bestelako ezarpenak. Aldaketarik eginez gero, ez dira sinkronizatuko kontuarekin.</translation>
+<translation id="3905353503976611311">Bilatu sarean</translation>
 <translation id="3913386780052199712">Chrome-n saioa hasita daukazu</translation>
 <translation id="3915450441834151894">Webgunearen informazioa</translation>
 <translation id="3922310737605261887">Bilatu kopiatu duzun testua</translation>
@@ -347,6 +351,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4172051516777682613">Erakutsi beti</translation>
 <translation id="418156467088430727">Ikusi konexio gabeko bertsioa beste fitxa batean</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
+<translation id="4223967053752765281">Erakundeak saioa hasteko aukera desaktibatu du. Gailuan dituzu oraindik laster-markak, historia, pasahitzak eta bestelako ezarpenak. Aldaketarik eginez gero, ez dira sinkronizatuko kontuarekin.</translation>
 <translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Idatzi pasaesaldia</translation>
 <translation id="4249955472157341256">Ordenatu berrienetatik zaharrenetara</translation>
@@ -371,6 +376,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4469418912670346607">Jarraitu konfiguratzen</translation>
 <translation id="4474494258097106883">Zure iPhone-rako garatua</translation>
 <translation id="4476574785019001431">Ezarpenak</translation>
+<translation id="448433063499977729">Sinkronizazioa desaktibatu egin da</translation>
 <translation id="4496373720959965247">Gehitu fitxak eta aldatu orri batetik bestera</translation>
 <translation id="4502566650163919158">Egiaztatu</translation>
 <translation id="4505980578794259603">Azken egiaztatze-data: <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5580834567471114021">Irakurketa-zerrendan gehitu nahi duzu geroagorako?</translation>
 <translation id="5592679540098330836">Aktibatu <ph name="NAME" /> erabiltzailearen sinkronizazioa</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
+<translation id="560999923643681074">Editatzeko baimena</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
 <translation id="5626245204502895507">Ezin izan da deskargatu fitxategia.</translation>
 <translation id="5631164295104953411">Gehitu ordainketa-metodo bat</translation>
@@ -594,7 +601,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6389470377220713856">Txartelaren titularra</translation>
 <translation id="6406506848690869874">Sinkronizazioa</translation>
 <translation id="6410883413783534063">Erabili fitxak aldi berean webgune bat baino gehiago ikusteko</translation>
-<translation id="6417838470969808600"><ph name="USER_EMAIL1" /> kontuko laster-markak, historia, pasahitzak eta beste ezarpen batzuk dituzu.</translation>
 <translation id="641799622251403418"><ph name="EMAIL" /> gisa hasi duzu saioa.
 
 Sinkronizatzeko pasaesaldiaren bidez enkriptatu dira datuak (<ph name="TIME" />). Idatz ezazu sinkronizatzen hasteko.</translation>
@@ -759,6 +765,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7840771868269352570">Kendu egingo dira hautatutako elementuak.</translation>
 <translation id="7856733331829174190">Ezin izan da deskargatu</translation>
 <translation id="7859704718976024901">Arakatze-historia</translation>
+<translation id="7884694604461143138">Bilatu historian (<ph name="COUNT" /> aurkitu dira)</translation>
 <translation id="7887198238286927132">Zure pribatutasuna babesteko, Chrome-k ez du automatikoki beteko eremu hau.</translation>
 <translation id="7911190106180361398">Erakundeak ez dizu eman baimenik guztia sinkronizatzeko.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8076014560081431679">Ez dira ezabatuko webgunearen gordetako ezarpenak, eta baliteke arakatze-ohiturak islatzea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Administratzaileak kudeatzen du ezarpen hau; informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="8080028325999236607">Itxi fitxa guztiak</translation>
+<translation id="809543534949702122">Bilaketa-historia</translation>
 <translation id="8101409298456377967">Sortu, gorde eta kudeatu pasahitzak, webgune eta aplikazioetan erraz hasteko saioa. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desaktibatu</translation>
 <translation id="8114753159095730575">Fitxategi bat deskargatzeko prest dago. Pantailaren behealdean agertzen dira horretarako aukerak.</translation>
@@ -811,6 +819,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8319076807703933069">Bilaketa berria</translation>
 <translation id="8323906514956095947">Eduki sakatuta fitxetako aukera gehiago ikusteko</translation>
 <translation id="8328777765163860529">Itxi guztiak</translation>
+<translation id="8364085047956854021"><ph name="SITE_NAME" /> webgunearen baimenak desaktibatu egingo dira webgunetik irteten zarenean.</translation>
 <translation id="8378714024927312812">Erakundeak kudeatzen du</translation>
 <translation id="8386068868580335421">Berrezarri</translation>
 <translation id="8407669440184693619">Ez da aurkitu webgune honen pasahitzik</translation>
@@ -897,6 +906,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9148126808321036104">Hasi saioa berriro</translation>
 <translation id="9152539721251340337">Sortu QR kode bat</translation>
 <translation id="9157836665414082580">Ezkutatu leihoak</translation>
+<translation id="9177438225260810839">Bilatu fitxa irekietan</translation>
 <translation id="9188680907066685419">Amaitu saioa kontu kudeatuan</translation>
 <translation id="9200875785104711666">Duela <ph name="TIME" /> egun</translation>
 <translation id="9203116392574189331">Handoff</translation>

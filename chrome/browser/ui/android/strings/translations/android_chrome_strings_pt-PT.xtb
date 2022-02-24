@@ -372,6 +372,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">associado a</translation>
 <translation id="3123734510202723619">Anúncios</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
@@ -873,7 +874,6 @@ As avaliações da Privacy Sandbox ainda estão em desenvolvimento e estão disp
 <translation id="6138832295072039549">Altere as definições do site aqui.</translation>
 <translation id="6140709049082532940">Proteção melhorada:</translation>
 <translation id="6140912465461743537">País/região</translation>
-<translation id="6141988275892716286">Confirmar transferência</translation>
 <translation id="614940544461990577">Experimente:</translation>
 <translation id="6150320133806434356">Marcador guardado</translation>
 <translation id="6154478581116148741">Ative o bloqueio de ecrã nas Definições para exportar as suas palavras-passe a partir deste dispositivo.</translation>
@@ -1055,7 +1055,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7093803425429738190">Adicionar ícone expressivo</translation>
 <translation id="7105047059074518658">Inicie sessão para navegar mais facilmente nos dispositivos</translation>
 <translation id="7106762743910369165">O seu navegador é gerido pela sua entidade</translation>
-<translation id="7121362699166175603">Limpa o histórico e os preenchimentos automáticos na barra de endereço. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7143462160780459030">Não é possível tirar uma captura de ecrã. Tente novamente.</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem ser importantes para si:</translation>
@@ -1129,7 +1128,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="752220631458524187">Desligue quando terminar.</translation>
 <translation id="7523960634226602883">Pesquise com a sua câmara através do Google Lens.</translation>
 <translation id="753225086557513863">Agendado para mais tarde</translation>
-<translation id="7560448309733608642">Limpa o histórico de todos os dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">A limpar dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome limpos</translation>
 <translation id="7577900504646297215">Gerir interesses</translation>

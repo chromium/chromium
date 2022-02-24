@@ -12,6 +12,7 @@
 
         
 Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama motorunuzun talimatlarını (varsa) inceleyin.</translation>
+<translation id="1054045277222934172">Varsayılan site görünümünü Ayarlar'daki İçerik Ayarları bölümünden masaüstü olarak değiştirebilirsiniz</translation>
 <translation id="1063454504051558093">Diğer Şifreyi Kullan...</translation>
 <translation id="1066060668811609597">Senkronizasyonu yönetin</translation>
 <translation id="1076421457278169141">Kod tarandı</translation>
@@ -182,6 +183,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2690858294534178585">Kamera kullanılıyor</translation>
 <translation id="2691653761409724435">Çevrimdışı kullanılamaz</translation>
 <translation id="2695507686909505111">Sayfa Çevrildi</translation>
+<translation id="2700241355396984822">İzin Verme Seçenekleri</translation>
 <translation id="2702801445560668637">Okuma Listesi</translation>
 <translation id="2704491540504985681">İndirilenler</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
@@ -318,6 +320,8 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3861486700625780712">Takibi bırak</translation>
 <translation id="3892144330757387737">Geçmişiniz burada gösterilir</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3904829425754749514">Kuruluşunuz senkronizasyonu kapattı. Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızı bu cihazda görmeye devam edebilirsiniz. Değişiklik yaparsanız bu değişiklikler hesabınızla senkronize edilmez.</translation>
+<translation id="3905353503976611311">Web'de arayın</translation>
 <translation id="3913386780052199712">Chrome'da oturum açıldı</translation>
 <translation id="3915450441834151894">Site Bilgileri</translation>
 <translation id="3922310737605261887">Kopyalanan Metni Ara</translation>
@@ -347,6 +351,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="4172051516777682613">Her zaman göster</translation>
 <translation id="418156467088430727">Çevrimdışı Sürümü Yeni Sekmede Göster</translation>
 <translation id="4181841719683918333">Diller</translation>
+<translation id="4223967053752765281">Kuruluşunuz oturum açmayı devre dışı bıraktı. Yer işaretleri, geçmiş, şifreler ve diğer ayarlarınızı bu cihazda görmeye devam edebilirsiniz. Değişiklik yaparsanız bu değişiklikler hesabınızla senkronize edilmez.</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Varsayılan Tarayıcı Uygulaması<ph name="END_BOLD" />'na dokunun</translation>
 <translation id="424315890655130736">Parolayı Girin</translation>
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
@@ -371,6 +376,7 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="4469418912670346607">Kuruluma Devam Et</translation>
 <translation id="4474494258097106883">iPhone'unuz için Geliştirildi</translation>
 <translation id="4476574785019001431">Ayarlar</translation>
+<translation id="448433063499977729">Senkronizasyon Kapatıldı</translation>
 <translation id="4496373720959965247">Sekmeler ekleyin ve sayfalar arasında geçiş yapın</translation>
 <translation id="4502566650163919158">Şimdi Denetle</translation>
 <translation id="4505980578794259603">Son kontrol zamanı: <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5580834567471114021">Sonrası için Okuma Listesi'ne eklensin mi?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> için senkronizasyonu aç</translation>
 <translation id="560322036295180549">Kuruluşunuz tarafından kapatıldı.</translation>
+<translation id="560999923643681074">Erişimi Düzenleyin</translation>
 <translation id="5614553682702429503">Şifre kaydedilsin mi?</translation>
 <translation id="5626245204502895507">Dosya şu anda indirilemedi.</translation>
 <translation id="5631164295104953411">Ödeme Yöntemi Ekle</translation>
@@ -594,7 +601,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6389470377220713856">Karttaki Ad</translation>
 <translation id="6406506848690869874">Senkronizasyon</translation>
 <translation id="6410883413783534063">Aynı anda birden fazla sayfayı ziyaret etmek için yeni sekme açın</translation>
-<translation id="6417838470969808600"><ph name="USER_EMAIL1" /> hesabından yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız var.</translation>
 <translation id="641799622251403418"><ph name="EMAIL" /> olarak oturum açıldı.
 
 Verileriniz <ph name="TIME" /> tarihinde senkronizasyon parolanızla şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
@@ -759,6 +765,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7840771868269352570">Seçtiğiniz öğeler kaldırılacak.</translation>
 <translation id="7856733331829174190">İndirilemedi</translation>
 <translation id="7859704718976024901">Tarama Geçmişi</translation>
+<translation id="7884694604461143138">Geçmişte arayın (<ph name="COUNT" /> sonuç)</translation>
 <translation id="7887198238286927132">Gizliliğinizi korumak için Chrome bu alanı otomatik olarak doldurmayacaktır.</translation>
 <translation id="7911190106180361398">Kuruluşunuz bazı şeyleri senkronize etmenize izin vermiyor.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +797,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8076014560081431679">Kayıtlı site ayarları silinmez ve web'e göz atma alışkanlıklarınızı yansıtabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Bu ayar yönetilir. Daha fazla bilgi için iki kez dokunun.</translation>
 <translation id="8080028325999236607">Tüm Sekmeleri Kapat</translation>
+<translation id="809543534949702122">Geçmişte arayın</translation>
 <translation id="8101409298456377967">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifrelerinizi oluşturun, kaydedin ve yönetin. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Kapat</translation>
 <translation id="8114753159095730575">Dosya indirme işlevi kullanılabilir. Seçenekler ekranın alt tarafındadır.</translation>
@@ -811,6 +819,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8319076807703933069">Yeni Arama</translation>
 <translation id="8323906514956095947">Diğer sekme seçenekleri için dokunup basılı tutun</translation>
 <translation id="8328777765163860529">Tümünü Kapat</translation>
+<translation id="8364085047956854021">Bu siteden ayrıldığınızda "<ph name="SITE_NAME" />" izinleri kapalı ayarına sıfırlanır.</translation>
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
 <translation id="8386068868580335421">Sıfırla</translation>
 <translation id="8407669440184693619">Bu site için şifre bulunamadı</translation>
@@ -897,6 +906,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9152539721251340337">QR Kodu oluşturma</translation>
 <translation id="9157836665414082580">İletişim Kutularını Gizle</translation>
+<translation id="9177438225260810839">Açık Sekmelerde Ara</translation>
 <translation id="9188680907066685419">Yönetilen hesabın oturumunu kapat</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> gün önce</translation>
 <translation id="9203116392574189331">Handoff</translation>

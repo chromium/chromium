@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">Chrome을 업데이트할 수 없음</translation>
 <translation id="1154147086299354128">Chrome에서 열기(&amp;O)</translation>
 <translation id="1182414570724401860">Chrome은 이 파일을 다운로드하거나 열지 않을 것을 권장합니다.</translation>
+<translation id="1201241595274620956">CloudReady 2.0 약관</translation>
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1293325835983155583">기기를 사용하기 전에 <ph name="MANAGER" />에서 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 Chrome OS 약관을 확대, 수정 또는 제한하지 않습니다.</translation>
 <translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
@@ -40,11 +41,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
+<translation id="1847459800604232346">CloudReady 2.0 다시 시작</translation>
 <translation id="1860536484129686729">이 사이트에서 카메라에 액세스하려면 Chrome에 권한이 필요합니다</translation>
+<translation id="1865667134297225786">계정의 로그인 세부정보가 오래되어 CloudReady 2.0에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="1874309113135274312">Chrome 베타(mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
+<translation id="1887927549935943139">도메인에 대한 동기화가 허용되지 않아 CloudReady 2.0에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
 <translation id="2063848847527508675">업데이트를 적용하려면 Chrome OS를 다시 시작해야 합니다.</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
@@ -55,12 +60,15 @@
 <translation id="2258103955319320201">모든 기기에서 Chrome 브라우저 데이터에 액세스하려면 로그인한 후 동기화를 사용 설정하세요</translation>
 <translation id="2290014774651636340">Google API 키가 누락되었습니다. Chrome의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="2290095356545025170">Chrome을 제거하시겠습니까?</translation>
+<translation id="2297776811548050971"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, CloudReady 2.0은 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="2345992953227471816">Chrome에서 다음 확장 프로그램에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="2348335408836342058">이 사이트에서 카메라와 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="234869673307233423">Chrome에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2371517829376452747">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
+      CloudReady 2.0 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="2429317896000329049">도메인에서 동기화를 사용할 수 없어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -89,6 +97,7 @@
 <translation id="2926676257163822632">취약한 비밀번호는 추측하기 쉽습니다. Chrome에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">다시 실행하여 CloudReady 2.0 업데이트(&amp;C)</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="303514781271618814">Chrome은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
@@ -115,6 +124,7 @@
 <translation id="3533694711092285624">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
 <translation id="3541482654983822893">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후 다시 시도해 보세요.</translation>
 <translation id="3576528680708590453">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 다른 브라우저를 실행하도록 Chrome을 구성했습니다.</translation>
+<translation id="3582634744482121096">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 CloudReady 2.0의 기능과 성능을 개선할 수 있도록 도와주세요.</translation>
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
@@ -135,6 +145,7 @@
 <translation id="4149882025268051530">설치 프로그램이 보관 파일 압축 풀기에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
 <translation id="4191857738314598978">{0,plural, =1{1일 이내로 Chrome을 다시 시작해 주세요}other{#일 이내로 Chrome을 다시 시작해 주세요}}</translation>
 <translation id="4205939740494406371">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
+<translation id="4218613300505264589">CloudReady 2.0 시스템</translation>
 <translation id="4242034826641750751">Chrome에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
@@ -152,7 +163,9 @@
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4480040274068703980">로그인 중 오류가 발생하여 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="4521185804071812304">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 Chrome OS의 기능 및 성능 개선에 참여합니다.</translation>
+<translation id="4539063627668028557">CloudReady 2.0 버전</translation>
 <translation id="4561051373932531560">Chrome을 사용하면 웹에서 전화번호를 클릭하여 Skype로 통화할 수 있습니다.</translation>
+<translation id="4562712242781620537">CloudReady 2.0 시스템</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
@@ -178,6 +191,7 @@
 일부 기능은 사용하지 못할 수 있습니다. 다른 프로필 디렉터리를 지정하거나 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="521447420733633466">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="5251420635869119124">게스트로 사용 기록을 남기지 않고 Chrome을 사용할 수 있습니다.</translation>
+<translation id="5307623274346663914">업데이트를 적용하려면 CloudReady 2.0을 다시 시작해야 합니다.</translation>
 <translation id="5334487786912937552">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
@@ -188,8 +202,10 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0은 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">로그인 중 오류가 발생하여 CloudReady 2.0에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{1초 후에 Chrome이 다시 시작됩니다}other{#초 후에 Chrome이 다시 시작됩니다}}</translation>
 <translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="573759479754913123">Chrome OS 정보</translation>
@@ -222,15 +238,23 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6679975945624592337">백그라운드에서 Chrome을 실행</translation>
 <translation id="6696915334902295848">Chrome에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
+<translation id="6749459139769042303">CloudReady 2.0 관련 지원받기</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
+<translation id="6814748008107187409">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
+      Chrome OS 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="6881299373831449287">Chrome 업데이트 중</translation>
 <translation id="6885412569789873916">Chrome 베타 앱</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" />에서는 기기를 사용하기 전에 다음 서비스 약관을 읽고 이에 동의하도록 하고 있습니다. 이 약관은 Google CloudReady 2.0 약관을 확대, 수정 또는 제한하지 않습니다</translation>
 <translation id="6943584222992551122">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복원하려면 <ph name="USER_EMAIL" />(으)로 Chrome에 로그인하세요.</translation>
 <translation id="6967962315388095737">Chrome 베타에서 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="6989339256997917931">Chrome이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
+<translation id="700644001690392105">CloudReady 2.0 정보</translation>
 <translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="7036251913954633326">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
+
+이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="7062128746136194023">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 추가가 허용되지 않습니다.</translation>
 <translation id="7085332316435785646">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chrome 방문 기록을 포함할지 선택하세요.</translation>
 <translation id="7088681679121566888">Chrome이 최신 버전입니다.</translation>
@@ -244,6 +268,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
+<translation id="7388770099345495132">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 게스트 모드를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
+
+이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7408085963519505752">Chrome OS 이용약관</translation>
 <translation id="7419046106786626209">내 도메인에서 동기화를 사용할 수 없으므로 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
@@ -251,6 +278,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7486227612705979895">Chrome에서 내 드라이브에 액세스하여 주소 표시줄에 추천 검색어를 표시합니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
 <translation id="7573289029918943991">기기가 최신 버전인지 확인하려면 <ph name="LINK_BEGIN" />Chrome OS 설정<ph name="LINK_END" />으로 이동하세요.</translation>
+<translation id="7580049017368059129">기기가 최신 상태인지 확인하려면 <ph name="LINK_BEGIN" />CloudReady 2.0 설정<ph name="LINK_END" />으로 이동하세요.</translation>
 <translation id="7592736734348559088">계정의 로그인 세부정보가 오래되어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
 <translation id="7629695634924605473">비밀번호가 유출되면 Chrome에서 알려줍니다.</translation>

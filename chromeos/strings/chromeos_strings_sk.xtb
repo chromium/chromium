@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizuje sa (dokončené na <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">K dispozícii nie je žiadna sieť <ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">Dátum posledného resetu dát nie je k dispozícii</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Domáca sieť, bez roamingu</translation>
 <translation id="1327977588028644528">Brána</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Nepodarilo sa – zlyhal filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mám pár kľúčov</translation>
+<translation id="1435763214710588005">Automaticky každý mesiac resetuje spotrebu dát vo vybraný deň</translation>
 <translation id="1442433966118452622">Zdroj obrázka</translation>
 <translation id="1451536289672181509">Zariadenie je klávesnica.</translation>
 <translation id="1459693405370120464">Počasie</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> sa nedá aktualizovať</translation>
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
+<translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
@@ -264,6 +267,7 @@
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Zhoda alternatívneho názvu subjektu</translation>
 <translation id="4536864596629708641">Konfigurácia adresy IP</translation>
+<translation id="4546131424594385779">Vytvoriť videoslučku</translation>
 <translation id="4548483925627140043">Signál sa nenašiel</translation>
 <translation id="4556753742174065117">Všetok firmvér je aktuálny</translation>
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -393,6 +397,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="594552776027197022">Generovanie náhodného páru kľúčov</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Povoliť automatický mesačný reset</translation>
 <translation id="6037291330010597344">Podávač dokumentov skenera je prázdny. Pridajte dokumenty a skúste to znova.</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6040852767465482106">Anonymná identita</translation>
@@ -416,6 +421,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
 <translation id="6232017090690406397">Batéria</translation>
+<translation id="6235460611964961764">Manuálne resetovať spotrebu dát</translation>
 <translation id="6243280677745499710">Práve nastavená</translation>
 <translation id="6278428485366576908">Motív</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -445,6 +451,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6566314079205407217">Viacstránkový sken</translation>
 <translation id="6574762126505704998">Výplň</translation>
 <translation id="6575134580692778371">Nenakonfigurované</translation>
+<translation id="6579509898032828423">Použiť túto fotku</translation>
 <translation id="6596816719288285829">Adresa IP</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
@@ -628,6 +635,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8918637186205009138">Zariadenie <ph name="DEVICE_TYPE" /> používateľa <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Nepodarilo sa – chýba zásobník</translation>
+<translation id="8923267550422472772">Deň mesiaca pre reset</translation>
 <translation id="8928727111548978589">Nepodarilo sa – minul sa papier</translation>
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
@@ -644,6 +652,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="9062831201344759865">Preklad DNS má vysokú latenciu</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Použiť toto video</translation>
 <translation id="9087578468327036362">Nahlásiť tento dopyt</translation>
 <translation id="9088306295921699330">Aktuálne využitie</translation>
 <translation id="9095415590198785865">Zariadenie zostane u rovnakého vlastníka</translation>

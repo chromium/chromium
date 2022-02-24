@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Esta pasta está sendo compartilhada com o Linux</translation>
 <translation id="1864756863218646478">O arquivo não foi encontrado.</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
+<translation id="1914901738028575085">Dispositivo CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malaiala (transliteração)</translation>
 <translation id="1920798810075583923">Melancia</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatado</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Selecionado: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="873847021056608403">Dispositivos CloudReady 2.0</translation>
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo administrador, conectar</translation>
 <translation id="8750438273876807512">Toque em um arquivo, mantenha-o pressionado e toque em <ph name="ICON" />. Em seguida, selecione "Fixar na estante" para ter acesso rápido a ele pela estante.</translation>
 <translation id="8787254343425541995">Permitir proxies para redes compartilhadas</translation>

@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Tämä kansio on jaettu Linuxille</translation>
 <translation id="1864756863218646478">Tiedostoa ei löytynyt.</translation>
 <translation id="1884013283844450420">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, yhdistä</translation>
+<translation id="1914901738028575085">CloudReady 2.0 ‑laite</translation>
 <translation id="1920670151694390848">translitteroitu malajalam</translation>
 <translation id="1920798810075583923">Vesimeloni</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> alustettu</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Polkupyörä</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>
 <translation id="872537912056138402">kroaatti</translation>
+<translation id="873847021056608403">CloudReady 2.0 ‑laitteet</translation>
 <translation id="8743164338060742337">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalin voimakkuus, <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan ylläpitämä, yhdistä</translation>
 <translation id="8750438273876807512">Kosketa tiedostoa pitkään, valitse <ph name="ICON" /> ja valitse Kiinnitä hyllyyn, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="8787254343425541995">Salli välityspalvelimet jaetuilla verkoilla</translation>

@@ -372,6 +372,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3091010850649238832">Content op het klembord bekijken</translation>
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
 <translation id="3114507951000454849">Lees het nieuws van vandaag <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">gekoppeld aan</translation>
 <translation id="3123734510202723619">Aankondigingen</translation>
 <translation id="3134784203083076891">'</translation>
 <translation id="314939179385989105">Homepage van Chrome</translation>
@@ -873,7 +874,6 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="6138832295072039549">Hier kun je je instellingen wijzigen</translation>
 <translation id="6140709049082532940">Geoptimaliseerde beveiliging:</translation>
 <translation id="6140912465461743537">Land/regio</translation>
-<translation id="6141988275892716286">Download bevestigen</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>
 <translation id="6150320133806434356">Bookmark opgeslagen</translation>
 <translation id="6154478581116148741">Zet de schermvergrendeling aan via Instellingen om je wachtwoorden te exporteren vanaf dit apparaat</translation>
@@ -1055,7 +1055,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7093803425429738190">Emoji toevoegen</translation>
 <translation id="7105047059074518658">Log in om makkelijker te browsen op apparaten</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
-<translation id="7121362699166175603">Hiermee worden de geschiedenis en automatische aanvullingen voor de adresbalk gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Overige</translation>
 <translation id="7143462160780459030">Kan geen screenshot maken. Probeer het opnieuw.</translation>
 <translation id="7146622961999026732">Zo te zien zijn deze sites en apps belangrijk voor jou:</translation>
@@ -1129,7 +1128,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="752220631458524187">Koppel je telefoon los als je klaar bent</translation>
 <translation id="7523960634226602883">Zoeken met je camera via Google Lens</translation>
 <translation id="753225086557513863">Gepland voor later</translation>
-<translation id="7560448309733608642">Hiermee wordt de geschiedenis van alle gesynchroniseerde apparaten gewist. Er kunnen andere vormen van browsegeschiedenis zijn opgeslagen voor je Google-account op <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Browsegegevens wissen</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="7577900504646297215">Interesses beheren</translation>

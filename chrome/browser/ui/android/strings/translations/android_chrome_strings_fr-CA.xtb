@@ -372,6 +372,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
 <translation id="3098745985164956033">Certaines images sont envoyées à Google afin d'améliorer les descriptions pour vous</translation>
 <translation id="3114507951000454849">Actualités du jour <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">lié à</translation>
 <translation id="3123734510202723619">Annonces</translation>
 <translation id="3134784203083076891"> »</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
@@ -733,6 +734,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
 <translation id="5342314432463739672">Demandes d'autorisation</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
+<translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> onglet ouvert, touchez pour basculer vers un autre onglet}one{<ph name="OPEN_TABS_MANY" /> onglet ouvert, touchez pour basculer vers un autre onglet}other{<ph name="OPEN_TABS_MANY" /> onglets ouverts, touchez pour basculer vers un autre onglet}}</translation>
 <translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
@@ -872,7 +874,6 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6138832295072039549">Modifier les paramètres de votre site ici</translation>
 <translation id="6140709049082532940">Protection renforcée :</translation>
 <translation id="6140912465461743537">Pays/région</translation>
-<translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="614940544461990577">Essayez ceci :</translation>
 <translation id="6150320133806434356">Favori enregistré</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans Paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
@@ -1054,7 +1055,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7093803425429738190">Ajouter une émotion</translation>
 <translation id="7105047059074518658">Connectez-vous pour naviguer plus facilement sur vos appareils</translation>
 <translation id="7106762743910369165">Votre navigateur est géré par votre organisation</translation>
-<translation id="7121362699166175603">Efface l'historique et les saisies semi-automatiques dans la barre d'adresse. D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Autre</translation>
 <translation id="7143462160780459030">Impossible de faire une capture d'écran. Réessayez.</translation>
 <translation id="7146622961999026732">Ces applications et ces sites semblent importants pour vous :</translation>
@@ -1128,7 +1128,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="752220631458524187">Déconnectez-vous lorsque vous avez terminé</translation>
 <translation id="7523960634226602883">Recherchez avec votre appareil photo à l'aide de Lentille Google</translation>
 <translation id="753225086557513863">Programmé pour plus tard</translation>
-<translation id="7560448309733608642">Efface l'historique de tous les appareils synchronisés. D'autres formes d'historique de navigation peuvent exister dans votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Effacement des données de navigation en cours…</translation>
 <translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="102360288709523007">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる。</translation>
 <translation id="1047130070405668746">[Chromium] を選択する</translation>
+<translation id="1091252999271033193">Chromium は毎回モバイルサイトをリクエストします。</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1289216811211435351">Chromium に切り替え</translation>
@@ -26,6 +27,7 @@
 <translation id="2178608107313874732">現在 Chromium ではカメラを使用できません</translation>
 <translation id="2195025571279539885">次回から Chromium でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
 <translation id="2218146227246548550">組織が、Chromium を使用するにはログインすることを求めています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Chromium は毎回 PC 版サイトをリクエストします。</translation>
 <translation id="2426113998523353159">Chromium を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="2450140762465183767">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>
 <translation id="2478931088402984578">[<ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />] を選択する</translation>

@@ -520,6 +520,7 @@
 <translation id="2523886232349826891">শুধুমাত্র এই ডিভাইসে সেভ করা যাবে</translation>
 <translation id="2524461107774643265">আরও তথ্য যোগ করুন</translation>
 <translation id="2529899080962247600">এই ফিল্ডে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি লেখা যাবে না। অন্য সব এন্ট্রি বাতিল করা হবে।</translation>
+<translation id="2535585790302968248">গোপনে ব্রাউজ করতে ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{এবং আরও ১টি}one{এবং আরও #টি}other{এবং আরও #টি}}</translation>
 <translation id="2536110899380797252">ঠিকানা যোগ করুন</translation>
 <translation id="2539524384386349900">শনাক্ত করুন</translation>
@@ -586,6 +587,7 @@
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
 <translation id="2713444072780614174">সাদা</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে আপনার পেমেন্ট ও ক্রেডিট কার্ডের তথ্য ম্যানেজ করতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="271663710482723385">ফুল-স্ক্রিন থেকে বেরিয়ে আসতে |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| প্রেস করুন</translation>
 <translation id="2721148159707890343">অনুরোধ সফল হয়েছে</translation>
 <translation id="2723669454293168317">Chrome সেটিংস থেকে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালান</translation>
 <translation id="2726001110728089263">সাইড ট্রে</translation>
@@ -751,6 +753,7 @@
 <translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতি সম্পর্কে আরও জানুন</translation>
 <translation id="3295444047715739395">Chrome সেটিংস থেকে আপনার পাসওয়ার্ড দেখুন ও ম্যানেজ করুন</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> লিঙ্ক খুলতে অ্যাপকে অনুমতি দেবেন?</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
 <translation id="3304073249511302126">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
@@ -1261,6 +1264,7 @@
 <translation id="4854362297993841467">এই পদ্ধতিতে ডেলিভারি করা যাবে না। অন্য পদ্ধতি ব্যবহার করুন।</translation>
 <translation id="4854853140771946034">Google Keep-এ চটপট নতুন নোট তৈরি করুন</translation>
 <translation id="485902285759009870">কোড যাচাই করা হচ্ছে…</translation>
+<translation id="4866506163384898554">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| প্রেস করুন</translation>
 <translation id="4876188919622883022">সরলীকৃত ভিউ</translation>
 <translation id="4876305945144899064">কোনও ব্যবহারকারীর নাম নেই</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{একটিও নয়}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}one{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1484,6 +1488,7 @@
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5560088892362098740">মেয়াদ শেষের তারিখ</translation>
 <translation id="55635442646131152">ডকুমেন্ট আউটলাইন</translation>
+<translation id="5565613213060953222">ছদ্মবেশী ট্যাব খুলুন</translation>
 <translation id="5565735124758917034">সক্রিয়</translation>
 <translation id="5570825185877910964">অ্যাকাউন্ট সুরক্ষিত রাখুন</translation>
 <translation id="5571083550517324815">এই ঠিকানা থেকে পিক-আপ করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
@@ -1949,6 +1954,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> জায়গা খালি করে। পরের বার যখন দেখবেন তখন কিছু সাইট লোড হতে দেরি হতে পারে।</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">আপনার অ্যাডমিনিস্ট্রেটর দেখতে পাবেন:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী ট্যাব খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> নিরাপত্তা মান মেনে চলে না।</translation>
 <translation id="7210993021468939304">কন্টেনারের মধ্যে Linux অ্যাক্টিভিটি দেখা যাবে এবং কন্টেনারের মধ্যেই Linux অ্যাপ ইনস্টল করা ও চালানো যাবে</translation>
@@ -2214,6 +2220,7 @@
 <translation id="799149739215780103">বাঁধাই</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />-এর সাথে আবার স্ক্রিন শেয়ার করা চালু করা হয়েছে</translation>
 <translation id="7995512525968007366">নির্দিষ্ট করে উল্লেখ করা নেই</translation>
+<translation id="7998269595945679889">'ছদ্মবেশী ট্যাব' বোতাম খুলুন, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী ট্যাব খুলতে Enter প্রেস করুন</translation>
 <translation id="800218591365569300">মেমরি ফাঁকা করতে অন্যান্য ট্যাব বা প্রোগ্রাম বন্ধ করার চেষ্টা করুন।</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{এই কার্ড ও সেটির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেটি ব্যবহার করতে পারবেন।}one{এই কার্ডগুলি ও সেগুলির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেগুলি ব্যবহার করতে পারবেন।}other{এই কার্ডগুলি ও সেগুলির বিলিং ঠিকানা সেভ করা হবে। <ph name="USER_EMAIL" />-এ সাইন-ইন করে থাকা অবস্থায় আপনি সেগুলি ব্যবহার করতে পারবেন।}}</translation>

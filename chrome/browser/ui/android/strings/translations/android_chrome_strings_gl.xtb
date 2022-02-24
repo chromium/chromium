@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
 <translation id="1204037785786432551">Descargar ligazón</translation>
+<translation id="1204692632633423444">Botón de acción de Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copiar texto da ligazón</translation>
 <translation id="1208340532756947324">Activa a sincronización para personalizar todos os teus dispositivos e sincronizalos</translation>
 <translation id="1209206284964581585">Ocultar por agora</translation>
@@ -201,6 +202,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2172688499998841696">As descricións das imaxes están desactivadas</translation>
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2176767904800337188">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2200113223741723867">Xestionar uso compartido dos datos de uso</translation>
@@ -213,6 +215,7 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Queres abrir a aplicación para <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
 <translation id="228704530595896923">Lista de opcións para compartir.</translation>
 <translation id="230115972905494466">Non se atoparon dispositivos compatibles</translation>
@@ -330,6 +333,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2923908459366352541">O nome non é válido</translation>
 <translation id="2932150158123903946">Almacenamento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">O teclado non cambiará</translation>
+<translation id="2936980480904111527">As notificacións de Chrome facilítanche as cousas</translation>
 <translation id="2942036813789421260">A pestana de vista previa está pechada</translation>
 <translation id="2946420957526726953">Actualizando Chrome para conectarse a outros dispositivos</translation>
 <translation id="2951071800649516099">Engade páxinas á lista de lectura para consultalas noutro momento</translation>
@@ -368,6 +372,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">vinculouse a</translation>
 <translation id="3123734510202723619">Avisos</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
@@ -671,6 +676,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
 <translation id="4971735654804503942">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos. Móstrache unha advertencia en caso de violacións da seguranza do contrasinal. Para utilizar este modo débenselle enviar a Google os datos de navegación.</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="4987271110129728827">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar unha busca web.</translation>
 <translation id="4988526792673242964">Páxinas</translation>
 <translation id="5001388021414335527">Seguir este sitio aquí</translation>
 <translation id="5004416275253351869">Controis de actividade de Google</translation>
@@ -728,6 +734,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>
 <translation id="5342314432463739672">Solicitudes de permisos</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
+<translation id="5368227114232678694">Se queres navegar de forma privada neste dispositivo, proba o modo de incógnito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestana aberta, toca para cambiar de pestana}other{<ph name="OPEN_TABS_MANY" /> pestanas abertas, toca para cambiar de pestana}}</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir só determinados sitios</translation>
@@ -867,7 +874,6 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="6138832295072039549">Cambia aquí a configuración do teu sitio</translation>
 <translation id="6140709049082532940">Protección mellorada:</translation>
 <translation id="6140912465461743537">País/rexión</translation>
-<translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="614940544461990577">Proba a facer o seguinte:</translation>
 <translation id="6150320133806434356">Gardouse o marcador</translation>
 <translation id="6154478581116148741">Activa o bloqueo de pantalla en Configuración para exportar os teus contrasinais deste dispositivo</translation>
@@ -875,6 +881,7 @@ As probas de Privacy Sandbox aínda se atopan nunha fase de desenvolvemento acti
 <translation id="6162892189396105610">Precarga aquelas páxinas que Chrome considera que é probable que visites.</translation>
 <translation id="6186394685773237175">Non se atoparon contrasinais vulnerados</translation>
 <translation id="6192907950379606605">Obter descricións de imaxes</translation>
+<translation id="620197886010707372">Queres abrir a aplicación para <ph name="APPNAME" /> con Google Play?</translation>
 <translation id="6203593061661911168">A descarga iniciarase cando se estableza conexión cunha rede wifi.</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
@@ -1048,7 +1055,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7093803425429738190">Engadir emoticona</translation>
 <translation id="7105047059074518658">Inicia sesión para navegar facilmente en distintos dispositivos</translation>
 <translation id="7106762743910369165">A túa organización xestiona o teu navegador</translation>
-<translation id="7121362699166175603">Borra o historial e os completados automáticos na barra de enderezos. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7143462160780459030">Non se puido facer unha captura de pantalla. Téntao de novo.</translation>
 <translation id="7146622961999026732">Estes sitios e aplicacións parecen importantes para ti:</translation>
@@ -1064,6 +1070,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
+<translation id="7237045078887540010">Ao utilizar Chrome, aceptas as <ph name="BEGIN_TOS_LINK" />Condicións de servizo de Google<ph name="END_TOS_LINK" /> e as <ph name="BEGIN_ATOS_LINK" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Tamén é aplicable a <ph name="BEGIN_PRIVACY_LINK" />Política de privacidade<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Nota estilizada (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7252076891734325316">Coloca o teléfono preto do ordenador</translation>
@@ -1121,7 +1128,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="752220631458524187">Cando remates, desconéctao</translation>
 <translation id="7523960634226602883">Realizar buscas coa cámara usando Google Lens</translation>
 <translation id="753225086557513863">Programada para máis tarde</translation>
-<translation id="7560448309733608642">Borra o historial de todos os dispositivos sincronizados. É posible que a túa Conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>
 <translation id="756809126120519699">Borráronse os datos de Chrome</translation>
 <translation id="7577900504646297215">Xestionar intereses</translation>
@@ -1270,6 +1276,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
 <translation id="8352996530981010042">Non se puideron descargar as reaccións. Téntao de novo.</translation>
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>
+<translation id="8356078935982976590">Poderás xestionar con facilidade os controis multimedia, as sesións do modo de incógnito, as descargas e moito máis</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> descargas restauradas</translation>
 <translation id="8364299278605033898">Descubre sitios web populares</translation>
 <translation id="8368001212524806591">Facer seguimento do prezo</translation>
@@ -1427,6 +1434,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
+<translation id="9205933215779845960">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar a busca en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Non se pode realizar chamadas</translation>
 <translation id="9212845824145208577">Non se pode seguir baixando. Proba a comezar desde máis abaixo na páxina.</translation>

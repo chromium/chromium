@@ -747,6 +747,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ले तपाईंको भुक्तानी पुष्टि गर्नका निम्ति अतिरिक्त चरणहरू पूरा गर्नु पर्ने हुन सक्छ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीतिका बारेमा थप जान्नुहोस्</translation>
 <translation id="3295444047715739395">Chrome ब्राउजरका सेटिङमा गई आफ्ना पासवर्डहरू हेर्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="3303795387212510132">एपलाई <ph name="PROTOCOL_SCHEME" /> लिंकहरू खोल्ने अनुमति दिनुहोस्?</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3304073249511302126">ब्लुटुथ स्क्यान गर्ने सुविधा</translation>
 <translation id="3308006649705061278">सङ्गठनात्मक एकाइ (OU)</translation>
@@ -1269,6 +1270,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">नवौँ रोल</translation>
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
+<translation id="4905659621780993806">तपाईंका एड्मिनले तपाईंको डिभाइस <ph name="DATE" /> का दिन <ph name="TIME" /> बजे रिस्टार्ट गर्ने छन्। तपाईंको डिभाइस रिस्टार्ट हुनुअघि खोलिएका सबै वस्तु सेभ गर्नुहोस्।</translation>
 <translation id="4913987521957242411">सिरानको बायाँपट्टि प्वाल</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> स्थापना गर्नुहोस् (डाउनलोड गरिराख्नु पर्दैन)</translation>
 <translation id="4923459931733593730">भुक्तानी</translation>
@@ -1682,6 +1684,7 @@
 <translation id="6290238015253830360">तपाईंका सुझाव गरिएका लेखहरू यहाँ देखिन्छन्</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{तपाईंको डिभाइस अब रिस्टार्ट हुने छ}=1{तपाईंको डिभाइस १ सेकेन्डमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # सेकेन्डमा रिस्टार्ट हुने छ}}</translation>
 <translation id="6302269476990306341">Chrome को Google सहायक रोकिँदै छ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>
 <translation id="6312113039770857350">वेबपृष्ठ उपलब्ध छैन</translation>
@@ -2005,6 +2008,7 @@
 <translation id="7378627244592794276">होइन</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">लागू नहुने</translation>
+<translation id="7388594495505979117">{0,plural, =1{तपाईंको डिभाइस १ मिनेटमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # मिनेटमा रिस्टार्ट हुने छ}}</translation>
 <translation id="7390545607259442187">कार्डको पुष्टि गर्नुहोस्</translation>
 <translation id="7392089738299859607">ठेगाना परिवर्तन गर्नुहोस्</translation>
 <translation id="7399802613464275309">सुरक्षा जाँच</translation>
@@ -2361,6 +2365,7 @@
 <translation id="8507227106804027148">कमान्ड लाइन</translation>
 <translation id="8508648098325802031">खोज आइकन</translation>
 <translation id="8511402995811232419">कुकीहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="8519753333133776369">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको HID डिभाइस</translation>
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="8530813470445476232">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास र अन्य डेटा मेटाउनुहोस्</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>

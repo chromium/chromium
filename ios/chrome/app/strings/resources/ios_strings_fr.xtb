@@ -12,6 +12,7 @@
 
         
 Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
+<translation id="1054045277222934172">Vous pouvez remplacer le mode d'affichage par défaut du site par le mode ordinateur de bureau dans Paramètres &gt; Paramètres de contenu.</translation>
 <translation id="1063454504051558093">Utiliser un autre mot de passe…</translation>
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code scanné</translation>
@@ -182,6 +183,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2695507686909505111">Page traduite</translation>
+<translation id="2700241355396984822">Options pour définir les autorisations</translation>
 <translation id="2702801445560668637">Liste de lecture</translation>
 <translation id="2704491540504985681">Téléchargements</translation>
 <translation id="2704606927547763573">Copié</translation>
@@ -318,6 +320,8 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3861486700625780712">Se désabonner</translation>
 <translation id="3892144330757387737">Votre historique s'affichera ici</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vos favoris, historique, mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
+<translation id="3905353503976611311">Rechercher sur le Web</translation>
 <translation id="3913386780052199712">Connecté à Google Chrome</translation>
 <translation id="3915450441834151894">Informations sur le site</translation>
 <translation id="3922310737605261887">Rechercher le texte copié</translation>
@@ -347,6 +351,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
 <translation id="418156467088430727">Afficher version hors connexion dans nouvel onglet</translation>
 <translation id="4181841719683918333">Langues</translation>
+<translation id="4223967053752765281">Votre organisation a désactivé la connexion. Vos favoris, historique, mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="4237377247299956313">Appuyez sur <ph name="BEGIN_BOLD" />Navigateur par défaut<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Saisir la phrase secrète</translation>
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
@@ -371,6 +376,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4469418912670346607">Poursuivre la configuration</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
 <translation id="4476574785019001431">Paramètres</translation>
+<translation id="448433063499977729">La synchronisation a été désactivée</translation>
 <translation id="4496373720959965247">Ajoutez des onglets pour naviguer d'une page à l'autre</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
 <translation id="4505980578794259603">Dernière vérification <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5580834567471114021">Ajouter à la liste de lecture pour plus tard ?</translation>
 <translation id="5592679540098330836">Activer la synchronisation pour <ph name="NAME" /></translation>
 <translation id="560322036295180549">Désactivé par votre organisation</translation>
+<translation id="560999923643681074">Modifier l'accès</translation>
 <translation id="5614553682702429503">Enregistrer le mot de passe ?</translation>
 <translation id="5626245204502895507">Impossible de télécharger le fichier pour le moment.</translation>
 <translation id="5631164295104953411">Ajouter un mode de paiement</translation>
@@ -594,7 +601,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6389470377220713856">Nom sur la carte</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6410883413783534063">Utilisez les onglets pour consulter plusieurs pages en même temps</translation>
-<translation id="6417838470969808600">Vous disposez des favoris, de l'historique, des mots de passe et d'autres paramètres du compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="641799622251403418">Connecté en tant que <ph name="EMAIL" />.
 
 Vos données ont été chiffrées avec votre phrase secrète de synchronisation le <ph name="TIME" />. Saisissez-la pour lancer la synchronisation.</translation>
@@ -760,6 +766,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7856733331829174190">Téléchargement impossible</translation>
 <translation id="7859704718976024901">Historique de navigation</translation>
+<translation id="7884694604461143138">Rechercher dans l'historique (nombre de résultats : <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Pour protéger votre vie privée, Chrome ne renseigne pas automatiquement de champ.</translation>
 <translation id="7911190106180361398">Votre organisation ne vous permet pas de tout synchroniser.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -791,6 +798,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8076014560081431679">Les paramètres de site enregistrés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Il s'agit d'un paramètre géré, appuyez deux fois pour plus d'informations</translation>
 <translation id="8080028325999236607">Fermer tous les onglets</translation>
+<translation id="809543534949702122">Rechercher dans l'historique</translation>
 <translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
@@ -812,6 +820,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
+<translation id="8364085047956854021">Les autorisations de <ph name="SITE_NAME" /> seront désactivées lorsque vous quitterez ce site.</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
 <translation id="8407669440184693619">Aucun mot de passe trouvé pour ce site</translation>
@@ -898,6 +907,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9152539721251340337">Créer un code QR</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
+<translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>
 <translation id="9200875785104711666">Il y a <ph name="TIME" /> j</translation>
 <translation id="9203116392574189331">Handoff</translation>

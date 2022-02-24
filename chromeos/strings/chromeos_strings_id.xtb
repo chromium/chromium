@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mengupdate (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
 <translation id="1310380015393971138">Jaringan <ph name="NETWORK_NAME" /> tidak tersedia</translation>
+<translation id="131421566576084655">Tanggal reset data terakhir tidak tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
 <translation id="131461803491198646">Jaringan asal, tidak dalam jelajah</translation>
 <translation id="1327977588028644528">Gerbang</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Saya memiliki pasangan kunci</translation>
+<translation id="1435763214710588005">Otomatis mereset penggunaan data setiap bulan pada tanggal yang dipilih</translation>
 <translation id="1442433966118452622">Sumber gambar</translation>
 <translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Tidak dapat mengupdate <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Setel sebagai wallpaper</translation>
+<translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
+<translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> dari <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Pastikan pemindai dinyalakan dan tersedia melalui jaringan Anda atau koneksi langsung</translation>
+<translation id="4170180284036919717">Ambil foto</translation>
 <translation id="4170700058716978431">GAGAL</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
 <translation id="4213104098953699324">Keyboard USB</translation>
@@ -262,6 +267,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Kecocokan nama alternatif subjek</translation>
 <translation id="4536864596629708641">Konfigurasi IP</translation>
+<translation id="4546131424594385779">Buat video berulang</translation>
 <translation id="4548483925627140043">Sinyal tidak ditemukan</translation>
 <translation id="4556753742174065117">Semua firmware sudah diupdate</translation>
 <translation id="455835558791489930">Baterai <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -391,6 +397,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Buat pasangan kunci acak</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Aktifkan reset bulanan otomatis</translation>
 <translation id="6037291330010597344">Pengumpan dokumen pemindai kosong. Tambahkan dokumen, lalu coba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identitas Anonim</translation>
@@ -414,6 +421,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Tidak ada pemindai yang tersedia</translation>
 <translation id="6232017090690406397">Baterai</translation>
+<translation id="6235460611964961764">Reset penggunaan data secara manual</translation>
 <translation id="6243280677745499710">Yang disetel saat ini</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -443,6 +451,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6566314079205407217">Pemindaian multi-halaman</translation>
 <translation id="6574762126505704998">Isi</translation>
 <translation id="6575134580692778371">Tidak dikonfigurasi</translation>
+<translation id="6579509898032828423">Gunakan foto ini</translation>
 <translation id="6596816719288285829">Alamat IP</translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
@@ -489,6 +498,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7175037578838465313">Konfigurasi <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />. Administrator dapat mengonfigurasi perangkat dari jarak jauh.</translation>
 <translation id="7180611975245234373">Perbarui</translation>
+<translation id="7212734716605298123">Update firmware untuk perangkat eksternal</translation>
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -625,6 +635,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Gagal - Tidak ada baki</translation>
+<translation id="8923267550422472772">Tanggal reset</translation>
 <translation id="8928727111548978589">Gagal - Kertas habis</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
@@ -641,6 +652,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Gunakan video ini</translation>
 <translation id="9087578468327036362">Laporkan kueri ini</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
 <translation id="9095415590198785865">Perangkat akan diberikan kepada pemilik yang sama</translation>

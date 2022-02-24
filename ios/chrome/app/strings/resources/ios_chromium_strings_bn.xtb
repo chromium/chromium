@@ -3,6 +3,7 @@
 <translationbundle lang="bn">
 <translation id="102360288709523007">Google-এ ব্যবহারের পরিসংখ্যান এবং ক্র্যাশ রিপোর্ট পাঠিয়ে Chromium-কে আরও ভাল করে তুলতে সহায়তা করুন।</translation>
 <translation id="1047130070405668746">Chromium বেছে নিন</translation>
+<translation id="1091252999271033193">এর মানে Chromium প্রতিবার মোবাইল সাইটের অনুরোধ করবে।</translation>
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1257458525759135959">ছবি সেভ করতে, সেটিংসে ট্যাপ করুন যাতে Chromium আপনার ফটো যোগ করতে পারে</translation>
 <translation id="1289216811211435351">Chromium-এ পাল্টান</translation>
@@ -26,6 +27,7 @@
 <translation id="2178608107313874732">Chromium এই মুহূর্তে আপনার ক্যামেরা ব্যবহার করতে পারছে না</translation>
 <translation id="2195025571279539885">আপনি কি এরপর থেকে এই সাইটের <ph name="LANGUAGE_NAME" /> পৃষ্ঠাগুলিকে অনুবাদ করে দেওয়ার জন্য Chromium থেকে প্রম্পট পেতে চান?</translation>
 <translation id="2218146227246548550">Chromium ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">এর মানে Chromium প্রতিবার ডেস্কটপ সাইটের অনুরোধ করবে।</translation>
 <translation id="2426113998523353159">Chromium ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে।</translation>
 <translation id="2450140762465183767">এখন থেকে আপনি চাইলে মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ট্যাপ করে, যেকোনও সময় তা Chromium ব্রাউজারে খুলতে পারেন।</translation>
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /> বেছে নিন</translation>
@@ -42,6 +44,7 @@
 <translation id="3344973607274501920">Chromium আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="3639997914391704523">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Chromium তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
+<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium ব্যবহার করছিলেন এবং এই ডিভাইসে বুকমার্ক, পাসওয়ার্ড এবং অন্যান্য সেটিংস রয়ে গেছে।</translation>
 <translation id="3805899903892079518">আপনার ফটো এবং ভিডিওগুলিতে Chromium এর অ্যাক্সেস নেই৷ iOS সেটিংস &gt; গোপনীয়তা &gt; ফটোগুলিতে অ্যাক্সেস সক্ষম করুন৷</translation>
 <translation id="4043291146360695975">শুধুমাত্র এই ডিভাইসের 'পাসওয়ার্ড ম্যানেজারে' পাসওয়ার্ড সেভ করা হয়।</translation>
 <translation id="4099085513035183040">এই সুবিধা Chromium-এর বিটা ভার্সনে কাজ করে না</translation>

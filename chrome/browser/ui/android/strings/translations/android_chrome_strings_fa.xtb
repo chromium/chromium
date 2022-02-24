@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">نمایش محتوای بریده‌دان</translation>
 <translation id="3098745985164956033">‏برخی از تصاویر به Google ارسال می‌شوند تا شرح آن‌ها برایتان بهبود یابد</translation>
 <translation id="3114507951000454849">اخبار <ph name="NEWS_ICON" /> امروز را بخوانید</translation>
+<translation id="311958134571892113">پیوندداده‌شده با</translation>
 <translation id="3123734510202723619">اطلاعیه‌ها</translation>
 <translation id="3134784203083076891">»</translation>
 <translation id="314939179385989105">‏صفحه اصلی Chrome</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140709049082532940">محافظت بهبودیافته:</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
-<translation id="6141988275892716286">تأیید بارگیری</translation>
 <translation id="614940544461990577">این موارد را امتحان کنید:</translation>
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
 <translation id="6154478581116148741">برای صادر کردن گذرواژه‌ها از این دستگاه، قفل صفحه را در تنظیمات روشن کنید.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="7093803425429738190">افزودن احساس</translation>
 <translation id="7105047059074518658">برای مرور آسان‌تر در دستگاه‌ها به سیستم وارد شوید</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
-<translation id="7121362699166175603">‏سابقه و تکمیل‌های خودکار را در نوار نشانی پاک می‌کند. ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="7138678301420049075">دیگر</translation>
 <translation id="7143462160780459030">نماگرفت ثبت نشد. دوباره امتحان کنید.</translation>
 <translation id="7146622961999026732">به‌نظر می‌رسد این سایت‌ها و برنامه‌ها برای شما مهم هستند:</translation>
@@ -1129,7 +1128,6 @@
 <translation id="752220631458524187">وقتی کارتان تمام شد، اتصال را قطع کنید</translation>
 <translation id="7523960634226602883">‏جستجو با دوربین ازطریق «لنز Google»</translation>
 <translation id="753225086557513863">برای فرصتی دیگر زمان‌بندی شده است</translation>
-<translation id="7560448309733608642">‏سابقه را از همه دستگاه‌های همگام‌سازی‌شده پاک می‌کند. ممکن است «حساب Google» شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="7562080006725997899">پاک کردن داده‌های مرور</translation>
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
 <translation id="7577900504646297215">مدیریت علایق</translation>

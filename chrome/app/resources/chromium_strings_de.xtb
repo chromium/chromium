@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium benötigt Zugriff auf die Kamera, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen}=1{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator müssen Sie Chromium neu starten, um ein Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="1625909126243026060">Hiermit können Sie sich die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chromium ansehen</translation>
+<translation id="1632539827495546968">Wenn Sie dieses Konto nur einmal verwenden möchten, können Sie den <ph name="GUEST_LINK_BEGIN" />Gastmodus<ph name="GUEST_LINK_END" /> in Chromium nutzen. Wenn Sie ein Konto für jemand anderen hinzufügen möchten, können Sie <ph name="LINK_BEGIN" />Ihrem <ph name="DEVICE_TYPE" /> eine neue Person hinzufügen<ph name="LINK_END" />.
+
+Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglicherweise für dieses Konto. Sie können Ihre Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="1708666629004767631">Es gibt eine neue, sicherere Version von Chromium.</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne Ihr Wissen hinzugefügt wurden.</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Sie melden sich mit einem verwalteten Konto an und ermöglichen dessen Administrator Zugriff auf Ihr Chromium-Profil. Ihre Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Sie können diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn Sie Ihre bestehenden Chromium-Daten getrennt verwenden möchten, können Sie ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Wenn Sie diese Einstellung deaktivieren, können Sie sich auf Websites von Google wie beispielsweise Gmail anmelden, ohne sich auch in Chromium anmelden zu müssen</translation>
 <translation id="1929939181775079593">Chromium reagiert nicht. Jetzt neu starten?</translation>
+<translation id="1940680973325097484">Wenn Sie dieses Konto nur einmal verwenden möchten, können Sie den Gastmodus in Chromium nutzen. Wenn Sie ein Konto für jemand anderen hinzufügen möchten, können Sie <ph name="LINK_BEGIN" />Ihrem <ph name="DEVICE_TYPE" /> eine neue Person hinzufügen<ph name="LINK_END" />.
+
+Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglicherweise für dieses Konto. Sie können Ihre Google-Konten in den <ph name="SETTINGS_LINK_BEGIN" />Einstellungen<ph name="SETTINGS_LINK_END" /> verwalten.</translation>
 <translation id="1966382378801805537">Chromium kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="1981611865800294956">Neu starten, um &amp;Chromium OS zu aktualisieren</translation>
 <translation id="2008474315282236005">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chromium an.</translation>

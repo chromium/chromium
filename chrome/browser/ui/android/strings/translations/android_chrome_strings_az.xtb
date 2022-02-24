@@ -372,6 +372,7 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="3091010850649238832">Mübadilə buferindəki kontenti göstərin</translation>
 <translation id="3098745985164956033">Sizin üçün təsvirləri yaxşılaşdırmaq üçün bəzi şəkillər Google'a göndərilir</translation>
 <translation id="3114507951000454849">Bugünün <ph name="NEWS_ICON" /> xəbərlərini oxuyun</translation>
+<translation id="311958134571892113">bununla əlaqələndirildi:</translation>
 <translation id="3123734510202723619">Elanlar</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome’un əsas səhifəsi</translation>
@@ -873,7 +874,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="6138832295072039549">Sayt ayarlarınızı burada dəyişdirin</translation>
 <translation id="6140709049082532940">Geniş qoruma:</translation>
 <translation id="6140912465461743537">Ölkə/Region</translation>
-<translation id="6141988275892716286">Endirməni təsdiq edin</translation>
 <translation id="614940544461990577">Cəhd edin:</translation>
 <translation id="6150320133806434356">Əlfəcin yadda saxlanıldı</translation>
 <translation id="6154478581116148741">Bu cihazdan parolları eksport etmək üçün Ayarlarda ekran kilidini aktiv edin</translation>
@@ -1053,7 +1053,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="7093803425429738190">Emosiya əlavə edin</translation>
 <translation id="7105047059074518658">Cihazlar arasında asan baxış üçün daxil olun</translation>
 <translation id="7106762743910369165">Təşkilatınız brauzerinizi idarə edir</translation>
-<translation id="7121362699166175603">Ünvan penelindəki tarixçə və avtomatik tamamlamanı silir. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> linkində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər.</translation>
 <translation id="7138678301420049075">Digər</translation>
 <translation id="7143462160780459030">Skrinşot çəkmək olmur. Yenə cəhd edin.</translation>
 <translation id="7146622961999026732">Bu saytlar və tətbiqlər sizə vacib görünür:</translation>
@@ -1127,7 +1126,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="752220631458524187">Hazır olduqda bağlantını ayırın</translation>
 <translation id="7523960634226602883">Google Linza istifadə edərək kameranızla axtarış edin</translation>
 <translation id="753225086557513863">Sonraya planlaşdırıldı</translation>
-<translation id="7560448309733608642">Bütün sinxronizasiya edilmiş cihazlardan tarixçəni təmizləyir. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> keçidində Google Hesabına məxsus axtarış tarixçəsinin başqa formaları ola bilər.</translation>
 <translation id="7562080006725997899">Baxış datası silinir</translation>
 <translation id="756809126120519699">Chrome datası təmizləndi</translation>
 <translation id="7577900504646297215">Maraqları idarə edin</translation>

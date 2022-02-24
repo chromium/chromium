@@ -748,6 +748,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> อาจต้องทำตามขั้นตอนเพิ่มเติมเพื่อยืนยันการชำระเงิน</translation>
 <translation id="3293642807462928945">ดูข้อมูลเพิ่มเติมเกี่ยวกับนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
+<translation id="3303795387212510132">อนุญาตให้แอปเปิดลิงก์ <ph name="PROTOCOL_SCHEME" /> ไหม</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3304073249511302126">การสแกนหาบลูทูธ</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>

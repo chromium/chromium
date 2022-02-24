@@ -372,6 +372,7 @@
 <translation id="3091010850649238832">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
+<translation id="311958134571892113">အောက်ပါနှင့် လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
@@ -873,7 +874,6 @@
 <translation id="6138832295072039549">သင့်ဝဘ်ဆိုက်ဆက်တင်များကို ဤနေရာတွင် ပြောင်းပါ</translation>
 <translation id="6140709049082532940">အရည်အသွေးမြှင့်တင်ထားသည့် ကာကွယ်မှု -</translation>
 <translation id="6140912465461743537">နိုင်ငံ/ဒေသ</translation>
-<translation id="6141988275892716286">ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="614940544461990577">စမ်းကြည့်ပါ −</translation>
 <translation id="6150320133806434356">လိပ်စာ သိမ်းထားသည်</translation>
 <translation id="6154478581116148741">ဤစက်မှ သင့်စကားဝှက်များ တင်ပို့ရန် ဆက်တင်များတွင် မျက်နှာပြင်လော့ခ် ဖွင့်ပါ</translation>
@@ -1054,7 +1054,6 @@
 <translation id="7093803425429738190">ခံစားချက်ထည့်ရန်</translation>
 <translation id="7105047059074518658">စက်များကြား လွယ်ကူစွာကြည့်ရှုနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7106762743910369165">သင့်ဘရောင်ဇာကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
-<translation id="7121362699166175603">လိပ်စာဘားရှိ မှတ်တမ်းနှင့် အလိုအလျောက်ဖြည့်ပေးခြင်းများကို ဖျက်လိုက်ပါလိမ့်မည်။ သင့်  Google အကောင့်က ဖွင့်ကြည့်ထားသောမှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်။</translation>
 <translation id="7138678301420049075">အခြား</translation>
 <translation id="7143462160780459030">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်၍ မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7146622961999026732">ဤဝဘ်ဆိုက်နှင့် အက်ပ်များက သင့်အတွက် အရေးကြီးပုံရသည်-</translation>
@@ -1128,7 +1127,6 @@
 <translation id="752220631458524187">ပြီးသွားသည့်အခါ ချိတ်ဆက်မှုဖြုတ်ပါ</translation>
 <translation id="7523960634226602883">Google Lens ကိုသုံး၍ သင့်ကင်မရာဖြင့် ရှာဖွေရန်</translation>
 <translation id="753225086557513863">နောင်အတွက် စီစဉ်ထားသည်</translation>
-<translation id="7560448309733608642">စင့်ခ်လုပ်ထားသော စက်အားလုံးမှ မှတ်တမ်းကို ရှင်းထုတ်သည်။ သင့် Google Account သည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုခြင်းမှတ်တမ်းများ ရှိနေနိုင်သည်။</translation>
 <translation id="7562080006725997899">ဘရောင်ဇာ ဒေတာကို ရှင်းရန်</translation>
 <translation id="756809126120519699">Chrome ဒေတာကို ရှင်းလင်းလိုက်ပါပြီ</translation>
 <translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>

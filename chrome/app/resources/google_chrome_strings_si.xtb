@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">Chrome යාවත්කාලීන කළ නොහැක</translation>
 <translation id="1154147086299354128">&amp;Chrome තුළ විවෘත කරන්න</translation>
 <translation id="1182414570724401860">Chrome ඔබ මෙම ගොනුව බාගැනීම හෝ විවෘත කිරීම නොකළ යුතු බව නිර්දේශ කරයි</translation>
+<translation id="1201241595274620956">CloudReady 2.0 නියම</translation>
 <translation id="1278833599417554002">&amp;Chrome යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> හට ඔබ මෙම උපාංගය භාවිත කිරීමට පෙර පහත සේවා නියම කියවා පිළිගැනීමට අවශ්‍යයි. මෙම නියම Google Chrome OS නියම පුළුල් කිරීම, වෙනස් කිරීම හෝ සීමා කිරීම නොකරයි.</translation>
 <translation id="1302523850133262269">කරුණාකර Chrome නවතම පද්ධති යාවත්කාලීන ස්ථාපනය කරන අතරතුර රැඳී සිටින්න.</translation>
@@ -39,11 +40,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ඔබ ඔබගේ <ph name="TARGET_DEVICE_NAME" /> හි Chrome වෙත පුරා ඇති බව සහතික කර ගෙන අනතුරුව නැවත යැවීමට උත්සාහ කරන්න.</translation>
 <translation id="1812689907177901597">මෙය අක්‍රිය කිරීමෙන්, ඔබට Chrome වෙත පුරනය නොවී Gmail වැනි Google වෙබ් අඩවිවලට පුරනය විය හැක.</translation>
+<translation id="1847459800604232346">CloudReady 2.0 යළි අරඹන්න</translation>
 <translation id="1860536484129686729">Chrome හට මෙම අඩවිය සදහා ඔබේ කැමරාවට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
+<translation id="1865667134297225786">CloudReady 2.0 හට ඔබගේ ගිණුම් පිරීමේ විස්තර යල් පැන ගොස් ඇති හෙයින් සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="1873233029667955273">Google Chrome ඔබේ පෙරනිමි බ්‍රව්සරය නොවේ</translation>
 <translation id="1874309113135274312">Google Chrome බීටා (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome යල් පැන ගොස් ඇත</translation>
+<translation id="1887927549935943139">ඔබගේ වසම සඳහා සමමුහුර්තකරණය ලබා ගත නොහැකි නිසා CloudReady 2.0 හට ඔබගේ දත්ත සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="1919130412786645364">Chrome පුරනයට ඉඩ දෙන්න</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">එක් එක් පැතිකඩ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේවල් වැනි එහිම Chrome තොරතුරු දරයි</translation>
 <translation id="2063848847527508675">යාවත්කාලීනය යෙදීමට Chrome OS නැවත ඇරඹිය යුතුය.</translation>
 <translation id="2094919256425865063">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
@@ -54,12 +59,15 @@
 <translation id="2258103955319320201">ඔබගේ සියලු උපාංග හරහා ඔබගේ Chrome බ්‍රවුසර දේවල්වලට ප්‍රවේශ වීමට, පුරා සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="2290014774651636340">Google API යතුරු අහිමිව ඇත. Google Chrome හි ඇතැම් ක්‍රියාකාරීත්ව අක්‍රීය වනු ඇත.</translation>
 <translation id="2290095356545025170">ඔබට Google Chrome ඉවත්කිරීමට අවශ්‍ය බව විශ්වාසද?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංගය<ph name="END_LINK_CROS_OSS" /> මගින්, <ph name="BEGIN_LINK_LINUX_OSS" />Linux සංවර්ධන පරිසරය<ph name="END_LINK_LINUX_OSS" /> ලෙස හැකියාව ලබාදී ඇත.</translation>
 <translation id="2309047409763057870">මෙය Google Chrome හි දෙවන ස්ථාපනයක් වන අතර, ඔබේ පෙරනිමි බ්‍රව්සරය කළ නොහැකිය.</translation>
 <translation id="2345992953227471816">මෙම දිගුවල අනිෂ්ට මෘදුකාංග අඩංගු බව Chrome සොයා ගෙන ඇත:</translation>
 <translation id="2348335408836342058">Chrome හට මෙම අඩවිය සදහා ඔබේ කැමරාවට සහ මයික්‍රෆෝනයට ප්‍රවේශ වීමට අවසර අවශ්‍යයි</translation>
 <translation id="234869673307233423">Chrome හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="235650106824528204">මෙම පැතිකඩ භාවිතා කරන විට ජනනය කරන කිනම් හෝ Chrome දත්ත (පිටුසන්, ඉතිහාසය, මුරපද සහ වෙනත් සැකසීම් වැනි) කාර්යාල පැතිකඩ පරිපාලක විසින් ඉවත් කළ හැකිය. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
+<translation id="2371517829376452747">මෙම පිටුවෙහි සැකසීමක් නොපෙන්වන්නේ නම්, ඔබගේ <ph name="LINK_BEGIN" />
+     CloudReady 2.0 සැකසීම්<ph name="LINK_END" /> තුළ සොයා බලන්න</translation>
 <translation id="2429317896000329049">ඔබේ වසම සඳහා සම්මුහු නොපවතින බැවින් Google Chrome හට ඔබේ දත්ත සම්මුහු කළ නොහැකි විය.</translation>
 <translation id="2467438592969358367">Google Chrome හට ඔබගේ මුරපද නිර්යාත කිරීමට අවශ්‍යය. මේ සඳහා අවසර දීමට ඔබගේ Windows මුරපදය ටයිප් කරන්න.</translation>
 <translation id="2485422356828889247">අස්ථාපනය</translation>
@@ -88,6 +96,7 @@
 <translation id="2926676257163822632">දුර්වල මුරපද අනුමානය කිරීමට පහසුයි. <ph name="BEGIN_LINK" />ඔබ සඳහා ප්‍රබල මුරපද තැනීමට සහ මතක තබා ගැනීමට<ph name="END_LINK" /> Chrome හට ඉඩ දෙන්න.</translation>
 <translation id="2926952073016206995">මෙම අඩවිය සඳහා Chrome හට කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="2929907241665500097">Chrome යාවත්කාලීන නොවිය, යම් දෙයක් වැරදිණි. <ph name="BEGIN_LINK" />Chrome යාවත්කාලීන ගැටලු සහ අසමත් වූ යාවත්කාලීන නිරාකරණ කරන්න.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0 යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ජාල පුරනය - Chrome</translation>
 <translation id="303514781271618814">Chrome ඔබගේ දත්ත අඩුවෙන් භාවිත කරමින් එකම බ්‍රවුස් කිරීමේ අත්දැකීම ලබා දීමට අඩවිවලට ඉඩ සලසන නව විශේෂාංග ගවේෂණය කරයි</translation>
 <translation id="3037838751736561277">Google Chrome පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
@@ -114,6 +123,7 @@
 <translation id="3533694711092285624">සුරැකි මුරපද නැත. ඔබ ඔබේ මුරපද පරීක්‍ෂා කරන විට Chrome හට ඒවා පරීක්‍ෂා කළ හැක.</translation>
 <translation id="3541482654983822893">Chrome හට ඔබේ මුරපද පරීක්ෂා කළ නොහැක. පැය 24-කට පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3576528680708590453">ඔබේ පද්ධති පරිපාලකයා <ph name="TARGET_URL_HOSTNAME" /> වෙත ප්‍රවේශ වීමට වෛකල්පික බ්‍රවුසරයක් විවෘත කිරීමට Google Chrome වින්‍යාස කර ඇත.</translation>
+<translation id="3582634744482121096">විකල්පමය: දෝෂ නිර්ණ සහ භාවිත දත්ත ස්වයංක්‍රියව Google වෙත යැවීමෙන් CloudReady 2.0 විශේෂාංග සහ කාර්ය සාධනය වැඩිදියුණු කිරීමට උදවු වන්න.</translation>
 <translation id="3582972582564653026">ඔබගේ උපාංග හරහා Chrome සමමුහුර්ත කර පෞද්ගලීකරණය කරන්න</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ}=1{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{යාවත්කාලීනයක් යෙදීමට ඔබ Chrome නැවත ආරම්භ කිරීම පරිපාලකයාට අවශ්‍ය වේ. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
 <translation id="3622797965165704966">දැන් Chrome ඔබගේ Google ගිණුම සහ බෙදාගත් පරිගණක මත භාවිතා කිරීමට වඩාත් පහසුයි.</translation>
@@ -134,6 +144,7 @@
 <translation id="4149882025268051530">ස්ථාපකයට සංරක්ෂකය විහිදුවිය නොහැකි විය. කරුණාකර නැවත Google Chrome බාගන්න.</translation>
 <translation id="4191857738314598978">{0,plural, =1{දිනයක් ඇතුළත Chrome යළි දියත් කරන්න}one{දින # ක් ඇතුළත Chrome යළි දියත් කරන්න}other{දින # ක් ඇතුළත Chrome යළි දියත් කරන්න}}</translation>
 <translation id="4205939740494406371">Chrome හට ඔබේ මුරපද පරීක්ෂා කළ නොහැක. පැය 24-කට පසු නැවත උත්සාහ කරන්න, නැති නම් <ph name="BEGIN_LINK" />ඔබේ Google ගිණුම තුළ මුරපද පරීක්‍ෂා කරන්න<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0 පද්ධතිය</translation>
 <translation id="4242034826641750751">මෙම අඩවිය සඳහා Chrome හට මයික්‍රෆෝන සහ කැමරා අවසරය අවශ්‍යයි</translation>
 <translation id="424864128008805179">Chrome වෙතින් වරන්න</translation>
 <translation id="4251615635259297716">මෙම ගිණුමට Chrome දත්ත සම්බන්ධ කරන්නද?</translation>
@@ -151,7 +162,9 @@
 <translation id="4458462641685292929">Google Chrome මත තවත් මෙහෙයුමක් ක්‍රියාත්මක වෙමින් පවතී. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4480040274068703980">පිවිසුම් දෝශයක් හේතුවෙන් Chrome OS හට ඔබේ දත්ත සම්මුහු කළ නොහැක.</translation>
 <translation id="4521185804071812304">විකල්පමය: Google වෙත දෝෂහරණ සහ භාවිතයේ දත්ත ස්වයංක්‍රීයව යැවීමෙන් Chrome OS විශේෂාංග සහ ක්‍රියාකාරිත්වය වැඩි දියුණු කිරීමට උදවු කරන්න.</translation>
+<translation id="4539063627668028557">CloudReady 2.0 අනුවාදය</translation>
 <translation id="4561051373932531560">වෙබ් මත දුරකථනයක් ක්ලික් කර ඊට Skype! මඟින් කථා කිරීමට Google Chrome ඔබට ඉඩ ලබා දේ!</translation>
+<translation id="4562712242781620537">CloudReady 2.0 පද්ධතිය</translation>
 <translation id="4567424176335768812">ඔබ <ph name="USER_EMAIL_ADDRESS" /> ලෙස සයින් ඉන් වී තිබේ. ඔබට දැන් ඔබේ පිටු සලකුණු, ඉතිහාසය, සහ අනෙක් පසුතල වෙත ඔබේ අත්සන් කළ උපාංගයෙන් පිවිසිය හැකිය.</translation>
 <translation id="4571503333518166079">Chrome දැනුම් දීම් සැකසීම්වලට යන්න</translation>
 <translation id="459622048091363950">Chrome හට ප්‍රවේශය ඇති විට, වෙබ් අඩවි හට ඔබගෙන් ප්‍රවේශය සඳහා ඉල්ලීමට හැකිය.</translation>
@@ -177,6 +190,7 @@
 ඇතැම් විශේෂාංග නොපවතිනු ඇත. කරුණාකර Chrome නි නව සංස්කරණය භාවිතයට වෙනස් පැතිකඩ නාමාවලියක් භාවිත කරන්න.</translation>
 <translation id="521447420733633466">ඔබ උපාංගයක් බෙදා ගන්නේ නම්, මිතුරන්ට සහ පවුලේ අයට වෙන්ව බ්‍රවුස් කළ හැකි අතර ඔවුනට අවශ්‍ය ආකාරයට Chrome පිහිටුවිය හැකිය.</translation>
 <translation id="5251420635869119124">අමුත්තන්ට කිසිවක් තබා යෑමෙන් තොරව Chrome භාවිත කළ හැක.</translation>
+<translation id="5307623274346663914">යාවත්කාලීනය යෙදීමට CloudReady 2.0 නැවත ඇරඹිය යුතුය.</translation>
 <translation id="5334487786912937552">Chrome හට ගොනු බාගැනීමට ගබඩා අවසරය අවශ්‍යයි</translation>
 <translation id="5386244825306882791">තවද එය ඔබ Chrome විවෘත කරන විට හෝ Omnibox වෙතින් සොයන විට පෙන්වන වෙබ් පිටුව නිර්ණය කරයි.</translation>
 <translation id="5394833366792865639">Chrome පටිත්තක් බෙදා ගන්න</translation>
@@ -187,8 +201,10 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> අනතුරුදායක විය හැකිය, එම නිසා Chrome එය අවහිර කර ඇත.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{මෙම යාවත්කාලීනය යෙදීමට Chrome නැවත ආරම්භ කරන ලෙසට පරිපාලකයා ඔබට පවසයි}=1{මෙම යාවත්කාලීනය යෙදීමට Chrome නැවත ආරම්භ කරන ලෙසට පරිපාලකයා ඔබට පවසයි. ඔබේ අප්‍රසිද්ධ කවුළුව යළි විවෘත නොවෙයි.}one{මෙම යාවත්කාලීනය යෙදීමට Chrome නැවත ආරම්භ කරන ලෙසට පරිපාලකයා ඔබට පවසයි. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}other{මෙම යාවත්කාලීනය යෙදීමට Chrome නැවත ආරම්භ කරන ලෙසට පරිපාලකයා ඔබට පවසයි. ඔබේ අප්‍රසිද්ධ කවුළු # යළි විවෘත නොවෙයි.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 හට අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින් හැකියාව ලබාදී ඇත.</translation>
 <translation id="5686916850681061684">Google Chrome අභිරුචි කර පාලන කරන්න යම් දෙයකට ඔබේ අවධානය අවශ්‍යයි - විස්තර සඳහා ක්ලික් කරන්න.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 හට පිරීමේ දෝෂයක් හේතුවෙන් ඔබගේ දත්ත සමමුහුර්ත කළ නොහැකි විය.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome තත්පර 1කින් යළි ඇරඹෙනු ඇත}one{Google Chrome තත්පර #කින් යළි ඇරඹෙනු ඇත}other{Google Chrome තත්පර #කින් යළි ඇරඹෙනු ඇත}}</translation>
 <translation id="5736850870166430177">අඩවියක් ඔබගේ මුරපදය සොරා ගැනීමට උත්සාහ කළහොත්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chrome පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL සුරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවීමටද හැකිය</translation>
 <translation id="573759479754913123">Chrome OS පිළිබඳ</translation>
@@ -221,15 +237,23 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6679975945624592337">Chrome Run හට පසුබිම ධාවනය වීමට ඉඩ දෙන්න</translation>
 <translation id="6696915334902295848">මෙම අඩවිය සඳහා Chrome හට මයික්‍රෆෝන අවසරය අවශ්‍යයි</translation>
 <translation id="6739177684496155661">නව Chrome පැතිකඩක ඉදිරියට යන්නද?</translation>
+<translation id="6749459139769042303">CloudReady 2.0 සම්බන්ධව උදවු ලබා ගන්න</translation>
 <translation id="6750954913813541382">අක්‍ෂර වින්‍යාස දෝෂ නිවැරදි කිරීමට, නිඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Chrome විසින් Google වෙත යවනු ලැබේ</translation>
 <translation id="677276454032249905">කෙසේ වුවත් Chrome වෙතින් ඉවත් වන්න ද?</translation>
+<translation id="6814748008107187409">මෙම පිටුවෙහි සැකසීමක් නොපෙන්වන්නේ නම්, ඔබගේ <ph name="LINK_BEGIN" />
+      Chrome OS සැකසීම්<ph name="LINK_END" /> තුළ සොයා බලන්න</translation>
 <translation id="683440813066116847">Google Chrome Canary හි අභ්‍යන්තර නියෝගය වන්නේ   mDNS තදබදයයි.</translation>
 <translation id="6881299373831449287">Chrome යාවත්කාලීන කරමින්</translation>
 <translation id="6885412569789873916">Chrome බීටා යෙදුම්</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> හට ඔබ මෙම උපාංගය භාවිත කිරීමට පෙර පහත සේවා නියම කියවා පිළිගැනීම අවශ්‍යයි. මෙම නියම Google CloudReady 2.0 නියම පුළුල් කිරීම, වෙනස් කිරීම හෝ සීමා කිරීම නොකරයි.</translation>
 <translation id="6943584222992551122">මෙම පුද්ගලයාගේ බ්‍රවුස් කිරීමේ දත්ත මෙම උපාංගයෙන් මකනු ලැබේ. දත්ත ප්‍රතිසාධන කිරීමට, <ph name="USER_EMAIL" /> ලෙස Chrome වෙත පුරන්න.</translation>
 <translation id="6967962315388095737">mDNS තදබදයට ඉඩ දීමට Google Chrome බීටා සඳහා බන්ධිත රීතිය.</translation>
 <translation id="6989339256997917931">Google ක්‍රෝම් යාවත්කාල වී ඇත. නමුත් ඔබ එය අවම වශයෙන් දින 30ක් වත් භාවිත කර නොමැත.</translation>
+<translation id="700644001690392105">CloudReady 2.0 ගැන</translation>
 <translation id="7025800014283535195">ඔබට මෙහිදී Chrome පැතිකඩවල් අතර මාරු විය හැකිය</translation>
+<translation id="7036251913954633326">ඔබට මෙම ගිණුම එක් වරක් පමණක් භාවිත කිරීමට අවශ්‍ය නම්, ඔබට Chrome බ්‍රවුසරයේ <ph name="GUEST_LINK_BEGIN" />ආගන්තුක ප්‍රකාරය<ph name="GUEST_LINK_END" /> භාවිත කළ හැකිය. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබගේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයකු එක් කරන්න<ph name="LINK_END" />.
+
+ඔබ දැනටමත් වෙබ් අඩවි සහ යෙදුම් සඳහා ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට ඔබගේ Google ගිණුම් <ph name="SETTINGS_LINK_BEGIN" />සැකසීම්<ph name="SETTINGS_LINK_END" /> තුළ කළමනාකරණය කිරීමට හැකිය.</translation>
 <translation id="7062128746136194023">ඔබේ මාපිය Chrome සඳහා "වෙබ් අඩවි, යෙදුම් සහ දිගු සඳහා වන අවසර" අක්‍රිය කර ඇත. මෙම <ph name="EXTENSION_TYPE_PARAMETER" /> එක් කිරීමට අවසර නැත.</translation>
 <translation id="7085332316435785646">Google සේවාවල වඩාත් පුද්ගලිකකරණය කළ අත්දැකීම් සඳහා Chrome ඉතිහාසය ඇතුළත් කළ යුතුද යන්න තෝරන්න</translation>
 <translation id="7088681679121566888">Chrome යාවත්කාලීනයි</translation>
@@ -243,6 +267,9 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7296210096911315575">වැදගත් භාවිතය සහ ආරක්‍ෂක තොරතුරු</translation>
 <translation id="7308322188646931570">Chrome හට ගොනු බාගැනීමට ආචයන ප්‍රවේශය අවශ්‍යයි</translation>
 <translation id="7339898014177206373">නව කවුළුව</translation>
+<translation id="7388770099345495132">ඔබට මෙම ගිණුම එක් වරක් පමණක් භාවිත කිරීමට අවශ්‍ය නම්, ඔබට Chrome බ්‍රවුසරයේ ආගන්තුක ප්‍රකාරය භාවිත කළ හැකිය. ඔබට වෙනත් යම් කෙනෙකු සඳහා ගිණුමක් එක් කිරීමට අවශ්‍ය නම්, ඔබගේ <ph name="DEVICE_TYPE" /> වෙත <ph name="LINK_BEGIN" />නව පුද්ගලයකු එක් කරන්න<ph name="LINK_END" />.
+
+ඔබ දැනටමත් වෙබ් අඩවි සහ යෙදුම් සඳහා ලබා දී ඇති අවසර මෙම ගිණුමට අදාළ විය හැකිය. ඔබට ඔබගේ Google ගිණුම් <ph name="SETTINGS_LINK_BEGIN" />සැකසීම්<ph name="SETTINGS_LINK_END" /> තුළ කළමනාකරණය කිරීමට හැකිය.</translation>
 <translation id="7398801000654795464">ඔබ Chrome වෙත <ph name="USER_EMAIL_ADDRESS" /> ලෙස පුරා තිබුණි. කරුණාකර නැවත පිරීමට එම ගිණුමම භාවිතා කරන්න.</translation>
 <translation id="7408085963519505752">Chrome OS නියම</translation>
 <translation id="7419046106786626209">Chrome OS ඔබේ වසම සඳහා සම්මුහුර්ත ලද නොහැකි නිසා Google Chrome හට ඔබේ දත්ත සම්මුහුර්ත කළ නොහැකි විය.</translation>
@@ -250,6 +277,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7486227612705979895">ලිපින තීරුවේ යෝජනා කිරීමට Chrome ඔබගේ Drive ප්‍රවේශ කරනු ඇත</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">ඔබේ උපාංගය යාවත්කාලීනද බැලීමට <ph name="LINK_BEGIN" />Chrome OS සැකසුම්<ph name="LINK_END" /> වෙත යන්න</translation>
+<translation id="7580049017368059129">ඔබගේ උපාංගය යාවත්කාලීනදැයි බැලීමට, <ph name="LINK_BEGIN" />CloudReady 2.0 සැකසීම්<ph name="LINK_END" /> වෙත යන්න</translation>
 <translation id="7592736734348559088">Google Chrome ට ඔබේ සයින් ඉන් විස්තර යල් පැනගොස් ඇති හෙයින් සමමු කළ නොහැකි විය.</translation>
 <translation id="7626032353295482388">Chrome වෙත පිළිගනිමු</translation>
 <translation id="7629695634924605473">Chrome ඔබට ඔබේ මුරපද කිසි විටෙක හෝ අවදානමට ලක් වී තිබේද යන්න දන්වයි</translation>

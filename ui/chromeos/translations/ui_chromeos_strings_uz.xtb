@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Bu jild Linuxga ulashilgan</translation>
 <translation id="1864756863218646478">Fayl topilmadi.</translation>
 <translation id="1884013283844450420">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish</translation>
+<translation id="1914901738028575085">CloudReady 2.0 qurilmasi</translation>
 <translation id="1920670151694390848">Malayalam tili transliteratsiyasi</translation>
 <translation id="1920798810075583923">Tarvuz</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandi</translation>
@@ -901,6 +902,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8714406895390098252">Velosiped</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> tanlandi.</translation>
 <translation id="872537912056138402">Xorvat</translation>
+<translation id="873847021056608403">CloudReady 2.0 qurilmalari</translation>
 <translation id="8743164338060742337">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Ulanish</translation>
 <translation id="8750438273876807512">Faylni tanlab, <ph name="ICON" /> ustiga bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8787254343425541995">Umumiy tarmoqlarga proksi-serverlardan foydalanishga ruxsat berish</translation>

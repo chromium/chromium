@@ -521,6 +521,7 @@
 <translation id="2523886232349826891">ఈ పరికరంలో మాత్రమే సేవ్ చేయబడి ఉంటుంది</translation>
 <translation id="2524461107774643265">మరింత సమాచారాన్ని జోడించండి</translation>
 <translation id="2529899080962247600">ఈ ఫీల్డ్‌లో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు. అన్ని తదుపరి ఎంట్రీలు విస్మరించబడతాయి.</translation>
+<translation id="2535585790302968248">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{మరియు మరో 1}other{మరియు మరో #}}</translation>
 <translation id="2536110899380797252">అడ్రస్‌ను జోడించు</translation>
 <translation id="2539524384386349900">గుర్తించు</translation>
@@ -587,6 +588,7 @@
 <translation id="2709516037105925701">ఆటో-ఫిల్</translation>
 <translation id="2713444072780614174">తెలుపు</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ పేమెంట్‌లు, క్రెడిట్ కార్డ్ సమాచారం మేనేజ్ చేయడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="271663710482723385">ఫుల్ స్క్రీన్ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| నొక్కండి</translation>
 <translation id="2721148159707890343">రిక్వెస్ట్‌ విజయవంతం అయింది</translation>
 <translation id="2723669454293168317">Chrome సెట్టింగ్‌లలో భద్రతా తనిఖీని రన్ చేయండి</translation>
 <translation id="2726001110728089263">సైడ్ ట్రే</translation>
@@ -752,6 +754,7 @@
 <translation id="3288238092761586174">మీ పేమెంట్‌ను వెరిఫై చేయడానికి, <ph name="URL" /> అదనపు దశలను తీసుకోవాల్సి రావచ్చు</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> విధానం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవడానికి యాప్‌ను అనుమతించాలా?</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3304073249511302126">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="3308006649705061278">ఆర్గనైజేషనల్ యూనిట్ (OU)</translation>
@@ -1262,6 +1265,7 @@
 <translation id="4854362297993841467">ఈ బట్వాడా పద్ధతి అందుబాటులో లేదు. వేరే పద్ధతిని ప్రయత్నించండి.</translation>
 <translation id="4854853140771946034">Google Keepలో త్వరగా కొత్త నోట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="485902285759009870">కోడ్‌ను వెరిఫై చేస్తోంది...</translation>
+<translation id="4866506163384898554">మీ కర్సర్‌‌ను చూపించడానికి |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| నొక్కండి</translation>
 <translation id="4876188919622883022">సరళీకృత వీక్షణ</translation>
 <translation id="4876305945144899064">వినియోగదారు పేరు లేదు</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ఏవీ లేవు}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1485,6 +1489,7 @@
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5560088892362098740">గడువు ముగింపు తేదీ</translation>
 <translation id="55635442646131152">డాక్యుమెంట్ చుట్టుగీత</translation>
+<translation id="5565613213060953222">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="5565735124758917034">సక్రియం</translation>
 <translation id="5570825185877910964">ఖాతాను సంరక్షించు</translation>
 <translation id="5571083550517324815">ఈ అడ్రస్‌ నుండి పికప్ చేసుకోవడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
@@ -1951,6 +1956,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> స్టోరేజీని ఖాళీ చేస్తుంది. కొన్ని సైట్‌లను మీరు తర్వాతిసారి సందర్శించినప్పుడు అవి మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="719464814642662924">వీసా</translation>
 <translation id="7201591969684833065">మీ నిర్వాహకుడు వీటిని చూడగలరు:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="7202346780273620635">లెటర్-అదనం</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> భద్రతా ప్రమాణాలకు కట్టుబడి లేదు.</translation>
 <translation id="7210993021468939304">కంటెయినర్ లోపల Linux యాక్టివిటీ, కంటెయినర్ లోపల Linux యాప్‌లను ఇన్‌స్టాల్ చేయవచ్చు</translation>
@@ -2216,6 +2222,7 @@
 <translation id="799149739215780103">బైండ్</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" />తో స్క్రీన్ షేరింగ్ కొనసాగించబడింది</translation>
 <translation id="7995512525968007366">పేర్కొనబడలేదు</translation>
+<translation id="7998269595945679889">అజ్ఞాత ట్యాబ్ బటన్‌ను తెరవండి, ప్రైవేట్‌గా బ్రౌజ్ చేసేందుకు కొత్త అజ్ఞాత ట్యాబ్‌ను తెరవడానికి, Enterను నొక్కండి</translation>
 <translation id="800218591365569300">మెమరీని ఖాళీ చేయడానికి ఇతర ట్యాబ్‌లు లేదా ప్రోగ్రామ్‌లను మూసివేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ఈ కార్డ్, దీని బిల్లింగ్ అడ్రస్‌ సేవ్ చేయబడతాయి. <ph name="USER_EMAIL" />కు సైన్ ఇన్ చేసినప్పుడు మీరు దీనిని ఉపయోగించగలరు.}other{ఈ కార్డ్‌లు, వీటి బిల్లింగ్ అడ్రస్‌లు సేవ్ చేయబడతాయి. <ph name="USER_EMAIL" />కు సైన్ ఇన్ చేసినప్పడు, మీరు వీటిని ఉపయోగించగలరు.}}</translation>

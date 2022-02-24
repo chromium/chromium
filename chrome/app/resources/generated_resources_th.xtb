@@ -284,6 +284,7 @@
 <translation id="1276994519141842946">ถอนการติดตั้ง <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="1277020343994096713">สร้าง PIN ใหม่ที่ต่างจาก PIN ปัจจุบัน</translation>
 <translation id="1278859221870828664">ตรวจสอบแอปและบริการของ Google Play</translation>
+<translation id="1279024913354609713">ไม่อนุญาต</translation>
 <translation id="127946606521051357">อุปกรณ์ใกล้เคียงกำลังจะแชร์</translation>
 <translation id="1280965841156951489">แก้ไขไฟล์</translation>
 <translation id="1282465000333679776">แชร์เสียงของระบบ</translation>
@@ -676,7 +677,6 @@
 <translation id="1644852018355792105">ป้อนรหัสผ่านบลูทูธของอุปกรณ์ <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527">Smart Lock จำเป็นต้องใช้การล็อกหน้าจอในโทรศัพท์เพื่อรักษา <ph name="DEVICE_TYPE" /> ของคุณให้ปลอดภัย</translation>
 <translation id="1646982517418478057">โปรดป้อนรหัสผ่านเพื่อเข้ารหัสใบรับรองนี้</translation>
-<translation id="1647408325348388858">เปิดและแก้ไข <ph name="FILE_NAME" /> ในเว็บแอปนี้ใช่ไหม</translation>
 <translation id="1648528859488547844">ใช้ Wi‑Fi หรือเครือข่ายมือถือเพื่อระบุตำแหน่ง</translation>
 <translation id="164936512206786300">เลิกจับคู่อุปกรณ์บลูทูธ</translation>
 <translation id="1651008383952180276">คุณต้องป้อนรหัสผ่านเดียวกัน 2 ครั้ง</translation>
@@ -1187,6 +1187,7 @@
 <translation id="2154502158735983655">อ่านข้อมูลอุปกรณ์ Chrome OS และข้อมูลในอุปกรณ์</translation>
 <translation id="2155772377859296191">ดูเหมือน <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">อย่าถามอีกเมื่อเปิดไฟล์รูปแบบ <ph name="FILE_FORMAT" /> ในแอปนี้</translation>
 <translation id="2156877321344104010">เรียกใช้การตรวจสอบความปลอดภัยอีกครั้ง</translation>
 <translation id="2157474325782140681">โปรดใช้แท่นชาร์จ Dell ที่ออกแบบมาให้ใช้งานกับ Chromebook นี้เพื่อใช้ฟีเจอร์เพิ่มเติม</translation>
 <translation id="215753907730220065">ออกจากการแสดงเต็มหน้าจอ</translation>
@@ -1613,7 +1614,6 @@
 <translation id="2553440850688409052">ซ่อนปลั๊กอินนี้</translation>
 <translation id="2554553592469060349">ไฟล์ที่เลือกมีขนาดใหญ่เกินไป (ขนาดสูงสุด: 3 MB)</translation>
 <translation id="2558896001721082624">แสดงตัวเลือกการเข้าถึงในเมนูระบบไว้เสมอ</translation>
-<translation id="2564407282561292919">ล้างประวัติการเข้าชมในช่องค้นหา บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="2564520396658920462">การเรียกใช้ JavaScript ผ่าน AppleScript ปิดอยู่ หากต้องการเปิด จากแถบเมนู ให้ไปที่ มุมมอง &gt; นักพัฒนาซอฟต์แวร์ &gt; อนุญาตให้เรียกใช้ JavaScript จากกิจกรรมใน Apple ดูข้อมูลเพิ่มเติมที่ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">การตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="2568774940984945469">ที่เก็บแถบข้อมูล</translation>
@@ -2301,6 +2301,7 @@
 <translation id="3277691515294482687">สำรองข้อมูลแอปและไฟล์ในโฟลเดอร์ไฟล์ของฉันก่อนที่จะอัปเกรด Linux</translation>
 <translation id="3278001907972365362">บัญชี Google ของคุณต้องการการดำเนินการ</translation>
 <translation id="3278800075417428224">จัดการภาษาในการตั้งค่า CloudReady 2.0</translation>
+<translation id="3278928434075969895">โปรไฟล์นี้ใช้การตั้งค่าพร็อกซีของ Chrome OS</translation>
 <translation id="3279092821516760512">รายชื่อติดต่อที่เลือกจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="3279230909244266691">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มเครื่องเสมือน</translation>
 <translation id="3280237271814976245">บันทึกใ&amp;ห้เป็น...</translation>
@@ -2325,7 +2326,6 @@
 <translation id="33022249435934718">GDI จัดการ</translation>
 <translation id="3302388252085547855">ป้อนเหตุผล...</translation>
 <translation id="3303260552072730022">มีส่วนขยายหนึ่งเรียกใช้หน้าจอแบบเต็ม</translation>
-<translation id="3303795387212510132">อนุญาตให้แอปเปิดลิงก์ <ph name="PROTOCOL_SCHEME" /> ไหม</translation>
 <translation id="3303818374450886607">จำนวนชุด</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3304212451103136496">ลด <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2617,7 +2617,6 @@
 <translation id="3596012367874587041">การตั้งค่าแอป</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3599221874935822507">ยกขึ้น</translation>
-<translation id="3599863153486145794">ล้างประวัติจากอุปกรณ์ที่ลงชื่อเข้าใช้ทั้งหมด บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="3600051066689725006">ข้อมูลคำขอเว็บ</translation>
 <translation id="3600792891314830896">ปิดเสียงเว็บไซต์ที่เล่นเสียง</translation>
 <translation id="360180734785106144">นำเสนอฟีเจอร์ใหม่ๆ เมื่อพร้อมให้บริการ</translation>
@@ -3105,7 +3104,6 @@
 <translation id="4033963223187371752">เว็บไซต์ที่ปลอดภัยอาจฝังเนื้อหา เช่น เฟรมรูปภาพหรือเว็บ ซึ่งไม่ปลอดภัย</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4035758313003622889">&amp;ตัวจัดการงาน</translation>
-<translation id="4035877632587724847">ไม่อนุญาต</translation>
 <translation id="4036778507053569103">นโยบายที่ดาวน์โหลดจากเซิร์ฟเวอร์ไม่ถูกต้อง</translation>
 <translation id="4037084878352560732">ม้า</translation>
 <translation id="403725336528835653">ลองใช้ก่อน</translation>
@@ -3147,7 +3145,6 @@
 <translation id="4079140982534148664">ใช้ฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="4081242589061676262">ไม่สามารถแคสต์ไฟล์</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> ได้ส่งการแจ้งเตือนไปยังโทรศัพท์ของคุณ โปรดทำตามขั้นตอนในข้อความแจ้งเตือนเพื่อยืนยันว่าเป็นคุณ</translation>
-<translation id="4083599409544993198">จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทนี้ <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">บุ๊กมาร์ก</translation>
 <translation id="4084835346725913160">ปิด <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">ถามเมื่อเว็บไซต์ต้องการเข้าถึงพอร์ตอนุกรม</translation>
@@ -3177,7 +3174,6 @@
 <translation id="4101352914005291489">SSID ที่ซ่อนไว้</translation>
 <translation id="4102906002417106771">รีสตาร์ทเพื่อทำ Powerwash</translation>
 <translation id="4104163789986725820">ส่ง&amp;ออก</translation>
-<translation id="410547683402570632">จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทต่อไปนี้ <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">ระบุและยกเลิกการต่อเชื่อมอุปกรณ์จัดเก็บข้อมูล</translation>
 <translation id="4109135793348361820">ย้ายหน้าต่างไปยัง <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">กู้คืนคำเตือน</translation>
@@ -3231,6 +3227,7 @@
 <translation id="4167686856635546851">โดยปกติแล้วเว็บไซต์จะใช้ JavaScript เพื่อแสดงฟีเจอร์แบบอินเทอร์แอกทีฟ เช่น วิดีโอเกมหรือเว็บฟอร์ม</translation>
 <translation id="4168015872538332605">การตั้งค่าบางอย่างที่เป็นของ <ph name="PRIMARY_EMAIL" /> กำลังมีการแชร์กับคุณ การตั้งค่าเหล่านี้มีผลกับบัญชีของคุณเมื่อมีการใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีเท่านั้น</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169535189173047238">ไม่อนุญาต</translation>
 <translation id="4170314459383239649">ล้างเมื่อออก</translation>
 <translation id="417096670996204801">เลือกโปรไฟล์</translation>
 <translation id="4175137578744761569">สีม่วงอ่อนและสีขาว</translation>
@@ -3302,6 +3299,7 @@
 <translation id="425573743389990240">อัตราการใช้แบตเตอรี่เป็นวัตต์ (ค่าลบหมายถึงแบตเตอรี่กำลังชาร์จ)</translation>
 <translation id="4256316378292851214">บั&amp;นทึกวิดีโอเป็น...</translation>
 <translation id="4258348331913189841">ระบบไฟล์</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> ต้องการเปิดไฟล์เหล่านี้</translation>
 <translation id="4259388776256904261">อาจใช้เวลาสักครู่</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้การปกป้องขั้นสูงของ Google สแกนไหม กด Shift+F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4261429981378979799">สิทธิ์ของส่วนขยาย</translation>
@@ -3776,7 +3774,6 @@
 <translation id="475088594373173692">ผู้ใช้แรก</translation>
 <translation id="4756378406049221019">หยุด/โหลดซ้ำ</translation>
 <translation id="4756388243121344051">&amp;ประวัติการเข้าชม</translation>
-<translation id="4759202969060787081">ไม่ต้องเปิด</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4761104368405085019">ใช้ไมโครโฟนของคุณ</translation>
 <translation id="4762718786438001384">พื้นที่ดิสก์ของอุปกรณ์ใกล้จะเต็มแล้ว</translation>
@@ -4861,7 +4858,6 @@
 <translation id="5889282057229379085">จำนวนสูงสุดของ CA ระดับกลาง: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">เครือข่าย Wi-Fi ที่ต้องการ</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
-<translation id="5896436821193322561">ไม่อนุญาต</translation>
 <translation id="5900302528761731119">รูปภาพ Google โปรไฟล์</translation>
 <translation id="590036993063074298">รายละเอียดคุณภาพการมิเรอร์</translation>
 <translation id="5901069264981746702">ข้อมูลลายนิ้วมือจะจัดเก็บไว้อย่างปลอดภัยและอยู่ใน <ph name="DEVICE_TYPE" /> ของคุณเสมอ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -4876,6 +4872,7 @@
 <translation id="5909379458939060601">ลบโปรไฟล์นี้และข้อมูลการท่องเว็บใช่ไหม</translation>
 <translation id="5910363049092958439">&amp;บันทึกรูปภาพเป็น...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ออฟไลน์</translation>
+<translation id="5911505723657992440">ใช้การตั้งค่าพร็อกซีของ Chrome OS สำหรับโปรไฟล์นี้</translation>
 <translation id="5911533659001334206">การดูแป้นพิมพ์ลัด</translation>
 <translation id="5914724413750400082">โมดูลัส (<ph name="MODULUS_NUM_BITS" /> บิต):
   <ph name="MODULUS_HEX_DUMP" />
@@ -5477,6 +5474,7 @@
 <translation id="6498249116389603658">&amp;ทุกภาษาของคุณ</translation>
 <translation id="6499143127267478107">กำลังแก้ไขปัญหาโฮสต์ในสคริปต์พร็อกซี...</translation>
 <translation id="6499764981457476645">ไม่พบอุปกรณ์ที่อยู่ใกล้เคียง</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ต้องการเปิดไฟล์นี้</translation>
 <translation id="65017764184991091">สำรองข้อมูลแอปและไฟล์ Linux ไม่สำเร็จ ปัญหานี้อาจเกิดขึ้นเมื่ออุปกรณ์เหลือพื้นที่เก็บข้อมูลไม่เพียงพอ ลองลบข้อมูลบางส่วนในอุปกรณ์ หรือเลือกพื้นที่เก็บข้อมูลอื่นที่จะสำรองข้อมูล</translation>
 <translation id="6501957628055559556">คอนเทนเนอร์ทั้งหมด</translation>
 <translation id="650266656685499220">หากต้องการสร้างอัลบั้ม โปรดไปที่ Google Photos</translation>
@@ -6467,7 +6465,6 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{อีก 1 รายการ}other{อีก {NUM_DOWNLOADS} รายการ}}</translation>
 <translation id="7526989658317409655">ตัวยึดตำแหน่ง</translation>
 <translation id="7527758104894292229">อัปเดตในบัญชี Google ของคุณ <ph name="ACCOUNT" /></translation>
-<translation id="7528224636098571080">ไม่ต้องเปิด</translation>
 <translation id="7529411698175791732">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณ หากปัญหายังคงอยู่ ให้ลองออกจากระบบและลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="7529876053219658589">{0,plural, =1{ปิดหน้าต่างสำหรับผู้มาเยือน}other{ปิดหน้าต่างสำหรับผู้มาเยือน}}</translation>
 <translation id="7530016656428373557">อัตราการใช้ไฟฟ้าเป็นวัตต์</translation>
@@ -6493,6 +6490,7 @@
 <translation id="7552846755917812628">ลองทำตามเคล็ดลับต่อไปนี้:</translation>
 <translation id="7553012839257224005">กำลังตรวจสอบคอนเทนเนอร์ Linux</translation>
 <translation id="7553242001898162573">ป้อนรหัสผ่าน</translation>
+<translation id="7553347517399115470">อย่าถามอีกเมื่อเปิดไฟล์รูปแบบ <ph name="FILE_FORMATS" /> ในแอปนี้</translation>
 <translation id="755472745191515939">ผู้ดูแลระบบไม่อนุญาตภาษานี้</translation>
 <translation id="7554791636758816595">แท็บใหม่</translation>
 <translation id="7556033326131260574">Smart Lock ไม่สามารถยืนยันบัญชีของคุณได้ โปรดพิมพ์รหัสผ่านเพื่อเข้าใช้งาน</translation>

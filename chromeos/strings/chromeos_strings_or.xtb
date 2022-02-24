@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1310380015393971138">କୌଣସି <ph name="NETWORK_NAME" /> ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
+<translation id="131421566576084655">ଗତ ଡାଟା ରିସେଟର ତାରିଖ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ହୋମ୍ ନେଟ୍‌ୱର୍କ, ରୋମିଂ ନୁହେଁ</translation>
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ମୋ ପାଖରେ ଏକ କୀପେୟାର ଅଛି</translation>
+<translation id="1435763214710588005">ପ୍ରତି ମାସ ଚୟନ କରାଯାଇଥିବା ଗୋଟିଏ ଦିନରେ ସ୍ୱଚାଳିତ ଭାବରେ ଡାଟା ବ୍ୟବହାର ରିସେଟ ହୁଏ</translation>
 <translation id="1442433966118452622">ଇମେଜ ସୋର୍ସ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
 <translation id="1459693405370120464">ପାଣିପାଗ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />କୁ ଅପଡେଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="1567064801249837505">ଆଲବମ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
 <translation id="1641857168437328880">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଗୋଟିଏ-ପାର୍ଶ୍ୱ)</translation>
@@ -177,6 +180,7 @@
 <translation id="3340011300870565703">ଡିଭାଇସର ଡାହାଣପଟ ବଡରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
 <translation id="3368922792935385530">ସଂଯୁକ୍ତ ହୋଇଛି</translation>
 <translation id="3369013195428705271">ଆପଣ ସମସ୍ତ ପ୍ରିଣ୍ଟ ଇତିହାସ ଖାଲି କରିବାକୁ ଚାହୁଁଥିବା ନିଶ୍ଚିତ କି? ଆପଣଙ୍କ ଚାଲୁଥିବା ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକ ଖାଲି ହେବ ନାହିଁ।</translation>
+<translation id="3413935475507503304">ଅପଡେଟ କରିବାକୁ ଆଗକୁ ବଢ଼ିବା ପାଇଁ, "ପରବର୍ତ୍ତୀ"କୁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />ଟି ପୃଷ୍ଠା ମଧ୍ୟରୁ <ph name="PRINTED_PAGES" /> ନମ୍ବର ପୃଷ୍ଠା ପ୍ରିଣ୍ଟ କରାଯାଇଛି।</translation>
@@ -232,6 +236,7 @@
 <translation id="4145784616224233563">HTTP ଫାୟାରୱାଲ୍</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ସ୍କାନରକୁ ଚାଲୁ କରାଯାଇଛି ଏବଂ ଏହା ଆପଣଙ୍କ ନେଟୱାର୍କ କିମ୍ବା ଏକ ସିଧାସଳଖ ସଂଯୋଗ ମାଧ୍ୟମରେ ଉପଲବ୍ଧ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
+<translation id="4170180284036919717">ଗୋଟିଏ ଫଟୋ ଉଠାନ୍ତୁ</translation>
 <translation id="4170700058716978431">ବିଫଳ ହୋଇଛି</translation>
 <translation id="4176463684765177261">ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="4213104098953699324">USB କୀବୋର୍ଡ</translation>
@@ -262,6 +267,7 @@
 <translation id="4511264077854731334">ପୋର୍ଟାଲ୍</translation>
 <translation id="4521826082652183069">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ</translation>
 <translation id="4536864596629708641">IP କନଫିଗର୍ କରନ୍ତୁ</translation>
+<translation id="4546131424594385779">ଏକ ଲୁପିଂ ଭିଡିଓ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4548483925627140043">ସିଗନାଲ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="4556753742174065117">ସମସ୍ତ ଫାର୍ମୱେର ଅପଟୁଡେଟ ଅଛି</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ବ୍ୟାଟେରୀ</translation>
@@ -391,6 +397,7 @@
 <translation id="5939518447894949180">ପୁନଃସେଟ୍</translation>
 <translation id="594552776027197022">ରେଣ୍ଡମ କୀପେୟାର ସୃଷ୍ଟି କରନ୍ତୁ</translation>
 <translation id="5972388717451707488">ଇଞ୍ଜିନ୍ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
+<translation id="6034694447310538551">ସ୍ୱଚାଳିତ ମାସିକ ରିସେଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6037291330010597344">ସ୍କାନରର ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ ଖାଲି ଅଛି। ଡକ୍ୟୁମେଣ୍ଟଗୁଡ଼ିକ ଯୋଗ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6040852767465482106">ବେନାମୀ ପରିଚୟ</translation>
@@ -414,6 +421,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
+<translation id="6235460611964961764">ଡାଟା ବ୍ୟବହାରକୁ ମାନୁଆଲୀ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -443,6 +451,7 @@
 <translation id="6566314079205407217">ଏକାଧିକ-ପୃଷ୍ଠା ସ୍କାନ୍</translation>
 <translation id="6574762126505704998">ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ କ୍ରପ୍ କରନ୍ତୁ</translation>
 <translation id="6575134580692778371">କନଫିଗର୍ କରାଯାଇନାହିଁ</translation>
+<translation id="6579509898032828423">ଏହି ଫଟୋ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6596816719288285829">IP ଠିକଣା</translation>
 <translation id="6618744767048954150">ଚାଲୁଛି</translation>
 <translation id="6620487321149975369">ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟଗୁଡ଼ିକୁ ମାନୁଆଲୀ କାଢ଼ି ନଦିଆଯିବା ପର୍ଯ୍ୟନ୍ତ ସେଗୁଡ଼ିକ ଇତିହାସରେ ଦେଖାଯିବ</translation>
@@ -489,6 +498,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
+<translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
 <translation id="7271040990581020067">ସ୍କାନରକୁ ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -625,6 +635,7 @@
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ଙ୍କ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ବିଫଳ ହୋଇଛି - ଟ୍ରେ ଅନୁପଲବ୍ଧ ଅଛି</translation>
+<translation id="8923267550422472772">ରିସେଟ କରିବା ପାଇଁ ମାସର ଦିନ</translation>
 <translation id="8928727111548978589">ବିଫଳ ହୋଇଛି - କାଗଜ ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8930521118335213258">ପିଅର୍</translation>
 <translation id="8930622219860340959">ୱେୟାରଲେସ୍</translation>
@@ -641,6 +652,7 @@
 <translation id="9062831201344759865">DNS ରିଜୋଲ୍ୟୁସନର ଲାଟେନ୍ସି ଅଧିକ ଅଛି</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
+<translation id="9082718469794970195">ଏହି ଭିଡିଓ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9087578468327036362">ଏହି କ୍ୱେରୀ ବିଷୟରେ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
 <translation id="9095415590198785865">ଡିଭାଇସଟି ସେହି ସମାନ ମାଲିକଙ୍କ ପାଖରେ ରହିବ</translation>

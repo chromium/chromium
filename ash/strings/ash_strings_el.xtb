@@ -334,6 +334,7 @@
 <translation id="3105917916468784889">Λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Κατάργηση πρότασης</translation>
+<translation id="3120421559657122717">Να τερματιστεί η λειτουργία της συσκευής;</translation>
 <translation id="3126069444801937830">Επανεκκίνηση για ενημέρωση</translation>
 <translation id="3139942575505304791">Γραφείο 1</translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
@@ -354,6 +355,7 @@
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3269597722229482060">Δεξί κλικ</translation>
+<translation id="3289544412142055976">Προς το παρόν, δεν υποστηρίζονται οι εφαρμογές Linux</translation>
 <translation id="3289674678944039601">Γίνεται φόρτιση μέσω μετασχηματιστή</translation>
 <translation id="3290356915286466215">Μη ασφαλές</translation>
 <translation id="3294437725009624529">Επισκέπτης</translation>
@@ -705,6 +707,7 @@
 <translation id="5400461572260843123">Γρήγορες ρυθμίσεις, πατήστε Αναζήτηση και αριστερά για πρόσβαση στο κέντρο ειδοποιήσεων.</translation>
 <translation id="5426063383988017631">Το μενού Ρυθμίσεις έκλεισε.</translation>
 <translation id="5428899915242071344">Έναρξη επιλογής</translation>
+<translation id="5429993543155113935">Προς το παρόν, δεν υποστηρίζονται τα παράθυρα για ανώνυμη περιήγηση</translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
 <translation id="5433020815079095860">Είσοδος ήχου</translation>
@@ -847,6 +850,7 @@
 <translation id="6431865393913628856">Εγγραφή οθόνης</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> συμβάν</translation>
+<translation id="6449483711453944360">Προς το παρόν, δεν υποστηρίζονται οι εφαρμογές Linux και τα παράθυρα για ανώνυμη περιήγηση</translation>
 <translation id="6452181791372256707">Απόρριψη</translation>
 <translation id="6453179446719226835">Η γλώσσα άλλαξε</translation>
 <translation id="6459472438155181876">Επέκταση οθόνης σε <ph name="DISPLAY_NAME" /></translation>
@@ -946,6 +950,7 @@
 <translation id="7025533177575372252">Συνδέστε τη συσκευή <ph name="DEVICE_NAME" /> με το τηλέφωνό σας</translation>
 <translation id="7026338066939101231">Μείωση</translation>
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
+<translation id="7032161822340700104">Επιτρέπονται μόνο 6 πρότυπα. Αφαιρέστε ένα πρότυπο για να αποθηκευτεί ένα νέο.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
 <translation id="7042322267639375032">Σύμπτυξη περιοχής κατάστασης</translation>
 <translation id="7045033600005038336">Αντικατάσταση προτύπου;</translation>
