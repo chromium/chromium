@@ -128,6 +128,9 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnTenMinutes();
   void OnFiveMinutes();
 
+  // Records the app usage time AppKM each 2 hours.
+  void OnTwoHours();
+
   // Records UKM when launching an app.
   void RecordAppLaunchUkm(AppType app_type,
                           const std::string& app_id,

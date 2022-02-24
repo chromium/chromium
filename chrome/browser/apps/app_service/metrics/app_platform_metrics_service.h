@@ -53,6 +53,10 @@ class AppPlatformMetricsService {
   // Helper function to check if 5 mintues have arrived.
   void CheckForFiveMinutes();
 
+  // Helper function to check if the reporting interval for noisy AppKMs has
+  // arrived to report noisy AppKMs events.
+  void CheckForNoisyAppKMReportingInterval();
+
   Profile* const profile_;
 
   int day_id_;
@@ -62,6 +66,10 @@ class AppPlatformMetricsService {
 
   // A periodic timer that checks if five minutes have arrived.
   base::RepeatingTimer five_minutes_timer_;
+
+  // A periodic timer that checks if the reporting interval for noisy AppKMs has
+  // arrived to report noisy AppKM events.
+  base::RepeatingTimer noisy_appkm_reporting_interval_timer_;
 
   std::unique_ptr<apps::AppPlatformMetrics> app_platform_app_metrics_;
   std::unique_ptr<apps::AppPlatformInputMetrics> app_platform_input_metrics_;

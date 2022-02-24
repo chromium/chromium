@@ -14,7 +14,13 @@ namespace apps {
 
 namespace {
 
+// Interval for reporting noisy AppKM events.
+constexpr base::TimeDelta kNoisyAppKMReportInterval = base::Hours(2);
+
+// Check for a new day every 10 minutes.
 constexpr base::TimeDelta kTimerInterval = base::Minutes(10);
+
+// Check for app usage time, input event each 5 minutes.
 constexpr base::TimeDelta kFiveMinutes = base::Minutes(5);
 
 // Returns the number of days since the origin.
@@ -63,9 +69,14 @@ void AppPlatformMetricsService::Start(
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &AppPlatformMetricsService::CheckForNewDay);
 
-  // Check every |kFiveMinutes|.
+  // Check every `kFiveMinutes` to record app usage time and input events.
   five_minutes_timer_.Start(FROM_HERE, kFiveMinutes, this,
                             &AppPlatformMetricsService::CheckForFiveMinutes);
+
+  // Check every `kNoisyAppKMReportInterval` to report noisy AppKM events.
+  noisy_appkm_reporting_interval_timer_.Start(
+      FROM_HERE, kNoisyAppKMReportInterval, this,
+      &AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval);
 }
 
 void AppPlatformMetricsService::CheckForNewDay() {
@@ -84,6 +95,11 @@ void AppPlatformMetricsService::CheckForNewDay() {
 void AppPlatformMetricsService::CheckForFiveMinutes() {
   app_platform_app_metrics_->OnFiveMinutes();
   app_platform_input_metrics_->OnFiveMinutes();
+}
+
+void AppPlatformMetricsService::CheckForNoisyAppKMReportingInterval() {
+  app_platform_app_metrics_->OnTwoHours();
+  app_platform_input_metrics_->OnTwoHours();
 }
 
 }  // namespace apps

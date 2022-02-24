@@ -593,6 +593,10 @@ void AppPlatformMetrics::OnFiveMinutes() {
   RecordAppsUsageTime();
 }
 
+void AppPlatformMetrics::OnTwoHours() {
+  // TODO(crbug.com/1299978): Record the app usage time AppKM.
+}
+
 void AppPlatformMetrics::RecordAppLaunchUkm(
     AppType app_type,
     const std::string& app_id,

@@ -54,6 +54,9 @@ class AppPlatformInputMetrics : public ui::EventHandler,
 
   void OnFiveMinutes();
 
+  // Records the input events AppKM each 2 hours.
+  void OnTwoHours();
+
  private:
   struct AppInfo {
     std::string app_id;

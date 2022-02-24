@@ -95,6 +95,10 @@ void AppPlatformInputMetrics::OnFiveMinutes() {
   app_id_to_event_count_per_five_minutes_.clear();
 }
 
+void AppPlatformInputMetrics::OnTwoHours() {
+  // TODO(crbug.com/1299978): Record the input events AppKM.
+}
+
 void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
   if (!update.StateChanged()) {
     return;
