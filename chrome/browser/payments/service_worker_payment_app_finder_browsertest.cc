@@ -255,7 +255,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     WebAppInstallationInfo* app = nullptr;
 
     const GURL expected_scope(scope);
-    url::Replacements<char> clear_port;
+    GURL::Replacements clear_port;
     clear_port.ClearPort();
 
     for (const auto& it : installable_apps()) {
