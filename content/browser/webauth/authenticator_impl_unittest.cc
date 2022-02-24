@@ -8341,6 +8341,83 @@ TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
   ASSERT_EQ(pairings_.size(), 0u);
 }
 
+// ServerLinkValues contains keys that mimic those created by a site doing
+// caBLEv2 server-link.
+struct ServerLinkValues {
+  // This value would be provided by the site to the desktop, in a caBLE
+  // extension in the get() call.
+  device::CableDiscoveryData desktop_side;
+
+  // These values would be provided to the phone via a custom mechanism.
+  std::array<uint8_t, device::cablev2::kQRSecretSize> secret;
+  std::array<uint8_t, device::kP256X962Length> peer_identity;
+};
+
+// CreateServerLink simulates a site doing caBLEv2 server-link and calculates
+// server-link values that could be sent to the desktop and phone sides of a
+// transaction.
+static ServerLinkValues CreateServerLink() {
+  std::vector<uint8_t> seed(device::cablev2::kQRSeedSize);
+  base::RandBytes(seed.data(), seed.size());
+
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  bssl::UniquePtr<EC_KEY> ec_key(
+      EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
+
+  ServerLinkValues ret;
+  base::RandBytes(ret.secret.data(), ret.secret.size());
+  CHECK_EQ(ret.peer_identity.size(),
+           EC_POINT_point2oct(p256.get(), EC_KEY_get0_public_key(ec_key.get()),
+                              POINT_CONVERSION_UNCOMPRESSED,
+                              ret.peer_identity.data(),
+                              ret.peer_identity.size(), /*ctx=*/nullptr));
+
+  ret.desktop_side.version = device::CableDiscoveryData::Version::V2;
+  ret.desktop_side.v2 = seed;
+  ret.desktop_side.v2->insert(ret.desktop_side.v2->end(), ret.secret.begin(),
+                              ret.secret.end());
+
+  return ret;
+}
+
+TEST_F(AuthenticatorCableV2Test, ServerLink) {
+  const ServerLinkValues server_link_1 = CreateServerLink();
+  const ServerLinkValues server_link_2 = CreateServerLink();
+  const std::vector<device::CableDiscoveryData> extension_values = {
+      server_link_1.desktop_side, server_link_2.desktop_side};
+
+  auto discovery = std::make_unique<device::cablev2::Discovery>(
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
+      qr_generator_key_, std::move(ble_advert_events_),
+      /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+      /*contact_device_stream=*/nullptr, extension_values,
+      GetPairingCallback());
+
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(
+          std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+  // Both extension values should work, but we can only do a single transaction
+  // per test because a lot of state is setup for a test. Therefore pick one of
+  // the two to check, at random.
+  const auto& server_link =
+      (base::RandUint64() & 1) ? server_link_1 : server_link_2;
+
+  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
+      device::cablev2::authenticator::TransactFromQRCode(
+          device::cablev2::authenticator::NewMockPlatform(
+              std::move(ble_advert_callback_), &virtual_device_,
+              /*observer=*/nullptr),
+          network_context_.get(), root_secret_, "Test Authenticator",
+          server_link.secret, server_link.peer_identity,
+          /*contact_id=*/absl::nullopt,
+          /*use_new_crypter_construction=*/false);
+
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(pairings_.size(), 0u);
+}
+
 // AuthenticatorCableV2AuthenticatorTest tests aspects of the authenticator
 // implementation, rather than of the underlying caBLEv2 transport.
 class AuthenticatorCableV2AuthenticatorTest
