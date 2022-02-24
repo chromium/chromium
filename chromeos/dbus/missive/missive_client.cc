@@ -44,9 +44,7 @@ class MissiveClientImpl : public MissiveClient {
   MissiveClientImpl() : client_(origin_task_runner()) {}
   MissiveClientImpl(const MissiveClientImpl& other) = delete;
   MissiveClientImpl& operator=(const MissiveClientImpl& other) = delete;
-  ~MissiveClientImpl() override {
-    client_.SetAvailability(/*is_available=*/false);
-  }
+  ~MissiveClientImpl() override = default;
 
   void Init(dbus::Bus* const bus) {
     DCHECK(bus);
@@ -132,9 +130,10 @@ class MissiveClientImpl : public MissiveClient {
           completion_callback_(std::move(completion_callback)) {}
 
    private:
-    // Implementation of DisconnectableClient::Delegate
+    // Implementation of DisconnectableClient::Delegate.
     void DoCall(base::OnceClosure cb) final {
       DCHECK_CALLED_ON_VALID_SEQUENCE(owner_->origin_checker_);
+      base::ScopedClosureRunner autorun(std::move(cb));
       dbus::MethodCall method_call(missive::kMissiveServiceInterface,
                                    dbus_method_);
       dbus::MessageWriter writer(&method_call);
@@ -151,8 +150,8 @@ class MissiveClientImpl : public MissiveClient {
       owner_->missive_service_proxy_->CallMethod(
           &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
           base::BindOnce(
-              [](base::OnceClosure cb, base::WeakPtr<DBusDelegate> self,
-                 dbus::Response* response) {
+              [](base::ScopedClosureRunner autorun,
+                 base::WeakPtr<DBusDelegate> self, dbus::Response* response) {
                 if (!self) {
                   return;  // Delegate already deleted.
                 }
@@ -163,19 +162,20 @@ class MissiveClientImpl : public MissiveClient {
                   return;
                 }
                 self->response_ = response;
-                std::move(cb).Run();
               },
-              std::move(cb), weak_ptr_factory_.GetWeakPtr()));
+              std::move(autorun), weak_ptr_factory_.GetWeakPtr()));
     }
 
     // Process dBus response, if status is OK, or error otherwise.
     void Respond(reporting::Status status) final {
       DCHECK_CALLED_ON_VALID_SEQUENCE(owner_->origin_checker_);
+      if (!completion_callback_) {
+        return;
+      }
       if (status.ok()) {
         dbus::MessageReader reader(response_);
         status = ParseResponse(&reader);
       }
-      DCHECK(completion_callback_);
       std::move(completion_callback_).Run(status);
     }
 
