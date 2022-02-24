@@ -3503,12 +3503,12 @@
   {
     "name": "global-media-controls-cast-start-stop",
     "owners": [  "takumif", "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "global-media-controls-modern-ui",
     "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "google-lens-sdk-intent",
