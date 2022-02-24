@@ -172,6 +172,7 @@ source_set("unit_tests") {
     "execution/mock_feature_list_query_processor.cc",
     "execution/mock_feature_list_query_processor.h",
     "execution/model_execution_manager_factory_unittest.cc",
+    "execution/query_processor.h",
     "mock_ukm_data_manager.cc",
     "mock_ukm_data_manager.h",
     "scheduler/model_execution_scheduler_unittest.cc",
