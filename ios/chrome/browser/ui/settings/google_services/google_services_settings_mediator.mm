@@ -247,8 +247,7 @@ bool GetStatusForSigninPolicy() {
                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
                    detailStringID:
                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
-                           status:GetStatusForSigninPolicy()
-                     controllable:IsSigninControllableByUser()];
+                           status:GetStatusForSigninPolicy()];
 }
 
 #pragma mark - Load non personalized section
@@ -362,8 +361,7 @@ bool GetStatusForSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL
-                               status:self.autocompleteSearchPreference.value
-                         controllable:self.autocompleteSearchPreference.value];
+                               status:self.autocompleteSearchPreference.value];
       [items addObject:autocompleteItem];
     } else {
       SyncSwitchItem* autocompleteItem = [self
@@ -382,8 +380,7 @@ bool GetStatusForSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
-                               status:self.safeBrowsingPreference.value
-                         controllable:self.safeBrowsingPreference.value];
+                               status:self.safeBrowsingPreference.value];
       [items addObject:safeBrowsingManagedItem];
     } else {
       SyncSwitchItem* safeBrowsingItem = [self
@@ -405,8 +402,7 @@ bool GetStatusForSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL
-                               status:self.sendDataUsagePreference
-                         controllable:self.sendDataUsagePreference];
+                               status:self.sendDataUsagePreference];
       [items addObject:improveChromeItem];
     } else {
       SyncSwitchItem* improveChromeItem = [self
@@ -425,8 +421,7 @@ bool GetStatusForSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL
-                               status:self.anonymizedDataCollectionPreference
-                         controllable:self.anonymizedDataCollectionPreference];
+                               status:self.anonymizedDataCollectionPreference];
       betterSearchAndBrowsingItem.accessibilityIdentifier =
           kBetterSearchAndBrowsingItemAccessibilityID;
       [items addObject:betterSearchAndBrowsingItem];
@@ -448,8 +443,7 @@ bool GetStatusForSigninPolicy() {
             tableViewInfoButtonItemType:TrackPricesOnTabsItemType
                            textStringID:IDS_IOS_TRACK_PRICES_ON_TABS
                          detailStringID:IDS_IOS_TRACK_PRICES_ON_TABS_DESCRIPTION
-                                 status:self.trackPricesOnTabsPreference
-                           controllable:self.trackPricesOnTabsPreference];
+                                 status:self.trackPricesOnTabsPreference];
         trackPricesOnTabsItem.accessibilityIdentifier =
             kTrackPricesOnTabsItemAccessibilityID;
         [items addObject:trackPricesOnTabsItem];
@@ -502,8 +496,7 @@ bool GetStatusForSigninPolicy() {
 - (TableViewInfoButtonItem*)tableViewInfoButtonItemType:(NSInteger)itemType
                                            textStringID:(int)textStringID
                                          detailStringID:(int)detailStringID
-                                                 status:(BOOL)status
-                                           controllable:(BOOL)controllable {
+                                                 status:(BOOL)status {
   TableViewInfoButtonItem* managedItem =
       [[TableViewInfoButtonItem alloc] initWithType:itemType];
   managedItem.text = GetNSString(textStringID);
@@ -514,14 +507,11 @@ bool GetStatusForSigninPolicy() {
     managedItem.tintColor = [UIColor colorNamed:kGrey300Color];
   }
 
-  // When there is no knob (not controllable), then set the color opacity to
-  // 40%.
-  if (!controllable) {
-    managedItem.textColor =
-        [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
-    managedItem.detailTextColor =
-        [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
-  }
+  // This item is not controllable, then set the color opacity to 40%.
+  managedItem.textColor =
+      [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
+  managedItem.detailTextColor =
+      [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
   managedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   return managedItem;
