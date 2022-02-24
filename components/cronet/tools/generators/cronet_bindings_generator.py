@@ -79,7 +79,7 @@ def MakeImportStackMessage(imported_filename_stack):
                     zip(imported_filename_stack[1:], imported_filename_stack)]))
 
 
-class RelativePath(object):
+class RelativePath():
   """Represents a path relative to the source tree."""
   def __init__(self, path, source_root):
     self.path = path
@@ -139,7 +139,7 @@ def ReadFileContents(filename):
     return f.read()
 
 
-class MojomProcessor(object):
+class MojomProcessor():
   """Parses mojom files and creates ASTs for them.
 
   Attributes:

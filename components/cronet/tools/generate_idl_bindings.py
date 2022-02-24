@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import optparse
+import argparse
 import os
 import shutil
 import sys
@@ -36,12 +36,12 @@ def GenerateIdlBindings(output_path, input_files):
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option('--output-path',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--output-path',
         help='Output path for generated bindings')
 
-  options, input_files = parser.parse_args()
-  GenerateIdlBindings(options.output_path, input_files)
+  args, input_files = parser.parse_known_args()
+  GenerateIdlBindings(args.output_path, input_files)
 
 
 if __name__ == '__main__':

@@ -15,7 +15,7 @@
 
 
 import glob
-import optparse
+import argparse
 import os
 import subprocess
 import sys
@@ -34,32 +34,32 @@ GN_CPU_TO_LD_ARCH = {
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option(
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
       '--input_libs',
       help='Comma-separated paths to input .a files which contain symbols '
            'which must be always linked.')
-  parser.add_option(
+  parser.add_argument(
       '--deps_lib',
       help='The path to a complete static library (.a file) which contains all '
            'dependencies of --input_libs. .o files in this library are also '
            'added to the output library, but only if they are referred from '
            '--input_libs.')
-  parser.add_option(
+  parser.add_argument(
       '--output_obj',
       help='Outputs the generated .o file here. This is an intermediate file.')
-  parser.add_option(
+  parser.add_argument(
       '--output_lib',
       help='Outputs the generated .a file here.')
-  parser.add_option(
+  parser.add_argument(
       '--current_cpu',
       help='The current processor architecture in the format of the target_cpu '
            'attribute in GN.')
-  parser.add_option(
+  parser.add_argument(
       '--use_custom_libcxx', default=False, action='store_true',
       help='Confirm there is a custom libc++ linked in.')
-  (options, args) = parser.parse_args()
-  assert not args
+  args, unknownargs = parser.parse_known_args()
+  assert not unknownargs
 
   developer_dir = subprocess.check_output(
       ['xcode-select', '--print-path'], universal_newlines=True).strip()
@@ -73,49 +73,49 @@ def main():
   # while "hiding" symbols not marked as visible.
   command = [
     'xcrun', 'ld',
-    '-arch', GN_CPU_TO_LD_ARCH[options.current_cpu],
+    '-arch', GN_CPU_TO_LD_ARCH[args.current_cpu],
     '-r',
   ]
-  for input_lib in options.input_libs.split(','):
+  for input_lib in args.input_libs.split(','):
     # By default, ld only pulls .o files out of a static library if needed to
     # resolve some symbol reference. We apply -force_load option to input_lib
     # (but not to deps_lib) to force pulling all .o files.
     command += ['-force_load', input_lib]
   command += xctoolchain_libs
   command += [
-    options.deps_lib,
-    '-o', options.output_obj
+    args.deps_lib,
+    '-o', args.output_obj
   ]
   try:
     subprocess.check_call(command)
   except subprocess.CalledProcessError:
     # Work around LD failure for x86 Debug buiilds when it fails with error:
     # ld: scattered reloc r_address too large for architecture i386
-    if options.current_cpu == "x86":
+    if args.current_cpu == "x86":
       # Combmine input lib with dependencies into output lib.
       command = [
         'xcrun', 'libtool', '-static', '-no_warning_for_no_symbols',
-        '-o', options.output_lib,
-        options.input_libs, options.deps_lib,
+        '-o', args.output_lib,
+        args.input_libs, args.deps_lib,
       ]
       subprocess.check_call(command)
       # Strip debug info from output lib so its size doesn't exceed 512mb.
       command = [
-        'xcrun', 'strip', '-S', options.output_lib,
+        'xcrun', 'strip', '-S', args.output_lib,
       ]
       subprocess.check_call(command)
       return
-    else:
-      exit(1)
 
-  if os.path.exists(options.output_lib):
-    os.remove(options.output_lib)
+    sys.exit(1)
+
+  if os.path.exists(args.output_lib):
+    os.remove(args.output_lib)
 
   # Creates a .a file which contains a single .o file.
   command = [
     'xcrun', 'ar', '-r',
-    options.output_lib,
-    options.output_obj,
+    args.output_lib,
+    args.output_obj,
   ]
 
   # When compiling for 64bit targets, the symbols in call_with_eh_frame.o are
@@ -125,13 +125,13 @@ def main():
   # other parts of cronet. Instead, simply add a second .o file with the
   # personality routine. Note that this issue was not caught by Chrome tests,
   # it was only detected when apps tried to link the resulting .a file.
-  if options.current_cpu == 'x64' or options.current_cpu == 'arm64':
+  if args.current_cpu in ('x64', 'arm64'):
     command += [ 'obj/base/base/call_with_eh_frame.o' ]
 
   subprocess.check_call(command)
 
-  if options.use_custom_libcxx:
-    ret = os.system('xcrun nm -u "' + options.output_obj +
+  if args.use_custom_libcxx:
+    ret = os.system('xcrun nm -u "' + args.output_obj +
                     '" | grep ___cxa_pure_virtual')
     if ret == 0:
       print("ERROR: Found undefined libc++ symbols, "
