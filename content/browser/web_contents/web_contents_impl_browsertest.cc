@@ -1815,7 +1815,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   FrameTreeNode* frame = root->child_at(0);
   ASSERT_NE(nullptr, frame);
 
-  url::Replacements<char> clear_port;
+  GURL::Replacements clear_port;
   clear_port.ClearPort();
 
   // A dialog from the main frame.
