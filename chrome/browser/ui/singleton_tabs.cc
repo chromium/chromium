@@ -21,7 +21,7 @@ namespace {
 // Returns true if two URLs are equal after taking |replacements| into account.
 bool CompareURLsWithReplacements(const GURL& url,
                                  const GURL& other,
-                                 const url::Replacements<char>& replacements,
+                                 const GURL::Replacements& replacements,
                                  ChromeAutocompleteProviderClient* client) {
   GURL url_replaced = url.ReplaceComponents(replacements);
   GURL other_replaced = other.ReplaceComponents(replacements);
@@ -110,7 +110,7 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
     content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
         &rewritten_tab_url, browser->profile());
 
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearRef();
     if (params.path_behavior == NavigateParams::IGNORE_AND_NAVIGATE) {
       replacements.ClearPath();
