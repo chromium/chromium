@@ -3600,9 +3600,16 @@ class AutofillInteractiveTestChromeVox : public AutofillInteractiveTestBase {
 
 // Ensure that autofill suggestions are properly read out via ChromeVox.
 // This is a regressions test for crbug.com/1208913.
-// TODO(https://crbug.com/1294266): Check back if flakiness is fixed now.
+// TODO(https://crbug.com/1294266): Flaky on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TestNotificationOfAutofillDropdown \
+  DISABLED_TestNotificationOfAutofillDropdown
+#else
+#define MAYBE_TestNotificationOfAutofillDropdown \
+  TestNotificationOfAutofillDropdown
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
-                       TestNotificationOfAutofillDropdown) {
+                       MAYBE_TestNotificationOfAutofillDropdown) {
   CreateTestProfile();
   SetTestUrlResponse(kTestShippingFormString);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
