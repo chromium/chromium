@@ -1,3 +1,4 @@
-monorail: {
-  component: "OS>Systems>Multidevice>FastPair"
+buganizer {
+  component_id: 1133283
 }
+team_email: "chromeos-cross-device-eng@google.com "
