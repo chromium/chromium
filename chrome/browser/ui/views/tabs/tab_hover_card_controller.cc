@@ -333,7 +333,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
                                            const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
-  if (hover_card_ || !TargetTabIsValid() || target_tab_ != intended_tab)
+  if (hover_card_ || target_tab_ != intended_tab || !TargetTabIsValid())
     return;
 
   CreateHoverCard(target_tab_);
@@ -544,8 +544,13 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
 }
 
 bool TabHoverCardController::TargetTabIsValid() const {
+  // There are a bunch of conditions under which a tab may no longer be valid,
+  // including no longer belonging to the same tabstrip, being dragged or
+  // detached, or just not being visible. We need to be vigilant about invalid
+  // tabs due to e.g. crbug.com/1295601.
   return target_tab_ && tab_strip_->GetModelIndexOf(target_tab_) >= 0 &&
-         !target_tab_->closing();
+         !target_tab_->closing() && !target_tab_->detached() &&
+         !target_tab_->dragging() && target_tab_->GetVisible();
 }
 
 void TabHoverCardController::OnCardFullyVisible() {

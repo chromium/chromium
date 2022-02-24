@@ -871,7 +871,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
   // can be blank for some web pages.
-  if (tab->data().last_committed_url.is_empty()) {
+  if (!tab->data().last_committed_url.is_valid()) {
     domain_url = tab->data().visible_url;
     title = tab->data().IsCrashed()
                 ? l10n_util::GetStringUTF16(IDS_HOVER_CARD_CRASHED_TITLE)
