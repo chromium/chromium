@@ -25,8 +25,9 @@ var WebRequestSender;
  *     sender is invalid.
  */
 function createSenderFromMessageSender(messageSender) {
-  var origin = getOriginFromUrl(/** @type {string} */ (messageSender.url));
-  if (!origin) {
+  var origin = messageSender.origin;
+  if (!origin ||
+      (!origin.startsWith('http://') && !origin.startsWith('https://'))) {
     return null;
   }
   var sender = {origin: origin};

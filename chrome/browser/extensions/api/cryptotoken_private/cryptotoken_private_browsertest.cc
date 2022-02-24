@@ -159,22 +159,8 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
     kShowPrompt,
   };
 
-  void ExpectSignSuccess(const std::string& app_id,
-                         PromptExpectation prompt_expectation) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(FrameToUseForConnecting());
-    if (prompt_expectation == PromptExpectation::kShowPrompt) {
-      // Automatically resolve permission prompts shown by Cryptotoken on the
-      // target frame.
-      permissions::PermissionRequestManager* request_manager =
-          permissions::PermissionRequestManager::FromWebContents(web_contents);
-      request_manager->set_auto_response_for_test(
-          permissions::PermissionRequestManager::DENY_ALL);
-    }
-
-    permissions::PermissionRequestObserver permission_request_observer(
-        web_contents);
-    const std::string script = base::StringPrintf(
+  std::string GenerateScriptRequestForAppId(const std::string& app_id) {
+    return base::StringPrintf(
         R"(new Promise((resolve,reject) => {
           chrome.runtime.sendMessage('%s',
               {
@@ -209,6 +195,24 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
               });
       }))",
         kCryptoTokenExtensionId, app_id.c_str(), app_id.c_str());
+  }
+
+  void ExpectSignSuccess(const std::string& app_id,
+                         PromptExpectation prompt_expectation) {
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(FrameToUseForConnecting());
+    if (prompt_expectation == PromptExpectation::kShowPrompt) {
+      // Automatically resolve permission prompts shown by Cryptotoken on the
+      // target frame.
+      permissions::PermissionRequestManager* request_manager =
+          permissions::PermissionRequestManager::FromWebContents(web_contents);
+      request_manager->set_auto_response_for_test(
+          permissions::PermissionRequestManager::DENY_ALL);
+    }
+
+    permissions::PermissionRequestObserver permission_request_observer(
+        web_contents);
+    const std::string script = GenerateScriptRequestForAppId(app_id);
     const content::EvalJsResult result =
         content::EvalJs(FrameToUseForConnecting(), script);
     if (prompt_expectation == PromptExpectation::kShowPrompt) {
@@ -348,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest,
-                       OriginTrailDoesNotAffectChildIframes) {
+                       OriginTrialDoesNotAffectChildIframes) {
   GURL parent_url = GURL(kOriginTrialOrigin);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), parent_url));
   content::WebContents* web_contents =
@@ -399,6 +403,24 @@ IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, InsecureOriginCannotConnect) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), http_server_.GetURL(kNonOriginTrialDomain, "/empty.html")));
   ExpectChromeRuntimeIsUndefined();
+}
+
+// Verify that a page with an origin that is not deriveable from its URL, in
+// this case because it uses a CSP sandbox, does not pass appid check.
+IN_PROC_BROWSER_TEST_P(CryptotokenBrowserTest, SandboxedPageDoesNotSign) {
+  if (!IsParamFeatureEnabled()) {
+    // Can't connect with the API disabled.
+    return;
+  }
+  GURL url = https_server_.GetURL(kNonOriginTrialDomain,
+                                  "/cryptotoken/csp-sandbox.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  std::string app_id = url::Origin::Create(url).Serialize();
+
+  const std::string script = GenerateScriptRequestForAppId(app_id);
+  const content::EvalJsResult result =
+      content::EvalJs(FrameToUseForConnecting(), script);
+  EXPECT_EQ("errorCode:2,errorMessage:undefined", result);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(CryptotokenBrowserTest);
