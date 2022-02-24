@@ -70,11 +70,14 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
       std::move(expected_c_states));
 
   auto result = ConvertPtr<telemetry_api::LogicalCpuInfo>(std::move(input));
-  EXPECT_EQ(kMaxClockSpeedKhz, *result.max_clock_speed_khz);
-  EXPECT_EQ(kScalingMaxFrequencyKhz, *result.scaling_max_frequency_khz);
-  EXPECT_EQ(kScalingCurrentFrequencyKhz, *result.scaling_current_frequency_khz);
+  EXPECT_EQ(kMaxClockSpeedKhz,
+            static_cast<uint32_t>(*result.max_clock_speed_khz));
+  EXPECT_EQ(kScalingMaxFrequencyKhz,
+            static_cast<uint32_t>(*result.scaling_max_frequency_khz));
+  EXPECT_EQ(kScalingCurrentFrequencyKhz,
+            static_cast<uint32_t>(*result.scaling_current_frequency_khz));
   EXPECT_EQ(kIdleTime, *result.idle_time_ms);
-  EXPECT_EQ(1, result.c_states.size());
+  EXPECT_EQ(1u, result.c_states.size());
   EXPECT_EQ(kCpuCStateName, *result.c_states[0].name);
   EXPECT_EQ(kCpuCStateTime,
             *result.c_states[0].time_in_state_since_last_boot_us);
@@ -108,14 +111,17 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
 
   auto result = ConvertPtr<telemetry_api::PhysicalCpuInfo>(std::move(input));
   EXPECT_EQ(kModelName, *result.model_name);
-  EXPECT_EQ(1, result.logical_cpus.size());
-  EXPECT_EQ(kMaxClockSpeedKhz, *result.logical_cpus[0].max_clock_speed_khz);
-  EXPECT_EQ(kScalingMaxFrequencyKhz,
-            *result.logical_cpus[0].scaling_max_frequency_khz);
+  EXPECT_EQ(1u, result.logical_cpus.size());
+  EXPECT_EQ(kMaxClockSpeedKhz,
+            static_cast<uint32_t>(*result.logical_cpus[0].max_clock_speed_khz));
+  EXPECT_EQ(
+      kScalingMaxFrequencyKhz,
+      static_cast<uint32_t>(*result.logical_cpus[0].scaling_max_frequency_khz));
   EXPECT_EQ(kScalingCurrentFrequencyKhz,
-            *result.logical_cpus[0].scaling_current_frequency_khz);
+            static_cast<uint32_t>(
+                *result.logical_cpus[0].scaling_current_frequency_khz));
   EXPECT_EQ(kIdleTime, *result.logical_cpus[0].idle_time_ms);
-  EXPECT_EQ(1, result.logical_cpus[0].c_states.size());
+  EXPECT_EQ(1u, result.logical_cpus[0].c_states.size());
   EXPECT_EQ(kCpuCStateName, *result.logical_cpus[0].c_states[0].name);
   EXPECT_EQ(
       kCpuCStateTime,

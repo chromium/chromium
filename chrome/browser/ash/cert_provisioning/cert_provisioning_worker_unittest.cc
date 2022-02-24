@@ -120,7 +120,7 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
       chromeos::AttestationClient::Get()
           ->GetTestInterface()
           ->delete_keys_history();
-  EXPECT_EQ(delete_keys_history.size(), 1);
+  EXPECT_EQ(delete_keys_history.size(), 1u);
   EXPECT_EQ(delete_keys_history[0].username().empty(),
             cert_scope != CertScope::kUser);
   EXPECT_EQ(delete_keys_history[0].key_label_match(),

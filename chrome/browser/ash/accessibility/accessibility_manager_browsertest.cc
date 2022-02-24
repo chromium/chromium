@@ -332,7 +332,7 @@ void AssertSodaNotificationShownForDictation(
 void AssertMessageCenterEmpty() {
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  ASSERT_EQ(0, notifications.size());
+  ASSERT_EQ(0u, notifications.size());
 }
 
 void ClearMessageCenter() {

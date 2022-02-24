@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest, PerformAction) {
   ArcAccessibilityHelperBridge* bridge =
       ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
   auto& tree_map = bridge->trees_for_test();
-  ASSERT_EQ(1, tree_map.size());
+  ASSERT_EQ(1u, tree_map.size());
   AXTreeSourceArc* tree_source = tree_map.begin()->second.get();
   MockAutomationEventRouter router;
   tree_source->set_automation_event_router_for_test(&router);
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
   ArcAccessibilityHelperBridge* bridge =
       ArcAccessibilityHelperBridge::GetForBrowserContext(browser()->profile());
   auto& tree_map = bridge->trees_for_test();
-  ASSERT_EQ(1, tree_map.size());
+  ASSERT_EQ(1u, tree_map.size());
   AXTreeSourceArc* tree_source = tree_map.begin()->second.get();
   MockAutomationEventRouter router;
   tree_source->set_automation_event_router_for_test(&router);

@@ -882,7 +882,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   WaitForTestSystemAppInstall();
 
   // There might be an initial browser from the testing framework.
-  int initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Test that a non descript URL gets rejected.
   GURL url1 = GURL("http://www.foo.bar");
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   WaitForTestSystemAppInstall();
 
   // There might be an initial browser from the testing framework.
-  int initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Start an application which uses the OS url handler.
   LaunchAndWaitForActivationChange(GURL(chrome::kOsUICreditsURL));
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppOpenInAshFromLacrosTests,
   WaitForTestSystemAppInstall();
 
   // There might be an initial browser from the testing framework.
-  int initial_browser_count = BrowserList::GetInstance()->size();
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Start an application using the OS Url handler.
   LaunchAndWaitForActivationChange(GURL(chrome::kOsUICreditsURL));

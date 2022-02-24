@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshTest, ProxyConfigUpdate) {
   ASSERT_TRUE(observer_->proxy_config_->proxy_settings->is_manual());
   crosapi::mojom::ProxySettingsManualPtr manual =
       std::move(observer_->proxy_config_->proxy_settings->get_manual());
-  ASSERT_EQ(manual->http_proxies.size(), 1);
+  ASSERT_EQ(manual->http_proxies.size(), 1u);
   EXPECT_EQ(manual->http_proxies[0]->host, "proxyhost");
   EXPECT_EQ(manual->http_proxies[0]->port, 3128);
 }

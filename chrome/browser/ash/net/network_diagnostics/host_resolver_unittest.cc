@@ -74,7 +74,7 @@ TEST_F(HostResolverTest, TestSuccessfulResolution) {
   EXPECT_EQ(resolution_result.result, net::OK);
   EXPECT_EQ(resolution_result.resolve_error_info,
             net::ResolveErrorInfo(net::OK));
-  EXPECT_EQ(resolution_result.resolved_addresses.value().size(), 1);
+  EXPECT_EQ(resolution_result.resolved_addresses.value().size(), 1u);
   EXPECT_EQ(resolution_result.resolved_addresses.value().front(),
             address_list.front());
 }

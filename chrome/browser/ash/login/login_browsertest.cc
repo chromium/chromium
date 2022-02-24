@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, UserOfflineLoginBlocked) {
   std::string email = managed_user_id_.GetUserEmail();
   std::vector<std::string> email_and_domain = base::SplitString(
       email, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  ASSERT_EQ(email_and_domain.size(), 2);
+  ASSERT_EQ(email_and_domain.size(), 2u);
   std::string prefix = *(email_and_domain.begin());
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();

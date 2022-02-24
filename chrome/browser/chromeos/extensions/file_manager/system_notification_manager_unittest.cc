@@ -297,7 +297,7 @@ TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -327,7 +327,7 @@ TEST_F(SystemNotificationManagerTest, FormatStart) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -351,7 +351,7 @@ TEST_F(SystemNotificationManagerTest, FormatSuccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -376,7 +376,7 @@ TEST_F(SystemNotificationManagerTest, FormatFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -403,7 +403,7 @@ TEST_F(SystemNotificationManagerTest, PartitionFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -428,7 +428,7 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -455,7 +455,7 @@ TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -493,7 +493,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -537,7 +537,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -585,7 +585,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -631,7 +631,7 @@ TEST_F(SystemNotificationManagerTest,
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   notification_platform_bridge->ClickButtonIndexById(
       kRemovableDeviceNotificationId,
       /*button_index=*/1);
@@ -667,7 +667,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -713,7 +713,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -752,7 +752,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -794,7 +794,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -819,7 +819,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   // Get the strings for the displayed notification.
   notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -869,7 +869,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -911,7 +911,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -923,7 +923,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
-  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons.size(), 1u);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
@@ -955,7 +955,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -967,7 +967,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Sorry, the device MyUSB could not be recognized.");
-  EXPECT_EQ(notification_strings.buttons.size(), 1);
+  EXPECT_EQ(notification_strings.buttons.size(), 1u);
   EXPECT_EQ(notification_strings.buttons[0], u"Format this device");
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
@@ -1001,7 +1001,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1012,7 +1012,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   EXPECT_EQ(notification_strings.message,
             u"Sorry, your external storage device could not be recognized.");
   // Device is read-only, expect no buttons present.
-  EXPECT_EQ(notification_strings.buttons.size(), 0);
+  EXPECT_EQ(notification_strings.buttons.size(), 0u);
   histogram_tester.ExpectUniqueSample(
       kNotificationShowHistogramName,
       DeviceNotificationUmaType::DEVICE_FAIL_UNKNOWN_READONLY, 1);
@@ -1040,7 +1040,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1091,7 +1091,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications.
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 
   // Send progress event.
   status.type =
@@ -1102,7 +1102,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 1 notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings;
   notification_strings =
@@ -1119,7 +1119,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications (copy progress has been closed).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
   // Start another copy that ends in error.
   copy_id = 2;
   copy_size = 100.0;
@@ -1137,7 +1137,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 1 notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
 
   // Send copy error event.
   status.type = file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_ERROR;
@@ -1146,7 +1146,7 @@ TEST_F(SystemNotificationManagerTest, CopyProgress) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have zero notifications (copy progress has been closed).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
 storage::FileSystemURL CreateFileSystemURL(std::string url) {
@@ -1262,7 +1262,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   const char* id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
@@ -1288,7 +1288,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have two notifications.
-  ASSERT_EQ(2, notification_count);
+  ASSERT_EQ(2u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1313,7 +1313,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have three notifications.
-  ASSERT_EQ(3, notification_count);
+  ASSERT_EQ(3u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1338,7 +1338,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have four notifications.
-  ASSERT_EQ(4, notification_count);
+  ASSERT_EQ(4u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1361,7 +1361,7 @@ TEST_F(SystemNotificationManagerTest, Errors) {
       base::BindOnce(&SystemNotificationManagerTest::GetNotificationsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
   // Check: We have five notifications.
-  ASSERT_EQ(5, notification_count);
+  ASSERT_EQ(5u, notification_count);
   id = file_manager_private::ToString(sync_error.type);
   // Get the strings for the displayed notification.
   notification_strings =
@@ -1393,7 +1393,7 @@ TEST_F(SystemNotificationManagerTest, EnableDocsOffline) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1430,7 +1430,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1455,7 +1455,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
   // Start another transfer that ends in error.
   transfer_status.transfer_state =
       file_manager_private::TRANSFER_STATE_IN_PROGRESS;
@@ -1472,7 +1472,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Setup an completed transfer event.
   transfer_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
   transfer_status.num_total_jobs = 0;
@@ -1489,7 +1489,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
 TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
@@ -1517,7 +1517,7 @@ TEST_F(SystemNotificationManagerTest, SyncProgressMultiple) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById(
@@ -1550,7 +1550,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById("swa-drive-pin");
@@ -1573,7 +1573,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 
   // Start another transfer that ends in error.
   pin_status.transfer_state = file_manager_private::TRANSFER_STATE_IN_PROGRESS;
@@ -1590,7 +1590,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Setup an completed transfer event.
   pin_status.transfer_state = file_manager_private::TRANSFER_STATE_FAILED;
   pin_status.num_total_jobs = 0;
@@ -1607,7 +1607,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressSingle) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have 0 notifications (notification closed on end).
-  ASSERT_EQ(0, notification_count);
+  ASSERT_EQ(0u, notification_count);
 }
 
 TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
@@ -1633,7 +1633,7 @@ TEST_F(SystemNotificationManagerTest, PinProgressMultiple) {
           &SystemNotificationManagerTest::GetNotificationsCallback,
           weak_ptr_factory_.GetWeakPtr()));
   // Check: We have one notification.
-  ASSERT_EQ(1, notification_count);
+  ASSERT_EQ(1u, notification_count);
   // Get the strings for the displayed notification.
   TestNotificationStrings notification_strings =
       notification_platform_bridge->GetNotificationStringsById("swa-drive-pin");

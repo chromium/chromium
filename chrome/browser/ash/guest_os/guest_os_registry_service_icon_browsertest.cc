@@ -66,7 +66,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
               if (expect_loaded) {
                 EXPECT_FALSE(icon->is_placeholder_icon);
                 EXPECT_EQ(apps::IconType::kCompressed, icon->icon_type);
-                EXPECT_GT(icon->compressed.size(), 0);
+                EXPECT_GT(icon->compressed.size(), 0u);
               } else {
                 EXPECT_EQ(apps::IconType::kUnknown, icon->icon_type);
               }

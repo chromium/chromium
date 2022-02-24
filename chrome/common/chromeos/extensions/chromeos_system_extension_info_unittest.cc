@@ -8,7 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(ChromeOSSystemExtensionInfo, AllowlistedExtensionsSizeEqualsToOne) {
-  ASSERT_EQ(2, chromeos::GetChromeOSSystemExtensionInfosSize());
+  ASSERT_EQ(2u, chromeos::GetChromeOSSystemExtensionInfosSize());
 }
 
 TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {

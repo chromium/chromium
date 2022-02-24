@@ -153,8 +153,8 @@ TEST_F(CrosapiTaskProviderAshTest, OnGetTaskManagerTasks) {
 
   // Verify all mojo tasks have been added to the task providers,
   // and GetSortedTaskIds returns the correct number of the task count.
-  DCHECK_EQ(3, GetTaskCount());
-  DCHECK_EQ(3, GetSortedTaskIdsCount());
+  DCHECK_EQ(3u, GetTaskCount());
+  DCHECK_EQ(3u, GetSortedTaskIdsCount());
   DCHECK_EQ(3, task_added_count());
   DCHECK_EQ(0, task_removed_count());
   // Verify that task ids returned by GetSortedTaskIds() matches
@@ -179,8 +179,8 @@ TEST_F(CrosapiTaskProviderAshTest, OnGetTaskManagerTasks) {
                                          std::move(mojo_task_groups));
 
   // Verify that one of the tasks has been removed.
-  DCHECK_EQ(2, GetTaskCount());
-  DCHECK_EQ(2, GetSortedTaskIdsCount());
+  DCHECK_EQ(2u, GetTaskCount());
+  DCHECK_EQ(2u, GetSortedTaskIdsCount());
   DCHECK_EQ(0, task_added_count());
   DCHECK_EQ(1, task_removed_count());
   // Verify that task ids returned by GetSortedTaskIds() matches

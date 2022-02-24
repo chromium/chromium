@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
 
   const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
-  EXPECT_EQ(pending_screencasts.size(), 1);
+  EXPECT_EQ(pending_screencasts.size(), 1u);
   ash::PendingScreencast ps = *(pending_screencasts.begin());
   EXPECT_EQ(ps.container_dir, base::FilePath(kTestScreencastPath));
   EXPECT_EQ(ps.name, kTestScreencastName);
@@ -286,10 +286,10 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                        MultipleValidAndInvalidScreencasts) {
   drivefs::mojom::SyncingStatus syncing_status;
-  int num_of_screencasts = 10;
+  size_t num_of_screencasts = 10;
   {
     // Create multiple valid pending screencasts.
-    for (int i = 0; i < num_of_screencasts; ++i) {
+    for (size_t i = 0; i < num_of_screencasts; ++i) {
       const std::string test_screencast_path =
           base::StrCat({kTestScreencastPath, base::NumberToString(i)});
       const std::string media =
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
 
   // Only valid screencasts could be processed.
   EXPECT_EQ(pending_screencasts.size(), num_of_screencasts);
-  for (int i = 0; i < num_of_screencasts; ++i) {
+  for (size_t i = 0; i < num_of_screencasts; ++i) {
     const std::string container_dir =
         base::StrCat({kTestScreencastPath, base::NumberToString(i)});
     const std::string name =
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
 
   const PendingScreencastSet pending_screencasts_1 =
       pending_screencast_manager()->GetPendingScreencasts();
-  EXPECT_EQ(pending_screencasts_1.size(), 1);
+  EXPECT_EQ(pending_screencasts_1.size(), 1u);
   ash::PendingScreencast ps = *(pending_screencasts_1.begin());
   const int total_size = kTestMediaFileBytes + kTestMetadataFileBytes;
   EXPECT_EQ(total_size, ps.total_size_in_bytes);
@@ -483,8 +483,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   EXPECT_NE(set1, set4);
   EXPECT_NE(set1, set5);
   EXPECT_EQ(set5, set6);
-  EXPECT_EQ(2, set5.size());
-  EXPECT_EQ(2, set7.size());
+  EXPECT_EQ(2u, set5.size());
+  EXPECT_EQ(2u, set7.size());
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {

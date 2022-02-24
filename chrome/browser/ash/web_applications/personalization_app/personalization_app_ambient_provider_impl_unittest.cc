@@ -344,7 +344,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
   auto albums = ObservedAlbums();
   // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
   // will be sent to JS side.
-  EXPECT_EQ(4, albums.size());
+  EXPECT_EQ(4u, albums.size());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,

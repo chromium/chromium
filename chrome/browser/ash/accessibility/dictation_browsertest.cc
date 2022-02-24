@@ -683,22 +683,22 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
     histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
                                          /*sample=*/true,
                                          /*expected_bucket_count=*/1);
-    ASSERT_EQ(1,
+    ASSERT_EQ(1u,
               histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
                   .size());
     // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0,
+    ASSERT_EQ(0u,
               histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
                   .size());
   } else {
     histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
                                          /*sample=*/false,
                                          /*expected_bucket_count=*/1);
-    ASSERT_EQ(1,
+    ASSERT_EQ(1u,
               histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
                   .size());
     // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0,
+    ASSERT_EQ(0u,
               histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
                   .size());
   }
@@ -1065,22 +1065,22 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, Metrics) {
     histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
                                          /*sample=*/true,
                                          /*expected_bucket_count=*/1);
-    ASSERT_EQ(1,
+    ASSERT_EQ(1u,
               histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
                   .size());
     // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0,
+    ASSERT_EQ(0u,
               histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
                   .size());
   } else {
     histogram_tester_.ExpectUniqueSample(/*name=*/kOnDeviceSpeechMetric,
                                          /*sample=*/false,
                                          /*expected_bucket_count=*/1);
-    ASSERT_EQ(1,
+    ASSERT_EQ(1u,
               histogram_tester_.GetAllSamples(kNetworkListeningDurationMetric)
                   .size());
     // Ensure there are no metrics for the other type of speech recognition.
-    ASSERT_EQ(0,
+    ASSERT_EQ(0u,
               histogram_tester_.GetAllSamples(kOnDeviceListeningDurationMetric)
                   .size());
   }

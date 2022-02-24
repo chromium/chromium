@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
     ASSERT_EQ(SelectShelfItem(kAppId_B),
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
-    ASSERT_EQ(registry_->GetLacrosBrowserWindowInstances().size(), 1);
+    ASSERT_EQ(registry_->GetLacrosBrowserWindowInstances().size(), 1u);
     ASSERT_EQ(ShelfStatus(kAppId_A), ash::STATUS_RUNNING);
     ASSERT_EQ(ShelfStatus(kAppId_B), ash::STATUS_RUNNING);
     ASSERT_EQ(WindowAppId(lacros->window), kAppId_B);

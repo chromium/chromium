@@ -106,13 +106,13 @@ TEST_F(RecommendedArcAppFetcherTest, OnLoadSuccess) {
 
 TEST_F(RecommendedArcAppFetcherTest, OnLoadError) {
   arc_app_fetcher()->SetCallbackForTesting(base::BindLambdaForTesting(
-      [](std::vector<Result> results) { ASSERT_EQ(results.size(), 0); }));
+      [](std::vector<Result> results) { ASSERT_EQ(results.size(), 0u); }));
   arc_app_fetcher()->OnLoadError();
 }
 
 TEST_F(RecommendedArcAppFetcherTest, OnParseResponseError) {
   arc_app_fetcher()->SetCallbackForTesting(base::BindLambdaForTesting(
-      [](std::vector<Result> results) { ASSERT_EQ(results.size(), 0); }));
+      [](std::vector<Result> results) { ASSERT_EQ(results.size(), 0u); }));
   arc_app_fetcher()->OnParseResponseError();
 }
 

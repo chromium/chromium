@@ -872,7 +872,7 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
   app_info->note_taking_new_note_url = new_note_url;
   std::string app_id =
       web_app::test::InstallWebApp(profile(), std::move(app_info));
-  ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1);
+  ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1u);
 
   // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;

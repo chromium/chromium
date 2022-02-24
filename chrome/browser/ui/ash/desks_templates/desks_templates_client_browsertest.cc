@@ -766,7 +766,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
       /*active_url_index=*/browser_active_index);
 
   // Verify that the active tab is correct.
-  EXPECT_EQ(browser_active_index, browser->tab_strip_model()->active_index());
+  EXPECT_EQ(static_cast<int>(browser_active_index),
+            browser->tab_strip_model()->active_index());
 
   aura::Window* window = browser->window()->GetNativeWindow();
   const int32_t browser_window_id =
@@ -791,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   Browser* new_browser = FindBrowser(browser_window_id);
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
-  EXPECT_EQ(browser_active_index,
+  EXPECT_EQ(static_cast<int>(browser_active_index),
             new_browser->tab_strip_model()->active_index());
 
   // Verify that the browser window has been launched on the new desk (desk B).
@@ -843,7 +844,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   // that browser session restore did not restore any windows/tabs.
   Browser* new_browser = FindBrowser(browser_window_id);
   ASSERT_TRUE(new_browser);
-  EXPECT_EQ(expected_tab_count, GetURLsForBrowserWindow(new_browser).size());
+  EXPECT_EQ(1u * expected_tab_count,
+            GetURLsForBrowserWindow(new_browser).size());
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
@@ -1167,7 +1169,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
       /*active_url_index=*/browser_active_index);
 
   // Verify that the active tab is correct.
-  EXPECT_EQ(browser_active_index, browser->tab_strip_model()->active_index());
+  EXPECT_EQ(static_cast<int>(browser_active_index),
+            browser->tab_strip_model()->active_index());
 
   aura::Window* window = browser->window()->GetNativeWindow();
   const int32_t browser_window_id =
@@ -1198,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   Browser* new_browser = FindBrowser(browser_window_id);
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(urls, GetURLsForBrowserWindow(new_browser));
-  EXPECT_EQ(browser_active_index,
+  EXPECT_EQ(static_cast<int>(browser_active_index),
             new_browser->tab_strip_model()->active_index());
 
   // Verify that the browser window has been launched on the new desk (desk B).

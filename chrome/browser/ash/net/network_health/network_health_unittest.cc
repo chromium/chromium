@@ -516,7 +516,7 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrength) {
 
   auto& network_health = network_health_.GetNetworkHealthState();
   auto& networks = network_health->networks;
-  ASSERT_EQ(1, networks.size());
+  ASSERT_EQ(1u, networks.size());
   auto& stats = networks[0]->signal_strength_stats;
   ASSERT_TRUE(stats);
   EXPECT_FLOAT_EQ(75.0, stats->average);
@@ -555,10 +555,10 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
 
   auto& network_health = network_health_.GetNetworkHealthState();
   auto& networks = network_health->networks;
-  ASSERT_EQ(1, networks.size());
+  ASSERT_EQ(1u, networks.size());
   auto& stats = networks[0]->signal_strength_stats;
   ASSERT_TRUE(stats);
-  ASSERT_EQ(1, stats->samples.size());
+  ASSERT_EQ(1u, stats->samples.size());
   ASSERT_EQ(75, stats->samples[0]);
 }
 

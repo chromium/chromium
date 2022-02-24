@@ -188,7 +188,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
       web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
       /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
-  ASSERT_EQ(filters.size(), 1);
+  ASSERT_EQ(filters.size(), 1u);
   IntentFilterPtr& filter = filters[0];
   EXPECT_FALSE(filter->activity_name.has_value());
   EXPECT_FALSE(filter->activity_label.has_value());
@@ -244,7 +244,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
           web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
           /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
-  ASSERT_EQ(filters.size(), 1);
+  ASSERT_EQ(filters.size(), 1u);
   apps::mojom::IntentFilterPtr& filter = filters[0];
   EXPECT_FALSE(filter->activity_name.has_value());
   EXPECT_FALSE(filter->activity_label.has_value());
@@ -314,21 +314,21 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_FileHandlers) {
       web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
       /*app_share_target*/ nullptr, &file_handlers);
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
   // 1st filter is URL filter.
 
   // File filter - View action
   const IntentFilterPtr& file_filter = filters[1];
-  ASSERT_EQ(file_filter->conditions.size(), 2);
+  ASSERT_EQ(file_filter->conditions.size(), 2u);
   const Condition& view_cond = *file_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // File filter - mime & file extension match
   const Condition& file_cond = *file_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 2);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond.condition_values[0]->value, "text/plain");
@@ -359,21 +359,21 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_FileHandlers) {
           web_app->app_id(), /*is_note_taking_web_app*/ false, scope,
           /*app_share_target*/ nullptr, &file_handlers);
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
   // 1st filter is URL filter.
 
   // File filter - View action
   const apps::mojom::IntentFilterPtr& file_filter = filters[1];
-  ASSERT_EQ(file_filter->conditions.size(), 2);
+  ASSERT_EQ(file_filter->conditions.size(), 2u);
   const apps::mojom::Condition& view_cond = *file_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // File filter - mime & file extension match
   const apps::mojom::Condition& file_cond = *file_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 2);
+  ASSERT_EQ(file_cond.condition_values.size(), 2u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond.condition_values[0]->value, "text/plain");
@@ -394,13 +394,13 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_NoteTakingApp) {
       web_app->app_id(), /*is_note_taking_web_app*/ true, scope,
       /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // 2nd filter is note-taking filter.
-  ASSERT_EQ(filters[1]->conditions.size(), 1);
+  ASSERT_EQ(filters[1]->conditions.size(), 1u);
   const Condition& condition = *filters[1]->conditions[0];
   EXPECT_EQ(condition.condition_type, ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1);
+  ASSERT_EQ(condition.condition_values.size(), 1u);
   EXPECT_EQ(condition.condition_values[0]->value,
             apps_util::kIntentActionCreateNote);
 }
@@ -419,17 +419,17 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_NoteTakingApp) {
           web_app->app_id(), /*is_note_taking_web_app*/ true, scope,
           /*app_share_target*/ nullptr, /*enabled_file_handlers*/ nullptr);
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // 1st filter is URL filter.
   EXPECT_TRUE(apps_util::IntentMatchesFilter(
       apps_util::CreateIntentFromUrl(scope), filters[0]));
 
   // 2nd filter is note-taking filter.
-  ASSERT_EQ(filters[1]->conditions.size(), 1);
+  ASSERT_EQ(filters[1]->conditions.size(), 1u);
   const apps::mojom::Condition& condition = *filters[1]->conditions[0];
   EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(condition.condition_values.size(), 1);
+  ASSERT_EQ(condition.condition_values.size(), 1u);
   EXPECT_EQ(condition.condition_values[0]->value,
             apps_util::kIntentActionCreateNote);
   EXPECT_TRUE(apps_util::IntentMatchesFilter(
@@ -476,37 +476,37 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForChromeApp_FileHandlers) {
 
   IntentFilters filters = apps_util::CreateIntentFiltersForChromeApp(foo.get());
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // "any" filter - View action
   const IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  ASSERT_EQ(mime_filter->conditions.size(), 2u);
   const Condition& view_cond = *mime_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // "any" filter - mime type match
   const Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  ASSERT_EQ(file_cond.condition_values.size(), 1u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond.condition_values[0]->value, "*/*");
 
   // Text filter - View action
   const IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
   const Condition& view_cond2 = *mime_filter2->conditions[0];
   EXPECT_EQ(view_cond2.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
   EXPECT_EQ(view_cond2.condition_values[0]->value,
             apps_util::kIntentActionView);
 
   // Text filter - mime type match
   const Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 2);
+  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond2.condition_values[0]->value, "text/plain");
@@ -558,37 +558,37 @@ TEST_F(IntentUtilsTest, CreateChromeAppIntentFilters_FileHandlers) {
   std::vector<apps::mojom::IntentFilterPtr> filters =
       apps_util::CreateChromeAppIntentFilters(foo.get());
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // "any" filter - View action
   const apps::mojom::IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  ASSERT_EQ(mime_filter->conditions.size(), 2u);
   const apps::mojom::Condition& view_cond = *mime_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // "any" filter - mime type match
   const apps::mojom::Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  ASSERT_EQ(file_cond.condition_values.size(), 1u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond.condition_values[0]->value, "*/*");
 
   // Text filter - View action
   const apps::mojom::IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
   const apps::mojom::Condition& view_cond2 = *mime_filter2->conditions[0];
   EXPECT_EQ(view_cond2.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
   EXPECT_EQ(view_cond2.condition_values[0]->value,
             apps_util::kIntentActionView);
 
   // Text filter - mime type match
   const apps::mojom::Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 2);
+  ASSERT_EQ(file_cond2.condition_values.size(), 2u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kMimeType);
   EXPECT_EQ(file_cond2.condition_values[0]->value, "text/plain");
@@ -642,37 +642,37 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
 
   IntentFilters filters = apps_util::CreateIntentFiltersForExtension(foo.get());
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // "html" filter - View action
   const IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  ASSERT_EQ(mime_filter->conditions.size(), 2u);
   const Condition& view_cond = *mime_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // "html" filter - glob match
   const Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  ASSERT_EQ(file_cond.condition_values.size(), 1u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type, PatternMatchType::kGlob);
   EXPECT_EQ(file_cond.condition_values[0]->value,
             R"(filesystem:chrome-extension://.*/.*\.html)");
 
   // "any" filter - View action
   const IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
   const Condition& view_cond2 = *mime_filter2->conditions[0];
   EXPECT_EQ(view_cond2.condition_type, ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
   EXPECT_EQ(view_cond2.condition_values[0]->value,
             apps_util::kIntentActionView);
 
   // "any" filter - glob match
   const Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 1);
+  ASSERT_EQ(file_cond2.condition_values.size(), 1u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             PatternMatchType::kGlob);
   EXPECT_EQ(file_cond2.condition_values[0]->value,
@@ -725,20 +725,20 @@ TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
   std::vector<apps::mojom::IntentFilterPtr> filters =
       apps_util::CreateExtensionIntentFilters(foo.get());
 
-  ASSERT_EQ(filters.size(), 2);
+  ASSERT_EQ(filters.size(), 2u);
 
   // "html" filter - View action
   const apps::mojom::IntentFilterPtr& mime_filter = filters[0];
-  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  ASSERT_EQ(mime_filter->conditions.size(), 2u);
   const apps::mojom::Condition& view_cond = *mime_filter->conditions[0];
   EXPECT_EQ(view_cond.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  ASSERT_EQ(view_cond.condition_values.size(), 1u);
   EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
 
   // "html" filter - glob match
   const apps::mojom::Condition& file_cond = *mime_filter->conditions[1];
   EXPECT_EQ(file_cond.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  ASSERT_EQ(file_cond.condition_values.size(), 1u);
   EXPECT_EQ(file_cond.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kGlob);
   EXPECT_EQ(file_cond.condition_values[0]->value,
@@ -746,17 +746,17 @@ TEST_F(IntentUtilsTest, CreateExtensionIntentFilters_FileHandlers) {
 
   // "any" filter - View action
   const apps::mojom::IntentFilterPtr& mime_filter2 = filters[1];
-  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  ASSERT_EQ(mime_filter2->conditions.size(), 2u);
   const apps::mojom::Condition& view_cond2 = *mime_filter2->conditions[0];
   EXPECT_EQ(view_cond2.condition_type, apps::mojom::ConditionType::kAction);
-  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1u);
   EXPECT_EQ(view_cond2.condition_values[0]->value,
             apps_util::kIntentActionView);
 
   // "any" filter - glob match
   const apps::mojom::Condition& file_cond2 = *mime_filter2->conditions[1];
   EXPECT_EQ(file_cond2.condition_type, apps::mojom::ConditionType::kFile);
-  ASSERT_EQ(file_cond2.condition_values.size(), 1);
+  ASSERT_EQ(file_cond2.condition_values.size(), 1u);
   EXPECT_EQ(file_cond2.condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kGlob);
   EXPECT_EQ(file_cond2.condition_values[0]->value,

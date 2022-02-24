@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   const base::span<const base::Value> result =
       CallGetAccountsNotAvailableInArc();
   // Two accounts are not available in ARC.
-  EXPECT_EQ(2, result.size());
+  EXPECT_EQ(2u, result.size());
   EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   const base::span<const base::Value> result =
       CallGetAccountsNotAvailableInArc();
   // One account is not available in ARC.
-  EXPECT_EQ(1, result.size());
+  EXPECT_EQ(1u, result.size());
   EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   const base::span<const base::Value> result_1 =
       CallGetAccountsNotAvailableInArc();
   // Zero accounts are not available in ARC.
-  EXPECT_EQ(0, result_1.size());
+  EXPECT_EQ(0u, result_1.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestWithArcRestrictionsSuite,
