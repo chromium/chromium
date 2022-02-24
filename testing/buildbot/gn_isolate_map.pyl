@@ -1139,6 +1139,13 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
+  "lacros_all_tast_tests_informational": {
+    "label": "//chromeos/lacros:lacros_all_tast_tests_informational",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "lacros_chrome_browsertests": {
     "label": "//chrome/test:lacros_chrome_browsertests",
     "type": "windowed_test_launcher",

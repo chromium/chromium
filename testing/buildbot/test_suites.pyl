@@ -3911,6 +3911,17 @@
       },
     },
 
+    'lacros_all_tast_tests_informational': {
+      'lacros_all_tast_tests_informational': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     # TODO(crbug.com/1204231): Re-enable vaapi_unittest.
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
@@ -7182,6 +7193,12 @@
     },
 
     'lacros_device_or_vm_tests_fyi': {
+      'lacros_all_tast_tests_informational': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
+          'LACROS_EVE',
+        ]
+      },
       'lacros_device_or_vm_gtests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
