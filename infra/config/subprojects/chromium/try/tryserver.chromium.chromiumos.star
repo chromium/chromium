@@ -217,6 +217,6 @@ try_.builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
-        experiment_percentage = 1,
+        experiment_percentage = 5,
     ),
 )

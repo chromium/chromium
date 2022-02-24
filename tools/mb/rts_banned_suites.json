@@ -5,6 +5,7 @@
     "metrics_python_tests",
     "mojo_python_unittests",
     "blink_python_tests",
+    "gl_unittests_ozone",
     "grit_python_unittests",
     "telemetry_perf_unittests",
     "telemetry_perf_unittests_android_chrome",
