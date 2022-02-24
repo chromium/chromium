@@ -96,8 +96,8 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
     // Recover the original URL of the request by replacing the host name in
     // request.GetURL() (which is 127.0.0.1) with the host name from the request
     // headers.
-    url::Replacements<char> replacements;
-    replacements.SetHost(host.c_str(), url::Component(0, host.length()));
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host);
     GURL original_url = request.GetURL().ReplaceComponents(replacements);
 
     {
