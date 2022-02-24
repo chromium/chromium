@@ -183,7 +183,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
                    FrameTreeNode* node,
                    RenderFrameHostImpl* frame_host,
                    const GURL& url) {
-  url::Replacements<char> strip_fragment;
+  GURL::Replacements strip_fragment;
   strip_fragment.ClearRef();
   data->SetString("frame", node->devtools_frame_token().ToString());
   data->SetString("url", url.ReplaceComponents(strip_fragment).spec());
