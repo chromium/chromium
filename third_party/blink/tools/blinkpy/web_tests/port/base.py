@@ -149,6 +149,7 @@ class Port(object):
         ('mac11-arm64', 'arm64'),
         ('win7', 'x86'),
         ('win10.20h2', 'x86'),
+        ('win11', 'x86'),
         ('trusty', 'x86_64'),
         ('fuchsia', 'x86_64'),
     )
@@ -158,7 +159,7 @@ class Port(object):
             'mac10.12', 'mac10.13', 'mac10.14', 'mac10.15', 'mac11',
             'mac11-arm64'
         ],
-        'win': ['win7', 'win10.20h2'],
+        'win': ['win7', 'win10.20h2', 'win11'],
         'linux': ['trusty'],
         'fuchsia': ['fuchsia'],
     }

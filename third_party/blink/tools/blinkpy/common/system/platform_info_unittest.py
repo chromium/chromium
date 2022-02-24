@@ -201,12 +201,17 @@ class TestPlatformInfo(unittest.TestCase):
             self.make_info(
                 fake_sys('win32', tuple([10, 0, 1234])),
                 fake_platform(win_version_string="10.0.1234")).os_version,
-            '10.1909')
+            '10.20h2')
         self.assertEqual(
             self.make_info(
                 fake_sys('win32', tuple([10, 0, 19042])),
                 fake_platform(win_version_string="10.0.19042")).os_version,
             '10.20h2')
+        self.assertEqual(
+            self.make_info(
+                fake_sys('win32', tuple([10, 0, 23000])),
+                fake_platform(win_version_string="10.0.23000")).os_version,
+            '11')
         self.assertEqual(
             self.make_info(
                 fake_sys('win32', tuple([6, 3, 1234])),

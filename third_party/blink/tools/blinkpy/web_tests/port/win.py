@@ -51,10 +51,11 @@ _log = logging.getLogger(__name__)
 class WinPort(base.Port):
     port_name = 'win'
 
-    SUPPORTED_VERSIONS = ('win7', 'win10.20h2')
+    SUPPORTED_VERSIONS = ('win7', 'win10.20h2', 'win11')
 
     FALLBACK_PATHS = {}
-    FALLBACK_PATHS['win10.20h2'] = ['win']
+    FALLBACK_PATHS['win11'] = ['win']
+    FALLBACK_PATHS['win10.20h2'] = ['win10'] + FALLBACK_PATHS['win11']
     FALLBACK_PATHS['win7'] = ['win7'] + FALLBACK_PATHS['win10.20h2']
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md'
@@ -67,9 +68,11 @@ class WinPort(base.Port):
             if host.platform.os_version in ('vista', '7sp0', '7sp1'):
                 version = 'win7'
             # Same for win8, win10.1909 we treat it as win10.
-            elif host.platform.os_version in ('8', '8.1', '10.1909', '10.20h2',
-                                              'future'):
+            elif host.platform.os_version in ('8', '8.1', '10.1909',
+                                              '10.20h2'):
                 version = 'win10.20h2'
+            elif host.platform.os_version in ('11', 'future'):
+                version = 'win11'
             else:
                 version = host.platform.os_version
             port_name = port_name + '-' + version
