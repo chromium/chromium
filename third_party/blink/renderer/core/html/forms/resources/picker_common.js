@@ -68,35 +68,37 @@ function Rectangle(xOrRect, y, width, height) {
   this.height = height;
 }
 
-Rectangle.prototype = {
-  get maxX() {
-    return this.x + this.width;
-  },
-  get maxY() {
-    return this.y + this.height;
-  },
-  toString: function() {
-    return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' +
-        this.height + ')';
-  }
-};
+{
+  Rectangle.prototype = {
+    get maxX() {
+      return this.x + this.width;
+    },
+    get maxY() {
+      return this.y + this.height;
+    },
+    toString: function() {
+      return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' +
+          this.height + ')';
+    }
+  };
 
-/**
- * @param {!Rectangle} rect1
- * @param {!Rectangle} rect2
- * @return {?Rectangle}
- */
-Rectangle.intersection = function(rect1, rect2) {
-  var x = Math.max(rect1.x, rect2.x);
-  var maxX = Math.min(rect1.maxX, rect2.maxX);
-  var y = Math.max(rect1.y, rect2.y);
-  var maxY = Math.min(rect1.maxY, rect2.maxY);
-  var width = maxX - x;
-  var height = maxY - y;
-  if (width < 0 || height < 0)
-    return null;
-  return new Rectangle(x, y, width, height);
-};
+  /**
+   * @param {!Rectangle} rect1
+   * @param {!Rectangle} rect2
+   * @return {?Rectangle}
+   */
+  Rectangle.intersection = function(rect1, rect2) {
+    var x = Math.max(rect1.x, rect2.x);
+    var maxX = Math.min(rect1.maxX, rect2.maxX);
+    var y = Math.max(rect1.y, rect2.y);
+    var maxY = Math.min(rect1.maxY, rect2.maxY);
+    var width = maxX - x;
+    var height = maxY - y;
+    if (width < 0 || height < 0)
+      return null;
+    return new Rectangle(x, y, width, height);
+  };
+}
 
 /**
  * @param {!number} width in CSS pixel
@@ -251,58 +253,60 @@ function enclosingNodeOrSelfWithClass(selfNode, className) {
 function EventEmitter() {
 }
 
-/**
- * @param {!string} type
- * @param {!function({...*})} callback
- */
-EventEmitter.prototype.on = function(type, callback) {
-  console.assert(callback instanceof Function);
-  if (!this._callbacks)
-    this._callbacks = {};
-  if (!this._callbacks[type])
-    this._callbacks[type] = [];
-  this._callbacks[type].push(callback);
-};
+{
+  /**
+   * @param {!string} type
+   * @param {!function({...*})} callback
+   */
+  EventEmitter.prototype.on = function(type, callback) {
+    console.assert(callback instanceof Function);
+    if (!this._callbacks)
+      this._callbacks = {};
+    if (!this._callbacks[type])
+      this._callbacks[type] = [];
+    this._callbacks[type].push(callback);
+  };
 
-EventEmitter.prototype.hasListener = function(type) {
-  if (!this._callbacks)
-    return false;
-  var callbacksForType = this._callbacks[type];
-  if (!callbacksForType)
-    return false;
-  return callbacksForType.length > 0;
-};
+  EventEmitter.prototype.hasListener = function(type) {
+    if (!this._callbacks)
+      return false;
+    var callbacksForType = this._callbacks[type];
+    if (!callbacksForType)
+      return false;
+    return callbacksForType.length > 0;
+  };
 
-/**
- * @param {!string} type
- * @param {!function(Object)} callback
- */
-EventEmitter.prototype.removeListener = function(type, callback) {
-  if (!this._callbacks)
-    return;
-  var callbacksForType = this._callbacks[type];
-  if (!callbacksForType)
-    return;
-  callbacksForType.splice(callbacksForType.indexOf(callback), 1);
-  if (callbacksForType.length === 0)
-    delete this._callbacks[type];
-};
+  /**
+   * @param {!string} type
+   * @param {!function(Object)} callback
+   */
+  EventEmitter.prototype.removeListener = function(type, callback) {
+    if (!this._callbacks)
+      return;
+    var callbacksForType = this._callbacks[type];
+    if (!callbacksForType)
+      return;
+    callbacksForType.splice(callbacksForType.indexOf(callback), 1);
+    if (callbacksForType.length === 0)
+      delete this._callbacks[type];
+  };
 
-/**
- * @param {!string} type
- * @param {...*} var_args
- */
-EventEmitter.prototype.dispatchEvent = function(type) {
-  if (!this._callbacks)
-    return;
-  var callbacksForType = this._callbacks[type];
-  if (!callbacksForType)
-    return;
-  callbacksForType = callbacksForType.slice(0);
-  for (var i = 0; i < callbacksForType.length; ++i) {
-    callbacksForType[i].apply(this, Array.prototype.slice.call(arguments, 1));
-  }
-};
+  /**
+   * @param {!string} type
+   * @param {...*} var_args
+   */
+  EventEmitter.prototype.dispatchEvent = function(type) {
+    if (!this._callbacks)
+      return;
+    var callbacksForType = this._callbacks[type];
+    if (!callbacksForType)
+      return;
+    callbacksForType = callbacksForType.slice(0);
+    for (var i = 0; i < callbacksForType.length; ++i) {
+      callbacksForType[i].apply(this, Array.prototype.slice.call(arguments, 1));
+    }
+  };
+}
 
 /**
  * @constructor
@@ -315,29 +319,31 @@ function Picker(element, config) {
   this._config = config;
 }
 
-Picker.prototype = Object.create(EventEmitter.prototype);
+{
+  Picker.prototype = Object.create(EventEmitter.prototype);
 
-/**
- * @enum {number}
- */
-Picker.Actions = {
-  SetValue: 0,
-  Cancel: -1,
-};
+  /**
+   * @enum {number}
+   */
+  Picker.Actions = {
+    SetValue: 0,
+    Cancel: -1,
+  };
 
-/**
- * @param {!string} value
- */
-Picker.prototype.submitValue = function(value) {
-  window.pagePopupController.setValue(value);
-  window.pagePopupController.closePopup();
-};
+  /**
+   * @param {!string} value
+   */
+  Picker.prototype.submitValue = function(value) {
+    window.pagePopupController.setValue(value);
+    window.pagePopupController.closePopup();
+  };
 
-Picker.prototype.handleCancel = function() {
-  window.pagePopupController.closePopup();
-};
+  Picker.prototype.handleCancel = function() {
+    window.pagePopupController.closePopup();
+  };
 
-Picker.prototype.cleanup = function() {};
+  Picker.prototype.cleanup = function() {};
+}
 
 window.addEventListener('keyup', function(event) {
   // JAWS dispatches extra Alt events and unless we handle them they move the
