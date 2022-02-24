@@ -88,6 +88,7 @@ class HTMLVideoElement;
 class ImageBitmap;
 class ImageData;
 class OESVertexArrayObject;
+class ScriptPromiseResolver;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 class VideoFrame;
 class WebGLActiveInfo;
