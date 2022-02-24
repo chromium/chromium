@@ -106,7 +106,7 @@ class RunOnOsLoginCommandUnitTest : public WebAppTest {
 
   AppId RegisterApp(const GURL& start_url = GURL("https://example.com/path")) {
     auto web_app = test::CreateWebApp(start_url);
-    const AppId app_id = web_app->app_id();
+    AppId app_id = web_app->app_id();
     web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
     {
       ScopedRegistryUpdate update(&provider()->sync_bridge());

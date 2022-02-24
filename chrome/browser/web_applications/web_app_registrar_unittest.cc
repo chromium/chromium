@@ -107,7 +107,7 @@ class WebAppRegistrarTest : public WebAppTest {
   AppId InitRegistrarWithApp(std::unique_ptr<WebApp> app) {
     DCHECK(registrar().is_empty());
 
-    const AppId app_id = app->app_id();
+    AppId app_id = app->app_id();
 
     Registry registry;
     registry.emplace(app_id, std::move(app));

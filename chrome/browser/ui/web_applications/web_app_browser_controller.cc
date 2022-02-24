@@ -295,12 +295,12 @@ std::u16string WebAppBrowserController::GetTitle() const {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id()));
   }
 
-  const std::u16string raw_title = AppBrowserController::GetTitle();
+  std::u16string raw_title = AppBrowserController::GetTitle();
 
   if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
     return raw_title;
 
-  const std::u16string app_name =
+  std::u16string app_name =
       base::UTF8ToUTF16(provider_.registrar().GetAppShortName(app_id()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
