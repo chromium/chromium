@@ -3224,6 +3224,48 @@
             ]
         }
     ],
+    "HappinessTrackingSystemEnt": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.01",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1641024000000",
+                        "trigger_id": "yBY8rziNW0jBnuKU19R0UdAcCDpC"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemEnt"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingSystemStability": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.001",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1641024000000",
+                        "trigger_id": "d6XgkEBLK0jBnuKU19R0VEK7mCc9"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemStability"
+                    ]
+                }
+            ]
+        }
+    ],
     "HatsArcGames": [
         {
             "platforms": [
