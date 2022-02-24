@@ -389,6 +389,7 @@ crbug.com/591099 external/wpt/css/css-layout-api/* [ Skip ]
 ### external/wpt/css/css-multicol/
 crbug.com/829028 external/wpt/css/css-multicol/abspos-containing-block-outside-spanner.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/balance-break-avoidance-001.html [ Failure ]
+crbug.com/829028 external/wpt/css/css-multicol/balance-break-avoidance-002.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/balance-orphans-widows-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/baseline-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-multicol/baseline-007.html [ Failure ]
