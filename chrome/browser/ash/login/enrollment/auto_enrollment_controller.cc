@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client_impl.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.h"
@@ -31,7 +30,6 @@
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/dbus/userdataauth/install_attributes_client.h"
-#include "chromeos/system/factory_ping_embargo_check.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/device_event_log/device_event_log.h"
@@ -51,18 +49,9 @@
 #define LOG_DETERMINATION() LOG(WARNING)
 
 namespace ash {
-// TODO(https://crbug.com/1164001): remove when migrated to ash::
-namespace system {
-using ::chromeos::system::FactoryPingEmbargoState;
-using ::chromeos::system::GetEnterpriseManagementPingEmbargoState;
-using ::chromeos::system::kFirmwareTypeKey;
-using ::chromeos::system::kFirmwareTypeValueNonchrome;
-using ::chromeos::system::kRlzBrandCodeKey;
-}  // namespace system
-
 namespace {
 
-// Maximum number of bits of the identifer hash to send during initial
+// Maximum number of bits of the identifier hash to send during initial
 // enrollment check.
 constexpr int kInitialEnrollmentModulusPowerLimit = 6;
 
@@ -119,24 +108,6 @@ int GetSanitizedArg(const std::string& switch_name) {
   return int_value;
 }
 
-std::string FRERequirementToString(
-    AutoEnrollmentController::FRERequirement requirement) {
-  using FRERequirement = AutoEnrollmentController::FRERequirement;
-  switch (requirement) {
-    case FRERequirement::kRequired:
-      return "Forced Re-Enrollment required.";
-    case FRERequirement::kNotRequired:
-      return "Forced Re-Enrollment disabled: first setup.";
-    case FRERequirement::kExplicitlyRequired:
-      return "Forced Re-Enrollment required: flag in VPD.";
-    case FRERequirement::kExplicitlyNotRequired:
-      return "Forced Re-Enrollment disabled: flag in VPD.";
-  }
-
-  NOTREACHED();
-  return std::string();
-}
-
 std::string AutoEnrollmentStateToString(policy::AutoEnrollmentState state) {
   switch (state) {
     case policy::AutoEnrollmentState::AUTO_ENROLLMENT_STATE_IDLE:
@@ -158,19 +129,6 @@ std::string AutoEnrollmentStateToString(policy::AutoEnrollmentState state) {
   }
 }
 
-// Returns true if this is an official build and the device has Chrome firmware.
-bool IsGoogleBrandedChrome() {
-  std::string firmware_type;
-  bool is_chrome_branded =
-      !system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-          system::kFirmwareTypeKey, &firmware_type) ||
-      firmware_type != system::kFirmwareTypeValueNonchrome;
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  is_chrome_branded = false;
-#endif
-  return is_chrome_branded;
-}
-
 // Schedules immediate initialization of the `DeviceManagementService` and
 // returns it.
 policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
@@ -180,6 +138,18 @@ policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
       connector->device_management_service();
   service->ScheduleInitialization(0);
   return service;
+}
+
+bool IsSystemClockSynchronized(
+    AutoEnrollmentController::SystemClockSyncState state) {
+  switch (state) {
+    case AutoEnrollmentController::SystemClockSyncState::kSynchronized:
+    case AutoEnrollmentController::SystemClockSyncState::kSyncFailed:
+      return true;
+    case AutoEnrollmentController::SystemClockSyncState::kCanWaitForSync:
+    case AutoEnrollmentController::SystemClockSyncState::kWaitingForSync:
+      return false;
+  }
 }
 
 enum class AutoEnrollmentControllerTimeoutReport {
@@ -196,108 +166,10 @@ void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
 
 }  // namespace
 
-const char AutoEnrollmentController::kForcedReEnrollmentAlways[] = "always";
-const char AutoEnrollmentController::kForcedReEnrollmentNever[] = "never";
-const char AutoEnrollmentController::kForcedReEnrollmentOfficialBuild[] =
-    "official";
-
-const char AutoEnrollmentController::kInitialEnrollmentAlways[] = "always";
-const char AutoEnrollmentController::kInitialEnrollmentNever[] = "never";
-const char AutoEnrollmentController::kInitialEnrollmentOfficialBuild[] =
-    "official";
-
-// static
-bool AutoEnrollmentController::IsFREEnabled() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  std::string command_line_mode = command_line->GetSwitchValueASCII(
-      switches::kEnterpriseEnableForcedReEnrollment);
-  if (command_line_mode == kForcedReEnrollmentAlways)
-    return true;
-
-  if (command_line_mode.empty() ||
-      command_line_mode == kForcedReEnrollmentOfficialBuild) {
-    return IsGoogleBrandedChrome();
-  }
-
-  if (command_line_mode == kForcedReEnrollmentNever)
-    return false;
-
-  LOG(FATAL) << "Unknown Forced Re-Enrollment mode: " << command_line_mode
-             << ".";
-  return false;
-}
-
-// static
-bool AutoEnrollmentController::IsInitialEnrollmentEnabled() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  if (!command_line->HasSwitch(switches::kEnterpriseEnableInitialEnrollment))
-    return IsGoogleBrandedChrome();
-
-  std::string command_line_mode = command_line->GetSwitchValueASCII(
-      switches::kEnterpriseEnableInitialEnrollment);
-  if (command_line_mode == kInitialEnrollmentAlways)
-    return true;
-
-  if (command_line_mode.empty() ||
-      command_line_mode == kInitialEnrollmentOfficialBuild) {
-    return IsGoogleBrandedChrome();
-  }
-
-  if (command_line_mode == kInitialEnrollmentNever)
-    return false;
-
-  LOG(FATAL) << "Unknown Initial Enrollment mode: " << command_line_mode << ".";
-  return false;
-}
-
 // static
 bool AutoEnrollmentController::ShouldUseFakePsmRlweClient() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnterpriseUseFakePsmRlweClientForTesting);
-}
-
-// static
-bool AutoEnrollmentController::IsEnabled() {
-  return IsFREEnabled() || IsInitialEnrollmentEnabled();
-}
-
-// static
-AutoEnrollmentController::FRERequirement
-AutoEnrollmentController::GetFRERequirement() {
-  std::string check_enrollment_value;
-  system::StatisticsProvider* provider =
-      system::StatisticsProvider::GetInstance();
-  bool fre_flag_found = provider->GetMachineStatistic(
-      system::kCheckEnrollmentKey, &check_enrollment_value);
-
-  if (fre_flag_found) {
-    if (check_enrollment_value == "0")
-      return FRERequirement::kExplicitlyNotRequired;
-    if (check_enrollment_value == "1")
-      return FRERequirement::kExplicitlyRequired;
-
-    LOG(ERROR) << "Unexpected value for " << system::kCheckEnrollmentKey << ": "
-               << check_enrollment_value;
-    LOG(WARNING) << "Forcing auto enrollment check.";
-    return FRERequirement::kExplicitlyRequired;
-  }
-  // Assume that the presence of the machine serial number means that VPD has
-  // been read successfully. Don't trust a missing ActivateDate if VPD could not
-  // be read successfully.
-  bool vpd_read_successfully = !provider->GetEnterpriseMachineID().empty();
-  if (vpd_read_successfully &&
-      !provider->GetMachineStatistic(system::kActivateDateKey, nullptr)) {
-    // The device has never been activated (enterprise enrolled or
-    // consumer-owned) so doing a FRE check is not necessary.
-    return FRERequirement::kNotRequired;
-  }
-  if (!vpd_read_successfully) {
-    LOG(ERROR) << "VPD could not be read, skipping explicitly required auto "
-                  "enrollment check.";
-  }
-  return FRERequirement::kRequired;
 }
 
 AutoEnrollmentController::AutoEnrollmentController() {
@@ -353,8 +225,10 @@ void AutoEnrollmentController::Start() {
 
 void AutoEnrollmentController::StartWithSystemClockSyncState() {
   auto_enrollment_check_type_ =
-      DetermineAutoEnrollmentCheckType(system_clock_sync_state_);
-  if (auto_enrollment_check_type_ == AutoEnrollmentCheckType::kNone) {
+      policy::AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
+          IsSystemClockSynchronized(system_clock_sync_state_));
+  if (auto_enrollment_check_type_ ==
+      policy::AutoEnrollmentTypeChecker::CheckType::kNone) {
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
     return;
   }
@@ -365,7 +239,8 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
     return;
 
   if (auto_enrollment_check_type_ ==
-      AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync) {
+      policy::AutoEnrollmentTypeChecker::CheckType::
+          kUnknownDueToMissingSystemClockSync) {
     DCHECK_EQ(system_clock_sync_state_, SystemClockSyncState::kCanWaitForSync);
     system_clock_sync_state_ = SystemClockSyncState::kWaitingForSync;
 
@@ -409,156 +284,16 @@ void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
   testing_auto_enrollment_client_factory_ = auto_enrollment_client_factory;
 }
 
-// static
-AutoEnrollmentController::InitialStateDeterminationRequirement
-AutoEnrollmentController::GetInitialStateDeterminationRequirement(
-    SystemClockSyncState system_clock_sync_state) {
-  // Skip Initial State Determination if it is not enabled according to
-  // command-line flags.
-  if (!IsInitialEnrollmentEnabled()) {
-    LOG(WARNING) << "Initial Enrollment is disabled.";
-    return InitialStateDeterminationRequirement::kNotRequired;
-  }
-
-  system::StatisticsProvider* provider =
-      system::StatisticsProvider::GetInstance();
-  system::FactoryPingEmbargoState embargo_state =
-      system::GetEnterpriseManagementPingEmbargoState(provider);
-  if (provider->GetEnterpriseMachineID().empty()) {
-    LOG(WARNING)
-        << "Skip Initial State Determination due to missing serial number.";
-    return InitialStateDeterminationRequirement::kNotRequired;
-  }
-
-  std::string rlz_brand_code;
-  const bool rlz_brand_code_found =
-      provider->GetMachineStatistic(system::kRlzBrandCodeKey, &rlz_brand_code);
-  if (!rlz_brand_code_found || rlz_brand_code.empty()) {
-    LOG(WARNING)
-        << "Skip Initial State Determination due to missing brand code.";
-    return InitialStateDeterminationRequirement::kNotRequired;
-  }
-
-  if (system_clock_sync_state == SystemClockSyncState::kCanWaitForSync &&
-      (embargo_state == system::FactoryPingEmbargoState::kInvalid ||
-       embargo_state == system::FactoryPingEmbargoState::kNotPassed)) {
-    // Wait for the system clock to become synchronized and check again.
-    LOG(WARNING)
-        << "Skip Initial State Determination due to out of sync clock.";
-    return InitialStateDeterminationRequirement::
-        kUnknownDueToMissingSystemClockSync;
-  }
-
-  const char* system_clock_log_info =
-      system_clock_sync_state == SystemClockSyncState::kSynchronized
-          ? "system clock in sync"
-          : "system clock sync failed";
-  if (embargo_state == system::FactoryPingEmbargoState::kInvalid) {
-    LOG(WARNING)
-        << "Skip Initial State Determination due to invalid embargo date ("
-        << system_clock_log_info << ").";
-    return InitialStateDeterminationRequirement::kNotRequired;
-  }
-  if (embargo_state == system::FactoryPingEmbargoState::kNotPassed) {
-    LOG(WARNING) << "Skip Initial State Determination because the device is in "
-                    "the embargo period ("
-                 << system_clock_log_info << ").";
-    return InitialStateDeterminationRequirement::kNotRequired;
-  }
-
-  LOG_DETERMINATION() << "Initial State Determination required.";
-  return InitialStateDeterminationRequirement::kRequired;
-}
-
-// static
-AutoEnrollmentController::AutoEnrollmentCheckType
-AutoEnrollmentController::DetermineAutoEnrollmentCheckType(
-    SystemClockSyncState system_clock_sync_state) {
-  // Skip everything if neither FRE nor Initial Enrollment are enabled.
-  if (!IsEnabled()) {
-    LOG(WARNING) << "Auto-enrollment disabled.";
-    return AutoEnrollmentCheckType::kNone;
-  }
-
-  // Skip everything if GAIA is disabled.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDisableGaiaServices)) {
-    LOG(WARNING) << "Auto-enrollment disabled: command line (gaia).";
-    return AutoEnrollmentCheckType::kNone;
-  }
-
-  // Determine whether to do an FRE check or an initial state determination.
-  // FRE has precedence since managed devices must go through an FRE check.
-  FRERequirement fre_requirement = GetFRERequirement();
-  LOG_DETERMINATION() << FRERequirementToString(fre_requirement);
-
-  // Skip FRE check if the device is explicitly marked as consumer owned.
-  if (fre_requirement == FRERequirement::kExplicitlyNotRequired)
-    return AutoEnrollmentCheckType::kNone;
-
-  if (ShouldDoFRECheck(command_line, fre_requirement)) {
-    // FRE has precedence over Initial Enrollment.
-    LOG(WARNING) << "Proceeding with FRE check.";
-    return fre_requirement == FRERequirement::kExplicitlyRequired
-               ? AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired
-               : AutoEnrollmentCheckType::kForcedReEnrollmentImplicitlyRequired;
-  }
-
-  // FRE is not required. Check whether an initial state determination should be
-  // done.
-  switch (GetInitialStateDeterminationRequirement(system_clock_sync_state)) {
-    case InitialStateDeterminationRequirement::kRequired:
-      LOG(WARNING) << "Proceeding with Initial State Determination.";
-      return AutoEnrollmentCheckType::kInitialStateDetermination;
-    case InitialStateDeterminationRequirement::
-        kUnknownDueToMissingSystemClockSync:
-      return AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync;
-    case InitialStateDeterminationRequirement::kNotRequired:
-      break;
-  }
-
-  // Neither FRE nor initial state determination checks are needed.
-  return AutoEnrollmentCheckType::kNone;
-}
-
-// static
-bool AutoEnrollmentController::ShouldDoFRECheck(
-    base::CommandLine* command_line,
-    FRERequirement fre_requirement) {
-  // Skip FRE check if modulus configuration is not present.
-  if (!command_line->HasSwitch(switches::kEnterpriseEnrollmentInitialModulus) &&
-      !command_line->HasSwitch(switches::kEnterpriseEnrollmentModulusLimit)) {
-    LOG(WARNING) << "FRE disabled through command line (config).";
-    return false;
-  }
-
-  // Skip FRE check if it is not enabled by command-line switches.
-  if (!IsFREEnabled()) {
-    LOG(WARNING) << "FRE disabled.";
-    return false;
-  }
-
-  // Skip FRE check if explicitly not required to check.
-  if (fre_requirement == FRERequirement::kExplicitlyNotRequired) {
-    LOG(WARNING) << "FRE disabled for device in consumer mode.";
-    return false;
-  }
-
-  // Skip FRE check if it is not required according to the device state.
-  if (fre_requirement == FRERequirement::kNotRequired)
-    return false;
-
-  return true;
-}
-
 void AutoEnrollmentController::OnOwnershipStatusCheckDone(
     DeviceSettingsService::OwnershipStatus status) {
   switch (status) {
     case DeviceSettingsService::OWNERSHIP_NONE:
       switch (auto_enrollment_check_type_) {
-        case AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired:
+        case policy::AutoEnrollmentTypeChecker::CheckType::
+            kForcedReEnrollmentExplicitlyRequired:
           // [[fallthrough]];
-        case AutoEnrollmentCheckType::kForcedReEnrollmentImplicitlyRequired:
+        case policy::AutoEnrollmentTypeChecker::CheckType::
+            kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
           g_browser_process->platform_part()
@@ -568,12 +303,14 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
                   base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
                                  client_start_weak_factory_.GetWeakPtr()));
           break;
-        case AutoEnrollmentCheckType::kInitialStateDetermination:
+        case policy::AutoEnrollmentTypeChecker::CheckType::
+            kInitialStateDetermination:
           StartClientForInitialEnrollment();
           break;
-        case AutoEnrollmentCheckType::kUnknownDueToMissingSystemClockSync:
+        case policy::AutoEnrollmentTypeChecker::CheckType::
+            kUnknownDueToMissingSystemClockSync:
           // [[fallthrough]];
-        case AutoEnrollmentCheckType::kNone:
+        case policy::AutoEnrollmentTypeChecker::CheckType::kNone:
           // The ownership check is only triggered if
           // `auto_enrollment_check_type_` indicates that an auto-enrollment
           // check should be done.
@@ -597,7 +334,8 @@ void AutoEnrollmentController::StartClientForFRE(
   if (state_keys.empty()) {
     LOG(ERROR) << "No state keys available.";
     if (auto_enrollment_check_type_ ==
-        AutoEnrollmentCheckType::kForcedReEnrollmentExplicitlyRequired) {
+        policy::AutoEnrollmentTypeChecker::CheckType::
+            kForcedReEnrollmentExplicitlyRequired) {
       if (request_state_keys_tries_ >= kMaxRequestStateKeysTries) {
         if (safeguard_timer_.IsRunning())
           safeguard_timer_.Stop();
@@ -649,6 +387,9 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
   system_clock_sync_state_ = system_clock_synchronized
                                  ? SystemClockSyncState::kSynchronized
                                  : SystemClockSyncState::kSyncFailed;
+  LOG(WARNING) << "System clock "
+               << (system_clock_synchronized ? "synchronized"
+                                             : "failed to synchronize");
   StartWithSystemClockSyncState();
 }
 
@@ -796,12 +537,14 @@ void AutoEnrollmentController::OnForcedReEnrollmentVpdCleared(bool reply) {
 void AutoEnrollmentController::Timeout() {
   // When tightening the FRE flows, as a cautionary measure (to prevent
   // interference with consumer devices) timeout was chosen to only enforce FRE
-  // for EXPLICTLY_REQUIRED.
+  // for EXPLICITLY_REQUIRED.
   // TODO(igorcov): Investigate the remaining causes of hitting timeout and
   // potentially either remove the timeout altogether or enforce FRE in the
   // REQUIRED case as well.
   if (client_start_weak_factory_.HasWeakPtrs() &&
-      GetFRERequirement() != FRERequirement::kExplicitlyRequired) {
+      auto_enrollment_check_type_ !=
+          policy::AutoEnrollmentTypeChecker::CheckType::
+              kForcedReEnrollmentExplicitlyRequired) {
     // If the callbacks to check ownership status or state keys are still
     // pending, there's a bug in the code running on the device. No use in
     // retrying anything, need to fix that bug.

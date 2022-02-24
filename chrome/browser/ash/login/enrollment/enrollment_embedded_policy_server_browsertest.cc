@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
@@ -203,7 +204,7 @@ class AutoEnrollmentEmbeddedPolicyServer
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableForcedReEnrollment,
-        AutoEnrollmentController::kForcedReEnrollmentAlways);
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnrollmentInitialModulus, "5");
     command_line->AppendSwitchASCII(switches::kEnterpriseEnrollmentModulusLimit,
@@ -223,7 +224,7 @@ class AutoEnrollmentEmbeddedPolicyServer
 class AutoEnrollmentWithStatistics : public AutoEnrollmentEmbeddedPolicyServer {
  public:
   AutoEnrollmentWithStatistics() : AutoEnrollmentEmbeddedPolicyServer() {
-    // AutoEnrollmentController assumes that VPD is in valid state if
+    // `AutoEnrollmentTypeChecker` assumes that VPD is in valid state if
     // "serial_number" or "Product_S/N" could be read from it.
     fake_statistics_provider_.SetMachineStatistic(
         system::kSerialNumberKeyForTest, test::kTestSerialNumber);
@@ -294,7 +295,7 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
-        AutoEnrollmentController::kInitialEnrollmentAlways);
+        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
   }
 
   int GetPsmExecutionResultPref() const {

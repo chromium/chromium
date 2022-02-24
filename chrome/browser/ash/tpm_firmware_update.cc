@@ -21,8 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -258,10 +258,10 @@ void GetAvailableUpdateModes(
     // enrollment might still be pending, in which case TPM firmware updates are
     // disallowed until FRE determines that the device is not remotely managed
     // or it does get enrolled and the admin allows TPM firmware updates.
-    const AutoEnrollmentController::FRERequirement requirement =
-        AutoEnrollmentController::GetFRERequirement();
-    if (requirement ==
-        AutoEnrollmentController::FRERequirement::kExplicitlyRequired) {
+    const auto requirement =
+        policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD();
+    if (requirement == policy::AutoEnrollmentTypeChecker::FRERequirement::
+                           kExplicitlyRequired) {
       std::move(completion).Run(std::set<Mode>());
       return;
     }

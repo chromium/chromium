@@ -68,6 +68,7 @@
 #include "chrome/browser/ash/net/rollback_network_config/fake_rollback_network_config.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/fake_auto_enrollment_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
@@ -1198,7 +1199,7 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableForcedReEnrollment,
-        AutoEnrollmentController::kForcedReEnrollmentAlways);
+        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnrollmentInitialModulus, "1");
     command_line->AppendSwitchASCII(switches::kEnterpriseEnrollmentModulusLimit,
@@ -1633,7 +1634,7 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
-        AutoEnrollmentController::kInitialEnrollmentAlways);
+        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
   }
 
   // Test initial enrollment. This method is shared by the tests for initial
@@ -1920,7 +1921,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
@@ -1928,7 +1929,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   system_clock_client()->NotifyObserversSystemClockUpdated();
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::kNone,
             auto_enrollment_controller()->auto_enrollment_check_type());
   EXPECT_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT,
             auto_enrollment_controller()->state());
@@ -1979,7 +1980,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 
@@ -1987,7 +1988,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   // Fast-forward by a bit more than that.
   task_runner->FastForwardBy(base::Seconds(45 + 1));
 
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::kNone,
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::kNone,
             auto_enrollment_controller()->auto_enrollment_check_type());
   EXPECT_EQ(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT,
             auto_enrollment_controller()->state());
@@ -2038,7 +2039,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   mock_auto_enrollment_check_screen_->RealShow();
-  EXPECT_EQ(AutoEnrollmentController::AutoEnrollmentCheckType::
+  EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
 

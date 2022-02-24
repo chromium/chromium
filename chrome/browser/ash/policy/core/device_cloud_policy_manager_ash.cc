@@ -27,10 +27,10 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader_impl.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
@@ -82,7 +82,7 @@ constexpr base::TimeDelta kDeviceStatusUploadFrequency = base::Hours(3);
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return ash::AutoEnrollmentController::IsFREEnabled();
+  return policy::AutoEnrollmentTypeChecker::IsFREEnabled();
 }
 
 }  // namespace

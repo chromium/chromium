@@ -20,12 +20,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
 #include "chrome/browser/ash/policy/dev_mode/dev_mode_policy_util.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/enrollment_status.h"
@@ -420,7 +420,7 @@ void EnrollmentHandler::HandleStateKeysResult(
   DCHECK_EQ(STEP_STATE_KEYS, enrollment_step_);
 
   // Make sure state keys are available if forced re-enrollment is on.
-  if (ash::AutoEnrollmentController::IsFREEnabled()) {
+  if (policy::AutoEnrollmentTypeChecker::IsFREEnabled()) {
     client_->SetStateKeysToUpload(state_keys);
     register_params_->current_state_key =
         state_keys_broker_->current_state_key();

@@ -30,7 +30,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
-#include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/notifications/adb_sideloading_policy_change_notification.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_migration_manager.h"
 #include "chrome/browser/ash/policy/active_directory/active_directory_policy_manager.h"
@@ -38,6 +37,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/dm_token_storage.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -114,7 +114,7 @@ MarketSegment TranslateMarketSegment(
 
 // Checks whether forced re-enrollment is enabled.
 bool IsForcedReEnrollmentEnabled() {
-  return ash::AutoEnrollmentController::IsFREEnabled();
+  return policy::AutoEnrollmentTypeChecker::IsFREEnabled();
 }
 
 std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {

@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
@@ -830,7 +831,7 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
-        AutoEnrollmentController::kInitialEnrollmentAlways);
+        policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
   }
 
   void ZeroTouchEndToEnd();
