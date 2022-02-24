@@ -252,9 +252,10 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
                                      const NGLogicalLineItem& item);
 
 // A vector of Child.
-// Unlike the fragment builder, chlidren are mutable.
+// Unlike the fragment builder, children are mutable.
 // Callers can add to the fragment builder in a batch once finalized.
-class NGLogicalLineItems : public GarbageCollected<NGLogicalLineItems> {
+class CORE_EXPORT NGLogicalLineItems
+    : public GarbageCollected<NGLogicalLineItems> {
  public:
   NGLogicalLineItems() = default;
   ~NGLogicalLineItems() { DCHECK(IsEmpty()); }
