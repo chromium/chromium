@@ -20,7 +20,7 @@ class CleanupVisualsTask : public Task {
  public:
   struct Result {
     bool success = false;
-    int removed_rows = 0;
+    int64_t removed_rows = 0;
   };
 
   CleanupVisualsTask(OfflinePageMetadataStore* store,

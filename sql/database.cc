@@ -1469,12 +1469,12 @@ int64_t Database::GetLastInsertRowId() const {
   return last_rowid;
 }
 
-int Database::GetLastChangeCount() const {
+int64_t Database::GetLastChangeCount() {
   if (!db_) {
     DCHECK(poisoned_) << "Illegal use of Database without a db";
     return 0;
   }
-  return sqlite3_changes(db_);
+  return sqlite3_changes64(db_);
 }
 
 int Database::GetMemoryUsage() {

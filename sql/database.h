@@ -501,7 +501,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns sqlite's count of the number of rows modified by the last
   // statement executed. Will be 0 if no statement has executed or the database
   // is closed.
-  int GetLastChangeCount() const;
+  int64_t GetLastChangeCount();
 
   // Approximates the amount of memory used by SQLite for this database.
   //

@@ -330,17 +330,18 @@ int PrefetchStoreTestUtil::ZombifyPrefetchItems(const std::string& name_space,
   return count;
 }
 
-int PrefetchStoreTestUtil::LastCommandChangeCount() {
+int64_t PrefetchStoreTestUtil::LastCommandChangeCount() {
   base::RunLoop run_loop;
-  int count = 0;
-  store_->Execute(base::BindOnce([](sql::Database* connection) {
-                    return connection->GetLastChangeCount();
-                  }),
-                  base::BindOnce(base::BindLambdaForTesting([&](int result) {
-                    count = result;
-                    run_loop.Quit();
-                  })),
-                  0);
+  int64_t count = 0;
+  store_->Execute(
+      base::BindOnce([](sql::Database* connection) {
+        return connection->GetLastChangeCount();
+      }),
+      base::BindOnce(base::BindLambdaForTesting([&](int64_t result) {
+        count = result;
+        run_loop.Quit();
+      })),
+      int64_t{0});
   run_loop.Run();
   return count;
 }
