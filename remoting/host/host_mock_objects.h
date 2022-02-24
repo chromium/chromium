@@ -20,6 +20,7 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/host_status_observer.h"
@@ -64,6 +65,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<webrtc::DesktopCapturer>,
               CreateVideoCapturer,
+              (std::unique_ptr<DesktopDisplayInfoMonitor>),
+              (override));
+  MOCK_METHOD(std::unique_ptr<DesktopDisplayInfoMonitor>,
+              CreateDisplayInfoMonitor,
               (),
               (override));
   MOCK_METHOD(std::unique_ptr<webrtc::MouseCursorMonitor>,
@@ -84,7 +89,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopAndCursorConditionalComposer>,
               CreateComposingVideoCapturer,
-              (),
+              (std::unique_ptr<DesktopDisplayInfoMonitor> monitor),
               (override));
   MOCK_METHOD(std::string, GetCapabilities, (), (const, override));
   MOCK_METHOD(void, SetCapabilities, (const std::string&), (override));

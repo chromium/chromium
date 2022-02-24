@@ -32,6 +32,7 @@
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/crash_process.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
@@ -431,8 +432,12 @@ void DesktopSessionAgent::Start(
   }
 
   // Start the video capturer and mouse cursor monitor.
+  // TODO(lambroslambrou): When supporting multiple streams, this class should
+  // create and own a single DesktopDisplayInfoMonitor and call Start() on it,
+  // instead of passing it to CreateVideoCapturer() here.
   video_capturer_ = std::make_unique<DesktopAndCursorConditionalComposer>(
-      desktop_environment_->CreateVideoCapturer());
+      desktop_environment_->CreateVideoCapturer(
+          desktop_environment_->CreateDisplayInfoMonitor()));
   video_capturer_->Start(this);
   video_capturer_->SetSharedMemoryFactory(
       std::make_unique<SharedMemoryFactoryImpl>(

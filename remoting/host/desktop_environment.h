@@ -26,6 +26,7 @@ class ActionExecutor;
 class AudioCapturer;
 class ClientSessionControl;
 class ClientSessionEvents;
+class DesktopDisplayInfoMonitor;
 class FileOperations;
 class InputInjector;
 class KeyboardLayoutMonitor;
@@ -48,7 +49,22 @@ class DesktopEnvironment {
   virtual std::unique_ptr<AudioCapturer> CreateAudioCapturer() = 0;
   virtual std::unique_ptr<InputInjector> CreateInputInjector() = 0;
   virtual std::unique_ptr<ScreenControls> CreateScreenControls() = 0;
-  virtual std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer() = 0;
+
+  // |monitor| is an optional parameter. If provided, it will be notified on
+  // every captured frame so it can refresh the display-info. Used (by
+  // DesktopCapturerProxy) only for the single-video-stream case, where there is
+  // only one capturer which owns the monitor. For multi-stream, the monitor is
+  // owned and managed independently from DesktopCapturerProxy.
+  // TODO(lambroslambrou): Remove this parameter when the single-stream
+  // implementation is removed. Alternatively, if the Win/Mac implementations
+  // of DesktopDisplayInfoLoader are updated to be event-driven (instead of
+  // polling per captured frame), this parameter could be removed even in
+  // the single-video-stream case.
+  virtual std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) = 0;
+
+  virtual std::unique_ptr<DesktopDisplayInfoMonitor>
+  CreateDisplayInfoMonitor() = 0;
   virtual std::unique_ptr<webrtc::MouseCursorMonitor>
   CreateMouseCursorMonitor() = 0;
   virtual std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
@@ -63,7 +79,8 @@ class DesktopEnvironment {
   // If the platform already does this, this method return null, and the caller
   // should use CreateVideoCapturer() instead.
   virtual std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer() = 0;
+  CreateComposingVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;

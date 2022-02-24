@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
@@ -87,7 +88,8 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
 }
 
 std::unique_ptr<webrtc::DesktopCapturer>
-FakeDesktopEnvironment::CreateVideoCapturer() {
+FakeDesktopEnvironment::CreateVideoCapturer(
+    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null())
     fake_capturer->set_frame_generator(frame_generator_);
@@ -96,6 +98,11 @@ FakeDesktopEnvironment::CreateVideoCapturer() {
       std::make_unique<DesktopCapturerProxy>(capture_thread_, capture_thread_);
   result->set_capturer(std::move(fake_capturer));
   return std::move(result);
+}
+
+std::unique_ptr<DesktopDisplayInfoMonitor>
+FakeDesktopEnvironment::CreateDisplayInfoMonitor() {
+  return nullptr;
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -129,7 +136,8 @@ uint32_t FakeDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-FakeDesktopEnvironment::CreateComposingVideoCapturer() {
+FakeDesktopEnvironment::CreateComposingVideoCapturer(
+    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   return nullptr;
 }
 

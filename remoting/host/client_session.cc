@@ -23,6 +23,7 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/screen_controls.h"
 #include "remoting/host/base/screen_resolution.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/file_transfer/file_transfer_message_handler.h"
 #include "remoting/host/file_transfer/rtc_log_file_operations.h"
@@ -456,15 +457,23 @@ void ClientSession::OnConnectionAuthenticated() {
 void ClientSession::CreateMediaStreams() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Create monitor to be used by the capturer. This is used only by
+  // DesktopCapturerProxy. With multi-process, the IpcDesktopEnvironment
+  // version of this method returns nullptr, and the monitor is created
+  // in the Desktop process instead (where DesktopCapturerProxy is used).
+  auto monitor = desktop_environment_->CreateDisplayInfoMonitor();
+
   // Create a VideoStream to pump frames from the capturer to the client.
-  auto composer = desktop_environment_->CreateComposingVideoCapturer();
+  auto composer =
+      desktop_environment_->CreateComposingVideoCapturer(std::move(monitor));
   if (composer) {
     desktop_and_cursor_composer_ = composer->GetWeakPtr();
     video_stream_ =
         connection_->StartVideoStream(kStreamName, std::move(composer));
   } else {
     video_stream_ = connection_->StartVideoStream(
-        kStreamName, desktop_environment_->CreateVideoCapturer());
+        kStreamName,
+        desktop_environment_->CreateVideoCapturer(std::move(monitor)));
   }
 
   // Create a AudioStream to pump audio from the capturer to the client.

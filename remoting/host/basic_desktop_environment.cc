@@ -101,6 +101,12 @@ BasicDesktopEnvironment::CreateScreenControls() {
   return nullptr;
 }
 
+std::unique_ptr<DesktopDisplayInfoMonitor>
+BasicDesktopEnvironment::CreateDisplayInfoMonitor() {
+  return std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_,
+                                                     client_session_control_);
+}
+
 std::unique_ptr<webrtc::MouseCursorMonitor>
 BasicDesktopEnvironment::CreateMouseCursorMonitor() {
   return std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
@@ -135,25 +141,25 @@ uint32_t BasicDesktopEnvironment::GetDesktopSessionId() const {
 }
 
 std::unique_ptr<DesktopAndCursorConditionalComposer>
-BasicDesktopEnvironment::CreateComposingVideoCapturer() {
+BasicDesktopEnvironment::CreateComposingVideoCapturer(
+    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining())
     return nullptr;
 #endif
   return std::make_unique<DesktopAndCursorConditionalComposer>(
-      CreateVideoCapturer());
+      CreateVideoCapturer(std::move(monitor)));
 }
 
 std::unique_ptr<webrtc::DesktopCapturer>
-BasicDesktopEnvironment::CreateVideoCapturer() {
+BasicDesktopEnvironment::CreateVideoCapturer(
+    std::unique_ptr<DesktopDisplayInfoMonitor> monitor) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   auto result = std::make_unique<DesktopCapturerProxy>(
       video_capture_task_runner_, ui_task_runner_);
-  result->set_desktop_display_info_monitor(
-      std::make_unique<DesktopDisplayInfoMonitor>(ui_task_runner_,
-                                                  client_session_control_));
+  result->set_desktop_display_info_monitor(std::move(monitor));
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }

@@ -39,7 +39,10 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer() override;
+  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
+      override;
   std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
       override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
@@ -52,7 +55,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer() override;
+  CreateComposingVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
 
  protected:
   friend class BasicDesktopEnvironmentFactory;

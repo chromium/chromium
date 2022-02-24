@@ -58,7 +58,10 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer() override;
+  std::unique_ptr<webrtc::DesktopCapturer> CreateVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
+  std::unique_ptr<DesktopDisplayInfoMonitor> CreateDisplayInfoMonitor()
+      override;
   std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
       override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
@@ -71,7 +74,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;
   std::unique_ptr<DesktopAndCursorConditionalComposer>
-  CreateComposingVideoCapturer() override;
+  CreateComposingVideoCapturer(
+      std::unique_ptr<DesktopDisplayInfoMonitor> monitor) override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
