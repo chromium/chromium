@@ -214,8 +214,7 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
       delay);
 }
 
-std::map<std::string, std::string> ProposeSyntheticFinchTrials(
-    bool is_enterprise) {
+std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   std::map<std::string, std::string> trials;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

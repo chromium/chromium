@@ -53,7 +53,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
       pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif
 
-      auto trials = ProposeSyntheticFinchTrials(false);
+      auto trials = ProposeSyntheticFinchTrials();
       auto group_iter = trials.find("BackupRefPtr_Effective");
       EXPECT_NE(group_iter, trials.end());
       EXPECT_EQ(group_iter->second, brp_expectation);
@@ -88,7 +88,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-      auto trials = ProposeSyntheticFinchTrials(false);
+      auto trials = ProposeSyntheticFinchTrials();
       auto group_iter = trials.find("BackupRefPtr_Effective");
       EXPECT_NE(group_iter, trials.end());
       EXPECT_EQ(group_iter->second, brp_expectation);
@@ -147,7 +147,7 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
                                     : (pcscan_enabled ? "Enabled" : "Disabled");
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-        auto trials = ProposeSyntheticFinchTrials(false);
+        auto trials = ProposeSyntheticFinchTrials();
         auto group_iter = trials.find("BackupRefPtr_Effective");
         EXPECT_NE(group_iter, trials.end());
         EXPECT_EQ(group_iter->second, brp_expectation);

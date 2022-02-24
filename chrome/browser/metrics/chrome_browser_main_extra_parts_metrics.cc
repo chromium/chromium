@@ -494,23 +494,6 @@ bool IsApplockerRunning() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Returns whether the instance has an enterprise brand code.
-bool HasEnterpriseBrandCode() {
-  std::string brand;
-  google_brand::GetBrand(&brand);
-  return google_brand::IsEnterprise(brand);
-}
-
-// Returns whether the instance is domain joined. This doesn't include CBCM
-// (EnterpriseManagementAuthority::DOMAIN_LOCAL).
-bool IsDomainJoined() {
-  return policy::ManagementServiceFactory::GetForPlatform()
-      ->HasManagementAuthority(
-          policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 void RecordDisplayHDRStatus(const display::Display& display) {
   base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
                             display.color_spaces().SupportsHDR());
@@ -574,26 +557,8 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_ANDROID)
-  // No need to filter out on Android, because it doesn't support
-  // ChromeVariations policy.
-  constexpr bool is_enterprise = false;
-#else
-  // Check for enterprises the same way that Google Update can check, to match
-  // with the experiment population (see the comment below).
-  // NOTE, this isn't perfect and won't catch all enterprises.
-  const bool is_enterprise = HasEnterpriseBrandCode() || IsDomainJoined();
-#endif
-
-  // TODO(bartekn): Remove once the enterprise inclusion is verified. This is
-  // just meant to ensure that the enterprise portion of the
-  // BackupRefPtrNoEnterprise setting below does what's expected.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "EnterpriseSynthetic",
-      is_enterprise ? "IsEnterprise" : "IsNotEnterprise");
-
   // Register synthetic Finch trials proposed by PartitionAlloc.
-  auto pa_trials = base::allocator::ProposeSyntheticFinchTrials(is_enterprise);
+  auto pa_trials = base::allocator::ProposeSyntheticFinchTrials();
   for (auto& trial : pa_trials) {
     auto [trial_name, group_name] = trial;
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
