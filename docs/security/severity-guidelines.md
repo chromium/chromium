@@ -8,9 +8,19 @@ for how to rate these issues. Check out our
 [security release management page](https://www.chromium.org/Home/chromium-security/security-release-management)
 for guidance on how to release fixes based on severity.
 
-Any significant mitigating factors, such as unusual or additional user
-interaction, or running Chrome with a specific command line flag or non-default
-feature enabled, may reduce an issue’s severity by one or more levels.
+Any significant mitigating factors will generally reduce an issue's severity by one or
+more levels:
+* Not web accessible, reliant solely on direct UI interaction to trigger.
+* Unusual or unlikely user interaction will normally reduce severity by one
+  level. This means interaction which may sometimes occur, but would not be
+  typical of an average user engaging with Chrome or a particular feature in
+  Chrome, nor could a user be easily convinced to perform by a persuasive web page.
+* Requiring profile destruction or browser shutdown will normally reduce
+  severity by one level.
+
+Bugs that require implausible interaction, interactions a user would not
+realistically be convinced to perform, will generally be downgraded to a
+functional bug and not considered a security bug.
 
 Conversely, we do not consider it a mitigating factor if a vulnerability applies
 only to a particular group of users. For instance, a Critical vulnerability is
@@ -63,6 +73,12 @@ For example, renderer sandbox escapes fall into this category as their impact is
 that of a critical severity bug, but they require the precondition of a
 compromised renderer. (Bugs which involve using [MojoJS](../../mojo/public/js/README.md)
 to trigger an exploitable browser process crash usually fall into this category).
+Another example are bugs that result in memory corruption in the browser
+process, which would normally be critical severity, but require browser shutdown
+or profile destruction, which would lower these issues to high severity. A
+bug with the precondition of browser shutdown or profile destruction should be
+considered to have a maximum severity of high and could potentially be
+reduced by other mitigating factors.
 
 They are normally assigned priority **Pri-1** and assigned to the current stable
 milestone (or earliest milestone affected). For high severity bugs,
@@ -78,7 +94,7 @@ Example bugs:
 bugs fall into this category, as they allow script execution in the context of
 an arbitrary origin ([534923](https://crbug.com/534923)).
 * A bug that allows arbitrary code execution within the confines of the sandbox,
-such as renderer or GPU process memory corruption
+such as renderer, network, or GPU process memory corruption
 ([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
 * Complete control over the apparent origin in the omnibox
 ([76666](https://crbug.com/76666)).
@@ -119,6 +135,10 @@ Example bugs:
 passed to a compromised renderer via IPC ([469151](https://crbug.com/469151)).
 * Memory corruption that requires a specific extension to be installed
 ([313743](https://crbug.com/313743)).
+* Memory corruption in the browser process, triggered by a browser shutdown that
+  is not reliably triggered and/or is difficult to trigger ([1230513](https://crbug.com/1230513)).
+* Memory corruption in the browser process, requiring a non-standard flag and
+  user interaction ([1255332](https://crbug.com/1255332)).
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
 ([419383](https://crbug.com/419383)).
