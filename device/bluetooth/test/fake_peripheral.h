@@ -91,6 +91,9 @@ class FakePeripheral : public device::BluetoothDevice {
   absl::optional<std::string> GetName() const override;
   std::u16string GetNameForDisplay() const override;
   bool IsPaired() const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool IsBonded() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   bool IsConnected() const override;
   bool IsGattConnected() const override;
   bool IsConnectable() const override;

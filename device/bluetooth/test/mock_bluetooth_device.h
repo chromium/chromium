@@ -49,6 +49,9 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(GetNameForDisplay, std::u16string());
   MOCK_CONST_METHOD0(GetDeviceType, BluetoothDeviceType());
   MOCK_CONST_METHOD0(IsPaired, bool());
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_CONST_METHOD0(IsBonded, bool());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   MOCK_CONST_METHOD0(IsConnected, bool());
   MOCK_CONST_METHOD0(IsGattConnected, bool());
   MOCK_CONST_METHOD0(IsConnectable, bool());

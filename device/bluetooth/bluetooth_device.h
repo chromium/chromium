@@ -315,6 +315,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // Indicates whether the device is paired with the adapter.
   virtual bool IsPaired() const = 0;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Indicates whether the device is bonded with the adapter.
+  virtual bool IsBonded() const = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Indicates whether the device is currently connected to the adapter.
   // Note that if IsConnected() is true, does not imply that the device is
   // connected to any application or service. If the device is not paired, it

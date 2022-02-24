@@ -183,6 +183,13 @@ bool FakePeripheral::IsPaired() const {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool FakePeripheral::IsBonded() const {
+  NOTREACHED();
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool FakePeripheral::IsConnected() const {
   NOTREACHED();
   return false;

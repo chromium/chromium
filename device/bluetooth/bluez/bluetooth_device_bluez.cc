@@ -406,6 +406,14 @@ bool BluetoothDeviceBlueZ::IsPaired() const {
   return properties->paired.value();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool BluetoothDeviceBlueZ::IsBonded() const {
+  // TODO(b/217464014): Update to retrieve whether the peripheral is bonded to
+  // the device when this information is available from the platform.
+  return IsPaired();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 bool BluetoothDeviceBlueZ::IsConnected() const {
   bluez::BluetoothDeviceClient::Properties* properties =
       bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
