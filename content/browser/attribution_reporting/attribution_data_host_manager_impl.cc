@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
@@ -28,6 +29,12 @@ AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
       attribution_manager_(attribution_manager) {
   DCHECK(browser_context_);
   DCHECK(attribution_manager_);
+
+  // It's safe to use `base::Unretained()` as `receivers_` is owned by `this`
+  // and will be deleted before `this`.
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &AttributionDataHostManagerImpl::OnDataHostDisconnected,
+      base::Unretained(this)));
 }
 
 AttributionDataHostManagerImpl::~AttributionDataHostManagerImpl() = default;
@@ -43,6 +50,13 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
     blink::mojom::AttributionSourceDataPtr data) {
+  // TODO(linnan): Log metrics for early returns.
+
+  auto result = receiver_source_destinations_.emplace(
+      receivers_.current_receiver(), data->destination);
+  if (!result.second && data->destination != result.first->second)
+    return;
+
   const FrozenContext& context = receivers_.current_context();
   base::Time source_time = base::Time::Now();
   const url::Origin& reporting_origin = data->reporting_origin;
@@ -76,6 +90,10 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
                       : absl::nullopt));
 
   attribution_manager_->HandleSource(std::move(storable_source));
+}
+
+void AttributionDataHostManagerImpl::OnDataHostDisconnected() {
+  receiver_source_destinations_.erase(receivers_.current_receiver());
 }
 
 }  // namespace content

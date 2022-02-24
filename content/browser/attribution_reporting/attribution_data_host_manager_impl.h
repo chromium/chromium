@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_DATA_HOST_MANAGER_IMPL_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -63,6 +64,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void SourceDataAvailable(
       blink::mojom::AttributionSourceDataPtr data) override;
 
+  void OnDataHostDisconnected();
+
   // Safe because the owning `AttributionManager` is guaranteed to outlive the
   // browser context.
   raw_ptr<BrowserContext> browser_context_;
@@ -72,6 +75,12 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
 
   mojo::ReceiverSet<blink::mojom::AttributionDataHost, FrozenContext>
       receivers_;
+
+  // Map which stores the attribution destination for all receivers, keyed by
+  // receiver ID.
+  // The attribution destination is required to match between calls to
+  // `SourceDataAvailable()` within a single `AttributionDataHost`.
+  base::flat_map<mojo::ReceiverId, url::Origin> receiver_source_destinations_;
 };
 
 }  // namespace content

@@ -29,10 +29,13 @@ using ConversionMeasurementOperation =
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::InSequence;
 using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::Pointee;
 using ::testing::Return;
+
+using Checkpoint = ::testing::MockFunction<void(int step)>;
 
 }  // namespace
 
@@ -157,6 +160,53 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->source_event_id = 10;
   source_data->destination = destination_origin;
   source_data->reporting_origin = reporting_origin;
+  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote.FlushForTesting();
+}
+
+TEST_F(AttributionDataHostManagerImplTest,
+       SourceDataHost_ReceiverDestinationCheckPerformed) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_manager_, HandleSource);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+    EXPECT_CALL(checkpoint, Call(3));
+    EXPECT_CALL(mock_manager_, HandleSource).Times(0);
+  }
+
+  auto page_origin = url::Origin::Create(GURL("https://page.example"));
+  auto destination_origin =
+      url::Origin::Create(GURL("https://trigger.example"));
+  auto reporting_origin = url::Origin::Create(GURL("https://reporter.example"));
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  data_host_manager_.RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver(), page_origin);
+
+  auto source_data = blink::mojom::AttributionSourceData::New();
+  source_data->destination = destination_origin;
+  source_data->reporting_origin = reporting_origin;
+  data_host_remote->SourceDataAvailable(source_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(1);
+
+  data_host_remote->SourceDataAvailable(source_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(2);
+
+  source_data->destination =
+      url::Origin::Create(GURL("https://other-trigger.example"));
+  data_host_remote->SourceDataAvailable(source_data.Clone());
+  data_host_remote.FlushForTesting();
+
+  checkpoint.Call(3);
   data_host_remote->SourceDataAvailable(std::move(source_data));
   data_host_remote.FlushForTesting();
 }
