@@ -356,7 +356,7 @@ PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
     case OptimizationGuideDecision::kTrue: {
       // Link hints only contain scheme, host, and path, so remove other
       // components.
-      url::Replacements<char> replacements;
+      GURL::Replacements replacements;
       replacements.ClearUsername();
       replacements.ClearPassword();
       replacements.ClearQuery();
