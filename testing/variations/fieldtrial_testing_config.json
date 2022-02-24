@@ -200,21 +200,6 @@
             ]
         }
     ],
-    "AndroidMessagesPermissionUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagesForAndroidPermissionUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesSaveCard": [
         {
             "platforms": [

@@ -35,7 +35,7 @@ constexpr base::FeatureParam<int>
         "save_password_message_dismiss_duration_ms", 0};
 
 const base::Feature kMessagesForAndroidPermissionUpdate{
-    "MessagesForAndroidPermissionUpdate", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidPermissionUpdate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPopupBlocked{
     "MessagesForAndroidPopupBlocked", base::FEATURE_ENABLED_BY_DEFAULT};

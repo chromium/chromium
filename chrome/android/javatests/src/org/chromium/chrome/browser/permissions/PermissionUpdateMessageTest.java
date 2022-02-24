@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,10 +31,11 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.messages.MessageContainer;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
 
@@ -87,9 +87,9 @@ public class PermissionUpdateMessageTest {
                         -> new PermissionInfo(
                                 ContentSettingsType.GEOLOCATION, locationUrl, null, false));
 
-        mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
-                new TestAndroidPermissionDelegate(
-                        null, Arrays.asList(Manifest.permission.ACCESS_FINE_LOCATION), null));
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+        windowAndroid.setAndroidPermissionDelegate(new TestAndroidPermissionDelegate(
+                null, Arrays.asList(Manifest.permission.ACCESS_FINE_LOCATION), null));
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
@@ -100,14 +100,11 @@ public class PermissionUpdateMessageTest {
                                     ContentSettingValues.ALLOW));
 
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
-            CriteriaHelper.pollInstrumentationThread(
-                    () -> mActivityTestRule.getActivity().findViewById(R.id.message_container));
-            MessageContainer container =
-                    (MessageContainer) mActivityTestRule.getActivity().findViewById(
-                            R.id.message_container);
 
-            CriteriaHelper.pollInstrumentationThread(
-                    () -> container.getChildCount() > 0, "Message is not enqueued.");
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat("Message is not enqueued.",
+                        MessagesTestHelper.getMessageCount(windowAndroid), Matchers.is(1));
+            });
 
             final WebContents webContents = TestThreadUtils.runOnUiThreadBlockingNoException(
                     () -> mActivityTestRule.getActivity().getActivityTab().getWebContents());
