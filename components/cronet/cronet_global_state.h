@@ -36,6 +36,7 @@ void EnsureInitialized();
 // Creates a proxy config service appropriate for this platform that fetches the
 // system proxy settings. Cronet will call this API only after a prior call
 // to EnsureInitialized() has returned.
+// On Android, this must be called on the JNI thread.
 std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
 

@@ -195,6 +195,8 @@ CronetURLRequestContext::NetworkTasks::~NetworkTasks() {
 
 void CronetURLRequestContext::InitRequestContextOnInitThread() {
   DCHECK(OnInitThread());
+  // Cannot create this inside Initialize because Android requires this to be
+  // created on the JNI thread.
   auto proxy_config_service =
       cronet::CreateProxyConfigService(GetNetworkTaskRunner());
   g_net_log.Get().EnsureInitializedOnInitThread();
@@ -280,40 +282,27 @@ void CronetURLRequestContext::NetworkTasks::InitializeNQEPrefs() const {
   cronet_prefs_manager_->SetupNqePersistence(network_quality_estimator_.get());
 }
 
-void CronetURLRequestContext::NetworkTasks::Initialize(
-    scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+std::unique_ptr<net::URLRequestContext>
+CronetURLRequestContext::NetworkTasks::BuildURLRequestContext(
     std::unique_ptr<net::ProxyConfigService> proxy_config_service) {
-  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  DCHECK(!is_context_initialized_);
-
-  std::unique_ptr<URLRequestContextConfig> config(std::move(context_config_));
-  network_task_runner_ = network_task_runner;
-  if (config->network_thread_priority)
-    SetNetworkThreadPriorityOnNetworkThread(
-        config->network_thread_priority.value());
-  base::DisallowBlocking();
   net::URLRequestContextBuilder context_builder;
   context_builder.set_network_delegate(
       std::make_unique<BasicNetworkDelegate>());
   context_builder.set_net_log(g_net_log.Get().net_log());
-
   context_builder.set_proxy_resolution_service(
       cronet::CreateProxyResolutionService(std::move(proxy_config_service),
                                            g_net_log.Get().net_log()));
 
-  config->ConfigureURLRequestContextBuilder(&context_builder);
-  effective_experimental_options_ =
-      base::Value(config->effective_experimental_options);
+  context_config_->ConfigureURLRequestContextBuilder(&context_builder);
 
-  if (config->enable_network_quality_estimator) {
-    DCHECK(!network_quality_estimator_);
+  DCHECK(!network_quality_estimator_);
+  if (context_config_->enable_network_quality_estimator) {
     std::unique_ptr<net::NetworkQualityEstimatorParams> nqe_params =
         std::make_unique<net::NetworkQualityEstimatorParams>(
             std::map<std::string, std::string>());
-    if (config->nqe_forced_effective_connection_type) {
+    if (context_config_->nqe_forced_effective_connection_type) {
       nqe_params->SetForcedEffectiveConnectionType(
-          config->nqe_forced_effective_connection_type.value());
+          context_config_->nqe_forced_effective_connection_type.value());
     }
 
     network_quality_estimator_ = std::make_unique<net::NetworkQualityEstimator>(
@@ -326,21 +315,20 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
   }
 
   DCHECK(!cronet_prefs_manager_);
-
   // Set up pref file if storage path is specified.
-  if (!config->storage_path.empty()) {
+  if (!context_config_->storage_path.empty()) {
 #if BUILDFLAG(IS_WIN)
     base::FilePath storage_path(
-        base::FilePath::FromUTF8Unsafe(config->storage_path));
+        base::FilePath::FromUTF8Unsafe(context_config_->storage_path));
 #else
-    base::FilePath storage_path(config->storage_path);
+    base::FilePath storage_path(context_config_->storage_path);
 #endif
     // Set up the HttpServerPropertiesManager.
     cronet_prefs_manager_ = std::make_unique<CronetPrefsManager>(
-        config->storage_path, network_task_runner_, file_task_runner,
-        config->enable_network_quality_estimator,
-        config->enable_host_cache_persistence, g_net_log.Get().net_log(),
-        &context_builder);
+        context_config_->storage_path, network_task_runner_, file_task_runner_,
+        context_config_->enable_network_quality_estimator,
+        context_config_->enable_host_cache_persistence,
+        g_net_log.Get().net_log(), &context_builder);
   }
 
   // Explicitly disable the persister for Cronet to avoid persistence of dynamic
@@ -351,22 +339,22 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
   // Disable net::CookieStore.
   context_builder.SetCookieStore(nullptr);
 
-  context_ = context_builder.Build();
+  auto context = context_builder.Build();
 
   // Set up host cache persistence if it's enabled. Happens after building the
   // URLRequestContext to get access to the HostCache.
-  if (config->enable_host_cache_persistence && cronet_prefs_manager_) {
-    net::HostCache* host_cache = context_->host_resolver()->GetHostCache();
+  if (context_config_->enable_host_cache_persistence && cronet_prefs_manager_) {
+    net::HostCache* host_cache = context->host_resolver()->GetHostCache();
     cronet_prefs_manager_->SetupHostCachePersistence(
-        host_cache, config->host_cache_persistence_delay_ms,
+        host_cache, context_config_->host_cache_persistence_delay_ms,
         g_net_log.Get().net_log());
   }
 
-  context_->set_check_cleartext_permitted(true);
-  context_->set_enable_brotli(config->enable_brotli);
+  context->set_check_cleartext_permitted(true);
+  context->set_enable_brotli(context_config_->enable_brotli);
 
-  if (config->enable_quic) {
-    for (const auto& quic_hint : config->quic_hints) {
+  if (context_config_->enable_quic) {
+    for (const auto& quic_hint : context_config_->quic_hints) {
       if (quic_hint->host.empty()) {
         LOG(ERROR) << "Empty QUIC hint host: " << quic_hint->host;
         continue;
@@ -398,56 +386,78 @@ void CronetURLRequestContext::NetworkTasks::Initialize(
       net::AlternativeService alternative_service(
           net::kProtoQUIC, "",
           static_cast<uint16_t>(quic_hint->alternate_port));
-      context_->http_server_properties()->SetQuicAlternativeService(
+      context->http_server_properties()->SetQuicAlternativeService(
           quic_server, net::NetworkIsolationKey(), alternative_service,
           base::Time::Max(), quic::ParsedQuicVersionVector());
     }
   }
 
   // Iterate through PKP configuration for every host.
-  for (const auto& pkp : config->pkp_list) {
+  for (const auto& pkp : context_config_->pkp_list) {
     // Add the host pinning.
-    context_->transport_security_state()->AddHPKP(
+    context->transport_security_state()->AddHPKP(
         pkp->host, pkp->expiration_date, pkp->include_subdomains,
         pkp->pin_hashes, GURL::EmptyGURL());
   }
 
-  context_->transport_security_state()
+  context->transport_security_state()
       ->SetEnablePublicKeyPinningBypassForLocalTrustAnchors(
-          config->bypass_public_key_pinning_for_local_trust_anchors);
+          context_config_->bypass_public_key_pinning_for_local_trust_anchors);
+
+#if BUILDFLAG(ENABLE_REPORTING)
+  if (context->reporting_service()) {
+    for (const auto& preloaded_header :
+         context_config_->preloaded_report_to_headers) {
+      context->reporting_service()->ProcessReportToHeader(
+          preloaded_header.origin, net::NetworkIsolationKey(),
+          preloaded_header.value);
+    }
+  }
+
+  if (context->network_error_logging_service()) {
+    for (const auto& preloaded_header :
+         context_config_->preloaded_nel_headers) {
+      context->network_error_logging_service()->OnHeader(
+          net::NetworkIsolationKey(), preloaded_header.origin, net::IPAddress(),
+          preloaded_header.value);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+  return context;
+}
+
+void CronetURLRequestContext::NetworkTasks::Initialize(
+    scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    std::unique_ptr<net::ProxyConfigService> proxy_config_service) {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  DCHECK(!is_context_initialized_);
+
+  network_task_runner_ = network_task_runner;
+  file_task_runner_ = file_task_runner;
+  if (context_config_->network_thread_priority)
+    SetNetworkThreadPriorityOnNetworkThread(
+        context_config_->network_thread_priority.value());
+  base::DisallowBlocking();
+  effective_experimental_options_ =
+      base::Value(context_config_->effective_experimental_options);
+
+  context_ = BuildURLRequestContext(std::move(proxy_config_service));
 
   callback_->OnInitNetworkThread();
   is_context_initialized_ = true;
 
-  // Set up network quality prefs.
-  if (config->enable_network_quality_estimator && cronet_prefs_manager_) {
-    // TODO(crbug.com/758401): execute the content of
-    // InitializeNQEPrefsOnNetworkThread method directly (i.e. without posting)
-    // after the bug has been fixed.
+  if (context_config_->enable_network_quality_estimator &&
+      cronet_prefs_manager_) {
+    // TODO(crbug.com/758401): Provide a better way for to configure the NQE
+    // for testing.. Currently, tests rely on posting a task to this network
+    // thread and hope it executes before the one below does.
     network_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &CronetURLRequestContext::NetworkTasks::InitializeNQEPrefs,
             base::Unretained(this)));
   }
-
-#if BUILDFLAG(ENABLE_REPORTING)
-  if (context_->reporting_service()) {
-    for (const auto& preloaded_header : config->preloaded_report_to_headers) {
-      context_->reporting_service()->ProcessReportToHeader(
-          preloaded_header.origin, net::NetworkIsolationKey(),
-          preloaded_header.value);
-    }
-  }
-
-  if (context_->network_error_logging_service()) {
-    for (const auto& preloaded_header : config->preloaded_nel_headers) {
-      context_->network_error_logging_service()->OnHeader(
-          net::NetworkIsolationKey(), preloaded_header.origin, net::IPAddress(),
-          preloaded_header.value);
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_REPORTING)
 
   while (!tasks_waiting_for_context_.empty()) {
     std::move(tasks_waiting_for_context_.front()).Run();

@@ -168,6 +168,8 @@ void EnsureInitialized() {
 
 std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner) {
+  // Note: CreateSystemProxyConfigService internally assumes that
+  // base::ThreadTaskRunnerHandle::Get() == JNI communication thread.
   std::unique_ptr<net::ProxyConfigService> service =
       net::ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
           io_task_runner);

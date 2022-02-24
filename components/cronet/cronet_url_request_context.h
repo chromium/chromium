@@ -32,8 +32,8 @@ class TimeTicks;
 
 namespace net {
 enum EffectiveConnectionType;
-class NetLog;
 class ProxyConfigService;
+class NetLog;
 class URLRequestContext;
 class URLRequestContextGetter;
 class FileNetLogObserver;
@@ -256,6 +256,10 @@ class CronetURLRequestContext {
     friend class TestUtil;
     base::Value GetNetLogInfo() const;
 
+    // Wraps the logic to build the underlying net::URLRequestContext.
+    std::unique_ptr<net::URLRequestContext> BuildURLRequestContext(
+        std::unique_ptr<net::ProxyConfigService> proxy_config_service);
+
     std::unique_ptr<net::FileNetLogObserver> net_log_file_observer_;
 
     // A network quality estimator. This member variable has to be destroyed
@@ -284,6 +288,9 @@ class CronetURLRequestContext {
 
     // Task runner that runs network tasks.
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
+
+    // Task runner that runs file tasks.
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
     // Callback implemented by the client.
     std::unique_ptr<CronetURLRequestContext::Callback> callback_;
