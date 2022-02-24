@@ -7,4 +7,6 @@ package org.chromium.support_lib_boundary;
 /**
  * Boundary interface for AwContents.addDocumentStartJavascript().
  */
-public interface ScriptHandlerBoundaryInterface extends ScriptReferenceBoundaryInterface {}
+public interface ScriptHandlerBoundaryInterface {
+    void remove();
+}
