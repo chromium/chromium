@@ -41,8 +41,25 @@ DedicatedWorkerHostFactoryClient::~DedicatedWorkerHostFactoryClient() = default;
 void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
     const blink::WebURL& script_url,
-    base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-        callback) {
+    CreateWorkerHostCallback callback) {
+  // The callback of mojom::CreateWorkerHost() requires mojo::PendingRemote as
+  // the second param, but the passed callback requires
+  // blink::CrossVariantMojoRemote. To bridge them, wrap the passed callback.
+  using MojoCreateWorkerHostCallback = base::OnceCallback<void(
+      const network::CrossOriginEmbedderPolicy&,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>)>;
+  MojoCreateWorkerHostCallback adapter_callback = base::BindOnce(
+      [](CreateWorkerHostCallback callback,
+         const network::CrossOriginEmbedderPolicy& policy,
+         mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+             back_forward_cache_controller_host) {
+        blink::CrossVariantMojoRemote<
+            blink::mojom::BackForwardCacheControllerHostInterfaceBase>
+            pending_remote = std::move(back_forward_cache_controller_host);
+        std::move(callback).Run(policy, std::move(pending_remote));
+      },
+      std::move(callback));
+
   DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
@@ -51,7 +68,7 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
       dedicated_worker_token, script_url,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       dedicated_worker_host.InitWithNewPipeAndPassReceiver(),
-      std::move(callback));
+      std::move(adapter_callback));
   OnWorkerHostCreated(std::move(browser_interface_broker),
                       std::move(dedicated_worker_host));
 }

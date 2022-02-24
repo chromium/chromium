@@ -142,11 +142,16 @@ class CORE_EXPORT DedicatedWorker final
   void OnHostCreated(
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           blob_url_loader_factory,
-      const network::CrossOriginEmbedderPolicy& parent_coep);
+      const network::CrossOriginEmbedderPolicy& parent_coep,
+      CrossVariantMojoRemote<
+          mojom::blink::BackForwardCacheControllerHostInterfaceBase>
+          back_forward_cache_controller_host);
 
   // Callbacks for |classic_script_loader_|.
   void OnResponse();
-  void OnFinished();
+  void OnFinished(
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
 
   // Implements EventTarget (via AbstractWorker -> EventTargetWithInlineData).
   const AtomicString& InterfaceName() const final;

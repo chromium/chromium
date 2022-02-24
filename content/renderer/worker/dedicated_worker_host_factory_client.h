@@ -47,8 +47,7 @@ class DedicatedWorkerHostFactoryClient final
   void CreateWorkerHostDeprecated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
-      base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-          callback) override;
+      CreateWorkerHostCallback callback) override;
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,

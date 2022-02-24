@@ -27,6 +27,10 @@ namespace content {
 class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
     : public blink::mojom::DedicatedWorkerHostFactory {
  public:
+  using CreateWorkerHostCallback = base::OnceCallback<void(
+      const network::CrossOriginEmbedderPolicy&,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>)>;
+
   // Exactly one of `creator_render_frame_host_id` and `creator_worker_token`
   // must be specified.
   // `creator_client_security_state` specifies the client security state of
@@ -56,8 +60,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           broker_receiver,
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
-      base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-          callback) override;
+      CreateWorkerHostCallback callback) override;
 
   // PlzDedicatedWorker:
   void CreateWorkerHostAndStartScriptLoad(

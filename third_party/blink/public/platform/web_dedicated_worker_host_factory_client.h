@@ -12,6 +12,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
@@ -33,6 +34,11 @@ class WebWorkerFetchContext;
 // content::DedicatedWorkerHostFactoryClient from blink::DedicatedWorker.
 class WebDedicatedWorkerHostFactoryClient {
  public:
+  using CreateWorkerHostCallback = base::OnceCallback<void(
+      const network::CrossOriginEmbedderPolicy&,
+      CrossVariantMojoRemote<
+          mojom::BackForwardCacheControllerHostInterfaceBase>)>;
+
   virtual ~WebDedicatedWorkerHostFactoryClient() = default;
 
   // Requests the creation of DedicatedWorkerHost in the browser process.
@@ -41,8 +47,7 @@ class WebDedicatedWorkerHostFactoryClient {
   virtual void CreateWorkerHostDeprecated(
       const DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
-      base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-          callback) = 0;
+      CreateWorkerHostCallback callback) = 0;
   // For PlzDedicatedWorker.
   virtual void CreateWorkerHost(
       const DedicatedWorkerToken& dedicated_worker_token,

@@ -477,7 +477,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       std::move(subresource_loader_factories),
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),
-      back_forward_cache_controller_host_receiver_.BindNewPipeAndPassRemote());
+      BindAndPassRemoteForBackForwardCacheControllerHost());
 
   // |service_worker_remote_object| is an associated remote, so calls can't be
   // made on it until its receiver is sent. Now that the receiver was sent, it
@@ -960,6 +960,12 @@ DedicatedWorkerHost::GetServiceWorkerContainerHost() {
     return nullptr;
   }
   return service_worker_handle_->container_host();
+}
+
+mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+DedicatedWorkerHost::BindAndPassRemoteForBackForwardCacheControllerHost() {
+  return back_forward_cache_controller_host_receiver_
+      .BindNewPipeAndPassRemote();
 }
 
 }  // namespace content

@@ -91,7 +91,11 @@ interface DedicatedWorkerHostFactory {
       pending_receiver<blink.mojom.BrowserInterfaceBroker>
           browser_interface_broker,
       pending_receiver<DedicatedWorkerHost> host) =>
-    (network.mojom.CrossOriginEmbedderPolicy parent_coep);
+    (network.mojom.CrossOriginEmbedderPolicy parent_coep,
+     // Used to notify feature usages that might affect back-forward cache
+     // usages.
+     pending_remote<BackForwardCacheControllerHost>?
+         back_forward_cache_controller_host);
 
   // PlzDedicatedWorker:
   // The factory client should call this instead of CreateWorkerHost() when

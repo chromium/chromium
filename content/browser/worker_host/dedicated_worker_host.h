@@ -201,6 +201,9 @@ class DedicatedWorkerHost final
 
   base::WeakPtr<ServiceWorkerContainerHost> GetServiceWorkerContainerHost();
 
+  mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+  BindAndPassRemoteForBackForwardCacheControllerHost();
+
   base::WeakPtr<DedicatedWorkerHost> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

@@ -71,18 +71,19 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     const GURL& script_url,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
-    base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-        callback) {
+    CreateWorkerHostCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Always invoke the callback first. If we don't, even if we exit with a
+  // Always invoke the callback. If we don't, even if we exit with a
   // mojo::ReportBadMessage, the callback will explode as it is torn down.
   // Ideally we'd have a handle to our binding and we'd manually close it
   // before returning, letting the callback die without being run.
-  std::move(callback).Run(
-      creator_client_security_state_->cross_origin_embedder_policy);
+  DCHECK(callback);
 
   if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     mojo::ReportBadMessage("DWH_INVALID_WORKER_CREATION");
     return;
   }
@@ -91,13 +92,23 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
   auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
   auto* service =
       GetDedicatedWorkerServiceImplForRenderProcessHost(worker_process_host);
-  if (!service)
+  if (!service) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     return;
+  }
 
   if (service->HasToken(token)) {
+    std::move(callback).Run(
+        creator_client_security_state_->cross_origin_embedder_policy,
+        /*back_forward_cache_controller_host=*/mojo::NullRemote());
     mojo::ReportBadMessage("DWH_INVALID_WORKER_TOKEN");
     return;
   }
+
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy =
+      creator_client_security_state_->cross_origin_embedder_policy;
 
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
@@ -108,6 +119,10 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
       std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
   host->MaybeCountWebFeature(script_url);
+
+  std::move(callback).Run(
+      cross_origin_embedder_policy,
+      host->BindAndPassRemoteForBackForwardCacheControllerHost());
 }
 
 // PlzDedicatedWorker:
