@@ -58,7 +58,6 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition,
   for i in range(len(lines) - 1, -1, -1):
     line = lines[i]
 
-    # TODO: This will incorrectly match test names within comments.
     idents = find_identifiers(line)
 
     if maybe in idents:
@@ -250,6 +249,16 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition,
 
 
 def find_identifiers(line: str) -> List[str]:
+  # Strip C++-style comments.
+  line = re.sub('//.*$', '', line)
+
+  # Strip strings.
+  line = re.sub(r'"[^"]*[^\\]"', '', line)
+
+  # Remainder is identifiers.
+  # There are probably many corner cases this doesn't handle. We accept this
+  # trade-off for simplicity of implementation, and because occurrences of the
+  # test name in such corner case contexts are likely very rare.
   return re.findall('[a-zA-Z_][a-zA-Z_0-9]*', line)
 
 

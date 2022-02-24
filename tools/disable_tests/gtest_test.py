@@ -230,6 +230,20 @@ TEST(Suite, MAYBE_Test) {}
 ''',
                        message='we should really fix this')
 
+  def test_ignores_test_names_in_other_contexts(self):
+    self.disabler_test(
+        '''
+IN_PROC_BROWSER_TEST_P(Suite, Test) {
+  // This is a very important Test.
+  auto s = "Test";
+  auto t = "some other Test stuff";
+}''', 'Suite.Test', conditions.ALWAYS, '''
+IN_PROC_BROWSER_TEST_P(Suite, DISABLED_Test) {
+  // This is a very important Test.
+  auto s = "Test";
+  auto t = "some other Test stuff";
+}''')
+
 
 if __name__ == '__main__':
   unittest.main()
