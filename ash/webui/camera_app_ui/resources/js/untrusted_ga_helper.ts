@@ -49,8 +49,8 @@ function initGA(
   m.parentNode.insertBefore(a, m);
 
   window.ga('create', id, {
-    'storage': 'none',
-    'clientId': clientId,
+    storage: 'none',
+    clientId: clientId,
   });
 
   window.ga((tracker?: UniversalAnalytics.Tracker) => {

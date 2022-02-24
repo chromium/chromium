@@ -173,6 +173,7 @@ def lint(args):
     cmd = [
         'eslint/bin/eslint.js',
         'js',
+        '.eslintrc.js',
         '--resolve-plugins-relative-to',
         os.path.join(get_chromium_root(), 'third_party/node'),
     ]

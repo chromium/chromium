@@ -202,21 +202,21 @@ const googleRules = {
     'error',
     2,
     {
-      'CallExpression': {
-        'arguments': 2,
+      CallExpression: {
+        arguments: 2,
       },
-      'FunctionDeclaration': {
-        'body': 1,
-        'parameters': 2,
+      FunctionDeclaration: {
+        body: 1,
+        parameters: 2,
       },
-      'FunctionExpression': {
-        'body': 1,
-        'parameters': 2,
+      FunctionExpression: {
+        body: 1,
+        parameters: 2,
       },
-      'MemberExpression': 2,
-      'ObjectExpression': 1,
-      'SwitchCase': 1,
-      'ignoredNodes': [
+      MemberExpression: 2,
+      ObjectExpression: 1,
+      SwitchCase: 1,
+      ignoredNodes: [
         'ConditionalExpression',
       ],
     },
@@ -276,9 +276,11 @@ const googleRules = {
     'error',
     {
       // Quote the keys to make clang-format format it correctly.
+      /* eslint-disable quote-props */
       'var': 'never',
       'let': 'never',
       'const': 'never',
+      /* eslint-enable quote-props */
     },
   ],
   // 'one-var-declaration-per-line': 'off',
@@ -366,23 +368,23 @@ const typescriptEslintDir =
 
 /* global module */
 module.exports = {
-  'root': true,
-  'env': {
-    'browser': true,
-    'es2020': true,
-    'webextensions': true,
+  root: true,
+  env: {
+    browser: true,
+    es2020: true,
+    webextensions: true,
   },
-  'parserOptions': {
-    'ecmaVersion': 2020,
-    'sourceType': 'module',
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: 'module',
   },
-  'extends': ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-  'parser': `${typescriptEslintDir}/parser`,
-  'plugins': ['@typescript-eslint'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  parser: `${typescriptEslintDir}/parser`,
+  plugins: ['@typescript-eslint'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
-  'rules': Object.assign({}, googleRules, {
+  rules: Object.assign({}, googleRules, {
     'curly': ['error', 'multi-line', 'consistent'],
     'eqeqeq': 'error',
     'no-console': ['error', {allow: ['warn', 'error']}],
@@ -444,8 +446,8 @@ module.exports = {
     'no-restricted-syntax': [
       'error',
       {
-        'selector': 'CallExpression[callee.name="parseInt"]',
-        'message': 'parseInt are not allowed, use Number() instead. ' +
+        selector: 'CallExpression[callee.name="parseInt"]',
+        message: 'parseInt are not allowed, use Number() instead. ' +
             '(go/tsstyle#type-coercion)',
       },
     ],
@@ -483,7 +485,7 @@ module.exports = {
     '@typescript-eslint/array-type': [
       'error',
       {
-        'default': 'array-simple',
+        default: 'array-simple',
       },
     ],
 
@@ -507,8 +509,10 @@ module.exports = {
         prefer: 'no-type-imports',
       },
     ],
+
+    'quote-props': ['error', 'consistent-as-needed'],
   }),
-  'overrides': [{
+  overrides: [{
     files: ['**/*.ts'],
     parserOptions: {
       // eslint-disable-next-line no-undef
