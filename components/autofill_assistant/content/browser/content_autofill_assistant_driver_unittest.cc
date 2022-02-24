@@ -46,12 +46,14 @@ class ContentAutofillAssistantDriverTest : public testing::Test {
 
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &browser_context_, nullptr);
-    // Constructor of ContentAUtofillAssistantDriver is private, cannot use
+    // Constructor of ContentAutofillAssistantDriver is private, cannot use
     // std::make_unique.
     driver_ = base::WrapUnique(
         new ContentAutofillAssistantDriver(web_contents_->GetMainFrame()));
     driver_->SetAnnotateDomModelService(annotate_dom_model_service_.get());
   }
+
+  bool HasPendingCallbacks() { return !driver_->pending_calls_.empty(); }
 
  protected:
   // The task_environment_ must be first to guarantee other field creations run
@@ -77,6 +79,8 @@ TEST_F(ContentAutofillAssistantDriverTest, GetLoadedModelFromService) {
 
   driver_->GetAnnotateDomModel(/* timeout= */ base::Milliseconds(1000),
                                callback.Get());
+
+  EXPECT_FALSE(HasPendingCallbacks());
 }
 
 TEST_F(ContentAutofillAssistantDriverTest, GetModelFromServiceAfterLoading) {
@@ -89,6 +93,8 @@ TEST_F(ContentAutofillAssistantDriverTest, GetModelFromServiceAfterLoading) {
 
   // Model loaded after being requested.
   annotate_dom_model_service_->SetModelFileForTest(model_file_.Duplicate());
+
+  EXPECT_FALSE(HasPendingCallbacks());
 }
 
 TEST_F(ContentAutofillAssistantDriverTest, GetModelTimesOut) {
@@ -101,6 +107,26 @@ TEST_F(ContentAutofillAssistantDriverTest, GetModelTimesOut) {
 
   // Model does not get loaded.
   task_environment_.FastForwardBy(base::Seconds(2));
+
+  EXPECT_FALSE(HasPendingCallbacks());
+}
+
+TEST_F(ContentAutofillAssistantDriverTest, MultipleParallelCalls) {
+  base::MockCallback<base::OnceCallback<void(mojom::ModelStatus, base::File)>>
+      callback;
+  EXPECT_CALL(callback, Run(mojom::ModelStatus::kTimeout, _)).Times(3);
+
+  driver_->GetAnnotateDomModel(/* timeout= */ base::Milliseconds(1000),
+                               callback.Get());
+  driver_->GetAnnotateDomModel(/* timeout= */ base::Milliseconds(1000),
+                               callback.Get());
+  driver_->GetAnnotateDomModel(/* timeout= */ base::Milliseconds(1000),
+                               callback.Get());
+
+  // Model does not get loaded.
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  EXPECT_FALSE(HasPendingCallbacks());
 }
 
 }  // namespace autofill_assistant

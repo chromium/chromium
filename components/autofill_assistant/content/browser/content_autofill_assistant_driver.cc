@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
 
 #include "base/files/file.h"
+#include "base/guid.h"
 #include "base/location.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -12,6 +13,13 @@
 namespace autofill_assistant {
 
 DOCUMENT_USER_DATA_KEY_IMPL(ContentAutofillAssistantDriver);
+
+ContentAutofillAssistantDriver::PendingCall::PendingCall(
+    std::unique_ptr<base::OneShotTimer> timer,
+    GetAnnotateDomModelCallback callback)
+    : timer_(std::move(timer)), callback_(std::move(callback)) {}
+
+ContentAutofillAssistantDriver::PendingCall::~PendingCall() = default;
 
 ContentAutofillAssistantDriver::ContentAutofillAssistantDriver(
     content::RenderFrameHost* render_frame_host)
@@ -79,44 +87,50 @@ void ContentAutofillAssistantDriver::GetAnnotateDomModel(
     return;
   }
 
-  callback_ = std::move(callback);
-  timer_ = std::make_unique<base::OneShotTimer>();
-  timer_->Start(FROM_HERE, timeout,
-                base::BindOnce(&ContentAutofillAssistantDriver::OnTimeout,
-                               weak_pointer_factory_.GetWeakPtr()));
+  std::string guid(base::GenerateGUID());
+  auto pending_call = std::make_unique<PendingCall>(
+      std::make_unique<base::OneShotTimer>(), std::move(callback));
+  pending_call->timer_->Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&ContentAutofillAssistantDriver::RunCallback,
+                     weak_pointer_factory_.GetWeakPtr(), guid,
+                     mojom::ModelStatus::kTimeout, base::File()));
+  pending_calls_.emplace(guid, std::move(pending_call));
 
   annotate_dom_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
       &ContentAutofillAssistantDriver::OnModelAvailabilityChanged,
-      weak_pointer_factory_.GetWeakPtr()));
-}
-
-void ContentAutofillAssistantDriver::OnTimeout() {
-  if (!callback_) {
-    return;
-  }
-  std::move(callback_).Run(mojom::ModelStatus::kTimeout, base::File());
+      weak_pointer_factory_.GetWeakPtr(), guid));
 }
 
 void ContentAutofillAssistantDriver::OnModelAvailabilityChanged(
+    const std::string& guid,
     bool is_available) {
-  if (!callback_) {
-    return;
-  }
-
   if (!is_available) {
-    std::move(callback_).Run(mojom::ModelStatus::kUnexpectedError,
-                             base::File());
+    RunCallback(guid, mojom::ModelStatus::kUnexpectedError, base::File());
     return;
   }
 
   absl::optional<base::File> file = annotate_dom_model_service_->GetModelFile();
   if (!file) {
     NOTREACHED() << "No model file where expected.";
-    std::move(callback_).Run(mojom::ModelStatus::kUnexpectedError,
-                             base::File());
+    RunCallback(guid, mojom::ModelStatus::kUnexpectedError, base::File());
     return;
   }
-  std::move(callback_).Run(mojom::ModelStatus::kSuccess, *std::move(file));
+  RunCallback(guid, mojom::ModelStatus::kSuccess, *std::move(file));
+}
+
+void ContentAutofillAssistantDriver::RunCallback(
+    const std::string& guid,
+    mojom::ModelStatus model_status,
+    base::File model_file) {
+  auto it = pending_calls_.find(guid);
+  if (it == pending_calls_.end()) {
+    return;
+  }
+
+  DCHECK(it->second->callback_);
+  std::move(it->second->callback_).Run(model_status, std::move(model_file));
+  pending_calls_.erase(it);
 }
 
 void ContentAutofillAssistantDriver::SetAnnotateDomModelService(

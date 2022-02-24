@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -63,13 +64,26 @@ class ContentAutofillAssistantDriver
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  void OnTimeout();
-  void OnModelAvailabilityChanged(bool is_available);
+  void OnModelAvailabilityChanged(const std::string& guid, bool is_available);
+  void RunCallback(const std::string& guid,
+                   mojom::ModelStatus model_status,
+                   base::File model_file);
 
   raw_ptr<AnnotateDomModelService> annotate_dom_model_service_ = nullptr;
 
-  std::unique_ptr<base::OneShotTimer> timer_;
-  GetAnnotateDomModelCallback callback_;
+  struct PendingCall {
+    PendingCall(std::unique_ptr<base::OneShotTimer> timer,
+                GetAnnotateDomModelCallback callback);
+    ~PendingCall();
+
+    PendingCall(const PendingCall&) = delete;
+    void operator=(const PendingCall&) = delete;
+
+    std::unique_ptr<base::OneShotTimer> timer_;
+    GetAnnotateDomModelCallback callback_;
+  };
+
+  base::flat_map<std::string, std::unique_ptr<PendingCall>> pending_calls_;
 
   mojo::AssociatedReceiver<mojom::AutofillAssistantDriver> receiver_{this};
 
