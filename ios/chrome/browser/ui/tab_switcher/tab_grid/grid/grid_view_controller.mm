@@ -304,6 +304,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
 
   _mode = mode;
+  // TODO(crbug.com/1300369): Enable dragging items from search results.
+  self.collectionView.dragInteractionEnabled = (_mode != TabGridModeSearch);
 
   if (IsTabsSearchRegularResultsSuggestedActionsEnabled()) {
     if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
@@ -689,6 +691,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath {
+  if (_mode == TabGridModeSearch) {
+    // TODO(crbug.com/1300369): Enable dragging items from search results.
+    return @[];
+  }
   if ([self isIndexPathForPlusSignCell:indexPath]) {
     // Return an empty array because the plus sign cell should not be dragged.
     return @[];
@@ -748,7 +754,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     canHandleDropSession:(id<UIDropSession>)session {
-  return YES;
+  // Prevent dropping tabs into grid while displaying search results.
+  return (_mode != TabGridModeSearch);
 }
 
 - (UICollectionViewDropProposal*)
