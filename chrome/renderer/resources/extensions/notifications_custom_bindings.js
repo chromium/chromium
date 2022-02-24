@@ -104,8 +104,9 @@ function replaceNotificationOptionURLs(notification_details, callback) {
   });
 }
 
-function generateHandler(name, failure_function) {
-  return function(id, notification_details, callback) {
+function generateHandler(name) {
+  return function(
+      id, notification_details, success_callback, failure_callback) {
     // Since we need to modify the details object, we copy it to avoid those
     // changes also being made to the object on the caller's side.
     // TODO(dewittj): Remove this hack. This is used as a way to deep
@@ -115,13 +116,10 @@ function generateHandler(name, failure_function) {
     replaceNotificationOptionURLs(notification_details_copy, function(success) {
       if (success) {
         bindingUtil.sendRequest(
-            name, [id, notification_details_copy, callback], undefined);
+            name, [id, notification_details_copy, success_callback], undefined);
         return;
       }
-      bindingUtil.runCallbackWithLastError(
-          'Unable to download all specified images.',
-          $Function.bind(failure_function, null,
-                         callback || function() {}, id));
+      failure_callback('Unable to download all specified images.');
     });
   };
 }
@@ -129,9 +127,9 @@ function generateHandler(name, failure_function) {
 apiBridge.registerCustomHook( function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setHandleRequest('create', generateHandler(
-      'notifications.create', function(callback, id) { callback(id); }));
+  apiFunctions.setHandleRequest(
+      'create', generateHandler('notifications.create'));
 
-  apiFunctions.setHandleRequest('update', generateHandler(
-      'notifications.update', function(callback, id) { callback(false); }));
+  apiFunctions.setHandleRequest(
+      'update', generateHandler('notifications.update'));
 });
