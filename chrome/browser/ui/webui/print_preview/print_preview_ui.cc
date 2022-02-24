@@ -434,7 +434,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui,
   // this UI is around.
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterClient();
+        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
   }
 #endif
 }
@@ -464,7 +464,7 @@ PrintPreviewUI::PrintPreviewUI(content::WebUI* web_ui)
   // this UI is around.
   if (base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers)) {
     service_manager_client_id_ =
-        PrintBackendServiceManager::GetInstance().RegisterClient();
+        PrintBackendServiceManager::GetInstance().RegisterQueryClient();
   }
 #endif
 }

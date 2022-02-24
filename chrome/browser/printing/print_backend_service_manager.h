@@ -38,11 +38,21 @@ class PrintBackendServiceManager {
   PrintBackendServiceManager& operator=(const PrintBackendServiceManager&) =
       delete;
 
-  // Register as a client of PrintBackendServiceManager.  This acts as a signal
-  // of impending activity enabling possible optimizations within the manager.
-  // Returns an ID which the caller is to use with `UnregisterClient()` once it
-  // is completed its printing activity.
-  uint32_t RegisterClient();
+  // Client registration routines.  These act as a signal of impending activity
+  // enabling possible optimizations within the manager.  They return an ID
+  // which the callers are to use with `UnregisterClient()` once they have
+  // completed their printing activity.
+
+  // Register as a client of PrintBackendServiceManager for print queries.
+  uint32_t RegisterQueryClient();
+
+  // Register as a client of PrintBackendServiceManager for print queries which
+  // require a system print dialog UI.
+  uint32_t RegisterQueryWithUiClient();
+
+  // Register as a client of PrintBackendServiceManager for printing a document
+  // to a specific printer.
+  uint32_t RegisterPrintDocumentClient(const std::string& printer_name);
 
   // Notify the manager that this client is no longer needing print backend
   // services.  This signal might alter the manager's internal optimizations.
@@ -115,6 +125,20 @@ class PrintBackendServiceManager {
 
  private:
   friend base::NoDestructor<PrintBackendServiceManager>;
+
+  enum class ClientType {
+    // Print Preview scenario, where printer might not be known.  Only performs
+    // queries, none of which would invoke a system dialog.
+    kQuery,
+    // System print scenario, where printer is not known. Only performs queries,
+    // and can require a window-modal system dialog be displayed to satisfy
+    // those queries.
+    kQueryWithUi,
+    // Printer is known, and printing of a document will be performed.  System
+    // dialogs might be required to complete printing (e.g., if driver saves to
+    // a file).
+    kPrintDocument,
+  };
 
   // Types to track saved callbacks associated with currently executing mojom
   // service calls.  These will be run either after a Mojom call finishes
@@ -193,6 +217,13 @@ class PrintBackendServiceManager {
 
   // Determine the remote ID that is used for the specified `printer_name`.
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
+
+  // Common helper for registering clients.
+  uint32_t RegisterClient(ClientType client_type,
+                          const std::string& printer_name);
+
+  // Get the total number of clients registered.
+  size_t GetClientsRegisteredCount() const;
 
   // Acquires a remote handle to the Print Backend Service instance, launching a
   // process to host the service if necessary. `is_sandboxed` is set to indicate
@@ -310,10 +341,21 @@ class PrintBackendServiceManager {
   RemotesBundleMap<mojom::UnsandboxedPrintBackendHost>
       unsandboxed_remotes_bundles_;
 
-  // Set of IDs for clients actively engaged in printing.  This could include
-  // tabs in print preview as well as an active system print.  Retention of a
-  // service process can have benefit so long as there are active clients.
-  base::flat_set<uint32_t> clients_;
+  // Members tracking active clients to aid retention of a service process.
+
+  // Set of IDs for clients actively engaged in printing queries.  This could
+  // include any tab which has triggered Print Preview.
+  base::flat_set<uint32_t> query_clients_;
+
+  // Set of IDs for clients actively engaged in a printing query which requires
+  // the use of a UI.  Such a UI corresponds to a modal system dialog.  For
+  // Linux there can be multiple of these, but for other platforms there can be
+  // at most one such client.
+  base::flat_set<uint32_t> query_with_ui_clients_;
+
+  // Map of remote ID to the set of clients printing documents to it.
+  base::flat_map<std::string, base::flat_set<uint32_t>> print_document_clients_;
+
   uint32_t last_client_id_ = 0;
 
   // Track the saved callbacks for each remote.

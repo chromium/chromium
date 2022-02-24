@@ -326,7 +326,8 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
       PrintBackendServiceManager::GetInstance();
 
   // Register this worker as a printing client.
-  service_manager_client_id_ = service_mgr.RegisterClient();
+  service_manager_client_id_ =
+      service_mgr.RegisterPrintDocumentClient(device_name_);
 
   service_mgr.StartPrinting(
       device_name_, document_cookie, document_name_, print_target_type_,
