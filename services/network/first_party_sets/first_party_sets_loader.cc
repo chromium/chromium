@@ -26,9 +26,8 @@ namespace network {
 
 namespace {
 
-absl::optional<
-    std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-CanonicalizeSet(const std::vector<std::string>& origins) {
+absl::optional<FirstPartySetsLoader::SingleSet> CanonicalizeSet(
+    const std::vector<std::string>& origins) {
   if (origins.empty())
     return absl::nullopt;
 

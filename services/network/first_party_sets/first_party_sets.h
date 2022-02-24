@@ -133,9 +133,6 @@ class FirstPartySets {
       base::OnceCallback<void(OwnersResult)> callback);
 
  private:
-  using SingleSet =
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
-
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(

@@ -25,6 +25,9 @@ class FirstPartySetsLoader {
  public:
   using LoadCompleteOnceCallback = base::OnceCallback<void(
       base::flat_map<net::SchemefulSite, net::SchemefulSite>)>;
+  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using SingleSet =
+      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
 
   explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);
   ~FirstPartySetsLoader();
@@ -69,11 +72,11 @@ class FirstPartySetsLoader {
   // -> owner).
   // It holds partial data until all of the sources (component updater +
   // manually specified) have been merged, and then holds the merged data.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_
+  FlattenedSets sets_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Holds the set that was provided on the command line (if any).
+  absl::optional<SingleSet> manually_specified_set_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  absl::optional<
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-      manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   enum Progress {
     kNotStarted,
