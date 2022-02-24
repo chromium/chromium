@@ -21,7 +21,8 @@ namespace blink {
 // for a particular video configuration.
 class MODULES_EXPORT WebrtcVideoPerfReporter {
  public:
-  WebrtcVideoPerfReporter() = default;
+  WebrtcVideoPerfReporter();
+  ~WebrtcVideoPerfReporter();
 
   void Initialize(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -40,8 +41,10 @@ class MODULES_EXPORT WebrtcVideoPerfReporter {
       const StatsCollector::StatsKey& stats_key,
       const StatsCollector::VideoStats& video_stats);
 
+  base::WeakPtr<WebrtcVideoPerfReporter> weak_this_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   mojo::Remote<media::mojom::blink::WebrtcVideoPerfRecorder> perf_recorder_;
+  base::WeakPtrFactory<WebrtcVideoPerfReporter> weak_factory_{this};
 };
 
 }  // namespace blink
