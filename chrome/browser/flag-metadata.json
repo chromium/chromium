@@ -2580,7 +2580,7 @@
   {
     "name": "enable-phone-hub-camera-roll",
     "owners": [ "mattwalliser", "jasonsun", "cros-cameraroll@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 106
   },
   {
     "name": "enable-phone-hub-recent-apps",
