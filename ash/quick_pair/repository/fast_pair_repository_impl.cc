@@ -258,7 +258,12 @@ void FastPairRepositoryImpl::FetchDeviceImages(scoped_refptr<Device> device) {
   // Save a record of the device ID -> model ID for this device so that we can
   // display images for device objects that lack a model ID, such as
   // device::BluetoothDevice.
-  device_id_map_->SaveModelIdForDevice(device);
+  if (!device_id_map_->SaveModelIdForDevice(device)) {
+    QP_LOG(WARNING) << __func__
+                    << ": Unable to save address -> model ID"
+                       " mapping for model ID "
+                    << device->metadata_id;
+  }
 
   GetDeviceMetadata(
       device->metadata_id,
@@ -286,7 +291,12 @@ void FastPairRepositoryImpl::CompleteFetchDeviceImages(
 bool FastPairRepositoryImpl::PersistDeviceImages(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Persisting device images for model ID "
                << device->metadata_id;
-  device_id_map_->PersistRecordsForDevice(device);
+  if (!device_id_map_->PersistRecordsForDevice(device)) {
+    QP_LOG(WARNING) << __func__
+                    << ": Unable to persist address -> model ID"
+                       " mapping for model ID "
+                    << device->metadata_id;
+  }
   return device_image_store_->PersistDeviceImages(device->metadata_id);
 }
 
@@ -310,8 +320,13 @@ absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 FastPairRepositoryImpl::GetImagesForDevice(const std::string& device_id) {
   absl::optional<const std::string> hex_model_id =
       device_id_map_->GetModelIdForDeviceId(device_id);
-  if (!hex_model_id)
+  if (!hex_model_id) {
+    QP_LOG(WARNING) << __func__
+                    << ": Could not find a matching model ID for "
+                       "device ID: "
+                    << device_id;
     return absl::nullopt;
+  }
 
   return device_image_store_->GetImagesForDeviceModel(hex_model_id.value());
 }

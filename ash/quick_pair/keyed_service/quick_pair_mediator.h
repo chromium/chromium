@@ -73,7 +73,7 @@ class Mediator final : public FeatureStatusTracker::Observer,
   // FeatureStatusTracker::Observer
   void OnFastPairEnabledChanged(bool is_enabled) override;
 
-  // SannerBroker::Observer
+  // ScannerBroker::Observer
   void OnDeviceFound(scoped_refptr<Device> device) override;
   void OnDeviceLost(scoped_refptr<Device> device) override;
 

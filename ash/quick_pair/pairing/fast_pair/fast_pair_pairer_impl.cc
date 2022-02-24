@@ -267,6 +267,9 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   QP_LOG(VERBOSE) << "Connect device successful.";
   RecordConnectDeviceResult(/*success=*/true);
+  // The device ID can change between device discovery and connection, so
+  // ensure that device images are mapped to the current device ID.
+  FastPairRepository::Get()->FetchDeviceImages(device_);
 }
 
 void FastPairPairerImpl::OnConnectError() {

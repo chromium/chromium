@@ -39,7 +39,7 @@ class DeviceIdMap {
 
   // Saves device ID -> model ID records for the devices matching both
   // the BLE and Classic address in memory, stored in device_id_to_model_id.
-  void SaveModelIdForDevice(scoped_refptr<Device> device);
+  bool SaveModelIdForDevice(scoped_refptr<Device> device);
 
   // Persists the device ID -> model ID records for |device|
   // to local state prefs. Returns true if a record was persisted, false

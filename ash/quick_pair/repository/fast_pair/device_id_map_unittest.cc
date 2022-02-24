@@ -76,7 +76,7 @@ class DeviceIdMapTest : public AshTestBase {
 };
 
 TEST_F(DeviceIdMapTest, SaveModelIdForDeviceValid) {
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   absl::optional<const std::string> ble_model_id =
       device_id_map_->GetModelIdForDeviceId(kTestBLEDeviceId);
   EXPECT_TRUE(ble_model_id);
@@ -93,7 +93,7 @@ TEST_F(DeviceIdMapTest, SaveModelIdForDeviceValidOnlyClassicAddress) {
   EXPECT_CALL(*adapter_, GetDevice(kTestBLEAddress)).WillOnce(Return(nullptr));
   EXPECT_CALL(*adapter_, GetDevice(kTestClassicAddress))
       .WillOnce(Return(&classic_bluetooth_device_));
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   absl::optional<const std::string> ble_model_id =
       device_id_map_->GetModelIdForDeviceId(kTestBLEDeviceId);
   EXPECT_FALSE(ble_model_id);
@@ -110,7 +110,7 @@ TEST_F(DeviceIdMapTest, SaveModelIdForDeviceValidOnlyBLEAddress) {
       .WillOnce(Return(&ble_bluetooth_device_));
   EXPECT_CALL(*adapter_, GetDevice(kTestClassicAddress))
       .WillOnce(Return(nullptr));
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   absl::optional<const std::string> ble_model_id =
       device_id_map_->GetModelIdForDeviceId(kTestBLEDeviceId);
   EXPECT_TRUE(ble_model_id);
@@ -125,7 +125,7 @@ TEST_F(DeviceIdMapTest, SaveModelIdForDeviceInvalidDeviceNotFound) {
   EXPECT_CALL(*adapter_, GetDevice(kTestBLEAddress)).WillOnce(Return(nullptr));
   EXPECT_CALL(*adapter_, GetDevice(kTestClassicAddress))
       .WillOnce(Return(nullptr));
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_FALSE(device_id_map_->SaveModelIdForDevice(device_));
   absl::optional<const std::string> ble_model_id =
       device_id_map_->GetModelIdForDeviceId(kTestBLEDeviceId);
   EXPECT_FALSE(ble_model_id);
@@ -136,7 +136,7 @@ TEST_F(DeviceIdMapTest, SaveModelIdForDeviceInvalidDeviceNotFound) {
 
 TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValid) {
   // First, save the device ID records to memory.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
 
   // Validate that the ID records are persisted to prefs.
@@ -163,7 +163,7 @@ TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValidOnlyClassicAddress) {
   EXPECT_CALL(*adapter_, GetDevice(kTestClassicAddress))
       .Times(2)
       .WillRepeatedly(Return(&classic_bluetooth_device_));
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
 }
 
@@ -176,13 +176,13 @@ TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValidOnlyBLEAddress) {
   EXPECT_CALL(*adapter_, GetDevice(kTestClassicAddress))
       .Times(2)
       .WillRepeatedly(Return(nullptr));
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
 }
 
 TEST_F(DeviceIdMapTest, PersistRecordsForDeviceValidDoublePersist) {
   // First, save the device ID records to memory.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
 
   // When persisting a second time, should overwrite record and
@@ -197,7 +197,7 @@ TEST_F(DeviceIdMapTest, PersistRecordsForDeviceInvalidNotSaved) {
 
 TEST_F(DeviceIdMapTest, EvictDeviceIdRecordValid) {
   // First, persist the device ID record to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
   EXPECT_TRUE(device_id_map_->EvictDeviceIdRecord(kTestBLEDeviceId));
 
@@ -218,7 +218,7 @@ TEST_F(DeviceIdMapTest, EvictDeviceIdRecordInvalidDeviceId) {
 
 TEST_F(DeviceIdMapTest, EvictDeviceIdRecordInvalidDoubleFree) {
   // First, persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
   EXPECT_TRUE(device_id_map_->EvictDeviceIdRecord(kTestBLEDeviceId));
 
@@ -227,7 +227,7 @@ TEST_F(DeviceIdMapTest, EvictDeviceIdRecordInvalidDoubleFree) {
 }
 
 TEST_F(DeviceIdMapTest, GetModelIdForDeviceIdValid) {
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
 
   absl::optional<const std::string> model_id =
       device_id_map_->GetModelIdForDeviceId(kTestBLEDeviceId);
@@ -243,7 +243,7 @@ TEST_F(DeviceIdMapTest, GetModelIdForDeviceIdInvalidUninitialized) {
 }
 
 TEST_F(DeviceIdMapTest, GetModelIdForDeviceIdInvalidNotAdded) {
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
 
   absl::optional<const std::string> model_id =
       device_id_map_->GetModelIdForDeviceId("not found id");
@@ -252,14 +252,14 @@ TEST_F(DeviceIdMapTest, GetModelIdForDeviceIdInvalidNotAdded) {
 
 TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdTrueAfterPersist) {
   // First, persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
   EXPECT_TRUE(device_id_map_->HasPersistedRecordsForModelId(kTestModelId));
 }
 
 TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdTrueAfterOneEviction) {
   // First, persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
   // Evict one of the records that points to this model ID.
   EXPECT_TRUE(device_id_map_->EvictDeviceIdRecord(kTestClassicDeviceId));
@@ -268,7 +268,7 @@ TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdTrueAfterOneEviction) {
 
 TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdFalseAfterAllEvictions) {
   // First, persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
   // Evict all of the records that points to this model ID.
   EXPECT_TRUE(device_id_map_->EvictDeviceIdRecord(kTestClassicDeviceId));
@@ -278,13 +278,13 @@ TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdFalseAfterAllEvictions) {
 
 TEST_F(DeviceIdMapTest, HasPersistedRecordsForModelIdFalseNoPersist) {
   // Don't persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_FALSE(device_id_map_->HasPersistedRecordsForModelId(kTestModelId));
 }
 
 TEST_F(DeviceIdMapTest, LoadPersistedIdRecordFromPrefs) {
   // First, persist the device ID records to disk.
-  device_id_map_->SaveModelIdForDevice(device_);
+  EXPECT_TRUE(device_id_map_->SaveModelIdForDevice(device_));
   EXPECT_TRUE(device_id_map_->PersistRecordsForDevice(device_));
 
   // A new/restarted DeviceIdMap instance should load persisted ID records

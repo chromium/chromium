@@ -31,26 +31,30 @@ DeviceIdMap::DeviceIdMap() {
 
 DeviceIdMap::~DeviceIdMap() = default;
 
-void DeviceIdMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
+bool DeviceIdMap::SaveModelIdForDevice(scoped_refptr<Device> device) {
   // In some cases, BLE and classic address can map to different devices (with
   // the same model ID) so we want to capture both device ID -> model ID
   // records.
+  bool did_save = false;
   absl::optional<const std::string> ble_device_id =
       GetDeviceIdForAddress(device->ble_address);
   if (ble_device_id) {
+    did_save = true;
     device_id_to_model_id_[ble_device_id.value()] = device->metadata_id;
   }
 
   absl::optional<const std::string> classic_address = device->classic_address();
   if (!classic_address) {
-    return;
+    return did_save;
   }
 
   absl::optional<const std::string> classic_device_id =
       GetDeviceIdForAddress(classic_address.value());
   if (classic_device_id) {
+    did_save = true;
     device_id_to_model_id_[classic_device_id.value()] = device->metadata_id;
   }
+  return did_save;
 }
 
 bool DeviceIdMap::PersistRecordsForDevice(scoped_refptr<Device> device) {
