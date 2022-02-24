@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
 
 Tutorial::StepBuilder::StepBuilder() = default;
 Tutorial::StepBuilder::StepBuilder(const TutorialDescription::Step& step)
@@ -53,15 +54,14 @@ Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementName(
   return *this;
 }
 
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetTitleText(
-    absl::optional<std::u16string> title_text_) {
-  step_.title_text = title_text_;
+Tutorial::StepBuilder& Tutorial::StepBuilder::SetTitleTextID(
+    int title_text_id) {
+  step_.title_text_id = title_text_id;
   return *this;
 }
 
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetBodyText(
-    std::u16string body_text_) {
-  step_.body_text = body_text_;
+Tutorial::StepBuilder& Tutorial::StepBuilder::SetBodyTextID(int body_text_id) {
+  step_.body_text_id = body_text_id;
   return *this;
 }
 
@@ -165,12 +165,19 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
   if (!step_.ShouldShowBubble())
     return ui::InteractionSequence::StepStartCallback();
 
+  const std::u16string title_text =
+      step_.title_text_id ? l10n_util::GetStringUTF16(step_.title_text_id)
+                          : std::u16string();
+
+  const std::u16string body_text =
+      step_.body_text_id ? l10n_util::GetStringUTF16(step_.body_text_id)
+                         : std::u16string();
+
   return base::BindOnce(
-      [](TutorialService* tutorial_service,
-         absl::optional<std::u16string> title_text_, std::u16string body_text_,
-         HelpBubbleArrow arrow_, absl::optional<std::pair<int, int>> progress_,
-         bool is_last_step_, ui::InteractionSequence* sequence,
-         ui::TrackedElement* element) {
+      [](TutorialService* tutorial_service, std::u16string title_text_,
+         std::u16string body_text_, HelpBubbleArrow arrow_,
+         absl::optional<std::pair<int, int>> progress_, bool is_last_step_,
+         ui::InteractionSequence* sequence, ui::TrackedElement* element) {
         DCHECK(tutorial_service);
 
         tutorial_service->HideCurrentBubbleIfShowing();
@@ -182,8 +189,7 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
             base::Unretained(tutorial_service));
 
         HelpBubbleParams params;
-        if (title_text_)
-          params.title_text = *title_text_;
+        params.title_text = title_text_;
         params.body_text = body_text_;
         params.tutorial_progress = progress_;
         params.arrow = arrow_;
@@ -197,8 +203,8 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
                 element, std::move(params));
         tutorial_service->SetCurrentBubble(std::move(bubble));
       },
-      base::Unretained(tutorial_service), step_.title_text, step_.body_text,
-      step_.arrow, progress, is_last_step);
+      base::Unretained(tutorial_service), title_text, body_text, step_.arrow,
+      progress, is_last_step);
 }
 
 ui::InteractionSequence::StepEndCallback

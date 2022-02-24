@@ -20,8 +20,8 @@ TutorialDescription::Step::Step()
 TutorialDescription::Step::~Step() = default;
 
 TutorialDescription::Step::Step(
-    absl::optional<std::u16string> title_text_,
-    std::u16string body_text_,
+    int title_text_id_,
+    int body_text_id_,
     ui::InteractionSequence::StepType step_type_,
     ui::ElementIdentifier element_id_,
     std::string element_name_,
@@ -30,8 +30,8 @@ TutorialDescription::Step::Step(
     absl::optional<bool> must_remain_visible_,
     bool transition_only_on_event_,
     TutorialDescription::NameElementsCallback name_elements_callback_)
-    : title_text(title_text_),
-      body_text(body_text_),
+    : title_text_id(title_text_id_),
+      body_text_id(body_text_id_),
       step_type(step_type_),
       event_type(event_type_),
       element_id(element_id_),
@@ -40,9 +40,7 @@ TutorialDescription::Step::Step(
       must_remain_visible(must_remain_visible_),
       transition_only_on_event(transition_only_on_event_),
       name_elements_callback(name_elements_callback_) {
-  DCHECK(!title_text.has_value() || !title_text->empty())
-      << "If title is specified it must be non-empty.";
-  DCHECK(!title_text.has_value() || !body_text.empty())
+  DCHECK(!title_text_id || body_text_id)
       << "Tutorial bubble should not have a title without body text.";
 }
 
@@ -52,6 +50,7 @@ TutorialDescription::Step& TutorialDescription::Step::operator=(
 
 bool TutorialDescription::Step::Step::ShouldShowBubble() const {
   // Hide steps and steps with no body text are "hidden" steps.
-  return !body_text.empty() &&
+
+  return body_text_id &&
          step_type != ui::InteractionSequence::StepType::kHidden;
 }

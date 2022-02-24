@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
 #include "chrome/browser/ui/views/user_education/user_education_test_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -56,21 +57,21 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
 
   TutorialDescription GetDefaultTutorialDescription() {
     TutorialDescription description;
-    TutorialDescription::Step step1(absl::nullopt, u"Here's the app menu.",
+    TutorialDescription::Step step1(0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
                                     ui::InteractionSequence::StepType::kShown,
                                     kAppMenuButtonElementId, std::string(),
                                     HelpBubbleArrow::kTopRight);
     description.steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
-        absl::nullopt, u"A thing happened. Now click the app menu.",
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kCustomEvent,
         ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
         kCustomEventType1);
     description.steps.emplace_back(step2);
 
     TutorialDescription::Step step3(
-        absl::nullopt, u"App menu clicked! Congratulations!",
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kActivated, kAppMenuButtonElementId,
         std::string(), HelpBubbleArrow::kTopRight);
     description.steps.emplace_back(step3);

@@ -66,8 +66,8 @@ class Tutorial {
 
     StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
     StepBuilder& SetAnchorElementName(std::string anchor_element_name);
-    StepBuilder& SetTitleText(absl::optional<std::u16string> title_text_);
-    StepBuilder& SetBodyText(std::u16string body_text_);
+    StepBuilder& SetTitleTextID(int title_text_id);
+    StepBuilder& SetBodyTextID(int body_text_id);
     // Sets the step type; `event_type_` should be set only for custom events.
     StepBuilder& SetStepType(
         ui::InteractionSequence::StepType step_type_,

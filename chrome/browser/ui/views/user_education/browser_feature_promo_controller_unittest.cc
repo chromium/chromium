@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_view.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -84,15 +85,14 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     // This is just the first two steps of the "create tab group" tutorial.
     TutorialDescription desc;
 
-    TutorialDescription::Step step1(
-        absl::nullopt,
-        u"Right Click on a Tab and select \"Add Tab To new Group\".",
-        ui::InteractionSequence::StepType::kShown, kTabStripElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
+    TutorialDescription::Step step1(0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                    ui::InteractionSequence::StepType::kShown,
+                                    kTabStripElementId, std::string(),
+                                    HelpBubbleArrow::kTopCenter);
     desc.steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
-        absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kShown, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kLeftCenter,
         ui::CustomElementEventType(), false /*must_remain_visible*/);

@@ -126,6 +126,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
                                  views::LayoutAlignment::kCenter);
   tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
+  SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kChromeOSTabSearchCaptionButton))
     return;
@@ -148,8 +150,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
     tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
   }
-
-  SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 }
 
 TabStripRegionView::~TabStripRegionView() = default;

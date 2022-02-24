@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -93,8 +94,9 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
   {
     TutorialDescription description;
     description.steps.emplace_back(TutorialDescription::Step(
-        u"title", u"description", ui::InteractionSequence::StepType::kShown,
-        kTestIdentifier1, std::string(), HelpBubbleArrow::kNone));
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+        ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+        std::string(), HelpBubbleArrow::kNone));
     registry->AddTutorial(kTestTutorial1, std::move(description));
   }
 
@@ -119,7 +121,8 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
   // Build the tutorial Description
   TutorialDescription description;
   description.steps.emplace_back(
-      TutorialDescription::Step(u"step 1 title", u"step 1 description",
+      TutorialDescription::Step(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+                                IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
                                 ui::InteractionSequence::StepType::kShown,
                                 kTestIdentifier1, "", HelpBubbleArrow::kNone));
   registry.AddTutorial(kTestTutorial1, std::move(description));
@@ -145,7 +148,8 @@ TEST(TutorialTest, TutorialWithCustomEvent) {
   // Build the tutorial Description
   TutorialDescription description;
   description.steps.emplace_back(TutorialDescription::Step(
-      u"step 1 title", u"step 1 description",
+      IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
+      IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
       ui::InteractionSequence::StepType::kCustomEvent, kTestIdentifier1, "",
       HelpBubbleArrow::kNone, kCustomEventType1));
   registry.AddTutorial(kTestTutorial1, std::move(description));
@@ -185,7 +189,7 @@ TEST(TutorialTest, BuildAndRunTutorial) {
                             return true;
                           }))
                       .SetArrow(HelpBubbleArrow::kTopCenter)
-                      .SetBodyText(u"Bubble 1")
+                      .SetBodyTextID(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
                       .SetProgress(std::make_pair(0, 2))
                       .Build(&service));
   builder.AddStep(

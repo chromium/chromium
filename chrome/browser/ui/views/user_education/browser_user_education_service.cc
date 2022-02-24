@@ -197,15 +197,14 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
 
     // The initial step.
     TutorialDescription::Step create_tabgroup_step(
-        absl::nullopt,
-        u"Right-Click on a Tab and select \"Add Tab To New Group\"",
+        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(create_tabgroup_step);
 
     // The menu step.
     TutorialDescription::Step bubble_menu_edit_step(
-        absl::nullopt, u"Name your group and choose a color",
+        0, IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE,
         ui::InteractionSequence::StepType::kShown, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kLeftCenter,
         ui::CustomElementEventType(),
@@ -213,22 +212,21 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
     description.steps.emplace_back(std::move(bubble_menu_edit_step));
 
     TutorialDescription::Step bubble_menu_edit_ended_step(
-        absl::nullopt, std::u16string(),
-        ui::InteractionSequence::StepType::kHidden, kTabGroupEditorBubbleId,
-        std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
+        0, 0, ui::InteractionSequence::StepType::kHidden,
+        kTabGroupEditorBubbleId, std::string(), HelpBubbleArrow::kNone,
+        ui::CustomElementEventType(),
         /*must_remain_visible =*/false);
     description.steps.emplace_back(std::move(bubble_menu_edit_ended_step));
 
     // Drag tab into the group.
     TutorialDescription::Step drag_tab_into_group_step(
-        absl::nullopt, u"Try dragging other open tabs into your group",
+        0, IDS_TUTORIAL_TAB_GROUP_DRAG_TAB,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(drag_tab_into_group_step));
 
     TutorialDescription::Step successfully_drag_tab_into_group_step(
-        absl::nullopt, std::u16string(),
-        ui::InteractionSequence::StepType::kCustomEvent,
+        0, 0, ui::InteractionSequence::StepType::kCustomEvent,
         ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
         kTabGroupedCustomEventId, /*must_remain_visible =*/true);
     description.steps.emplace_back(
@@ -236,16 +234,15 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
 
     // Click to collapse the tab group.
     TutorialDescription::Step collapse_step(
-        absl::nullopt, u"Click the group name to expand or collapse it",
+        0, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
         ui::InteractionSequence::StepType::kShown, kTabGroupHeaderElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(collapse_step));
 
     // Completion of the tutorial.
     TutorialDescription::Step success_step(
-        u"Nicely done!",
-        u"Try using tab groups to organize tasks, for online shopping, and "
-        u"more",
+        IDS_TUTORIAL_TAB_GROUP_SUCCESS_TITLE,
+        IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
         ui::InteractionSequence::StepType::kActivated, kTabGroupHeaderElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(success_step));
