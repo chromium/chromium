@@ -285,7 +285,7 @@ void TestRenderFrameHost::SendNavigateWithParameters(
   // This approach to determining whether a navigation is to be treated as
   // same document is not robust, as it will not handle pushState type
   // navigation. Do not use elsewhere!
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearRef();
   bool was_within_same_document =
       !ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD) &&
