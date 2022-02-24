@@ -75,6 +75,7 @@ js_library("app_details_item") {
     ":actions",
     ":store_client",
     ":util",
+    "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "./types.js" ]

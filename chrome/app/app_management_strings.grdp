@@ -109,4 +109,16 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
     App details
   </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
+    Android App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_CHROME" desc="Text for Chrome app type">
+    Chrome App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_WEB" desc="Text for Web app type">
+    Web App
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_SYSTEM" desc="Text for System app type">
+    System App
+  </message>
 </grit-part>

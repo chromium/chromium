@@ -11,9 +11,9 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {recordSettingChange} from '../../metrics_recorder.m.js';
@@ -21,7 +21,15 @@ import {recordSettingChange} from '../../metrics_recorder.m.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementStoreClient} from './store_client.js';
 
-class AppManagementAppDetailsItem extends PolymerElement {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const AppManagementAppDetailsItemBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
   static get is() {
     return 'app-management-app-details-item';
   }
@@ -32,12 +40,8 @@ class AppManagementAppDetailsItem extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!App} */
-      app: Object,
+      app: appManagement.mojom.App,
 
-      /**
-       * @type {boolean}
-       */
       hidden_: {
         type: Boolean,
         computed: 'isHidden_()',
@@ -55,6 +59,31 @@ class AppManagementAppDetailsItem extends PolymerElement {
    */
   isHidden_() {
     return !loadTimeData.getBoolean('appManagementAppDetailsEnabled');
+  }
+
+  /**
+   * Returns the string for the app type.
+   *
+   * @param {!App} app
+   * @returns {string}
+   * @private
+   */
+  getTypeString(app) {
+    switch (app.type) {
+      case AppType.kArc:
+        return this.i18n('appManagementAppDetailsTypeAndroid');
+      case AppType.kChromeApp:
+        return this.i18n('appManagementAppDetailsTypeChrome');
+      case AppType.kWeb:
+      case AppType.kExtension:
+        return this.i18n('appManagementAppDetailsTypeWeb');
+      case AppType.kBuiltIn:
+      case AppType.kSystemWeb:
+        return this.i18n('appManagementAppDetailsTypeSystem');
+      default:
+        console.error('App type not recognised.');
+        return '';
+    }
   }
 }
 
