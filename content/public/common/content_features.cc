@@ -980,6 +980,14 @@ const base::Feature kTouchpadOverscrollHistoryNavigation {
 #endif
 };
 
+// When TreatBootstrapAsDefault is enabled, the browser will execute tasks with
+// the kBootstrap task type on the default task queues (based on priority of
+// the task) rather than a dedicated high-priority task queue. Intended to
+// evaluate the impact of the already-launched prioritization of bootstrap
+// tasks (crbug.com/1258621).
+const base::Feature kTreatBootstrapAsDefault{"TreatBootstrapAsDefault",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the Trusted Types API is available.
 const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
                                      base::FEATURE_ENABLED_BY_DEFAULT};

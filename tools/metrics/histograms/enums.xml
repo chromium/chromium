@@ -52624,6 +52624,7 @@ from previous Chrome versions.
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
   <int value="-1280673966" label="PluginVmFullscreen:disabled"/>
   <int value="-1280274244" label="OmniboxClosePopupWithEscape:disabled"/>
+  <int value="-1279151596" label="TreatBootstrapAsDefault:enabled"/>
   <int value="-1278796760" label="QueryInOmnibox:enabled"/>
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
@@ -55402,6 +55403,7 @@ from previous Chrome versions.
   <int value="689117929" label="EarlyEstablishGpuChannel:disabled"/>
   <int value="689489984" label="disable-zero-suggest"/>
   <int value="689577480" label="vr-shell-experimental-rendering"/>
+  <int value="689903349" label="TreatBootstrapAsDefault:disabled"/>
   <int value="690185633" label="NonValidatingReloadOnNormalReload:disabled"/>
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>

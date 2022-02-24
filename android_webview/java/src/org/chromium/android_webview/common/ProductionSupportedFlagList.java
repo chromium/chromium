@@ -238,6 +238,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.FONT_MANAGER_EARLY_INIT,
                     "Whether to initialize the font manager when the renderer starts on a "
                             + "background thread."),
+            Flag.baseFeature(ContentFeatures.TREAT_BOOTSTRAP_AS_DEFAULT,
+                    "Executes tasks with  the kBootstrap task type on the default task queues "
+                            + "(based on priority of the task) rather than a dedicated "
+                            + "high-priority task queue."),
             Flag.baseFeature(BlinkFeatures.RTC_DISALLOW_PLAN_B_OUTSIDE_DEPRECATION_TRIAL,
                     "Makes constructing an RTCPeerConnection with {sdpSemantics:'plan-b'} throw "
                             + "an exception."),
