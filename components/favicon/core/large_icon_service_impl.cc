@@ -51,7 +51,7 @@ GURL TrimPageUrlForGoogleServer(const GURL& page_url,
   if (!page_url.SchemeIsHTTPOrHTTPS() || page_url.HostIsIPAddress())
     return GURL();
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   replacements.ClearQuery();
