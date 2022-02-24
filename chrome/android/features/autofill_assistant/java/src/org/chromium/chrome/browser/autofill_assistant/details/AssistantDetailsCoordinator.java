@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
+import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 /**

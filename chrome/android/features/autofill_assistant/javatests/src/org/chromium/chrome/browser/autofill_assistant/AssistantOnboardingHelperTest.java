@@ -38,6 +38,10 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantOnboardingHelper;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collections;

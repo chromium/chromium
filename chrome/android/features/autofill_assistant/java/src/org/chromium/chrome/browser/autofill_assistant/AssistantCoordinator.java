@@ -11,6 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.components.autofill_assistant.AssistantEditorFactory;
+import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
+import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
+import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
+import org.chromium.components.autofill_assistant.AssistantTabObscuringUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;

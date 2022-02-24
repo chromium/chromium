@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckTyp
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
 

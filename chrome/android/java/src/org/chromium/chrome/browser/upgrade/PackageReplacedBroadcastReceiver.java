@@ -11,10 +11,10 @@ import android.os.Build;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.chrome.browser.base.DexFixer;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 
 /**
  * Triggered when Chrome's package is replaced (e.g. when it is upgraded).

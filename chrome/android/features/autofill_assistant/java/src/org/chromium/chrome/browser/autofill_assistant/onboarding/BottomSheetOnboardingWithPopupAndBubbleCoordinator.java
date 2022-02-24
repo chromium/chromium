@@ -12,9 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
-import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;

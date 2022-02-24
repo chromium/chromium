@@ -11,6 +11,7 @@ import androidx.annotation.DimenRes;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
 
 /**
  * Implementation of {@link AssistantProfileImageUtil} for Chrome.

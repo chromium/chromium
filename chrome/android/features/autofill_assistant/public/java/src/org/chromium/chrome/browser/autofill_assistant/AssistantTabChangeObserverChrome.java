@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill_assistant.AssistantTabChangeObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /**

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
-import org.chromium.chrome.browser.autofill_assistant.TriggerContext;
+import org.chromium.components.autofill_assistant.TriggerContext;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 

@@ -11,11 +11,12 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
 import org.chromium.content_public.browser.WebContents;
 
 /**

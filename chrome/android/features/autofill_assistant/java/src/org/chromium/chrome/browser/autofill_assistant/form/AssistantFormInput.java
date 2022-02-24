@@ -12,7 +12,7 @@ import android.widget.TextView;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantStaticDependencies;
+import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
 
 import java.util.ArrayList;
 import java.util.List;

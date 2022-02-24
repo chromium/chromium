@@ -9,10 +9,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantOptionModel;
 
 /** Delegate for the Collect user data UI which forwards events to a native counterpart. */
 @JNINamespace("autofill_assistant")

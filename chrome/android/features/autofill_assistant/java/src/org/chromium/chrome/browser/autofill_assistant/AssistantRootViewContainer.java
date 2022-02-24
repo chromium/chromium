@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.components.autofill_assistant.AssistantBrowserControls;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**

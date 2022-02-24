@@ -11,20 +11,20 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPopup;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantPopupListSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantStaticTextSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection.TextInputFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputType;
+import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantOptionModel;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
+import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 

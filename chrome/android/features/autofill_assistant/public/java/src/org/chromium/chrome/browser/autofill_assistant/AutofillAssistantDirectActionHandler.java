@@ -20,6 +20,11 @@ import org.chromium.chrome.browser.directactions.DirectActionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Definition;
 import org.chromium.chrome.browser.directactions.DirectActionReporter.Type;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.autofill_assistant.AutofillAssistantActionHandler;
+import org.chromium.components.autofill_assistant.AutofillAssistantDirectAction;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
+import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 

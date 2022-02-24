@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.components.autofill_assistant.Starter;
+
 /**
  * Instantiates a tab helper for autofill-assistant.
  */

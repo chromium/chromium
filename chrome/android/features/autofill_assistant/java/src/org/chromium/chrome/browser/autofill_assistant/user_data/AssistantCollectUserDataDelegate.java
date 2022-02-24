@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
+import org.chromium.components.autofill_assistant.AssistantOptionModel;
 
 /**
  * Common interface for autofill assistant payment request delegates.

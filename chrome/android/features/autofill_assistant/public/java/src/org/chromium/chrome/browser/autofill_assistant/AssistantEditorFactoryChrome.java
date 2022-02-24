@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantAddressEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
+import org.chromium.components.autofill_assistant.AssistantContactEditorAccount;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
+import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 

@@ -12,6 +12,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.components.autofill_assistant.AssistantSnackbar;
+import org.chromium.components.autofill_assistant.AssistantSnackbarFactory;
 
 /**
  * Implementation of {@link AssistantSnackbarFactory} for Chrome.

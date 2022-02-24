@@ -17,11 +17,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
+import org.chromium.components.autofill_assistant.AssistantAutofillCreditCard;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
+import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
 
 import java.util.List;
 

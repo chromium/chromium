@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
+import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 
 /** History deletion observer that clears autofill-assistant flags when necessary. */
 public class AutofillAssistantHistoryDeletionObserver implements HistoryDeletionBridge.Observer {

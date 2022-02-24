@@ -10,6 +10,15 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantModuleInstallUi;
+import org.chromium.components.autofill_assistant.AssistantOnboardingHelper;
+import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
+import org.chromium.components.autofill_assistant.AutofillAssistantActionHandler;
+import org.chromium.components.autofill_assistant.AutofillAssistantDirectAction;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 

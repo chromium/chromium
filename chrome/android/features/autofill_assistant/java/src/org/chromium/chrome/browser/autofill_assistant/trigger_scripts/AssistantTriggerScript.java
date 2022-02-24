@@ -17,9 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
-import org.chromium.chrome.browser.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
-import org.chromium.chrome.browser.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantDependencyInjector;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
@@ -29,6 +27,8 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipView
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
+import org.chromium.components.autofill_assistant.AssistantProfileImageUtil;
+import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;

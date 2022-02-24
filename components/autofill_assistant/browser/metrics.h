@@ -20,7 +20,7 @@ class Metrics {
   // The different ways that autofill assistant can stop.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
+  // org.chromium.components.autofill_assistant.metrics)
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: DropOutReason
   //
   // This enum is used in histograms, do not remove/renumber entries. Only add
@@ -168,7 +168,7 @@ class Metrics {
   // The different ways in which DFM can be installed.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
+  // org.chromium.components.autofill_assistant.metrics)
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: FeatureModuleInstallation
   //
   // This enum is used in histograms, do not remove/renumber entries. Only add

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.components.autofill_assistant.AssistantBrowserControls;
 
 /**
  * Implementation of {@link AssistantBrowserControls} for Chrome.

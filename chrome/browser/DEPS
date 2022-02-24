@@ -46,6 +46,7 @@ include_rules = [
   "+components/accuracy_tips",
   "+components/account_manager_core",
   "+components/assist_ranker",
+  "+components/autofill_assistant/android",
   "+components/autofill_assistant/browser",
   "+components/autofill_assistant/content/browser",
   "+components/autofill_assistant/content/common",

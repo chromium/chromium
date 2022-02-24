@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.autofill_assistant.onboarding;
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
-import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.util.AccessibilityUtil;

@@ -9,14 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditorFactory;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
+import org.chromium.components.autofill_assistant.AssistantEditorFactory;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;

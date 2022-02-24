@@ -9,6 +9,7 @@ import android.app.Activity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill_assistant.AssistantFeedbackUtil;
 import org.chromium.content_public.browser.WebContents;
 
 /**

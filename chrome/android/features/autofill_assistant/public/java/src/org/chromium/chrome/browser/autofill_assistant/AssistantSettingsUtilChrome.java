@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.components.autofill_assistant.AssistantSettingsUtil;
 
 /**
  * Implementation of {@link AssistantSettingsUtil} for Chrome.

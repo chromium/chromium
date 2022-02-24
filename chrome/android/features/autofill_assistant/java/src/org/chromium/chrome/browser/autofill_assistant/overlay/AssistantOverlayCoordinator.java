@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.View;
 
-import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;

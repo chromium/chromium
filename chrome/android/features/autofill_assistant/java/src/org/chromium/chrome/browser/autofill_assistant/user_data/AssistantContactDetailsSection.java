@@ -15,9 +15,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantContactEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
 
 import java.util.ArrayList;
 import java.util.List;

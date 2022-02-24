@@ -9,6 +9,7 @@ import android.app.Activity;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.autofill_assistant.AssistantTabUtil;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**

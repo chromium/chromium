@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingC
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.trigger_scripts.AssistantTriggerScriptBridge;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantOnboardingHelper;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Map;

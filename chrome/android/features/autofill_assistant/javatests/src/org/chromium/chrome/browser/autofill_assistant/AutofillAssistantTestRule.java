@@ -12,6 +12,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 
 abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> implements TestRule {
     private final T mTestRule;

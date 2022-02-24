@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
 
 /**
  * Implementation of {@link AssistantInfoPageUtil} for Chrome.

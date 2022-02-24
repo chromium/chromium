@@ -4,7 +4,7 @@
 
 #include <array>
 
-#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantFeatures_jni.h"
+#include "components/autofill_assistant/android/jni_headers_public/AssistantFeatures_jni.h"
 #include "components/autofill_assistant/browser/features.h"
 
 namespace autofill_assistant {

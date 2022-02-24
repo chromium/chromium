@@ -13,10 +13,10 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantAddressEditor;
-import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddressEditor;
+import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.content_public.browser.WebContents;
 
 /**

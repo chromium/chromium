@@ -1,3 +1,9 @@
 include_rules = [
+  "+components/browser_ui/bottomsheet",
+  "+components/favicon",
+  "+components/image_fetcher",
+  "+components/module_installer",
+  "+components/signin",
+  "+content/public/android",
   "+ui/android",
 ]

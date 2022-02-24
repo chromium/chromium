@@ -13,9 +13,9 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControls;
-import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
+import org.chromium.components.autofill_assistant.AssistantBrowserControls;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
