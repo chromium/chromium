@@ -14,16 +14,18 @@ FakeDlcserviceClient::FakeDlcserviceClient() = default;
 
 FakeDlcserviceClient::~FakeDlcserviceClient() = default;
 
-void FakeDlcserviceClient::Install(const std::string& dlc_id,
-                                   InstallCallback callback,
-                                   ProgressCallback progress_callback) {
+void FakeDlcserviceClient::Install(
+    const dlcservice::InstallRequest& install_request,
+    InstallCallback callback,
+    ProgressCallback progress_callback) {
   VLOG(1) << "Requesting to install DLC(s).";
+  const std::string& id = install_request.id();
   InstallResult install_result{
       .error = install_err_,
-      .dlc_id = dlc_id,
+      .dlc_id = id,
       .root_path = install_root_path_,
   };
-  dlcs_with_content_.add_dlc_infos()->set_id(dlc_id);
+  dlcs_with_content_.add_dlc_infos()->set_id(id);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(install_result)));

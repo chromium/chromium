@@ -38,7 +38,8 @@ component("soda") {
 
     deps += [
       "//ash/constants",
-      "//chromeos/dbus/dlcservice",
+      "//chromeos/dbus/dlcservice:dlcservice",
+      "//chromeos/dbus/dlcservice:dlcservice_proto",
       "//ui/base",
     ]
   }

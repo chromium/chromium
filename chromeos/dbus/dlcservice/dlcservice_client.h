@@ -88,7 +88,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // Installs the DLC passed in while reporting progress through the progress
   // callback and only calls install callback on install success/failure.
-  virtual void Install(const std::string& dlc_id,
+  virtual void Install(const dlcservice::InstallRequest& install_request,
                        InstallCallback callback,
                        ProgressCallback progress_callback) = 0;
 

@@ -93,8 +93,10 @@ void OnGetExistingDlcsComplete(
   // the handwriting dlc if it is already on device.
   for (const auto& dlc_info : dlcs_with_content.dlc_infos()) {
     if (dlc_info.id() == kLibHandwritingDlcId) {
+      dlcservice::InstallRequest install_request;
+      install_request.set_id(kLibHandwritingDlcId);
       dlc_client->Install(
-          kLibHandwritingDlcId,
+          install_request,
           base::BindOnce(&OnInstallDlcComplete, std::move(spec),
                          std::move(receiver), std::move(callback)),
           base::DoNothing());

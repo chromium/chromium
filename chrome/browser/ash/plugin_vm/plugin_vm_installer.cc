@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -467,8 +468,10 @@ void PluginVmInstaller::StartDlcDownload() {
     return;
   }
 
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kPitaDlc);
   chromeos::DlcserviceClient::Get()->Install(
-      "pita",
+      install_request,
       base::BindOnce(&PluginVmInstaller::OnDlcDownloadCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PluginVmInstaller::OnDlcDownloadProgressUpdated,
