@@ -5947,8 +5947,6 @@ static_library("browser") {
       "fuchsia/chrome_browser_main_parts_fuchsia.h",
       "fuchsia/element_manager_impl.cc",
       "fuchsia/element_manager_impl.h",
-      "fuchsia/switches.cc",
-      "fuchsia/switches.h",
       "fullscreen_fuchsia.cc",
       "icon_loader_fuchsia.cc",
       "importer/firefox_profile_lock_fuchsia.cc",
