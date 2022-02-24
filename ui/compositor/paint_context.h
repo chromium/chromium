@@ -7,7 +7,6 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "cc/paint/paint_recorder.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
 

@@ -17,6 +17,10 @@
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/caption_button_types.h"
 
+namespace cc {
+class PaintFlags;
+}  // namespace cc
+
 namespace gfx {
 class SlideAnimation;
 struct VectorIcon;
