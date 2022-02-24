@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/audio/audio_features.h"
-#include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_switches.h"
@@ -119,14 +118,7 @@ std::unique_ptr<AudioEncoder> GpuMojoMediaClient::CreateAudioEncoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (!base::FeatureList::IsEnabled(features::kPlatformAudioEncoder))
     return nullptr;
-  // TODO(crbug.com/1259883) Right now Opus encoder is all we have, later on
-  // we'll create a real platform encoder here.
-  auto opus_encoder = std::make_unique<AudioOpusEncoder>();
-  auto encoding_runner = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_BLOCKING});
-  return std::make_unique<OffloadingAudioEncoder>(std::move(opus_encoder),
-                                                  std::move(encoding_runner),
-                                                  std::move(task_runner));
+  return nullptr;
 }
 
 VideoDecoderType GpuMojoMediaClient::GetDecoderImplementationType() {
