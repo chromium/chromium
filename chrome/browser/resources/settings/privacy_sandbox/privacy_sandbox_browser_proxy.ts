@@ -16,6 +16,15 @@ export type FlocIdentifier = {
   canReset: boolean,
 };
 
+/**
+ * A user interest to display. There must only be one of |topic| or |site| set.
+ */
+export type PrivacySandboxInterest = {
+  removed: boolean,
+  topic?: CanonicalTopic,
+  site?: string,
+};
+
 export type FledgeState = {
   joiningSites: Array<string>,
   blockedSites: Array<string>,

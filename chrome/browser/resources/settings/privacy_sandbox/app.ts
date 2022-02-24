@@ -4,21 +4,21 @@
 import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './icons.js';
-import '../lazy_load.js';
+import './interest_item.js';
 import '../settings.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// Those resources are loaded through lazy_load.js and settings.js as the
-// privacy sandbox page lives outside regular settings, hence can't access those
-// resources directly with |optimize_webui="true"|.
+// Those resources are loaded through settings.js as the privacy sandbox page
+// lives outside regular settings, hence can't access those resources directly
+// with |optimize_webui="true"|.
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
-import {FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
+import {FledgeState, FlocIdentifier, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 
 /** Views of the PrivacySandboxSettings page. */
 export enum PrivacySandboxSettingsView {
@@ -61,6 +61,39 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
         type: String,
         value: PrivacySandboxSettingsView.MAIN,
       },
+
+      /**
+       * The topTopics_, blockedTopics_, joiningSites_, and blockedSites_
+       * arrays are used as models to keep the UI in sync with the backend's
+       * expected Topics/Fledge states, while the user is on the page.
+       */
+      topTopics_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      blockedTopics_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      joiningSites_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      blockedSites_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
     };
   }
 
@@ -75,6 +108,10 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
       PrivacySandboxBrowserProxyImpl.getInstance();
   private privacySandboxSettings3Enabled_: boolean;
   privacySandboxSettingsView_: PrivacySandboxSettingsView;
+  private topTopics_: Array<PrivacySandboxInterest>;
+  private blockedTopics_: Array<PrivacySandboxInterest>;
+  private joiningSites_: Array<PrivacySandboxInterest>;
+  private blockedSites_: Array<PrivacySandboxInterest>;
 
   ready() {
     super.ready();
@@ -85,6 +122,11 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.privacySandboxBrowserProxy_.getFlocId().then(id => this.flocId_ = id);
     addWebUIListener(
         'floc-id-changed', (id: FlocIdentifier) => this.flocId_ = id);
+
+    this.privacySandboxBrowserProxy_.getTopicsState().then(
+        state => this.onTopicsStateChanged_(state));
+    this.privacySandboxBrowserProxy_.getFledgeState().then(
+        state => this.onFledgeStateChanged_(state));
 
     // Make the required policy strings available at the window level. This is
     // expected by cr-elements related to policy.
@@ -168,6 +210,79 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
   private onSpamAndFraudRowClick_() {
     this.privacySandboxSettingsView_ =
         PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG;
+  }
+
+  private showInterestsList_(interests: PrivacySandboxInterest[]): boolean {
+    return interests.length > 0;
+  }
+
+  private onTopicsStateChanged_(state: TopicsState) {
+    this.topTopics_ = state.topTopics.map(topic => {
+      return {topic, removed: false};
+    });
+    this.blockedTopics_ = state.blockedTopics.map(topic => {
+      return {topic, removed: true};
+    });
+  }
+
+  private onTopicInteracted_(interest: PrivacySandboxInterest) {
+    assert(!interest.site);
+    if (interest.removed) {
+      this.blockedTopics_.splice(this.blockedTopics_.indexOf(interest), 1);
+    } else {
+      this.topTopics_.splice(this.topTopics_.indexOf(interest), 1);
+      // Move the removed topic automatically to the removed section.
+      this.blockedTopics_.push({topic: interest.topic, removed: true});
+      this.blockedTopics_.sort(
+          (first, second) =>
+              first.topic!.displayString < second.topic!.displayString ? -1 :
+                                                                         1);
+    }
+    // This causes the lists to be fully re-rendered, in order to reflect
+    // the models' changes.
+    this.topTopics_ = this.topTopics_.slice();
+    this.blockedTopics_ = this.blockedTopics_.slice();
+    // If the interest was previously removed, set it to allowed, and vice
+    // versa.
+    this.privacySandboxBrowserProxy_.setTopicAllowed(
+        interest.topic!, /*allowed=*/ interest.removed);
+  }
+
+  private onFledgeStateChanged_(state: FledgeState) {
+    this.joiningSites_ = state.joiningSites.map(site => {
+      return {site, removed: false};
+    });
+    this.blockedSites_ = state.blockedSites.map(site => {
+      return {site, removed: true};
+    });
+  }
+
+  private onSiteInteracted_(interest: PrivacySandboxInterest) {
+    assert(!interest.topic);
+    if (interest.removed) {
+      this.blockedSites_.splice(this.blockedSites_.indexOf(interest), 1);
+    } else {
+      this.joiningSites_.splice(this.joiningSites_.indexOf(interest), 1);
+      // Move the removed site automatically to the removed section.
+      this.blockedSites_.push({site: interest.site, removed: true});
+      this.blockedSites_.sort(
+          (first, second) => first.site! < second.site!? -1 : 1);
+    }
+    this.joiningSites_ = this.joiningSites_.slice();
+    this.blockedSites_ = this.blockedSites_.slice();
+    // If the interest was previously removed, set it to allowed, and vice
+    // versa.
+    this.privacySandboxBrowserProxy_.setFledgeJoiningAllowed(
+        interest.site!, /*allowed=*/ interest.removed);
+  }
+
+  private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
+    const interest = e.detail;
+    if (interest.topic !== undefined) {
+      this.onTopicInteracted_(interest);
+    } else {
+      this.onSiteInteracted_(interest);
+    }
   }
 }
 

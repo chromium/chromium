@@ -104,6 +104,7 @@ web_component_files = [
   "privacy_page/security_keys_phones_dialog.ts",
   "privacy_page/security_page.ts",
   "privacy_sandbox/app.ts",
+  "privacy_sandbox/interest_item.ts",
   "reset_page/reset_page.ts",
   "reset_page/reset_profile_banner.ts",
   "reset_page/reset_profile_dialog.ts",
