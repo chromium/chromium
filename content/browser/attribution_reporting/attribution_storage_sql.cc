@@ -1719,12 +1719,13 @@ bool AttributionStorageSql::CreateSchema() {
   // Origins usually aren't _that_ big compared to a 64 bit integer(8 bytes).
   //
   // All of the columns in this table are designed to be "const" except for
-  // |num_conversions| and |active| which are updated when a new report is
-  // received. |num_conversions| is the number of times a report has
-  // been created for a given source. |delegate_| can choose to enforce a
-  // maximum limit on this. |active| indicates whether a source is able to
-  // create new associated reports. |active| can be unset on a number
-  // of conditions:
+  // |num_conversions|, |aggregatable_budget_consumed| and |active| which are
+  // updated when a new trigger is received. |num_conversions| is the number of
+  // times an event-level report has been created for a given source.
+  // |aggregatable_budget_consumed| is the aggregatable budget that has been
+  // consumed for a given source. |delegate_| can choose to enforce a maximum
+  // limit on them. |active| indicates whether a source is able to create new
+  // associated reports. |active| can be unset on a number of conditions:
   //   - A source converted too many times.
   //   - A new source was stored after a source converted, making it
   //     ineligible for new sources due to the attribution model documented
