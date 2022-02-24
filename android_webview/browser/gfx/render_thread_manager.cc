@@ -264,6 +264,11 @@ void RenderThreadManager::SetCompositorFrameProducer(
   root_frame_sink_getter_ = std::move(root_frame_sink_getter);
 }
 
+void RenderThreadManager::SetRootFrameSinkGetterForTesting(
+    RootFrameSinkGetter root_frame_sink_getter) {
+  root_frame_sink_getter_ = std::move(root_frame_sink_getter);
+}
+
 bool RenderThreadManager::HasFrameForHardwareRendererOnRT() const {
   base::AutoLock lock(lock_);
   return !child_frames_.empty();

@@ -123,7 +123,14 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
   }
 
   viz::FrameTimingDetailsMap TakeFrameTimingDetails() {
-    return support_->TakeFrameTimingDetailsMap();
+    for (const auto& feedback : support_->TakeFrameTimingDetailsMap()) {
+      DCHECK(!feedbacks_.contains(feedback.first));
+      feedbacks_[feedback.first] = feedback.second;
+    }
+
+    viz::FrameTimingDetailsMap result;
+    std::swap(result, feedbacks_);
+    return result;
   }
 
   size_t frames_submitted() { return frames_submitted_; }
@@ -138,8 +145,11 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
   }
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& feedbacks) override {
-    // We explicitly handle feedbacks after draw.
-    DCHECK(feedbacks.empty());
+    for (const auto& feedback : feedbacks) {
+      DCHECK(!feedbacks_.contains(feedback.first));
+      feedbacks_[feedback.first] = feedback.second;
+    }
+
     DCHECK_GE(frame_interval_, args.interval);
 
     last_begin_frame_args_ = args;
@@ -184,6 +194,7 @@ class VizClient : public viz::mojom::CompositorFrameSinkClient {
 
   viz::BeginFrameArgs last_begin_frame_args_;
   base::TimeTicks last_submitted_time_;
+  viz::FrameTimingDetailsMap feedbacks_;
 };
 
 struct PerFrameFlag {
@@ -241,9 +252,8 @@ class InvalidateTest : public testing::TestWithParam<
     DCHECK(context_);
 
     context_->MakeCurrent(surface_.get());
-    hardware_renderer_ = std::make_unique<HardwareRendererViz>(
-        render_thread_manager_.get(),
-        root_frame_sink_proxy_->GetRootFrameSinkCallback(), nullptr);
+    render_thread_manager_->SetRootFrameSinkGetterForTesting(
+        root_frame_sink_proxy_->GetRootFrameSinkCallback());
   }
 
   ~InvalidateTest() override {
@@ -253,19 +263,18 @@ class InvalidateTest : public testing::TestWithParam<
                          // `client` leaves scope.
                        },
                        std::move(client_)));
+    render_thread_manager_->DestroyHardwareRendererOnRT(false, false);
   }
 
   // viz::ExternalBeginFrameSourceClient
   void OnNeedsBeginFrames(bool needs_begin_frames) override {
+    needs_begin_frames_ = needs_begin_frames;
     if (set_needs_begin_frames_closure_)
       std::move(set_needs_begin_frames_closure_).Run();
   }
 
   // RootFrameSinkProxyClient
-  void Invalidate() override {
-    DCHECK(inside_begin_frame_);
-    did_invalidate_ = true;
-  }
+  void Invalidate() override { did_invalidate_ = true; }
 
   void ReturnResourcesFromViz(
       viz::FrameSinkId frame_sink_id,
@@ -276,7 +285,27 @@ class InvalidateTest : public testing::TestWithParam<
   }
 
  protected:
-  void Draw(const viz::BeginFrameArgs& args, bool invalidated) {
+  std::unique_ptr<ChildFrame> CreateChildFrame(
+      std::unique_ptr<content::SynchronousCompositor::Frame> frame,
+      const viz::BeginFrameArgs& args,
+      bool invalidated) {
+    auto future =
+        base::MakeRefCounted<content::SynchronousCompositor::FrameFuture>();
+    future->SetFrame(std::move(frame));
+
+    auto child_frame = std::make_unique<ChildFrame>(
+        future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
+        CopyOutputRequestQueue(), /*did_invalidate=*/invalidated);
+    return child_frame;
+  }
+
+  void DrawOnUI(std::unique_ptr<ChildFrame> frame) {
+    render_thread_manager_->SetFrameOnUI(std::move(frame));
+  }
+
+  void Sync() { render_thread_manager_->CommitFrameOnRT(); }
+
+  void DrawOnRT(const viz::BeginFrameArgs& args, bool invalidated) {
     HardwareRendererDrawParams params{.clip_left = 0,
                                       .clip_top = 0,
                                       .clip_right = 99,
@@ -289,9 +318,9 @@ class InvalidateTest : public testing::TestWithParam<
     params.transform[15] = 1.0f;
     params.color_space = gfx::ColorSpace::CreateSRGB();
 
-    ScopedAppGLStateRestore state_restore(ScopedAppGLStateRestore::MODE_DRAW,
-                                          false);
-    hardware_renderer_->DrawAndSwap(params, OverlaysParams());
+    render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
+                                     OverlaysParams());
+
     if (invalidated)
       last_invalidated_draw_bf_ = args;
     UpdateFrameTimingDetails();
@@ -299,12 +328,20 @@ class InvalidateTest : public testing::TestWithParam<
 
   bool BeginFrame(const viz::BeginFrameArgs& args) {
     DCHECK(!inside_begin_frame_);
-    did_invalidate_ = false;
-    inside_begin_frame_ = true;
-    begin_frame_source_->OnBeginFrame(args);
-    inside_begin_frame_ = false;
 
-    return did_invalidate_;
+    if (needs_begin_frames_) {
+      inside_begin_frame_ = true;
+      begin_frame_source_->OnBeginFrame(args);
+      inside_begin_frame_ = false;
+    }
+
+    if (did_invalidate_)
+      invalidate_count_++;
+
+    bool result = did_invalidate_;
+    did_invalidate_ = false;
+
+    return result;
   }
 
   void SubmitFrameIfNeeded() {
@@ -329,7 +366,9 @@ class InvalidateTest : public testing::TestWithParam<
       // We never should get ahead of hwui. If we have presentation feedback
       // newer then latest invalidated draw, then it must be failed.
       if (timing.first > last_invalidated_draw_bf_.frame_id.sequence_number) {
-        ASSERT_TRUE(timing.second.presentation_feedback.failed());
+        LOG_IF(FATAL, !timing.second.presentation_feedback.failed())
+            << "Rendered frame: " << timing.first << " ahead of "
+            << last_invalidated_draw_bf_.frame_id.sequence_number;
       }
       child_client_timings_[timing.first] = timing.second;
     }
@@ -368,6 +407,8 @@ class InvalidateTest : public testing::TestWithParam<
             .Build();
     AppendSurfaceDrawQuad(*compositor_frame.render_pass_list.back(),
                           child_client_surface_id);
+    compositor_frame.metadata.referenced_surfaces.push_back(
+        viz::SurfaceRange(child_client_surface_id));
 
     auto frame = std::make_unique<content::SynchronousCompositor::Frame>();
     frame->layer_tree_frame_sink_id = 1;
@@ -377,28 +418,18 @@ class InvalidateTest : public testing::TestWithParam<
     frame->local_surface_id =
         root_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
 
-    auto future =
-        base::MakeRefCounted<content::SynchronousCompositor::FrameFuture>();
-    future->SetFrame(std::move(frame));
-
-    auto child_frame = std::make_unique<ChildFrame>(
-        future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
-        CopyOutputRequestQueue(), /*did_invalidate=*/true);
-    child_frame->WaitOnFutureIfNeeded();
-    hardware_renderer_->SetChildFrameForTesting(std::move(child_frame));
-
     BeginFrame(bf_args);
     SubmitFrameIfNeeded();
+
     // First draw is implicitly invalidated.
-    Draw(bf_args, /*invalidated=*/true);
+    DrawOnUI(CreateChildFrame(std::move(frame), bf_args, /*invalidated=*/true));
+    Sync();
+    DrawOnRT(bf_args, /*invalidated=*/true);
 
     // This draw must always succeed.
     ASSERT_EQ(child_client_timings_.size(), 1u);
     ASSERT_FALSE(
         child_client_timings_.begin()->second.presentation_feedback.failed());
-
-    // Clear the map, so this draw doesn't count later.
-    child_client_timings_.clear();
   }
 
   viz::BeginFrameArgs NextBeginFrameArgs() {
@@ -431,16 +462,22 @@ class InvalidateTest : public testing::TestWithParam<
 
       // If we didn't draw last frame, now it's time.
       if (delayed_draw_args.IsValid()) {
-        Draw(delayed_draw_args, delayed_draw_invalidate);
+        DrawOnRT(delayed_draw_args, delayed_draw_invalidate);
         delayed_draw_args = viz::BeginFrameArgs();
       }
+
+      if (invalidate) {
+        DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
+      }
+
+      Sync();
 
       // If webview invalidated or other views requested to draw, try to draw.
       if (invalidate || always_draw) {
         // If this frame hwui is in "fast" mode (i.e RT is not a frame behind)
         // then draw a frame now.
         if (hwui_fast) {
-          Draw(args, invalidate);
+          DrawOnRT(args, invalidate);
           DCHECK(!delayed_draw_args.IsValid());
         } else {
           delayed_draw_args = args;
@@ -463,13 +500,19 @@ class InvalidateTest : public testing::TestWithParam<
 
     // Finish draw if it's still pending
     if (delayed_draw_args.IsValid()) {
-      Draw(delayed_draw_args, delayed_draw_invalidate);
+      DrawOnRT(delayed_draw_args, delayed_draw_invalidate);
     }
-    Draw(args, invalidate);
 
-    // Make sure we received all presentation feedback, ignoring first frame
-    // submitted during init.
-    ASSERT_EQ(client_->frames_submitted() - 1, child_client_timings_.size());
+    if (invalidate) {
+      DrawOnUI(CreateChildFrame(nullptr, args, /*invalidated=*/invalidate));
+    }
+
+    Sync();
+
+    DrawOnRT(args, invalidate);
+
+    // Make sure we received all presentation feedback.
+    ASSERT_EQ(client_->frames_submitted(), child_client_timings_.size());
   }
 
   int CountDroppedFrames() {
@@ -488,7 +531,6 @@ class InvalidateTest : public testing::TestWithParam<
   std::unique_ptr<RenderThreadManager> render_thread_manager_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-  std::unique_ptr<HardwareRendererViz> hardware_renderer_;
 
   std::unique_ptr<VizClient> client_;
   viz::ParentLocalSurfaceIdAllocator root_local_surface_id_allocator_;
@@ -498,6 +540,8 @@ class InvalidateTest : public testing::TestWithParam<
   base::TimeTicks begin_frame_time_ = base::TimeTicks::Now();
 
   viz::FrameTimingDetailsMap child_client_timings_;
+  int invalidate_count_ = 0;
+  bool needs_begin_frames_ = false;
 
   bool inside_begin_frame_ = false;
   bool did_invalidate_ = false;
@@ -536,7 +580,7 @@ INSTANTIATE_TEST_SUITE_P(
     TestParamToString);
 
 TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
-  const bool always_draw = testing::get<2>(GetParam());
+  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
 
@@ -553,15 +597,19 @@ TEST_P(InvalidateTest, LowFpsWithMaxFrame1) {
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/30);
   DrawLoop(client_slow, hwui_slow);
 
-  // Due to rounding error (1 / 60 * 2 < 1 / 30) we submit 39 frames instead
-  // of 30.
-  ASSERT_EQ(child_client_timings_.size(), 29u);
+  // Due to rounding error (1 / 60 * 2 < 1 / 30) we submit 29 frames instead
+  // of 30. Total 30 counting frame from first draw.
+  ASSERT_EQ(child_client_timings_.size(), 30u);
   EXPECT_EQ(CountDroppedFrames(), 0);
+
+  // If either client or hwui slow we currently invalidate more than we need.
+  if (client_slow.IsNever() || hwui_slow.IsNever())
+    EXPECT_LE(invalidate_count_, 31);
 }
 
 // Currently we can't reach 60fps with max pending frames 1.
 TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
-  const bool always_draw = testing::get<2>(GetParam());
+  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
 
@@ -578,14 +626,15 @@ TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame1) {
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/1, /*frame_rate=*/60);
   DrawLoop(client_slow, hwui_slow);
 
-  ASSERT_EQ(child_client_timings_.size(), 60u);
+  // We should have submitted 60 frames + 1 from initial draw.
+  ASSERT_EQ(child_client_timings_.size(), 61u);
   EXPECT_EQ(CountDroppedFrames(), 0);
 }
 
 // Currently we can't reach 60fps with max pending frames 1.
 // Test is failing on Lollipop Phone Tester (crbug.com/1234442).
-TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame2) {
-  const bool always_draw = testing::get<2>(GetParam());
+TEST_P(InvalidateTest, HighFpsWithMaxFrame2) {
+  auto always_draw = testing::get<2>(GetParam());
   auto client_slow = testing::get<0>(GetParam());
   auto hwui_slow = testing::get<1>(GetParam());
 
@@ -602,7 +651,8 @@ TEST_P(InvalidateTest, DISABLED_HighFpsWithMaxFrame2) {
   SetUpAndDrawFirstFrame(/*max_pending_frames=*/2, /*frame_rate=*/60);
   DrawLoop(client_slow, hwui_slow);
 
-  ASSERT_EQ(child_client_timings_.size(), 60u);
+  // We should have submitted 60 frames + 1 from initial draw.
+  ASSERT_EQ(child_client_timings_.size(), 61u);
 
   // Except the case when client is slower than hwui we currently drop first
   // frame always.
