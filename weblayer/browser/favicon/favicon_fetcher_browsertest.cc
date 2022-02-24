@@ -56,7 +56,8 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, Basic) {
   TestFaviconFetcherDelegate fetcher_delegate;
   auto fetcher = shell()->tab()->CreateFaviconFetcher(&fetcher_delegate);
   NavigateAndWaitForCompletion(
-      embedded_test_server()->GetURL("/simple_page_with_favicon.html"),
+      embedded_test_server()->GetURL(
+          "/simple_page_with_favicon_and_before_unload.html"),
       shell());
   fetcher_delegate.WaitForFavicon();
   EXPECT_FALSE(fetcher_delegate.last_image().IsEmpty());
@@ -65,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, Basic) {
   fetcher_delegate.ClearLastImage();
 
   const GURL url2 =
-      embedded_test_server()->GetURL("/simple_page_with_favicon2.html");
+      embedded_test_server()->GetURL("/simple_page_with_favicon.html");
   shell()->tab()->GetNavigationController()->Navigate(url2);
   // Favicon doesn't change immediately on navigation.
   EXPECT_FALSE(fetcher->GetFavicon().IsEmpty());
