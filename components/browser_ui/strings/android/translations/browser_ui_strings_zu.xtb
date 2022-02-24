@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Isihloko</translation>
 <translation id="4008040567710660924">Vumela amakhukhi esayithi elithile.</translation>
+<translation id="4040330681741629921">Thola ukwaziswa uma isayithi lingaboniswa ekubukeni okwenziwe lula</translation>
 <translation id="4046123991198612571">Ithrekhi elandelayo</translation>
 <translation id="4149994727733219643">Ukubuka okwenziwe lula kwamakhasi ewebhu</translation>
 <translation id="4165986682804962316">Izilungiselelo zesayithi</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Lokhu kuzosula idatha engu-<ph name="DATASIZE" /> namakhukhu alondolozwe amasayithi.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 okuningi)}one{(+ # okuningi)}other{(+ # okuningi)}}</translation>
 <translation id="5403592356182871684">Amagama</translation>
+<translation id="5412236728747081950">Leli sayithi lithola ongaba nentshisekelo kukho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu</translation>
 <translation id="5438097262470833822">Le nketho izosetha kabusha izimvume ze-<ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Isikhathi esidlulile singu-<ph name="ELAPSED_TIME" /> kwesingu-<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Vimbela izikhangiso kumasayithi abonisa izikhangiso ezisongelayo noma ezilahlekisayo</translation>

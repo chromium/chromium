@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> di ?</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4008040567710660924">Consenti i cookie per un sito specifico.</translation>
+<translation id="4040330681741629921">Ricevi una notifica quando un sito può essere mostrato nella visualizzazione semplificata</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="4149994727733219643">Visualizzazione semplificata delle pagine web</translation>
 <translation id="4165986682804962316">Impostazioni sito</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Verranno cancellati <ph name="DATASIZE" /> di dati e cookie memorizzati dai siti.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}one{(+ altri #)}other{(+ altri #)}}</translation>
 <translation id="5403592356182871684">Nomi</translation>
+<translation id="5412236728747081950">Questo sito acquisisce i tuoi interessi da Chrome per mostrarti annunci più pertinenti</translation>
 <translation id="5438097262470833822">Questa selezione reimposterà le autorizzazioni per <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Tempo trascorso: <ph name="ELAPSED_TIME" /> di <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blocca gli annunci su siti che mostrano annunci invasivi o fuorvianti</translation>

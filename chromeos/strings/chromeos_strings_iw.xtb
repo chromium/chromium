@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">מתבצע עדכון (%‏<ph name="PERCENTAGE_VALUE" /> הושלמו)</translation>
 <translation id="1310380015393971138">אין רשת <ph name="NETWORK_NAME" /> זמינה</translation>
+<translation id="131421566576084655">התאריך של איפוס הנתונים האחרון לא זמין</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">רשת ביתית, לא בנדידה</translation>
 <translation id="1327977588028644528">שער</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">נכשלה – הסינון נכשל</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">יש לי זוג מפתחות</translation>
+<translation id="1435763214710588005">איפוס אוטומטי של השימוש בחבילת הגלישה ביום הנבחר מדי חודש</translation>
 <translation id="1442433966118452622">מקור התמונה</translation>
 <translation id="1451536289672181509">המכשיר הוא מקלדת.</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">לא ניתן לעדכן את <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">אלבומים</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
+<translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">‏חומת אש מסוג HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">יש לוודא שהסורק מופעל וזמין דרך הרשת או דרך חיבור ישיר</translation>
+<translation id="4170180284036919717">צילום תמונה</translation>
 <translation id="4170700058716978431">הבדיקה הסתיימה בכישלון</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4213104098953699324">‏מקלדת USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
 <translation id="5972388717451707488">עדכון המנוע</translation>
+<translation id="6034694447310538551">הפעלת האיפוס החודשי באופן אוטומטי</translation>
 <translation id="6037291330010597344">מזין המסמכים של הסורק ריק. יש להוסיף מסמכים ולנסות שוב.</translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6040852767465482106">זהות אנונימית</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">אין סורקים זמינים</translation>
 <translation id="6232017090690406397">סוללה</translation>
+<translation id="6235460611964961764">איפוס ידני של השימוש בחבילת הגלישה</translation>
 <translation id="6243280677745499710">מוגדר עכשיו</translation>
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8918637186205009138">ה-<ph name="DEVICE_TYPE" /> של <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">נכשלה – המגש לא נמצא</translation>
+<translation id="8923267550422472772">היום בחודש לאיפוס</translation>
 <translation id="8928727111548978589">נכשלה – הנייר נגמר</translation>
 <translation id="8930521118335213258">קצה</translation>
 <translation id="8930622219860340959">אלחוטי</translation>

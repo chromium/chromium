@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">如要在任何使用 Chrome 的裝置上查看分頁，請開啟同步處理功能</translation>
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3634910711516114487">如要充分運用 Chrome 的所有功能，請透過 Google 帳戶登入 Chrome</translation>
+<translation id="3655656110921623717">這代表 Chrome 每次都會要求取得流動網站。</translation>
 <translation id="3706101708757577809">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用您的相機</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">顯示登入 Chrome 的指示。</translation>
 <translation id="8788269841521769222">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
 <translation id="9112744793181547300">要將 Chrome 設定為預設瀏覽器嗎？</translation>
+<translation id="9122931302567044771">這代表 Chrome 每次都會要求取得桌面版網站。</translation>
 </translationbundle>

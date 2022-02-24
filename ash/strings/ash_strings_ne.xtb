@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">स्क्रिनसट लिनुहोस्</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ब्लुटूथ)</translation>
 <translation id="3113926042639749131">सुझाव हटाउनुहोस्</translation>
+<translation id="3120421559657122717">यो डिभाइस सट डाउन गर्ने हो?</translation>
 <translation id="3126069444801937830">अपडेट गर्न पुनः सुरु गर्नुहोस्</translation>
 <translation id="3139942575505304791">डेस्क १</translation>
 <translation id="315116470104423982">मोबाइल डाटा</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">विन्डो सारेर <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> बाट <ph name="TARGET_DESK" /> डेस्कमा पुर्‍याइयो</translation>
 <translation id="3255483164551725916">तपाईं के गर्न सक्नुहुन्छ?</translation>
 <translation id="3269597722229482060">दायाँ क्लिक गर्नुहोस्</translation>
+<translation id="3289544412142055976">Linux एपहरू हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="3289674678944039601">एड्याप्टरमार्फत चार्ज गरिँदै छ</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3294437725009624529">पाहुना</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">द्रुत सेटिङहरू, सूचना केन्द्रमाथि पहुँच राख्न search + left बटन थिच्नुहोस्।</translation>
 <translation id="5426063383988017631">सेटिङ मेनु बन्द गरियो</translation>
 <translation id="5428899915242071344">पाठ चयन गर्न थालियोस्</translation>
+<translation id="5429993543155113935">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="5430931332414098647">तात्कालिक टेदरिङ</translation>
 <translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5433020815079095860">अडियो इनपुट</translation>
@@ -810,6 +813,7 @@
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6166852626429024716">आफ्नो यन्त्र, एप, सेटिङ, वेबमा खोज्नुहोस्...</translation>
 <translation id="6179832488876878285">तपाईं यहाँ आफ्ना महत्त्वपूर्ण फाइलहरू पिन गर्न सक्नुहुन्छ। पिन गर्न थाल्न फाइलहरू नामक एप खोल्नुहोस्।</translation>
+<translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6231419273573514727">सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@
 <translation id="6431865393913628856">स्क्रिन रेकर्ड</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> कार्यक्रम</translation>
+<translation id="6449483711453944360">Linux एप र इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="6452181791372256707">अस्वीकार</translation>
 <translation id="6453179446719226835">भाषा परिवर्तन गरिएको छ</translation>
 <translation id="6459472438155181876">स्क्रिनलाई <ph name="DISPLAY_NAME" /> मा विस्तार गर्दै</translation>
@@ -934,6 +939,7 @@
 <translation id="7025533177575372252">तपाईंको <ph name="DEVICE_NAME" /> लाई आफ्नो फोनसँग जोड्नुहोस्</translation>
 <translation id="7026338066939101231">घटाई</translation>
 <translation id="7029814467594812963">सत्रबाट निस्कनु…</translation>
+<translation id="7032161822340700104">६ वटाभन्दा बढी टेम्प्लेट सेभ गर्न मिल्दैन। तपाईं नयाँ टेम्प्लेट सेभ गर्न चाहनुहुन्छ भने सेभ गरिएको कुनै टेम्प्लेट हटाउनुहोस्।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google सहायक</translation>
 <translation id="7042322267639375032">वस्तुस्थिति देखाउने क्षेत्र संक्षिप्त गर्नुहोस्</translation>
 <translation id="7045033600005038336">यो टेम्प्लेट प्रतिस्थापन गर्ने हो?</translation>

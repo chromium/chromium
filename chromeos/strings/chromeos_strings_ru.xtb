@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
 <translation id="1310380015393971138">Сеть <ph name="NETWORK_NAME" /> недоступна.</translation>
+<translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашняя сеть, без роуминга</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Сбой: ошибка в работе фильтра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">У меня есть пара ключей</translation>
+<translation id="1435763214710588005">Каждый месяц объем переданных данных автоматически обнуляется в указанный день</translation>
 <translation id="1442433966118452622">Источник изображения</translation>
 <translation id="1451536289672181509">Это клавиатура.</translation>
 <translation id="1459693405370120464">Погода</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не удается обновить устройство</translation>
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Установить как обои</translation>
+<translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1639239467298939599">Загрузка</translation>
 <translation id="1641857168437328880">Автоподатчик документов (односторонний)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4155551848414053977">Убедитесь, что сканер работает и доступен для подключения напрямую или по сети.</translation>
+<translation id="4170180284036919717">Сделать снимок</translation>
 <translation id="4170700058716978431">ОШИБКА</translation>
 <translation id="4176463684765177261">Отключено</translation>
 <translation id="4213104098953699324">Клавиатура USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Сбросить</translation>
 <translation id="594552776027197022">Создать случайную пару ключей</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Включить ежемесячный автоматический сброс показателя</translation>
 <translation id="6037291330010597344">Автоподатчик документов пуст. Положите документы и повторите попытку.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6040852767465482106">Анонимная идентификация</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6235460611964961764">Выполнять сброс показателя вручную</translation>
 <translation id="6243280677745499710">Установлено как обои</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
+<translation id="8923267550422472772">День месяца для сброса показателя</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>
 <translation id="8930521118335213258">Пользователь</translation>
 <translation id="8930622219860340959">Беспроводная связь</translation>

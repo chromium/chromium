@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Heiti</translation>
 <translation id="4008040567710660924">Leyfa fótspor fyrir tiltekið vefsvæði.</translation>
+<translation id="4040330681741629921">Fá tilkynningu þegar hægt er að birta vefsvæði í einfaldaðri útgáfu</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
 <translation id="4149994727733219643">Einfaldað yfirlit fyrir vefsíður</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Þetta hreinsar <ph name="DATASIZE" /> af gögnum og fótsporum sem vefsvæði geyma.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 í viðbót)}one{(+ # í viðbót)}other{(+ # í viðbót)}}</translation>
 <translation id="5403592356182871684">Heiti</translation>
+<translation id="5412236728747081950">Þetta vefsvæði fær upplýsingar um áhugasvið þín frá Chrome til að birta þér viðeigandi auglýsingar</translation>
 <translation id="5438097262470833822">Þetta val endurstillir heimildir fyrir <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Liðinn tími: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Útiloka auglýsingar á vefsvæðum sem birta ágengar eða villandi auglýsingar</translation>

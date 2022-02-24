@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Šis aplankas bendrinamas su „Linux“</translation>
 <translation id="1864756863218646478">Nepavyko rasti failo.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, prisijungti</translation>
+<translation id="1914901738028575085">2.0 versijos „CloudReady“ įrenginys</translation>
 <translation id="1920670151694390848">Malajalių k. transliteracija</translation>
 <translation id="1920798810075583923">Arbūzas</translation>
 <translation id="1924372192547904021">Suformatuota: „<ph name="DRIVE_NAME" />“</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Dviratis</translation>
 <translation id="8719721339511222681">Pasirinktas įrašas „<ph name="ENTRY_NAME" />“.</translation>
 <translation id="872537912056138402">Kroatų</translation>
+<translation id="873847021056608403">2.0 versijos „CloudReady“ įrenginiai</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, prisijungti</translation>
 <translation id="8750438273876807512">Palieskite ir palaikykite failą, tada palieskite <ph name="ICON" /> ir pasirinkite „Prisegti prie lentynos“, kad sparčiai pasiektumėte failus lentynoje.</translation>
 <translation id="8787254343425541995">Leisti tarpinius serverius bendrai naudojamuose tinkluose</translation>

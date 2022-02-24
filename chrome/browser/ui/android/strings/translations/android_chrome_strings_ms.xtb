@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="1204037785786432551">Muat turun pautan</translation>
+<translation id="1204692632633423444">Butang tindakan Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Salin teks pautan</translation>
 <translation id="1208340532756947324">Hidupkan penyegerakan untuk melakukan penyegerakan dan pemperibadian pada semua peranti</translation>
 <translation id="1209206284964581585">Sorok sementara</translation>
@@ -201,6 +202,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2172688499998841696">Perihalan imej dimatikan</translation>
 <translation id="2172905120685242547">Tutup tetingkap?</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2176767904800337188">Kad maya menggantikan kad sebenar anda untuk melindungi anda daripada kemungkinan penipuan. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Perkongsian</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2200113223741723867">Urus perkongsian data penggunaan</translation>
@@ -213,6 +215,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2259659629660284697">Eksport kata laluan…</translation>
 <translation id="2276696007612801991">Log masuk ke akaun Google anda untuk menyemak kata laluan anda</translation>
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Buka apl <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Alamat pengebilan</translation>
 <translation id="228704530595896923">Senarai pilihan perkongsian.</translation>
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
@@ -330,6 +333,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2923908459366352541">Nama tidak sah</translation>
 <translation id="2932150158123903946">Storan Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Papan kekunci anda tidak akan berubah</translation>
+<translation id="2936980480904111527">Pemberitahuan Chrome memudahkan segalanya</translation>
 <translation id="2942036813789421260">Tab pratonton ditutup</translation>
 <translation id="2946420957526726953">Mengemas kini Chrome untuk menyambung kepada peranti lain</translation>
 <translation id="2951071800649516099">Tambahkan halaman pada senarai bacaan anda untuk kemudian</translation>
@@ -670,6 +674,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4961107849584082341">Terjemahkan halaman ini ke sebarang bahasa</translation>
 <translation id="4971735654804503942">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya. Memberi anda amaran tentang pelanggaran kata laluan. Menghendaki data semakan imbas dihantar kepada Google.</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
+<translation id="4987271110129728827">Tidak menemukan halaman itu. Semak ejaan anda atau cuba carian web.</translation>
 <translation id="4988526792673242964">Halaman</translation>
 <translation id="5001388021414335527">Ikuti laman ini di sini</translation>
 <translation id="5004416275253351869">Kawalan aktiviti Google</translation>
@@ -727,6 +732,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5329858041417644019">Penyemak imbas anda tidak diurus</translation>
 <translation id="5342314432463739672">Permintaan kebenaran</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
+<translation id="5368227114232678694">Untuk menyemak imbas secara peribadi pada peranti ini, cubalah Inkognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketik untuk beralih antara tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketik untuk beralih antara tab}}</translation>
 <translation id="5375577065097716013">Cari imej dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Benarkan tapak tertentu sahaja</translation>
@@ -874,6 +880,7 @@ Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau ter
 <translation id="6162892189396105610">Mempramuat halaman yang diramal oleh Chrome akan anda lawati.</translation>
 <translation id="6186394685773237175">Tiada kata laluan yang terjejas ditemukan</translation>
 <translation id="6192907950379606605">Dapatkan perihalan imej</translation>
+<translation id="620197886010707372">Buka apl <ph name="APPNAME" /> dengan Google Play?</translation>
 <translation id="6203593061661911168">Muat turun akan bermula apabila menggunakan Wi-Fi</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
@@ -1063,6 +1070,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7196215469483532480">Penjelasan panduan privasi dibuka pada ketinggian penuh</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 muat turun belum selesai}other{# muat turun belum selesai}}</translation>
+<translation id="7237045078887540010">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan Google<ph name="END_TOS_LINK" /> dan <ph name="BEGIN_ATOS_LINK" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Dasar Privasi<ph name="END_PRIVACY_LINK" /> juga dikenakan.</translation>
 <translation id="7242755609445462077">Serlahan digayakan <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Pastikan penyegerakan telah dihidupkan dalam Chrome pada <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Letakkan telefon anda dekat dengan komputer</translation>
@@ -1269,6 +1277,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="834313815369870491">Jangan terjemah laman</translation>
 <translation id="8352996530981010042">Tidak dapat memuat turun reaksi. Cuba lagi.</translation>
 <translation id="8354977102499939946">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
+<translation id="8356078935982976590">Anda akan dapat mengurus kawalan media, sesi inkognito, muat turun dan pelbagai lagi dengan mudah</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipulihkan</translation>
 <translation id="8364299278605033898">Lihat laman web popular</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
@@ -1425,6 +1434,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="9169507124922466868">Sejarah navigasi separa terbuka</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Disemak 1 minit yang lalu}other{Disemak # minit yang lalu}}</translation>
 <translation id="9204836675896933765">1 fail lagi</translation>
+<translation id="9205933215779845960">Tidak menemukan halaman itu. Semak ejaan anda atau cuba cari pada <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Tidak dapat membuat panggilan</translation>
 <translation id="9212845824145208577">Tidak dapat pergi lebih rendah. Cuba bermula dari bahagian bawah halaman.</translation>

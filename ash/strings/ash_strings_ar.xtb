@@ -139,6 +139,7 @@
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1749109475624620922">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لجميع أسطح المكتب.</translation>
 <translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
+<translation id="1756833229520115364">لا يمكن حفظ النموذج بسبب تخطّي عدد النوافذ أو علامات التبويب الحد المسموح به.</translation>
 <translation id="1761222317188459878">تبديل الاتصال بالشبكة. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">‏تم تغيير اختصار لوحة المفاتيح <ph name="LAUNCHER_KEY_NAME" /> + مفتاح Period. لاستخدام مفتاح Insert، اضغط على مفتاح <ph name="LAUNCHER_KEY_NAME" /> + Shift + مفتاح Backspace.</translation>
 <translation id="1770726142253415363">تم النقل إلى الصف رقم <ph name="ROW_NUMBER" />، العمود رقم <ph name="COLUMN_NUMBER" />.</translation>
@@ -189,6 +190,7 @@
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2083190527011054446">ليلة سعيدة <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">لا يتوفّر اتصال بالشبكة</translation>
+<translation id="2107914222138020205">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز Thunderbolt. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="2108303511227308752">‏تم تغيير اختصارات لوحة المفاتيح "Alt + Backspace". لاستخدام مفتاح Delete، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + Backspace".</translation>
 <translation id="211328683600082144">تفعيل الميكروفون</translation>
 <translation id="2126242104232412123">سطح مكتب جديد</translation>
@@ -292,6 +294,8 @@
 <translation id="2865888419503095837">معلومات الشبكة</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878884018241093801">ليست هناك عناصر تم استخدامها مؤخرًا</translation>
+<translation id="2891209721153296020">"إلغاء الاختيار"</translation>
+<translation id="2894949423239620203">قد يؤثّر استخدام الكابل في أداء الجهاز</translation>
 <translation id="2903844815300039659">تم الاتصال بشبكة <ph name="NAME" />، <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">لقطات الشاشة</translation>
 <translation id="2941112035454246133">منخفضة</translation>
@@ -331,6 +335,7 @@
 <translation id="3105917916468784889">أخذ لقطة شاشة</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3113926042639749131">إزالة الاقتراح</translation>
+<translation id="3120421559657122717">هل تريد إيقاف تشغيل الجهاز؟</translation>
 <translation id="3126069444801937830">إعادة التشغيل للتحديث</translation>
 <translation id="3139942575505304791">مكتب 1</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
@@ -351,6 +356,7 @@
 <translation id="3249513730522716925">تم نقل النافذة <ph name="WINDOW_TITLE" /> من سطح المكتب <ph name="ACTIVE_DESK" /> إلى سطح المكتب <ph name="TARGET_DESK" />.</translation>
 <translation id="3255483164551725916">ما الإجراء المطلوب؟</translation>
 <translation id="3269597722229482060">النقر بزر الماوس الأيمن</translation>
+<translation id="3289544412142055976">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux.</translation>
 <translation id="3289674678944039601">جارٍ الشحن عبر المحوِّل.</translation>
 <translation id="3290356915286466215">غير مؤمّن</translation>
 <translation id="3294437725009624529">ضيف</translation>
@@ -434,6 +440,7 @@
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
+<translation id="3712317119236351467">يتعذّر حفظ التسجيل</translation>
 <translation id="371370241367527062">الميكروفون الأمامي</translation>
 <translation id="3713734891607377840">فتح الملف بعد اكتمال تنزيله</translation>
 <translation id="3726171378575546917">التطبيقات <ph name="UNAVAILABLE_APPS_ONE" /> و<ph name="UNAVAILABLE_APPS_TWO" /> و<ph name="UNAVAILABLE_APPS_COUNT" /> غير مثبَّتة على هذا الجهاز.</translation>
@@ -493,8 +500,10 @@
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
 <translation id="4114315158543974537">‏تفعيل Phone Hub</translation>
 <translation id="412298498316631026">نافذة</translation>
+<translation id="4123259114412175274">‏يجب تفعيل البلوتوث على هاتفك لفتح قفل جهاز Chromebook.</translation>
 <translation id="4129129681837227511">للاطِّلاع على الإشعارات على شاشة القفل، يمكنك فتح القفل لتغيير الإعداد</translation>
 <translation id="4146833061457621061">تشغيل الموسيقى</translation>
+<translation id="4165275524535002941">قد لا يتوافق الكابل مع الشاشات</translation>
 <translation id="4173958948577803258">الخميس</translation>
 <translation id="4177913004758410636">{0,plural, =1{تحديث الجهاز خلال يوم واحد}zero{تحديث الجهاز خلال # يوم}two{تحديث الجهاز خلال يومين}few{تحديث الجهاز خلال # أيام}many{تحديث الجهاز خلال # يومًا}other{تحديث الجهاز خلال # يوم}}</translation>
 <translation id="4181841719683918333">اللغات</translation>
@@ -596,6 +605,7 @@
 <translation id="4690510401873698237">الرف في الجزء السفلي</translation>
 <translation id="4696813013609194136">فتح قفل الجهاز باستخدام رمز الوالدين</translation>
 <translation id="4702647871202761252">تم إيقاف شاشة الخصوصية.</translation>
+<translation id="4717575069099566988">‏لا يتوافق الكابل المزوّد بمنفذ USB-C مع جهاز USB4. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="4730374152663651037">التطبيقات المستخدمة بشكل متكرر</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4733161265940833579">%<ph name="BATTERY_PERCENTAGE" /> (السماعة اليسرى)</translation>
@@ -698,6 +708,7 @@
 <translation id="5400461572260843123">الإعدادات السريعة: اضغط على مفتاح البحث + السهم المتجه لليسار للوصول إلى مركز الإشعارات.</translation>
 <translation id="5426063383988017631">تم إغلاق قائمة الإعدادات.</translation>
 <translation id="5428899915242071344">بدء التحديد</translation>
+<translation id="5429993543155113935">هذا الخيار غير متوفّر حاليًا لنوافذ التصفّح المتخفي.</translation>
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5433020815079095860">إدخال الصوت</translation>
@@ -734,6 +745,7 @@
 <translation id="5682642926269496722">‏لا يتوفر "مساعد Google" لحساب المستخدم الحالي.</translation>
 <translation id="5689633613396158040">تسهّل ميزة "الإضاءة الليلية" النظر إلى الشاشة أو القراءة في الإضاءة الخافتة. انقر لتغيير وقت تفعيل "الإضاءة الليلية" أو إيقافها تمامًا.</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
+<translation id="5707775774148071965">يتوافق جهازك مع معدّل نقل بيانات أعلى منه في الكابل. وقد يصبح أداء الجهاز محدودًا.</translation>
 <translation id="5710450975648804523">تمّ تفعيل وضع "عدم الإزعاج"</translation>
 <translation id="571295407079589142">تم إيقاف بيانات الجوّال.</translation>
 <translation id="573413375004481890">لا يمكن لهذا الجهاز توفير جميع شاشات العرض، لذلك تم قطع الاتصال بأحدها</translation>
@@ -785,6 +797,7 @@
 <translation id="6022924867608035986">محو نص مربع البحث</translation>
 <translation id="602472752137106327">عرض النوافذ المفتوحة في جميع أسطح المكتب، تم النقر على زر الاختيار.</translation>
 <translation id="6025324406281560198">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
+<translation id="6027518778343897451">‏ما مِن حدث مُحدَّد في <ph name="CURRENT_MONTH_DAY" />. اضغط على المفتاح Enter لفتح "تقويم Google" في المتصفِّح.</translation>
 <translation id="6030495522958826102">تم نقل القائمة إلى أسفل يمين الشاشة.</translation>
 <translation id="6032620807120418574">انقر على أي مكان لالتقاط صورة في وضع ملء الشاشة.</translation>
 <translation id="6040071906258664830">التسجيل من الميكروفون <ph name="STATE" /></translation>
@@ -811,6 +824,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166852626429024716">البحث في الجهاز والتطبيقات والإعدادات والويب...</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
+<translation id="6220928844947387476">يمكنك الآن تسجيل فيديو لنفسك ولشاشتك في الوقت نفسه.</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">قد يصبح أداء الأجهزة الملحقة محدودًا</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -837,6 +851,7 @@
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />، حدث واحد (<ph name="NUMBER" />)</translation>
+<translation id="6449483711453944360">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux ونوافذ التصفّح المتخفي.</translation>
 <translation id="6452181791372256707">رفض</translation>
 <translation id="6453179446719226835">تم تغيير اللغة</translation>
 <translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
@@ -861,6 +876,7 @@
 <translation id="6570831796530454248">{0,plural, =1{تحديث الجهاز خلال ساعة واحدة}zero{تحديث الجهاز خلال # ساعة}two{تحديث الجهاز خلال ساعتين}few{تحديث الجهاز خلال # ساعات}many{تحديث الجهاز خلال # ساعة}other{تحديث الجهاز خلال # ساعة}}</translation>
 <translation id="6570902864550063460">‏جارٍ الشحن عبر USB.</translation>
 <translation id="6574587113394758819">‏تم حجب إشعار التطبيق <ph name="APP_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
+<translation id="6574622320167699133">تم فتح قفل الجهاز باستخدام الهاتف. انقر لبدء استخدام الجهاز.</translation>
 <translation id="6578407462441924264">بدون اسم</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
@@ -935,6 +951,7 @@
 <translation id="7025533177575372252">يمكنك ربط الجهاز <ph name="DEVICE_NAME" /> بهاتفك</translation>
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
+<translation id="7032161822340700104">يجب ألا يزيد عدد النماذج عن 6 نماذج. يُرجى إزالة أحدها لحفظ نموذج جديد.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
 <translation id="7042322267639375032">تصغير منطقة الحالة</translation>
 <translation id="7045033600005038336">هل تريد استبدال النموذج؟</translation>
@@ -1034,7 +1051,9 @@
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7654687942625752712">اضغط مع الاستمرار على مفتاحي مستوى الصوت لمدة خمس ثوانٍ لإيقاف التعليقات والملاحظات المنطوقة.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
+<translation id="7660160718439869192">سيظهر الجهاز <ph name="NAME" /> على الأجهزة المرتبطة بعنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="7662283695561029522">النقر للإعداد</translation>
+<translation id="7670953955701272011">‏فتح هذا التاريخ في "تقويم Google"</translation>
 <translation id="7671610481353807627">تم ترتيب التطبيقات حسب اللون.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">إضافة شبكة جوّال جديدة</translation>
@@ -1126,6 +1145,7 @@
 <translation id="8236042855478648955">حان وقت الراحة</translation>
 <translation id="8247060538831475781">حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />، بطارية الهاتف <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، تطبيق</translation>
+<translation id="8248728785693203669">‏قد لا يتم توصيل الكابل المزوّد بمنفذ USB-C بالشاشات بشكل صحيح.</translation>
 <translation id="8255234195843591763">إعادة الضبط لتحديث النظام</translation>
 <translation id="826107067893790409">‏عليك الضغط على Enter لفتح قفل <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">حذف</translation>
@@ -1155,6 +1175,7 @@
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8433186206711564395">إعدادات الشبكة</translation>
 <translation id="8433977262951327081">تم تغيير اختصار عرض الفقاعة التفسيرية لقائمة خيارات الإدخال في الرف. يُرجى استخدام <ph name="NEW_SHORTCUT" /> بدلاً من <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8443879455002739353">"نسخ"</translation>
 <translation id="8444246603146515890">تم تفعيل سطح المكتب <ph name="DESK_TITILE" />.</translation>
 <translation id="8446884382197647889">مزيد من المعلومات</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
@@ -1222,6 +1243,7 @@
 <translation id="8878886163241303700">توسيع الشاشة</translation>
 <translation id="888982883502837004">تتوفّر تحديثات للبرامج الثابتة على جهازك. انقر للمراجعة والتحديث.</translation>
 <translation id="8896630965521842259">سيتم حذف النموذج <ph name="DESK_TEMPLATE_NAME" /> نهائيًا.</translation>
+<translation id="8905919797434099235">(بلا عنوان)</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="8921554779039049422">H+‎</translation>

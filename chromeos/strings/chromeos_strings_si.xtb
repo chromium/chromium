@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">යාවත්කාලීන කරමින් (<ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ජාලය ලබා ගත නොහැකිය</translation>
+<translation id="131421566576084655">අවසන් දත්ත යළි සැකසීමේ දිනය නොමැත</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">නිවෙස් ජාලය, සංක්‍රමණයේ නොවේ</translation>
 <translation id="1327977588028644528">වාහල</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">අසාර්ථක විය - පෙරහන අසාර්ථක විය</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">මට යතුරු යුගලක් ඇත</translation>
+<translation id="1435763214710588005">සෑම මසකම තෝරා ගත් දිනයක දත්ත භාවිතය ස්වයංක්‍රීයව යළි සකසයි</translation>
 <translation id="1442433966118452622">පින්තූර මූලාශ්‍රය</translation>
 <translation id="1451536289672181509">උපාංගය යතුරු පුවරුවකි.</translation>
 <translation id="1459693405370120464">කාලගුණය</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> යාවත්කාලීන කළ නොහැකිය</translation>
 <translation id="1567064801249837505">ඇල්බම</translation>
 <translation id="1572585716423026576">බිතුපත ලෙස සකසන්න</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> සිට දත්ත භාවිතය</translation>
 <translation id="1621067168122174824">ආරෝපණ පරීක්ෂණය ධාවනය කරන්න</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
 <translation id="1641857168437328880">ලේඛන සංග්‍රාහකය (තනි-පැත්තක)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP ෆයර්වෝලය</translation>
 <translation id="4147897805161313378">Google ඡායාරූප</translation>
 <translation id="4155551848414053977">ස්කෑනරය ක්‍රියාත්මක කර ඇති බව සහ ඔබගේ ජාලය හරහා හෝ සෘජු සබැඳුමක් හරහා ලබා ගත හැකි බව සහතික කර ගන්න</translation>
+<translation id="4170180284036919717">ඡායාරූපයක් ගන්න</translation>
 <translation id="4170700058716978431">අසාර්ථක විය</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>
 <translation id="4213104098953699324">USB යතුරු පුවරුව</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
 <translation id="594552776027197022">අහඹු යතුරු යුගල උත්පාදනය කරන්න</translation>
 <translation id="5972388717451707488">යන්ත්‍රය යාවත්කාලීන කරන්න</translation>
+<translation id="6034694447310538551">ස්වයංක්‍රීය මාසික යළි සැකසීම සබල කරන්න</translation>
 <translation id="6037291330010597344">ස්කෑනරයේ ලේඛන සංග්‍රහය හිස්ය. ලේඛන එක් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6040852767465482106">නිර්නාමික අනන්‍යතාව</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ස්කෑනර ලබා ගත නොහැකිය</translation>
 <translation id="6232017090690406397">බැටරිය</translation>
+<translation id="6235460611964961764">දත්ත භාවිතය හස්තීයව යළි සකසන්න</translation>
 <translation id="6243280677745499710">දැනට සකසා ඇත</translation>
 <translation id="6278428485366576908">තේමාව</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">පමාවේ මායිමට ඉහළ පෙරනිමි ජාලය</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ගේ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">අසාර්ථක විය - තැටිය මගහැරී ඇත</translation>
+<translation id="8923267550422472772">යළි සැකසීම සඳහා මාසයේ දිනය</translation>
 <translation id="8928727111548978589">අසාර්ථක විය - කඩදාසි නැත</translation>
 <translation id="8930521118335213258">සාමානයා</translation>
 <translation id="8930622219860340959">නොරැහැන්</translation>

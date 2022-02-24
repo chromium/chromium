@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1202892408424955784">Проследявани продукти</translation>
 <translation id="1204037785786432551">Изтегляне на връзката</translation>
+<translation id="1204692632633423444">Бутон за действие от Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Копиране на текста на връзката</translation>
 <translation id="1208340532756947324">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства</translation>
 <translation id="1209206284964581585">Скриване засега</translation>
@@ -201,6 +202,7 @@
 <translation id="2172688499998841696">Функцията за описания на изображенията е изключена</translation>
 <translation id="2172905120685242547">Да се затвори ли прозорецът?</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
+<translation id="2176767904800337188">Виртуалната карта прикрива действителната ви, за да ви защити от потенциална измама. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Споделяне</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2200113223741723867">Управление на споделянето на данни за употребата</translation>
@@ -213,6 +215,7 @@
 <translation id="2259659629660284697">Експортиране на паролите…</translation>
 <translation id="2276696007612801991">Влезте в профила си в Google, за да бъдат проверени паролите ви</translation>
 <translation id="2278052315791335171">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Искате ли да отворите приложението за <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Адрес за фактуриране</translation>
 <translation id="228704530595896923">Списък с опции за споделяне.</translation>
 <translation id="230115972905494466">Няма намерени съвместими устройства</translation>
@@ -330,6 +333,7 @@
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
+<translation id="2936980480904111527">Всичко е по-лесно с известията в Chrome</translation>
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
 <translation id="2946420957526726953">Chrome се актуализира, за да може да се свързва с други устройства</translation>
 <translation id="2951071800649516099">Добавете страници към списъка за четене по-късно</translation>
@@ -670,6 +674,7 @@
 <translation id="4961107849584082341">Превод на тази страница на който и да е език</translation>
 <translation id="4971735654804503942">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения. Предупреждава ви за разкрити пароли. За да действа, до Google трябва да се изпращат данни за сърфирането.</translation>
 <translation id="497421865427891073">Преминаване напред</translation>
+<translation id="4987271110129728827">Страницата не е намерена. Проверете изписването или потърсете в мрежата.</translation>
 <translation id="4988526792673242964">Страници</translation>
 <translation id="5001388021414335527">Следене на този сайт тук</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
@@ -727,6 +732,7 @@
 <translation id="5329858041417644019">Браузърът ви не се управлява</translation>
 <translation id="5342314432463739672">Искания за разрешение</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
+<translation id="5368227114232678694">За да сърфирате частно на това устройство, изпробвайте режим „инкогнито“</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворен раздел. Докоснете за превключване между разделите}other{<ph name="OPEN_TABS_MANY" /> отворени раздела. Докоснете за превключване между тях}}</translation>
 <translation id="5375577065097716013">Търсене на изобр. с Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Разрешаване само на конкретни сайтове</translation>
@@ -874,6 +880,7 @@
 <translation id="6162892189396105610">Предварително зареждане на страниците, които Chrome смята, че е вероятно да посетите.</translation>
 <translation id="6186394685773237175">Няма намерени компрометирани пароли</translation>
 <translation id="6192907950379606605">Описания на изображенията</translation>
+<translation id="620197886010707372">Искате ли да отворите приложението за <ph name="APPNAME" /> чрез Google Play?</translation>
 <translation id="6203593061661911168">Изтеглянето ще стартира при връзка с Wi-Fi мрежа</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
@@ -1063,6 +1070,7 @@
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
 <translation id="7196215469483532480">Обяснението на ръководството за поверителност е отворено на пълната височина</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Предстои 1 изтегляне}other{Предстоят # изтегляния}}</translation>
+<translation id="7237045078887540010">С използването на Chrome приемате <ph name="BEGIN_TOS_LINK" />Общите условия на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_ATOS_LINK" />. В сила е и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизирано открояване – <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Уверете се, че синхронизирането в Chrome е включено за <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Поставете телефона си близо до компютъра</translation>
@@ -1269,6 +1277,7 @@
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8352996530981010042">Реакциите не могат да се изтеглят. Опитайте отново.</translation>
 <translation id="8354977102499939946">Бързо търсене с гласа ви. За да редактирате този пряк път, отворете настройките.</translation>
+<translation id="8356078935982976590">Ще можете лесно да управлявате контроли за мултимедия, сесии в режим „инкогнито“, изтегляния и др.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>
@@ -1425,6 +1434,7 @@
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
+<translation id="9205933215779845960">Страницата не е намерена. Проверете изписването или потърсете с <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>
 <translation id="9209888181064652401">Не могат да се извършват обаждания</translation>
 <translation id="9212845824145208577">Придвижването по-надолу не е възможно. Започнете от по-долна част на страницата.</translation>

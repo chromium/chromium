@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1202892408424955784">Отслеживаемые товары</translation>
 <translation id="1204037785786432551">Сохранить данные по ссылке</translation>
+<translation id="1204692632633423444">Кнопка действий в Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Копировать текст ссылки</translation>
 <translation id="1208340532756947324">Чтобы синхронизировать и персонализировать данные на всех устройствах, включите синхронизацию.</translation>
 <translation id="1209206284964581585">Скрыть</translation>
@@ -201,6 +202,7 @@
 <translation id="2172688499998841696">Описания изображений отключены.</translation>
 <translation id="2172905120685242547">Закрыть окно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2176767904800337188">Чтобы защитить ваши данные от мошенников, вместо настоящей карты будет использоваться виртуальная. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
 <translation id="2194856509914051091">Важная информация</translation>
 <translation id="2200113223741723867">Управление передачей данных об использовании</translation>
@@ -213,6 +215,7 @@
 <translation id="2259659629660284697">Экспорт паролей…</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
+<translation id="2279146068164892489"><ph name="APPNAME" />: открыть приложение?</translation>
 <translation id="2286841657746966508">Платежный адрес</translation>
 <translation id="228704530595896923">Список способов отправки.</translation>
 <translation id="230115972905494466">Совместимые устройства не найдены.</translation>
@@ -330,6 +333,7 @@
 <translation id="2923908459366352541">Имя недействительно</translation>
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
+<translation id="2936980480904111527">Воспользуйтесь преимуществами уведомлений в Chrome</translation>
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2946420957526726953">Обновление Chrome для подключения к другим устройствам</translation>
 <translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
@@ -670,6 +674,7 @@
 <translation id="4961107849584082341">Эту страницу можно перевести на любой язык</translation>
 <translation id="4971735654804503942">Более быстрая и эффективная защита от опасных сайтов, расширений и скачанных файлов. Предупреждает об утечках паролей. Требуется отправка данных о работе в браузере в Google.</translation>
 <translation id="497421865427891073">Вперед</translation>
+<translation id="4987271110129728827">Не удается найти страницу. Проверьте, правильно ли введен запрос, или выполните поиск в интернете.</translation>
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="5001388021414335527">Подписаться на этот сайт</translation>
 <translation id="5004416275253351869">Отслеживание действий в Google</translation>
@@ -875,6 +880,7 @@
 <translation id="6162892189396105610">Chrome предварительно загружает страницы, которые вы с большой вероятностью посетите.</translation>
 <translation id="6186394685773237175">Раскрытых паролей не найдено.</translation>
 <translation id="6192907950379606605">Описывать изображения</translation>
+<translation id="620197886010707372"><ph name="APPNAME" />: открыть приложение через Google Play?</translation>
 <translation id="6203593061661911168">Скачивание начнется, когда будет установлено подключение по Wi-Fi.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
@@ -1064,6 +1070,7 @@
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7196215469483532480">Пояснение для руководства по конфиденциальности открыто на весь экран</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ожидание скачивания 1 файла…}one{Ожидание скачивания # файла…}few{Ожидание скачивания # файлов…}many{Ожидание скачивания # файлов…}other{Ожидание скачивания # файла…}}</translation>
+<translation id="7237045078887540010">Используя Chrome, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Также действует <ph name="BEGIN_PRIVACY_LINK" />Политика конфиденциальности<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Стилизованный контент: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Убедитесь, что в браузере Chrome на устройстве <ph name="TARGET_DEVICE_NAME" /> включена синхронизация.</translation>
 <translation id="7252076891734325316">Поднесите телефон к компьютеру.</translation>
@@ -1270,6 +1277,7 @@
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8352996530981010042">Не удалось скачать отклики. Повторите попытку.</translation>
 <translation id="8354977102499939946">Выполнить голосовой поиск. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
+<translation id="8356078935982976590">Вы сможете легко управлять медиаконтентом, сеансами в режиме инкогнито, скачанными файлами и не только.</translation>
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Показать популярные сайты</translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
@@ -1426,6 +1434,7 @@
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>
 <translation id="9204836675896933765">Остался 1 файл</translation>
+<translation id="9205933215779845960">Не удается найти страницу. Проверьте, правильно ли введен запрос, или воспользуйтесь поисковой системой <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>
 <translation id="9209888181064652401">Звонки недоступны</translation>
 <translation id="9212845824145208577">Не удается прокрутить дальше вниз. Начните делать скриншот ниже на этой странице.</translation>

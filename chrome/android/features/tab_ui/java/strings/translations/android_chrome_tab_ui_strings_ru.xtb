@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Настройки отслеживания цен</translation>
 <translation id="1378979118429748177">Получать уведомления о скидках</translation>
 <translation id="1403228085774130835">Закрытые вкладки можно найти в главном меню Chrome в разделе "Недавние вкладки".</translation>
+<translation id="1455506303394048917">Связанная с ними информация будет удалена с этого устройства.</translation>
+<translation id="1499635324672558517">Закрыть все вкладки инкогнито?</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2118649612461486615">Сведения о магазине</translation>

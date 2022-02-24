@@ -138,6 +138,7 @@
 <translation id="1747827819627189109">آن اسکرین کی بورڈ فعال ہے</translation>
 <translation id="1749109475624620922">ونڈو <ph name="WINDOW_TITLE" /> کو سبھی ڈیسکس پر تفویض کیا گیا</translation>
 <translation id="1750088060796401187">صرف <ph name="MAX_DESK_LIMIT" /> ڈیسکس کی اجازت ہے۔ نئی کھولنے کے لیے ڈیسک کو ہٹا دیں۔</translation>
+<translation id="1756833229520115364">تمثیل محفوظ نہیں ہو سکی۔ بہت ساری ونڈوز یا ٹیبز۔</translation>
 <translation id="1761222317188459878">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">‏Period + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ انسرٹ کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + شفٹ + بیک اسپیس کو دبائیں۔</translation>
 <translation id="1770726142253415363">قطار <ph name="ROW_NUMBER" /> کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
@@ -188,6 +189,7 @@
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2083190527011054446">شب بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
+<translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="211328683600082144">مائیکروفون آن کریں</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
@@ -291,6 +293,8 @@
 <translation id="2865888419503095837">نیٹ ورک کی معلومات</translation>
 <translation id="2872961005593481000">بند کریں</translation>
 <translation id="2878884018241093801">کوئی حالیہ آئٹم نہیں</translation>
+<translation id="2891209721153296020">"غیر منتخب کریں"</translation>
+<translation id="2894949423239620203">کیبل کارکردگی پر اثرانداز ہو سکتی ہے</translation>
 <translation id="2903844815300039659"><ph name="NAME" />، <ph name="STRENGTH" /> سے منسلک ہو گیا</translation>
 <translation id="2914580577416829331">اسکرین کیپچرز</translation>
 <translation id="2941112035454246133">کم</translation>
@@ -435,6 +439,7 @@
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">پہلے سے منسلک کردہ</translation>
+<translation id="3712317119236351467">ریکارڈنگ کو محفوظ نہیں کیا جا سکتا</translation>
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3713734891607377840">مکمل ہونے پر کھولیں</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، اور <ph name="UNAVAILABLE_APPS_COUNT" /> مزید اس آلہ پر موجود نہیں ہے۔</translation>
@@ -494,8 +499,10 @@
 <translation id="4112140312785995938">پیچھے کریں</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="412298498316631026">ونڈو</translation>
+<translation id="4123259114412175274">‏اپنے Chromebook کو غیر مقفل کرنے کے لے یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے</translation>
 <translation id="4129129681837227511">اپنی مقفل اسکرین پر اطلاعات دیکھنے کیلئے، ترتیب تبدیل کرنے کیلئے غیر مقفل کریں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
+<translation id="4165275524535002941">ہو سکتا ہے کہ کیبل ڈسپلیز کو سپورٹ نہ کرے</translation>
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{ایک دن کے اندر آلہ کو اپ ڈیٹ کریں}other{# دن کے اندر آلہ کو اپ ڈیٹ کریں}}</translation>
 <translation id="4181841719683918333">زبانیں</translation>
@@ -597,6 +604,7 @@
 <translation id="4690510401873698237">شیلف نچلے حصے میں ہے</translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
 <translation id="4702647871202761252">رازداری کی اسکرین آف ہے</translation>
+<translation id="4717575069099566988">‏آپ کی USB-C کیبل USB4 کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="4730374152663651037">کثرت سے استعمال کردہ</translation>
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (بائیں)</translation>
@@ -736,6 +744,7 @@
 <translation id="5682642926269496722">‏Google اسسٹنٹ موجودہ صارف اکاؤنٹ کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="5689633613396158040">نائٹ لائٹ سے مدھم روشنی میں اپنی اسکرین کو دیکھنا یا پڑھنا آسان ہو جاتا ہے۔ نائٹ لائٹ کے آن ہونے کے وقت کو تبدیل کرنے کے لئے تھپتھپائیں یا اسے مکمل طور پر آف کر دیں۔</translation>
 <translation id="5691772641933328258">فنگر پرنٹ کی شناخت نہیں ہو سکی</translation>
+<translation id="5707775774148071965">آپ کا آلہ آپ کی کیبل سے زیادہ ڈیٹا کی شرح کو سپورٹ کرتا ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="5710450975648804523">'ڈسٹرب نہ کریں' آن ہے</translation>
 <translation id="571295407079589142">موبائل ڈیٹا آف ہے</translation>
 <translation id="573413375004481890">یہ آلہ آپ کے تمام ڈسپلیز کو سپورٹ نہیں کر سکتا، لہذا ایک کو غیر منسلک کر دیا گیا ہے</translation>
@@ -787,6 +796,7 @@
 <translation id="6022924867608035986">تلاش کے خانے کا ٹیکسٹ صاف کریں</translation>
 <translation id="602472752137106327">تمام ڈیسکس سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
+<translation id="6027518778343897451">‏<ph name="CURRENT_MONTH_DAY" /> کو کوئی بھی ایونٹ نہیں ہے۔ براؤزر میں Google کیلنڈر کھولنے کے لیے انٹر دبائیں۔</translation>
 <translation id="6030495522958826102">مینو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
 <translation id="6040071906258664830">مائیکروفون کے ذریعے ریکارڈ کریں <ph name="STATE" /></translation>
@@ -864,6 +874,7 @@
 <translation id="6570831796530454248">{0,plural, =1{ایک گھنٹے کے اندر آلہ اپ ڈیٹ کریں}other{# گھنٹے کے اندر آلہ اپ ڈیٹ کریں}}</translation>
 <translation id="6570902864550063460">‏USB کے ذریعے چارج ہو رہا ہے</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> اطلاع پوشیدہ ہے کیونکہ دیکھنے کا تحفظ آن ہے</translation>
+<translation id="6574622320167699133">آپ کے فون سے غیر مقفل کیا گیا۔ درج کرنے کیلئے تھپتھپائیں یا کلک کریں۔</translation>
 <translation id="6578407462441924264">بغیر نام والا</translation>
 <translation id="6585808820553845416">سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا۔</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
@@ -1038,7 +1049,9 @@
 <translation id="7649070708921625228">مدد</translation>
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7660160718439869192">آپ کا <ph name="NAME" /> <ph name="EMAIL" /> کے ساتھ لنک کردہ آلات پر ظاہر ہوگا</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
+<translation id="7670953955701272011">‏Google کیلنڈر میں اس تاریخ کو کھولیں</translation>
 <translation id="7671610481353807627">ایپس رنگ کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">نیا سیلولر نیٹ ورک شامل کریں</translation>
@@ -1130,6 +1143,7 @@
 <translation id="8236042855478648955">وقفے کا وقت ہو گیا</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، ایپ</translation>
+<translation id="8248728785693203669">‏ہو سکتا ہے کہ آپ کی USB-C کیبل مناسب طریقے سے ڈسپلیز سے منسلک نہ ہو</translation>
 <translation id="8255234195843591763">اپ ڈیٹ کرنے کے لیے ری سیٹ کریں</translation>
 <translation id="826107067893790409">‏<ph name="USER_EMAIL_ADDRESS" /> کی خاطر غیر مقفل کرنے کے لیے Enter دبائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
@@ -1159,6 +1173,7 @@
 <translation id="8428213095426709021">ترتیبات</translation>
 <translation id="8433186206711564395">نیٹ ورک کی ترتیبات</translation>
 <translation id="8433977262951327081">شیلف میں ان پٹ اختیارات کے مینو بلبلے کو دکھانے والا شارٹ کٹ تبدیل ہو گیا ہے۔ براہ کرم <ph name="OLD_SHORTCUT" /> کی بجائے <ph name="NEW_SHORTCUT" /> استعمال کریں۔</translation>
+<translation id="8443879455002739353">"کاپی کریں"</translation>
 <translation id="8444246603146515890"><ph name="DESK_TITILE" /> ڈیسک فعال کر دیا گیا</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8456543082656546101">‏V + <ph name="SHORTCUT_KEY_NAME" />‏</translation>
@@ -1226,6 +1241,7 @@
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>
+<translation id="8905919797434099235">(کوئی عنوان نہیں)</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>
 <translation id="8909138438987180327">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔</translation>
 <translation id="8921554779039049422">H+‎</translation>

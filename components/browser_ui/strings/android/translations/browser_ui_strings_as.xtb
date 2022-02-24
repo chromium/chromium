@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4008040567710660924">কোনো নিৰ্দিষ্ট ছাইটৰ বাবে কুকিসমূহক অনুমতি দিয়ক।</translation>
+<translation id="4040330681741629921">এটা ছাইট সৰলীকৃত ভিউত দেখুৱাব পৰা হ'লে জাননী পাওক</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4149994727733219643">ৱেবপৃষ্ঠাৰ বাবে সৰলকৰণ কৰা ভিউ</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">এইটোৱে ছাইটসমূহে ষ্ট’ৰ কৰা <ph name="DATASIZE" /> ডেটা আৰু কুকি মচিব।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
+<translation id="5412236728747081950">আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰা আপোনাৰ আগ্ৰহসমূহ পায়</translation>
 <translation id="5438097262470833822">এই বাছনিটোৱে <ph name="WEBSITE" />ৰ বাবে অনুমতি ৰিছেট কৰিব</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ৰ ভিতৰত <ph name="ELAPSED_TIME" /> সময় পাৰ হৈছে।</translation>
 <translation id="5494752089476963479">অননুমোদিত বা বিভ্ৰান্তিকৰ বিজ্ঞাপন দেখুওৱা ছাইটসমূহত বিজ্ঞাপন অৱৰোধ কৰক</translation>

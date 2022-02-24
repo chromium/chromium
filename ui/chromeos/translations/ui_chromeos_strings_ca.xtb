@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Aquesta carpeta es comparteix amb Linux</translation>
 <translation id="1864756863218646478">No s'ha pogut trobar el fitxer.</translation>
 <translation id="1884013283844450420">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connecta</translation>
+<translation id="1914901738028575085">Dispositiu CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malaiàlam (transliteració)</translation>
 <translation id="1920798810075583923">Síndria</translation>
 <translation id="1924372192547904021">S'ha formatat <ph name="DRIVE_NAME" /></translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">S'ha seleccionat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croat</translation>
+<translation id="873847021056608403">Dispositius CloudReady 2.0</translation>
 <translation id="8743164338060742337">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal del proveïdor <ph name="NETWORK_PROVIDER_NAME" />, gestionada per l'administrador, connecta</translation>
 <translation id="8750438273876807512">Mantén premut un fitxer i toca <ph name="ICON" />. A continuació, selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8787254343425541995">Permet servidors intermediaris per a xarxes compartides</translation>

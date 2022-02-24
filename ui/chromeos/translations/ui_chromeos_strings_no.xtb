@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Denne mappen deles med Linux</translation>
 <translation id="1864756863218646478">Kunne ikke finne filen.</translation>
 <translation id="1884013283844450420">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – koble til</translation>
+<translation id="1914901738028575085">CloudReady 2.0-enhet</translation>
 <translation id="1920670151694390848">Malayalam, translitterasjon</translation>
 <translation id="1920798810075583923">Vannmelon</translation>
 <translation id="1924372192547904021">Formaterte <ph name="DRIVE_NAME" /></translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Sykkel</translation>
 <translation id="8719721339511222681">Valgte <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
+<translation id="873847021056608403">CloudReady 2.0-enheter</translation>
 <translation id="8743164338060742337">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – koble til</translation>
 <translation id="8750438273876807512">Trykk og hold på en fil, trykk på <ph name="ICON" />, og velg «Fest til hyllen» for rask tilgang til filer på hyllen.</translation>
 <translation id="8787254343425541995">Gi tillatelse til proxy-tjenere for delte nettverk</translation>

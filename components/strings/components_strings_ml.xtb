@@ -518,6 +518,7 @@
 <translation id="2523886232349826891">ഈ ഉപകരണത്തിൽ മാത്രം സംരക്ഷിക്കപ്പെടും</translation>
 <translation id="2524461107774643265">കൂടുതൽ വിവരങ്ങൾ ചേർക്കുക</translation>
 <translation id="2529899080962247600">ഈ ഫീൽഡിൽ <ph name="MAX_ITEMS_LIMIT" />-ൽ കൂടുതൽ എൻ‌ട്രികൾ ഉണ്ടാകരുത്. തുടർന്നുള്ള എല്ലാ എൻ‌ട്രികളും നിരസിക്കും.</translation>
+<translation id="2535585790302968248">സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{എന്നതും മറ്റൊരെണ്ണവും}other{എന്നതും മറ്റ് # എണ്ണവും}}</translation>
 <translation id="2536110899380797252">വിലാസം ചേർക്കുക</translation>
 <translation id="2539524384386349900">കണ്ടെത്തുക</translation>
@@ -584,6 +585,7 @@
 <translation id="2709516037105925701">സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
+<translation id="271663710482723385">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്തുകടക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
 <translation id="2721148159707890343">അഭ്യർത്ഥന വിജയിച്ചു</translation>
 <translation id="2723669454293168317">Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="2726001110728089263">വശത്തുള്ള ട്രേ</translation>
@@ -1256,6 +1258,7 @@
 <translation id="4854362297993841467">ഈ ഡെലിവറി രീതി ലഭ്യമല്ല. മറ്റൊരു രീതി പരീക്ഷിക്കുക.</translation>
 <translation id="4854853140771946034">Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="485902285759009870">കോഡ് പരിശോധിച്ചുറപ്പിക്കുന്നു...</translation>
+<translation id="4866506163384898554">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| അമർത്തുക</translation>
 <translation id="4876188919622883022">ലളിതവൽക്കരിച്ച കാഴ്ച്ച</translation>
 <translation id="4876305945144899064">ഉപയോക്തൃനാമമില്ല</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{ഒന്നുമില്ല}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1479,6 +1482,7 @@
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5560088892362098740">കാലഹരണപ്പെടല്‍ തീയതി</translation>
 <translation id="55635442646131152">ഡോക്യുമെന്റിന്റെ ഔട്ട്‌ലൈൻ</translation>
+<translation id="5565613213060953222">അദൃശ്യ ടാബ് തുറക്കുക</translation>
 <translation id="5565735124758917034">സജീവമാണ്</translation>
 <translation id="5570825185877910964">അക്കൗണ്ട് പരിരക്ഷിക്കുക</translation>
 <translation id="5571083550517324815">ഈ വിലാസത്തിൽ നിന്ന് പിക്ക്അപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
@@ -1945,6 +1949,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> ലാഭിക്കുക. നിങ്ങളുടെ അടുത്ത സന്ദർശനത്തിൽ ചില സൈറ്റുകൾ സാവധാനത്തിൽ ലോഡായേക്കാം.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർക്ക് ഇവ കാണാനാകും:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കുന്നതിന് 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="7202346780273620635">ലെറ്റർ-അധികം</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" />, സുരക്ഷാ മാനദണ്ഡങ്ങൾ പാലിക്കുന്നില്ല.</translation>
 <translation id="7210993021468939304">കണ്ടെയ്‌നറിനുള്ളിലെ Linux ആക്‌റ്റിവിറ്റി, കൂടാതെ കണ്ടെയ്‌നറിനുള്ളിൽ Linux ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്യാനും റൺ ചെയ്യാനും കഴിയും</translation>
@@ -2208,6 +2213,7 @@
 <translation id="799149739215780103">ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> എന്നതുമായി സ്ക്രീൻ പങ്കിടൽ പുനരാരംഭിച്ചു</translation>
 <translation id="7995512525968007366">വ്യക്തമാക്കിയിട്ടില്ല</translation>
+<translation id="7998269595945679889">'അദൃശ്യ ടാബ് തുറക്കുക' ബട്ടൺ, സ്വകാര്യമായി ബ്രൗസ് ചെയ്യാൻ പുതിയ അദൃശ്യ ടാബ് തുറക്കാൻ 'Enter' അമർത്തുക</translation>
 <translation id="800218591365569300">ഇടം സൃഷ്‌ടിക്കാൻ മറ്റ് ടാബുകളോ പ്രോഗ്രാമുകളോ അടയ്‌ക്കുന്നത് പരീക്ഷിക്കൂ.</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ഈ കാർഡും അവയുടെ ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കപ്പെടും. നിങ്ങൾ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ അത് ഉപയോഗിക്കാനാകും.}other{ഈ കാർഡുകളും അവയുടെ ബില്ലിംഗ് വിലാസങ്ങളും സംരക്ഷിക്കപ്പെടും. നിങ്ങൾ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ അവ ഉപയോഗിക്കാനാകും.}}</translation>

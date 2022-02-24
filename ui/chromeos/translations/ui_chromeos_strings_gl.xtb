@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Este cartafol compártese con Linux</translation>
 <translation id="1864756863218646478">Non se puido atopar o ficheiro.</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
+<translation id="1914901738028575085">Dispositivo CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malabar (transliteración)</translation>
 <translation id="1920798810075583923">Sandía</translation>
 <translation id="1924372192547904021">Formatouse <ph name="DRIVE_NAME" /></translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Seleccionouse <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>
+<translation id="873847021056608403">Dispositivos CloudReady 2.0</translation>
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, conectar</translation>
 <translation id="8750438273876807512">Para poder acceder rapidamente aos ficheiros dun estante, mantén premido un ficheiro, toca <ph name="ICON" /> e selecciona Fixar no estante.</translation>
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>

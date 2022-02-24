@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Päivitetään (<ph name="PERCENTAGE_VALUE" /> % valmiina)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" />-verkkoja ei ole käytettävissä</translation>
+<translation id="131421566576084655">Edellisen nollauksen päivämäärä ei ole saatavilla</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Kotiverkko, ei roaming-tilassa </translation>
 <translation id="1327977588028644528">Yhdyskäytävä</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Minulla on avainpari</translation>
+<translation id="1435763214710588005">Nollaa datan käytön valittuna päivänä joka kuukausi</translation>
 <translation id="1442433966118452622">Kuvan lähde</translation>
 <translation id="1451536289672181509">Laite on näppäimistö.</translation>
 <translation id="1459693405370120464">Sää</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Päivitys ei onnistu: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
+<translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP-palomuuri</translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4155551848414053977">Varmista, että skanneri on päällä ja käytettävissä verkkosi tai suoran yhteyden kautta</translation>
+<translation id="4170180284036919717">Ota kuva</translation>
 <translation id="4170700058716978431">EPÄONNISTUI</translation>
 <translation id="4176463684765177261">Pois käytöstä</translation>
 <translation id="4213104098953699324">USB-näppäimistö</translation>
@@ -391,6 +395,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
 <translation id="594552776027197022">Luo satunnainen avainpari</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Ota automaattinen kuukausittainen nollaus käyttöön</translation>
 <translation id="6037291330010597344">Skannerin syöttölaite on tyhjä. Lisää dokumentteja ja yritä uudelleen.</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6040852767465482106">Anonyymi henkilöllisyys</translation>
@@ -414,6 +419,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skannereita ei saatavilla</translation>
 <translation id="6232017090690406397">Akku</translation>
+<translation id="6235460611964961764">Nollaa datan käyttö manuaalisesti</translation>
 <translation id="6243280677745499710">Nykyinen taustakuva</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8919837981463578619">Epäonnistui – Lokero puuttuu</translation>
+<translation id="8923267550422472772">Nollaamispäivä</translation>
 <translation id="8928727111548978589">Epäonnistui – Paperi loppu</translation>
 <translation id="8930521118335213258">Vertaisominaisuudet</translation>
 <translation id="8930622219860340959">Langaton</translation>

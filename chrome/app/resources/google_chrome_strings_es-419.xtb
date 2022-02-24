@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">No se puede actualizar Chrome</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="1182414570724401860">Chrome te recomienda no descargar ni abrir este archivo.</translation>
+<translation id="1201241595274620956">Condiciones de CloudReady 2.0</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de Google Chrome OS.</translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
@@ -36,11 +37,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Asegúrate de haber accedido a Chrome en tu <ph name="TARGET_DEVICE_NAME" /> y, luego, intenta enviarlo de nuevo.</translation>
 <translation id="1812689907177901597">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chrome</translation>
+<translation id="1847459800604232346">Reiniciar CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome necesita permiso para acceder a tu cámara para este sitio</translation>
+<translation id="1865667134297225786">CloudReady 2.0 no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
+<translation id="1887927549935943139">CloudReady 2.0 no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
 <translation id="2063848847527508675">El Chrome OS debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="2094919256425865063">¿Deseas salir de Chrome de todos modos?</translation>
@@ -51,12 +56,15 @@
 <translation id="2258103955319320201">A fin de ver el contenido de tu navegador Chrome en todos tus dispositivos, accede a tu cuenta y activa la sincronización</translation>
 <translation id="2290014774651636340">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Google Chrome.</translation>
 <translation id="2290095356545025170">¿Estás seguro de que deseas desinstalar Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Como esta es una instalación secundaria de Google Chrome, no puede establecerse como tu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectó que las siguientes extensiones contienen software malicioso:</translation>
 <translation id="2348335408836342058">Chrome necesita permiso para acceder a tu cámara y micrófono para este sitio</translation>
 <translation id="234869673307233423">Chrome no puede revisar las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="235650106824528204">El administrador del perfil de trabajo puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2371517829376452747">Si no ves un parámetro de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
+        configuración de CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="2467438592969358367">Google Chrome desea exportar tus contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
@@ -85,6 +93,7 @@
 <translation id="2926676257163822632">Las contraseñas poco seguras son fáciles de adivinar. Permite que Chrome <ph name="BEGIN_LINK" />cree y recuerde contraseñas seguras para ti<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome necesita permiso de acceso a la cámara para este sitio.</translation>
 <translation id="2929907241665500097">No se actualizó Chrome porque se produjo un error. <ph name="BEGIN_LINK" />Soluciona los problemas de actualización y las actualizaciones con error de Chrome.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Reiniciar para actualizar CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="303514781271618814">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
@@ -111,6 +120,7 @@
 <translation id="3533694711092285624">No hay contraseñas guardadas. Chrome puede revisar las contraseñas cuando las guardas.</translation>
 <translation id="3541482654983822893">Chrome no puede revisar las contraseñas. Vuelve a intentarlo después de 24 horas.</translation>
 <translation id="3576528680708590453">El administrador del sistema configuró Google Chrome de manera que se abriera un navegador alternativo para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Opcional: Para ayudar a mejorar las funciones y el rendimiento de CloudReady 2.0, envía automáticamente datos de uso y diagnóstico a Google.</translation>
 <translation id="3582972582564653026">Sincroniza y personaliza Chrome en todos tus dispositivos</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{El administrador necesita que reinicies Chrome para aplicar una actualización}=1{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3622797965165704966">Ahora es más sencillo utilizar Chrome con la cuenta de Google y en computadoras compartidas.</translation>
@@ -131,6 +141,7 @@
 <translation id="4149882025268051530">El instalador no pudo descomprimir el archivo. Descargue Google Chrome nuevamente.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en el transcurso de 1 día}other{Reinicia Chrome en el transcurso de # días}}</translation>
 <translation id="4205939740494406371">Chrome no puede revisar las contraseñas. Vuelve a intentarlo dentro de 24 horas o <ph name="BEGIN_LINK" />revisa las contraseñas en tu Cuenta de Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Sistema CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome necesita permiso de acceso al micrófono y la cámara para este sitio.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
 <translation id="4251615635259297716">¿Quieres vincular tus datos de Google Chrome con esta cuenta?</translation>
@@ -148,7 +159,9 @@
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
 <translation id="4480040274068703980">El Chrome OS no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="4521185804071812304">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento del Sistema operativo Chrome, envía automáticamente datos de uso y diagnóstico a Google.</translation>
+<translation id="4539063627668028557">Versión 2.0 de CloudReady</translation>
 <translation id="4561051373932531560">Google Chrome te permite hacer clic en un número de teléfono en la web y ¡llamarlo por Skype!</translation>
+<translation id="4562712242781620537">Sistema CloudReady 2.0</translation>
 <translation id="4567424176335768812">Accediste como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes ir a los favoritos, al historial y a otras opciones en todos los dispositivos en los que hayas accedido.</translation>
 <translation id="4571503333518166079">Ir a la configuración de notificaciones de Chrome</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
@@ -172,6 +185,7 @@
 <translation id="5170938038195470297">No se puede usar tu perfil porque pertenece a una nueva versión de Google Chrome. Es posible que algunas características no estén disponibles. Especifica un directorio de perfil diferente o usa una nueva versión de Chrome.</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chrome según sus preferencias.</translation>
 <translation id="5251420635869119124">Los invitados pueden utilizar Chrome sin dejar nada detrás.</translation>
+<translation id="5307623274346663914">CloudReady 2.0 debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso al almacenamiento para descargar archivos.</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
@@ -180,8 +194,10 @@
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
 <translation id="565744775970812598">Chrome bloqueó <ph name="FILE_NAME" /> porque es posible que sea un archivo peligroso.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Tu administrador solicita que reinicies Chrome para aplicar esta actualización}=1{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="5686916850681061684">Personalizar y controlar Google Chrome. Una alerta necesita tu atención: haz clic para ver los detalles.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome se reiniciará en 1 segundo}other{Google Chrome se reiniciará en # segundos}}</translation>
 <translation id="5736850870166430177">Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="573759479754913123">Acerca de Chrome OS</translation>
@@ -214,15 +230,23 @@
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="6696915334902295848">Chrome necesita permiso de acceso al micrófono para este sitio.</translation>
 <translation id="6739177684496155661">¿Deseas continuar en un nuevo perfil de Chrome?</translation>
+<translation id="6749459139769042303">Recibe ayuda de CloudReady 2.0</translation>
 <translation id="6750954913813541382">Para corregir los errores ortográficos, Chrome envía a Google lo que escribes en el navegador</translation>
 <translation id="677276454032249905">¿Deseas salir de Chrome de todos modos?</translation>
+<translation id="6814748008107187409">Si no ves un parámetro de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
+      configuración de Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Regla de entrada para que Google Chrome Canary permita el tráfico mDNS.</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Apps de Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> requiere que leas y aceptes las siguientes Condiciones del Servicio antes de usar este dispositivo. Estas condiciones no amplían, modifican ni limitan las Condiciones de CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Los datos de navegación de esta persona se borrarán de este dispositivo. Para recuperarlos, accede a Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regla de entrada para que Google Chrome Beta permita el tráfico mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome fue actualizado, pero no lo has utilizado en los últimos 30 días.</translation>
+<translation id="700644001690392105">Información sobre CloudReady 2.0</translation>
 <translation id="7025800014283535195">Puedes alternar entre los perfiles de Chrome aquí</translation>
+<translation id="7036251913954633326">Si deseas usar esta cuenta solo una vez, puedes usar el <ph name="GUEST_LINK_BEGIN" />Modo de Invitado<ph name="GUEST_LINK_END" /> en el navegador Chrome. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Puedes administrar tus Cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">Tu padre o madre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chrome. No se permite agregar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7085332316435785646">Elige si quieres incluir el historial de Chrome para tener experiencias más personalizadas en los servicios de Google</translation>
 <translation id="7088681679121566888">Chrome está actualizado</translation>
@@ -236,6 +260,9 @@
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7308322188646931570">Chrome necesita acceder al almacenamiento para descargar archivos</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
+<translation id="7388770099345495132">Si deseas usar esta cuenta solo una vez, puedes usar el Modo de Invitado en el navegador Chrome. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
+
+Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web y apps. Puedes administrar tus Cuentas de Google en <ph name="SETTINGS_LINK_BEGIN" />Configuración<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">Accediste a Google Chrome con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
 <translation id="7408085963519505752">Condiciones del Chrome OS</translation>
 <translation id="7419046106786626209">El Chrome OS no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
@@ -243,6 +270,7 @@
 <translation id="7486227612705979895">Chrome accederá a tus datos de Drive para hacer sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para saber si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración del Sistema operativo Chrome<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Para saber si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración de CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome no pudo sincronizar los datos porque los datos de acceso de la cuenta están obsoletos.</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7629695634924605473">Chrome te informará si tus contraseñas se ven comprometidas</translation>

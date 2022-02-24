@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="1204037785786432551">ڈاؤن لوڈ کا لنک</translation>
+<translation id="1204692632633423444">‏Chrome ایکشن بٹن: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">لنک کا متن کاپی کریں</translation>
 <translation id="1208340532756947324">سبھی آلات پر سِنک کرنے اور ذاتی نوعیت سازی کیلئے، سِنک کو آن کریں</translation>
 <translation id="1209206284964581585">ابھی کیلئے چھپائیں</translation>
@@ -201,6 +202,7 @@
 <translation id="2172688499998841696">تصویر کی تفصیلات آف ہیں</translation>
 <translation id="2172905120685242547">ونڈو کو بند کر دیں؟</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
+<translation id="2176767904800337188">ورچوئل کارڈ آپ کے اصل کارڈ کو چھپاتا ہے تاکہ آپ کی ممکنہ دھوکہ دہی سے حفاظت کرنے میں مدد کر سکے۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">اشتراک</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2200113223741723867">استعمال کے ڈیٹا کے اشتراک کا نظم کریں</translation>
@@ -213,6 +215,7 @@
 <translation id="2259659629660284697">پاسورڈز برآمد کریں…</translation>
 <translation id="2276696007612801991">‏اپنے پاس ورڈز چیک کرنے کے لئے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="2278052315791335171">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا</translation>
+<translation id="2279146068164892489"><ph name="APPNAME" /> کے لیے ایپ کھولیں؟</translation>
 <translation id="2286841657746966508">بلنگ پتہ</translation>
 <translation id="228704530595896923">اشتراک کرنے کے اختیارات کی فہرست۔</translation>
 <translation id="230115972905494466">کوئی مطابقت پذیر آلہ نہیں ملا</translation>
@@ -330,6 +333,7 @@
 <translation id="2923908459366352541">نام غلط ہے</translation>
 <translation id="2932150158123903946">‏Google <ph name="APP_NAME" /> اسٹوریج</translation>
 <translation id="2932222164150889403">آپ کا کی بورڈ تبدیل نہیں ہوگا</translation>
+<translation id="2936980480904111527">‏Chrome کی اطلاعات چیزوں کو آسان بناتی ہیں</translation>
 <translation id="2942036813789421260">پیش منظر ٹیب بند ہے</translation>
 <translation id="2946420957526726953">‏دیگر آلات سے منسلک ہونے کیلئے Chrome کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="2951071800649516099">بعد کیلئے اپنی پڑھنے کی فہرست میں صفحات شامل کریں</translation>
@@ -670,6 +674,7 @@
 <translation id="4961107849584082341">اس صفحہ کا کسی بھی زبان میں ترجمہ کریں</translation>
 <translation id="4971735654804503942">‏ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تیز، فعال حفاظت۔ پاس ورڈز کی خلاف ورزیوں کے بارے میں آپ کو متنبہ کرتا ہے۔ براؤزنگ ڈیٹا کو Google کے پاس بھیجے جانے کی ضرورت ہوتی ہے۔</translation>
 <translation id="497421865427891073">آگے جائیں</translation>
+<translation id="4987271110129728827">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا ویب تلاش کی کوشش کریں۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
@@ -875,6 +880,7 @@
 <translation id="6162892189396105610">‏ایسے صفحات پیشگی لوڈ ہوتے ہیں جن کے بارے میں Chrome کا خیال ہوتا ہے کہ آپ ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="6186394685773237175">کوئی متاثرہ پاس ورڈ نہیں ملا</translation>
 <translation id="6192907950379606605">تصویری تفصیلات حاصل کریں</translation>
+<translation id="620197886010707372">‏Google Play کے ساتھ <ph name="APPNAME" /> کے لیے ایپ کھولیں؟</translation>
 <translation id="6203593061661911168">‏ڈاؤن لوڈ Wi-Fi آن ہونے پر شروع ہوگا</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
 <translation id="6211386937064921208">اس صفحہ کا پیش منظر دکھایا جا رہا ہے</translation>
@@ -1064,6 +1070,7 @@
 <translation id="7191430249889272776">ٹیب پس منظر میں کھلا ہے۔</translation>
 <translation id="7196215469483532480">رازداری کی گائیڈ کی وضاحت سے متعلق معلومات مکمل اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
+<translation id="7237045078887540010">‏Chrome کا استعمال کر کے، آپ <ph name="BEGIN_TOS_LINK" />Google کی سروس کی شرائط<ph name="END_TOS_LINK" /> اور <ph name="BEGIN_ATOS_LINK" />Chrome OS کی اضافی سروس کی شرائط<ph name="END_ATOS_LINK" />سے اتفاق کرتے ہیں۔ <ph name="BEGIN_PRIVACY_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_LINK" /> بھی لاگو ہوتی ہے۔</translation>
 <translation id="7242755609445462077">اسٹائلائزڈ ہائی لائٹ <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">‏یہ یقینی بنائیں کہ Chrome پر <ph name="TARGET_DEVICE_NAME" /> کی مطابقت پذیری آن ہے</translation>
 <translation id="7252076891734325316">اپنا فون کمپیوٹر کے قریب رکھیں</translation>
@@ -1270,6 +1277,7 @@
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8352996530981010042">ردعمل کو ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں۔</translation>
 <translation id="8354977102499939946">اپنی آواز کی مدد سے فوری طور پر تلاش کریں۔ اس شارٹ کٹ میں ترمیم کرنے کیلئے ترتیبات پر جائیں۔</translation>
+<translation id="8356078935982976590">آپ آسانی سے میڈیا کنٹرولز، پوشیدگی سیشنز، ڈاؤن لوڈز وغیرہ کا نظم کر سکیں گے</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ڈاؤن لوڈز بحال کئے گئے</translation>
 <translation id="8364299278605033898">مقبول ویب سائٹس دیکھیں</translation>
 <translation id="8368001212524806591">قیمت ٹریک کریں</translation>
@@ -1426,6 +1434,7 @@
 <translation id="9169507124922466868">نیویگیشن کی سرگزشت آدھی کھلی ہوئی ہے</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 منٹ پہلے چیک کیا گيا}other{# منٹ پہلے چیک کیا گیا}}</translation>
 <translation id="9204836675896933765">1 فائل باقی ہے</translation>
+<translation id="9205933215779845960">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا <ph name="SEARCH_ENGINE" /> پر تلاش کرنے کی کوشش کریں۔</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">کالز نہیں کی جا سکیں</translation>
 <translation id="9212845824145208577">زیادہ نیچے نہیں جا سکتے۔ صفحے کے مزید نیچے سے شروع کرنے کی کوشش کریں۔</translation>

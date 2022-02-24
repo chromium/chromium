@@ -7,8 +7,8 @@
 <translation id="1302104331113804646">가격 추적 설정</translation>
 <translation id="1378979118429748177">가격 인하 알림을 받습니다.</translation>
 <translation id="1403228085774130835">Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.</translation>
-<translation id="1455506303394048917">시크릿 탭의 활동이 기기에서 삭제됩니다.</translation>
-<translation id="1499635324672558517">모든 시크릿 탭을 닫으시겠습니까?</translation>
+<translation id="1455506303394048917">시크릿 탭의 활동 내역이 기기에서 삭제됩니다.</translation>
+<translation id="1499635324672558517">시크릿 탭을 모두 닫으시겠습니까?</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="2118649612461486615">매장 정보</translation>

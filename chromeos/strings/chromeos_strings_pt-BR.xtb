@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Atualizando (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1310380015393971138">Nenhuma rede <ph name="NETWORK_NAME" /> disponível</translation>
+<translation id="131421566576084655">A data da última redefinição não está disponível</translation>
 <translation id="1314565355471455267">VPN do Android</translation>
 <translation id="131461803491198646">Rede doméstica, não está em roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Falha - Falha no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Eu tenho um par de chaves</translation>
+<translation id="1435763214710588005">Redefine automaticamente o uso de dados a cada mês em um dia selecionado</translation>
 <translation id="1442433966118452622">Origem da imagem</translation>
 <translation id="1451536289672181509">Este dispositivo é um teclado.</translation>
 <translation id="1459693405370120464">Clima</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Não é possível atualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbuns</translation>
 <translation id="1572585716423026576">Definir como plano de fundo</translation>
+<translation id="1615335640928990664">Uso de dados desde <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executar teste de carregamento</translation>
 <translation id="1639239467298939599">Carregando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (unilateral)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Confira se o scanner está ligado e disponível pela rede ou por uma conexão direta</translation>
+<translation id="4170180284036919717">Tirar uma foto</translation>
 <translation id="4170700058716978431">FALHA</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
@@ -391,6 +395,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5939518447894949180">Redefinir</translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
 <translation id="5972388717451707488">Mecanismo de atualização</translation>
+<translation id="6034694447310538551">Ativar redefinição mensal automática</translation>
 <translation id="6037291330010597344">O alimentador de documentos do scanner está vazio. Adicione documentos e tente novamente.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6040852767465482106">Identidade anônima</translation>
@@ -414,6 +419,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6235460611964961764">Redefinir uso de dados manualmente</translation>
 <translation id="6243280677745499710">Definido no momento</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8910721771319628100">Rede padrão acima do limite de latência</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Falha - Bandeja ausente</translation>
+<translation id="8923267550422472772">Dia do mês para redefinição</translation>
 <translation id="8928727111548978589">Falha - Sem papel</translation>
 <translation id="8930521118335213258">Ponto</translation>
 <translation id="8930622219860340959">Rede sem fio</translation>

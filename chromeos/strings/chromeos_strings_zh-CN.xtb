@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">正在更新（已完成 <ph name="PERCENTAGE_VALUE" />%）</translation>
 <translation id="1310380015393971138">无可用的“<ph name="NETWORK_NAME" />”网络</translation>
+<translation id="131421566576084655">无法获取上次重置流量使用情况的日期</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">家庭网络，非漫游</translation>
 <translation id="1327977588028644528">网关</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">我有一个密钥对</translation>
+<translation id="1435763214710588005">在每月的指定日期自动重置流量使用情况</translation>
 <translation id="1442433966118452622">图片来源</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1459693405370120464">天气</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">无法更新<ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">影集</translation>
 <translation id="1572585716423026576">设为壁纸</translation>
+<translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP 防火墙</translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4155551848414053977">请确保扫描仪已开机，且已直接或通过网络连接到设备</translation>
+<translation id="4170180284036919717">拍照</translation>
 <translation id="4170700058716978431">失败</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">重置</translation>
 <translation id="594552776027197022">生成随机密钥对</translation>
 <translation id="5972388717451707488">更新引擎</translation>
+<translation id="6034694447310538551">启用每月自动重置</translation>
 <translation id="6037291330010597344">扫描仪的文件馈送器是空的。请添加文件，然后重试。</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6040852767465482106">匿名身份</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">没有可用的扫描仪</translation>
 <translation id="6232017090690406397">电池</translation>
+<translation id="6235460611964961764">手动重置流量使用情况</translation>
 <translation id="6243280677745499710">当前设置的壁纸</translation>
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">失败 - 缺少送纸盘</translation>
+<translation id="8923267550422472772">每月重置流量使用情况的日期</translation>
 <translation id="8928727111548978589">失败 - 纸张已用完</translation>
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>

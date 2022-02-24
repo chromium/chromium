@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">Kan ikke oppdatere Chrome</translation>
 <translation id="1154147086299354128">&amp;Åpne i Chrome</translation>
 <translation id="1182414570724401860">Chrome fraråder deg å laste ned eller åpne denne filen</translation>
+<translation id="1201241595274620956">Vilkår for CloudReady 2.0</translation>
 <translation id="1278833599417554002">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser Google Chrome OS-vilkårene.</translation>
 <translation id="1302523850133262269">Vent mens Chrome installerer de nyeste systemoppdateringene.</translation>
@@ -35,11 +36,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sørg for at du er logget på Chrome på <ph name="TARGET_DEVICE_NAME" />, og prøv å sende på nytt.</translation>
 <translation id="1812689907177901597">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chrome</translation>
+<translation id="1847459800604232346">Start CloudReady 2.0 på nytt</translation>
 <translation id="1860536484129686729">Chrome trenger tilgang til kameraet ditt for dette nettstedet</translation>
+<translation id="1865667134297225786">CloudReady 2.0 kunne ikke synkronisere dataene dine. Dette skyldes at påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="1873233029667955273">Google Chrome er ikke standardnettleseren din</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS – inn)</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
+<translation id="1887927549935943139">CloudReady 2.0 kunne ikke synkronisere dataene dine. Dette skyldes at synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
 <translation id="2063848847527508675">Chrome OS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="2094919256425865063">Vil du avslutte Chrome likevel?</translation>
@@ -50,12 +55,15 @@
 <translation id="2258103955319320201">For å få tilgang til Chrome-nettlesertingene dine på alle enhetene dine, logg på og slå på synkronisering</translation>
 <translation id="2290014774651636340">API-nøkler for Google mangler. Noe funksjonalitet i Google Chrome blir deaktivert.</translation>
 <translation id="2290095356545025170">Er du sikker på at du vil avinstallere Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Dette er en sekundær installering av Google Chrome. Den kan ikke brukes som standardnettleser.</translation>
 <translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
 <translation id="2348335408836342058">Chrome trenger tilgang til kameraet ditt og mikrofonen din for dette nettstedet</translation>
 <translation id="234869673307233423">Chrome kan ikke sjekke passordene dine. Prøv igjen senere.</translation>
 <translation id="235650106824528204">Alle Chrome-data som genereres mens denne profilen brukes (f.eks. oppretting av bokmerker, logg, passord og andre innstillinger), kan fjernes av administratoren for jobbprofilen. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Fortsett</translation>
+<translation id="2371517829376452747">Hvis en innstilling ikke vises på denne siden, kan du se i <ph name="LINK_BEGIN" />
+        innstillingene for CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome kunne ikke synkronisere dataene dine fordi synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="2467438592969358367">Google Chrome forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -84,6 +92,7 @@
 <translation id="2926676257163822632">Svake passord er enkle å gjette. La Chrome <ph name="BEGIN_LINK" />opprette og huske sterke passord for deg<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome trenger kameratillatelse for dette nettstedet</translation>
 <translation id="2929907241665500097">Chrome ble ikke oppdatert. Noe gikk galt. <ph name="BEGIN_LINK" />Løs problemer med Chrome-oppdateringer og mislykkede oppdateringer.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Start på nytt for å oppdatere &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chrome</translation>
 <translation id="303514781271618814">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="3037838751736561277">Google Chrome er i bakgrunnsmodus.</translation>
@@ -110,6 +119,7 @@
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="3541482654983822893">Chrome kan ikke sjekke passordene dine. Prøv igjen når det har gått 24 timer.</translation>
 <translation id="3576528680708590453">Systemadministratoren din har konfigurert at Google Chrome skal åpne <ph name="TARGET_URL_HOSTNAME" /> i en annen nettleser.</translation>
+<translation id="3582634744482121096">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til CloudReady 2.0 bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
 <translation id="3582972582564653026">Synkroniser og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
@@ -130,6 +140,7 @@
 <translation id="4149882025268051530">Installasjonsprogrammet fikk ikke dekomprimert arkivet. Last ned Google Chrome på nytt.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Start Chrome på nytt innen en dag}other{Start Chrome på nytt innen # dager}}</translation>
 <translation id="4205939740494406371">Chrome kan ikke sjekke passordene dine. Prøv på nytt om 24 timer, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0-system</translation>
 <translation id="4242034826641750751">Chrome trenger kamera- og mikrofontillatelse for dette nettstedet</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251615635259297716">Vil du koble Chrome-dataene dine til denne kontoen?</translation>
@@ -147,7 +158,9 @@
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
 <translation id="4480040274068703980">Chrome OS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
 <translation id="4521185804071812304">Valgfritt: Bidra til å gjøre funksjonene og ytelsen til Chrome OS bedre ved å sende diagnostikk og bruksdata automatisk til Google.</translation>
+<translation id="4539063627668028557">CloudReady 2.0-versjon</translation>
 <translation id="4561051373932531560">Med Google Chrome kan du klikke på et telefonnummer på Internett og ringe ved bruk av Skype!</translation>
+<translation id="4562712242781620537">CloudReady 2.0-system</translation>
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4571503333518166079">Gå til innstillingene for Chrome-varsler</translation>
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
@@ -171,6 +184,7 @@
 <translation id="5170938038195470297">Profilen din kan ikke brukes fordi den er fra en nyere versjon av Google Chrome. Enkelte funksjoner kan være utilgjengelige. Angi en annen profilkatalog, eller bruk en nyere versjon av Chrome.</translation>
 <translation id="521447420733633466">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil</translation>
 <translation id="5251420635869119124">Gjester kan bruke Chrome uten å etterlate seg spor.</translation>
+<translation id="5307623274346663914">CloudReady 2.0 må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="5334487786912937552">Chrome må ha lagringstilgang for å kunne laste ned filer</translation>
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
@@ -179,8 +193,10 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan være farlig, så Chrome har blokkert den.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen}=1{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chrome på nytt for å ta i bruk denne oppdateringen. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Tilpass og kontrollér Google Chrome. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 kunne ikke synkronisere dataene dine på grunn av en påloggingsfeil.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome startes på nytt om 1 sekund}other{Google Chrome startes på nytt om # sekunder}}</translation>
 <translation id="5736850870166430177">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="573759479754913123">Om Chrome OS</translation>
@@ -213,14 +229,19 @@
 <translation id="6679975945624592337">La Google Chrome kjøre i bakgrunnen</translation>
 <translation id="6696915334902295848">Chrome trenger mikrofontillatelse for dette nettstedet</translation>
 <translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
+<translation id="6749459139769042303">Få hjelp med CloudReady 2.0</translation>
 <translation id="6750954913813541382">For å rette stavefeil sender Chrome teksten du skriver inn i nettleseren, til Google</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
+<translation id="6814748008107187409">Hvis en innstilling ikke vises på denne siden, kan du se i <ph name="LINK_BEGIN" />
+        innstillingene for Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta-apper</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> krever at du leser og godtar disse vilkårene for bruk før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser vilkårene for Google CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regel for å tillate innkommende mDNS-trafikk i Google Chrome Beta.</translation>
 <translation id="6989339256997917931">Google Chrome har blitt oppdatert, men du har ikke brukt programmet på minst 30 dager.</translation>
+<translation id="700644001690392105">Om CloudReady 2.0</translation>
 <translation id="7025800014283535195">Du kan bytte mellom Chrome-profiler her</translation>
 <translation id="7036251913954633326">Hvis du vil bruke denne kontoen kun én gang, kan du bruke <ph name="GUEST_LINK_BEGIN" />gjestemodus<ph name="GUEST_LINK_END" /> i Chrome-nettleseren. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
 
@@ -248,6 +269,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7486227612705979895">Chrome får tilgang til Disk-lagringen din for å kunne gi deg forslag i adressefeltet</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">For å se om enheten er oppdatert, gå til <ph name="LINK_BEGIN" />Innstillinger for Chrome OS<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">For å se om enheten er oppdatert, gå til <ph name="LINK_BEGIN" />Innstillinger for CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome kunne ikke synkronisere dataene dine. Dette skyldes at påloggingsopplysningene for kontoen din er foreldede.</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7629695634924605473">Med Chrome får du beskjed hvis passordene dine noensinne utsettes for sikkerhetsbrudd</translation>

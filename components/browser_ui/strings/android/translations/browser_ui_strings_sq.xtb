@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4008040567710660924">Lejo kukit për një sajt specifik.</translation>
+<translation id="4040330681741629921">Merr njoftime kur një sajt mund të shfaqet në pamje të thjeshtuar</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="4149994727733219643">Pamje e thjeshtuar për faqet e uebit</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Kjo do të pastrojë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
 <translation id="5403592356182871684">Emrat</translation>
+<translation id="5412236728747081950">Ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="5438097262470833822">Kjo zgjedhje do të rivendosë autorizimet për <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Koha e kaluar: <ph name="ELAPSED_TIME" /> nga <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>

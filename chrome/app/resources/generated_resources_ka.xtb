@@ -105,6 +105,7 @@
 <translation id="1099383081182863812">ხედავთ თუ არა თქვენს Chromecast-ს <ph name="BEGIN_LINK" />Google Home აპში<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-დან დაკოპირდა სურათი</translation>
 <translation id="1100504063505580045">მიმდინარე ხატულა</translation>
+<translation id="1102790815296970136">ნახეთ „<ph name="PERSONALIZED_MEMORY_TITLE" />“ და სხვა მოგონებები აქ</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">შ&amp;ეწყვეტა</translation>
 <translation id="1108938384783527433">ისტორიის სინქრონიზაცია</translation>
@@ -263,6 +264,7 @@
 <translation id="125220115284141797">ნაგულისხმევი</translation>
 <translation id="1252987234827889034">წარმოიქმნა პროფილთან დაკავშირებული შეცდომა</translation>
 <translation id="1254593899333212300">პირდაპირი ინტერნეტ კავშირი</translation>
+<translation id="1258144502260926473">თქვენი კომპიუტერი შეიცავს უსაფრთხოების მოდულს, რომელიც CloudReady 2.0-ში უსაფრთხოებასთან დაკავშირებული მრავალი კრიტიკული ფუნქციის შესასრულებლად გამოიყენება. მეტის გასაგებად, მოინახულეთ Chromebook-ის დახმარების ცენტრი: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="1258491128795710625">სიახლეები</translation>
 <translation id="1259152067760398571">უსაფრთხოების შემოწმება შესრულდა გუშინ</translation>
 <translation id="1260451001046713751"><ph name="HOST" />-დან გადამისამართებებისა და ამომხტარი ფანჯრების ყოველთვის დაშვება</translation>
@@ -489,6 +491,7 @@
 <translation id="1481537595330271162">შეცდომა დისკის ზომის შეცვლისას</translation>
 <translation id="1482626744466814421">ამ ჩანართის სანიშნეებში დამატება…</translation>
 <translation id="1483493594462132177">გაგზავნა</translation>
+<translation id="1484599694148543901">გსურთ, გაააქტიუროთ ChromeVox, CloudReady 2.0-ში ჩაშენებული ეკრანის წამკითხველი?</translation>
 <translation id="1484979925941077974">საიტი იყენებს Bluetooth-კავშირს</translation>
 <translation id="1485015260175968628">ახლა შეუძლია შემდეგის გაკეთება:</translation>
 <translation id="1485141095922496924">ვერსია <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -673,6 +676,7 @@
 <translation id="1644852018355792105">შეიყვანეთ Bluetooth წვდომის გასაღები მოწყობილობისთვის <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527"><ph name="DEVICE_TYPE" />-ის უსაფრთხოების უზრუნველსაყოფად, Smart Lock საჭიროებს თქვენს ტელეფონზე ეკრანის დაბლოკვის მეთოდის გამოყენებას.</translation>
 <translation id="1646982517418478057">ამ სერტიფიკატის დასაშიფრად, გთხოვთ, შეიყვანოთ პაროლი</translation>
+<translation id="1647408325348388858">გსურთ გახსნათ და რედაქტირება გაუწიოთ ფაილს (<ph name="FILE_NAME" />) ამ ვებ-აპში?</translation>
 <translation id="1648528859488547844">მდებარეობის დასადგენად Wi-Fi ან მობილური ქსელების გამოყენება</translation>
 <translation id="164936512206786300">Bluetooth მოწყობილობის დაწყვილების გაუქმება</translation>
 <translation id="1651008383952180276">შეყვანილი საიდუმლო ფრაზები უნდა ემთხვეოდეს</translation>
@@ -1134,6 +1138,7 @@
 <translation id="2113921862428609753">უფლებამოსილების ინფორმაციაზე წვდომა</translation>
 <translation id="2114326799768592691">&amp;ფრეიმის ხელახლა ჩატვირთვა</translation>
 <translation id="2114413269775311385">ამ ანგარიშის გამოყენება Android აპებში. Android აპებისთვის ნებართვების მართვა შეგიძლიათ <ph name="LINK_BEGIN" />აპების პარამეტრებიდან<ph name="LINK_END" />.</translation>
+<translation id="2114820389966440614">გაეცანით „ბოლოდროინდელ ციმებსა“ და სხვა მოგონებებს აქ</translation>
 <translation id="2114896190328250491">ფოტოს ავტორი: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM ბარათი ჩასმული არ არის</translation>
 <translation id="2116619964159595185">როგორც წესი, საიტები Bluetooth მოწყობილობებს უკავშირდება ისეთი ფუნქციების უზრუნველსაყოფად, როგორიცაა, მაგალითად, დაბალი ენერგომოხმარების შუქურის, ჯანმრთელობისა თუ ფიტნესის აღმნუსხველების ან გონიერი განათების ნათურების დაყენება/სინქრონიზაცია</translation>
@@ -1369,6 +1374,7 @@
 <translation id="2326188115274135041">ავტომატური განბლოკვის ჩასართავად დაადასტურეთ PIN-კოდი</translation>
 <translation id="2326931316514688470">პროგრამის ხე&amp;ლახლა ჩატვირთვა</translation>
 <translation id="2327492829706409234">პროგრამის ჩართვა</translation>
+<translation id="2327920026543055248">შეიყვანეთ <ph name="CHARACTER" /> სიმბოლო <ph name="TOTAL" />-დან</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" />-ის გამოსაყენებლად გადატვირთეთ მოწყობილობა.</translation>
 <translation id="2328636661627946415">როცა ინკოგნიტო რეჟიმით სარგებლობთ, საიტებს თქვენ მიერ ვების დათვალიერების აქტივობის გაგება მხოლოდ ქუქი-ჩანაწერების მეშვეობით შეუძლია. ინკოგნიტო სესიის დასრულების შემდეგ ქუქი-ჩანაწერები წაიშლება.</translation>
 <translation id="2329597144923131178">შედით სისტემაში თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების ყველა თქვენს მოწყობილობაში მისაღებად.</translation>
@@ -1839,6 +1845,7 @@
 <translation id="2791952154587244007">შეცდომა მოხდა. კიოსკის პროგრამა ავტომატურად ვერ გაიშვება ამ მოწყობილობაში.</translation>
 <translation id="2792290659606763004">გსურთ Android-ის აპების ამოშლა?</translation>
 <translation id="2792465461386711506">თქვენს ტელეფონზე არსებული ბოლოდროინდელი Chrome ჩანართების სანახავად ჩართეთ Chrome სინქრონიზაცია</translation>
+<translation id="2792697226874849938">შეზღუდვის სურათი</translation>
 <translation id="2794233252405721443">საიტი დაბლოკილია</translation>
 <translation id="2794522004398861033">eSIM-ის დასაყენებლად დაუკავშირდით Wi-Fi ან Ethernet ქსელს</translation>
 <translation id="2795716239552913152">საიტების მიერ თქვენი მდებარეობის გამოყენება ხდება შესაბამისი ფუნქციებისა თუ ინფორმაციის უზრუნველსაყოფად, მაგალითად, ადგილობრივი ახალი ამბების ან ახლომდებარე მაღაზიების საჩვენებლად</translation>
@@ -2067,6 +2074,7 @@
 <translation id="3012804260437125868">მხოლოდ იმავე საიტის დაცული კავშირები</translation>
 <translation id="3012917896646559015">გთხოვთ დაუყოვნებლივ დაუკავშირდეთ თქვენი აპარატურის მწარმოებელს და გაგზავნეთ თქვენი კომპიუტერი შეკეთების ორგანოში.</translation>
 <translation id="301525898020410885">ენა დაყენებულია თქვენი ორგანიზაციის მიერ</translation>
+<translation id="3015425363367310551">გსურთ, გაააქტიუროთ ChromeVox, CloudReady 2.0-ში ჩაშენებული ეკრანის წამკითხველი? ამისთვის დააჭირეთ ხმის ორივე ღილაკს ხუთი წამის განმავლობაში.</translation>
 <translation id="3015639418649705390">ხელახლა გაშვება ახლავე</translation>
 <translation id="3016381065346027039">ჟურნალის ჩანაწერები არ არის</translation>
 <translation id="3016641847947582299">კომპონენტი განახლდა</translation>
@@ -2190,6 +2198,7 @@
 <translation id="3142562627629111859">ახალი ჯგუფი</translation>
 <translation id="3143515551205905069">სინქრონიზაციის გაუქმება</translation>
 <translation id="3143754809889689516">დასაწყისიდან დაკვრა</translation>
+<translation id="3144023778624018265">CloudReady 2.0 პარამეტრების სინქრონიზაცია</translation>
 <translation id="3144647712221361880">ბმულის გახსნა, როგორც</translation>
 <translation id="3149510190863420837">Chrome-ის პროგრამები</translation>
 <translation id="3150693969729403281">უსაფრთხოების შემოწმების გაშვება</translation>
@@ -2292,6 +2301,7 @@
 <translation id="3275778913554317645">გახსნა ფანჯარაში</translation>
 <translation id="3277691515294482687">Linux-ის ახალ ვერსიაზე გადასვლამდე ჩემი აპებისა და ფაილების სარეზერვო ასლების შექმნა „ჩემი ფაილების“ საქაღალდეში.</translation>
 <translation id="3278001907972365362">თქვენი Google ანგარიშ(ებ)ი საჭიროებს ყურადღებას</translation>
+<translation id="3278800075417428224">ენების მართვა CloudReady 2.0-ის პარამეტრებიდან</translation>
 <translation id="3279092821516760512">არჩეულ კონტაქტებს შეეძლებათ კონტენტის თქვენთვის გაზიარება, როცა ახლომახლო იქნებიან. მონაცემთა გადაცემა არ დაიწყება, სანამ არ დაეთანხმებით.</translation>
 <translation id="3279230909244266691">მიმდინარეობს ვირტუალური მოწყობილობის გაშვება, რასაც შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="3280237271814976245">&amp;შეინახე როგორც…</translation>
@@ -2438,6 +2448,7 @@
 <translation id="343115368966109153">ჩამოიტვირთოს <ph name="FILE_NAME" />? მისი ნახვა მოწყობილობის ყველა მომხმარებელს შეეძლება.</translation>
 <translation id="3432227430032737297">ყველა ნაჩვენების ამოშლა</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
+<translation id="3433507769937235446">ჩაკეტვა დატოვებისას</translation>
 <translation id="3433621910545056227">უი! სისტემამ ვერ დააყენა მოწყობილობის ინსტალაციის დროის ატრიბუტების ბლოკი.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში. ამ პარამეტრების და მათი დარეგულირების შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია შემდეგ მისამართზე: families.google.com.</translation>
@@ -2459,6 +2470,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> წთ</translation>
 <translation id="3445925074670675829">USB-C მოწყობილობა</translation>
 <translation id="3446274660183028131">Windows-ის ინსტალაციისთვის გაუშვით Parallels Desktop.</translation>
+<translation id="3446286111407214190">Google CloudReady 2.0-ის პიროვბების სარჩევი</translation>
 <translation id="344630545793878684">წაიკითხეთ თქვენი მონაცემები რამდენიმე ვებსაიტზე</translation>
 <translation id="3446650212859500694">ეს ფაილი შეიცავს სენსიტიურ კონტენტს</translation>
 <translation id="3447644283769633681">დაბლოკეთ მესამე მხარის ყველა ქუქი-ჩანაწერი</translation>
@@ -2657,6 +2669,7 @@
 <translation id="3640214691812501263">გსურთ, დაამატოთ „<ph name="EXTENSION_NAME" />“ <ph name="USER_NAME" />-სთვის?</translation>
 <translation id="3640613767643722554">ასწავლეთ ასისტენტს თქვენი ხმის ამოცნობა</translation>
 <translation id="3641456520301071208">საიტებს შეუძლია თქვენი მდებარეობის გამოყენების თხოვნა</translation>
+<translation id="3642699533549879077">როცა ვინმე სხვა შეხედავს თქვენს ეკრანს, თქვენ მიიღებთ ამაზე გაფრთხილებას და შეტყობინების შინაარსი დაიმალება.</translation>
 <translation id="3645372836428131288">გთხოვთ, ოდნავ გადააადგილოთ თითი თქვენი თითის ანაბეჭდის სხვა ნაწილის აღსაბეჭდად.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}other{<ph name="ATTACHMENTS" /> მიღებულია <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> აღმოჩენილია</translation>
@@ -2686,6 +2699,7 @@
 <translation id="3672681487849735243">აღმოჩენილია ქარხნული შეცდომა</translation>
 <translation id="3673097791729989571">შესვლის ჰოსტია <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673622964532248901">ამ მოწყობილობაზე ტრანსლირების უფლება არ გაქვთ.</translation>
+<translation id="3675511132463531771">საჭიროა CloudReady 2.0-ის განახლება</translation>
 <translation id="367645871420407123">დატოვეთ ცარიელი, თუ გსურთ დააყენოთ ძირეული პაროლი საწყის სატესტო გამოსახულების ღირებულებაზე</translation>
 <translation id="3677106374019847299">შეიყვანეთ მორგებული პროვაიდერი</translation>
 <translation id="3677911431265050325">მობილური საიტის მოთხოვნა</translation>
@@ -2702,6 +2716,24 @@
 <translation id="3688526734140524629">არხის შეცვლა</translation>
 <translation id="3688578402379768763">განახლებული</translation>
 <translation id="3688794912214798596">ენების შეცვლა...</translation>
+<translation id="3688944113090948433"><ph name="BEGIN_H3" />გამართვის ფუნქციები<ph name="END_H3" />
+      <ph name="BR" />
+      თქვენს Chrome OS მოწყობილობაზე თქვენი საკუთარი კოდის ინსტალაციისთვის და ტესტირებისთვის შეგიძლიათ ჩართოთ გამართვის ფუნქციები. მათი მეშვეობით თქვენ შეგეძლებათ:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />RootFS დადასტურების გაუქმება ოპერაციული სისტემის ფაილების შესაცვლელად
+        <ph name="LIST_ITEM" />მოწყობილობაზე სტანდარტული სატესტო გასაღებების მეშვეობით SSH-წვდომის ჩართვა ისეთი ხელსაწყოების გამოსაყენებლად, როგორიცაა <ph name="BEGIN_CODE" />Cros Flash<ph name="END_CODE" />
+        <ph name="LIST_ITEM" />USB-დან ჩატვირთვის ჩართვა USB-დისკიდან ოპერაციული სისტემის იმიჯის ინსტალაციისთვის
+        <ph name="LIST_ITEM" />დეველოპერისა და სისტემის ძირეული პაროლების დაყენება სასურველ მნიშვნელობაზე მოწყობილობაში SSH-ის მეშვეობით ხელით შესასვლელად
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      გამართვის ფუნქციების უმეტესობა ჩართული დარჩება კორპორაციულ მოწყობილობაზე Powerwash-ის შესრულების ან მონაცემების ამოშლის შემდეგაც კი. გამართვის ფუნქციების სრულად გამოსართავად საჭიროა Chrome OS-ის აღდგენის პროცესის გაშვება (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      გამართვის ფუნქციების შესახებ დამატებითი ინფორმაციისთვის გადადით ბმულზე:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" />  პროცესის მსვლელობისას სისტემა გადაიტვირთება.</translation>
 <translation id="3690369331356918524">გაგაფრთხილებთ მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში</translation>
 <translation id="3691231116639905343">კლავიატურის აპები</translation>
 <translation id="3691267899302886494"><ph name="HOST" /> ითხოვს თქვენი ეკრანის გაზიარების ნებართვას</translation>
@@ -2911,6 +2943,7 @@
 <translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
 <translation id="3887022758415973389">მოწყობილობების სიის ჩვენება</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> კავშირი</translation>
+<translation id="3888491127874785636">CouldReady 2.0 System Image Writer</translation>
 <translation id="3888550877729210209">ჩანიშვნა <ph name="LOCK_SCREEN_APP_NAME" />-ის მეშვეობით</translation>
 <translation id="3888586133700543064">ეს ინფორმაცია დაგვეხმარება, უკეთ გავერკვიოთ, თუ რა პრობლემა გაქვთ ასისტენტთან დაკავშირებით. ის ინახება მაქსიმუმ 90 დღის ვადით და მასზე წვდომა აქვს მხოლოდ ინჟინერებისა და უკუკავშირის შესაბამის გუნდებს.</translation>
 <translation id="3888900458694486810">გვერდითი ძიების დახურვა</translation>
@@ -3002,6 +3035,7 @@
 <translation id="3962119236270174787">სტანდარტული დაცვა ცნობილი სახიფათო ვებსაიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან</translation>
 <translation id="3963721102035795474">წამკითხველის რეჟიმი</translation>
 <translation id="3964480518399667971">ფიჭური ქსელის გამორთვა</translation>
+<translation id="39650333289039736">თქვენი აპები, პარამეტრები და სხვა მოდიფიკაციები სინქრონიზებული იქნება ყველა CloudReady 2.0 მოწყობილობას შორის, რომლებზეც შესული ხართ თქვენი Google ანგარიშით.</translation>
 <translation id="3965811923470826124">მეთოდი:</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-იდან გასვლა</translation>
 <translation id="3966072572894326936">აირჩიეთ სხვა საქაღალდე...</translation>
@@ -3113,6 +3147,7 @@
 <translation id="4079140982534148664">მართლწერის გაძლიერებული შემოწმების გამოყენება</translation>
 <translation id="4081242589061676262">ფაილის ტრანსლირება ვერ ხერხდება.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" />-მა გამოგიგზავნათ შეტყობინება ტელეფონზე. თქვენი ვინაობის დასადასტურებლად, შეასრულეთ იქ მოცემული ნაბიჯები.</translation>
+<translation id="4083599409544993198">ჩემი არჩევანის დამახსოვრება ფაილის ამ ტიპისთვის: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">სანიშნე</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />-ის დახურვა</translation>
 <translation id="4085270836953633510">საიტების მიერ თანმიმდევრულ პორტებზე წვდომის მოთხოვნა</translation>
@@ -3142,6 +3177,7 @@
 <translation id="4101352914005291489">დამალული SSID</translation>
 <translation id="4102906002417106771">გადატვირთვა Powerwash-ისთვის</translation>
 <translation id="4104163789986725820">ე&amp;ქსპორტი…</translation>
+<translation id="410547683402570632">ჩემი არჩევანის დამახსოვრება ფაილის ამ ტიპებისთვის: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">მეხსიერების მოწყობილობების იდენტიფიცირება და ამოღება</translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
@@ -3150,6 +3186,7 @@
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
 <translation id="4115002065223188701">ქსელი დიაპაზონს მიღმაა</translation>
 <translation id="4115378294792113321">მაგენტა</translation>
+<translation id="4116704186509653070">ისევ გახსნა</translation>
 <translation id="4117637339509843559">მუქი რეჟიმი</translation>
 <translation id="4117714603282104018">სენსორული პანელის შეხებადი რეაქცია</translation>
 <translation id="4118579674665737931">გთხოვთ, გადატვირთოთ მოწყობილობა და ხელახლა ცადოთ.</translation>
@@ -3366,6 +3403,7 @@
 <translation id="4369121877634339065">ძიებისთვის ჩავლებით გადაიტანეთ ნებისმიერ სურათზე</translation>
 <translation id="4369215744064167350">ვებსაიტის მოთხოვნა დაკმაყოფილდა</translation>
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
+<translation id="4371179719793593133">თქვენი აპები და პარამეტრები სინქრონიზებული იქნება თქვენს ყველა CloudReady 2.0 მოწყობილობასთან, რომელშიც შესული ხართ თქვენი Google ანგარიშით. ბრაუზერის სინქრონიზაციის ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />Chrome-ის პარამეტრებზე<ph name="LINK_END" />.</translation>
 <translation id="4373966964907728675">დესკტოპის ტრანსლირება</translation>
 <translation id="4374831787438678295">Linux ინსტალატორი</translation>
 <translation id="4375035964737468845">გახსენით გადმოწერილი ფაილი</translation>
@@ -3471,6 +3509,7 @@
 <translation id="4477015793815781985">დაურთეთ Ctrl, Alt ან ⌘</translation>
 <translation id="4478664379124702289">ბმუ&amp;ლების შენახვა როგორც…</translation>
 <translation id="4479424953165245642">kiosk აპლიკაციების მართვა</translation>
+<translation id="4479481745547029647">Google Chrome-ისა და CloudReady 2.0-ის დამატებითი პირობები</translation>
 <translation id="4479639480957787382">ეთერნეთი</translation>
 <translation id="4479877282574735775">მიმდინარეობს ვირტუალური მოწყობილობის კონფიგურაცია. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="4480590691557335796">Chrome-ს შეუძლია თქვენს კომპიუტერზე საზიანო პროგრამული უზრუნველყოფის პოვნა და ამოშლა</translation>
@@ -3636,6 +3675,7 @@
 <translation id="4638930039313743000">ADB გამართვის ჩართვა</translation>
 <translation id="4641539339823703554">Chrome-მა ვერ დააყენა სისტემის დრო. შეამოწმეთ დრო ქვემოთ და გაასწორეთ, თუ საჭიროა.</translation>
 <translation id="4643612240819915418">ვიდეოს &amp;გახსნა ახალ ჩანართზე</translation>
+<translation id="4643833688073835173">თქვენი Chromebook იყენებს ჩაშენებულ სენსორს თქვენი მოწყობილობის წინ მყოფი ადამიანების აღმოსაჩენად. ყველა დაკავშირებული მონაცემი მყისიერად მუშავდება თქვენს მოწყობილობაზე, შემდეგ კი იშლება. სენსორის მონაცემები არასოდეს ეგზავნება Google-ს.</translation>
 <translation id="4644205769234414680">ინკოგნიტოში დაშვება</translation>
 <translation id="4645676300727003670">&amp;შეინახეთ</translation>
 <translation id="4646675363240786305">პორტები</translation>
@@ -3649,6 +3689,7 @@
 <translation id="4653405415038586100">შეცდომა Linux-ის კონფიგურაციისას</translation>
 <translation id="4654236001025007561">გაუზიარეთ ფაილები ახლომდებარე Chromebook-ებსა და Android მოწყობილობებს</translation>
 <translation id="4657914796247705218">TrackPoint-ის სიჩქარე</translation>
+<translation id="4658285806588491142">შეინარჩუნეთ თქვენი ეკრანის კონფიდენციალურობა</translation>
 <translation id="465878909996028221">ბრაუზერის გადამისამართებისთვის მხარდაჭერილია მხოლოდ http, https და ფაილების პროტოკოლები.</translation>
 <translation id="4659126640776004816">თქვენს Google ანგარიშში შესვლისას ეს ფუნქცია ჩართული იქნება.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{სურათი}other{# სურათი}}</translation>
@@ -3697,6 +3738,7 @@
 <translation id="4699357559218762027">(ავტომატურად გაშვებული)</translation>
 <translation id="4701025263201366865">შესვლა მშობლისთვის</translation>
 <translation id="4701335814944566468">ნანახია გუშინ</translation>
+<translation id="4701540735981103145">შესვლა დაბლოკა თქვენმა ადმინისტრატორმა</translation>
 <translation id="4707337002099455863">ყოველთვის ყველა საიტზე</translation>
 <translation id="4708794300267213770">ძილიდან გამოღვიძებისას ჩაკეტილი ეკრანის ჩვენება</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
@@ -3732,6 +3774,7 @@
 <translation id="475088594373173692">პირველი მომხმარებელი</translation>
 <translation id="4756378406049221019">შეწყვეტა/გადატვირთვა</translation>
 <translation id="4756388243121344051">&amp;ისტორია</translation>
+<translation id="4759202969060787081">არ გაიხსნას</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4761104368405085019">გამოიყენეთ თქვენი მიკროფონი</translation>
 <translation id="4762718786438001384">მოწყობილობის დისკზე ხელმისაწვდომი მეხსიერება კრიტიკულად არასაკმარისია</translation>
@@ -3896,6 +3939,7 @@
 <translation id="4917385247580444890">ძლიერი</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> სურს ურთიერთობა გაფართოებით „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">მიღება</translation>
+<translation id="4918134162946436591">მინიშნების გადაფარვის ჩვენება</translation>
 <translation id="4921348630401250116">ტექსტის გახმოვანება</translation>
 <translation id="4921809350408880559">თქვენს ბოლოდროინდელ და შემოთავაზებულ დოკუმენტებს ხედავთ Google Drive-ის მეშვეობით თქვენ მიერ ადრე განხორციელებული აქტივობის საფუძველზე.
         <ph name="BREAK" />
@@ -3927,6 +3971,7 @@
 <translation id="4944310289250773232">ავტორიზაციის ამ სერვისის ჰოსტინგს უზრუნველყოფს <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">თითის ანაბეჭდი რომ დააყენოთ, სთხოვეთ თქვენს ბავშვს, შეეხოს ღილაკს. თქვენი ბავშვის თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ ამ <ph name="DEVICE_TYPE" />-ზე.</translation>
 <translation id="4946459324029651239">თქვენ სტანდარტული დაცვით სარგებლობთ</translation>
+<translation id="4950993567860689081">თქვენს სესიას მართავს თქვენივე ორგანიზაცია. ადმინისტრატორებს შეუძლიათ თქვენი პროფილის წაშლა და თქვენი ქსელის ტრაფიკზე დაკვირვება.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4953808748584563296">ნაგულისხმევი სტაფილოსფერი ავატარი</translation>
@@ -4066,6 +4111,7 @@
 <translation id="5111646998522066203">ინკოგნიტო რეჟიმიდან გასვლა</translation>
 <translation id="5111692334209731439">&amp;და მონიშნულების მმართველი</translation>
 <translation id="5112577000029535889">შემ&amp;მუშავებლის ხელსაწყოები</translation>
+<translation id="511313294362309725">სწრაფი დაწყვილების ჩართვა</translation>
 <translation id="5113739826273394829">თუ თქვენ დააჭირეთ ამ ხატულას, თქვენ მანუალურად დაბლოკავთ ამ <ph name="DEVICE_TYPE" />. სხვა დროს, თქვენ დაგჭირდებათ პაროლის შეყვანა.</translation>
 <translation id="51143538739122961">მიაერთეთ თქვენი უსაფრთხოების გასაღები და შეეხეთ მას</translation>
 <translation id="5115309401544567011">გთხოვთ, დაუკავშიროთ თქვენი <ph name="DEVICE_TYPE" /> დენის წყაროს.</translation>
@@ -4595,6 +4641,7 @@
 <translation id="5648166631817621825">ბოლო 7 დღე</translation>
 <translation id="5651308944918885595">მახლობლად გაზიარების აღმოჩენადობა</translation>
 <translation id="5653154844073528838">თქვენ გაქვთ <ph name="PRINTER_COUNT" /> შენახული პრინტერი.</translation>
+<translation id="5654266266024827740">გსურთ, გაააქტიუროთ ChromeVox, CloudReady 2.0-ში ჩაშენებული ეკრანის წამკითხველი? ამისთვის დააჭირეთ შორისის კლავიშს.</translation>
 <translation id="5655296450510165335">მოწყობილობის რეგისტრაცია</translation>
 <translation id="5656845498778518563">გამოხმაურების გაგზავნა Google-ში</translation>
 <translation id="5657156137487675418">ყველა ქუქი-ჩანაწერის დაშვება</translation>
@@ -4678,6 +4725,7 @@
 <translation id="5747552184818312860">ვადა</translation>
 <translation id="5747785204778348146">შემმუშავებელი - არასტაბილური</translation>
 <translation id="5747809636523347288">ჩა&amp;სმა და <ph name="URL" />-ზე გადასვლა</translation>
+<translation id="5747845802829012825">Linux-ის დაყენების დასასრულებლად განაახლეთ CloudReady 2.0 და ცადეთ ხელახლა.</translation>
 <translation id="5755022574660047665">მოგონებები Google Photos-იდან</translation>
 <translation id="5756163054456765343">დახმარ&amp;ების ცენტრი</translation>
 <translation id="5757375109985023827">გადასახედად აირჩიეთ ჩანართი</translation>
@@ -4804,9 +4852,12 @@
 <translation id="5883356647197510494">ავტომატურად დაბლოკილია <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">ეს ჩანართი USB მოწყობილობასთან არის დაკავშირებული.</translation>
 <translation id="5886009770935151472">თითის ანაბეჭდი 1</translation>
+<translation id="5886325049116255797">თქვენი შენახული პარამეტრები და აქტივობა გამოსაყენებლად მზად იქნება ნებისმიერ CloudReady 2.0 მოწყობილობაზე, რომელშიც თქვენი Google ანგარიშით შეხვალთ. პარამეტრებიდან შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
+<translation id="5888843733007437002">ნაჩვენებია შაბლონები. ნავიგაციისთვის დააჭირეთ კლავიშს Tab.</translation>
 <translation id="5889282057229379085">შუალედური CA-ების მაქსიმალური რაოდენობა: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">უპირატესი Wi-Fi ქსელები</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
+<translation id="5896436821193322561">არ დაიშვას</translation>
 <translation id="5900302528761731119">Google პროფილის ფოტო</translation>
 <translation id="590036993063074298">დეტალები არეკვლის ფუნქციის ხარისხის შესახებ</translation>
 <translation id="5901069264981746702">თქვენი თითის ანაბეჭდის მონაცემები უსაფრთხოდ შეინახება მხოლოდ და მხოლოდ თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -4857,6 +4908,7 @@
 <translation id="5939719276406088041">მალსახმობი ვერ შეიქმნა</translation>
 <translation id="594048410531370124">კლავიშის ამოცნობა ვერ მოხერხდა. <ph name="RESPONSE" /> რომ შესრულდეს, დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="5941153596444580863">მომხმარებლის დამატება…</translation>
+<translation id="5941176400377813459">CloudReady 2.0 მოწყობილობისა და კომპონენტების სერიული ნომრების წაკითხვა.</translation>
 <translation id="5941343993301164315">შედით <ph name="TOKEN_NAME" />-ში.</translation>
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5942779427914696408">მოწყობილობის ხილვადობა</translation>
@@ -4869,6 +4921,24 @@
 <translation id="5950819593680344519">Chrome-მა თქვენს კომპიუტერში საზიანო პროგრამული უზრუნველყოფა ვერ აღმოაჩინა • შემოწმდა გუშინ</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> ადგილობრივი შრიფტების გამოყენებას ითხოვს</translation>
 <translation id="5951624318208955736">მონიტორი</translation>
+<translation id="5953627503079109298"><ph name="BEGIN_H3" />გამართვის ფუნქციები<ph name="END_H3" />
+      <ph name="BR" />
+      თქვენს CloudReady 2.0  მოწყობილობაზე თქვენი საკუთარი კოდის ინსტალაციისთვის და ტესტირებისთვის შეგიძლიათ ჩართოთ გამართვის ფუნქციები. მათი მეშვეობით თქვენ შეგეძლებათ:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />RootFS დადასტურების გაუქმება ოპერაციული სისტემის ფაილების შესაცვლელად
+        <ph name="LIST_ITEM" />მოწყობილობაზე სტანდარტული სატესტო გასაღებების მეშვეობით SSH-წვდომის ჩართვა ისეთი ხელსაწყოების გამოსაყენებლად, როგორიცაა <ph name="BEGIN_CODE" />Cros Flash<ph name="END_CODE" />
+        <ph name="LIST_ITEM" />USB-დან ჩატვირთვის ჩართვა USB-დისკიდან ოპერაციული სისტემის იმიჯის ინსტალაციისთვის
+        <ph name="LIST_ITEM" />დეველოპერისა და სისტემის ძირეული პაროლების დაყენება სასურველ მნიშვნელობაზე მოწყობილობაში SSH-ის მეშვეობით ხელით შესასვლელად
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      გამართვის ფუნქციების უმეტესობა ჩართული დარჩება კორპორაციულ მოწყობილობაზე Powerwash-ის შესრულების ან მონაცემების ამოშლის შემდეგაც კი. გამართვის ფუნქციების სრულად გამოსართავად საჭიროა Chrome OS-ის აღდგენის პროცესის გაშვება (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      გამართვის ფუნქციების შესახებ დამატებითი ინფორმაციისთვის გადადით ბმულზე:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />შენიშვნა:<ph name="END_BOLD" />  პროცესის მსვლელობისას სისტემა გადაიტვირთება.</translation>
 <translation id="5955282598396714173">თქვენი პაროლის მოქმედების ვადა ამოიწურა. მის შესაცვლელად გადით და ხელახლა შედით სისტემაში.</translation>
 <translation id="5955304353782037793">პროგრამა</translation>
 <translation id="5955721306465922729">ვებსაიტი ითხოვს ამ აპლიკაციის გახსნას.</translation>
@@ -4961,6 +5031,7 @@
     <ph name="BEGIN_PARAGRAPH3" />ამ ფუნქციის გამორთვა არ შეუშლის ხელს ამ მოწყობილობას, გააგზავნოს ის საჭირო ინფორმაცია, რომელიც ისეთი არსებითი სერვისებისთვის არის აუცილებელი, როგორიცაა სისტემის განახლებები და უსაფრთხოება.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />თუ თქვენი ბავშვის Google ანგარიშისთვის ჩართულია ვებსა და აპებში აქტივობის პარამეტრი, თქვენი ბავშვის მონაცემები, შესაძლოა, თავის Google ანგარიშში შეინახოს. ამ პარამეტრების და მათი დარეგულირების შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052488962264772833">ტრანსლირების დასაწყებად აკრიფეთ წვდომის კოდი</translation>
 <translation id="6052976518993719690">SSL სერტიფიცირების ორგანიზაცია</translation>
 <translation id="6053401458108962351">დათვალიერების მონაცემების &amp;გასუფთავება…</translation>
 <translation id="6054284857788651331">ახლახან დახურული ჩანართების ჯგუფი</translation>
@@ -4998,6 +5069,7 @@
 <translation id="6078769373519310690">„<ph name="CHROME_EXTENSION_NAME" />“ ითხოვს HID მოწყობილობასთან დაკავშირებას</translation>
 <translation id="608029822688206592">ქსელი ვერ მოიძებნა. ჩასვით SIM ბარათი და ცადეთ ხელახლა.</translation>
 <translation id="6080689532560039067">შეამოწმეთ სისტემის დრო</translation>
+<translation id="6082877069782862752">კლავიშების ასახვა</translation>
 <translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> — უსახელო ჯგუფის ნაწილი</translation>
 <translation id="6085886413119427067">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს</translation>
@@ -5166,6 +5238,7 @@
 <translation id="6254503684448816922">გასაღების კომპრომეტაცია</translation>
 <translation id="6254892857036829079">იდეალური</translation>
 <translation id="6257602895346497974">სინქრონიზაციის ჩართვა...</translation>
+<translation id="62586649943626337">დაახარისხეთ თქვენი ჩანართები ჩანართების ჯგუფი</translation>
 <translation id="625895209797312329">საიტებისთვის თქვენს მოწყობილობაზე დაინსტალირებული შრიფტების გამოყენების დაბლოკვა</translation>
 <translation id="6262371516389954471">სარეზერვო ასლები აიტვირთება Google-ში და დაიშიფრება თქვენი Google ანგარიშის პაროლით.</translation>
 <translation id="6263082573641595914">Microsoft CA ვერსია</translation>
@@ -5544,6 +5617,7 @@
 <translation id="6644513150317163574">URL-ის ფორმატი არასწორია. SSO ავტორიზაციით სარგებლობისას სერვერი მითითებული უნდა იყოს ჰოსტის სახელის სახით.</translation>
 <translation id="6644846457769259194">მიმდინარეობს თქვენი მოწყობილობის განახლება (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">არჩეული Google Cloud Print მოწყობილობა აღარ არის მხარდაჭერილი. <ph name="BR" /> ცადეთ პრინტერის დაყენება თქვენი კომპიუტერის სიტემის პარამეტრებიდან.</translation>
+<translation id="6646476869708241165">სწრაფი დაწყვილების გამორთვა</translation>
 <translation id="6647228709620733774">Netscape სერტიფიკაციის ნებართვის გაუქმების URL მისამართი</translation>
 <translation id="6647441008198474441">თქვენ მიერ მონახულებული URL-ები ეგზავნება Google-ს იმის პროგნოზირებისთვის, თუ რომელი საიტების მონახულებას მოისურვებთ შემდგომში</translation>
 <translation id="6648911618876616409">კრიტიკული განახლება მზად არის ინსტალაციისთვის. დასაწყებად შედით სისტემაში.</translation>
@@ -5654,6 +5728,7 @@
 <translation id="6770602306803890733">უსაფრთხოების გაუმჯობესება თქვენთვის და ვების ყველა მომხმარებლისთვის</translation>
 <translation id="6771503742377376720">არის სერტიფიცირების ორგანიზაცია</translation>
 <translation id="6775163072363532304">აქ გამოჩნდება ხელმისაწვდომი მოწყობილობები.</translation>
+<translation id="6776729248872343918">სწრაფი დაწყვილების ჩართვა</translation>
 <translation id="6777817260680419853">გადამისამართება დაიბლოკა</translation>
 <translation id="6778737459546443941">თქვენს მშობელს ის ჯერ არ დაუდასტურებია</translation>
 <translation id="6779092717724412415">ამის მსგავსი გამოყოფის შესაქმნელად, აირჩიეთ ნებისმიერი ტექსტი და დააწკაპუნეთ მარჯვენა ღილაკზე</translation>
@@ -5711,7 +5786,9 @@
 <translation id="6813907279658683733">მთელი ეკრანი</translation>
 <translation id="6817174620439930047">შეკითხვა, როცა საიტს MIDI მოწყობილობებზე წვდომისთვის სისტემის ექსკლუზიური შეტყობინების გამოყენება სურს (რეკომენდებულია)</translation>
 <translation id="6818198425579322765">სათარგმნი გვერდის ენა</translation>
+<translation id="6818640747323584611">CloudReady 2.0-ის ფუნქციებისა და წარმადობის გაუმჯობესების ხელშეწყობა</translation>
 <translation id="6818802132960437751">ვირუსებისგან ჩაშენებული დაცვა</translation>
+<translation id="6819741204334296334">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს CloudReady 2.0-ის კიოსკის რეჟიმში</translation>
 <translation id="682123305478866682">დესკტოპის ტრანსლირება</translation>
 <translation id="6823174134746916417">სენსორული პანელზე შეხებით დაწკაპუნება</translation>
 <translation id="6824564591481349393">&amp;ელფოსტის მისამართის კოპირება</translation>
@@ -5781,6 +5858,7 @@
 <translation id="6889957081990109136">გადამრთველი ჯერ არ არის მიკუთვნებული</translation>
 <translation id="6892812721183419409">ბმულის გახსნა, როგორც <ph name="USER" /></translation>
 <translation id="6895032998810961280">საზიანო პროგრამული უზრუნველყოფის, სისტემის პარამეტრების და თქვენი კომპიუტერის გასუფთავებისას აღმოჩენილი მიმდინარე პროცესების შესახებ დეტალური ინფორმაციის შეტყობინება Google-ისთვის</translation>
+<translation id="6895902329218596456"><ph name="USER_EMAIL" /> იმართება <ph name="MANAGER" />-ის მიერ და თქვენმა ადმინისტრატორმა დაბლოკა სისტემაში შესვლა არაძირითადი ანგარიშიდან</translation>
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6897363604023044284">გასასუფთავებლად აირჩიეთ საიტები</translation>
 <translation id="6898440773573063262">ახლა შეგიძლიათ ისე დააკონფიგურიროთ კიოსკის პროგრამები, რომ ავტომატურად გაიშვას ამ მოწყობილობაში.</translation>
@@ -6169,6 +6247,7 @@
 <translation id="730515362922783851">ლოკალურ ქსელში თუ ინტერნეტში არსებულ ნებისმიერ მოწყობილობასთან მონაცემთა მიმოცვლა</translation>
 <translation id="7306521477691455105">გახსენით პარამეტრები, <ph name="USB_DEVICE_NAME" /> რომ <ph name="USB_VM_NAME" />-თან დააკავშიროთ</translation>
 <translation id="7307129035224081534">დაპაუზებულია</translation>
+<translation id="7307719647623535470">დაცული DNS-ის მართვა CloudReady 2.0-ის პარამეტრებიდან</translation>
 <translation id="7308643132139167865">ვებსაიტების ენები</translation>
 <translation id="7310598146671372464">შესვლა ვერ მოხერხდა. Kerberos დაშიფვრის მითითებული ტიპები მხარდაუჭერელია სერვერის მიერ. დაუკავშირდით თქვენს ადმინისტრატორს.</translation>
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
@@ -6384,6 +6463,7 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 სხვა}other{{NUM_DOWNLOADS} სხვა}}</translation>
 <translation id="7526989658317409655">ჩანაცვლების ველი</translation>
 <translation id="7527758104894292229">განაახლეთ ის თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
+<translation id="7528224636098571080">არ გაიხსნას</translation>
 <translation id="7529411698175791732">შეამოწმეთ კავშირი ინტერნეტთან. თუ პრობლემა გამეორდება, ცადეთ გამოსვლა და ხელახლა შესვლა.</translation>
 <translation id="7529876053219658589">{0,plural, =1{სტუმრის ფანჯრების დახურვა}other{სტუმრის ფანჯრების დახურვა}}</translation>
 <translation id="7530016656428373557">განტვირთვის მაჩვენებელი (ვატი)</translation>
@@ -6561,6 +6641,7 @@
 <translation id="7691163173018300413">„Ok Google“</translation>
 <translation id="7691698019618282776">Crostini-ს ვერსიის განახლება</translation>
 <translation id="769375405463525957">თუ თქვენს მოწყობილობას უყურადღებოდ დატოვებთ, ეკრანი ავტომატურად ჩაიკეტება. როცა თქვენი მოწყობილობის წინ იქნებით, ეკრანი არ ჩაიკეტება.</translation>
+<translation id="7694052127939518600">ფაილების პროგრამა უზრუნველყოფს სწრაფ წვდომას ფაილებზე, რომლებიც შეინახეთ Google Drive-ზე, გარე მეხსიერებაში ან თქვენს CloudReady 2.0 მოწყობილობაში.</translation>
 <translation id="7694246789328885917">გამომყოფი ხელსაწყო</translation>
 <translation id="7696063401938172191">თქვენს „<ph name="PHONE_NAME" />“-ზე:</translation>
 <translation id="7697166915480294040">ეკრანის გაზიარებისას დეტალები დამალულია</translation>
@@ -6626,6 +6707,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">თქვენი ეკრანის საზღვრების დარეგულირება</translation>
 <translation id="7760004034676677601">ეს ის გაშვების გვერდია, რომელსაც მოელოდით?</translation>
+<translation id="7762463735017901568">შეტყობინებების სინქრონიზება გათიშულია თქვენი ტელეფონის ადმინისტრატორის მიერ</translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> <ph name="DOWNLOAD_DOMAIN" />-დან</translation>
 <translation id="7765158879357617694">გადატანა</translation>
@@ -6810,6 +6892,7 @@
 <translation id="7935451262452051102">შესრულდა <ph name="PERCENT" />%</translation>
 <translation id="7938594894617528435">ამჟამად ოფლაინშია</translation>
 <translation id="7939062555109487992">გაფართოებული ვარიანტები</translation>
+<translation id="7939321852721702336">თქვენ საშუალებას აძლევთ CloudReady 2.0-ს გამართვის თვისებები, რომელიც შეიქმნა sshd daemon და რთავს ჩატვირთვას USB დრაივიდან.</translation>
 <translation id="7939412583708276221">მაინც შენახვა</translation>
 <translation id="7942349550061667556">წითელი</translation>
 <translation id="7943368935008348579">PDF-ების ჩამოტვირთვა</translation>
@@ -6956,6 +7039,7 @@
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8076835018653442223">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081623398548615289">თქვენს სესიას მართავს <ph name="MANAGER_NAME" />. ადმინისტრატორებს შეუძლიათ თქვენი პროფილის წაშლა და თქვენი ქსელის ტრაფიკზე დაკვირვება.</translation>
 <translation id="8081989000209387414">გსურთ ADB გამართვის გამორთვა?</translation>
 <translation id="8082106343289440791">გსურთ „<ph name="DEVICE_NAME" />“-თან დაწყვილება?</translation>
 <translation id="8082390128630131497">ADB გამართვის გათიშვის შემთხვევაში ეს <ph name="DEVICE_TYPE" /> დაბრუნდება ქარხნულ პარამეტრებზე. მომხმარებლის ყველა ანგარიში და ლოკალური მონაცემები ამოიშლება.</translation>
@@ -7503,6 +7587,7 @@
 <translation id="8665110742939124773">თქვენ მიერ შეყვანილი წვდომის კოდი არასწორია. ცადეთ ხელახლა.</translation>
 <translation id="8665180165765946056">სარეზერვო კოპირება დასრულდა</translation>
 <translation id="866611985033792019">ამ სერტიფიკატისთვის ელფოსტის მომხმარებლების ამოცნობის მინდობა</translation>
+<translation id="8666224701549693691">CloudReady 2.0 სადიაგნოზო ტესტების გაშვება.</translation>
 <translation id="8666584013686199826">საიტების მიერ USB-მოწყობილობებზე წვდომის მოთხოვნა</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> ახლა სრულეკრანიან რეჟიმშია და მაუსის კურსორი გამოირთო.</translation>
 <translation id="8668052347555487755">ფერთა რეჟიმი</translation>
@@ -7555,6 +7640,7 @@
 <translation id="8719472795285728850">მიმდინარეობს გაფართოებების აქტივობის მოსმენა…</translation>
 <translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> ვერ ჩამოიტვირთა</translation>
 <translation id="8720200012906404956">მიმდინარეობს მობილური ქსელის ძიება. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="8720781020694544444">სამწუხაროდ, თქვენი კომპიუტერი კონფიგურირებულია დეფორმირებული აპარატურის ID-თი. ეს ხელს უშლის CloudReady 2.0-ის განახლებას უსაფრთხოების უახლესი გამოსწორებებით და თქვენი კომპიუტერი <ph name="BEGIN_BOLD" />შეიძლება გახდეს მავნე პროგრამების მიერ განხორციელებული შეტევების ობიექტი<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">ინსტალაციისას ატრიბუტების ინიცირების დრო ამოიწურა.</translation>
 <translation id="8722912030556880711">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ეს მოწყობილობა ამჟამად ავტომატურად უგზავნის Google-ს დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემებს. აღნიშნული მონაცემები დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. თუ ჩართული გაქვთ ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს თქვენს Google ანგარიშში. <ph name="BEGIN_LINK2" />შეიტყვეთ მეტი<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">თუ ამ ხატულას დაინახავთ, ეს ნიშნავს, რომ ვინაობის თუ შენაძენების დადასტურება შეგიძლიათ თითის ანაბეჭდის მეშვეობით.</translation>
@@ -7740,6 +7826,7 @@
 <translation id="8890516388109605451">წყაროები</translation>
 <translation id="8890529496706615641">პროფილის გადარქმევა ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით თქვენს ოპერატორს ტექნიკური მხარდაჭერისთვის.</translation>
 <translation id="8892168913673237979">ყველაფერი დაყენებულია!</translation>
+<translation id="8893116021193670489">თქვენი კომპიუტერი შეიცავს სანდო პლატფორმის მოდულის (TPM) უსაფრთხოების მოწყობილობას, რომელიც CloudReady 2.0-ში უსაფრთხოებასთან დაკავშირებული მრავალი კრიტიკული ფუნქციის შესასრულებლად გამოიყენება. მეტის გასაგებად, მოინახულეთ Chromebook-ის დახმარების ცენტრი: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="8893801527741465188">დეინსტალაცია დასრულდა</translation>
 <translation id="8893928184421379330">ვწუხვართ, მოწყობილობა <ph name="DEVICE_LABEL" />-ის ამოცნობა ვერ მოხერხდა.</translation>
 <translation id="8894761918470382415">მონაცემებზე წვდომის დაცვა პერიფერიული მოწყობილობებისთვის</translation>
@@ -7873,6 +7960,7 @@
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> აღარ არის მხარდაჭერილი</translation>
 <translation id="9031549947500880805">სარეზერვო კოპირება Google Drive-ში. მარტივად აღადგინეთ თქვენი მონაცემები, ან შეცვალეთ მოწყობილობები ნებისმიერ დროს. თქვენი სარეზერვო ასლი მოიცავს აპების მონაცემებს.</translation>
 <translation id="9031811691986152304">ცადეთ ხელახლა</translation>
+<translation id="9032097289595078011">სწრაფი დაწყვილების გათიშვა</translation>
 <translation id="9033765790910064284">მაინც გაგრძელება</translation>
 <translation id="9033857511263905942">ჩ&amp;ასმა</translation>
 <translation id="903480517321259405">ხელახლა აკრიფეთ PIN-კოდი</translation>
@@ -7902,6 +7990,7 @@
 <translation id="9063208415146866933">შეცდომა ხაზებში <ph name="ERROR_LINE_START" />-<ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">კონფიდენციალური კონტენტის აღბეჭდვა ვერ მოხერხდება</translation>
 <translation id="9064275926664971810">ფორმების ერთი დაწკაპუნებით შესავსებად, ავტომატური შევსების ფუნქციის ჩართვა</translation>
+<translation id="9064599787951583960">CloudReady 2.0 მოწყობილობის ინფორმაციისა და მოწყობილობის მონაცემების წაკითხვა.</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9066394310994446814">ამ ერთეულს ხედავთ Google სერვისებში თქვენი წინა აქტივობის საფუძველზე. თქვენი მონაცემების ნახვა, წაშლა და თქვენი პარამეტრების შეცვლა შეგიძლიათ მისამართზე <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />

@@ -177,6 +177,7 @@
 <translation id="5354152178998424783">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и још 1)}one{(и још #)}few{(и још #)}other{(и још #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
+<translation id="5412236728747081950">Овај сајт прима податке о вашим интересовањима из Chrome-а да би вам приказивао релевантније огласе</translation>
 <translation id="5438097262470833822">Овај избор ће ресетовати дозволе за <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Протекло време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај огласе на сајтовима који приказују огласе који ометају активности или обмањујуће огласе</translation>

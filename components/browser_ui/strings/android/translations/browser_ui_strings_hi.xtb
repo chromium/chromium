@@ -177,6 +177,7 @@
 <translation id="5354152178998424783">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों ने सेव किया है.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 और)}one{(+ # और)}other{(+ # और)}}</translation>
 <translation id="5403592356182871684">नाम</translation>
+<translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
 <translation id="5438097262470833822">यह विकल्प <ph name="WEBSITE" /> के लिए अनुमतियां रीसेट करेगा</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> में से <ph name="ELAPSED_TIME" /> का समय बीत चुका है.</translation>
 <translation id="5494752089476963479">तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाने वाली साइटों पर विज्ञापन ब्लॉक करें</translation>

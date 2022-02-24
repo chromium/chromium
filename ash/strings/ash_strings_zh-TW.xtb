@@ -135,6 +135,7 @@
 <translation id="1747827819627189109">螢幕小鍵盤已啟用</translation>
 <translation id="1749109475624620922">「<ph name="WINDOW_TITLE" />」視窗已指派給所有桌面</translation>
 <translation id="1750088060796401187">只允許 <ph name="MAX_DESK_LIMIT" /> 個桌面。如要開啟新桌面，請先移除一個現有桌面。</translation>
+<translation id="1756833229520115364">視窗或分頁過多，無法儲存範本。</translation>
 <translation id="1761222317188459878">切換網路連線設定。<ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
@@ -185,6 +186,7 @@
 <translation id="2079545284768500474">復原</translation>
 <translation id="2083190527011054446">晚安，<ph name="GIVEN_NAME" />：</translation>
 <translation id="209965399369889474">未連上網路</translation>
+<translation id="2107914222138020205">你的 USB-C 連接線不支援 Thunderbolt。裝置效能可能會因此受到限制。</translation>
 <translation id="2108303511227308752">「Alt + Backspace 鍵」的鍵盤快速鍵已變更。如要使用 Delete 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Backspace 鍵。</translation>
 <translation id="211328683600082144">開啟麥克風</translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
@@ -288,6 +290,8 @@
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
+<translation id="2891209721153296020">「取消選取」</translation>
+<translation id="2894949423239620203">連接線可能會影響效能</translation>
 <translation id="2903844815300039659">已連上 <ph name="NAME" />，<ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2941112035454246133">低</translation>
@@ -327,6 +331,7 @@
 <translation id="3105917916468784889">擷取螢幕畫面</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3113926042639749131">移除建議</translation>
+<translation id="3120421559657122717">要關機嗎？</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">行動數據</translation>
@@ -347,6 +352,7 @@
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你會做些什麼？</translation>
 <translation id="3269597722229482060">按一下滑鼠右鍵</translation>
+<translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
@@ -430,6 +436,7 @@
 <translation id="3702846122927433391">奈及利亞的人口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">先前連線的裝置</translation>
+<translation id="3712317119236351467">無法儲存錄製內容</translation>
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3726171378575546917">這部裝置未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
@@ -489,8 +496,10 @@
 <translation id="4112140312785995938">倒轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
 <translation id="412298498316631026">視窗</translation>
+<translation id="4123259114412175274">如要解鎖 Chromebook，請確認手機的藍牙已開啟</translation>
 <translation id="4129129681837227511">如要在鎖定畫面上查看通知，請將裝置解鎖並修改相關設定</translation>
 <translation id="4146833061457621061">播放音樂</translation>
+<translation id="4165275524535002941">連接線可能不支援螢幕</translation>
 <translation id="4173958948577803258">四</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -592,6 +601,7 @@
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>
+<translation id="4717575069099566988">你的 USB-C 連接線不支援 USB4。裝置效能可能會因此受到限制。</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
@@ -694,6 +704,7 @@
 <translation id="5400461572260843123">快速設定，按下搜尋鍵 + 向左鍵即可存取通知中心。</translation>
 <translation id="5426063383988017631">已關閉設定選單</translation>
 <translation id="5428899915242071344">開始選取</translation>
+<translation id="5429993543155113935">目前不支援無痕式視窗</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433020815079095860">音訊輸入</translation>
@@ -730,6 +741,7 @@
 <translation id="5682642926269496722">Google 助理不支援目前的使用者帳戶。</translation>
 <translation id="5689633613396158040">夜燈功能可讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字。輕觸即可變更夜燈的開啟時間，或完全關閉夜燈功能。</translation>
 <translation id="5691772641933328258">指紋辨識失敗</translation>
+<translation id="5707775774148071965">你使用的連接線無法達到裝置所支援的資料傳輸速率。裝置效能可能會因此受到限制。</translation>
 <translation id="5710450975648804523">「零打擾」模式已開啟</translation>
 <translation id="571295407079589142">行動數據已關閉</translation>
 <translation id="573413375004481890">這部裝置無法支援你的所有螢幕，因此其中一個畫面已中斷連線</translation>
@@ -781,6 +793,7 @@
 <translation id="6022924867608035986">清除搜尋框文字</translation>
 <translation id="602472752137106327">顯示所有桌面的視窗，已點選圓形按鈕</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
+<translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />沒有任何活動。按一下 Enter 鍵即可在瀏覽器中開啟 Google 日曆。</translation>
 <translation id="6030495522958826102">已將選單移至畫面左下角。</translation>
 <translation id="6032620807120418574">點擊任一處即可錄製全螢幕畫面</translation>
 <translation id="6040071906258664830">錄音麥克風已<ph name="STATE" /></translation>
@@ -834,6 +847,7 @@
 <translation id="6431865393913628856">螢幕畫面錄製</translation>
 <translation id="6445835306623867477">正在透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
+<translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 畫面</translation>
@@ -857,6 +871,7 @@
 <translation id="6570831796530454248">{0,plural, =1{請在 1 小時內更新裝置}other{請在 # 小時內更新裝置}}</translation>
 <translation id="6570902864550063460">正在透過 USB 充電</translation>
 <translation id="6574587113394758819">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_TITLE" /> 的通知</translation>
+<translation id="6574622320167699133">已由手機解鎖，按一下或輕觸即可繼續使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
@@ -931,6 +946,7 @@
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結到你的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>
+<translation id="7032161822340700104">最多只能保存 6 個範本。如要儲存新範本，請先移除現有範本。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
 <translation id="7045033600005038336">要取代範本嗎？</translation>
@@ -1030,7 +1046,9 @@
 <translation id="7649070708921625228">說明</translation>
 <translation id="7654687942625752712">同時按住音量調高和調低鍵五秒，即可停用互動朗讀。</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7660160718439869192">「<ph name="NAME" />」會顯示在與 <ph name="EMAIL" /> 連結的裝置上</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
+<translation id="7670953955701272011">在 Google 日曆中開啟此日期</translation>
 <translation id="7671610481353807627">依顏色將應用程式排序</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新增行動網路</translation>
@@ -1121,6 +1139,7 @@
 <translation id="8236042855478648955">休息時間到了</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
+<translation id="8248728785693203669">你的 USB-C 連接線可能未妥善連接螢幕</translation>
 <translation id="8255234195843591763">重設以更新</translation>
 <translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -1150,6 +1169,7 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8433977262951327081">在檔案櫃中顯示輸入選項選單方塊的快速鍵已變更，請改用：<ph name="NEW_SHORTCUT" /> (停用 <ph name="OLD_SHORTCUT" />)。</translation>
+<translation id="8443879455002739353">「複製」</translation>
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
@@ -1217,6 +1237,7 @@
 <translation id="8878886163241303700">延伸螢幕</translation>
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> 將永久刪除</translation>
+<translation id="8905919797434099235">(未命名)</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8909138438987180327">電池剩餘電量：<ph name="PERCENTAGE" />%。</translation>
 <translation id="8921554779039049422">H+</translation>

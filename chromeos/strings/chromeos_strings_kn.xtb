@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="PERCENTAGE_VALUE" />% ಪೂರ್ಣಗೊಂಡಿದೆ)</translation>
 <translation id="1310380015393971138">ಯಾವುದೇ <ph name="NETWORK_NAME" /> ನೆಟ್‌ವರ್ಕ್ ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="131421566576084655">ಕೊನೆಯದಾಗಿ ಡೇಟಾ ರೀಸೆಟ್ ಮಾಡಿದ ದಿನಾಂಕ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ಹೋಮ್ ನೆಟ್‌ವರ್ಕ್, ರೋಮಿಂಗ್ ಇಲ್ಲ</translation>
 <translation id="1327977588028644528">ಗೇಟ್‌ವೇ</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">ವಿಫಲವಾಗಿದೆ - ಫಿಲ್ಟರ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ನನ್ನ ಬಳಿ ಕೀ ಜೋಡಿಯಿದೆ</translation>
+<translation id="1435763214710588005">ಪ್ರತಿ ತಿಂಗಳು ಆಯ್ದ ದಿನದಂದು ಡೇಟಾ ಬಳಕೆಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="1442433966118452622">ಚಿತ್ರದ ಮೂಲ</translation>
 <translation id="1451536289672181509">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಆಗಿದೆ.</translation>
 <translation id="1459693405370120464">ಹವಾಮಾನ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1567064801249837505">ಆಲ್ಬಮ್‌‌ಗಳು</translation>
 <translation id="1572585716423026576">ವಾಲ್‌ಪೇಪರ್ ಆಗಿ ಹೊಂದಿಸಿ</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ಸ್ಕ್ಯಾನರ್ ಆನ್ ಆಗಿದೆಯೆ ಮತ್ತು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ ನೇರ ಕನೆಕ್ಷನ್ ಮೂಲಕ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
+<translation id="4170180284036919717">ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="4170700058716978431">ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4176463684765177261">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4213104098953699324">USB ಕೀಬೋರ್ಡ್</translation>
@@ -390,6 +394,7 @@
 <translation id="5939518447894949180">ಮರುಹೊಂದಿಸು</translation>
 <translation id="594552776027197022">ರ‍್ಯಾಂಡಮ್ ಕೀ ಜೋಡಿಯನ್ನು ರಚಿಸಿ</translation>
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
+<translation id="6034694447310538551">ಸ್ವಯಂಚಾಲಿತ ಮಾಸಿಕ ರೀಸೆಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6037291330010597344">ಸ್ಕ್ಯಾನರ್‌ನ ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ ಖಾಲಿಯಾಗಿದೆ. ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು ಸೇರಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6040852767465482106">ಅನಾಮಧೇಯ ಗುರುತಿಸುವಿಕೆ</translation>
@@ -413,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
+<translation id="6235460611964961764">ಡೇಟಾ ಬಳಕೆಯನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="6243280677745499710">ಪ್ರಸ್ತುತವಾಗಿ ಹೊಂದಿಸಿರುವುದು</translation>
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -624,6 +630,7 @@
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ನ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">ವಿಫಲವಾಗಿದೆ - ಟ್ರೇ ಕಾಣೆಯಾಗಿದೆ</translation>
+<translation id="8923267550422472772">ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗಿರುವ ತಿಂಗಳಿನ ದಿನ</translation>
 <translation id="8928727111548978589">ವಿಫಲವಾಗಿದೆ - ಕಾಗದ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8930521118335213258">ಪೀಯರ್</translation>
 <translation id="8930622219860340959">ವೈರ್‌ಲೆಸ್</translation>

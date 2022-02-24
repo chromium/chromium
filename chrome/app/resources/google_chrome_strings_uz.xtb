@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">Chromeni yangilab bo‘lmadi</translation>
 <translation id="1154147086299354128">Chrome brauzerida &amp;ochish</translation>
 <translation id="1182414570724401860">Chrome bu faylni yuklab olmaslik va ochmaslikni tavsiya qiladi</translation>
+<translation id="1201241595274620956">CloudReady 2.0 shartlari</translation>
 <translation id="1278833599417554002">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini o‘qib, qabul qilishingizni talab qiladi. Bu shartlar Google Chrome OS shartlarini kengaytirmaydi, o‘zgartirmaydi yoki cheklamaydi.</translation>
 <translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
@@ -37,11 +38,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chrome hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="1812689907177901597">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
+<translation id="1847459800604232346">CloudReady 2.0 ilovasini qayta ishga tushirish</translation>
 <translation id="1860536484129686729">Bu sayt kamerangizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
+<translation id="1865667134297225786">Hisobga kirish maʼlumotlaringiz eskirgani sababli CloudReady 2.0 maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="1873233029667955273">Google Chrome hozir birlamchi brauzeringiz emas</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome versiyasi eskirdi</translation>
+<translation id="1887927549935943139">Domeningizda Sinxronlash xizmati mavjud emasligi sababli CloudReady 2.0 maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Har bir profilda bukmark, tarix va parol kabi Chrome axboroti saqlanadi</translation>
 <translation id="2063848847527508675">Yangilov o‘rnatilishi uchun Chrome OS qaytadan ishga tushirilishi kerak.</translation>
 <translation id="2094919256425865063">Chrome baribir yopilsinmi?</translation>
@@ -52,12 +57,15 @@
 <translation id="2258103955319320201">Chrome brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="2290014774651636340">Google API kalitlari topilmadi. Google Chrome’ning ba’zi funksiyalari o‘chirib qo‘yiladi.</translation>
 <translation id="2290095356545025170">Haqiqatan ham Google Chrome brauzerini o‘chirib tashlamoqchimisiz?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> kabi <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="2309047409763057870">Google Chrome takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="2345992953227471816">Chrome quyidagi kengaytmalar tarkibida zararli dastur aniqladi:</translation>
 <translation id="2348335408836342058">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="234869673307233423">Chrome parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="235650106824528204">Bu profil ishlatilganda yaratilgan har qanday Chrome maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Davom etish</translation>
+<translation id="2371517829376452747">Agar sozlama bu sahifada chiqmasa, <ph name="LINK_BEGIN" />
+        CloudReady 2.0 sozlamalarini<ph name="LINK_END" /> tekshiring.</translation>
 <translation id="2429317896000329049">Google Chrome domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>
 <translation id="2467438592969358367">Google Chrome parollaringizni eksport qilmoqchi. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -86,6 +94,7 @@
 <translation id="2926676257163822632">Kuchsiz parollar oson topiladi. Chrome <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="2929907241665500097">Notanish xatolik tufayli Chrome yangilanmadi. <ph name="BEGIN_LINK" />Chromedagi yangilanish muammolari va xatoliklarni tuzatish.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0 yangilanishi uchun qayta ishga tushirish</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish - Chrome</translation>
 <translation id="303514781271618814">Chrome saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="3037838751736561277">Google Chrome orqa fon rejimida ishlamoqda.</translation>
@@ -112,6 +121,7 @@
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="3541482654983822893">Chrome parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
 <translation id="3576528680708590453">Chrome <ph name="TARGET_URL_HOSTNAME" /> havolasini muqobil brauzerda ochishi tizim administratori tomonidan sozlangan.</translation>
+<translation id="3582634744482121096">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali CloudReady 2.0 tizimini takomillashtirishga yordam bering.</translation>
 <translation id="3582972582564653026">Chrome brauzerini barcha qurilmalringizda sinxronlang va o‘zingizga moslab oling</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="3622797965165704966">Endi Google hisobida Chrome bilan ishlash yanada qulay bo‘ladi, jumladan umumiy kompyuterlarda ham.</translation>
@@ -132,6 +142,7 @@
 <translation id="4149882025268051530">Fayllarni arxivdan chiqarib bo‘lmadi. Google Chrome‘ni qayta yuklab oling.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome brauzerini 1 kun ichida qayta ishga tushiring}other{Chrome brauzerini # kun ichida qayta ishga tushiring}}</translation>
 <translation id="4205939740494406371">Chrome parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0 tizimi</translation>
 <translation id="4242034826641750751">Chrome bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4251615635259297716">Chrome ma’lumotlari bu hisobga bog‘lansinmi?</translation>
@@ -149,7 +160,9 @@
 <translation id="4458462641685292929">Google Chrome boshqa amalni bajarmoqda. Keyinroq qayta urinib ko‘ring.</translation>
 <translation id="4480040274068703980">Hisobga kirishdagi xatolik sababli Chrome OS ma’lumotlarni sinxronlay olmadi.</translation>
 <translation id="4521185804071812304">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi ma’lumotlarini yuborish orqali Chrome OS tizimini takomillashtirishga yordam bering.</translation>
+<translation id="4539063627668028557">CloudReady 2.0 versiyasi</translation>
 <translation id="4561051373932531560">Google Chrome‘da har qanday telefon raqami ustiga bosib Skype orqali qo‘ng‘iroq qilish mumkin!</translation>
+<translation id="4562712242781620537">CloudReady 2.0 tizimi</translation>
 <translation id="4567424176335768812">Siz <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirtingiz. Barcha xatcho‘plar, brauzer tarixi va boshqa sozlamalaringiz endi bu hisobdan foydalanadigan barcha qurilmalaringizda mavjud.</translation>
 <translation id="4571503333518166079">Chrome bildirishnomalar sozlamalarini ochish</translation>
 <translation id="459622048091363950">Chrome saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
@@ -175,6 +188,7 @@
 Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tanlang yoki yangiroq Google Chrome versiyasini o‘rnating.</translation>
 <translation id="521447420733633466">Agar qurilmadan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chrome brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="5251420635869119124">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chrome mehmon rejimidan foydalaning.</translation>
+<translation id="5307623274346663914">Yangilanishni oʻrnatish uchun CloudReady 2.0 qayta ishga tushirilishi kerak.</translation>
 <translation id="5334487786912937552">Chrome bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
 <translation id="5386244825306882791">Bundan tashqari kengaytma Chrome boshlash sahifasini va omniboksdagi so‘rovlar uchun foydalaniladigan birlamchi qidiruv tizimini o‘zgartirdi.</translation>
 <translation id="5394833366792865639">Chrome sahifasini namoyish qilish</translation>
@@ -185,8 +199,10 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> zararli bo‘lishi mumkin, shuning uchun u Chrome tomonidan bloklandi.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 tizimini ishlab chiqishda <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="5686916850681061684">Google Chrome brauzerini sozlash va boshqarish. Diqqat qaratishingiz zarur. Batafsil axborot olish uchun bu yerga bosing.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">Hisobga kirishdagi xatolik sababli CloudReady 2.0 maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 soniyada qayta ishga tushiriladi}other{Google Chrome # soniyada qayta ishga tushiriladi}}</translation>
 <translation id="5736850870166430177">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
 <translation id="573759479754913123">Chrome OS haqida</translation>
@@ -219,15 +235,23 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6679975945624592337">Google Chrome fonda ishlashiga ruxsat</translation>
 <translation id="6696915334902295848">Chrome bu saytda mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="6739177684496155661">Yangi Chrome profilida davom etasizmi?</translation>
+<translation id="6749459139769042303">CloudReady 2.0 yuzasidan yordam olish</translation>
 <translation id="6750954913813541382">Imlo xatolarini tuzatish uchun Chrome brauzerida kiritiladigan matn Google serverlariga yuboriladi.</translation>
 <translation id="677276454032249905">Chrome baribir yopilsinmi?</translation>
+<translation id="6814748008107187409">Agar sozlama bu sahifada chiqmasa, <ph name="LINK_BEGIN" />
+        Chrome OS sozlamalarini<ph name="LINK_END" /> tekshiring.</translation>
 <translation id="683440813066116847">Google Chrome Canary‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
 <translation id="6881299373831449287">Chrome yangilanmoqda</translation>
 <translation id="6885412569789873916">Chrome Beta ilovalari</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar CloudReady 2.0 shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="6943584222992551122">Bu foydalanuvchi brauzerining tarixi ushbu qurilmadan butunlay tozalanadi. Axborotlarni tiklash uchun brauzerga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="6967962315388095737">Google Chrome Beta mDNS trafigiga ruxsat berishiga oid kiruvchi qoida.</translation>
 <translation id="6989339256997917931">Google Chrome yangilandi, lekin siz undan so‘nggi 30 kun davomida foydalanmadingiz.</translation>
+<translation id="700644001690392105">CloudReady 2.0 haqida</translation>
 <translation id="7025800014283535195">Bu yerda Chrome profillarini almashtirish mumkin</translation>
+<translation id="7036251913954633326">Bu hisobdan bir marta foydalanish uchun Chrome brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
+
+Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="7062128746136194023">Chromedagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. <ph name="EXTENSION_TYPE_PARAMETER" /> kiritilishi taqiqlangan.</translation>
 <translation id="7085332316435785646">Kerak boʻlsa, Chrome tarixi yanada moslashtirilgan Google xizmatlarida ishlatilishini tanlang</translation>
 <translation id="7088681679121566888">Chrome eng oxirgi versiyada</translation>
@@ -241,6 +265,9 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7296210096911315575">Foydalanish va xavfsizlik</translation>
 <translation id="7308322188646931570">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
+<translation id="7388770099345495132">Bu hisobdan bir marta foydalanish uchun Chrome brauzerida Mehmon rejimidan foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
+
+Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="7398801000654795464">Siz Chrome brauzeriga <ph name="USER_EMAIL_ADDRESS" /> hisobi orqali kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
 <translation id="7408085963519505752">Chrome OS shartlari</translation>
 <translation id="7419046106786626209">Ma’lumotlarni sinxronlab bo‘lmadi, chunki domeningizda Sync xizmati mavjud emas.</translation>
@@ -248,6 +275,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7486227612705979895">Manzil panelida tavsiyalarni namoyish qilish uchun Chrome sizning Drive omboringizdan foydalanadi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Qurilmangiz tizimi yangilanganligini <ph name="LINK_BEGIN" />Chrome OS sozlamalari<ph name="LINK_END" /> orqali bilish mumkin</translation>
+<translation id="7580049017368059129">Qurilmangiz tizimi yangilanganini <ph name="LINK_BEGIN" />CloudReady 2.0 sozlamalari<ph name="LINK_END" /> orqali bilish mumkin</translation>
 <translation id="7592736734348559088">Hisob ma’lumotlaringiz eskirganligi tufayli sinxronlash amali bajarilmadi.</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7629695634924605473">Parollaringiz oshkor etilsa, Chrome bu haqida xabar qiladi</translation>

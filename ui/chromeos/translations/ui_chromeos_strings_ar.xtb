@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">‏تمّت مشاركة هذا المجلد مع نظام التشغيل Linux.</translation>
 <translation id="1864756863218646478">تعذر العثور على الملف.</translation>
 <translation id="1884013283844450420">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، الاتصال</translation>
+<translation id="1914901738028575085">‏جهاز يعمل بنظام التشغيل CloudReady 2.0</translation>
 <translation id="1920670151694390848">تحويل صوتي إلى اللغة الماليالامية</translation>
 <translation id="1920798810075583923">بطيخ</translation>
 <translation id="1924372192547904021">تم ضبط <ph name="DRIVE_NAME" /></translation>
@@ -903,6 +904,7 @@
 <translation id="8714406895390098252">دراجة</translation>
 <translation id="8719721339511222681">تم اختيار <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">الكرواتية</translation>
+<translation id="873847021056608403">‏أجهزة تعمل بنظام التشغيل CloudReady 2.0</translation>
 <translation id="8743164338060742337">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يدير المشرف هذه الشبكة، الاتصال</translation>
 <translation id="8750438273876807512">يمكنك النقر مع الاستمرار على أحد الملفات ثم النقر على الرمز <ph name="ICON" /> واختيار "تثبيت في الرف" للوصول السريع إلى الملفات في الرف.</translation>
 <translation id="8787254343425541995">السماح بالخوادم الوكيلة للشبكات المشتركة</translation>

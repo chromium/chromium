@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">제목</translation>
 <translation id="4008040567710660924">특정 사이트의 쿠키를 허용합니다.</translation>
+<translation id="4040330681741629921">사이트를 간단한 뷰로 표시할 수 있을 때 알림 받기</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4149994727733219643">웹페이지 간단히 보기</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">사이트에서 저장한 <ph name="DATASIZE" />의 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
+<translation id="5412236728747081950">이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시합니다.</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" />의 권한이 재설정됩니다.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>
 <translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>

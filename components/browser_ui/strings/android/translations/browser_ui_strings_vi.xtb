@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4008040567710660924">Cho phép cookie của một trang web cụ thể.</translation>
+<translation id="4040330681741629921">Nhận thông báo khi một trang web có thể xuất hiện trong chế độ xem đơn giản</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
 <translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Thao tác này sẽ xóa <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
 <translation id="5403592356182871684">Tên</translation>
+<translation id="5412236728747081950">Trang web này lấy thông tin về mối quan tâm của bạn trên Chrome để cho bạn thấy những quảng cáo phù hợp hơn</translation>
 <translation id="5438097262470833822">Lựa chọn này sẽ đặt lại các quyền của <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Chặn quảng cáo trên các trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>

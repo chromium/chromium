@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
+<translation id="131421566576084655">နောက်ဆုံး ဒေတာပြင်ဆင်သတ်မှတ်သည့်ရက်စွဲ ရှာမတွေ့ပါ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ပင်မ ကွန်ရက်၊ ရိုမင်း မဟုတ်ပါ</translation>
 <translation id="1327977588028644528">ဂိတ်ဝ</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ကျွန်ုပ်တွင် ကီးအတွဲရှိသည်</translation>
+<translation id="1435763214710588005">လစဉ်လတိုင်း ရွေးချယ်ထားသည့်နေ့တွင် ဒေတာသုံးစွဲမှုကို အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည်</translation>
 <translation id="1442433966118452622">ပုံရင်းမြစ်</translation>
 <translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> အပ်ဒိတ်လုပ်၍ မရပါ</translation>
 <translation id="1567064801249837505">အယ်လ်ဘမ်များ</translation>
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">စကင်ဖတ်စက်ဖွင့်ထားပြီး သင့်ကွန်ရက် (သို့) တိုက်ရိုက်ချိတ်ဆက်မှုမှတစ်ဆင့် သုံးနိုင်ကြောင်း သေချာပါစေ</translation>
+<translation id="4170180284036919717">ဓာတ်ပုံရိုက်ရန်</translation>
 <translation id="4170700058716978431">မအောင်မြင်ပါ</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
 <translation id="4213104098953699324">USB ကီးဘုတ်</translation>
@@ -390,6 +394,7 @@
 <translation id="5939518447894949180">ပြန်ညှိ</translation>
 <translation id="594552776027197022">ကျပန်းကီးအတွဲ ထုတ်ရန်</translation>
 <translation id="5972388717451707488">အင်ဂျင် အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="6034694447310538551">လစဉ်အလိုအလျောက် ပြင်ဆင်သတ်မှတ်ခြင်း ဖွင့်ရန်</translation>
 <translation id="6037291330010597344">စကင်ဖတ်စက်၏ စာရွက်ထည့်ရန်ဗန်း ကုန်သွားသည်။ စာရွက်များထည့်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6040852767465482106">အမည်မသိ အထောက်အထား:</translation>
@@ -413,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
+<translation id="6235460611964961764">ဒေတာသုံးစွဲမှု ကိုယ်တိုင်ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6243280677745499710">လောလောဆယ် သတ်မှတ်ထားသည်</translation>
 <translation id="6278428485366576908">အပြင်အဆင်</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -624,6 +630,7 @@
 <translation id="8910721771319628100">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူလကွန်ရက်</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ၏ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">မအောင်မြင်ပါ - ဗန်းမရှိပါ</translation>
+<translation id="8923267550422472772">တစ်လတာတွင် ပြင်ဆင်သတ်မှတ်မည့်နေ့</translation>
 <translation id="8928727111548978589">မအောင်မြင်ပါ - စာရွက်ကုန်နေသည်</translation>
 <translation id="8930521118335213258">အမျိုးအစားတူ</translation>
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>

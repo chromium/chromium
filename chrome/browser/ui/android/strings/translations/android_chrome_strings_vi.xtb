@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
 <translation id="1204037785786432551">Tải nội dung đường liên kết</translation>
+<translation id="1204692632633423444">Nút thao tác trên Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Sao chép văn bản liên kết</translation>
 <translation id="1208340532756947324">Để đồng bộ hóa và cá nhân hóa trên các thiết bị, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="1209206284964581585">Ẩn ngay bây giờ</translation>
@@ -201,6 +202,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2172688499998841696">Tính năng mô tả hình ảnh đang tắt</translation>
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
 <translation id="2175927920773552910">Mã QR</translation>
+<translation id="2176767904800337188">Thẻ ảo giúp ngụy trang thẻ thực của bạn để bảo vệ bạn khỏi nguy cơ bị lừa đảo. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Chia sẻ</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
 <translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
@@ -213,6 +215,7 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2259659629660284697">Xuất mật khẩu...</translation>
 <translation id="2276696007612801991">Đăng nhập vào Tài khoản Google của bạn để kiểm tra mật khẩu</translation>
 <translation id="2278052315791335171">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Mở ứng dụng <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Địa chỉ thanh toán</translation>
 <translation id="228704530595896923">Danh sách các lựa chọn chia sẻ.</translation>
 <translation id="230115972905494466">Không tìm thấy thiết bị tương thích</translation>
@@ -330,6 +333,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
+<translation id="2936980480904111527">Thông báo của Chrome giúp mọi việc trở nên dễ dàng hơn</translation>
 <translation id="2942036813789421260">Thẻ xem trước đang đóng</translation>
 <translation id="2946420957526726953">Đang cập nhật Chrome để kết nối với các thiết bị khác</translation>
 <translation id="2951071800649516099">Thêm các trang vào danh sách đọc để đọc sau</translation>
@@ -670,6 +674,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="4961107849584082341">Dịch trang này sang ngôn ngữ bất kỳ</translation>
 <translation id="4971735654804503942">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Cảnh báo bạn những mật khẩu đã bị lộ. Yêu cầu gửi dữ liệu duyệt web cho Google.</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
+<translation id="4987271110129728827">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên web.</translation>
 <translation id="4988526792673242964">Trang</translation>
 <translation id="5001388021414335527">Theo dõi trang web này tại đây</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
@@ -727,6 +732,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5329858041417644019">Trình duyệt của bạn không được quản lý</translation>
 <translation id="5342314432463739672">Yêu cầu cấp quyền</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
+<translation id="5368227114232678694">Để duyệt web riêng tư trên thiết bị này, hãy thử chế độ Ẩn danh</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> thẻ đang mở, nhấn để chuyển thẻ}other{<ph name="OPEN_TABS_MANY" /> thẻ đang mở, nhấn để chuyển thẻ}}</translation>
 <translation id="5375577065097716013">Tìm hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
@@ -874,6 +880,7 @@ Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong gia
 <translation id="6162892189396105610">Chrome sẽ tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập.</translation>
 <translation id="6186394685773237175">Không phát hiện thấy mật khẩu nào bị lộ</translation>
 <translation id="6192907950379606605">Tải nội dung mô tả hình ảnh</translation>
+<translation id="620197886010707372">Mở ứng dụng <ph name="APPNAME" /> trên Google Play?</translation>
 <translation id="6203593061661911168">Quá trình tải xuống sẽ bắt đầu khi có Wi-Fi</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>
@@ -1063,6 +1070,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
+<translation id="7237045078887540010">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ của Google<ph name="END_TOS_LINK" /> cũng như <ph name="BEGIN_ATOS_LINK" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Chính sách quyền riêng tư<ph name="END_PRIVACY_LINK" /> cũng được áp dụng.</translation>
 <translation id="7242755609445462077">Nội dung nổi bật được cách điệu <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Hãy đảm bảo <ph name="TARGET_DEVICE_NAME" /> đã bật tính năng đồng bộ hóa trên Chrome</translation>
 <translation id="7252076891734325316">Để điện thoại của bạn gần máy tính</translation>
@@ -1269,6 +1277,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="834313815369870491">Không bao giờ dịch các trang web</translation>
 <translation id="8352996530981010042">Không thể tải các phản ứng xuống. Hãy thử lại.</translation>
 <translation id="8354977102499939946">Tìm kiếm nhanh bằng giọng nói. Để chính sửa lối tắt này, hãy chuyển đến phần Cài đặt.</translation>
+<translation id="8356078935982976590">Bạn có thể dễ dàng quản lý bảng khiển nội dung nghe nhìn, phiên truy cập ẩn danh, tệp đã tải xuống, v.v.</translation>
 <translation id="835847953965672673">Đã khôi phục <ph name="NUMBER_OF_DOWNLOADS" /> tệp đã tải xuống</translation>
 <translation id="8364299278605033898">Xem các trang web phổ biến</translation>
 <translation id="8368001212524806591">Theo dõi giá</translation>
@@ -1425,6 +1434,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Đã kiểm tra 1 phút trước}other{Đã kiểm tra # phút trước}}</translation>
 <translation id="9204836675896933765">Còn lại 1 tệp</translation>
+<translation id="9205933215779845960">Không tìm được trang đó. Hãy kiểm tra lỗi chính tả hoặc thử tìm kiếm trên <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Không thể gọi điện</translation>
 <translation id="9212845824145208577">Không thể di chuyển xuống thấp hơn. Hãy thử bắt đầu ở phía dưới nữa của trang.</translation>

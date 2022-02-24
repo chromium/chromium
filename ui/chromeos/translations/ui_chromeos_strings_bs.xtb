@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Ovaj folder se dijeli s Linuxom</translation>
 <translation id="1864756863218646478">Nije moguće pronaći fajl.</translation>
 <translation id="1884013283844450420">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, poveži</translation>
+<translation id="1914901738028575085">CloudReady 2.0 uređaj</translation>
 <translation id="1920670151694390848">malajalamski (transliteracija)</translation>
 <translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Disk <ph name="DRIVE_NAME" /> je formatiran</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Biciklo</translation>
 <translation id="8719721339511222681">Odabran je unos <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">hrvatska</translation>
+<translation id="873847021056608403">CloudReady 2.0 uređaji</translation>
 <translation id="8743164338060742337">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja vaš administrator, poveži</translation>
 <translation id="8750438273876807512">Dodirnite i zadržite fajl i dodirnite <ph name="ICON" />, a nakon toga odaberite "Zakači na policu" da brzo pristupite fajlovima na polici.</translation>
 <translation id="8787254343425541995">Dozvoli proksi servere za dijeljene mreže</translation>

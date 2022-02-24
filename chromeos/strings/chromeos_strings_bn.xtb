@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">আপডেট হচ্ছে (<ph name="PERCENTAGE_VALUE" />% সম্পূর্ণ হয়েছে)</translation>
 <translation id="1310380015393971138">কোনও <ph name="NETWORK_NAME" /> নেটওয়ার্ক উপলভ্য নেই</translation>
+<translation id="131421566576084655">ডেটা রিসেট করার শেষ তারিখ উপলভ্য নেই</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">হোম নেটওয়ার্ক, রোমিং নয়</translation>
 <translation id="1327977588028644528">গেটওয়ে</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">আমার কী পেয়ার আছে</translation>
+<translation id="1435763214710588005">প্রতি মাসে বেছে নেওয়া তারিখে অটোমেটিক ডেটার ব্যবহার রিসেট করে</translation>
 <translation id="1442433966118452622">ছবির সোর্স</translation>
 <translation id="1451536289672181509">ডিভাইস একটি কীবোর্ড।</translation>
 <translation id="1459693405370120464">আবহাওয়া</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> আপডেট করা যাচ্ছে না</translation>
 <translation id="1567064801249837505">অ্যালবাম</translation>
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
@@ -391,6 +394,7 @@
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="594552776027197022">র‍্যান্ডম কী পেয়ার জেনারেট করুন</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">প্রতিমাসে অটোমেটিক রিসেট করার ফিচার চালু করুন</translation>
 <translation id="6037291330010597344">স্ক্যানারের ডকুমেন্ট ফিডার খালি আছে। ডকুমেন্ট যোগ করে আবার চেষ্টা করুন।</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6040852767465482106">নামহীন পরিচয়</translation>
@@ -414,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">কোনও স্ক্যানার উপলভ্য নেই</translation>
 <translation id="6232017090690406397">ব্যাটারি: %</translation>
+<translation id="6235460611964961764">ম্যানুয়ালি ডেটার ব্যবহার রিসেট করুন</translation>
 <translation id="6243280677745499710">বর্তমানে সেট করা রয়েছে</translation>
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +630,7 @@
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-এর <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">প্রিন্ট করা যায়নি - ট্রে পাওয়া যাচ্ছে না</translation>
+<translation id="8923267550422472772">রিসেট করার জন্য মাসের দিন</translation>
 <translation id="8928727111548978589">প্রিন্ট করা যায়নি - কাগজ শেষ হয়ে গেছে</translation>
 <translation id="8930521118335213258">পিয়ার</translation>
 <translation id="8930622219860340959">ওয়্যারলেস</translation>

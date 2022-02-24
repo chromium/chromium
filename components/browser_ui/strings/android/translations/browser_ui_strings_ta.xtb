@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4008040567710660924">குறிப்பிட்ட தளத்திற்கு, குக்கீகளை அனுமதிக்கும்.</translation>
+<translation id="4040330681741629921">எளிதாக்கப்பட்ட காட்சியில் தளம் காட்டப்படும்போது அறிவிப்பைப் பெறலாம்</translation>
 <translation id="4046123991198612571">அடுத்த டிராக்</translation>
 <translation id="4149994727733219643">இணையப் பக்கங்களுக்கான எளிதாக்கப்பட்ட காட்சி</translation>
 <translation id="4165986682804962316">தள அமைப்புகள்</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">இதைச் செய்தால் தளங்கள் சேமித்துள்ள <ph name="DATASIZE" /> தரவும் குக்கீகளும் அழிக்கப்படும்.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
 <translation id="5403592356182871684">பெயர்கள்</translation>
+<translation id="5412236728747081950">மிகவும் தொடர்புடைய விளம்பரங்களைக் காட்டுவதற்காக Chromeமில் இருந்து உங்கள் ஆர்வங்களை இந்தத் தளம் பெறுகிறது</translation>
 <translation id="5438097262470833822">இதைச் செய்தால் <ph name="WEBSITE" /> தளத்திற்கான அனுமதிகள் ரீசெட் செய்யப்படும்</translation>
 <translation id="5489227211564503167">முடிந்த நேரம்: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">குறுக்கிடும் அல்லது தவறாக வழிநடத்தும் விளம்பரங்களைக் காட்டும் தளங்களில் விளம்பரங்களைத் தடு</translation>

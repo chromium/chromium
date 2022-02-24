@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Ten folder jest udostępniany Linuksowi</translation>
 <translation id="1864756863218646478">Nie można znaleźć pliku.</translation>
 <translation id="1884013283844450420">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, połącz</translation>
+<translation id="1914901738028575085">Urządzenie z CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malajalam – transliteracja</translation>
 <translation id="1920798810075583923">Arbuz</translation>
 <translation id="1924372192547904021">Sformatowano: <ph name="DRIVE_NAME" /></translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Rower</translation>
 <translation id="8719721339511222681">Zaznaczono element <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Chorwacki</translation>
+<translation id="873847021056608403">Urządzenia z CloudReady 2.0</translation>
 <translation id="8743164338060742337">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, połącz</translation>
 <translation id="8750438273876807512">Naciśnij i przytrzymaj plik, a następnie kliknij <ph name="ICON" /> i wybierz „Przypnij do półki”, by mieć szybki dostęp do swoich plików na półce.</translation>
 <translation id="8787254343425541995">Zezwalaj na serwery proxy w sieciach współdzielonych</translation>

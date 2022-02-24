@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">‏تعذّرت إعادة التحميل Chrome</translation>
 <translation id="1154147086299354128">‏&amp;فتح في Chrome</translation>
 <translation id="1182414570724401860">‏ينصح Chrome بعدم تنزيل هذا الملف أو فتحه.</translation>
+<translation id="1201241595274620956">‏بنود نظام التشغيل CloudReady 2.0</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="1293325835983155583">‏يشترط <ph name="MANAGER" /> عليك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل Google Chrome ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
 <translation id="1302523850133262269">‏يُرجى الانتظار لحين تثبيت Chrome لآخر تحديثات النظام.</translation>
@@ -38,11 +39,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
+<translation id="1847459800604232346">‏إعادة تشغيل CloudReady 2.0</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
+<translation id="1865667134297225786">‏تعذَّر على CloudReady 2.0 مزامنة البيانات لأنّ تفاصيل الحساب المُستخدَم في تسجيل الدخول قديمة.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
 <translation id="1874309113135274312">‏الإصدار التجريبي من Google Chrome‏ (mDNS-In)</translation>
 <translation id="1877026089748256423">‏إصدار Chrome قديم</translation>
+<translation id="1887927549935943139">‏تعذَّر على CloudReady 2.0 مزامنة البيانات لأنّ ميزة المزامنة غير متاحة لنطاقك.</translation>
 <translation id="1919130412786645364">‏السماح بتسجيل الدخول إلى Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">‏يحتفظ كل ملف شخصي بالمعلومات الخاصة به على Chrome، مثل الإشارات المرجعية والسجلّ وكلمات المرور وغير ذلك.</translation>
 <translation id="2063848847527508675">‏يلزم إعادة تشغيل نظام التشغيل Chrome حتى يتم تطبيق التحديث.</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
@@ -53,12 +58,15 @@
 <translation id="2258103955319320201">‏للوصول إلى بياناتك في متصفّح Chrome من جميع أجهزتك، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="2290014774651636340">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Google Chrome عن العمل.</translation>
 <translation id="2290095356545025170">‏هل تريد فعلًا إزالة Google Chrome؟</translation>
+<translation id="2297776811548050971">‏أصبح نظام التشغيل CloudReady 2.0 متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير نظام التشغيل Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">‏هذا تثبيت ثانوي من Google Chrome، ولا يمكن جعله متصفحك التلقائي.</translation>
 <translation id="2345992953227471816">‏رصد Chrome أنّ هذه الإضافات تحتوي على برامج ضارة:</translation>
 <translation id="2348335408836342058">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="234869673307233423">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="235650106824528204">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chrome والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2371517829376452747">‏في حال عدم ظهور أحد الإعدادات على هذه الصفحة، انتقِل إلى <ph name="LINK_BEGIN" />
+        إعدادات CloudReady 2.0<ph name="LINK_END" />.</translation>
 <translation id="2429317896000329049">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
@@ -87,6 +95,7 @@
 <translation id="2926676257163822632">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chrome <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="2929907241665500097">‏تعذّر تحديث Chrome بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">‏إعادة التشغيل لتحديث CloudReady 2.0</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - Chrome - تسجيل الدخول إلى الشبكة</translation>
 <translation id="303514781271618814">‏يعمل Chrome على استكشاف ميزات جديدة تتيح للمواقع الإلكترونية توفير تجربة التصفّح نفسها باستخدام قدر أقل من البيانات.</translation>
 <translation id="3037838751736561277">‏Google Chrome في وضع الخلفية.</translation>
@@ -113,6 +122,7 @@
 <translation id="3533694711092285624">‏ما مِن كلمات مرور محفوظة. لا يستطيع متصفّح Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="3541482654983822893">‏يتعذّر على Chrome التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة.</translation>
 <translation id="3576528680708590453">‏ضَبَط مشرف النظام Google Chrome لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">‏اختياري: يمكنك المساعدة في تحسين ميزات نظام التشغيل CloudReady 2.0 وأدائه من خلال إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
 <translation id="3582972582564653026">‏يمكنك مزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
@@ -133,6 +143,7 @@
 <translation id="4149882025268051530">‏فشلت أداة المثبِّت في فك ضغط الأرشيف. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏يجب إعادة تشغيل Chrome في غضون يوم واحد}zero{‏يجب إعادة تشغيل Chrome في غضون # يوم}two{‏يجب إعادة تشغيل Chrome في غضون يومين}few{‏يجب إعادة تشغيل Chrome في غضون # أيام}many{‏يجب إعادة تشغيل Chrome في غضون # يومًا}other{‏يجب إعادة تشغيل Chrome في غضون # يوم}}</translation>
 <translation id="4205939740494406371">‏يتعذّر على Chrome التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">‏نظام CloudReady 2.0</translation>
 <translation id="4242034826641750751">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4251615635259297716">‏هل ترغب في ربط بياناتك في Chrome بهذا الحساب؟</translation>
@@ -150,7 +161,9 @@
 <translation id="4458462641685292929">‏عملية أخرى على Google Chrome قيد التقدم. يُرجى المحاولة مرة أخرى لاحقًا.</translation>
 <translation id="4480040274068703980">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
 <translation id="4521185804071812304">‏اختياري: يمكنك المساعدة في تحسين ميزات نظام التشغيل Chrome وأدائه من خلال إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
+<translation id="4539063627668028557">‏إصدار نظام التشغيل CloudReady 2.0</translation>
 <translation id="4561051373932531560">‏يتيح لك Google Chrome النقر على رقم هاتف على الويب والاتصال به باستخدام Skype!</translation>
+<translation id="4562712242781620537">‏نظام CloudReady 2.0</translation>
 <translation id="4567424176335768812">لقد سجلت دخولك باعتبارك <ph name="USER_EMAIL_ADDRESS" />. ويُمكنك الآن الاستمتاع بالدخول إلى الإشارات المرجعية، والسجلّ، والإعدادات الأخرى على جميع الأجهزة التي تسجّل الدخول إليها.</translation>
 <translation id="4571503333518166079">‏الانتقال إلى إعدادات الإشعارات في Chrome</translation>
 <translation id="459622048091363950">‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
@@ -176,6 +189,7 @@
 قد تكون بعض الميزات غير متاحة. يُرجى تحديد دليل ملف شخصي مختلف أو استخدام إصدار أحدث من Chrome.</translation>
 <translation id="521447420733633466">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chrome على النحو المفضّل لديهم.</translation>
 <translation id="5251420635869119124">‏يمكن للضيف استخدام Chrome بدون أن يترك أي أثر وراءه.</translation>
+<translation id="5307623274346663914">‏عليك إعادة تشغيل CloudReady 2.0 ليتم تحديثه.</translation>
 <translation id="5334487786912937552">‏يحتاج Chrome إلى إذن للوصول إلى مساحة التخزين من أجل تنزيل الملفات.</translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
@@ -184,8 +198,10 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">‏قد يكون ملف <ph name="FILE_NAME" /> ضارًا، لذلك فقد حظره Chrome.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق هذا التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
+<translation id="5685161537284117504">‏أصبح نظام التشغيل CloudReady 2.0 متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">‏تخصيص Google Chrome والتحكم فيه معلومات مهمة - انقر للحصول على التفاصيل.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">‏تعذَّر على CloudReady 2.0 مزامنة البيانات بسبب حدوث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{‏ستتم إعادة تشغيل Google Chrome خلال ثانية واحدة}zero{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}two{‏ستتم إعادة تشغيل Google Chrome خلال ثانيتين (#)}few{‏ستتم إعادة تشغيل Google Chrome خلال # ثوانٍ}many{‏ستتم إعادة تشغيل Google Chrome خلال # ثانيةً}other{‏ستتم إعادة تشغيل Google Chrome خلال # ثانية}}</translation>
 <translation id="5736850870166430177">‏إذا حاول موقع إلكتروني سرقة كلمة المرور أو إذا نزّلت ملفًا ضارًا، قد يرسِل متصفِّح Chrome أيضًا عناوين URL تتضمّن أجزاءً من محتوى الصفحة إلى خدمة "التصفُّح الآمن".</translation>
 <translation id="573759479754913123">‏لمحة عن نظام التشغيل Chrome</translation>
@@ -218,15 +234,21 @@
 <translation id="6679975945624592337">‏السماح بتشغيل Google Chrome في الخلفية</translation>
 <translation id="6696915334902295848">‏يحتاج Chrome إلى إذن للوصول إلى الميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="6739177684496155661">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
+<translation id="6749459139769042303">‏الحصول على المساعدة بشأن نظام التشغيل CloudReady 2.0</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
+<translation id="6814748008107187409">‏في حال عدم ظهور أحد الإعدادات على هذه الصفحة، انتقِل إلى <ph name="LINK_BEGIN" />
+        إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
 <translation id="683440813066116847">‏قاعدة الوارد إلى Google Chrome Canary للسماح بحركة مرور mDNS.</translation>
 <translation id="6881299373831449287">‏جارٍ تحديث Chrome.</translation>
 <translation id="6885412569789873916">‏تطبيقات الإصدار التجريبي من Chrome</translation>
+<translation id="6919064686744569862">‏يطلب <ph name="MANAGER" /> منك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم أنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل CloudReady 2.0 ولا تعدِّلها ولا تفرض قيودًا عليها.</translation>
 <translation id="6943584222992551122">‏سيتم حذف بيانات تصفُّح هذا المستخدم من هذا الجهاز. لاسترداد البيانات، يُرجى تسجيل الدخول إلى Chrome بصفتك <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">‏قاعدة الوارد إلى الإصدار التجريبي من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="6989339256997917931">‏تم تحديث متصفح Google Chrome، ولكنك لم تستخدمه منذ أكثر من 30 يومًا.</translation>
+<translation id="700644001690392105">‏لمحة عن CloudReady 2.0</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
+<translation id="7036251913954633326">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام <ph name="GUEST_LINK_BEGIN" />وضع الضيف<ph name="GUEST_LINK_END" /> في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7062128746136194023">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chrome. ولا يمكن تثبيت <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="7085332316435785646">‏اختَر ما إذا كنت تريد تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
 <translation id="7088681679121566888">‏Chrome محدّث.</translation>
@@ -240,6 +262,7 @@
 <translation id="7296210096911315575">معلومات مهمّة حول الأمان والاستخدام</translation>
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
+<translation id="7388770099345495132">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام "وضع الضيف" في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7408085963519505752">‏بنود نظام التشغيل Chrome</translation>
 <translation id="7419046106786626209">‏تعذر على نظام التشغيل Chrome مزامنة البيانات نظرًا لأن المزامنة غير متاحة في نطاقك.</translation>
@@ -247,6 +270,7 @@
 <translation id="7486227612705979895">‏سيصل Chrome إلى Drive لإنشاء الاقتراحات في شريط العناوين.</translation>
 <translation id="7535429826459677826">‏إصدار مطوري البرامج من Google Chrome</translation>
 <translation id="7573289029918943991">‏للتأكّد من أن جهازك يستخدم أحدث إصدار من نظام التشغيل، يُرجى الانتقال إلى <ph name="LINK_BEGIN" />إعدادات نظام التشغيل Chrome<ph name="LINK_END" />.</translation>
+<translation id="7580049017368059129">‏للتأكّد من أنّ جهازك يستخدم أحدث إصدار من نظام التشغيل، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات CloudReady 2.0<ph name="LINK_END" />.</translation>
 <translation id="7592736734348559088">‏تعذر على Google Chrome مزامنة البيانات نظرًا لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7629695634924605473">‏يتم إعلامك من خلال Chrome في حال تم اختراق كلمات المرور في أي وقت.</translation>

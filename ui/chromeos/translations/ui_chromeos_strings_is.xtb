@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Þessari möppu er deilt með Linux</translation>
 <translation id="1864756863218646478">Skráin fannst ekki.</translation>
 <translation id="1884013283844450420">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, tengjast</translation>
+<translation id="1914901738028575085">CloudReady 2.0 tæki</translation>
 <translation id="1920670151694390848">Malayalam umritun</translation>
 <translation id="1920798810075583923">Vatnsmelóna</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> var forsniðið</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Bíllaus</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valið.</translation>
 <translation id="872537912056138402">Króatískt</translation>
+<translation id="873847021056608403">CloudReady 2.0 tæki</translation>
 <translation id="8743164338060742337">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> sendistyrkur <ph name="SIGNAL_STRENGTH" />%, stjórnað af kerfisstjóra, tengjast</translation>
 <translation id="8750438273876807512">Haltu fingri á skrá og ýttu á <ph name="ICON" />. Veldu svo „Festa á hillu“ til að fá skjótan aðgang að skránum þínum á hillunni.</translation>
 <translation id="8787254343425541995">Leyfa proxy-þjóna fyrir sameiginleg net</translation>

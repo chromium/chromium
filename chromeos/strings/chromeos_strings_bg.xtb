@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1310380015393971138">Няма налична <ph name="NETWORK_NAME" /> мрежа</translation>
+<translation id="131421566576084655">Няма данни за датата на последното нулиране на преноса</translation>
 <translation id="1314565355471455267">VPN за Android</translation>
 <translation id="131461803491198646">Собствената мрежа, не роуминг</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Имам двойка ключове</translation>
+<translation id="1435763214710588005">Преносът на данни се нулира автоматично всеки месец в избрания ден</translation>
 <translation id="1442433966118452622">Източник на изображението</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
 <translation id="1459693405370120464">Времето</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> не може да се актуализира</translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Задаване като тапет</translation>
+<translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Защитна стена за HTTP</translation>
 <translation id="4147897805161313378">Google Снимки</translation>
 <translation id="4155551848414053977">Уверете се, че скенерът е включен и достъпен чрез мрежата ви или директна връзка</translation>
+<translation id="4170180284036919717">Правене на снимка</translation>
 <translation id="4170700058716978431">НЕУСПЕХ</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4213104098953699324">Клавиатура с USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Активиране на автоматичното ежемесечно нулиране</translation>
 <translation id="6037291330010597344">Подавачът на документи на скенера е празен. Добавете документи и опитайте отново.</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6040852767465482106">Анонимна самоличност</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма налични скенери</translation>
 <translation id="6232017090690406397">Батерия</translation>
+<translation id="6235460611964961764">Ръчно нулиране на преноса на данни</translation>
 <translation id="6243280677745499710">Зададено понастоящем</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Неуспешно – липсваща тава</translation>
+<translation id="8923267550422472772">Ден от месеца за нулиране</translation>
 <translation id="8928727111548978589">Неуспешно – няма хартия</translation>
 <translation id="8930521118335213258">Подобни свойства</translation>
 <translation id="8930622219860340959">Безжична</translation>

@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4008040567710660924">कुनै खास साइटमा कुकीहरूलाई अनुमति दिनुहोस्।</translation>
+<translation id="4040330681741629921">साइट सरलीकृत भ्यूमा देखाउन मिल्ने भएमा उक्त कुराका बारेमा सूचना पठाइयोस्</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">यस कार्यले साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटाउने छ।</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
 <translation id="5403592356182871684">नामहरू</translation>
+<translation id="5412236728747081950">यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome मा तोकेका रुचिहरू प्राप्त गर्छ</translation>
 <translation id="5438097262470833822">तपाईंले यो विकल्प रोज्नुभयो भने <ph name="WEBSITE" /> लाई दिइएका अनुमतिहरू रिसेट गरिने छन्</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> मध्ये <ph name="ELAPSED_TIME" /> समय बित्यो।</translation>
 <translation id="5494752089476963479">हस्तक्षेपकारी वा भ्रामक विज्ञापन देखाउने साइटका विज्ञापनहरूलाई रोक लगाउनुहोस्</translation>

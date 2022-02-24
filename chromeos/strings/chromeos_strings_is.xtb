@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="1310380015393971138">Ekkert <ph name="NETWORK_NAME" /> netkerfi er tiltækt</translation>
+<translation id="131421566576084655">Dagsetning síðustu gagnaendurstillingar er ekki tiltæk</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Heimanet, ekki í reiki</translation>
 <translation id="1327977588028644528">Gátt</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ég er með lyklasett</translation>
+<translation id="1435763214710588005">Endurstillir gagnanotkun sjálfkrafa á völdum degi mánaðarlega</translation>
 <translation id="1442433966118452622">Uppruni myndar</translation>
 <translation id="1451536289672181509">Tækið er lyklaborð.</translation>
 <translation id="1459693405370120464">Veður</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Ekki er hægt að uppfæra <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albúm</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
+<translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1641857168437328880">Skjalamatari (einhliða)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP-eldveggur</translation>
 <translation id="4147897805161313378">Google myndir</translation>
 <translation id="4155551848414053977">Gakktu úr skugga um að kveikt sé á skannanum og hann tiltækur í gegnum nettengingu eða beintengingu</translation>
+<translation id="4170180284036919717">Taka mynd</translation>
 <translation id="4170700058716978431">MISTÓKST</translation>
 <translation id="4176463684765177261">Óvirkt</translation>
 <translation id="4213104098953699324">USB-lyklaborð</translation>
@@ -391,6 +395,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5939518447894949180">Endurstilla</translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
 <translation id="5972388717451707488">Uppfæra vél</translation>
+<translation id="6034694447310538551">Kveikja á sjálfvirkri mánaðarlegri endurstillingu</translation>
 <translation id="6037291330010597344">Skjalamatarinn á skannanum er tómur. Bættu við skjölum og reyndu aftur.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6040852767465482106">Nafnlaust auðkenni</translation>
@@ -414,6 +419,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Enginn skanni í boði</translation>
 <translation id="6232017090690406397">Rafhlaða</translation>
+<translation id="6235460611964961764">Endurstilla gagnanotkun handvirkt</translation>
 <translation id="6243280677745499710">Valið núna</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Mistókst – bakka vantar</translation>
+<translation id="8923267550422472772">Mánaðardagur fyrir endurstillingu</translation>
 <translation id="8928727111548978589">Mistókst – pappír vantar</translation>
 <translation id="8930521118335213258">Samanburður</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>

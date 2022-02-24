@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, zapnite synchronizáciu</translation>
 <translation id="3533694711092285624">Žiadne uložené heslá. Chrome môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="3634910711516114487">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google</translation>
+<translation id="3655656110921623717">Znamená to, že Chrome bude zakaždým žiadať o mobilný web.</translation>
 <translation id="3706101708757577809">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="3720541637541300822">Uzamknúť karty inkognito pri zavretí Chromu</translation>
 <translation id="384394811301901750">Google Chrome momentálne nemôže použiť váš fotoaparát</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Zobrazí výzvy na prihlásenie do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
+<translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>
 </translationbundle>

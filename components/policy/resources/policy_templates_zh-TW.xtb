@@ -104,6 +104,7 @@
 <translation id="1122089575901325963">你可以透過這項政策設定 <ph name="WILCO_NAME" /> 診斷與遙測控制器 (DTC)，前提是裝置提供相關支援。設定檔大小不得超過 1 MB (1,000,000 個位元組)，且必須採用 JSON 格式。<ph name="WILCO_NAME" /> DTC 會負責處理相關設定。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個設定檔，而且只要網址或雜湊一有變動，就會重新下載檔案。
 
       如果你設定這項政策，使用者將無法變更設定。</translation>
+<translation id="1123650965531933634">預設拒絕對所有網站授予視窗放置權限</translation>
 <translation id="1133622335785078255">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，以及使用訪客模式</translation>
 <translation id="1133814529606590009">如果將這項政策設為啟用，系統會將輸入網址匿名資料收集功能設為一律開啟；該功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
 
@@ -189,6 +190,7 @@
 <translation id="1223789468190631420">信任來源的安全瀏覽功能啟用狀態</translation>
 <translation id="123018742985150697">要求比對本機使用者和遠端存取主機擁有者</translation>
 <translation id="123081309365616809">允許將內容投放至裝置</translation>
+<translation id="1239411164172567974">啟用 Direct Sockets API。</translation>
 <translation id="1239526922294123540">控管是否允許網站以不安全的方式，向更私密的網路端點傳送要求。如果將這項政策設為 True，系統會為所有來源停用<ph name="PRIVATE_NETWORK_ACCESS" />檢查。這可能會讓攻擊者有機會對私人網路伺服器執行 <ph name="CSRF" /> 攻擊。
 
           如果不設定這項政策或設為 False，向更私密的網路端點傳送要求的預設行為將取決於使用者對 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />、<ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> 和 <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" /> 功能旗標的個人設定，使用者可以透過實際測試或指令列來進行設定。
@@ -204,6 +206,7 @@
 <translation id="1240722269871366886">這項政策可讓 <ph name="PRODUCT_OS_NAME" />在使用者透過虛擬或實體鍵盤輸入文字時提供表情符號建議。
       如果將這項政策設為 True，系統會啟用這項功能，且使用者將可變更這項設定。
       這項政策的預設值為 False，系統不會提供任何表情符號建議，且使用者無法覆寫這項設定。</translation>
+<translation id="1241536186320046498">每當網站要取得視窗放置權限時詢問我</translation>
 <translation id="1243570869342663665">控制安全網站成人內容篩選設定。</translation>
 <translation id="1244309789361056660">這項政策已在 M87 版中遭到移除，且系統會在使用者登入時自動將主目錄遷移至 ext4。
       你可以透過這項政策指定當使用者的主目錄採用 eCryptfs 加密機制建立時，系統要採取的動作。除非將採用 eCryptfs 加密的主目錄遷移至 ext4 加密，否則 Android 應用程式可能會停止運作。
@@ -476,6 +479,11 @@
       如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用 <ph name="BASIC_AUTH" /> 驗證機制，只能採用安全的 HTTPS。
 
       如果設定的 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策不含 <ph name="BASIC_AUTH" />，系統會忽略這項政策設定 (一律禁止使用 <ph name="BASIC_AUTH" />)。</translation>
+<translation id="1573444493980402757">你可以設定網站網址模式清單，指定要自動拒絕授予哪些網站視窗放置權限。這會限制網站執行以下操作：查看裝置畫面相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
+
+      如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
+
+      如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> 已設定的政策；在後者亦未設定的情況下，網站則會依循瀏覽器的預設權限設定，使用者則能依網站選擇這項權限。</translation>
 <translation id="1574258262373444557">不採用 <ph name="AES_KL_NAME" /> 做為加密使用者儲存空間的加密演算法 (如果支援)</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
 <translation id="1583248206450240930">根據預設使用 <ph name="PRODUCT_FRAME_NAME" /></translation>
@@ -1398,6 +1406,8 @@
 <translation id="2509919237512982967">使用舊版表單控制項，直到 M84 版為止。</translation>
 <translation id="2512972020817284317">允許合併使用者層級的雲端政策。</translation>
 <translation id="2515699738406900920">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
+<translation id="251594860034549963">如果將這項政策設為 Enabled，系統就會在登入時自動從目前使用者上次使用的裝置上啟動瀏覽器視窗。
+      如果將這項政策設為 Disabled 或不設定，登入時啟動的項目便取決於完整還原設定。</translation>
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
 <translation id="2518231489509538392">允許播放音訊</translation>
 <translation id="2520551905471951523">以高優先順序執行音訊程序</translation>
@@ -2356,6 +2366,8 @@
 
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
 <translation id="3606571057705314194">瀏覽器啟動時不顯示設定檔選擇畫面</translation>
+<translation id="3608206578291537084">啟用加密報告管道</translation>
+<translation id="3612809274815536412">視窗放置設定</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
 <translation id="3634125384445314047">允許他人透過 Phone Hub 存取手機上最近拍攝的相片和影片。</translation>
@@ -2481,6 +2493,7 @@
 
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
 <translation id="3791179836066841809">政策說明文件</translation>
+<translation id="3791556154364029875">啟用浮動工作區，並在登入時啟動遠端瀏覽器視窗</translation>
 <translation id="3794413118360704299">這項政策可讓管理員針對已安裝的網頁應用程式指定設定。
 
       這項政策可將網頁應用程式對應至特定的設定。查看 <ph name="WEB_APP_ID_REFERENCE_URL" /> 操作說明，瞭解系統如何決定已安裝網頁應用程式的 ID。
@@ -2701,6 +2714,7 @@
       如果不設定這項政策，使用者可自行決定是否要允許快速解答功能存取所選內容。</translation>
 <translation id="4016700865356669962">如果將這項政策設為 Enabled，使用者就能使用桌面版面配置範本。如果將這項政策設為 Disabled 或不設定，則會導致使用者無法使用這些範本。</translation>
 <translation id="4020682745012723568">Android 應用程式無法存取傳輸到該使用者設定檔的 Cookie。</translation>
+<translation id="4025176296532430931">停用浮動工作區，而且不在登入時啟動遠端瀏覽器視窗</translation>
 <translation id="4025500273782820766">如有外部通訊協定對話方塊詢問使用者是否要略過日後的確認提示，允許使用者選取 [一律允許]</translation>
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
 <translation id="4027608872760987929">啟用預設搜尋引擎</translation>
@@ -2961,6 +2975,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="4389073105055031853">允許使用者管理所有憑證</translation>
 <translation id="4389091865841123886">使用 TPM 機制設定遠端證明。</translation>
+<translation id="4397464099112037398">預設的視窗放置權限設定</translation>
 <translation id="4401496838830169080">可讓你控管是否要啟用 <ph name="PRODUCT_NAME" /> 的安全瀏覽功能，以及這項功能要在哪種模式下運作。
 
       如果將這項政策設為「NoProtection」(值為 0)，系統一律不會啟用安全瀏覽功能。
@@ -3255,6 +3270,7 @@
 <translation id="4812714598405913256">設定 DeviceMinimumVersion 政策的自動更新期限訊息</translation>
 <translation id="4816674326202173458">允許企業使用者成為主要或次要使用者 (非管理化環境中使用者的預設行為)</translation>
 <translation id="4820432864264617413">禁止使用者執行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="4821987881803903281">禁止這些網站取得視窗放置權限</translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="482803100714220060">顯示完整網址</translation>
 <translation id="4832852360828533362">使用者與裝置回報功能</translation>
@@ -4099,11 +4115,13 @@
 <translation id="5766438888216077649">不要為目標是 <ph name="BLANK_PAGE_NAME" /> 的連結設定 <ph name="WINDOW_OPENER_PROPERTY" /></translation>
 <translation id="5767776869128458023">停用替代的錯誤網頁</translation>
 <translation id="5770738360657678870">開發頻道 (可能不穩定)</translation>
+<translation id="5774345930803672932">如果將這項政策設為 True 或不設定，系統就會將事件、遙測和資訊回報至加密報告管道。如果將這項政策設為 False，則會停用加密報告管道。</translation>
 <translation id="5774856474228476867">預設搜尋引擎搜尋網址</translation>
 <translation id="5775235485119094648">當電量位於特定範圍內時進行充電。</translation>
 <translation id="5776485039795852974">每當網站要顯示桌面通知時詢問我</translation>
 <translation id="5783009211970309878">列印頁首和頁尾</translation>
 <translation id="5790763087505467169">減少顯示受管理訪客工作階段的自動啟動通知</translation>
+<translation id="5802931736499687181">停用加密報告管道</translation>
 <translation id="5806128552675651249">只允許不使用背景圖形的列印模式</translation>
 <translation id="5809210507920527553">控管 Linux 容器 (Crostini) 的設定。</translation>
 <translation id="5809728392451418079">設定裝置本機帳戶的顯示名稱</translation>
@@ -4373,6 +4391,14 @@
 <translation id="6144046700495610112">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入自動填入表單資料。如果將這項政策設為停用或不設定，瀏覽器首次執行時就不會匯入任何自動填入表單資料。
 
       使用者可以觸發匯入對話方塊，瀏覽器將根據這項政策的值，勾選或取消勾選自動填入表單資料的核取方塊。</translation>
+<translation id="614522356524762803">
+      控管 Chrome 狀態報告上傳頻率。
+
+      適用範圍包括由 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 啟用的報告。
+
+      如未設定這項政策，系統會每 24 小時上傳一次此類報告。
+      如果設定這項政策，所設定的值便決定了兩份連續報告上傳應間隔的時數。
+      </translation>
 <translation id="614616930188030377">系統會將這份清單中的模式與要求網址的安全性來源進行比對。
       如果找到相符的結果，或你已停用 chrome://flags/#enable-webrtc-hide-local-ips-with-mdns，系統就會在 WebRTC ICE 候選項目中顯示本機 IP 位址。
       否則系統會透過 mDNS 主機名稱隱藏本機 IP 位址。
@@ -5390,6 +5416,11 @@
       如未設定這項政策或將其留空，則使用者可以將任何 Google 帳戶設定為 <ph name="PRODUCT_NAME" /> 中的瀏覽器主要帳戶。</translation>
 <translation id="723103540848640830">設定螢幕鎖定 PIN 碼的長度下限</translation>
 <translation id="7234280155140786597">禁止的內建訊息傳遞主機名稱 (指定 * 表示涵蓋所有內建訊息傳遞主機)。</translation>
+<translation id="723621412149834592">如果將這項政策設為 <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" /> (值 2)，根據預設，系統會自動拒絕對網站授予視窗放置權限。這會限制網站執行以下操作：查看裝置畫面相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
+
+      如果將這項政策設為 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (值 3)，根據預設，系統會在網站要求視窗放置權限時提示使用者。如果使用者授予權限，網站就能執行以下操作：查看裝置螢幕相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
+
+      如果未設定這項政策，系統會套用 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> 政策，但使用者可以變更這項設定。</translation>
 <translation id="7246767840750730334">允許啟用 Phone Hub 通知。</translation>
 <translation id="7249828445670652637">允許 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」CA 憑證</translation>
 <translation id="7251825257294351251">允許系統通知</translation>
@@ -5407,6 +5438,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7258823566580374486">啟用遠端存取主機遮幕</translation>
 <translation id="7260204423892780600">控管 Google 助理的設定。</translation>
+<translation id="7261140115553020049">啟用浮動工作區服務</translation>
 <translation id="7261252191178797385">裝置桌布圖片</translation>
 <translation id="7264704483008663819">這項政策自 M68 起已淘汰，請改用 DeveloperToolsAvailability。
 
@@ -5475,6 +5507,11 @@
 <translation id="7340034977315324840">回報裝置活動時間</translation>
 <translation id="7343004974628511824">執行 DNS 攔截檢查功能</translation>
 <translation id="7343497214039883642">裝置專用企業印表機設定檔</translation>
+<translation id="7358012133037776875">你可以設定網站網址模式清單，指定要自動授予哪些網站視窗放置權限。這會允許網站執行以下操作：查看裝置畫面相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
+
+      如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
+
+      如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> 已設定的政策；在後者亦未設定的情況下，網站則會依循瀏覽器的預設權限設定，使用者則能依網站選擇這項權限。</translation>
 <translation id="7358359585412734876">啟用 <ph name="LACROS_NAME" /></translation>
 <translation id="7358744897221281073">如果啟用這項設定，已開啟 Phone Hub 功能的使用者將可在 Chrome 作業系統上繼續完成工作，例如繼續瀏覽手機的網頁。
 
@@ -5539,6 +5576,9 @@
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>
 <translation id="7464991223784276288">將來自相符網址的 Cookie 限制在目前的工作階段中</translation>
+<translation id="7466522266556143347">如果將這項政策設為 Enabled，在滿足所有其他必要條件的情況下，使用者就能使用 Direct Sockets API。
+      如果將這項政策設為 Enabled，代表使用者將無法存取這個 API。
+      如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用這項功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="7468182772656807573">你可以透過這項政策，決定監控網路封包的傳送頻率 (以毫秒為單位)。間隔範圍須介於 30 秒到 24 小時之間。系統會將超出範圍的值調整到範圍內。
 
       如果未設定，系統會套用 3 分鐘的預設間隔。</translation>
@@ -6043,6 +6083,7 @@
           如果不設定這項政策，系統會使用預設時間長度。
 
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。</translation>
+<translation id="7992613144342460685">允許這些網站取得視窗放置權限</translation>
 <translation id="7995610550667275367">掃描 (自 87 版起開始支援)</translation>
 <translation id="7999023147219236247">這項政策可控管如何授予應用程式要求的權限。PERMISSION_POLICY_UNSPECIFIED：未指定政策。如未針對任何層級的權限指定政策，系統會預設採取「PROMPT」值對應的行為。PROMPT：提示使用者授予權限。GRANT：自動授予權限。DENY：自動拒絕授予權限。</translation>
 <translation id="7999818120028621358">啟用資料外洩防護事件的回報功能</translation>
@@ -6660,6 +6701,7 @@
       如果將這項政策設為停用或不設定，遠端存取主機即可與任何本機使用者建立關聯。</translation>
 <translation id="867708016260789630">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="8677853537025397834">允許這些網站上的 WebHID API</translation>
+<translation id="8684781382594546769">停用 Direct Sockets API。</translation>
 <translation id="8685024486845674965">密碼遭到重複使用時，會觸發密碼保護警告</translation>
 <translation id="8685680544554917389">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 即可自動播放媒體。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 不會自動播放媒體。
 
@@ -6851,6 +6893,7 @@
 <translation id="8892783613915541293">使用 AC 電源供電的裝置閒置時，系統採取的動作和延遲管理電源行動</translation>
 <translation id="8897796778265450949">限制透過 GAIA 驗證 (未使用 SAML) 的使用者可離線登入的時間</translation>
 <translation id="889814528399907891">允許使用者啟用 <ph name="LACROS_NAME" /> 並設為主要瀏覽器</translation>
+<translation id="8900312706328930425">雲端回報頻率 (以小時為單位)</translation>
 <translation id="8903283771634816230">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 將使用作業系統的預設印表機，做為列印預覽的預設目的地。
 
       如果將這項政策設為停用或不設定，則 <ph name="PRODUCT_NAME" /> 會使用最近一次用過的印表機，做為列印預覽的預設目的地。</translation>
@@ -6905,6 +6948,12 @@
       這項政策只適用於 Family Link 使用者。</translation>
 <translation id="8947415621777543415">回報裝置位置</translation>
 <translation id="8948062138228904066">驗證伺服器許可清單</translation>
+<translation id="8949511380888040821">如果啟用這項設定，<ph name="PRODUCT_NAME" /> 將使用內建的憑證驗證器執行伺服器憑證驗證作業。
+      如果停用這項設定，<ph name="PRODUCT_NAME" /> 將使用平台提供的舊版憑證驗證器執行伺服器憑證驗證作業。
+      如果不進行設定，系統可能會使用內建或舊版的憑證驗證器。
+
+      我們計劃將這項政策從適用於 <ph name="MAC_OS_NAME" /> 104 版的 <ph name="PRODUCT_NAME" /> 中移除，屆時也將停止支援 <ph name="MAC_OS_NAME" /> 的舊版憑證驗證器。
+      </translation>
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>

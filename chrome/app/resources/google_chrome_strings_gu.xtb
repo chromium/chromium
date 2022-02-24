@@ -252,6 +252,9 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6989339256997917931">Google Chrome અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
 <translation id="700644001690392105">CloudReady 2.0 વિશે</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
+<translation id="7036251913954633326">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં <ph name="GUEST_LINK_BEGIN" />અતિથિ મોડ<ph name="GUEST_LINK_END" />નો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
+
+તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="7062128746136194023">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ઉમેરવાની મંજૂરી નથી.</translation>
 <translation id="7085332316435785646">Googleની સેવાઓમાં વધુ મનગમતા બનાવેલા અનુભવો આપવા માટે, Chrome ઇતિહાસ શામેલ કરવો કે નહીં, તે પસંદ કરો</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
@@ -265,6 +268,9 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7296210096911315575">મહત્વપૂર્ણ ઉપયોગ અને સુરક્ષા માહિતી</translation>
 <translation id="7308322188646931570">ફાઇલો ડાઉનલોડ કરવા માટે Chromeને સ્ટોરેજના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="7339898014177206373">નવી વિંડો</translation>
+<translation id="7388770099345495132">જો તમે માત્ર એક વાર જ આ એકાઉન્ટનો ઉપયોગ કરવા માગતા હો, તો તમે Chrome બ્રાઉઝરમાં અતિથિ મોડનો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
+
+તમે વેબસાઇટ અને ઍપને પહેલેથી જે પરવાનગીઓ આપી છે, તે આ એકાઉન્ટ પર લાગુ થઈ શકે છે. તમે <ph name="SETTINGS_LINK_BEGIN" />સેટિંગ<ph name="SETTINGS_LINK_END" />માં જઈને તમારા Google એકાઉન્ટ મેનેજ કરી શકો છો.</translation>
 <translation id="7398801000654795464">તમે Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું હતું. ફરીથી સાઇન ઇન કરવા માટે કૃપા કરીને એ જ એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="7408085963519505752">Chrome OS શરતો</translation>
 <translation id="7419046106786626209">Chrome OS તમારા ડેટાને સિંક કરી શક્યું નથી કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>

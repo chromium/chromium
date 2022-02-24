@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4008040567710660924">Izinkan cookie untuk situs tertentu.</translation>
+<translation id="4040330681741629921">Dapatkan notifikasi saat situs bisa ditampilkan dalam tampilan sederhana</translation>
 <translation id="4046123991198612571">Lagu berikutnya</translation>
 <translation id="4149994727733219643">Tampilan sederhana untuk halaman web</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
+<translation id="5412236728747081950">Situs ini mendapatkan minat Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="5438097262470833822">Pilihan ini akan mereset izin untuk <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Waktu berlalu <ph name="ELAPSED_TIME" /> dari <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokir iklan di situs yang menampilkan iklan yang mengganggu atau menyesatkan</translation>

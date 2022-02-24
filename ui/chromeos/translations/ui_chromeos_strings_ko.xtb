@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
 <translation id="1864756863218646478">파일을 찾지 못했습니다.</translation>
 <translation id="1884013283844450420">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 연결</translation>
+<translation id="1914901738028575085">CloudReady 2.0 기기</translation>
 <translation id="1920670151694390848">말라얄람어(음역)</translation>
 <translation id="1920798810075583923">수박</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />이(가) 포맷되었습니다.</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">자전거</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="872537912056138402">크로아티아어</translation>
+<translation id="873847021056608403">CloudReady 2.0 기기</translation>
 <translation id="8743164338060742337">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 연결</translation>
 <translation id="8750438273876807512">실행기에서 파일에 빠르게 액세스하려면 파일을 길게 터치한 다음 <ph name="ICON" /> 아이콘을 탭하고 '실행기에 고정'을 선택하세요.</translation>
 <translation id="8787254343425541995">공유 네트워크에서 프록시 허용</translation>

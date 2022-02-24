@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1204037785786432551">Pobierz link</translation>
+<translation id="1204692632633423444">Przycisk działania Chrome: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Kopiuj tekst linku</translation>
 <translation id="1208340532756947324">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację</translation>
 <translation id="1209206284964581585">Na razie ukryj</translation>
@@ -201,6 +202,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2172688499998841696">Opisy do obrazów są wyłączone</translation>
 <translation id="2172905120685242547">Zamknąć okno?</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2176767904800337188">Karta wirtualna ukrywa Twoją prawdziwą kartę, aby chronić Cię przed oszustwami. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Udostępnianie</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2200113223741723867">Zarządzanie udostępnianiem danych o korzystaniu</translation>
@@ -213,6 +215,7 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2259659629660284697">Eksportuj hasła…</translation>
 <translation id="2276696007612801991">Aby sprawdzić swoje hasła, zaloguj się na konto Google</translation>
 <translation id="2278052315791335171">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta na stronie <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Otworzyć aplikację <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Adres rozliczeniowy</translation>
 <translation id="228704530595896923">Lista opcji udostępniania.</translation>
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
@@ -330,6 +333,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2923908459366352541">Nazwa jest nieprawidłowa.</translation>
 <translation id="2932150158123903946">Dane aplikacji Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Twoja klawiatura się nie zmieni</translation>
+<translation id="2936980480904111527">Powiadomienia w Chrome ułatwiają korzystanie z internetu</translation>
 <translation id="2942036813789421260">Karta podglądu jest zamknięta</translation>
 <translation id="2946420957526726953">Aktualizuję Chrome, aby umożliwić nawiązywanie połączeń z innymi urządzeniami</translation>
 <translation id="2951071800649516099">Dodaj strony do listy Do przeczytania, aby przeczytać je później</translation>
@@ -670,6 +674,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4961107849584082341">Możesz przetłumaczyć tę stronę na dowolny język</translation>
 <translation id="4971735654804503942">Szybsza proaktywna ochrona przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami. Będziesz otrzymywać ostrzeżenia o kradzieżach haseł. Wymaga wysyłania danych przeglądania do Google.</translation>
 <translation id="497421865427891073">Dalej</translation>
+<translation id="4987271110129728827">Nie można znaleźć tej strony. Sprawdź pisownię lub spróbuj wyszukać w internecie.</translation>
 <translation id="4988526792673242964">Strony</translation>
 <translation id="5001388021414335527">Dodaj stronę do obserwowanych tutaj</translation>
 <translation id="5004416275253351869">Zarządzanie aktywnością w Google</translation>
@@ -727,6 +732,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5329858041417644019">Twoja przeglądarka nie jest zarządzana</translation>
 <translation id="5342314432463739672">Prośby o uprawnienia</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
+<translation id="5368227114232678694">Wypróbuj tryb incognito do prywatnego przeglądania internetu na tym urządzeniu</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> otwarta karta. Kliknij, by przełączyć się między kartami}few{<ph name="OPEN_TABS_MANY" /> otwarte karty. Kliknij, by przełączyć się między kartami}many{<ph name="OPEN_TABS_MANY" /> otwartych kart. Kliknij, by przełączyć się między kartami}other{<ph name="OPEN_TABS_MANY" /> otwartej karty. Kliknij, by przełączyć się między kartami}}</translation>
 <translation id="5375577065097716013">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Pozwól na otwieranie tylko wybranych stron</translation>
@@ -874,6 +880,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbn
 <translation id="6162892189396105610">Wczytuje strony, w przypadku których Chrome przewiduje, że je odwiedzisz.</translation>
 <translation id="6186394685773237175">Nie znaleziono przejętych haseł</translation>
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
+<translation id="620197886010707372">Otworzyć aplikację <ph name="APPNAME" /> w Google Play?</translation>
 <translation id="6203593061661911168">Pobieranie rozpocznie się po połączeniu z siecią Wi-Fi</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
@@ -1063,6 +1070,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7196215469483532480">Wyjaśnienie dotyczące Przewodnika po prywatności jest otwarte na całą wysokość</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
+<translation id="7237045078887540010">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_TOS_LINK" />Warunki korzystania z usług Google<ph name="END_TOS_LINK" /> oraz <ph name="BEGIN_ATOS_LINK" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />. Obowiązują też postanowienia <ph name="BEGIN_PRIVACY_LINK" />polityki prywatności<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="7242755609445462077">Stylizowane wyróżnienie: <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma włączoną synchronizację w Chrome</translation>
 <translation id="7252076891734325316">Przybliż telefon do komputera</translation>
@@ -1269,6 +1277,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="834313815369870491">Nigdy nie tłumacz stron</translation>
 <translation id="8352996530981010042">Nie udało się pobrać reakcji. Spróbuj ponownie.</translation>
 <translation id="8354977102499939946">Szybko wyszukaj głosowo. Aby edytować ten skrót, otwórz Ustawienia.</translation>
+<translation id="8356078935982976590">Będziesz mieć możliwość łatwego zarządzania opcjami sterowania multimediami, sesjami incognito, pobranymi plikami i nie tylko</translation>
 <translation id="835847953965672673">Przywrócone pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Zobacz najpopularniejsze strony</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
@@ -1425,6 +1434,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sprawdzano minutę temu}few{Sprawdzano # minuty temu}many{Sprawdzano # minut temu}other{Sprawdzano # minuty temu}}</translation>
 <translation id="9204836675896933765">Pozostał jeden plik</translation>
+<translation id="9205933215779845960">Nie można znaleźć tej strony. Sprawdź pisownię lub spróbuj wyszukać w <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Nie można wykonywać połączeń</translation>
 <translation id="9212845824145208577">Nie można przejść niżej. Zacznij w dolnej części strony.</translation>

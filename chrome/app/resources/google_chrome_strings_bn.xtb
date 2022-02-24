@@ -11,6 +11,7 @@
 <translation id="1142745911746664600">Chrome আপডেট করা যাচ্ছে না</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="1182414570724401860">Chrome-এর সাজেশন, আপনি ফাইলটি ডাউনলোড করবেন না এবং এটি খুলবেন না</translation>
+<translation id="1201241595274620956">CloudReady 2.0-এর শর্তাবলী</translation>
 <translation id="1278833599417554002">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google Chrome OS-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
@@ -38,11 +39,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
+<translation id="1847459800604232346">CloudReady 2.0 রিস্টার্ট করুন</translation>
 <translation id="1860536484129686729">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরায় অ্যাক্সেস দিতে হবে</translation>
+<translation id="1865667134297225786">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে CloudReady 2.0 আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="1873233029667955273">Google Chrome আপনার ডিফল্ট ব্রাউজার নয়</translation>
 <translation id="1874309113135274312">Google Chrome বিটা (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
+<translation id="1887927549935943139">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য CloudReady 2.0 আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="1919130412786645364">Chrome-এ সাইন-ইন করতে দিন</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">প্রতিটি প্রোফাইলে বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও আরও অনেক কিছুর মতো তার নিজস্ব Chrome তথ্য আছে</translation>
 <translation id="2063848847527508675">আপডেটটি প্রয়োগ করতে Chrome OS আবার চালু করা প্রয়োজন।</translation>
 <translation id="2094919256425865063">তা স্বত্তেও Chrome বন্ধ করবেন?</translation>
@@ -53,12 +58,15 @@
 <translation id="2258103955319320201">সব ডিভাইস জুড়ে Chrome ব্রাউজারে থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
 <translation id="2290014774651636340">Google এপিআই কীগুলি অনুপস্থিত৷ Google Chrome-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="2290095356545025170">আপনি কি Google Chrome আনইনস্টল করার ব্যাপারে নিষ্চিত ?</translation>
+<translation id="2297776811548050971"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে CloudReady 2.0 তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="2309047409763057870">এটা Google Chrome-এর সেকেন্ডারি ইনস্টলেশন এবং একে আপনার ডিফল্ট ব্রাউজার করা যাবে না।</translation>
 <translation id="2345992953227471816">Chrome এইসব আইটেমে ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে:</translation>
 <translation id="2348335408836342058">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরা এবং মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="234869673307233423">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
+<translation id="2371517829376452747">এই পৃষ্ঠাতে কোনও একটি সেটিং দেখা না গেলে, আপনার <ph name="LINK_BEGIN" />
+        CloudReady 2.0 সেটিংস<ph name="LINK_END" /> বিকল্পটি দেখুন</translation>
 <translation id="2429317896000329049">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Google Chrome সিঙ্ক করতে পারেনি৷</translation>
 <translation id="2467438592969358367">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে। অনুমতি দিতে Windows এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="2485422356828889247">আনইনস্টল</translation>
@@ -87,6 +95,7 @@
 <translation id="2926676257163822632">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। Chrome-কে <ph name="BEGIN_LINK" />আপনার জন্য শক্তিশালী পাসওয়ার্ড তৈরি করার ও সেটি মনে রাখার<ph name="END_LINK" /> অনুমতি দিন।</translation>
 <translation id="2926952073016206995">এই সাইটের জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="2929907241665500097">Chrome আপডেট করা যায়নি, কোনও সমস্যা হয়েছে। <ph name="BEGIN_LINK" />Chrome-এ আপডেট করতে না পারার সমস্যা ও আপডেট করা যায়নি এমন সমস্যার সমাধান করুন।<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0 আপডেট করার জন্য আবার চালু করুন</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chrome</translation>
 <translation id="303514781271618814">Chrome নতুন ফিচার এক্সপ্লোর করছে যা সাইটগুলিকে আপনার কম ডেটা ব্যবহার করে একই ব্রাউজিং অভিজ্ঞতা প্রদান করতে দেয়</translation>
 <translation id="3037838751736561277">Google Chrome পটভূমি মোডে রয়েছে।</translation>
@@ -113,6 +122,7 @@
 <translation id="3533694711092285624">কোনও পাসওয়ার্ড সেভ করা নেই। আপনি পাসওয়ার্ড সেভ করলে Chrome সেটি চেক করতে পারবে।</translation>
 <translation id="3541482654983822893">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। ২৪ ঘণ্টা পরে আবার চেষ্টা করুন।</translation>
 <translation id="3576528680708590453"><ph name="TARGET_URL_HOSTNAME" /> অ্যাক্সেস করতে অন্য ব্রাউজার খোলার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর Google Chrome কনফিগার করেছেন।</translation>
+<translation id="3582634744482121096">ঐচ্ছিক: Google-কে অটোমেটিক ডায়াগনস্টিক ও ব্যবহারের ডেটা পাঠিয়ে CloudReady 2.0-এর ফিচার ও পারফর্ম্যান্সের উন্নতিতে সাহায্য করুন।</translation>
 <translation id="3582972582564653026">আপনার সব ডিভাইস জুড়ে Chrome সিঙ্ক করুন এবং নিজের মতো সাজিয়ে নিন</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
@@ -133,6 +143,7 @@
 <translation id="4149882025268051530">ইনস্টলারটি আর্কাইভ আনকমপ্রেস করা যায়নি৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome এক দিনের মধ্যে আবার লঞ্চ করুন}one{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}other{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}}</translation>
 <translation id="4205939740494406371">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। ২৪ ঘণ্টা পরে আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টে পাসওয়ার্ড চেক করুন<ph name="END_LINK" />।</translation>
+<translation id="4218613300505264589">CloudReady 2.0 সিস্টেম</translation>
 <translation id="4242034826641750751">এই সাইটের জন্য Chrome-এর ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="424864128008805179">Chrome থেকে সাইন-আউট করবেন?</translation>
 <translation id="4251615635259297716">এই অ্যাকাউন্টে আপনার Chrome ডেটা লিঙ্ক করবেন?</translation>
@@ -150,7 +161,9 @@
 <translation id="4458462641685292929">Google Chrome এ আরেকটি ক্রিয়াকলাপ প্রক্রিয়ায় আছে। দয়া করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="4480040274068703980">সাইন ইনে ত্রুটির কারণে Chrome OS আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
 <translation id="4521185804071812304">ঐচ্ছিক: ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক Google-এ পাঠিয়ে Chrome OS-এর ফিচার ও পারফরম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন।</translation>
+<translation id="4539063627668028557">CloudReady 2.0-এর ভার্সন</translation>
 <translation id="4561051373932531560">Google Chrome আপনাকে ওয়েবে কোনো ফোন নম্বরে ক্লিক করতে এবং Skype-এর মাধ্যমে সেটিতে কল করতে দেয়!</translation>
+<translation id="4562712242781620537">CloudReady 2.0 সিস্টেম</translation>
 <translation id="4567424176335768812">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন৷ এখন আপনি আপনার সমস্ত সাইন-ইন করা ডিভাইসে আপনার বুকমার্ক, ইতিহাস এবং অন্যান্য সেটিংস অ্যাক্সেস করতে পারেন৷</translation>
 <translation id="4571503333518166079">Chrome বিজ্ঞপ্তি সেটিংসে যান</translation>
 <translation id="459622048091363950">Chrome অ্যাক্সেস পেলেই, ওয়েবসাইটগুলি আপনাকে অ্যাক্সেসের অনুরোধ করতে পারবে।</translation>
@@ -176,6 +189,7 @@
 কিছু বৈশিষ্ট্য অনুপলভ্য হতে পারে৷ একটি ভিন্ন প্রোফাইল নির্দেশিকা সুনির্দিষ্টভাবে উল্লেখ করুন অথবা Chrome এর নতুন ভার্সন ব্যবহার করুন৷</translation>
 <translation id="521447420733633466">যদি আপনি কোনও ডিভাইস শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের পছন্দ অনুযায়ী Chrome সেট-আপ করতে পারবেন</translation>
 <translation id="5251420635869119124">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chrome ব্যবহার করতে পারবেন৷</translation>
+<translation id="5307623274346663914">আপডেটটি প্রয়োগ করতে CloudReady 2.0 আবার চালু করা প্রয়োজন।</translation>
 <translation id="5334487786912937552">ফাইল ডাউনলোড করতে Chrome-এর স্টোরেজ অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="5386244825306882791">আপনি Chrome শুরু করলে বা Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
@@ -184,8 +198,10 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{এই আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
+<translation id="5685161537284117504">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে CloudReady 2.0 তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="5686916850681061684">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন। একটি বিষয়ে আপনার নজর দেওয়া দরকার - বিস্তারিত বিবরণের জন্য ক্লিক করুন।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">সাইন-ইনে সমস্যা থাকার জন্য CloudReady 2.0 আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
 <translation id="5736850870166430177">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
 <translation id="573759479754913123">Chrome OS সম্পর্কে </translation>
@@ -218,14 +234,19 @@
 <translation id="6679975945624592337">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
 <translation id="6696915334902295848">এই সাইটের জন্য Chrome-এর মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6739177684496155661">নতুন Chrome প্রোফাইলে কাজ চালিয়ে যেতে চান?</translation>
+<translation id="6749459139769042303">CloudReady 2.0-এর জন্য সাহায্য পান</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
+<translation id="6814748008107187409">এই পৃষ্ঠাতে কোনও একটি সেটিং দেখা না গেলে, আপনার <ph name="LINK_BEGIN" />
+      Chrome OS সেটিংস<ph name="LINK_END" /> বিকল্পটি দেখুন</translation>
 <translation id="683440813066116847">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome Canary এর জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6881299373831449287">Chrome আপডেট হচ্ছে</translation>
 <translation id="6885412569789873916">Chrome বিটা অ্যাপ</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত CloudReady 2.0-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
 <translation id="6943584222992551122">ডিভাইসটি থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="6967962315388095737">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome বিটার জন্য ইনবাউন্ড নিয়ম।</translation>
 <translation id="6989339256997917931">Google Chrome আপডেট হয়েছে তবে আপনি এটি কমপক্ষে 30 দিন যাবত ব্যবহার করেন নি৷</translation>
+<translation id="700644001690392105">CloudReady 2.0-এর বিষয়ে</translation>
 <translation id="7025800014283535195">আপনি এখানে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
 <translation id="7036251913954633326">আপনি শুধু একবারের জন্য এই অ্যাকাউন্ট ব্যবহার করলে, Chrome ব্রাউজারের <ph name="GUEST_LINK_BEGIN" />গেস্ট মোড<ph name="GUEST_LINK_END" /> ব্যবহার করুন। অন্য কোনও ব্যক্তির জন্য অ্যাকাউন্ট যোগ করতে চাইলে, <ph name="DEVICE_TYPE" />-এ <ph name="LINK_BEGIN" />নতুন ব্যক্তিকে যোগ করুন<ph name="LINK_END" />।
 
@@ -253,6 +274,7 @@
 <translation id="7486227612705979895">অ্যাড্রেস বারে সাজেশন দেওয়ার জন্য Chrome আপনার ড্রাইভ অ্যাক্সেস করবে</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>
 <translation id="7573289029918943991">আপনার ডিভাইস আপ-টু-ডেট আছে কিনা তা দেখতে <ph name="LINK_BEGIN" />Chrome OS সেটিংস<ph name="LINK_END" /> বিকল্পে যান</translation>
+<translation id="7580049017368059129">আপনার ডিভাইস আপ-টু-ডেট আছে কিনা তা দেখতে <ph name="LINK_BEGIN" />CloudReady 2.0 সেটিংস<ph name="LINK_END" /> বিকল্পে যান</translation>
 <translation id="7592736734348559088">Google Chrome আপনার অ্যাকাউন্ট সাইন-ইন বিশদ বিবরণটি পুরনো হওয়ার কারণে সিঙ্ক করতে পারেনি৷</translation>
 <translation id="7626032353295482388">Chrome এ স্বাগতম</translation>
 <translation id="7629695634924605473">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chrome আপনাকে জানিয়ে দেবে</translation>

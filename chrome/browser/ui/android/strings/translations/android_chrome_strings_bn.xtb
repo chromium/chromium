@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
 <translation id="1204037785786432551">লিঙ্ক ডাউনলোড করুন</translation>
+<translation id="1204692632633423444">Chrome অ্যাকশন বোতাম: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">লিঙ্ক টেক্সট কপি করুন</translation>
 <translation id="1208340532756947324">সমগ্র ডিভাইস জুড়ে সিঙ্ক এবং ব্যক্তিগতকৃত করতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="1209206284964581585">এখনকার মতো লুকান</translation>
@@ -201,6 +202,7 @@
 <translation id="2172688499998841696">ছবির বিবরণ বন্ধ করা আছে</translation>
 <translation id="2172905120685242547">উইন্ডো বন্ধ করবেন?</translation>
 <translation id="2175927920773552910">QR কোড</translation>
+<translation id="2176767904800337188">কোনও ভার্চুয়াল কার্ড আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে আপনার আসল কার্ডের ছদ্মবেশ নিতে পারে। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">শেয়ার করা সংক্রান্ত বিজ্ঞপ্তি</translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2200113223741723867">ব্যবহারের ডেটা শেয়ার করার সেটিংস ম্যানেজ করুন</translation>
@@ -213,6 +215,7 @@
 <translation id="2259659629660284697">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
 <translation id="2276696007612801991">আপনার পাসওয়ার্ড চেক করতে Google অ্যাকাউন্টে সাইন-ইন করুন</translation>
 <translation id="2278052315791335171">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না</translation>
+<translation id="2279146068164892489"><ph name="APPNAME" /> অ্যাপ খুলবেন?</translation>
 <translation id="2286841657746966508">বিলিং ঠিকানা</translation>
 <translation id="228704530595896923">শেয়ার করার বিকল্পের তালিকা।</translation>
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
@@ -330,6 +333,7 @@
 <translation id="2923908459366352541">নাম সঠিক নয়</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> স্টোরেজ</translation>
 <translation id="2932222164150889403">আপনার কীবোর্ড পরিবর্তন হবে না</translation>
+<translation id="2936980480904111527">Chrome-এর বিজ্ঞপ্তিগুলি জিনিসকে আরও সহজ করে তোলে</translation>
 <translation id="2942036813789421260">প্রিভিউ ট্যাব বন্ধ করা আছে</translation>
 <translation id="2946420957526726953">অন্য ডিভাইসে কানেক্ট করার জন্য Chrome আপডেট করা হচ্ছে</translation>
 <translation id="2951071800649516099">পরে পড়ার জন্য পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
@@ -672,6 +676,7 @@
 <translation id="4961107849584082341">এই পৃষ্ঠাটি যেকোনও ভাষায় অনুবাদ করুন</translation>
 <translation id="4971735654804503942">ঝুঁকিপূর্ণ ওয়েবসাইট, ডাউনলোড এবং এক্সটেনশনের জন্য আরও দ্রুত, সক্রিয় সুরক্ষা ব্যবস্থা। পাসওয়ার্ড সুরক্ষিত নেই সেই সম্পর্কে আপনাকে জানায়। Google-কে পাঠানোর জন্য ব্রাউজ করা ডেটা প্রয়োজন।</translation>
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
+<translation id="4987271110129728827">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা ওয়েব সার্চ করুন।</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="5001388021414335527">এই সাইট এখানে ফলো করুন</translation>
 <translation id="5004416275253351869">Google অ্যাক্টিভিটির নিয়ন্ত্রণ</translation>
@@ -877,6 +882,7 @@
 <translation id="6162892189396105610">Chrome-এর মতে আপনি যেসব পৃষ্ঠা দেখতে পারেন সেগুলি প্রিলোড করা হয়।</translation>
 <translation id="6186394685773237175">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড খুঁজে পাওয়া যায়নি</translation>
 <translation id="6192907950379606605">ছবির বিবরণ পান</translation>
+<translation id="620197886010707372">Google Play দিয়ে <ph name="APPNAME" />-এর জন্য অ্যাপ খুলবেন?</translation>
 <translation id="6203593061661911168">ওয়াই-ফাই নেটওয়ার্কে কানেক্ট করা হলে ডাউনলোড শুরু হবে</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
@@ -1066,6 +1072,7 @@
 <translation id="7191430249889272776">পটভূমিতে ট্যাব খোলা হয়েছে।</translation>
 <translation id="7196215469483532480">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১টি ডাউনলোড বাকি আছে}one{#টি ডাউনলোড বাকি আছে}other{#টি ডাউনলোড বাকি আছে}}</translation>
+<translation id="7237045078887540010">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_TOS_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" /> এবং <ph name="BEGIN_ATOS_LINK" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_ATOS_LINK" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" /> প্রযোজ্য।</translation>
 <translation id="7242755609445462077">স্টাইলযুক্ত হাইলাইট <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Chrome-এ <ph name="TARGET_DEVICE_NAME" /> সিঙ্ক করার ফিচার চালু করে রেখেছেন কিনা দেখে নিন।</translation>
 <translation id="7252076891734325316">ফোনকে কম্পিউটারের কাছাকাছি নিয়ে আসুন</translation>
@@ -1272,6 +1279,7 @@
 <translation id="834313815369870491">সাইট কখনও অনুবাদ করবেন না</translation>
 <translation id="8352996530981010042">প্রতিক্রিয়া ডাউনলোড করা যাচ্ছে না। আবার চেষ্টা করুন।</translation>
 <translation id="8354977102499939946">আপনার ভয়েস ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকাট এডিট করতে, সেটিংসে যান।</translation>
+<translation id="8356078935982976590">আপনি খুব সহজেই মিডিয়া কন্ট্রোল, ছদ্মবেশী সেশন, ডাউনলোড এবং আরও অনেক কিছু ম্যানেজ করতে পারবেন</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড ফিরিয়ে আনা হয়েছে</translation>
 <translation id="8364299278605033898">জনপ্রিয় ওয়েবসাইট দেখুন</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
@@ -1428,6 +1436,7 @@
 <translation id="9169507124922466868">নেভিগেশনের ইতিহাস অর্ধেক খোলা রয়েছে</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
 <translation id="9204836675896933765">১টি ফাইল বাকি</translation>
+<translation id="9205933215779845960">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা <ph name="SEARCH_ENGINE" />-এ সার্চ করে দেখুন।</translation>
 <translation id="9206873250291191720">আ</translation>
 <translation id="9209888181064652401">কল করা যাচ্ছে না</translation>
 <translation id="9212845824145208577">এর চেয়ে নিচে আর যেতে পারবেন না। পৃষ্ঠার নিচে থেকে শুরু করার চেষ্টা করে দেখুন।</translation>

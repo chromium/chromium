@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4008040567710660924">Autoriser les témoins pour un site en particulier.</translation>
+<translation id="4040330681741629921">Recevez une notification lorsqu'un site prend en charge l'affichage simplifié</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
 <translation id="4149994727733219643">Affichage simplifié pour les pages Web</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
+<translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="5438097262470833822">Ce choix réinitialisera les autorisations du site <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui diffusent des annonces intrusives ou trompeuses</translation>

@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Atnaujinama (atlikta <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Nėra jokių pasiekiamų „<ph name="NETWORK_NAME" />“ tinklų</translation>
+<translation id="131421566576084655">Pastarojo duomenų nustatymo iš naujo data nepasiekiama</translation>
 <translation id="1314565355471455267">„Android“ VPN</translation>
 <translation id="131461803491198646">Namų tinklas, ne tarptinklinis ryšys</translation>
 <translation id="1327977588028644528">Tinklų sietuvas</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Nepavyko – filtras neveikia tinkamai</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Turiu raktų porą</translation>
+<translation id="1435763214710588005">Pasirinktą dieną automatiškai iš naujo nustatomas duomenų naudojimas kiekvieną mėnesį</translation>
 <translation id="1442433966118452622">Vaizdo šaltinis</translation>
 <translation id="1451536289672181509">Įrenginys yra klaviatūra.</translation>
 <translation id="1459693405370120464">Oras</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Nepavyksta atnaujinti įrenginio „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1567064801249837505">Albumai</translation>
 <translation id="1572585716423026576">Nustatyti kaip foną</translation>
+<translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
 <translation id="1639239467298939599">Įkeliama</translation>
 <translation id="1641857168437328880">Dokumentų tiektuvas (vienpusis)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP užkarda</translation>
 <translation id="4147897805161313378">„Google“ nuotraukos</translation>
 <translation id="4155551848414053977">Įsitikinkite, kad skaitytuvas įjungtas ir pasiekiamas tinkle arba tiesioginiu ryšiu</translation>
+<translation id="4170180284036919717">Fotografuoti</translation>
 <translation id="4170700058716978431">NESĖKMINGAS</translation>
 <translation id="4176463684765177261">Išjungta</translation>
 <translation id="4213104098953699324">USB klaviatūra</translation>
@@ -391,6 +395,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="594552776027197022">Generuoti atsitiktinę raktų porą</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Įgalinti automatinį nustatymą iš naujo kas mėnesį</translation>
 <translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6040852767465482106">Anoniminė tapatybė</translation>
@@ -414,6 +419,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skaitytuvai nepasiekiami</translation>
 <translation id="6232017090690406397">Akumuliatorius</translation>
+<translation id="6235460611964961764">Neautomatiškai iš naujo nustatyti duomenų naudojimą</translation>
 <translation id="6243280677745499710">Šiuo metu nustatytas</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />, <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Nepavyko – nėra dėklo</translation>
+<translation id="8923267550422472772">Nustatymo iš naujo mėnesio diena</translation>
 <translation id="8928727111548978589">Nepavyko – baigėsi popierius</translation>
 <translation id="8930521118335213258">Lygiavertis tinklo mazgas</translation>
 <translation id="8930622219860340959">Belaidis</translation>

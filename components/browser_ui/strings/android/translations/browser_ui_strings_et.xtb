@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
+<translation id="4040330681741629921">Saate märguande, kui saiti saab kuvada lihtsustatud vaates</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">See kustutab <ph name="DATASIZE" /> andmed ja küpsisefailid, mille saidid on salvestanud.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ja veel 1)}other{(ja veel #)}}</translation>
 <translation id="5403592356182871684">Nimed</translation>
+<translation id="5412236728747081950">See sait hangib Chrome'ist teie huvid, et näidata teile asjakohasemaid reklaame</translation>
 <translation id="5438097262470833822">Jätkates lähtestatakse veebisaidi <ph name="WEBSITE" /> load</translation>
 <translation id="5489227211564503167">Kulunud aeg: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokeeri reklaamid saitidel, mis kuvavad sekkuvaid või eksitavaid reklaame</translation>

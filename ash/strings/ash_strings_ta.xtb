@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">ஸ்கிரீன் ஷாட்டை எடுக்கும்</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (புளூடூத்)</translation>
 <translation id="3113926042639749131">பரிந்துரையை அகற்று</translation>
+<translation id="3120421559657122717">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
 <translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
 <translation id="3139942575505304791">மேசை 1</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> என்ற சாளரமானது டெஸ்க்<ph name="ACTIVE_DESK" />ல் இருந்து டெஸ்க் <ph name="TARGET_DESK" />க்கு நகர்த்தப்பட்டது</translation>
 <translation id="3255483164551725916">உன்னால் என்னவெல்லாம் செய்ய முடியும்?</translation>
 <translation id="3269597722229482060">வலது கிளிக்</translation>
+<translation id="3289544412142055976">Linux ஆப்ஸைத் தற்போது பயன்படுத்த முடியாது</translation>
 <translation id="3289674678944039601">அடாப்டர் மூலம் சார்ஜாகிறது</translation>
 <translation id="3290356915286466215">பாதுகாப்பற்ற வைஃபை நெட்வொர்க்</translation>
 <translation id="3294437725009624529">கெஸ்ட்</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">விரைவு அமைப்புகள், அறிவிப்பு மையத்தை அணுக, தேடல் + இடது அம்புக்குறியை அழுத்தவும்.</translation>
 <translation id="5426063383988017631">அமைப்புகள் மெனு மூடப்பட்டது</translation>
 <translation id="5428899915242071344">தேர்ந்தெடுப்பதைத் தொடங்கு</translation>
+<translation id="5429993543155113935">மறைநிலைச் சாளரங்களைத் தற்போது பயன்படுத்த முடியாது</translation>
 <translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
 <translation id="5433020815079095860">ஆடியோ உள்ளீடு</translation>
@@ -810,6 +813,7 @@
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6166852626429024716">உங்கள் சாதனம், ஆப்ஸ், அமைப்புகள், இணையம் ஆகியவற்றில் தேடுக...</translation>
 <translation id="6179832488876878285">முக்கியமான கோப்புகளை இங்கே பின் (pin) செய்யலாம். பின் செய்ய Files ஆப்ஸைத் திறக்கவும்.</translation>
+<translation id="6220928844947387476">இப்போது ஒரே சமயத்தில் உங்கள் வீடியோவையும் திரையையும் ரெக்கார்டு செய்யலாம்</translation>
 <translation id="622484624075952240">கீழ்</translation>
 <translation id="6231419273573514727">சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@
 <translation id="6431865393913628856">திரையை ரெக்கார்டு செய்யும்</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புகிறது</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வு</translation>
+<translation id="6449483711453944360">Linux ஆப்ஸையும் மறைநிலைச் சாளரங்களையும் தற்போது பயன்படுத்த முடியாது</translation>
 <translation id="6452181791372256707">நிராகரி</translation>
 <translation id="6453179446719226835">மொழி மாற்றப்பட்டது</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> க்கு திரை விரிவாக்கப்படுகிறது</translation>
@@ -934,6 +939,7 @@
 <translation id="7025533177575372252">உங்கள் <ph name="DEVICE_NAME" />ஐ ஃபோனுடன் இணைக்கவும்</translation>
 <translation id="7026338066939101231">குறை</translation>
 <translation id="7029814467594812963">அமர்விலிருந்து வெளியேறவும்</translation>
+<translation id="7032161822340700104">ஆறு டெம்ப்ளேட்டுகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க, ஒரு டெம்ப்ளேட்டை அகற்றவும்.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google அசிஸ்டண்ட்</translation>
 <translation id="7042322267639375032">நிலைப் பகுதியை சுருக்கும்</translation>
 <translation id="7045033600005038336">டெம்ப்ளேட்டை மாற்றியமைக்கவா?</translation>

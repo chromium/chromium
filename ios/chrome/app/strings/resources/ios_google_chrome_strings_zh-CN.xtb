@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">要查看您在其他设备上用 Chrome 打开的标签页，请开启同步功能</translation>
 <translation id="3533694711092285624">尚未保存任何密码。您需要先保存密码才能使用 Chrome 的密码检查功能。</translation>
 <translation id="3634910711516114487">若要充分利用 Chrome，请使用您的 Google 帐号登录 Chrome</translation>
+<translation id="3655656110921623717">这意味着 Chrome 每次都会对移动网站发出请求。</translation>
 <translation id="3706101708757577809">当您点按消息、文档和其他应用中的链接时，可以使用 Chrome 打开链接啦。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
 <translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
+<translation id="9122931302567044771">这意味着 Chrome 每次都会对桌面版网站发出请求。</translation>
 </translationbundle>

@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš ?</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4008040567710660924">Leisti konkrečios svetainės slapukus.</translation>
+<translation id="4040330681741629921">Gaukite pranešimą, kai galima rodyti supaprastinto rodinio svetainę</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
 <translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
+<translation id="5412236728747081950">Ši svetainė gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokuoti skelbimus svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>

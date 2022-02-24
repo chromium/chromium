@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1310380015393971138">Kullanılabilir <ph name="NETWORK_NAME" /> ağı yok</translation>
+<translation id="131421566576084655">Son veri sıfırlama tarihi kullanılamıyor</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Ev ağı, dolaşımda değil</translation>
 <translation id="1327977588028644528">Ağ geçidi</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">İşlem başarısız - Filtre başarısız</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Anahtar çiftim var</translation>
+<translation id="1435763214710588005">Her ay belirli bir günde veri kullanımı otomatik olarak sıfırlanır</translation>
 <translation id="1442433966118452622">Resim kaynağı</translation>
 <translation id="1451536289672181509">Cihazın türü klavye.</translation>
 <translation id="1459693405370120464">Hava durumu</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> güncellenemiyor</translation>
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
+<translation id="4170180284036919717">Fotoğraf çek</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4213104098953699324">USB klavye</translation>
@@ -391,6 +395,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5939518447894949180">Sıfırla</translation>
 <translation id="594552776027197022">Rastgele anahtar çifti oluşturun</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Aylık otomatik sıfırlamayı etkinleştir</translation>
 <translation id="6037291330010597344">Tarayıcının doküman besleyicisi boş. Doküman ekleyip tekrar deneyin.</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6040852767465482106">Anonim Kimlik</translation>
@@ -414,6 +419,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
 <translation id="6232017090690406397">Pil</translation>
+<translation id="6235460611964961764">Veri kullanımını manuel olarak sıfırla</translation>
 <translation id="6243280677745499710">Şu anda ayarlı</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>
 <translation id="8919837981463578619">İşlem başarısız - Tepsi yok</translation>
+<translation id="8923267550422472772">Aylık sıfırlama günü</translation>
 <translation id="8928727111548978589">İşlem başarısız - Kağıt yok</translation>
 <translation id="8930521118335213258">Eş</translation>
 <translation id="8930622219860340959">WiFi (Kablosuz)</translation>

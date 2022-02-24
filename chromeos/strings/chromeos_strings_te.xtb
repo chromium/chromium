@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> నెట్‌వర్క్ ఏదీ అందుబాటులో లేదు</translation>
+<translation id="131421566576084655">చివరిసారిగా డేటా రీసెట్ చేసిన తేదీ అందుబాటులో లేదు</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">హోమ్ నెట్‌వర్క్, రోమింగ్ కాదు</translation>
 <translation id="1327977588028644528">గేట్‌వే</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">నా దగ్గర కీపెయిర్ ఉంది</translation>
+<translation id="1435763214710588005">ప్రతి నెలా ఎంచుకున్న రోజున డేటా వినియోగాన్ని ఆటోమేటిక్‌గా రీసెట్ చేస్తుంది</translation>
 <translation id="1442433966118452622">ఇమేజ్ సోర్స్</translation>
 <translation id="1451536289672181509">పరికర రకం కీబోర్డ్.</translation>
 <translation id="1459693405370120464">వాతావరణం</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />‌ను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="1567064801249837505">ఆల్బమ్‌లు</translation>
 <translation id="1572585716423026576">వాల్‌పేపర్‌గా సెట్ చేయి</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
 <translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google ఫోటోలు</translation>
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
+<translation id="4170180284036919717">ఫోటో తీయండి</translation>
 <translation id="4170700058716978431">విఫలమైంది</translation>
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
 <translation id="4213104098953699324">USB కీబోర్డ్</translation>
@@ -390,6 +394,7 @@
 <translation id="5939518447894949180">రీసెట్ చేయి</translation>
 <translation id="594552776027197022">ర్యాండమ్ కీపెయిర్‌ను జెనరేట్ చేయండి</translation>
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
+<translation id="6034694447310538551">ఆటోమేటిక్ నెలవారీ రీసెట్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="6037291330010597344">స్కానర్ డాక్యుమెంట్ ఫీడర్ ఖాలీగా ఉంది. డాక్యుమెంట్‌లను జోడించి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6040852767465482106">అనామక ఐడెంటిటీ</translation>
@@ -413,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
+<translation id="6235460611964961764">డేటా వినియోగాన్ని మాన్యువల్‌గా రీసెట్ చేయండి</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -624,6 +630,7 @@
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />కు చెందిన <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">విఫలమైంది - ట్రే అందుబాటులో లేదు</translation>
+<translation id="8923267550422472772">రీసెట్ కోసం నెలలో రోజు</translation>
 <translation id="8928727111548978589">విఫలమైంది - పేపర్ లేదు</translation>
 <translation id="8930521118335213258">బెంచ్‌మార్క్</translation>
 <translation id="8930622219860340959">వైర్‌లెస్</translation>

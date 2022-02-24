@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Πραγματοποιείται ενημέρωση (ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Δεν υπάρχει διαθέσιμο δίκτυο <ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">Η ημερομηνία της τελευταίας επαναφοράς δεδομένων δεν είναι διαθέσιμη</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Εγχώριο δίκτυο, χωρίς περιαγωγή </translation>
 <translation id="1327977588028644528">Πύλη</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Έχω ένα ζεύγος κλειδιών</translation>
+<translation id="1435763214710588005">Επαναφέρει αυτόματα τη χρήση δεδομένων κάθε μήνα κατά την επιλεγμένη ημέρα</translation>
 <translation id="1442433966118452622">Προέλευση εικόνας</translation>
 <translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1459693405370120464">Καιρός</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Αδυναμία ενημέρωσης <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Λευκώματα</translation>
 <translation id="1572585716423026576">Ορισμός ως ταπετσαρία</translation>
+<translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
 <translation id="1639239467298939599">Γίνεται φόρτωση</translation>
 <translation id="1641857168437328880">Τροφοδότης εγγράφων (Μίας όψης)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Τείχος προστασίας HTTP</translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4155551848414053977">Βεβαιωθείτε ότι ο σαρωτής είναι ενεργοποιημένος και διαθέσιμος μέσω του δικτύου σας ή μέσω άμεσης σύνδεσης.</translation>
+<translation id="4170180284036919717">Λήψη φωτογραφίας</translation>
 <translation id="4170700058716978431">ΑΠΕΤΥΧΕ</translation>
 <translation id="4176463684765177261">Απενεργοποιημένο</translation>
 <translation id="4213104098953699324">Πληκτρολόγιο USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Ενεργοποίηση αυτόματης μηνιαίας επαναφοράς</translation>
 <translation id="6037291330010597344">Ο τροφοδότης εγγράφων του σαρωτή είναι άδειος. Προσθέστε έγγραφα και δοκιμάστε ξανά.</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6040852767465482106">Ανώνυμη ταυτότητα</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Δεν υπάρχουν διαθέσιμοι σαρωτές</translation>
 <translation id="6232017090690406397">Μπαταρία</translation>
+<translation id="6235460611964961764">Μη αυτόματη επαναφορά χρήσης δεδομένων</translation>
 <translation id="6243280677745499710">Έχει οριστεί</translation>
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> του/της <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Σφάλμα - Λείπει δίσκος</translation>
+<translation id="8923267550422472772">Ημέρα του μήνα για επαναφορά</translation>
 <translation id="8928727111548978589">Σφάλμα - Τελείωσε το χαρτί</translation>
 <translation id="8930521118335213258">Ομότιμη</translation>
 <translation id="8930622219860340959">Ασύρματο</translation>

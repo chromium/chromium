@@ -334,6 +334,7 @@
 <translation id="3105917916468784889">સ્ક્રીનશૉટ લો</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">સૂચન કાઢી નાખો</translation>
+<translation id="3120421559657122717">શું ડિવાઇસને શટ ડાઉન કરીએ?</translation>
 <translation id="3126069444801937830">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો</translation>
 <translation id="3139942575505304791">ડેસ્ક 1</translation>
 <translation id="315116470104423982">મોબાઇલ ડેટા</translation>
@@ -354,6 +355,7 @@
 <translation id="3249513730522716925">વિડો <ph name="WINDOW_TITLE" />ને ડેસ્ક <ph name="ACTIVE_DESK" />માંથી ડેસ્ક <ph name="TARGET_DESK" />માં ખસેડી</translation>
 <translation id="3255483164551725916">તમે શું કરી શકો?</translation>
 <translation id="3269597722229482060">રાઇટ ક્લિક કરો</translation>
+<translation id="3289544412142055976">હાલમાં Linux ઍપને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="3289674678944039601">અડૅપ્ટર વડે ચાર્જિંગ</translation>
 <translation id="3290356915286466215">અસુરક્ષિત</translation>
 <translation id="3294437725009624529">અતિથિ</translation>
@@ -705,6 +707,7 @@
 <translation id="5400461572260843123">ઝડપી સેટિંગ, નોટિફિકેશન કેન્દ્ર ઍક્સેસ કરવા માટે Search + ડાબી ઍરો કી દબાવો.</translation>
 <translation id="5426063383988017631">સેટિંગ મેનૂ બંધ કર્યું</translation>
 <translation id="5428899915242071344">પસંદ કરવાનું શરૂ કરો</translation>
+<translation id="5429993543155113935">છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="5430931332414098647">ફટાફટ ટિથરિંગ</translation>
 <translation id="5431318178759467895">રંગ</translation>
 <translation id="5433020815079095860">ઑડિયો ઇનપુટ</translation>
@@ -847,6 +850,7 @@
 <translation id="6431865393913628856">સ્ક્રીન રેકૉર્ડ કરો</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ઇવેન્ટ</translation>
+<translation id="6449483711453944360">Linux ઍપ અને છૂપી વિન્ડોને હાલમાં સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="6452181791372256707">નકારો</translation>
 <translation id="6453179446719226835">ભાષા બદલવામાં આવી છે</translation>
 <translation id="6459472438155181876">સ્ક્રીનને <ph name="DISPLAY_NAME" /> પર વિસ્તૃત કરી રહ્યાં છે</translation>
@@ -946,6 +950,7 @@
 <translation id="7025533177575372252">તમારા <ph name="DEVICE_NAME" />ને તમારા ફોન સાથે કનેક્ટ કરો</translation>
 <translation id="7026338066939101231">હ્રાસ</translation>
 <translation id="7029814467594812963">સત્રમાંથી બહાર નીકળો</translation>
+<translation id="7032161822340700104">માત્ર 6 નમૂનાઓને સાચવવાની મંજૂરી છે. નવો નમૂનો સાચવવા માટે કોઈ નમૂનો કાઢી નાખો.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">સ્ટેટસ એરિયા ઓછો કરો</translation>
 <translation id="7045033600005038336">નમૂનો બદલીએ?</translation>

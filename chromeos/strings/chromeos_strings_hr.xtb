@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ažuriranje (dovršeno <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Nije dostupna nijedna <ph name="NETWORK_NAME" /> mreža</translation>
+<translation id="131421566576084655">Datum zadnjeg poništavanja podatkovnog prometa nije dostupan</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Matična mreža, bez roaminga</translation>
 <translation id="1327977588028644528">Pristupnik</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Nije uspjelo – filtar ne radi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključeva</translation>
+<translation id="1435763214710588005">Potrošnja podatkovnog prometa svaki se mjesec automatski poništava na odabrani dan</translation>
 <translation id="1442433966118452622">Izvor slike</translation>
 <translation id="1451536289672181509">Uređaj je tipkovnica.</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije moguće</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
+<translation id="1615335640928990664">Potrošnja podatkovnog prometa od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test napunjenosti</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač dokumenata (jednostrano)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Vatrozid za HTTP</translation>
 <translation id="4147897805161313378">Google fotografije</translation>
 <translation id="4155551848414053977">Provjerite je li skener uključen i dostupan putem vaše mreže ili izravne veze</translation>
+<translation id="4170180284036919717">Fotografiraj</translation>
 <translation id="4170700058716978431">NIJE USPJELO</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4213104098953699324">USB tipkovnica</translation>
@@ -391,6 +395,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5939518447894949180">Ponovno postavi</translation>
 <translation id="594552776027197022">Generiraj nasumični par ključeva</translation>
 <translation id="5972388717451707488">Ažuriraj alat</translation>
+<translation id="6034694447310538551">Omogući automatsko mjesečno poništavanje</translation>
 <translation id="6037291330010597344">Ulagač dokumenata u skener je prazan. Dodajte dokumente i pokušajte ponovo.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Anoniman identitet</translation>
@@ -414,6 +419,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nema dostupnih skenera</translation>
 <translation id="6232017090690406397">Baterija</translation>
+<translation id="6235460611964961764">Ručno poništi potrošnju podatkovnog prometa</translation>
 <translation id="6243280677745499710">Trenutačno postavljeno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8910721771319628100">Zadana mreža iznad praga latencije</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Nije uspjelo – nema ladice</translation>
+<translation id="8923267550422472772">Dan u mjesecu za poništavanje</translation>
 <translation id="8928727111548978589">Nije uspjelo – nema papira</translation>
 <translation id="8930521118335213258">Aplikacija iste kategorije</translation>
 <translation id="8930622219860340959">Bežično</translation>

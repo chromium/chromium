@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Sieć <ph name="NETWORK_NAME" /> jest niedostępna</translation>
+<translation id="131421566576084655">Data ostatniego resetowania użycia danych jest niedostępna</translation>
 <translation id="1314565355471455267">VPN na Androida</translation>
 <translation id="131461803491198646">Sieć macierzysta, nie w roamingu</translation>
 <translation id="1327977588028644528">Brama</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Mam parę kluczy</translation>
+<translation id="1435763214710588005">Automatycznie resetuje użycie danych co miesiąc w wybrany dzień</translation>
 <translation id="1442433966118452622">Źródło obrazu</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1459693405370120464">Pogoda</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Nie można zaktualizować urządzenia: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Ustaw jako tapetę</translation>
+<translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
@@ -392,6 +395,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Włącz automatyczne comiesięczne resetowanie</translation>
 <translation id="6037291330010597344">Podajnik dokumentów w skanerze jest pusty. Dodaj dokumenty i spróbuj ponownie.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6040852767465482106">Tożsamość anonimowa</translation>
@@ -415,6 +419,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6235460611964961764">Ręcznie resetuj użycie danych</translation>
 <translation id="6243280677745499710">Obecnie ustawiona</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -626,6 +631,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Niepowodzenie – nie znaleziono tacy</translation>
+<translation id="8923267550422472772">Dzień miesiąca, w którym ma być przeprowadzane resetowanie</translation>
 <translation id="8928727111548978589">Niepowodzenie – brak papieru</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Sieć bezprzewodowa</translation>

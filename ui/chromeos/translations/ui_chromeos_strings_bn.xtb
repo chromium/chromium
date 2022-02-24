@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">এই ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="1864756863218646478">ফাইলটি পাওয়া যায়নি৷</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, কানেক্ট করুন</translation>
+<translation id="1914901738028575085">CloudReady 2.0 ডিভাইস</translation>
 <translation id="1920670151694390848">মালয়ালাম লিপ্যন্তর</translation>
 <translation id="1920798810075583923">তরমুজ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ফরম্যাট করা হয়েছে</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">সাইকেল</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="872537912056138402">ক্রোয়েশিয়</translation>
+<translation id="873847021056608403">CloudReady 2.0 ডিভাইস</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, কানেক্ট করুন</translation>
 <translation id="8750438273876807512">ফাইলে টাচ করে ধরে থেকে, <ph name="ICON" /> ট্যাপ করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করতে, "শেল্ফে পিন করে রাখুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="8787254343425541995">শেয়ার করে নেওয়া নেটওয়ার্কগুলির জন্য প্রক্সিগুলির অনুমতি দিন</translation>

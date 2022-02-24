@@ -107,6 +107,7 @@
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
 <translation id="1884013283844450420">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Σύνδεση</translation>
+<translation id="1914901738028575085">Συσκευή CloudReady 2.0</translation>
 <translation id="1920670151694390848">Μεταγραφή στα Μαλαγιαλαμικά</translation>
 <translation id="1920798810075583923">Καρπούζι</translation>
 <translation id="1924372192547904021">Έγινε μορφοποίηση της συσκευής <ph name="DRIVE_NAME" /></translation>
@@ -923,6 +924,7 @@
 <translation id="8719721339511222681">Επιλογή <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Κροατικά
 </translation>
+<translation id="873847021056608403">Συσκευές CloudReady 2.0</translation>
 <translation id="8743164338060742337">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="8750438273876807512">Αγγίξτε παρατεταμένα ένα αρχείο και πατήστε το εικονίδιο <ph name="ICON" /> και, στη συνέχεια, επιλέξτε "Καρφίτσωμα στο ράφι" για γρήγορη πρόσβαση στα αρχεία που βρίσκονται στο ράφι.</translation>
 <translation id="8787254343425541995">Να επιτρέπονται οι διακομιστές μεσολάβησης για κοινόχρηστα δίκτυα</translation>

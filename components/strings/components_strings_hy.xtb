@@ -1276,6 +1276,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Իններորդ գլանափաթեթ</translation>
 <translation id="4901778704868714008">Պահել…</translation>
+<translation id="4905659621780993806">Ադմինիստրատորն ավտոմատ կվերագործարկի սարքը՝ <ph name="DATE" />, <ph name="TIME" />։ Պահեք բոլոր բացված տարրերը մինչև սարքի վերագործարկումը։</translation>
 <translation id="4913987521957242411">Անցք վերևի ձախ կողմում</translation>
 <translation id="4918221908152712722">Տեղադրեք <ph name="APP_NAME" /> հավելվածը (ներբեռնում չի պահանջվում)</translation>
 <translation id="4923459931733593730">Վճարում</translation>
@@ -1691,6 +1692,7 @@
 <translation id="6290238015253830360">Այստեղ կցուցադրվեն առաջարկվող հոդվածները</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC կոդ՝</translation>
+<translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6302269476990306341">Google Օգնականը Chrome-ում կանջատվի</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
 <translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
@@ -2015,6 +2017,7 @@
 <translation id="7378627244592794276">Ոչ հիմա</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Կիրառելի չէ</translation>
+<translation id="7388594495505979117">{0,plural, =1{Սարքը կվերագործարկվի 1 րոպեից}one{Սարքը կվերագործարկվի # րոպեից}other{Սարքը կվերագործարկվի # րոպեից}}</translation>
 <translation id="7390545607259442187">Քարտի հաստատում</translation>
 <translation id="7392089738299859607">Թարմացնել հասցեն</translation>
 <translation id="7399802613464275309">Անվտանգության ստուգում</translation>
@@ -2372,6 +2375,7 @@
 <translation id="8507227106804027148">Հրամանատող</translation>
 <translation id="8508648098325802031">Որոնման պատկերակ</translation>
 <translation id="8511402995811232419">Կառավարել քուքիները</translation>
+<translation id="8519753333133776369">HID սարքը թույլատրված է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="8522552481199248698">Chrome-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
 <translation id="8530813470445476232">Ջնջեք ձեր այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ Chrome-ի կարգավորումներում</translation>
 <translation id="8533619373899488139">Արգելափակված URL-ների ցուցակը և ձեր համակարգի ադմինիստրատորի կողմից կիրառված մյուս կանոնները տեսնելու համար այցելեք &lt;strong&gt;chrome://policy&lt;/strong&gt;։</translation>

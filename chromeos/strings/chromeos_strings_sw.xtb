@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Inasasisha (imekamilika kwa asilimia <ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="1310380015393971138">Hakuna mtandao wa <ph name="NETWORK_NAME" /> unaopatikana</translation>
+<translation id="131421566576084655">Tarehe ya mwisho data ilipowekwa upya haipatikani</translation>
 <translation id="1314565355471455267">VPN ya Android</translation>
 <translation id="131461803491198646">Uko katika mtandao wako wa kawaida</translation>
 <translation id="1327977588028644528">Lango</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Haijakamilika - Kichujio kimeshindwa kufanya kazi</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Nina jozi ya funguo</translation>
+<translation id="1435763214710588005">Huweka upya matumizi ya data kiotomatiki kila mwezi kwenye siku iliyochaguliwa</translation>
 <translation id="1442433966118452622">Chanzo cha picha</translation>
 <translation id="1451536289672181509">Kifaa hiki ni kibodi.</translation>
 <translation id="1459693405370120464">Hali ya Hewa</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Imeshindwa kusasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
+<translation id="1615335640928990664">Matumizi ya data tangu <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1641857168437328880">Mashine ya kuingiza hati (Upande mmoja)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Kinga mtandao ya HTTP</translation>
 <translation id="4147897805161313378">Picha kwenye Google</translation>
 <translation id="4155551848414053977">Hakikisha kichanganuzi kimewashwa na kinapatikana kupitia mtandao wako au muunganisho wa moja kwa moja</translation>
+<translation id="4170180284036919717">Piga picha</translation>
 <translation id="4170700058716978431">HALIJAFAULU</translation>
 <translation id="4176463684765177261">Imezimwa</translation>
 <translation id="4213104098953699324">Kibodi yenye USB</translation>
@@ -390,6 +394,7 @@
 <translation id="5939518447894949180">Weka upya</translation>
 <translation id="594552776027197022">Zalisha jozi ya funguo nasibu</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Washa uwekaji upya wa data kiotomatiki kila mwezi</translation>
 <translation id="6037291330010597344">Mashine ya kichanganuzi ya kuingiza hati haina chochote. Weka hati kisha ujaribu tena.</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6040852767465482106">Kitambulisho Hakijulikani</translation>
@@ -413,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hakuna vichanganuzi vilivyopatikana</translation>
 <translation id="6232017090690406397">Betri</translation>
+<translation id="6235460611964961764">Weka upya matumizi ya data wewe mwenyewe</translation>
 <translation id="6243280677745499710">Mandhari yaliyopo</translation>
 <translation id="6278428485366576908">Mandhari</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -624,6 +630,7 @@
 <translation id="8910721771319628100">Muda wa kusubiri wa mtandao chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ya <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Haijakamilika - Trei haipo</translation>
+<translation id="8923267550422472772">Siku ya mwezi kwa ajili ya kuweka upya</translation>
 <translation id="8928727111548978589">Haijakamilika - Karatasi zimeisha</translation>
 <translation id="8930521118335213258">Programu nyingine</translation>
 <translation id="8930622219860340959">Bila Waya</translation>

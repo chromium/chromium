@@ -334,6 +334,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3105917916468784889">Neem skermkiekie</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Verwyder voorstel</translation>
+<translation id="3120421559657122717">Skakel toestel af?</translation>
 <translation id="3126069444801937830">Herbegin om op te dateer</translation>
 <translation id="3139942575505304791">Lessenaar 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -354,6 +355,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3249513730522716925">Venster <ph name="WINDOW_TITLE" /> is geskuif van lessenaar <ph name="ACTIVE_DESK" /> af na lessenaar <ph name="TARGET_DESK" /> toe</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
 <translation id="3269597722229482060">Regsklik</translation>
+<translation id="3289544412142055976">Linux-programme word nie tans gesteun nie</translation>
 <translation id="3289674678944039601">Laai tans deur aansluitprop</translation>
 <translation id="3290356915286466215">Onbeveilig</translation>
 <translation id="3294437725009624529">Gas</translation>
@@ -706,6 +708,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5400461572260843123">Kitsinstellings; druk soek + links om na die kennisgewingsentrum toe te gaan.</translation>
 <translation id="5426063383988017631">Instellingskieslys is gesluit</translation>
 <translation id="5428899915242071344">Begin kies</translation>
+<translation id="5429993543155113935">Incognito-vensters word nie tans gesteun nie</translation>
 <translation id="5430931332414098647">Kitsverbinding</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433020815079095860">Oudio-invoer</translation>
@@ -848,6 +851,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6431865393913628856">Skermopnemer</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> geleentheid</translation>
+<translation id="6449483711453944360">Linux-programme en Incognito-vensters word nie tans gesteun nie</translation>
 <translation id="6452181791372256707">Verwerp</translation>
 <translation id="6453179446719226835">Taal is verander</translation>
 <translation id="6459472438155181876">Brei skerm na <ph name="DISPLAY_NAME" /> uit</translation>
@@ -947,6 +951,7 @@ Nuwe installasie</translation>
 <translation id="7025533177575372252">Koppel jou <ph name="DEVICE_NAME" /> aan jou foon</translation>
 <translation id="7026338066939101231">Verminder</translation>
 <translation id="7029814467594812963">Verlaat sessie</translation>
+<translation id="7032161822340700104">Net 6 template word toegelaat. Verwyder ’n templaat om ’n nuwe een te stoor.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Vou statusarea in</translation>
 <translation id="7045033600005038336">Vervang templaat?</translation>

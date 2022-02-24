@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="3533694711092285624">No hay ninguna contraseña guardada. Chrome puede comprobar tus contraseñas cuando las guardas.</translation>
 <translation id="3634910711516114487">Para sacarle el máximo partido a Chrome, inicia sesión en Chrome con tu cuenta de Google.</translation>
+<translation id="3655656110921623717">Esto significa que Chrome siempre solicitará la vista del sitio web como móvil.</translation>
 <translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="3720541637541300822">Bloquear las pestañas de incógnito al cerrar Chrome</translation>
 <translation id="384394811301901750">Google Chrome no puede usar la cámara en este momento</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Muestra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">No tendrás que recordar esta contraseña. Se guardará en el gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="9112744793181547300">¿Establecer Chrome como predeterminado?</translation>
+<translation id="9122931302567044771">Esto significa que Chrome siempre solicitará la vista del sitio web como ordenador.</translation>
 </translationbundle>

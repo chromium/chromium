@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">無法更新 Chrome</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
 <translation id="1182414570724401860">Chrome 建議您不要下載或開啟此檔案</translation>
+<translation id="1201241595274620956">CloudReady 2.0 條款</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1293325835983155583">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google Chrome 作業系統條款》。</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
@@ -39,11 +40,15 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">請確保您已在 <ph name="TARGET_DEVICE_NAME" /> 上登入 Chrome，然後再傳送一次。</translation>
 <translation id="1812689907177901597">關閉此功能後，您無需登入 Chrome，即可登入 Gmail 等 Google 網站</translation>
+<translation id="1847459800604232346">重新啟動 CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome 需要取得權限，才能讓這個網站存取您的相機</translation>
+<translation id="1865667134297225786">您的帳戶登入詳情已過時，因此 CloudReady 2.0 無法同步處理您的資料。</translation>
 <translation id="1873233029667955273">Google Chrome 並非您的預設瀏覽器</translation>
 <translation id="1874309113135274312">Google Chrome 測試版 (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
+<translation id="1887927549935943139">您的網域無法使用同步功能，因此 CloudReady 2.0 無法同步處理您的資料。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">每個設定檔都會保存本身專屬的 Chrome 資料，例如書籤、記錄、密碼等</translation>
 <translation id="2063848847527508675">必須重新啟動 Chrome 作業系統，才能套用更新。</translation>
 <translation id="2094919256425865063">仍要退出 Chrome 嗎？</translation>
@@ -54,12 +59,14 @@
 <translation id="2258103955319320201">如要透過所有裝置存取 Chrome 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">確定要解除安裝 Google Chrome 嗎？</translation>
+<translation id="2297776811548050971">CloudReady 2.0 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="2309047409763057870">這是以並行形式安裝的第二個 Google Chrome，因此無法設定為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 發現以下擴充程式含有惡意軟件：</translation>
 <translation id="2348335408836342058">Chrome 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
 <translation id="234869673307233423">Chrome 無法檢查密碼，請稍後再試。</translation>
 <translation id="235650106824528204">工作設定檔管理員可移除任何在使用此設定檔時產生的 Chrome 資料 (例如建立的書籤、記錄、密碼和其他設定)。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2371517829376452747">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />CloudReady 2.0 設定<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">您的網域無法使用「同步功能」，因此 Google Chrome 無法同步處理您的數據。</translation>
 <translation id="2467438592969358367">Google Chrome 想匯出您的密碼。請輸入 Windows 密碼以允許此操作。</translation>
 <translation id="2485422356828889247">解除安裝</translation>
@@ -88,6 +95,7 @@
 <translation id="2926676257163822632">安全性弱的密碼很容易被猜到。讓 Chrome <ph name="BEGIN_LINK" />為您建立並記住安全性強的密碼<ph name="END_LINK" />。</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行此網站要求的功能</translation>
 <translation id="2929907241665500097">發生錯誤，Chrome 未能更新。<ph name="BEGIN_LINK" />請修正 Chrome 更新問題與更新失敗問題。<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">重新啟動以更新 &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網絡登入 - Chrome</translation>
 <translation id="303514781271618814">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="3037838751736561277">Google Chrome 正在背景模式中執行。</translation>
@@ -114,6 +122,7 @@
 <translation id="3533694711092285624">沒有已儲存的密碼。儲存密碼時，Chrome 可檢查您的密碼。</translation>
 <translation id="3541482654983822893">Chrome 無法檢查密碼，請於 24 小時後再試一次。</translation>
 <translation id="3576528680708590453">系統管理員已設定 Google Chrome 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
+<translation id="3582634744482121096">選用：將診斷和使用情況資料自動傳送給 Google，協助改善 CloudReady 2.0 的功能和效能。</translation>
 <translation id="3582972582564653026">在不同裝置上同步和設定個人化的 Chrome</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用更新}=1{管理員要求您重新啟動 Chrome，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
@@ -134,6 +143,7 @@
 <translation id="4149882025268051530">安裝程式無法解壓縮封存檔案，請再次下載 Google Chrome。</translation>
 <translation id="4191857738314598978">{0,plural, =1{請在 1 天內重新啟動 Chrome}other{請在 # 天內重新啟動 Chrome}}</translation>
 <translation id="4205939740494406371">Chrome 無法檢查密碼，請於 24 小時後再試一次，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
+<translation id="4218613300505264589">CloudReady 2.0 系統</translation>
 <translation id="4242034826641750751">Chrome 需要相機權限和麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251615635259297716">要將您的 Chrome 數據連結至這個帳戶嗎？</translation>
@@ -151,7 +161,9 @@
 <translation id="4458462641685292929">Google Chrome 正在執行另一項操作，請稍後再試。</translation>
 <translation id="4480040274068703980">登入時發生錯誤，因此 Chrome 作業系統無法同步處理您的數據。</translation>
 <translation id="4521185804071812304">選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 作業系統的功能和效能。</translation>
+<translation id="4539063627668028557">CloudReady 2.0 版本</translation>
 <translation id="4561051373932531560">Google Chrome 可讓您按一下網頁上的電話號碼，隨即透過 Skype 撥打電話！</translation>
+<translation id="4562712242781620537">CloudReady 2.0 系統</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
@@ -177,6 +189,7 @@
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chrome。</translation>
 <translation id="521447420733633466">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chrome</translation>
 <translation id="5251420635869119124">以訪客身分使用 Chrome 不會留下任何記錄。</translation>
+<translation id="5307623274346663914">CloudReady 2.0 必須重新啟動，才能套用更新。</translation>
 <translation id="5334487786912937552">Chrome 需要儲存空間存取權才能下載檔案</translation>
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5394833366792865639">分享 Chrome 分頁</translation>
@@ -187,8 +200,10 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用此更新}=1{管理員要求您重新啟動 Chrome，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
 <translation id="5686916850681061684">自訂及控制 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">登入時發生錯誤，因此 CloudReady 2.0 無法同步您的資料。</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 將於 1 秒後重新啟動}other{Google Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="5736850870166430177">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="573759479754913123">關於 Chrome 作業系統</translation>
@@ -221,15 +236,22 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6696915334902295848">Chrome 需要麥克風權限，才能執行此網站要求的功能</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
+<translation id="6749459139769042303">取得 CloudReady 2.0 的說明</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
+<translation id="6814748008107187409">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chrome 作業系統設定<ph name="LINK_END" />。</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
+<translation id="6919064686744569862">在使用這部裝置前，「<ph name="MANAGER" />」要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Google CloudReady 2.0 條款》。</translation>
 <translation id="6943584222992551122">系統將會從此裝置上刪除此使用者的瀏覽資料。如要復原資料，請以「<ph name="USER_EMAIL" />」的身分登入 Chrome。</translation>
 <translation id="6967962315388095737">允許 mDNS 流量的 Google Chrome 測試版輸入規則。</translation>
 <translation id="6989339256997917931">Google Chrome 已更新，但您至少已有 30 天未使用該瀏覽器。</translation>
+<translation id="700644001690392105">關於 CloudReady 2.0</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
+<translation id="7036251913954633326">如果您只想使用此帳戶一次，可以在 Chrome 瀏覽器中使用<ph name="GUEST_LINK_BEGIN" />訪客模式<ph name="GUEST_LINK_END" />。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
+
+您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="7062128746136194023">您的家長已停用 Chrome 的「網站、應用程式和擴充程式權限」設定，因此您無法新增此<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="7085332316435785646">選擇是否包含 Chrome 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
@@ -243,6 +265,9 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7296210096911315575">重要的使用和安全資訊</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間的存取權才能下載檔案</translation>
 <translation id="7339898014177206373">新視窗</translation>
+<translation id="7388770099345495132">如果您只想使用此帳戶一次，可以在 Chrome 瀏覽器中使用訪客模式。如要新增其他人的帳戶，請<ph name="LINK_BEGIN" />新增使用者<ph name="LINK_END" />至您的 <ph name="DEVICE_TYPE" />。
+
+您已向網站和應用程式授予的權限，可能會套用到此帳戶。您可在「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」中管理 Google 帳戶。</translation>
 <translation id="7398801000654795464">您使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7408085963519505752">Chrome 作業系統條款</translation>
 <translation id="7419046106786626209">您的網域無法使用「同步功能」，因此 Chrome 作業系統無法同步處理您的數據。</translation>
@@ -250,6 +275,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7486227612705979895">Chrome 會存取您的「雲端硬碟」，然後在網址列提出建議</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>
 <translation id="7573289029918943991">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />Chrome 作業系統設定<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />CloudReady 2.0 設定<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">您的帳戶登入詳情尚未更新，因此 Google Chrome 無法同步處理您的數據。</translation>
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7629695634924605473">Chrome 會通知您密碼是否曾被盜用</translation>

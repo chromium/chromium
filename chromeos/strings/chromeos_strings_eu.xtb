@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
 <translation id="1310380015393971138">Ez dago <ph name="NETWORK_NAME" /> sarerik erabilgarri</translation>
+<translation id="131421566576084655">Ez dago erabilgarri azken datu-berrezartzearen data</translation>
 <translation id="1314565355471455267">Android VPN sarea</translation>
 <translation id="131461803491198646">Tokiko sarea, ez ibiltaritza</translation>
 <translation id="1327977588028644528">Atebidea</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Hutsegitea - Iragazkiak huts egin du</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Gako pare bat dut</translation>
+<translation id="1435763214710588005">Datuen erabilera automatikoki berrezartzen du hilabeteko hautatutako egunean</translation>
 <translation id="1442433966118452622">Irudiaren iturburua</translation>
 <translation id="1451536289672181509">Gailua teklatu bat da.</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ezkeroko datuen erabilera</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
 <translation id="1641857168437328880">Dokumentu-elikatzailea (alde bakarrekoa)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP protokolorako suebakia</translation>
 <translation id="4147897805161313378">Google Argazkiak</translation>
 <translation id="4155551848414053977">Ziurtatu eskanerra piztuta dagoela eta sarearen edo konexio zuzenaren bidez erabilgarri dagoela</translation>
+<translation id="4170180284036919717">Atera argazki bat</translation>
 <translation id="4170700058716978431">EZ DA GAINDITU</translation>
 <translation id="4176463684765177261">Desgaituta</translation>
 <translation id="4213104098953699324">USB bidezko teklatua</translation>
@@ -391,6 +395,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
 <translation id="594552776027197022">Sortu ausazko gako pare bat</translation>
 <translation id="5972388717451707488">Eguneratu motorra</translation>
+<translation id="6034694447310538551">Gaitu hileroko berrezartze automatikoa</translation>
 <translation id="6037291330010597344">Eskanerraren dokumentu-elikatzailea hutsik dago. Gehitu dokumentuak eta saiatu berriro.</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6040852767465482106">Identitate anonimoa</translation>
@@ -414,6 +419,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ez dago eskanerrik erabilgarri</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6235460611964961764">Berrezarri datuen erabilera eskuz</translation>
 <translation id="6243280677745499710">Ezarrita dagoena</translation>
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8910721771319628100">Sare lehenetsia latentziaren atalasetik gora dago</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> erabiltzailearen <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8919837981463578619">Hutsegitea - Erretilua falta da</translation>
+<translation id="8923267550422472772">Hilabeteko zein egunetan berrezarri behar den</translation>
 <translation id="8928727111548978589">Hutsegitea - Ez dago paperik</translation>
 <translation id="8930521118335213258">Parekoa</translation>
 <translation id="8930622219860340959">Hari gabekoa</translation>

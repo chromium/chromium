@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1308754910631152188">جارٍ التحديث (اكتمل تثبيت %<ph name="PERCENTAGE_VALUE" /> من التحديثات)</translation>
 <translation id="1310380015393971138">ما مِن شبكة <ph name="NETWORK_NAME" /> متوفّرة.</translation>
+<translation id="131421566576084655">تاريخ أحدث عملية إعادة ضبط للبيانات غير متوفّر.</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
 <translation id="1327977588028644528">المدخل</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">يتوفّر لديّ مفتاحا تشفير</translation>
+<translation id="1435763214710588005">إعادة ضبط استخدام البيانات تلقائيًا كل شهر في يوم محدَّد</translation>
 <translation id="1442433966118452622">مصدر الصورة</translation>
 <translation id="1451536289672181509">الجهاز هو لوحة مفاتيح.</translation>
 <translation id="1459693405370120464">الطقس</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">يتعذَّر تحديث <ph name="DEVICE_NAME" />.</translation>
 <translation id="1567064801249837505">الألبومات</translation>
 <translation id="1572585716423026576">تحديد كخلفية</translation>
+<translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
 <translation id="4147897805161313378">‏صور Google‏‏</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
+<translation id="4170180284036919717">التقاط صورة</translation>
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
 <translation id="4213104098953699324">‏لوحة مفاتيح USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6040852767465482106">هوية مجهولة</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
 <translation id="6232017090690406397">البطارية</translation>
+<translation id="6235460611964961764">إعادة ضبط استخدام البيانات يدويًا</translation>
 <translation id="6243280677745499710">المحدّدة حاليًا</translation>
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
+<translation id="8923267550422472772">إعادة الضبط في يوم محدَّد من الشهر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
 <translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>

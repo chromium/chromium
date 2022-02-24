@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
+<translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">RPV Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
 <translation id="1327977588028644528">Passerelle</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">J'ai une biclé</translation>
+<translation id="1435763214710588005">Réinitialise automatiquement l'utilisation de données tous les mois à un jour défini</translation>
 <translation id="1442433966118452622">Source de l'image</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1459693405370120464">Météo</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
+<translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Assurez-vous que le numériseur est allumé et accessible par le biais de votre réseau ou d'une connexion directe</translation>
+<translation id="4170180284036919717">Prendre une photo</translation>
 <translation id="4170700058716978431">ÉCHEC</translation>
 <translation id="4176463684765177261">Désactivé</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
@@ -391,6 +395,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="594552776027197022">Générer une biclé aléatoire</translation>
 <translation id="5972388717451707488">Mettre à jour le moteur</translation>
+<translation id="6034694447310538551">Activer la réinitialisation mensuelle automatique</translation>
 <translation id="6037291330010597344">Le chargeur de documents du numériseur est vide. Ajoutez des documents, puis réessayez.</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6040852767465482106">Authentification anonyme</translation>
@@ -414,6 +419,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
 <translation id="6232017090690406397">Pile</translation>
+<translation id="6235460611964961764">Réinitialiser manuellement l'utilisation de données</translation>
 <translation id="6243280677745499710">Fond d'écran actuel</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8910721771319628100">Le seuil de latence du réseau par défaut est trop élevé</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Échec : bac manquant</translation>
+<translation id="8923267550422472772">Jour du mois pour la réinitialisation</translation>
 <translation id="8928727111548978589">Échec : à court de papier</translation>
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>

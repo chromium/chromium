@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Updaten (<ph name="PERCENTAGE_VALUE" />% klaar)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beschikbaar</translation>
+<translation id="131421566576084655">De datum van de meest recente datareset is niet beschikbaar</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Thuisnetwerk zonder roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ik heb een sleutelpaar</translation>
+<translation id="1435763214710588005">Het datagebruik wordt elke maand automatisch gereset op de geselecteerde datum</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
+<translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP-firewall</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4155551848414053977">Zorg dat de scanner aanstaat en beschikbaar is via je netwerk of een directe verbinding.</translation>
+<translation id="4170180284036919717">Foto maken</translation>
 <translation id="4170700058716978431">MISLUKT</translation>
 <translation id="4176463684765177261">Uitgezet</translation>
 <translation id="4213104098953699324">USB-toetsenbord</translation>
@@ -391,6 +395,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="594552776027197022">Willekeurig sleutelpaar genereren</translation>
 <translation id="5972388717451707488">Engine updaten</translation>
+<translation id="6034694447310538551">Elke maand automatisch resetten aanzetten</translation>
 <translation id="6037291330010597344">De documentinvoer van de scanner is leeg. Voeg documenten toe en probeer het opnieuw.</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6040852767465482106">Anonieme identiteit</translation>
@@ -414,6 +419,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen scanners beschikbaar</translation>
 <translation id="6232017090690406397">Batterij</translation>
+<translation id="6235460611964961764">Datagebruik handmatig resetten</translation>
 <translation id="6243280677745499710">Momenteel ingesteld</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> van <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
+<translation id="8923267550422472772">Dag van de maand voor resetten</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Draadloos</translation>

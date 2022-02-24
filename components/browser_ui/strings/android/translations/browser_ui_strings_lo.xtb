@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4008040567710660924">ອະນຸຍາດຄຸກກີ້ສຳລັບເວັບໄຊສະເພາະ.</translation>
+<translation id="4040330681741629921">ຮັບການແຈ້ງເຕືອນເມື່ອສາມາດສະແດງເວັບໄຊໃດໜຶ່ງໃນມຸມມອງແບບງ່າຍໄດ້</translation>
 <translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="4149994727733219643">ມຸມມອງງ່າຍດາຍສຳລັບໜ້າເວັບ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">ນີ້ຈະລຶບລ້າງຂໍ້ມູນ <ph name="DATASIZE" /> ແລະ ຄຸກກີ້ທັງໝົດທີ່ເກັບໄວ້ໂດຍເວັບໄຊ.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ອີກ 1 ລາຍການ)}other{(ອີກ # ລາຍການ)}}</translation>
 <translation id="5403592356182871684">ຊື່</translation>
+<translation id="5412236728747081950">ເວັບໄຊນີ້ໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="5438097262470833822">ຕົວເລືອກນີ້ຈະຣີເຊັດການອະນຸຍາດສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">ເວລາຜ່ານໄປ <ph name="ELAPSED_TIME" /> ຈາກທັງໝົດ <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">ບລັອກໂຄສະນາໃນເວັບໄຊທີ່ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ</translation>

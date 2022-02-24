@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Đang cập nhật (đã xong <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Không có sẵn mạng <ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">Không có ngày đặt lại dữ liệu gần nhất</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Mạng chủ, không chuyển vùng</translation>
 <translation id="1327977588028644528">Cổng vào</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Tôi có một cặp khóa</translation>
+<translation id="1435763214710588005">Tự động đặt lại mức sử dụng dữ liệu mỗi tháng vào một ngày chọn sẵn</translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
 <translation id="1459693405370120464">Thời tiết</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Không thể cập nhật <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Đặt làm hình nền</translation>
+<translation id="1615335640928990664">Mức sử dụng dữ liệu kể từ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Chạy quá trình Kiểm tra sạc</translation>
 <translation id="1639239467298939599">Đang tải</translation>
 <translation id="1641857168437328880">Khay nạp tài liệu (1 mặt)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Tường lửa HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Hãy đảm bảo máy quét đã bật và ở trạng thái sẵn sàng thông qua mạng của bạn hoặc một đường kết nối trực tiếp</translation>
+<translation id="4170180284036919717">Chụp ảnh</translation>
 <translation id="4170700058716978431">KHÔNG THÀNH CÔNG</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4213104098953699324">Bàn phím USB</translation>
@@ -391,6 +395,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="594552776027197022">Tạo cặp khóa ngẫu nhiên</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Bật chế độ tự động đặt lại hằng tháng</translation>
 <translation id="6037291330010597344">Khay nạp tài liệu của máy quét đang trống. Hãy nạp tài liệu rồi thử lại.</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6040852767465482106">Danh tính ẩn danh</translation>
@@ -414,6 +419,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
 <translation id="6232017090690406397">Pin</translation>
+<translation id="6235460611964961764">Đặt lại mức sử dụng dữ liệu theo cách thủ công</translation>
 <translation id="6243280677745499710">Hiện đã được đặt</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> của <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Không thành công – Thiếu khay</translation>
+<translation id="8923267550422472772">Ngày trong tháng để đặt lại</translation>
 <translation id="8928727111548978589">Không thành công – Hết giấy</translation>
 <translation id="8930521118335213258">Ứng dụng ngang hàng</translation>
 <translation id="8930622219860340959">Không dây</translation>

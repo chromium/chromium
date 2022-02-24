@@ -165,6 +165,7 @@
 <translation id="1150490752229770117">Dit is die laaste outomatiese sagteware- en sekuriteitopdatering vir hierdie <ph name="DEVICE_TYPE" />. Gradeer na 'n nuwer model toe op om toekomstige opdaterings te kry. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Sonbril</translation>
 <translation id="1151917987301063366">Gee <ph name="HOST" /> altyd toegang tot sensors</translation>
+<translation id="1152181876167086799">Laat alle uitbreidings toe om <ph name="SITE_NAME" /> te lees en te verander</translation>
 <translation id="1152346050262092795">Voer jou wagwoord weer in om jou rekening te verifieer.</translation>
 <translation id="1153356358378277386">Saamgebinde toestelle</translation>
 <translation id="1153636665119721804">Google se Gevorderde Beskerming-program</translation>
@@ -452,6 +453,9 @@
 <translation id="1442851588227551435">Stel aktiewe Kerberos-kaartjie</translation>
 <translation id="1444628761356461360">Hierdie instelling word deur die toesteleienaar, <ph name="OWNER_EMAIL" />, bestuur.</translation>
 <translation id="144518587530125858">Kon nie "<ph name="IMAGE_PATH" />" vir tema laai nie.</translation>
+<translation id="1448264954024227422">Jy kan hierdie rekening saam met Android-programme gebruik. <ph name="LINK_BEGIN" />Voeg eerder ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
+
+Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van toepassing wees. Jy kan toestemmings vir Android-programme in <ph name="APPS_LINK_BEGIN" />Programinstellings<ph name="APPS_LINK_END" /> beheer.</translation>
 <translation id="1448779317883494811">Kwasnutsding</translation>
 <translation id="1449191289887455076">Druk “<ph name="CURRENTKEY" />” weer om toewysing te bevestig en <ph name="RESPONSE" />.</translation>
 <translation id="1451375123200651445">Webbladsy, enkellêer</translation>
@@ -1043,6 +1047,7 @@
 <translation id="2003130567827682533">Om "<ph name="NAME" />"-data te aktiveer, koppel eers aan 'n Wi-Fi-netwerk</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2005199804247617997">Ander profiele</translation>
+<translation id="2005967212456643969">Pasmaak toestemmings vir elke uitbreiding</translation>
 <translation id="2006638907958895361">Maak skakel in <ph name="APP" /> oop</translation>
 <translation id="2007404777272201486">Gee 'n probleem aan …</translation>
 <translation id="2009590708342941694">Emosiekoonnutsding</translation>
@@ -2116,6 +2121,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3039491566278747710">Kon nie vanlyn beleid op die toestel installeer nie.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" />-<ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752">Vanaf <ph name="ORIGIN" /></translation>
+<translation id="304499331062371949">Moenie enige uitbreidings toelaat om <ph name="SITE_NAME" /> te lees en te verander nie</translation>
 <translation id="3045447014237878114">Hierdie werf het veelvuldige lêers outomaties afgelaai</translation>
 <translation id="3046178388369461825">Linux-skyfspasie is gevaarlik min</translation>
 <translation id="3046910703532196514">Webblad, voltooi</translation>
@@ -3344,6 +3350,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4289540628985791613">Oorsig</translation>
 <translation id="4289732974614035569">Kies 'n PIN</translation>
 <translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
+<translation id="4291265871880246274">Aanmelddialoog</translation>
 <translation id="4295072614469448764">Program is in jou terminaal beskikbaar. Daar is dalk ook 'n ikoon in jou Lanseerder.</translation>
 <translation id="4295979599050707005">Meld asseblief weer aan om te bevestig dat jou rekening <ph name="USER_EMAIL" /> in webwerwe, programme en uitbreidings in Chrome en Google Play gebruik kan word. Jy kan hierdie rekening ook verwyder. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Herbegin en stel terug</translation>
@@ -4568,6 +4575,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5571832155627049070">Pasmaak jou profiel</translation>
 <translation id="5572648434713976849">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="5572851009514199876">Begin asseblief deur by Chrome aan te meld sodat Chrome kan kyk of jy toegelaat word om na hierdie werf te gaan.</translation>
+<translation id="557506220935336383">Sien uitbreidingtoestemmings vir ander werwe</translation>
 <translation id="5575473780076478375">Incognito-uitbreiding: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Iets was fout met demonstrasieregistrasieversoek.</translation>
 <translation id="557722062034137776">As jy jou toestel terugstel, sal dit nie jou Google-rekeninge of enige data wat met hierdie rekeninge gesinkroniseer is, affekteer nie. Al die lêers wat plaaslik op jou toestel gestoor is, sal egter uitgevee word.</translation>
@@ -5569,6 +5577,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6586099239452884121">Gasteblaai</translation>
 <translation id="6586213706115310390">Gaan na jou Assistent toe wanneer jy "Ok Google" sê.</translation>
 <translation id="6586451623538375658">Ruil primêre muisknoppie</translation>
+<translation id="6587958707401001932">Kies jou verstekinstelling</translation>
 <translation id="6588043302623806746">Gebruik beveiligde DNS</translation>
 <translation id="659005207229852190">Veiligheidskontrole is voltooi.</translation>
 <translation id="6590458744723262880">Hernoem vouer</translation>
@@ -5592,6 +5601,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6606671997164410857">Dit lyk of jy Google Assistent reeds op 'n ander toestel opgestel het. Skakel Skermkonteks op hierdie toestel aan om jou Assistent selfs nog beter te benut.</translation>
 <translation id="6607831829715835317">Meer nutsgoed</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> word reeds deur <ph name="DOMAIN" /> bestuur. Om ouerkontroles met 'n ander Google-rekening te gebruik, moet jy ná opstelling afmeld, en dan "Voeg persoon by" op die aanmeldskerm kies.</translation>
+<translation id="6608166463665411119">Stel e-SIM terug</translation>
 <translation id="6609478180749378879">Aanmelddata sal op hierdie toestel geberg word nadat jy Incognitomodus verlaat het. Jy sal later weer met jou toestel by hierdie werf kan aanmeld.</translation>
 <translation id="6610002944194042868">Vertaalopsies</translation>
 <translation id="6611972847767394631">Vind jou oortjies hier</translation>
@@ -6195,6 +6205,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7243632151880336635">Vee uit en meld af</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Sit jou sekuriteitsleutel weer in en probeer weer</translation>
+<translation id="724835896049478274">Rekeninge beskikbaar vir Android-programme</translation>
 <translation id="7249197363678284330">Verander hierdie instelling in die adresbalk.</translation>
 <translation id="7250616558727237648">Die toestel waarmee jy deel, het nie geantwoord nie. Probeer weer.</translation>
 <translation id="725109152065019550">Jammer, jou administrateur het eksterne berging op jou rekening gedeaktiveer.</translation>
@@ -6278,6 +6289,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> is nou volskerm.</translation>
 <translation id="7340650977506865820">Werf deel tans jou skerm</translation>
+<translation id="7340757554212515731">Stuur omvalverslae, asook diagnostiese en gebruiksdata outomaties na Google toe.</translation>
 <translation id="7341834142292923918">Wil toegang tot hierdie werf hê</translation>
 <translation id="7343372807593926528">Beskryf asseblief die probleem voordat jy terugvoer stuur.</translation>
 <translation id="7345706641791090287">Bevestig jou wagwoord</translation>
@@ -8172,6 +8184,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="93766956588638423">Herstel uitbreiding</translation>
 <translation id="938568644810664664">Probeer “Ok Google, what song is this?” of “Ok Google, what's on my screen?”</translation>
 <translation id="939252827960237676">Kon nie skermkiekie stoor nie</translation>
+<translation id="939401694733344652">Hierdie rekeninge word nie op die oomblik saam met Android-programme gebruik nie. As jy ’n rekening kies om saam met hierdie Android-program te gebruik, kan die rekening ook saam met ander Android-programme gebruik word. Jy kan Android-programtoegang in <ph name="LINK_BEGIN" />Instellings &gt; Rekeninge<ph name="LINK_END" /> verander.</translation>
 <translation id="939598580284253335">Tik wagfrase in</translation>
 <translation id="939736085109172342">Nuwe vouer</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deel tans 'n Chrome-oortjie en oudio.</translation>
@@ -8228,6 +8241,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="994289308992179865">Lus</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Vestig tans beveiligde verbinding …</translation>
+<translation id="996803490569799917">Sien herinneringe van jou gunstelingmense en meer</translation>
 <translation id="99731366405731005">Skakel <ph name="LINK1_BEGIN" />Chrome-sinkronisering<ph name="LINK1_END" /> aan om Wi-fi-sinkronisering te gebruik. <ph name="LINK2_BEGIN" />Kom meer te wete<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Ondersoek</translation>
 </translationbundle>

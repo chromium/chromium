@@ -12,6 +12,7 @@
 
         
 Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
+<translation id="1054045277222934172">Sie können in den Einstellungen unter „Inhaltseinstellungen“ die Desktopansicht als Standardeinstellung festlegen</translation>
 <translation id="1063454504051558093">Anderes Passwort verwenden…</translation>
 <translation id="1066060668811609597">Synchronisierung verwalten</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
@@ -182,6 +183,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
 <translation id="2695507686909505111">Seite ist übersetzt</translation>
+<translation id="2700241355396984822">Optionen zum Festlegen von Berechtigungen</translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Kopiert</translation>
@@ -318,6 +320,8 @@ Gehen Sie so vor:</translation>
 <translation id="3861486700625780712">Nicht mehr folgen</translation>
 <translation id="3892144330757387737">Hier wird Ihr Verlauf angezeigt</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3904829425754749514">Ihre Organisation hat die Synchronisierung deaktiviert. Sie sehen weiterhin Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf diesem Gerät. Änderungen werden aber nicht mehr mit Ihrem Konto synchronisiert.</translation>
+<translation id="3905353503976611311">Im Web suchen</translation>
 <translation id="3913386780052199712">In Chrome angemeldet</translation>
 <translation id="3915450441834151894">Websiteinformationen</translation>
 <translation id="3922310737605261887">Nach kopiertem Text suchen</translation>
@@ -347,6 +351,7 @@ Gehen Sie so vor:</translation>
 <translation id="4172051516777682613">Immer anzeigen</translation>
 <translation id="418156467088430727">Offlineversion in einem neuen Tab ansehen</translation>
 <translation id="4181841719683918333">Sprachen</translation>
+<translation id="4223967053752765281">Ihre Organisation hat die Anmeldung deaktiviert. Sie sehen weiterhin Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf diesem Gerät. Änderungen werden aber nicht mehr mit Ihrem Konto synchronisiert.</translation>
 <translation id="4237377247299956313">Tippen Sie auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Passphrase eingeben</translation>
 <translation id="4249955472157341256">Neueste zuerst</translation>
@@ -371,6 +376,7 @@ Gehen Sie so vor:</translation>
 <translation id="4469418912670346607">Einrichtung fortsetzen</translation>
 <translation id="4474494258097106883">Für Ihr iPhone entwickelt</translation>
 <translation id="4476574785019001431">Einstellungen</translation>
+<translation id="448433063499977729">Die Synchronisierung wurde deaktiviert</translation>
 <translation id="4496373720959965247">Tabs hinzufügen und zwischen Seiten wechseln</translation>
 <translation id="4502566650163919158">Jetzt prüfen</translation>
 <translation id="4505980578794259603">Letzte Überprüfung: <ph name="TIME" />.</translation>
@@ -489,6 +495,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5580834567471114021">Der Leseliste für später hinzufügen?</translation>
 <translation id="5592679540098330836">Synchronisierung für <ph name="NAME" /> aktivieren</translation>
 <translation id="560322036295180549">Von Ihrer Organisation deaktiviert</translation>
+<translation id="560999923643681074">Zugriff bearbeiten</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
 <translation id="5626245204502895507">Die Datei kann momentan nicht heruntergeladen werden.</translation>
 <translation id="5631164295104953411">Zahlungsmethode hinzufügen</translation>
@@ -759,6 +766,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7840771868269352570">Die ausgewählten Elemente werden entfernt.</translation>
 <translation id="7856733331829174190">Fehler beim Download</translation>
 <translation id="7859704718976024901">Browserverlauf</translation>
+<translation id="7884694604461143138">Suchverlauf (<ph name="COUNT" /> gefunden)</translation>
 <translation id="7887198238286927132">Um Ihre Daten zu schützen, füllt Chrome dieses Feld nicht automatisch aus.</translation>
 <translation id="7911190106180361398">Ihre Organisation lässt nicht zu, dass Sie alles synchronisieren.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +798,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8076014560081431679">Gespeicherte Website-Einstellungen werden nicht gelöscht und können möglicherweise Ihre Surfgewohnheiten wiedergeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Diese Einstellung wird verwaltet – für weitere Informationen doppeltippen</translation>
 <translation id="8080028325999236607">Alle Tabs schließen</translation>
+<translation id="809543534949702122">Suchverlauf</translation>
 <translation id="8101409298456377967">Sie können Passwörter erstellen, speichern und verwalten, damit Sie sich auf Websites und in Apps einfach anmelden können. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktivieren</translation>
 <translation id="8114753159095730575">Dateidownload verfügbar. Optionen stehen unten auf dem Bildschirm zur Verfügung.</translation>
@@ -811,6 +820,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8319076807703933069">Neue Suche</translation>
 <translation id="8323906514956095947">Für weitere Tab-Optionen berühren und halten</translation>
 <translation id="8328777765163860529">Alle schließen</translation>
+<translation id="8364085047956854021">Die Berechtigungen für „<ph name="SITE_NAME" />“ werden zurückgesetzt und damit deaktiviert, wenn Sie diese Website verlassen.</translation>
 <translation id="8378714024927312812">Von Ihrer Organisation verwaltet</translation>
 <translation id="8386068868580335421">Zurücksetzen</translation>
 <translation id="8407669440184693619">Keine Passwörter für diese Website gefunden</translation>
@@ -897,6 +907,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="9148126808321036104">Erneut anmelden</translation>
 <translation id="9152539721251340337">QR-Code erstellen</translation>
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
+<translation id="9177438225260810839">Auf offenen Tabs suchen</translation>
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>

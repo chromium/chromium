@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1310380015393971138">Non hai ningunha rede <ph name="NETWORK_NAME" /> dispoñible</translation>
+<translation id="131421566576084655">Non está dispoñible a data do último restablecemento dos datos</translation>
 <translation id="1314565355471455267">VPN de Android</translation>
 <translation id="131461803491198646">Rede doméstica, sen itinerancia</translation>
 <translation id="1327977588028644528">Pasarela</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Produciuse un erro: fallo no filtro</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Teño un par de claves</translation>
+<translation id="1435763214710588005">Restablece automaticamente o uso de datos todos os meses nun día seleccionado</translation>
 <translation id="1442433966118452622">Fonte da imaxe</translation>
 <translation id="1451536289672181509">O dispositivo é un teclado.</translation>
 <translation id="1459693405370120464">O tempo</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Non se pode actualizar o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="1567064801249837505">Álbums</translation>
 <translation id="1572585716423026576">Definir como fondo de pantalla</translation>
+<translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Asegúrate de que o escáner estea acendido e dispoñible a través da túa rede ou mediante unha conexión directa</translation>
+<translation id="4170180284036919717">Tirar unha foto</translation>
 <translation id="4170700058716978431">NON SE SUPEROU</translation>
 <translation id="4176463684765177261">Desactivado</translation>
 <translation id="4213104098953699324">Teclado con conexión por USB</translation>
@@ -391,6 +395,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5939518447894949180">Restablecer</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Activar restablecemento mensual automático</translation>
 <translation id="6037291330010597344">O alimentador de documentos do escáner está baleiro. Engade algún documento e téntao de novo.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6040852767465482106">Identidade anónima</translation>
@@ -414,6 +419,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
 <translation id="6232017090690406397">Batería</translation>
+<translation id="6235460611964961764">Restablecer uso de datos de forma manual</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
+<translation id="8923267550422472772">Día do mes no que debe restablecerse o uso de datos</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>
 <translation id="8930521118335213258">Semellante</translation>
 <translation id="8930622219860340959">Sen fíos</translation>

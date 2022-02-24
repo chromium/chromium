@@ -334,6 +334,7 @@
 <translation id="3105917916468784889">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ਬਲੂਟੁੱਥ)</translation>
 <translation id="3113926042639749131">ਸੁਝਾਅ ਹਟਾਓ</translation>
+<translation id="3120421559657122717">ਕੀ ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3126069444801937830">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="3139942575505304791">ਡੈਸਕ 1</translation>
 <translation id="315116470104423982">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
@@ -354,6 +355,7 @@
 <translation id="3249513730522716925">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ ਡੈਸਕ <ph name="ACTIVE_DESK" /> ਤੋਂ ਡੈਸਕ <ph name="TARGET_DESK" /> 'ਤੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="3255483164551725916">ਤੁਸੀਂ ਕੀ ਕਰ ਸਕਦੇ ਹੋ?</translation>
 <translation id="3269597722229482060">ਸੱਜਾ-ਕਲਿੱਕ</translation>
+<translation id="3289544412142055976">Linux ਐਪਾਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="3289674678944039601">ਅਡਾਪਟਰ ਨਾਲ ਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="3290356915286466215">ਅਸੁਰੱਖਿਅਤ</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
@@ -706,6 +708,7 @@
 <translation id="5400461572260843123">ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ, ਸੂਚਨਾ ਕੇਂਦਰ 'ਤੇ ਜਾਣ ਲਈ search + left ਦਬਾਓ।</translation>
 <translation id="5426063383988017631">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5428899915242071344">ਚੁਣਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="5429993543155113935">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="5430931332414098647">ਤਤਕਾਲ ਟੈਦਰਿੰਗ</translation>
 <translation id="5431318178759467895">ਰੰਗ</translation>
 <translation id="5433020815079095860">ਆਡੀਓ ਇਨਪੁੱਟ</translation>
@@ -821,6 +824,7 @@
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6166852626429024716">ਆਪਣਾ ਡੀਵਾਈਸ, ਐਪਾਂ, ਸੈਟਿੰਗਾਂ, ਵੈੱਬ ਖੋਜੋ...</translation>
 <translation id="6179832488876878285">ਇੱਥੇ ਤੁਸੀਂ ਆਪਣੀਆਂ ਮਹੱਤਵਪੂਰਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਪਿੰਨ ਕਰ ਸਕਦੇ ਹੋ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ Files ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
+<translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6231419273573514727">ਪੈਰੀਫੈਰਲ ਕਾਰਗੁਜ਼ਾਰੀ ਸੀਮਤ ਹੋ ਸਕਦੀ ਹੈ</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -847,6 +851,7 @@
 <translation id="6431865393913628856">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਰ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> 'ਤੇ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ਇਵੈਂਟ</translation>
+<translation id="6449483711453944360">Linux ਐਪਾਂ ਅਤੇ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="6452181791372256707">ਰੱਦ ਕਰੋ</translation>
 <translation id="6453179446719226835">ਭਾਸ਼ਾ ਬਦਲ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
 <translation id="6459472438155181876">ਸਕ੍ਰੀਨ <ph name="DISPLAY_NAME" /> ਵਿੱਚ ਵਧਾ ਰਿਹਾ ਹੈ</translation>
@@ -946,6 +951,7 @@
 <translation id="7025533177575372252">ਆਪਣੇ ਫ਼ੋਨ ਨਾਲ ਆਪਣੇ <ph name="DEVICE_NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7026338066939101231">ਘਟਾਓ</translation>
 <translation id="7029814467594812963">ਸੈਸ਼ਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
+<translation id="7032161822340700104">ਸਿਰਫ਼ 6 ਟੈਮਪਲੇਟਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵੇਂ ਟੈਮਪਲੇਟ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਕੋਈ ਟੈਮਪਲੇਟ ਹਟਾਓ।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
 <translation id="7042322267639375032">ਸਥਿਤੀ ਖੇਤਰ ਸਮੇਟੋ</translation>
 <translation id="7045033600005038336">ਕੀ ਟੈਮਪਲੇਟ ਬਦਲਣਾ ਹੈ?</translation>

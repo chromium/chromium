@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ažurira se (završeno je <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">Nijedna <ph name="NETWORK_NAME" /> mreža nije dostupna</translation>
+<translation id="131421566576084655">Datum poslednjeg resetovanja je nedostupan</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Matična mreža, nije u romingu</translation>
 <translation id="1327977588028644528">Mrežni prolaz</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Nije uspelo – filter je otkazao</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Imam par ključeva</translation>
+<translation id="1435763214710588005">Automatski resetuje potrošnju podataka svakog meseca na izabrani dan</translation>
 <translation id="1442433966118452622">Izvor slike</translation>
 <translation id="1451536289672181509">Uređaj je tastatura.</translation>
 <translation id="1459693405370120464">Vreme</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije uspelo</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
+<translation id="1615335640928990664">Potrošnja podataka od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
@@ -392,6 +395,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Generišite nasumični par ključeva</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Omogući automatsko mesečno resetovanje</translation>
 <translation id="6037291330010597344">Mehanizam za uvlačenje dokumenata na skeneru je prazan. Dodajte dokumente i probajte ponovo.</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6040852767465482106">Nepoznati identitet</translation>
@@ -415,6 +419,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nisu dostupni skeneri</translation>
 <translation id="6232017090690406397">Baterija</translation>
+<translation id="6235460611964961764">Ručno resetuj potrošnju podataka</translation>
 <translation id="6243280677745499710">Trenutno podešena</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -626,6 +631,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> korisnika <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Nije uspelo – nedostaje fioka</translation>
+<translation id="8923267550422472772">Dan u mesecu za resetovanje</translation>
 <translation id="8928727111548978589">Nije uspelo – nema više papira</translation>
 <translation id="8930521118335213258">Relevantna aplikacija</translation>
 <translation id="8930622219860340959">Bežično</translation>

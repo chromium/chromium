@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">මෙම ෆෝල්ඩරය Linux සමග බෙදා ගෙන ඇත</translation>
 <translation id="1864756863218646478">ගොනුව සොයාගත නොහැකි විය.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සබඳින්න</translation>
+<translation id="1914901738028575085">CloudReady 2.0 උපාංගය</translation>
 <translation id="1920670151694390848">මලයාලම් අක්ෂර පරිවර්තනය</translation>
 <translation id="1920798810075583923">දිය කොමඩු</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> හැඩතල ගැන්වීය</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">බයිසිකල්</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> තෝරන ලදි.</translation>
 <translation id="872537912056138402">ක්‍රොඒෂියානු</translation>
+<translation id="873847021056608403">CloudReady 2.0 උපාංග</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලකයා විසින් කළමනාකරණය කරයි, සබඳින්න</translation>
 <translation id="8750438273876807512">රාක්කයේ ඇති ඔබගේ ගොනු වෙත ඉක්මන් ප්‍රවේශය සඳහා ගොනුවක් ස්පර්ශ කර අල්ලාගෙන <ph name="ICON" /> තට්ටු කර, "රාක්කයට අමුණන්න" තෝරන්න.</translation>
 <translation id="8787254343425541995">බෙදාගත් ජාල සඳහා ප්‍රොක්සි වලට ඉඩදෙන්න</translation>

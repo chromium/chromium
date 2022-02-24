@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">このフォルダは Linux と共有されています</translation>
 <translation id="1864756863218646478">ファイルが見つかりませんでした。</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、接続</translation>
+<translation id="1914901738028575085">CloudReady 2.0 デバイス</translation>
 <translation id="1920670151694390848">マラヤーラム語（文字変換）</translation>
 <translation id="1920798810075583923">スイカ</translation>
 <translation id="1924372192547904021">「<ph name="DRIVE_NAME" />」をフォーマットしました</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">自転車</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> を選択しました。</translation>
 <translation id="872537912056138402">クロアチア語</translation>
+<translation id="873847021056608403">CloudReady 2.0 デバイス</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="8750438273876807512">ファイルを長押しして <ph name="ICON" /> をタップし、[シェルフに固定] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>

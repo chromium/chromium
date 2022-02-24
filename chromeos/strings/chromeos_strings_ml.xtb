@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">അപ്ഡേറ്റ് ചെയ്യുന്നു (<ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്ക് ഒന്നും ലഭ്യമല്ല</translation>
+<translation id="131421566576084655">അവസാനം ഡാറ്റാ റീസെറ്റ് ചെയ്ത തീയതി ലഭ്യമല്ല</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">ഹോം നെറ്റ്‍വര്‍ക്ക്, റോമിംഗ് അല്ല</translation>
 <translation id="1327977588028644528">ഗേറ്റ്‌വേ</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">എനിക്ക് കീ ജോടിയുണ്ട്</translation>
+<translation id="1435763214710588005">ഓരോ മാസവും തിരഞ്ഞെടുത്ത ദിവസം ഡാറ്റാ ഉപയോഗം സ്വയമേവ റീസെറ്റ് ചെയ്യുന്നു</translation>
 <translation id="1442433966118452622">ചിത്രത്തിന്റെ ഉറവിടം</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
 <translation id="1572585716423026576">വാൾപേപ്പറായി സജ്ജീകരിക്കുക</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
@@ -391,6 +394,7 @@
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="594552776027197022">ക്രമരഹിതമായ കീ ജോടി സൃഷ്‌ടിക്കുക</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">സ്വയമേവയുള്ള പ്രതിമാസ റീസെറ്റ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6037291330010597344">സ്‌കാനറിന്റെ ഡോക്യുമെന്റ് ഫീഡർ ശൂന്യമാണ്. ഡോക്യുമെന്റുകൾ ചേർത്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6040852767465482106">അജ്ഞാത ഐഡന്‍റിറ്റി</translation>
@@ -414,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
+<translation id="6235460611964961764">ഡാറ്റാ ഉപയോഗം നേരിട്ട് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6243280677745499710">നിലവിൽ സജ്ജീകരിച്ചിരിക്കുന്നത്</translation>
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +630,7 @@
 <translation id="8910721771319628100">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് പ്രതികരണ സമയം പരിധിക്ക് മുകളിലാണ്</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> എന്നയാളുടെ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">പ്രിന്റ് ചെയ്യാനായില്ല - ട്രേ കാണുന്നില്ല</translation>
+<translation id="8923267550422472772">റീസെറ്റ് ചെയ്യുന്നതിനുള്ള, മാസത്തിലെ ദിവസം</translation>
 <translation id="8928727111548978589">പ്രിന്റ് ചെയ്യാനായില്ല - പേപ്പറില്ല</translation>
 <translation id="8930521118335213258">പിയർ</translation>
 <translation id="8930622219860340959">വയര്‍‌ലെസ്സ്</translation>

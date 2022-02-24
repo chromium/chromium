@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="1047130070405668746">Seleziona Chromium</translation>
+<translation id="1091252999271033193">Ciò significa che Chromium richiederà ogni volta il sito per dispositivi mobili.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -26,6 +27,7 @@
 <translation id="2178608107313874732">Chromium non può utilizzare la videocamera al momento</translation>
 <translation id="2195025571279539885">Vuoi che Chromium ti proponga di tradurre le pagine di questo sito in <ph name="LANGUAGE_NAME" /> al prossimo accesso?</translation>
 <translation id="2218146227246548550">La tua organizzazione richiede l'accesso per usare Chromium. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Ciò significa che Chromium richiederà ogni volta il sito desktop.</translation>
 <translation id="2426113998523353159">La tua organizzazione richiede l'accesso per usare Chromium.</translation>
 <translation id="2450140762465183767">Ora puoi usare Chromium ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="2478931088402984578">Seleziona <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />.</translation>

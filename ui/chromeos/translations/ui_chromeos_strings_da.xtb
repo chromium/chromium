@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Denne mappe deles med Linux</translation>
 <translation id="1864756863218646478">Filen blev ikke fundet.</translation>
 <translation id="1884013283844450420">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, opret forbindelse</translation>
+<translation id="1914901738028575085">CloudReady 2.0-enhed</translation>
 <translation id="1920670151694390848">Malayalam translitteration</translation>
 <translation id="1920798810075583923">Vandmelon</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> er formateret</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Cykel</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> er valgt.</translation>
 <translation id="872537912056138402">Kroatisk</translation>
+<translation id="873847021056608403">CloudReady 2.0-enheder</translation>
 <translation id="8743164338060742337">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, opret forbindelse</translation>
 <translation id="8750438273876807512">Tryk på en fil, hold fingeren nede, tryk på <ph name="ICON" />, og vælg "Fastgør til hylde" for at få hurtig adgang til dine filer på hylden.</translation>
 <translation id="8787254343425541995">Tillad proxyer til delte netværk</translation>

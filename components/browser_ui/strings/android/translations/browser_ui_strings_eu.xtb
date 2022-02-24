@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4008040567710660924">Onartu webgune zehatz baten cookieak.</translation>
+<translation id="4040330681741629921">Jaso jakinarazpen bat webgune bat ikuspegi sinplifikatuan erakuts daitekeenean</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="4149994727733219643">Web-orrien ikuspegi sinplifikatua</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Webguneek gordetako datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
 <translation id="5403592356182871684">Izenak</translation>
+<translation id="5412236728747081950">Webgune honek Chrome-n oinarritzen da zure interesen berri izateko, iragarki erabilgarriagoak erakuts diezazkizun</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> webgunearen baimenak berrezarriko dira</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5494752089476963479">Blokeatu iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneetako iragarkiak</translation>

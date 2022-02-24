@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">업데이트 중(<ph name="PERCENTAGE_VALUE" />% 완료)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> 네트워크를 사용할 수 없음</translation>
+<translation id="131421566576084655">마지막 데이터 재설정 날짜가 없음</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">홈 네트워크 로밍 안함</translation>
 <translation id="1327977588028644528">게이트웨이</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">키 쌍 있음</translation>
+<translation id="1435763214710588005">매월 선택한 날짜에 데이터 사용량을 자동으로 재설정합니다.</translation>
 <translation id="1442433966118452622">이미지 출처</translation>
 <translation id="1451536289672181509">키보드 기기입니다.</translation>
 <translation id="1459693405370120464">날씨</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> 업데이트할 수 없음</translation>
 <translation id="1567064801249837505">앨범</translation>
 <translation id="1572585716423026576">배경화면으로 설정</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
 <translation id="1639239467298939599">로드 중</translation>
 <translation id="1641857168437328880">서류 급지(단면)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP 방화벽</translation>
 <translation id="4147897805161313378">Google 포토</translation>
 <translation id="4155551848414053977">스캐너가 켜져 있으며 네트워크 또는 직접 연결을 통해 사용 가능한지 확인하세요.</translation>
+<translation id="4170180284036919717">사진 찍기</translation>
 <translation id="4170700058716978431">실패</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">초기화</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
+<translation id="6034694447310538551">월간 자동 재설정 사용 설정</translation>
 <translation id="6037291330010597344">스캐너의 급지대가 비어 있습니다. 문서를 추가한 후 다시 시도해 보세요.</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6040852767465482106">익명 ID</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
 <translation id="6232017090690406397">배터리</translation>
+<translation id="6235460611964961764">데이터 사용량 수동 재설정</translation>
 <translation id="6243280677745499710">현재 설정</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">기본 네트워크가 지연 시간 기준을 초과했습니다.</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />님의 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">실패 - 트레이 없음</translation>
+<translation id="8923267550422472772">재설정 날짜</translation>
 <translation id="8928727111548978589">실패 - 용지 없음</translation>
 <translation id="8930521118335213258">동종</translation>
 <translation id="8930622219860340959">무선</translation>

@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4008040567710660924">Belirli bir site için çerezlere izin verin.</translation>
+<translation id="4040330681741629921">Siteler basitleştirilmiş görünümde gösterilebiliyorsa bilgilendirilirsiniz</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">Bu işlem, siteler tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizler.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tane daha)}other{(+ # tane daha)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5412236728747081950">Bu site size daha alakalı reklamlar göstermek için Chrome'dan ilgi alanlarınızı öğrenir</translation>
 <translation id="5438097262470833822">Bu tercih, <ph name="WEBSITE" /> izinlerini sıfırlar</translation>
 <translation id="5489227211564503167">Geçen süre: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Araya giren veya yanıltıcı reklamlar gösteren sitelerde reklamları engelle</translation>
