@@ -2019,7 +2019,10 @@
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets:*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend:*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,format_blendable:*'>
-<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:*'>
+<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=false;component="color";*'>
+<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=false;component="alpha";*'>
+<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=true;component="color";*'>
+<meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=true;component="alpha";*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:pipeline_layout,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,createRenderPipeline:shader_module,device_mismatch:*'>
 <meta name=variant content='?q=webgpu:api,validation,createSampler:lodMinAndMaxClamp:*'>

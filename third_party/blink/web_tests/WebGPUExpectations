@@ -359,8 +359,6 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,re
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24unorm-stencil8";compute=false;* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth32float-stencil8";compute=false;* [ Failure ]
 
-crbug.com/dawn/1297 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:* [ Timeout ]
-
 ###
 ### Mac (Metal) specific
 ###

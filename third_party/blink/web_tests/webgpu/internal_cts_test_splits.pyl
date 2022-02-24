@@ -250,4 +250,7 @@
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="workgroup";workgroupSize=[7,7,3];batch__=0;*',
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";workgroupSize=[1,1,1];batch__=0;*',
   'wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="function";workgroupSize=[1,1,1];batch__=0;*',
+
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=false;component="color";*',
+  'wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:pipeline_output_targets,blend_min_max:isAsync=true;component="color";*',
 ]
