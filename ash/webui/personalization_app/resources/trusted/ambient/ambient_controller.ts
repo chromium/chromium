@@ -36,10 +36,10 @@ export function setTopicSource(
 
 // Set ambient mode temperature unit.
 export function setTemperatureUnit(
-    temperatureUnit: TemperatureUnit, _: AmbientProviderInterface,
+    temperatureUnit: TemperatureUnit, provider: AmbientProviderInterface,
     store: PersonalizationStore): void {
   // Dispatch action to select temperature unit.
   store.dispatch(setTemperatureUnitAction(temperatureUnit));
 
-  // TODO(b/217281778): implement SetTemperatureUnit API.
+  provider.setTemperatureUnit(temperatureUnit);
 }

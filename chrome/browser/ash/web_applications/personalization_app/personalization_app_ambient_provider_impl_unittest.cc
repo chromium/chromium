@@ -48,9 +48,10 @@ class TestAmbientObserver
     albums_ = std::move(albums);
   }
 
-  // TODO: to be updated in b/219247662.
   void OnTemperatureUnitChanged(
-      ash::AmbientModeTemperatureUnit temperature_unit) override {}
+      ash::AmbientModeTemperatureUnit temperature_unit) override {
+    temperature_unit_ = temperature_unit;
+  }
 
   mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
   pending_remote() {
@@ -76,6 +77,11 @@ class TestAmbientObserver
     return std::move(albums_);
   }
 
+  ash::AmbientModeTemperatureUnit temperature_unit() {
+    ambient_observer_receiver_.FlushForTesting();
+    return temperature_unit_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientObserver>
       ambient_observer_receiver_{this};
@@ -83,6 +89,8 @@ class TestAmbientObserver
   bool ambient_mode_enabled_ = false;
   ash::AmbientModeTopicSource topic_source_ =
       ash::AmbientModeTopicSource::kArtGallery;
+  ash::AmbientModeTemperatureUnit temperature_unit_ =
+      ash::AmbientModeTemperatureUnit::kFahrenheit;
   std::vector<ash::personalization_app::mojom::AmbientModeAlbumPtr> albums_;
 };
 
@@ -154,6 +162,11 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     return test_ambient_observer_.albums();
   }
 
+  ash::AmbientModeTemperatureUnit ObservedTemperatureUnit() {
+    ambient_provider_remote_.FlushForTesting();
+    return test_ambient_observer_.temperature_unit();
+  }
+
   absl::optional<ash::AmbientSettings>& settings() {
     return ambient_provider_->settings_;
   }
@@ -182,6 +195,14 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
 
   void SetSelectedAlbums(const std::vector<std::string>& ids) {
     ambient_provider_->settings_->selected_album_ids = ids;
+  }
+
+  void SetTemperatureUnit(ash::AmbientModeTemperatureUnit temperature_unit) {
+    ambient_provider_->SetTemperatureUnit(temperature_unit);
+  }
+
+  ash::AmbientModeTemperatureUnit TemperatureUnit() {
+    return ambient_provider_->settings_->temperature_unit;
   }
 
   bool HasPendingFetchRequestAtProvider() const {
@@ -326,6 +347,20 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
   EXPECT_EQ(4, albums.size());
 }
 
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       ShouldCallOnTemperatureUnitChanged) {
+  // Will fetch settings when observer is set.
+  SetAmbientObserver();
+  ambient_provider_remote().FlushForTesting();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            ObservedTemperatureUnit());
+
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kFahrenheit);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kFahrenheit,
+            ObservedTemperatureUnit());
+}
+
 TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
   FetchSettings();
   ReplyFetchSettingsAndAlbums(/*success=*/true);
@@ -345,6 +380,18 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
   SetSelectedAlbums(/*ids=*/{"1"});
   SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, SetTemperatureUnit) {
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius, TemperatureUnit());
+
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kFahrenheit);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kFahrenheit, TemperatureUnit());
+
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius, TemperatureUnit());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, TestFetchSettings) {

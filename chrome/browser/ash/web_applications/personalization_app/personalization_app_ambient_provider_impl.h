@@ -47,6 +47,8 @@ class PersonalizationAppAmbientProviderImpl
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
+  void SetTemperatureUnit(
+      ash::AmbientModeTemperatureUnit temperature_unit) override;
 
   // TODO(b/216307771): Will need to add observer for this.
   void OnAmbientModeEnabledChanged(bool ambient_mode_enabled);

@@ -44,6 +44,8 @@ class FakePersonalizationAppAmbientProvider
           observer) override {}
   void SetAmbientModeEnabled(bool enabled) override {}
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override {}
+  void SetTemperatureUnit(
+      ash::AmbientModeTemperatureUnit temperature_unit) override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

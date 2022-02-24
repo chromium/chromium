@@ -406,4 +406,7 @@ interface AmbientProvider {
 
   // Sets the ambient mode topic source.
   SetTopicSource(TopicSource topic_source);
+
+  // Sets the ambient mode temperature unit.
+  SetTemperatureUnit(TemperatureUnit temperature_unit);
 };

@@ -129,6 +129,15 @@ void PersonalizationAppAmbientProviderImpl::SetTopicSource(
   MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
 }
 
+void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(
+    ash::AmbientModeTemperatureUnit temperature_unit) {
+  if (settings_->temperature_unit != temperature_unit) {
+    settings_->temperature_unit = temperature_unit;
+    UpdateSettings();
+    OnTemperatureUnitChanged();
+  }
+}
+
 void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged(
     bool ambient_mode_enabled) {
   DCHECK(ambient_observer_remote_.is_bound());
@@ -136,7 +145,11 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged(
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
-  NOTIMPLEMENTED();
+  if (!ambient_observer_remote_.is_bound())
+    return;
+
+  ambient_observer_remote_->OnTemperatureUnitChanged(
+      settings_->temperature_unit);
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
