@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
 
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
