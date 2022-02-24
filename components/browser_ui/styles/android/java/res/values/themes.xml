@@ -11,6 +11,7 @@
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_600</item>
         <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
         <item name="colorOnPrimary">@color/baseline_primary_0</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
@@ -58,6 +59,7 @@
 
          <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
         <item name="colorPrimaryDark">@android:color/black</item>
         <item name="colorOnPrimary">@color/baseline_primary_0</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
