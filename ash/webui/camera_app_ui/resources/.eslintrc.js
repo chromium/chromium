@@ -442,13 +442,20 @@ module.exports = {
       },
     ],
 
-    // Disallow parseInt (go/tsstyle#type-coercion)
     'no-restricted-syntax': [
       'error',
+      // Disallow parseInt. (go/tsstyle#type-coercion)
       {
         selector: 'CallExpression[callee.name="parseInt"]',
         message: 'parseInt are not allowed, use Number() instead. ' +
             '(go/tsstyle#type-coercion)',
+      },
+      // Disallow Array constructor. (go/tsstyle#array-constructor)
+      {
+        selector: 'NewExpression[callee.name="Array"], ' +
+            'CallExpression[callee.name="Array"]',
+        message: 'Array constructor are not allowed. ' +
+            '(go/tsstyle#array-constructor)',
       },
     ],
 
