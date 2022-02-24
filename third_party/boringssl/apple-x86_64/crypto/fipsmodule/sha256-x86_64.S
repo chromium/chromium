@@ -24,6 +24,8 @@ _sha256_block_data_order:
 	movl	0(%r11),%r9d
 	movl	4(%r11),%r10d
 	movl	8(%r11),%r11d
+	testl	$536870912,%r11d
+	jnz	L$shaext_shortcut
 	andl	$1073741824,%r9d
 	andl	$268435968,%r10d
 	orl	%r9d,%r10d
@@ -1780,6 +1782,215 @@ K256:
 .long	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
 .long	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
+
+.p2align	6
+sha256_block_data_order_shaext:
+
+L$shaext_shortcut:
+	leaq	K256+128(%rip),%rcx
+	movdqu	(%rdi),%xmm1
+	movdqu	16(%rdi),%xmm2
+	movdqa	512-128(%rcx),%xmm7
+
+	pshufd	$0x1b,%xmm1,%xmm0
+	pshufd	$0xb1,%xmm1,%xmm1
+	pshufd	$0x1b,%xmm2,%xmm2
+	movdqa	%xmm7,%xmm8
+.byte	102,15,58,15,202,8
+	punpcklqdq	%xmm0,%xmm2
+	jmp	L$oop_shaext
+
+.p2align	4
+L$oop_shaext:
+	movdqu	(%rsi),%xmm3
+	movdqu	16(%rsi),%xmm4
+	movdqu	32(%rsi),%xmm5
+.byte	102,15,56,0,223
+	movdqu	48(%rsi),%xmm6
+
+	movdqa	0-128(%rcx),%xmm0
+	paddd	%xmm3,%xmm0
+.byte	102,15,56,0,231
+	movdqa	%xmm2,%xmm10
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	nop
+	movdqa	%xmm1,%xmm9
+.byte	15,56,203,202
+
+	movdqa	32-128(%rcx),%xmm0
+	paddd	%xmm4,%xmm0
+.byte	102,15,56,0,239
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	leaq	64(%rsi),%rsi
+.byte	15,56,204,220
+.byte	15,56,203,202
+
+	movdqa	64-128(%rcx),%xmm0
+	paddd	%xmm5,%xmm0
+.byte	102,15,56,0,247
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm6,%xmm7
+.byte	102,15,58,15,253,4
+	nop
+	paddd	%xmm7,%xmm3
+.byte	15,56,204,229
+.byte	15,56,203,202
+
+	movdqa	96-128(%rcx),%xmm0
+	paddd	%xmm6,%xmm0
+.byte	15,56,205,222
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm3,%xmm7
+.byte	102,15,58,15,254,4
+	nop
+	paddd	%xmm7,%xmm4
+.byte	15,56,204,238
+.byte	15,56,203,202
+	movdqa	128-128(%rcx),%xmm0
+	paddd	%xmm3,%xmm0
+.byte	15,56,205,227
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm4,%xmm7
+.byte	102,15,58,15,251,4
+	nop
+	paddd	%xmm7,%xmm5
+.byte	15,56,204,243
+.byte	15,56,203,202
+	movdqa	160-128(%rcx),%xmm0
+	paddd	%xmm4,%xmm0
+.byte	15,56,205,236
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm5,%xmm7
+.byte	102,15,58,15,252,4
+	nop
+	paddd	%xmm7,%xmm6
+.byte	15,56,204,220
+.byte	15,56,203,202
+	movdqa	192-128(%rcx),%xmm0
+	paddd	%xmm5,%xmm0
+.byte	15,56,205,245
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm6,%xmm7
+.byte	102,15,58,15,253,4
+	nop
+	paddd	%xmm7,%xmm3
+.byte	15,56,204,229
+.byte	15,56,203,202
+	movdqa	224-128(%rcx),%xmm0
+	paddd	%xmm6,%xmm0
+.byte	15,56,205,222
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm3,%xmm7
+.byte	102,15,58,15,254,4
+	nop
+	paddd	%xmm7,%xmm4
+.byte	15,56,204,238
+.byte	15,56,203,202
+	movdqa	256-128(%rcx),%xmm0
+	paddd	%xmm3,%xmm0
+.byte	15,56,205,227
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm4,%xmm7
+.byte	102,15,58,15,251,4
+	nop
+	paddd	%xmm7,%xmm5
+.byte	15,56,204,243
+.byte	15,56,203,202
+	movdqa	288-128(%rcx),%xmm0
+	paddd	%xmm4,%xmm0
+.byte	15,56,205,236
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm5,%xmm7
+.byte	102,15,58,15,252,4
+	nop
+	paddd	%xmm7,%xmm6
+.byte	15,56,204,220
+.byte	15,56,203,202
+	movdqa	320-128(%rcx),%xmm0
+	paddd	%xmm5,%xmm0
+.byte	15,56,205,245
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm6,%xmm7
+.byte	102,15,58,15,253,4
+	nop
+	paddd	%xmm7,%xmm3
+.byte	15,56,204,229
+.byte	15,56,203,202
+	movdqa	352-128(%rcx),%xmm0
+	paddd	%xmm6,%xmm0
+.byte	15,56,205,222
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm3,%xmm7
+.byte	102,15,58,15,254,4
+	nop
+	paddd	%xmm7,%xmm4
+.byte	15,56,204,238
+.byte	15,56,203,202
+	movdqa	384-128(%rcx),%xmm0
+	paddd	%xmm3,%xmm0
+.byte	15,56,205,227
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm4,%xmm7
+.byte	102,15,58,15,251,4
+	nop
+	paddd	%xmm7,%xmm5
+.byte	15,56,204,243
+.byte	15,56,203,202
+	movdqa	416-128(%rcx),%xmm0
+	paddd	%xmm4,%xmm0
+.byte	15,56,205,236
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	movdqa	%xmm5,%xmm7
+.byte	102,15,58,15,252,4
+.byte	15,56,203,202
+	paddd	%xmm7,%xmm6
+
+	movdqa	448-128(%rcx),%xmm0
+	paddd	%xmm5,%xmm0
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+.byte	15,56,205,245
+	movdqa	%xmm8,%xmm7
+.byte	15,56,203,202
+
+	movdqa	480-128(%rcx),%xmm0
+	paddd	%xmm6,%xmm0
+	nop
+.byte	15,56,203,209
+	pshufd	$0x0e,%xmm0,%xmm0
+	decq	%rdx
+	nop
+.byte	15,56,203,202
+
+	paddd	%xmm10,%xmm2
+	paddd	%xmm9,%xmm1
+	jnz	L$oop_shaext
+
+	pshufd	$0xb1,%xmm2,%xmm2
+	pshufd	$0x1b,%xmm1,%xmm7
+	pshufd	$0xb1,%xmm1,%xmm1
+	punpckhqdq	%xmm2,%xmm1
+.byte	102,15,58,15,215,8
+
+	movdqu	%xmm1,(%rdi)
+	movdqu	%xmm2,16(%rdi)
+	.byte	0xf3,0xc3
+
+
 
 .p2align	6
 sha256_block_data_order_ssse3:
