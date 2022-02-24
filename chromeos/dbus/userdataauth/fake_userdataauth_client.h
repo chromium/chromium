@@ -95,6 +95,35 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       AuthenticateAuthSessionCallback callback) override;
   void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
                       AddCredentialsCallback callback) override;
+  void PrepareGuestVault(
+      const ::user_data_auth::PrepareGuestVaultRequest& request,
+      PrepareGuestVaultCallback callback) override;
+  void PrepareEphemeralVault(
+      const ::user_data_auth::PrepareEphemeralVaultRequest& request,
+      PrepareEphemeralVaultCallback callback) override;
+  void CreatePersistentUser(
+      const ::user_data_auth::CreatePersistentUserRequest& request,
+      CreatePersistentUserCallback callback) override;
+  void PreparePersistentVault(
+      const ::user_data_auth::PreparePersistentVaultRequest& request,
+      PreparePersistentVaultCallback callback) override;
+  void InvalidateAuthSession(
+      const ::user_data_auth::InvalidateAuthSessionRequest& request,
+      InvalidateAuthSessionCallback callback) override;
+  void ExtendAuthSession(
+      const ::user_data_auth::ExtendAuthSessionRequest& request,
+      ExtendAuthSessionCallback callback) override;
+  void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
+                     AddAuthFactorCallback callback) override;
+  void AuthenticateAuthFactor(
+      const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+      AuthenticateAuthFactorCallback callback) override;
+  void UpdateAuthFactor(
+      const ::user_data_auth::UpdateAuthFactorRequest& request,
+      UpdateAuthFactorCallback callback) override;
+  void RemoveAuthFactor(
+      const ::user_data_auth::RemoveAuthFactorRequest& request,
+      RemoveAuthFactorCallback callback) override;
 
   // Mount() related setter/getters.
 
@@ -177,6 +206,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_authenticate_auth_session_request_.authorization();
   }
 
+  // AuthenticateAuthFactor() related:
+  const ::user_data_auth::AuthenticateAuthFactorRequest&
+  get_last_authenticate_auth_factor_request() {
+    return last_authenticate_auth_factor_request_;
+  }
+
   // WaitForServiceToBeAvailable() related:
 
   // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
@@ -227,6 +262,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Check whether user with given id exists
   bool UserExists(const cryptohome::AccountIdentifier& account_id) const;
 
+  // The method takes serialized auth session id and returns an authenticated
+  // auth session associated with the id. If the session is missing or not
+  // authenticated, |nullptr| is returned.
+  const AuthSessionData* GetAuthenticatedAuthSession(
+      const std::string& auth_session_id,
+      ::user_data_auth::CryptohomeErrorCode* error) const;
+
   // Mount() related fields.
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
@@ -276,6 +318,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // AuthenticateAuthSession() call.
   ::user_data_auth::AuthenticateAuthSessionRequest
       last_authenticate_auth_session_request_;
+
+  // The AuthenticateAuthFactorRequest passed in for the last
+  // AuthenticateAuthFactor() call.
+  ::user_data_auth::AuthenticateAuthFactorRequest
+      last_authenticate_auth_factor_request_;
 
   // The auth sessions on file.
   base::flat_map<std::string, AuthSessionData> auth_sessions_;

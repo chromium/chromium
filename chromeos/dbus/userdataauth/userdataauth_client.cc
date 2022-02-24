@@ -235,6 +235,85 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void PrepareGuestVault(
+      const ::user_data_auth::PrepareGuestVaultRequest& request,
+      PrepareGuestVaultCallback callback) override {
+    CallProtoMethod(::user_data_auth::kPrepareGuestVault,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void PrepareEphemeralVault(
+      const ::user_data_auth::PrepareEphemeralVaultRequest& request,
+      PrepareEphemeralVaultCallback callback) override {
+    CallProtoMethod(::user_data_auth::kPrepareEphemeralVault,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void CreatePersistentUser(
+      const ::user_data_auth::CreatePersistentUserRequest& request,
+      CreatePersistentUserCallback callback) override {
+    CallProtoMethod(::user_data_auth::kCreatePersistentUser,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void PreparePersistentVault(
+      const ::user_data_auth::PreparePersistentVaultRequest& request,
+      PreparePersistentVaultCallback callback) override {
+    CallProtoMethod(::user_data_auth::kPreparePersistentVault,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void InvalidateAuthSession(
+      const ::user_data_auth::InvalidateAuthSessionRequest& request,
+      InvalidateAuthSessionCallback callback) override {
+    CallProtoMethod(::user_data_auth::kInvalidateAuthSession,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void ExtendAuthSession(
+      const ::user_data_auth::ExtendAuthSessionRequest& request,
+      ExtendAuthSessionCallback callback) override {
+    CallProtoMethod(::user_data_auth::kExtendAuthSession,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
+                     AddAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kAddAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void AuthenticateAuthFactor(
+      const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+      AuthenticateAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kAuthenticateAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void UpdateAuthFactor(
+      const ::user_data_auth::UpdateAuthFactorRequest& request,
+      UpdateAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kUpdateAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void RemoveAuthFactor(
+      const ::user_data_auth::RemoveAuthFactorRequest& request,
+      RemoveAuthFactorCallback callback) override {
+    CallProtoMethod(::user_data_auth::kRemoveAuthFactor,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)

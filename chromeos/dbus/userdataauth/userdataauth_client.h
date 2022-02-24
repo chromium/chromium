@@ -69,6 +69,26 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       DBusMethodCallback<::user_data_auth::AuthenticateAuthSessionReply>;
   using AddCredentialsCallback =
       DBusMethodCallback<::user_data_auth::AddCredentialsReply>;
+  using PrepareGuestVaultCallback =
+      DBusMethodCallback<::user_data_auth::PrepareGuestVaultReply>;
+  using PrepareEphemeralVaultCallback =
+      DBusMethodCallback<::user_data_auth::PrepareEphemeralVaultReply>;
+  using CreatePersistentUserCallback =
+      DBusMethodCallback<::user_data_auth::CreatePersistentUserReply>;
+  using PreparePersistentVaultCallback =
+      DBusMethodCallback<::user_data_auth::PreparePersistentVaultReply>;
+  using InvalidateAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::InvalidateAuthSessionReply>;
+  using ExtendAuthSessionCallback =
+      DBusMethodCallback<::user_data_auth::ExtendAuthSessionReply>;
+  using AddAuthFactorCallback =
+      DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
+  using AuthenticateAuthFactorCallback =
+      DBusMethodCallback<::user_data_auth::AuthenticateAuthFactorReply>;
+  using UpdateAuthFactorCallback =
+      DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
+  using RemoveAuthFactorCallback =
+      DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -189,6 +209,67 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void AddCredentials(
       const ::user_data_auth::AddCredentialsRequest& request,
       AddCredentialsCallback callback) = 0;
+
+  // This request is intended to happen when a user wants
+  // to login to ChromeOS as a guest.
+  virtual void PrepareGuestVault(
+      const ::user_data_auth::PrepareGuestVaultRequest& request,
+      PrepareGuestVaultCallback callback) = 0;
+
+  // This request is intended when a policy (either device or enterprise)
+  // has enabled ephemeral users. An ephemeral user is created
+  // in a memory filesystem only and is never actually persisted to disk.
+  virtual void PrepareEphemeralVault(
+      const ::user_data_auth::PrepareEphemeralVaultRequest& request,
+      PrepareEphemeralVaultCallback callback) = 0;
+
+  // This will create user directories needed to store
+  // keys and download policies. This will usually be called when a new user is
+  // registering.
+  virtual void CreatePersistentUser(
+      const ::user_data_auth::CreatePersistentUserRequest& request,
+      CreatePersistentUserCallback callback) = 0;
+
+  // This makes available user directories for them to use.
+  virtual void PreparePersistentVault(
+      const ::user_data_auth::PreparePersistentVaultRequest& request,
+      PreparePersistentVaultCallback callback) = 0;
+
+  // This call is used to invalidate an AuthSession
+  // once the need for one no longer exists.
+  virtual void InvalidateAuthSession(
+      const ::user_data_auth::InvalidateAuthSessionRequest& request,
+      InvalidateAuthSessionCallback callback) = 0;
+
+  // This call is used to extend the duration of
+  //  AuthSession that it should be valid for.
+  virtual void ExtendAuthSession(
+      const ::user_data_auth::ExtendAuthSessionRequest& request,
+      ExtendAuthSessionCallback callback) = 0;
+
+  // This call adds an AuthFactor for a user. The call goes
+  // through an authenticated AuthSession.
+  virtual void AddAuthFactor(
+      const ::user_data_auth::AddAuthFactorRequest& request,
+      AddAuthFactorCallback callback) = 0;
+
+  // This will Authenticate an existing AuthFactor.
+  // This call will authenticate an AuthSession.
+  virtual void AuthenticateAuthFactor(
+      const ::user_data_auth::AuthenticateAuthFactorRequest& request,
+      AuthenticateAuthFactorCallback callback) = 0;
+
+  // This call will be used in the case of a user wanting
+  // to update an AuthFactor. (E.g. Changing pin or password).
+  virtual void UpdateAuthFactor(
+      const ::user_data_auth::UpdateAuthFactorRequest& request,
+      UpdateAuthFactorCallback callback) = 0;
+
+  // This is called when a user wants to remove an
+  // AuthFactor.
+  virtual void RemoveAuthFactor(
+      const ::user_data_auth::RemoveAuthFactorRequest& request,
+      RemoveAuthFactorCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
