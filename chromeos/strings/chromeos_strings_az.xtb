@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncəllənir (<ph name="PERCENTAGE_VALUE" />% tamamlanıb)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> şəbəkəsi əlçatan deyil</translation>
+<translation id="131421566576084655">Sonuncu data sıfırlama tarixi əlçatan deyil</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Ev şəbəkəsidir, rominq deyil</translation>
 <translation id="1327977588028644528">Keçid</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Açar cütüm var</translation>
+<translation id="1435763214710588005">Hər ay seçilmiş gündə data istifadəsini avtomatik sıfırlayır</translation>
 <translation id="1442433966118452622">Şəkil mənbəyi</translation>
 <translation id="1451536289672181509">Cihaz klaviaturadır.</translation>
 <translation id="1459693405370120464">Hava</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> cihazını güncəlləmək mümkün deyil</translation>
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP Qoruyucu divarı</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Skanerin aktiv olduğuna, şəbəkə və ya birbaşa qoşulma üzərindən əlçatan olduğuna əmin olun</translation>
+<translation id="4170180284036919717">Foto çəkin</translation>
 <translation id="4170700058716978431">UĞURSUZ OLDU</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4213104098953699324">USB klaviatura</translation>
@@ -390,6 +394,7 @@
 <translation id="5939518447894949180">Sıfırlayın</translation>
 <translation id="594552776027197022">Təsadüfi açar cütü yaradın</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
+<translation id="6034694447310538551">Avtomatik aylıq sıfırlamanı aktivləşdirin</translation>
 <translation id="6037291330010597344">Skanerin sənəd ötürücüsü boşdur. Sənəd əlavə edib yenidən sınayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6040852767465482106">Anonim Kimlik</translation>
@@ -413,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Əlçatan skaner yoxdur</translation>
 <translation id="6232017090690406397">Batareya</translation>
+<translation id="6235460611964961764">Data istifadəsini manual olaraq sıfırlayın</translation>
 <translation id="6243280677745499710">Hazırda ayarlanıb</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -624,6 +630,7 @@
 <translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı istifadəçinin <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Alınmadı - Altlıq yoxdur</translation>
+<translation id="8923267550422472772">Sıfırlamaq üçün ayın günü</translation>
 <translation id="8928727111548978589">Alınmadı - Kağız yoxdur</translation>
 <translation id="8930521118335213258">Eynisəviyyəli tətbiq</translation>
 <translation id="8930622219860340959">Simsiz</translation>

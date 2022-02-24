@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Локацијата <ph name="SITE_NAME" /> е додадена</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384959399684842514">Преземањето е паузирано</translation>
+<translation id="1409426117486808224">Поедноставен приказ за отворени картички</translation>
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
 <translation id="1446450296470737166">Дозволи контрола над MIDI-уреди</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228">Отстранете <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2315043854645842844">Оперативниот систем не поддржува избор на сертификат од страна на клиентот.</translation>
+<translation id="2321958826496381788">Влечете го лизгачот сѐ додека не го читате ова удобно. Текстот треба да изгледа барем олку голем по двојно допирање на пасусот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2379925928934107488">Ако е можно, примени темна тема на сајтовите кога Chrome користи темна тема</translation>
+<translation id="2387895666653383613">Скалирање текст</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" /> се одобрени}}</translation>
 <translation id="2434158240863470628">Преземањето е завршено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
+<translation id="3895926599014793903">Присилно овозможи зумирање</translation>
 <translation id="3955193568934677022">Дозволете сајтовите да пуштаат заштитени содржини (се препорачува)</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/?</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4008040567710660924">Дозволете колачиња за конкретен сајт.</translation>
+<translation id="4040330681741629921">Добивајте известувања кога сајт може да се прикажува во поедноставен преглед</translation>
 <translation id="4046123991198612571">Следна песна</translation>
+<translation id="4149994727733219643">Поедноставен приказ за веб-страници</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4194328954146351878">Прашај пред да дозволиш сајтовите да гледаат и менуваат податоци на NFC-уреди (се препорачува)</translation>
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
 <translation id="5403592356182871684">Имиња</translation>
+<translation id="5412236728747081950">Сајтов ги добива вашите интереси од Chrome за да ви прикажува порелевантни реклами</translation>
 <translation id="5438097262470833822">Изборов ќе ги ресетира дозволите за <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај ги рекламите на сајтови што прикажуваат нападни или лажни реклами</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
+<translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>
 <translation id="5677928146339483299">Блокирано</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="5690795753582697420">Камерата е исклучена во поставките за Android</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">Блокирај го читањето текст и слики од привремената меморија за сајтовите</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6965382102122355670">Во ред</translation>
+<translation id="6981982820502123353">Пристапност</translation>
 <translation id="6992289844737586249">Прво прашај пред да дозволиш сајтовите да го користат микрофонот (се препорачува)</translation>
 <translation id="7000754031042624318">Исклучена во поставките за Android</translation>
 <translation id="7016516562562142042">Дозволено за тековниот пребарувач</translation>
+<translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избрана е 1}one{Избрана е #}other{Избрани се #}}</translation>
 <translation id="7087918508125750058">Избрани ставки: <ph name="ITEM_COUNT" />. Достапни се опции во горниот дел од екранот</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">Врската е безбедна</translation>
 <translation id="8249310407154411074">Премести најгоре</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8284326494547611709">Титлови</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>
 <translation id="8324158725704657629">Не прашувај повторно</translation>
 <translation id="8372893542064058268">Дозволи Синхронизација во заднина за одреден сајт.</translation>

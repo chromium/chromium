@@ -150,6 +150,7 @@
 <translation id="1139923033416533844">Mälukasutus</translation>
 <translation id="1140351953533677694">Juurdepääs Bluetoothi ja jadaseadmetele</translation>
 <translation id="114036956334641753">Heli ja subtiitrid</translation>
+<translation id="1142002900084379065">Hiljutised fotod</translation>
 <translation id="1143142264369994168">Sertifikaadi allkirjastaja</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome ei leidnud teie arvutist kahjulikku tarkvara • Kontrolliti 1 minut tagasi}other{Chrome ei leidnud teie arvutist kahjulikku tarkvara • Kontrolliti {NUM_MINS} minutit tagasi}}</translation>
 <translation id="1145593918056169051">Printer on peatunud</translation>
@@ -2385,7 +2386,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3390013585654699824">Rakenduse üksikasjad</translation>
 <translation id="3390741581549395454">Linuxi rakenduste ja failide varundamine õnnestus. Versiooni uuendamine algab peagi.</translation>
 <translation id="3391512812407811893">Privaatsuse liivakasti prooviversioonid</translation>
-<translation id="339178315942519818">Vaadake märguandeid oma seadme <ph name="DEVICE_TYPE" /> vestlusrakendustes</translation>
 <translation id="3393554941209044235">Chrome'i dokumendi analüüs</translation>
 <translation id="3394850431319394743">Lubatud identifikaatorite alusel kaitstud sisu esitada</translation>
 <translation id="3396744558790608201">Tehke paremklikk ning valige käsk „Otsi Google'i Lensiga pilte“, et otsida saidi konkreetset piirkonda ja saada lisateavet visuaalse sisu kohta, mida sirvimisel ja veebis osteldes näete.</translation>
@@ -3419,7 +3419,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4432621511648257259">Parool on vale</translation>
 <translation id="443454694385851356">Pärandversioon (ebaturvaline)</translation>
 <translation id="443475966875174318">Ühildumatute rakenduste värskendamine või eemaldamine</translation>
-<translation id="4435634292635092844">Vaadake oma telefoni kaamera albumi fotosid seadmes <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Läbipaistev</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> saatis teie telefoni märguande. Oma isiku kinnitamiseks puudutage märguannet „<ph name="NOTIFICATIONTITLE" />“ ja järgige juhiseid.</translation>
 <translation id="4441124369922430666">Kas soovite selle rakenduse seadme sisselülitamisel automaatselt käivitada?</translation>
@@ -4914,6 +4913,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6016972670657536680">Valige keele ja klaviatuuri nupp. Praegu on valitud <ph name="LANGUAGE" /> keel.</translation>
 <translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> on teie Chromebookis vaikekonto</translation>
 <translation id="6017514345406065928">Roheline</translation>
+<translation id="6019169947004469866">Kärbi</translation>
 <translation id="6019851026059441029">Suurepärane – HD</translation>
 <translation id="6020431688553761150">Server ei luba teil sellele ressursile juurdepääsu hankida.</translation>
 <translation id="6022526133015258832">Ava täisekraanil</translation>
@@ -4945,6 +4945,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Võite oma lapse Chrome OS-i seadme seadetes need aruanded igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Kui lülitate selle funktsiooni välja, saab seade endiselt saata oluliste teenuste (nagu süsteemivärskendused ja turvalisus) kasutamiseks vajalikku teavet.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Kui teie lapse Google'i kontol on veebi- ja rakendustegevuste seade sisse lülitatud, võidakse teie lapse andmed salvestada tema Google'i kontole. Seadete ja nende kohandamise kohta leiate lisateavet saidilt families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052976518993719690">SSL-i sertimiskeskus</translation>
 <translation id="6053401458108962351">Kustuta &amp;sirvimise andmed...</translation>
 <translation id="6054284857788651331">Hiljuti suletud vahelehtede grupp</translation>
@@ -6498,7 +6499,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7661259717474717992">Luba saitidel küpsisefailide andmeid salvestada ja lugeda</translation>
 <translation id="7661451191293163002">Registreerimise sertifikaati ei õnnestunud hankida.</translation>
 <translation id="7662283695561029522">Puudutage seadistamiseks</translation>
-<translation id="7662419552544645985">Vaadake oma telefoni kaamera albumi fotosid seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="7663719505383602579">Saaja: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Saadaval on klaviatuuri otsetee</translation>
 <translation id="7663859337051362114">eSIM-i profiili lisamine</translation>
@@ -7132,6 +7132,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="827097179112817503">Kuva nupp Avaleht</translation>
 <translation id="8271268254812352141">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi. Kohandage tõlgitavaid keeli jaotises <ph name="LINK_BEGIN" />Veebisaidi keeled<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Vanemad, järgmised toimingud on mõeldud teile. Pärast konto seadistamist saate seadme <ph name="DEVICE_TYPE" /> lapsele tagasi anda.</translation>
+<translation id="8272194309885535896">Laadi kujutis alla</translation>
 <translation id="8272443605911821513">Hallake oma laiendusi, klõpsates menüüs „Rohkem tööriistu” valikul Laiendused.</translation>
 <translation id="8274332263553132018">Faili ülekandmine</translation>
 <translation id="8274921654076766238">Luup järgib klaviatuuri fookust</translation>

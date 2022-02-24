@@ -79,7 +79,6 @@
 <translation id="1406000523432664303">"Не відстежувати"</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1407135791313364759">Відкрити все</translation>
-<translation id="1409426117486808224">Спрощений перегляд відкритих вкладок</translation>
 <translation id="1409879593029778104">Файл <ph name="FILE_NAME" /> не завантажено, оскільки він уже є.</translation>
 <translation id="1414981605391750300">З’єднання з Google. Це може зайняти хвилину…</translation>
 <translation id="1416550906796893042">Версія додатка</translation>
@@ -220,7 +219,6 @@
 <translation id="230155349749732438">Щоб користуватися цією функцією, потрібно ввімкнути параметр <ph name="BEGIN_LINK" />Покращувати пошук і веб-перегляд<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
-<translation id="2321958826496381788">Перетягуйте повзунок, доки розмір тексту не стане зручним для читання. Якщо двічі торкнутись абзацу, розмір тексту має стати принаймні таким, як цей.</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
 <translation id="2328985652426384049">Не вдається ввійти</translation>
 <translation id="234265804618409743">Не вдається відкрити камеру. Помилка.</translation>
@@ -230,7 +228,6 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2369533728426058518">відкриті вкладки</translation>
 <translation id="2386938421315164605">Ховайте й показуйте теми</translation>
-<translation id="2387895666653383613">Масштаб тексту</translation>
 <translation id="2390510615457643724">Завантажити файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) знову?</translation>
 <translation id="2394602618534698961">Завантажені файли з’являться тут</translation>
 <translation id="2407481962792080328">Ця функція вмикається, коли ви входите в обліковий запис Google</translation>
@@ -267,7 +264,6 @@
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
 <translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
 <translation id="2549516196460093976">Ви можете використовувати цей планшет, щоб входити на комп’ютері, де відображається цей QR-код.</translation>
-<translation id="2558692642259318568">Увімкніть анонімний режим, якщо не хочете зберігати історію активності на пристрої</translation>
 <translation id="2561519700418191927">Анімовані значки відео</translation>
 <translation id="2567385386134582609">ЗОБРАЖЕННЯ</translation>
 <translation id="2567545343356994513">Швидший активний захист від небезпечних веб-сайтів, завантажень і розширень</translation>
@@ -488,7 +484,6 @@
 <translation id="3861633093716975811">Популярні відео</translation>
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3894427358181296146">Додати папку</translation>
-<translation id="3895926599014793903">Примусово ввімкнути масштабування</translation>
 <translation id="3899682235662194879">Закрити всі анонімні вкладки</translation>
 <translation id="3908308510347173149">Оновити сервіс <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Шукаємо найкраще в Інтернеті…</translation>
@@ -529,7 +524,6 @@
 <translation id="4135200667068010335">Список пристроїв, на які можна надіслати вкладку, закрито.</translation>
 <translation id="4137746084635924146">Поточна мова пристрою</translation>
 <translation id="4141536112466364990">Ознайомтеся з Chrome</translation>
-<translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4162867837470729563">Список параметрів спільного доступу відкрито на всю висоту.</translation>
 <translation id="4165986682804962316">Налаштування сайту</translation>
 <translation id="4170011742729630528">Служба не доступна. Повторіть спробу пізніше.</translation>
@@ -781,7 +775,6 @@
 <translation id="5655963694829536461">Пошук у завантаженнях</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5665379678064389456">Створити подію в додатку <ph name="APP_NAME" /></translation>
-<translation id="5668404140385795438">Відхиляти запит веб-сайту, щоб забороняти масштабування</translation>
 <translation id="5683547024293500885">Chrome не може перевірити наявність оновлень</translation>
 <translation id="5686790454216892815">Назва файлу задовга</translation>
 <translation id="569536719314091526">Перекладіть цю сторінку будь-якою мовою, натиснувши кнопку "Більше опцій"</translation>
@@ -1031,13 +1024,11 @@
 <translation id="6963766334940102469">Видалити закладки</translation>
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
 <translation id="6979737339423435258">Увесь час</translation>
-<translation id="6981982820502123353">Спеціальні можливості</translation>
 <translation id="6987047470128880212">Анонімний режим недоступний на цьому пристрої</translation>
 <translation id="6995899638241819463">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="7001056293070445572">Цей файл великий (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Додати в список читання <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Відкрити у веб-переглядачі</translation>
-<translation id="702463548815491781">Рекомендується, коли ввімкнено TalkBack або кнопковий доступ</translation>
 <translation id="7027549951530753705">Відновлено об'єкт "<ph name="ITEM_TITLE" />"</translation>
 <translation id="7029390216614421513">Розмістіть QR-код або штрих-код у цій рамці</translation>
 <translation id="7029809446516969842">Паролі</translation>
@@ -1272,7 +1263,6 @@
 <translation id="8274165955039650276">Переглянути завантаження</translation>
 <translation id="8281886186245836920">Пропустити</translation>
 <translation id="8282297628636750033">Застосовувати темну тему для сайтів</translation>
-<translation id="8284326494547611709">Субтитри</translation>
 <translation id="829672787777123339">Підключення до пристрою…</translation>
 <translation id="8310344678080805313">Стандартні вкладки</translation>
 <translation id="831192587911042850">Поточний веб-сайт буде додано до списку тих, на які ви підписалися.</translation>

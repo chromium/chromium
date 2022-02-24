@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हो रहा है (<ph name="PERCENTAGE_VALUE" />% हो गया)</translation>
 <translation id="1310380015393971138">कोई भी <ph name="NETWORK_NAME" /> नेटवर्क मौजूद नहीं है</translation>
+<translation id="131421566576084655">आखिरी बार डेटा किस तारीख को रीसेट किया गया था, इसकी जानकारी उपलब्ध नहीं है</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">होम नेटवर्क, रोमिंग नहीं</translation>
 <translation id="1327977588028644528">गेटवे</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मेरे पास कुंजी का जोड़ा है</translation>
+<translation id="1435763214710588005">हर महीने, चुनी गई तारीख को डेटा के इस्तेमाल की जानकारी अपने-आप रीसेट हो जाती है</translation>
 <translation id="1442433966118452622">इमेज का सोर्स</translation>
 <translation id="1451536289672181509">डिवाइस एक कीबोर्ड है.</translation>
 <translation id="1459693405370120464">मौसम</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> को अपडेट नहीं किया जा सकता</translation>
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
 <translation id="1639239467298939599">लोड हो रहा है</translation>
 <translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">एचटीटीपी फ़ायरवॉल</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">पक्का करें कि स्कैनर चालू हो और आपके नेटवर्क या डायरेक्ट कनेक्शन के ज़रिए उपलब्ध हो</translation>
+<translation id="4170180284036919717">फ़ोटो लें</translation>
 <translation id="4170700058716978431">असफल</translation>
 <translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4213104098953699324">यूएसबी कीबोर्ड</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="594552776027197022">रैंडम कुंजी के जोड़े बनाएं</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">हर महीने के लिए, अपने-आप रीसेट होने की सुविधा चालू करें</translation>
 <translation id="6037291330010597344">स्कैनर का डॉक्यूमेंट फ़ीडर खाली है. डॉक्यूमेंट जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6040852767465482106">अनाम पहचान</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोई भी स्कैनर उपलब्ध नहीं है</translation>
 <translation id="6232017090690406397">बैटरी</translation>
+<translation id="6235460611964961764">डेटा के इस्तेमाल की जानकारी को मैन्युअल तरीके से रीसेट करें</translation>
 <translation id="6243280677745499710">इस समय सेट है</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">प्रिंट नहीं हो पाया - ट्रे मौजूद नहीं है</translation>
+<translation id="8923267550422472772">रीसेट करने के लिए महीने की तारीख</translation>
 <translation id="8928727111548978589">प्रिंट नहीं हो पाया - काग़ज़ खत्म हो गया</translation>
 <translation id="8930521118335213258">पीयर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>

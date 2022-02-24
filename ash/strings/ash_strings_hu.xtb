@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">Képernyőkép készítése</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Javaslat eltávolítása</translation>
+<translation id="3120421559657122717">Leállítja az eszközt?</translation>
 <translation id="3126069444801937830">Indítsa újra a frissítéshez</translation>
 <translation id="3139942575505304791">1. asztal</translation>
 <translation id="315116470104423982">Mobiladatok</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">A(z) „<ph name="WINDOW_TITLE" />” ablak át lett helyezve a(z) „<ph name="ACTIVE_DESK" />” asztalról a(z) „<ph name="TARGET_DESK" />” asztalra</translation>
 <translation id="3255483164551725916">Mit lehet csinálni?</translation>
 <translation id="3269597722229482060">Kattintás jobb egérgombbal</translation>
+<translation id="3289544412142055976">A Linux-alkalmazások jelenleg nem támogatottak.</translation>
 <translation id="3289674678944039601">Töltés adapteren keresztül…</translation>
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3294437725009624529">Vendég</translation>
@@ -698,6 +700,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5400461572260843123">Gyorsbeállítások, az értesítési központ megnyitásához nyomja meg a Keresés + balra nyíl billentyűkombinációt.</translation>
 <translation id="5426063383988017631">Beállítások menü bezárva</translation>
 <translation id="5428899915242071344">Kijelölés indítása</translation>
+<translation id="5429993543155113935">Az inkognitó ablakok jelenleg nem támogatottak.</translation>
 <translation id="5430931332414098647">Azonnali internetmegosztás</translation>
 <translation id="5431318178759467895">Színes</translation>
 <translation id="5433020815079095860">Audiobemenet</translation>
@@ -811,6 +814,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6166852626429024716">Kereshet az eszközén, az alkalmazások és a beállítások között, az interneten…</translation>
 <translation id="6179832488876878285">Ide kitűzheti a fontos fájlokat. A kezdéshez nyissa meg a Fájlok alkalmazást.</translation>
+<translation id="6220928844947387476">Mostantól egyszerre veheti fel magát és képernyőjét</translation>
 <translation id="622484624075952240">Le</translation>
 <translation id="6231419273573514727">Korlátozott lehet a perifériás teljesítmény</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -837,6 +841,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6431865393913628856">Képernyőrögzítés</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> itt: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
+<translation id="6449483711453944360">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak.</translation>
 <translation id="6452181791372256707">Elutasítás</translation>
 <translation id="6453179446719226835">A nyelv módosult</translation>
 <translation id="6459472438155181876">Képernyő kiterjesztése erre: <ph name="DISPLAY_NAME" /></translation>
@@ -935,6 +940,7 @@ Frissen telepítve</translation>
 <translation id="7025533177575372252">A(z) <ph name="DEVICE_NAME" /> eszköz csatlakoztatása a telefonjával</translation>
 <translation id="7026338066939101231">Csökkentés</translation>
 <translation id="7029814467594812963">Kilépés</translation>
+<translation id="7032161822340700104">Csak hat sablon engedélyezett. Távolítsa el valamelyiket, ha új sablont szeretne menteni.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Segéd</translation>
 <translation id="7042322267639375032">Állapotsor összecsukása</translation>
 <translation id="7045033600005038336">Lecseréli a sablont?</translation>
@@ -1238,6 +1244,7 @@ Frissen telepítve</translation>
 <translation id="9000771174482730261">TÁRHELY KEZELÉSE</translation>
 <translation id="9017320285115481645">Adja meg a Family Link szülői hozzáférési kódját.</translation>
 <translation id="9024331582947483881">teljes képernyő</translation>
+<translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
 <translation id="9059834730836941392">Értesítés összecsukása</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>

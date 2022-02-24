@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Ustawienia monitorowania cen</translation>
 <translation id="1378979118429748177">Otrzymuj powiadomienia o obniżkach cen</translation>
 <translation id="1403228085774130835">Zamknięte karty znajdziesz w sekcji Ostatnie karty w menu głównym Chrome</translation>
+<translation id="1455506303394048917">Twoja aktywność na tych kartach incognito zostanie usunięta z tego urządzenia</translation>
+<translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1657719826150349398">Przesuń kartę w dół</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="2118649612461486615">Informacje o sklepie</translation>

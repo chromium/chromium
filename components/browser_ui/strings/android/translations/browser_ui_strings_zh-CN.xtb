@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384959399684842514">已暂停下载</translation>
+<translation id="1409426117486808224">使用简化版视图查看打开的标签页</translation>
 <translation id="1415402041810619267">网址被截断了</translation>
 <translation id="1446450296470737166">允许全面控制 MIDI 设备</translation>
 <translation id="1620510694547887537">摄像头</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228">移除“<ph name="NAME_OF_LIST_ITEM" />”</translation>
 <translation id="2289270750774289114">在网站想发现附近的蓝牙设备时询问您（推荐）</translation>
 <translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
+<translation id="2321958826496381788">拖动该滑块，将文字调整到适合您阅读的大小。点按两次某段落后，显示的文字至少应是这么大。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2379925928934107488">当 Chrome 使用深色主题时，尽可能对网站应用深色主题</translation>
+<translation id="2387895666653383613">文字大小</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="2434158240863470628">下载完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">您的设备使用情况</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">前进</translation>
+<translation id="3895926599014793903">强制启用缩放功能</translation>
 <translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3987993985790029246">复制链接</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">标题</translation>
 <translation id="4008040567710660924">允许特定网站使用 Cookie。</translation>
 <translation id="4046123991198612571">下一曲</translation>
+<translation id="4149994727733219643">使用简化版视图查看网页</translation>
 <translation id="4165986682804962316">网站设置</translation>
 <translation id="4194328954146351878">需先询问，得到许可后才允许网站查看和更改 NFC 设备上的信息（推荐）</translation>
 <translation id="4200726100658658164">打开位置信息设置</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5649053991847567735">自动下载项</translation>
+<translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
 <translation id="5677928146339483299">已禁止</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6981982820502123353">无障碍</translation>
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="7016516562562142042">允许当前搜索引擎使用</translation>
+<translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
 <translation id="7087918508125750058">已选择 <ph name="ITEM_COUNT" /> 项。选项位于屏幕顶部附近</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">连接是安全的</translation>
 <translation id="8249310407154411074">移至顶部</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由应用管理</translation>
 <translation id="8324158725704657629">别再询问</translation>
 <translation id="8372893542064058268">允许特定网站进行后台同步。</translation>

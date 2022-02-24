@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
 <translation id="1310380015393971138">Боломжтой <ph name="NETWORK_NAME" /> сүлжээ байхгүй байна</translation>
+<translation id="131421566576084655">Сүүлийн дата шинэчлэлтийн огноо боломжгүй байна</translation>
 <translation id="1314565355471455267">Андройд VPN</translation>
 <translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
 <translation id="1327977588028644528">Гэйтвэй</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
+<translation id="1435763214710588005">Дата ашиглалтыг сонгосон өдөр сар бүр автоматаар шинэчилнэ</translation>
 <translation id="1442433966118452622">Зургийн эх сурвалж</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />-г шинэчлэх боломжгүй</translation>
 <translation id="1567064801249837505">Цомог</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
+<translation id="4170180284036919717">Зураг авах</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
 <translation id="4213104098953699324">USB гар</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
+<translation id="6034694447310538551">Сар тутмын автомат шинэчлэлтийг идэвхжүүлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6040852767465482106">Нэрээ нууцалсан байдал</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Боломжтой сканнер байхгүй</translation>
 <translation id="6232017090690406397">Баттерей</translation>
+<translation id="6235460611964961764">Дата ашиглалтыг гар аргаар шинэчлэх</translation>
 <translation id="6243280677745499710">Одоогийн тохируулсан дэлгэцийн зураг</translation>
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
+<translation id="8923267550422472772">Шинэчлэх сарын өдөр</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
 <translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>

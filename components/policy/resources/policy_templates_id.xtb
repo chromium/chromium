@@ -3292,33 +3292,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="475479145997699293">Jika kebijakan disetel ke <ph name="ASK_FILE_HANDLING" />, aplikasi web akan dapat meminta akses ke berbagai jenis file melalui File Handling API. Jika kebijakan disetel ke <ph name="BLOCK_FILE_HANDLING" />, aplikasi web akan dilarang mengakses berbagai jenis file.
 
       Jika kebijakan tidak disetel, aplikasi web akan dapat meminta akses, tetapi pengguna dapat mengubah setelan ini.</translation>
-<translation id="4755492101519343259">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
-      Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
-
-      Setiap aturan terdiri dari hal-hal berikut:
-      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Batasan akan diterapkan terhadap data tersebut.
-      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
-      - Daftar batasan yang akan diterapkan pada data sumber.
-
-      Aturan dapat ditambahkan untuk:
-      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
-      - Mengontrol pengambilan screenshot dari sumber mana pun.
-      - Mengontrol pencetakan dari sumber mana pun.
-      - Mengontrol layar privasi saat sumber mana pun terlihat.
-      - Mengontrol berbagi layar dari sumber mana pun.
-
-      Level batasan dapat disetel ke BLOCK, ALLOW, REPORT, atau WARN.
-      - Jika level batasan disetel ke BLOCK, tindakan tidak akan diizinkan. Jika <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), tindakan yang diblokir akan dilaporkan ke admin.
-      - Jika level batasan disetel ke ALLOW, tindakan akan diizinkan.
-      - Jika level batasan disetel ke REPORT dan <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), tindakan akan dilaporkan ke admin.
-      - Jika level batasan disetel ke WARN, pengguna akan diberi peringatan dan dapat memilih untuk membatalkan atau melanjutkan tindakan. Jika <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), peristiwa menampilkan peringatan akan dilaporkan ke admin; peristiwa melanjutkan tindakan juga akan dilaporkan ke admin.
-
-      Catatan:
-      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
-      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi tujuan tidak berpengaruh pada batasan lainnya.
-      - Format pola URL sesuai dengan format ini ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
-
-      Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="4757053978738874325">Mengaktifkan fitur aksesibilitas audio mono.
 
           Fitur ini berfungsi untuk mengeluarkan audio stereo yang menyertakan saluran yang berbeda pada kiri dan kanan sehingga setiap telinga dapat mendengarkan suara yang berbeda.

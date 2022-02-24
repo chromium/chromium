@@ -148,6 +148,7 @@
 <translation id="1139923033416533844">Využitie pamäte</translation>
 <translation id="1140351953533677694">Mať prístup k zariadeniam pripojeným cez Bluetooth a sériový port</translation>
 <translation id="114036956334641753">Zvuk a titulky</translation>
+<translation id="1142002900084379065">Najnovšie fotky</translation>
 <translation id="1143142264369994168">Podpisovateľ certifikátu</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred 1 minútou}few{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_MINS} minútami}many{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_MINS} minúty}other{Chrome nenašiel vo vašom počítači škodlivý softvér • skontrolované pred {NUM_MINS} minútami}}</translation>
 <translation id="1145593918056169051">Tlačiareň sa zastavila</translation>
@@ -2381,7 +2382,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3390013585654699824">Podrobnosti o aplikácii</translation>
 <translation id="3390741581549395454">Aplikácie a súbory systému Linux boli úspešne zálohované. Inovácia sa čoskoro začne.</translation>
 <translation id="3391512812407811893">Skúšobné verzie Privacy Sandbox</translation>
-<translation id="339178315942519818">Zobrazte si upozornenia z četových aplikácií v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Analýza dokumentov Chromu</translation>
 <translation id="3394850431319394743">Prehrávanie chráneného obsahu pomocou identifikátorov je povolené</translation>
 <translation id="3396744558790608201">Ak chcete vyhľadať ktorýkoľvek región webu a dozvedieť sa viac o vizuálnom obsahu, ktorý sa zobrazuje pri prehliadaní tohto webu a nakupovaní na ňom, kliknite pravým tlačidlom a vyberte Vyhľadať časť stránky pomocou funkcie Google Lens.</translation>
@@ -3415,7 +3415,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4432621511648257259">Heslo je nesprávne</translation>
 <translation id="443454694385851356">Staré (nezabezpečené)</translation>
 <translation id="443475966875174318">Aktualizácia a odstránenie nekompatibilných aplikácií</translation>
-<translation id="4435634292635092844">Pozrite si fotky zo snímok svojho telefónu v zariadení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Priehľadné</translation>
 <translation id="4440097423000553826">Z webu <ph name="WEBSITE" /> bolo odoslané upozornenie do vášho telefónu. Ak chcete potvrdiť svoju totožnosť, klepnite na upozornenie <ph name="NOTIFICATIONTITLE" /> a postupujte podľa pokynov.</translation>
 <translation id="4441124369922430666">Chcete automaticky spustiť túto aplikáciu po zapnutí zariadenia?</translation>
@@ -4910,6 +4909,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6016972670657536680">Tlačidlo pre výber jazyka a klávesnice. Aktuálne je vybratý jazyk <ph name="LANGUAGE" />.</translation>
 <translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> je predvolený účet vo vašom Chromebooku</translation>
 <translation id="6017514345406065928">Zelená</translation>
+<translation id="6019169947004469866">Orezať</translation>
 <translation id="6019851026059441029">Výborná – HD</translation>
 <translation id="6020431688553761150">Server vám neudelil autorizáciu na používanie tohto zdroja.</translation>
 <translation id="6022526133015258832">Otvoriť v režime celej obrazovky</translation>
@@ -4941,6 +4941,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Tieto hlásenia môžete kedykoľvek začať alebo prestať povoľovať v nastaveniach zariadenia so systémom Chrome OS svojho dieťaťa. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Vypnutím tejto funkcie neovplyvníte schopnosť tohto zariadenia odosielať informácie potrebné na fungovanie základných služieb, ako sú aktualizácie systému a zabezpečenie.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ak zapnete nastavenie Aktivita na internete a v aplikáciách pre účet Google svojho dieťaťa, údaje dieťaťa sa môžu ukladať do jeho účtu Google. Viac o týchto nastaveniach a o tom, ako ich upraviť, sa dozviete na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052976518993719690">Certifikačná autorita SSL</translation>
 <translation id="6053401458108962351">&amp;Vymazať dáta prehliadania…</translation>
 <translation id="6054284857788651331">Nedávno zavretá skupina kariet</translation>
@@ -6494,7 +6495,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7661259717474717992">Povoliť webom ukladať a čítať súbory cookie</translation>
 <translation id="7661451191293163002">Registračný certifikát sa nepodarilo získať.</translation>
 <translation id="7662283695561029522">Klepnutím spustíte konfiguráciu</translation>
-<translation id="7662419552544645985">Pozrite si fotky zo snímok svojho telefónu v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7663719505383602579">Prijímač: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">K dispozícii je klávesová skratka</translation>
 <translation id="7663859337051362114">Pridať profil eSIM</translation>
@@ -7127,6 +7127,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="827097179112817503">Zobrazovať tlačidlo domovskej stránky</translation>
 <translation id="8271268254812352141">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu. Jazyky prekladu si prispôsobíte v sekcii <ph name="LINK_BEGIN" />Jazyky webu<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Nasledujúce kroky sú určené pre rodičov. Po založení účtu môžete zariadenie <ph name="DEVICE_TYPE" /> vrátiť dieťaťu.</translation>
+<translation id="8272194309885535896">Stiahnuť obrázok</translation>
 <translation id="8272443605911821513">Ak chcete spravovať rozšírenia, kliknite v ponuke Ďalšie nástroje na možnosť Rozšírenia.</translation>
 <translation id="8274332263553132018">Prenášať súbor</translation>
 <translation id="8274921654076766238">Lupa sleduje výber klávesnice</translation>

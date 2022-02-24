@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">価格トラッキングの設定</translation>
 <translation id="1378979118429748177">値下げがあった場合に通知されます</translation>
 <translation id="1403228085774130835">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます</translation>
+<translation id="1455506303394048917">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
+<translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="2118649612461486615">ストア情報</translation>

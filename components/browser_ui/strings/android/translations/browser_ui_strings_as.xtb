@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">ছাইট <ph name="SITE_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ডাইনল’ড পজ কৰা হৈছে</translation>
+<translation id="1409426117486808224">খোলা টেবৰ বাবে সৰলীকৃত ভিউ</translation>
 <translation id="1415402041810619267">URL চুটি কৰা হ’ল</translation>
 <translation id="1446450296470737166">MIDI ডিভাইচৰ সম্পূর্ণ নিয়ন্ত্ৰণৰ অনুমতি দিয়া</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> আঁতৰাওক</translation>
 <translation id="2289270750774289114">কোনো ছাইটে নিকটৱৰ্তী ডিভাইচ ব্লুটুথ ডিভাইচসমূহ পাব বিচাৰিলে সোধক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="2315043854645842844">অপাৰেটিং ছিষ্টেমটোৱে ক্লায়েণ্টৰ ফালৰ প্ৰমাণপত্ৰ বাছনি কৰা সুবিধাটো সমৰ্থন নকৰে।</translation>
+<translation id="2321958826496381788">আপুনি এইখিনি অনায়সে পঢ়িব নোৱাৰালৈকে স্লাইডাৰটো টানক। কোনো পেৰেগ্ৰাফত দুবাৰ টিপিলে পাঠখিনি অতি কমেও ইমানখিনি ডাঙৰ দেখা হ'ব লাগে।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2379925928934107488">সম্ভৱ হ’লে, Chromeএ গাঢ় ৰঙৰ থীম ব্যৱহাৰ কৰাৰ সময়ত ছাইটত গাঢ় ৰঙৰ থীম প্ৰয়োগ কৰক</translation>
+<translation id="2387895666653383613">পাঠ মিলোৱা কাৰ্য</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এম. বি.</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
 <translation id="2434158240863470628">ডাউনল’ড সম্পূর্ণ হৈছে <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3859306556332390985">আগলৈ যাওক</translation>
+<translation id="3895926599014793903">বলেৰে জুম সক্ষম কৰক</translation>
 <translation id="3955193568934677022">ছাইটসমূহক সুৰক্ষিত সমল প্লে’ কৰিবলৈ অনুমতি দিয়ক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4008040567710660924">কোনো নিৰ্দিষ্ট ছাইটৰ বাবে কুকিসমূহক অনুমতি দিয়ক।</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
+<translation id="4149994727733219643">ৱেবপৃষ্ঠাৰ বাবে সৰলকৰণ কৰা ভিউ</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
 <translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5649053991847567735">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
+<translation id="5668404140385795438">ৱেবছাইটোৱে জুম ইনৰ ক্ষেত্ৰত বাধা দিবলৈ কৰা অনুৰোধ অ’ভাৰৰাইড কৰে</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
 <translation id="5689516760719285838">অৱস্থান</translation>
 <translation id="5690795753582697420">Android ছেটিংসমূহত কেমেৰাটো অফ কৰা হ’ল</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">ছাইটসমূহৰ ক্লিপব’ৰ্ডৰ পাঠ আৰু ছবি পঢ়াৰ সুবিধা অৱৰোধ কৰক</translation>
 <translation id="6945221475159498467">বাছনি কৰক</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
 <translation id="6992289844737586249">ছাইটসমূহে আপোনাৰ ডিভাইচৰ মাইক্ৰফ'ন ব্যৱহাৰ কৰাৰ পূর্বে অনুমতি ল'বলৈ দিয়ক (এয়া চুপাৰিছ কৰা হয়)</translation>
 <translation id="7000754031042624318">Androidৰ ছেটিংসমূহত অফ কৰা আছে</translation>
 <translation id="7016516562562142042">বৰ্তমানৰ সন্ধান ইঞ্জিনৰ বাবে অনুমোদন জনোৱা হৈছে</translation>
+<translation id="702463548815491781">টকবেক বা ছুইচৰ দ্বাৰা ব্যৱহাৰ কৰা অনুমতি অন থকা অৱস্থান এয়া চুপাৰিছ কৰা হয়</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{১টা বস্তু বাছনি কৰা হ’ল}one{#টা বস্তু বাছনি কৰা হ’ল}other{#টা বস্তু বাছনি কৰা হ’ল}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />টা বাছনি কৰা হ’ল।  স্ক্ৰীণৰ ওপৰৰ অংশত কাষত থকা বিকল্পসমূহ</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">সংযোগটো নিৰাপদ</translation>
 <translation id="8249310407154411074">শীৰ্ষলৈ নিয়ক</translation>
 <translation id="8261506727792406068">মচক</translation>
+<translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="8300705686683892304">এপৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8324158725704657629">পুনৰ নুসুধিব</translation>
 <translation id="8372893542064058268">কোনো নির্দিষ্ট ছাইটৰ বাবে নেপথ্যত ছিংক কৰাৰ অনুমতি দিয়ক।</translation>

@@ -107,6 +107,7 @@
     Google Home ऐप्लिकेशन<ph name="END_LINK" /> में अपना Chromecast देख पा रहे हैं?</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> से इमेज कॉपी की गई</translation>
 <translation id="1100504063505580045">मौजूदा आइकॉन</translation>
+<translation id="1102790815296970136">"<ph name="PERSONALIZED_MEMORY_TITLE" />" और दूसरी यादें यहां देखें</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1108600514891325577">&amp;रोकें</translation>
 <translation id="1108938384783527433">इतिहास सिंक करें</translation>
@@ -150,6 +151,7 @@
 <translation id="1139923033416533844">स्टोरेज का इस्तेमाल</translation>
 <translation id="1140351953533677694">अपने ब्लूटूथ और Serial डिवाइस एक्सेस करें</translation>
 <translation id="114036956334641753">ऑडियो और कैप्शन</translation>
+<translation id="1142002900084379065">हाल ही के फ़ोटो</translation>
 <translation id="1143142264369994168">प्रमाणपत्र हस्ताक्षरकर्ता</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 मिनट पहले जांच की गई}one{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_MINS} मिनट पहले जांच की गई}other{Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • {NUM_MINS} मिनट पहले जांच की गई}}</translation>
 <translation id="1145593918056169051">प्रिंटर बंद हो गया है</translation>
@@ -163,6 +165,7 @@
 <translation id="1150490752229770117">इस <ph name="DEVICE_TYPE" /> के लिए अपने-आप होने वाला यह आखिरी साॅफ़्टवेयर और सुरक्षा अपडेट था. आने वाले समय में अपडेट पाने के लिए, नए माॅडल पर अपग्रेड करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">धूप के चश्मे</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> को सेंसर ऐक्सेस करने की हमेशा मंज़ूरी दें</translation>
+<translation id="1152181876167086799">सभी एक्सटेंशन को, <ph name="SITE_NAME" /> पढ़ने और उसे बदलने की अनुमति दें</translation>
 <translation id="1152346050262092795">अपने खाते की पुष्टि करने के लिए, फिर से पासवर्ड डालें.</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
 <translation id="1153636665119721804">Google बेहतर सुरक्षा कार्यक्रम</translation>
@@ -264,6 +267,7 @@
 <translation id="125220115284141797">डिफ़ॉल्ट</translation>
 <translation id="1252987234827889034">प्रोफ़ाइल संबंधी गड़बड़ी हुई</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
+<translation id="1258144502260926473">आपके कंप्यूटर में एक ऐसा सुरक्षित मॉड्यूल है जिसे CloudReady 2.0 की सुरक्षा से जुड़ी कई अहम सुविधाओं को लागू करने में इस्तेमाल किया जाता है. ज़्यादा जानने के लिए Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="1258491128795710625">नया क्या है</translation>
 <translation id="1259152067760398571">कल सुरक्षा जांच हुई थी</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> से हमेशा पॉप-अप और रीडायरेक्ट की अनुमति दें</translation>
@@ -448,6 +452,9 @@
 <translation id="1442851588227551435">चालू Kerberos टिकट सेट करें</translation>
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
 <translation id="144518587530125858">थीम के लिए '<ph name="IMAGE_PATH" />' को लोड नहीं कर सका.</translation>
+<translation id="1448264954024227422">इस खाते का इस्तेमाल Android ऐप्लिकेशन के साथ किया जा सकता है. अगर आपको किसी और के लिए कोई खाता जोड़ना है, तो अपने <ph name="DEVICE_TYPE" /> में <ph name="LINK_BEGIN" /> एक नया व्यक्ति जोड़ें<ph name="LINK_END" />.
+
+आपने ऐप्लिकेशन को जो अनुमतियां पहले से ही दी हुई हैं वे इस खाते पर लागू हो सकती हैं. <ph name="APPS_LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="APPS_LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
 <translation id="1449191289887455076">“<ph name="CURRENTKEY" />” को स्विच के तौर पर असाइन करने की पुष्टि करने के लिए, इसे फिर से दबाएं और <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">वेबपेज, एकल फ़ाइल</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />
@@ -485,6 +492,7 @@
 <translation id="1481537595330271162">डिस्क का साइज़ बदलते समय गड़बड़ी हुई</translation>
 <translation id="1482626744466814421">इस टैब को बुकमार्क करें...</translation>
 <translation id="1483493594462132177">भेजें</translation>
+<translation id="1484599694148543901">क्या आपको CloudReady 2.0 के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है?</translation>
 <translation id="1484979925941077974">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="1485015260175968628">यह अब निम्न कर सकता है:</translation>
 <translation id="1485141095922496924">वर्शन <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -667,6 +675,7 @@
 <translation id="1644852018355792105"><ph name="DEVICE" /> डिवाइस के लिए ब्लूटूथ पासवर्ड डालें</translation>
 <translation id="1645516838734033527">आपके <ph name="DEVICE_TYPE" /> को सुरक्षित बनाए रखने के लिए, Smart Lock को आपके फ़ोन पर स्क्रीन लॉक की ज़रूरत होती है.</translation>
 <translation id="1646982517418478057">कृपया इस प्रमाणपत्र को सुरक्षित करने के लिए पासवर्ड डालें</translation>
+<translation id="1647408325348388858">क्या <ph name="FILE_NAME" /> को इस वेब ऐप्लिकेशन में खोलकर उसमें बदलाव करना है?</translation>
 <translation id="1648528859488547844">स्थान तय करने के लिए वाई-फ़ाई या मोबाइल नेटवर्क का इस्तेमाल करें</translation>
 <translation id="164936512206786300">ब्लूटूथ डिवाइस से जुड़ा हुआ डिवाइस हटाएं</translation>
 <translation id="1651008383952180276">आपको एक ही 'पासफ़्रेज़' दो बार डालना होगा</translation>
@@ -1033,6 +1042,7 @@
 <translation id="2003130567827682533">'<ph name="NAME" />' डेटा चालू करने के लिए, सबसे पहले किसी वाई-फ़ाई नेटवर्क से जुड़ें</translation>
 <translation id="2004697686368036666">हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें</translation>
 <translation id="2005199804247617997">अन्य प्रोफ़ाइलें</translation>
+<translation id="2005967212456643969">हर एक्सटेंशन के हिसाब से अनुमतियां तय करें</translation>
 <translation id="2006638907958895361"><ph name="APP" /> में लिंक खोलें</translation>
 <translation id="2007404777272201486">किसी समस्या की रिपोर्ट करें...</translation>
 <translation id="2010501376126504057">इसके साथ काम करने वाले डिवाइस</translation>
@@ -1134,6 +1144,7 @@
 <translation id="2113921862428609753">अथॉरिटी इनफार्मेशन एक्सेस</translation>
 <translation id="2114326799768592691">फ़्रेम को फिर से लोड करें</translation>
 <translation id="2114413269775311385">Android ऐप्लिकेशन के साथ इस खाते का इस्तेमाल करें. <ph name="LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
+<translation id="2114820389966440614">"हाल की बेहतरीन फ़ोटो" और दूसरी यादें यहां देखें</translation>
 <translation id="2114896190328250491"><ph name="NAME" /> की फ़ोटो</translation>
 <translation id="2114995631896158695">कोई सिम कार्ड नहीं डाला गया</translation>
 <translation id="2116619964159595185">आम तौर पर साइटें, कम ऊर्जा वाले बीकन, हेल्थ या फ़िटनेस ट्रैकर या स्मार्ट लाइट बल्ब को सेट अप या सिंक करने जैसी सुविधाओं के लिए ब्लूटूथ डिवाइसों से कनेक्ट करती हैं</translation>
@@ -1372,6 +1383,7 @@
 <translation id="2326188115274135041">अपने-आप अनलॉक होने की सुविधा चालू करने के लिए, पिन की पुष्टि करें</translation>
 <translation id="2326931316514688470">और ऐप्लिकेशन रीलोड करें</translation>
 <translation id="2327492829706409234">ऐप्लिकेशन चालू करें</translation>
+<translation id="2327920026543055248"><ph name="TOTAL" /> में से <ph name="CHARACTER" /> वर्ण डालें</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> का इस्तेमाल करने के लिए, कृपया अपने डिवाइस को रीस्टार्ट करें.</translation>
 <translation id="2328636661627946415">गुप्त मोड में ब्राउज़ करने पर साइटें, कुकी का इस्तेमाल सिर्फ़ अपनी साइट पर आपकी ब्राउज़िंग गतिविधि देखने के लिए कर सकती हैं. गुप्त मोड वाला सेशन खत्म होने पर कुकी अपने-आप मिट जाती हैं.</translation>
 <translation id="2329597144923131178">अपने सभी डिवाइस पर बुकमार्क, इतिहास, पासवर्ड और दूसरी तरह की सेटिंग पाने के लिए साइन इन करें</translation>
@@ -1840,6 +1852,7 @@
 <translation id="2791952154587244007">एक गड़बड़ी हुई. किओस्क ऐप्लिकेशन इस डिवाइस परअपने-आपलॉन्च नहीं हो सकेंगे.</translation>
 <translation id="2792290659606763004">क्या Android ऐप्लिकेशन निकालना है?</translation>
 <translation id="2792465461386711506">अपने फ़ोन में Chrome पर हाल ही में खोले गए टैब देखने के लिए, Chrome सिंक की सुविधा चालू करें</translation>
+<translation id="2792697226874849938">पाबंदी से जुड़ी इमेज</translation>
 <translation id="2794233252405721443">साइट अवरोधित है</translation>
 <translation id="2794522004398861033">ई-सिम सेट अप करने के लिए, वाई-फ़ाई या ईथरनेट से कनेक्ट करें</translation>
 <translation id="2795716239552913152">आम तौर पर, साइटें, काम की सुविधाओं या जानकारी के लिए, आपकी जगह की जानकारी का इस्तेमाल करती हैं. जैसे कि स्थानीय समाचार या आस-पास की दुकानें</translation>
@@ -2068,6 +2081,7 @@
 <translation id="3012804260437125868">केवल समान-साइट कनेक्शन को सुरक्षित बनाएं</translation>
 <translation id="3012917896646559015">अपने कंप्यूटर को सुधार सुविधा केंद्र पर भेजने के लिए कृपया तत्काल अपने हार्डवेयर निर्माता से संपर्क करें.</translation>
 <translation id="301525898020410885">भाषा को आपका संगठन सेट करता है</translation>
+<translation id="3015425363367310551">क्या आपको CloudReady 2.0 के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है? अगर हां, तो दोनों आवाज़ बटन पांच सेकंड तक दबाकर रखें.</translation>
 <translation id="3015639418649705390">अभी फिर से लॉन्च करें</translation>
 <translation id="3016381065346027039">कोई लॉग एंट्री नहीं है</translation>
 <translation id="3016641847947582299">घटक अपडेट किया गया</translation>
@@ -2098,6 +2112,7 @@
 <translation id="3039491566278747710">डिवाइस पर ऑफ़लाइन नीति इंस्टॉल नहीं की जा सकी.</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> से</translation>
+<translation id="304499331062371949">किसी भी एक्सटेंशन को, <ph name="SITE_NAME" /> पढ़ने और उसे बदलने की अनुमति न दें</translation>
 <translation id="3045447014237878114">इस साइट ने कई फ़ाइलें अपने आप डाउनलोड की हैं</translation>
 <translation id="3046178388369461825">Linux डिस्क में बहुत कम जगह बची है</translation>
 <translation id="3046910703532196514">वेबपेज, पूरा हुआ</translation>
@@ -2189,6 +2204,7 @@
 <translation id="3142562627629111859">नया ग्रुप</translation>
 <translation id="3143515551205905069">लिंक करना रोक दें</translation>
 <translation id="3143754809889689516">शुरू से चलाएं</translation>
+<translation id="3144023778624018265">CloudReady 2.0 सेटिंग सिंक</translation>
 <translation id="3144647712221361880">लिंक को इस रूप में खोलें</translation>
 <translation id="3149510190863420837">Chrome ऐप्स</translation>
 <translation id="3150693969729403281">अभी सुरक्षा जांच करें</translation>
@@ -2291,6 +2307,7 @@
 <translation id="3275778913554317645">विंडो के रूप में खोलें</translation>
 <translation id="3277691515294482687">Linux को बेहतर बनाने से पहले, 'मेरी फ़ाइलें' फ़ोल्डर में मेरे ऐप्लिकेशन और फ़ाइलों का बैक अप लें.</translation>
 <translation id="3278001907972365362">आपके Google खाता (खातों) पर ध्यान देना होगा</translation>
+<translation id="3278800075417428224">CloudReady 2.0 की सेटिंग में भाषाओं को मैनेज करें</translation>
 <translation id="3279092821516760512">चुने गए संपर्क, आस-पास होने पर आपके साथ शेयर कर सकते हैं. आपके स्वीकार करने तक ट्रांसफ़र शुरू नहीं होगा.</translation>
 <translation id="3279230909244266691">इस प्रोसेस में कुछ मिनट लग सकते हैं. वर्चुअल मशीन को शुरू किया जा रहा है.</translation>
 <translation id="3280237271814976245">इस रूप में सेव करें...</translation>
@@ -2394,7 +2411,6 @@
 <translation id="3390013585654699824">ऐप्लिकेशन की जानकारी</translation>
 <translation id="3390741581549395454">Linux ऐप्लिकेशन और फ़ाइलों का बैक अप ले लिया गया है. जल्द ही बेहतर बनाने की प्रोसेस शुरू हो जाएगी.</translation>
 <translation id="3391512812407811893">निजता सैंडबॉक्स ट्रायल</translation>
-<translation id="339178315942519818"><ph name="DEVICE_TYPE" /> पर अपने चैट ऐप्लिकेशन की सूचनाएं देखें</translation>
 <translation id="3393554941209044235">Chrome के दस्तावेज़ का विश्लेषण</translation>
 <translation id="3394850431319394743">सुरक्षित कॉन्टेंट दिखाने के लिए, पहचानकर्ताओं का इस्तेमाल किया जा सकता है</translation>
 <translation id="3396744558790608201">साइट के किसी भी हिस्से में खोजने के लिए, दायां क्लिक करें और “Google Lens की मदद से, इमेजों को खोजें” को चुनें. इससे आपको वेब पर खरीदारी और ब्राउज़ करते समय दिखने वाले विज़ुअल कॉन्टेंट के बारे में ज़्यादा जानने में मदद मिलेगी.</translation>
@@ -2438,6 +2454,7 @@
 <translation id="343115368966109153"><ph name="FILE_NAME" /> डाउनलोड करें? इस डिवाइस को इस्तेमाल करने वाला हर व्यक्ति इसे देख सकता है.</translation>
 <translation id="3432227430032737297">दिखाई गईं सभी कुकी निकालें</translation>
 <translation id="3432762828853624962">शेयर किए गए वर्कर</translation>
+<translation id="3433507769937235446">Lock-on-leave</translation>
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">अगर आपके बच्चे के लिए 'अन्य वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. इन सेटिंग के बारे में ज़्यादा जानें. साथ ही, जानें कि families.google.com पर इन्हें कैसे नियंत्रित करें.</translation>
@@ -2459,6 +2476,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनट</translation>
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3446274660183028131">Windows को इंस्टॉल करने के लिए कृपया Parallels Desktop को लॉन्च करें.</translation>
+<translation id="3446286111407214190">Google CloudReady 2.0 की शर्तों का कॉन्टेंट</translation>
 <translation id="344630545793878684">अपना डेटा कई वेबसाइटों पर पढ़ें</translation>
 <translation id="3446650212859500694">इस फ़ाइल में संवेदनशील सामग्री है</translation>
 <translation id="3447644283769633681">सभी तृतीय पक्ष कुकी अवरोधित करें</translation>
@@ -2655,6 +2673,7 @@
 <translation id="3640214691812501263"><ph name="USER_NAME" /> के लिए "<ph name="EXTENSION_NAME" />" को जोड़ें?</translation>
 <translation id="3640613767643722554">अपनी Assistant को आपकी आवाज़ पहचानना सिखाएं</translation>
 <translation id="3641456520301071208">साइटें आपकी जगह की जानकारी मांग सकती हैं</translation>
+<translation id="3642699533549879077">जब कोई और आपकी स्क्रीन की तरफ़ देखता है, तब आपको इसकी चेतावनी मिलती है. साथ ही, सूचना का कॉन्टेंट छिपा दिया जाता है.</translation>
 <translation id="3645372836428131288">फ़िंगरप्रिंट के अलग हिस्से को कैप्चर करने के लिए उंगली धीरे से हिलाएं</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिला}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिले}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> का पता चला</translation>
@@ -2684,6 +2703,7 @@
 <translation id="3672681487849735243">फ़ैक्टरी गड़बड़ी का पता लगाया गया है</translation>
 <translation id="3673097791729989571">साइन इन करने की यह सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई है</translation>
 <translation id="3673622964532248901">आपको इस डिवाइस पर कास्ट करने की अनुमति नहीं है.</translation>
+<translation id="3675511132463531771">CloudReady 2.0 को अपडेट करना ज़रूरी है</translation>
 <translation id="367645871420407123">अगर आप रूट पासवर्ड को इमेज की 'डिफ़ॉल्‍ट टेस्ट वैल्यू' पर सेट करना चाहते हैं, तो खाली छोड़ दें</translation>
 <translation id="3677106374019847299">डीएनएस सेवा देने वाली कंपनी का नाम अपने हिसाब से डालें</translation>
 <translation id="3677911431265050325">मोबाइल साइट के लिए अनुरोध करें</translation>
@@ -2700,6 +2720,24 @@
 <translation id="3688526734140524629">चैनल बदलें</translation>
 <translation id="3688578402379768763">अद्यतित</translation>
 <translation id="3688794912214798596">भाषाएं बदलें...</translation>
+<translation id="3688944113090948433"><ph name="BEGIN_H3" />डीबग करने की सुविधाएं<ph name="END_H3" />
+      <ph name="BR" />
+      अपने डिवाइस पर कस्टम कोड को इंस्टॉल और उसे टेस्ट करने के लिए, Chrome OS डिवाइस पर डीबग करने की सुविधाएं चालू की जा सकती हैं.  ऐसा करने से, ये काम किए जा सकेंगे:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />rootfs पुष्टि को हटाया जा सकता है, ताकि आप ओएस फ़ाइलों में बदलाव कर सकें
+        <ph name="LIST_ITEM" />स्टैंडर्ड टेस्ट बटनों का इस्तेमाल करके, डिवाइस के लिए एसएसएच ऐक्सेस चालू किया जा सकता है, ताकि आप डिवाइस ऐक्सेस करने के लिए <ph name="BEGIN_CODE" />'क्रॉस फ़्लैश'<ph name="END_CODE" /> जैसे टूल इस्तेमाल कर सकें
+        <ph name="LIST_ITEM" />डिवाइस को यूएसबी से चालू करने की सुविधा चालू की जा सकती है, ताकि आप यूएसबी ड्राइव से ओएस इमेज इंस्टॉल कर सकें
+        <ph name="LIST_ITEM" />डेव और सिस्टम रूट, दोनों के लॉगिन पासवर्ड के लिए कस्टम वैल्यू सेट की जा सकती है, ताकि आप डिवाइस में मैन्युअल तरीके से एसएसएच कर सकें
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      चालू करने के बाद, डीबग करने की ज़्यादातर सुविधाएं, उन डिवाइसों पर पावरवॉश करने या डेटा मिटाने के बाद भी चालू रहती हैं जिन्हें एंटरप्राइज़ मैनेज करता है.  डीबग करने की सभी सुविधाओं को पूरी तरह बंद करने के लिए, Chrome OS की रिकवरी प्रोसेस (https://support.google.com/chromebook/answer/1080595) पूरी करें.
+      <ph name="BR" />
+      <ph name="BR" />
+      डीबग करने की सुविधाओं के बारे में ज़्यादा जानकारी के लिए, यह देखें:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" />  प्रोसेस के दौरान, सिस्टम को फिर चालू किया जाएगा.</translation>
 <translation id="3690369331356918524">अगर डेटा का गलत इस्तेमाल होने पर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="3691231116639905343">कीबोर्ड ऐप्लिकेशन</translation>
 <translation id="3691267899302886494"><ph name="HOST" /> आपकी स्क्रीन शेयर करना चाहता है</translation>
@@ -2908,6 +2946,7 @@
 <translation id="3886446263141354045">यह साइट एक्सेस करने का आपका अनुरोध <ph name="NAME" /> को भेज दिया गया है</translation>
 <translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
 <translation id="3888053818972567950"><ph name="WEB_DRIVE" /> कनेक्शन</translation>
+<translation id="3888491127874785636">CouldReady 2.0 का सिस्टम इमेज राइटर</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
 <translation id="3888586133700543064">इस जानकारी से, हमें Assistant से जुड़ी आपकी समस्या को बेहतर तरीके से समझने में मदद मिलती है. इस जानकारी को 90 दिनों तक सेव करके रखा जाता है. साथ ही, इसका ऐक्सेस उन इंजीनियरिंग और फ़ीडबैक टीमों के पास ही रहता है जो आपकी समस्या पर काम करती हैं.</translation>
 <translation id="3888900458694486810">खोज के लिए स्क्रीन के बाईं ओर दिया गया बटन बंद करें</translation>
@@ -2998,6 +3037,7 @@
 <translation id="3962119236270174787">ऐसे डाउनलोड, वेबसाइटों, और एक्सटेंशन से मानक सुरक्षा जो नुकसान पहुंचा सकते हैं</translation>
 <translation id="3963721102035795474">रीडर मोड</translation>
 <translation id="3964480518399667971">सेल्युलर नेटवर्क बंद करें</translation>
+<translation id="39650333289039736">आपके ऐप्लिकेशन, सेटिंग, और दूसरे कस्टमाइज़ेशन, CloudReady 2.0 वाले उन सभी डिवाइसों पर सिंक हो जाएंगे जिन पर आपके Google खाते से साइन इन किया गया है.</translation>
 <translation id="3965811923470826124">इसके साथ</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> से बाहर निकलें</translation>
 <translation id="3966072572894326936">कोई अन्य फ़ोल्डर चुनें</translation>
@@ -3109,6 +3149,7 @@
 <translation id="4079140982534148664">'बेहतर वर्तनी जाँच' का इस्तेमाल करें</translation>
 <translation id="4081242589061676262">फ़ाइल को कास्ट नहीं किया जा सका.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> ने आपके फ़ोन पर कोई सूचना भेजी है. फ़ोन पर अपनी पहचान की पुष्टि करने के लिए यह तरीका अपनाएं.</translation>
+<translation id="4083599409544993198">इस फ़ाइल टाइप के लिए, मेरी पसंद याद रखें: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">बुकमार्क</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> बंद करें</translation>
 <translation id="4085270836953633510">जब कोई साइट सीरियल पाेर्ट ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
@@ -3138,6 +3179,7 @@
 <translation id="4101352914005291489">छिपा हुआ SSID</translation>
 <translation id="4102906002417106771">पावरवॉश के लिए रीस्टार्ट करें</translation>
 <translation id="4104163789986725820">नि&amp;र्यात करें...</translation>
+<translation id="410547683402570632">इन फ़ाइल टाइप के लिए मेरी पसंद याद रखें: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">मेमोरी डिवाइसों की पहचान करें और उन्हें निकालें</translation>
 <translation id="4109135793348361820">विंडो को <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) पर ले जाएं</translation>
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
@@ -3146,6 +3188,7 @@
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
 <translation id="4115002065223188701">नेटवर्क नहीं मिल रहा है</translation>
 <translation id="4115378294792113321">मैजेंटा</translation>
+<translation id="4116704186509653070">फिर से खोलें</translation>
 <translation id="4117637339509843559">गहरे रंग वाला मोड</translation>
 <translation id="4117714603282104018">टचपैड हैप्टिक फ़ीडबैक</translation>
 <translation id="4118579674665737931">कृपया डिवाइस को फिर से चालू करें और दोबारा कोशिश करें.</translation>
@@ -3294,6 +3337,7 @@
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4289732974614035569">कोई पिन चुनें</translation>
 <translation id="4290791284969893584">किसी भी पेज को बंद करने पर, हो सकता है कि वे टास्क पूरे न हों जिन्हें आपने शुरू किया था</translation>
+<translation id="4291265871880246274">लॉगिन डायलॉग</translation>
 <translation id="4295072614469448764">ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध है. आपके 'लॉन्चर' में एक आइकॉन भी मौजूद हो सकता है.</translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">रीस्टार्ट करें और रीसेट करें</translation>
@@ -3361,6 +3405,7 @@
 <translation id="4369121877634339065">खोजने के लिए, किसी भी इमेज पर खींचें और छोड़ें</translation>
 <translation id="4369215744064167350">वेबसाइट ऐक्सेस करने के लिए किए गए अनुरोध को मंज़ूरी मिल गई है</translation>
 <translation id="4370975561335139969">  डाले गए ईमेल और पासवर्ड का मिलान नहीं हो रहा</translation>
+<translation id="4371179719793593133">आपके ऐप्लिकेशन और सेटिंग CloudReady 2.0 वाले उन सभी डिवाइसों पर सिंक हो जाएंगी जिन पर आपने Google खाते से साइन इन किया है. ब्राउज़र को सिंक करने के विकल्पों के लिए, <ph name="LINK_BEGIN" />Chrome की सेटिंग<ph name="LINK_END" /> पर जाएं.</translation>
 <translation id="4373966964907728675">डेस्कटॉप को कास्ट किया जा रहा है</translation>
 <translation id="4374831787438678295">Linux इंस्टॉलर</translation>
 <translation id="4375035964737468845">डाउनलोड की गई फ़ाइलें खोलें</translation>
@@ -3427,7 +3472,6 @@
 <translation id="4432621511648257259">पासवर्ड गलत है</translation>
 <translation id="443454694385851356">विरासती (असुरक्षित)</translation>
 <translation id="443475966875174318">उन ऐप्लिकेशन को अपडेट करें या हटाएं, जो मेल नहीं खाती हैं</translation>
-<translation id="4435634292635092844">फ़ोन के कैमरा रोल की मदद से, अपने <ph name="DEVICE_TYPE" /> पर फ़ोटो देखें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">पारदर्शी</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> ने आपके फ़ोन पर कोई सूचना भेजी है. आप ही साइन इन कर रहे हैं, इस बात की पुष्टि करने के लिए, “<ph name="NOTIFICATIONTITLE" />” पर टैप करें और यह तरीका अपनाएं.</translation>
 <translation id="4441124369922430666">क्या आप चाहते हैं कि मशीन चालू होने पर यह ऐप्लिकेशन अपने आप शुरू हो जाए?</translation>
@@ -3467,6 +3511,7 @@
 <translation id="4477015793815781985">Ctrl, Alt या ⌘ को शामिल करें</translation>
 <translation id="4478664379124702289">लिंक को इस रूप में सेव करें...</translation>
 <translation id="4479424953165245642">कियोस्क ऐप्स  प्रबंधित करें</translation>
+<translation id="4479481745547029647">Google Chrome और CloudReady 2.0 की अन्य शर्तें</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4479877282574735775">वर्चुअल मशीन कॉन्फ़िगर हो रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4480590691557335796">Chrome आपके कंप्यूटर पर नुकसान पहुंचाने वाला सॉफ़्टवेयर ढूंढ सकता है और उसे हटा सकता है</translation>
@@ -3633,6 +3678,7 @@
 <translation id="4638930039313743000">ADB डीबग करने की सुविधा चालू करें</translation>
 <translation id="4641539339823703554">Chrome, सिस्टम का समय सेट नहीं कर सका. कृपया नीचे दिया गया समय देखें और ज़रुरत होने पर उसे सही करें.</translation>
 <translation id="4643612240819915418">वीडियो नए टैब में &amp;खोलें</translation>
+<translation id="4643833688073835173">आपका Chromebook, बिल्ट-इन सेंसर की मदद से डिवाइस की स्क्रीन के सामने लोगों की मौजूदगी का पता लगाता है. सारा डेटा तुरंत ही आपके डिवाइस पर प्रोसेस किया जाता है. इसके बाद, डेटा को मिटा दिया जाता है. सेंसर का डेटा कभी भी Google को नहीं भेजा जाता.</translation>
 <translation id="4644205769234414680">गुप्त मोड में अनुमति दें</translation>
 <translation id="4645676300727003670">&amp;रखें</translation>
 <translation id="4646675363240786305">पोर्ट</translation>
@@ -3646,6 +3692,7 @@
 <translation id="4653405415038586100">Linux को कॉन्फ़िगर करने में गड़बड़ी हुई</translation>
 <translation id="4654236001025007561">अपने आस-पास मौजूद Chromebook और Android डिवाइस के साथ फ़ाइलें शेयर करें</translation>
 <translation id="4657914796247705218">TrackPoint की रफ़्तार</translation>
+<translation id="4658285806588491142">अपनी स्क्रीन को निजी रखें</translation>
 <translation id="465878909996028221">ब्राउज़र रीडायरेक्ट के लिए सिर्फ़ एचटीटीपी, एचटीटीपीएस और फ़ाइल प्रोटोकॉल काम करते हैं.</translation>
 <translation id="4659126640776004816">जब आप अपने Google खाते में लॉग इन करते हैं, तो यह सुविधा चालू हो जाती है.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{इमेज}one{# इमेज}other{# इमेज}}</translation>
@@ -3694,6 +3741,7 @@
 <translation id="4699357559218762027">(अपने-आप-लॉन्च किया गया)</translation>
 <translation id="4701025263201366865">माता-पिता साइन इन करें</translation>
 <translation id="4701335814944566468">कल देखा गया</translation>
+<translation id="4701540735981103145">आपके एडमिन ने साइन इन करने की सुविधा को ब्लॉक किया है</translation>
 <translation id="4707337002099455863">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="4708794300267213770">निष्क्रिय से बाहर आने पर लॉक स्क्रीन दिखाएं</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड़ें</translation>
@@ -3729,6 +3777,7 @@
 <translation id="475088594373173692">पहला उपयोगकर्ता</translation>
 <translation id="4756378406049221019">रोकें/फिर से लोड करें</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4759202969060787081">न खोलें</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
 <translation id="4762718786438001384">डिवाइस के डिस्क में बहुत कम स्पेस है</translation>
@@ -3892,6 +3941,7 @@
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> "<ph name="EXTENSION_NAME" />" एक्‍सटेंशन से संचार करना चाहता है</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
+<translation id="4918134162946436591">संकेत ओवरले दिखाएं</translation>
 <translation id="4921348630401250116">लिखाई को बोली में बदलना</translation>
 <translation id="4921809350408880559">आपने Google Drive पर हाल ही में क्या खोजा, देखा, और किया है, इसके आधार पर आपको हाल ही के और सुझाए गए दस्तावेज़ दिख रहे हैं.
         <ph name="BREAK" />
@@ -3923,6 +3973,7 @@
 <translation id="4944310289250773232">यह प्रमाणीकरण सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई है</translation>
 <translation id="4945439665401275950">फ़िंगरप्रिंट सेट अप करने के लिए, अपने बच्चे को पावर बटन छूने के लिए कहें. आपके बच्चे के फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है. साथ ही, यह हमेशा इस <ph name="DEVICE_TYPE" /> में ही रहता है.</translation>
 <translation id="4946459324029651239">आपके खाते के लिए सामान्य सुरक्षा सेट की गई है</translation>
+<translation id="4950993567860689081">आपका संगठन, आपके सेशन को मैनेज कर रहा है. एडमिन आपकी प्रोफ़ाइल मिटा सकते हैं और आपके नेटवर्क ट्रैफ़िक की निगरानी भी कर सकते हैं.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{एक फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
@@ -4062,6 +4113,7 @@
 <translation id="5111646998522066203">गुप्त मोड से बाहर निकलें</translation>
 <translation id="5111692334209731439">&amp;बुकमार्क मैनेजर</translation>
 <translation id="5112577000029535889">&amp;डेवलपर टूल</translation>
+<translation id="511313294362309725">फ़ास्ट पेयर की सुविधा चालू करें</translation>
 <translation id="5113739826273394829">अगर आप इस आइकॉन पर क्‍लिक करते हैं तो, आप इस <ph name="DEVICE_TYPE" /> को मैन्‍युअल रूप से लॉक कर लेंगे. अगली बार, अनलॉक करने के लिए आपको अपना पासवर्ड डालना होगा.</translation>
 <translation id="51143538739122961">अपनी सुरक्षा कुंजी लगाएं और उसे छुएं</translation>
 <translation id="5115309401544567011">कृपया अपने <ph name="DEVICE_TYPE" /> को पावर स्रोत में प्लग करें.</translation>
@@ -4509,6 +4561,7 @@
 <translation id="5571832155627049070">अपनी प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
 <translation id="5572648434713976849">आपको पता बार में बेहतर सुझाव मिलेंगे</translation>
 <translation id="5572851009514199876">कृपया Chrome शुरू करके उसमें साइन इन करें ताकि Chrome देख सके कि क्या आपके पास यह साइट एक्सेस करने की अनुमति है.</translation>
+<translation id="557506220935336383">दूसरी साइटों के लिए, एक्सटेंशन से जुड़ी अनुमतियां देखें</translation>
 <translation id="5575473780076478375">गुप्‍त एक्सटेंशन: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">डेमो रजिस्ट्रेशन अनुरोध में कोई परेशानी हुई.</translation>
 <translation id="557722062034137776">अपने डिवाइस को रीसेट करना आपके Google खातों या इन खातों से समन्वयित किसी भी डेटा को प्रभावित नहीं करेगा. हालांकि, आपके डिवाइस पर स्थानीय रूप से सहेजी गईं सभी फ़ाइलें हट जाएंगी.</translation>
@@ -4590,6 +4643,7 @@
 <translation id="5648166631817621825">पिछले 7 दिन</translation>
 <translation id="5651308944918885595">आस-पास शेयर करने की सुविधा और 'खोजने लायक बनाना' सेटिंग</translation>
 <translation id="5653154844073528838">आपके पास <ph name="PRINTER_COUNT" /> सेव किए गए प्रिंटर हैं.</translation>
+<translation id="5654266266024827740">क्या आपको CloudReady 2.0 के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है? अगर हां, तो स्पेस बार दबाएं.</translation>
 <translation id="5655296450510165335">डिवाइस का नाम दर्ज करना</translation>
 <translation id="5656845498778518563">Google को सुझाव भेजें</translation>
 <translation id="5657156137487675418">सभी कुकी को अनुमति दें</translation>
@@ -4673,6 +4727,7 @@
 <translation id="5747552184818312860">समय सीमा समाप्ति तारीख</translation>
 <translation id="5747785204778348146">डेवलपर - अस्थिर</translation>
 <translation id="5747809636523347288"><ph name="URL" /> चिपकाएं और इस पर जाएं</translation>
+<translation id="5747845802829012825">Linux का सेट अप पूरा करने के लिए, CloudReady 2.0 को अपडेट करके दोबारा कोशिश करें.</translation>
 <translation id="5755022574660047665">Google Photos में सेव की गई आपकी यादें</translation>
 <translation id="5756163054456765343">&amp;सहायता केंद्र</translation>
 <translation id="5757375109985023827">झलक देखने के लिए, कोई टैब चुनें</translation>
@@ -4799,9 +4854,12 @@
 <translation id="5883356647197510494"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को अपने-आप ब्लॉक किया गया</translation>
 <translation id="5884474295213649357">यह टैब किसी USB डिवाइस से कनेक्ट है.</translation>
 <translation id="5886009770935151472">उंगली एक</translation>
+<translation id="5886325049116255797">अपने Google खाते से साइन इन करने पर, आपकी सेव की गई सेटिंग और गतिविधि को किसी भी CloudReady 2.0 वाले डिवाइस से ऐक्सेस किया जा सकेगा. सेटिंग में जाकर वे चीज़ें चुनी जा सकती हैं जिन्हें सिंक करना है.</translation>
+<translation id="5888843733007437002">टेंप्लेट देखा जा रहा है. नेविगेट करने के लिए Tab दबाएं.</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA की अधिकतम संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">पसंदीदा वाई-फ़ाई नेटवर्क</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
+<translation id="5896436821193322561">अनुमति न दें</translation>
 <translation id="5900302528761731119">Google प्रोफ़ाइल फ़ोटो</translation>
 <translation id="590036993063074298">स्क्रीन शेयर करने की सुविधा की क्वालिटी के बारे में जानकारी</translation>
 <translation id="5901069264981746702">आपके फ़िंगरप्रिंट का डेटा सुरक्षित तरीके से सेव किया जाता है और यह आपके <ph name="DEVICE_TYPE" /> में ही रहता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -4852,6 +4910,7 @@
 <translation id="5939719276406088041">शॉर्टकट नहीं बनाए जा सकते</translation>
 <translation id="594048410531370124">इस बटन की पहचान नहीं हो सकी. <ph name="RESPONSE" /> के लिए कोई भी बटन दबाएं.</translation>
 <translation id="5941153596444580863">व्‍यक्ति को शामिल करें...</translation>
+<translation id="5941176400377813459">CloudReady 2.0 वाले डिवाइस और कॉम्पोनेंट के सीरियल नंबर पढ़ें.</translation>
 <translation id="5941343993301164315">कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
 <translation id="5941711191222866238">छोटा करें</translation>
 <translation id="5942779427914696408">डिवाइस किसे दिख रहा है</translation>
@@ -4864,6 +4923,24 @@
 <translation id="5950819593680344519">Chrome को आपके कंप्यूटर पर, नुकसान पहुंचाने वाला कोई सॉफ़्टवेयर नहीं मिला • 1 दिन पहले जांच की गई</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> स्थानीय फ़ॉन्ट इस्तेमाल करना चाहता है</translation>
 <translation id="5951624318208955736">मॉनिटर</translation>
+<translation id="5953627503079109298"><ph name="BEGIN_H3" />डीबग करने की सुविधाएं<ph name="END_H3" />
+      <ph name="BR" />
+      अपने डिवाइस पर कस्टम कोड को इंस्टॉल और उसे टेस्ट करने के लिए, CloudReady 2.0 वाले डिवाइस पर डीबग करने की सुविधाएं चालू की जा सकती हैं.  ऐसा करने से, ये काम किए जा सकेंगे:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />rootfs पुष्टि को हटाया जा सकता है, ताकि आप ओएस फ़ाइलों में बदलाव कर सकें
+        <ph name="LIST_ITEM" />स्टैंडर्ड टेस्ट बटनों का इस्तेमाल करके, डिवाइस के लिए एसएसएच ऐक्सेस चालू किया जा सकता है, ताकि आप डिवाइस ऐक्सेस करने के लिए <ph name="BEGIN_CODE" />'क्रॉस फ़्लैश'<ph name="END_CODE" /> जैसे टूल इस्तेमाल कर सकें
+        <ph name="LIST_ITEM" />डिवाइस को यूएसबी से चालू करने की सुविधा चालू की जा सकती है, ताकि आप यूएसबी ड्राइव से ओएस इमेज इंस्टॉल कर सकें
+        <ph name="LIST_ITEM" />डेव और सिस्टम रूट, दोनों के लॉगिन पासवर्ड के लिए कस्टम वैल्यू सेट की जा सकती है, ताकि आप डिवाइस में मैन्युअल तरीके से एसएसएच कर सकें
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      चालू करने के बाद, डीबग करने की ज़्यादातर सुविधाएं, उन डिवाइसों पर पावरवॉश करने या डेटा मिटाने के बाद भी चालू रहती हैं जिन्हें एंटरप्राइज़ मैनेज करता है.  डीबग करने की सभी सुविधाओं को पूरी तरह बंद करने के लिए, Chrome OS की रिकवरी प्रोसेस (https://support.google.com/chromebook/answer/1080595) पूरी करें.
+      <ph name="BR" />
+      <ph name="BR" />
+      डीबग करने की सुविधाओं के बारे में ज़्यादा जानकारी के लिए, यह देखें:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" />  प्रोसेस के दौरान, सिस्टम को फिर चालू किया जाएगा.</translation>
 <translation id="5955282598396714173">आपके पासवर्ड की समय-सीमा खत्म हो गई है. इसे बदलने के लिए कृपया साइन आउट करके फिर से साइन इन करें.</translation>
 <translation id="5955304353782037793">ऐप्लिकेशन</translation>
 <translation id="5955721306465922729">एक वेबसाइट इस ऐप्लिकेशन को खोलना चाहती है.</translation>
@@ -4923,6 +5000,7 @@
 <translation id="6016972670657536680">भाषा और कीबोर्ड बटन चुनें. इस समय चुनी गई भाषा <ph name="LANGUAGE" /> है.</translation>
 <translation id="6017286291357847767">आपके Chromebook पर <ph name="ACCOUNT_EMAIL" /> डिफ़ॉल्ट खाता है</translation>
 <translation id="6017514345406065928">हरा</translation>
+<translation id="6019169947004469866">काटें</translation>
 <translation id="6019851026059441029">बहुत अच्छा - एचडी</translation>
 <translation id="6020431688553761150">इस संसाधन को एक्सेस करने के लिए सर्वर ने आपको अनुमति नहीं दी.</translation>
 <translation id="6022526133015258832">पूरी स्‍क्रीन खोलें</translation>
@@ -4954,6 +5032,8 @@
     <ph name="BEGIN_PARAGRAPH2" />आप अपने बच्चे के ChromeOS डिवाइस की सेटिंग में जाकर किसी भी समय, इन रिपोर्ट को अपने-आप भेजने की सुविधा को शुरू या बंद कर सकते हैं. डोमेन एडमिन, Admin console में जाकर इस सेटिंग को बदल सकता है.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट और सुरक्षा जैसी ज़रूरी सेवाओं के लिए अहम जानकारी भेज सकेगा.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />अगर आपके बच्चे के Google खाते की वेब और ऐप्लिकेशन गतिविधि की सेटिंग चालू है, तो उसके डिवाइस का डेटा उसके Google खाते में सेव किया जा सकता है. इन सेटिंग और इन्हें अपने हिसाब से सेट करने के बारे में ज़्यादा जानने के लिए families.google.com पर जाएं.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
+<translation id="6052488962264772833">कास्ट करना शुरू करने के लिए, ऐक्सेस कोड टाइप करें</translation>
 <translation id="6052976518993719690">SSL सत्यापन प्रधिकरण</translation>
 <translation id="6053401458108962351">ब्राउज़िंग डेटा &amp;साफ़ करें...</translation>
 <translation id="6054284857788651331">हाल ही में बंद हुआ टैब ग्रुप</translation>
@@ -4991,6 +5071,7 @@
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" किसी एचआईडी डिवाइस से कनेक्ट करना चाहता है</translation>
 <translation id="608029822688206592">कोई भी नेटवर्क नहीं मिला. कृपया अपना सिम कार्ड डालें और दोबारा कोशिश करें.</translation>
 <translation id="6080689532560039067">अपने सिस्टम के समय की जाँच करें</translation>
+<translation id="6082877069782862752">की-मैपिंग</translation>
 <translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - बिना नाम वाले ग्रुप का हिस्सा</translation>
 <translation id="6085886413119427067">वेबसाइटों से सुरक्षित कनेक्शन की मदद से जुड़ने का तरीका तय करें</translation>
@@ -5157,6 +5238,7 @@
 <translation id="6254503684448816922">कुंजी समझौता</translation>
 <translation id="6254892857036829079">बढ़िया</translation>
 <translation id="6257602895346497974">'सिंक करें' चालू करें...</translation>
+<translation id="62586649943626337">टैब ग्रुप की मदद से, अपने टैब व्यवस्थित करें</translation>
 <translation id="625895209797312329">साइटों को अपने डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने से रोकें</translation>
 <translation id="6262371516389954471">आपके डिवाइस के डेटा का बैक अप Google पर अपलोड हो गया है. साथ ही, उसे Google खाते के पासवर्ड से एन्क्रिप्ट (सुरक्षित) कर दिया गया है.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
@@ -5477,6 +5559,7 @@
 <translation id="6586099239452884121">अतिथि ब्राउज़िंग</translation>
 <translation id="6586213706115310390">"Ok Google" बोलकर अपनी Assistant को ऐक्सेस करें.</translation>
 <translation id="6586451623538375658">प्राथमिक माउस बटन स्वैप करें</translation>
+<translation id="6587958707401001932">डिफ़ॉल्ट सेटिंग चुनें</translation>
 <translation id="6588043302623806746">सुरक्षित डीएनएस इस्तेमाल करें</translation>
 <translation id="659005207229852190">सुरक्षा जांच पूरी हो गई.</translation>
 <translation id="6590458744723262880">फ़ोल्‍डर का नाम बदलें</translation>
@@ -5500,6 +5583,7 @@
 <translation id="6606671997164410857">ऐसा लगता है कि आपने पहले ही किसी दूसरे डिवाइस पर Google Assistant को सेट अप कर लिया है. 'स्क्रीन पर दिखने वाला कॉन्टेंट इस्तेमाल करें' चालू करके, Assistant से ज़्यादा फ़ायदे पाएं.</translation>
 <translation id="6607831829715835317">ज़्यादा टू&amp;ल</translation>
 <translation id="6607890859198268021"><ph name="DOMAIN" /> पहले ही <ph name="USER_EMAIL" /> को प्रबंधित कर रहा है. दूसरे Google खाते पर माता-पिता के कंट्रोल की सुविधा इस्तेमाल करने के लिए, सेट अप करने के बाद साइन आउट करें. फिर, साइन इन वाली स्क्रीन पर "व्यक्ति जोड़ें" को चुनें.</translation>
+<translation id="6608166463665411119">ई-सिम को रीसेट करें</translation>
 <translation id="6609478180749378879">जब आप गुप्त मोड से बाहर निकल जाएंगे, तब साइन इन करने का डेटा इस डिवाइस में सेव किया जाएगा. अपने डिवाइस की मदद से, आप बाद में इस वेबसाइट पर साइन इन कर पाएंगे.</translation>
 <translation id="6610002944194042868">अनुवाद के विकल्प</translation>
 <translation id="6611972847767394631">अपने टैब यहां देखें</translation>
@@ -5532,6 +5616,7 @@
 <translation id="6644513150317163574">यूआरएल फ़ॉर्मैट अमान्य है एसएसओ (SSO) प्रमाणीकरण का इस्तेमाल होने पर सर्वर को होस्ट नाम के तौर पर लिखा जाना चाहिए.</translation>
 <translation id="6644846457769259194">आपका डिवाइस अपडेट हो रहा है (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6645437135153136856">चुना गया 'Google क्लाउड प्रिंट' डिवाइस अब काम नहीं करता है. <ph name="BR" /> अपने कंप्यूटर की सिस्टम सेटिंग में जाकर प्रिंटर सेटअप करके देखें.</translation>
+<translation id="6646476869708241165">फ़ास्ट पेयर की सुविधा बंद करें</translation>
 <translation id="6647228709620733774">Netscape प्रमाणन प्राधिकरण खण्डन यूआरएल</translation>
 <translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="6648911618876616409">एक ज़रूरी अपडेट इंस्टॉल होने के लिए तैयार है. शुरू करने के लिए साइन इन करें.</translation>
@@ -5642,6 +5727,7 @@
 <translation id="6770602306803890733">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है</translation>
 <translation id="6771503742377376720">एक प्रमाणन प्राधिकरण है</translation>
 <translation id="6775163072363532304">उपलब्ध डिवाइस यहां दिखाई देंगे.</translation>
+<translation id="6776729248872343918">फ़ास्ट पेयर की सुविधा चालू करें</translation>
 <translation id="6777817260680419853">रीडायरेक्ट ब्लॉक किया गया</translation>
 <translation id="6778737459546443941">आपके अभिभावक ने अभी तक इसकी अनुमति नहीं दी है</translation>
 <translation id="6779092717724412415">किसी भी टेक्स्ट को हाइलाइट करने के लिए, उसे चुनें और दायां क्लिक करें.</translation>
@@ -5699,7 +5785,9 @@
 <translation id="6813907279658683733">पूरी स्क्रीन</translation>
 <translation id="6817174620439930047">जब साइट MIDI डिवाइस को एक्सेस करने के लिए सिस्टम के खास संदेशों का इस्तेमाल करना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
 <translation id="6818198425579322765">उस पेज की भाषा जिसका अनुवाद करना है</translation>
+<translation id="6818640747323584611">CloudReady 2.0 की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="6818802132960437751">वायरस से सुरक्षित रखने वाला सॉफ़्टवेयर पहले से मौजूद है</translation>
+<translation id="6819741204334296334">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाले ऐप्लिकेशन को CloudReady 2.0 के कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
 <translation id="682123305478866682">डेस्कटॉप कास्ट करें</translation>
 <translation id="6823174134746916417">टचपैड पर क्लिक-के-लिए-टैप</translation>
 <translation id="6824564591481349393">&amp;ईमेल पते की कॉपी बनाएं</translation>
@@ -5769,6 +5857,7 @@
 <translation id="6889957081990109136">अब तक स्विच असाइन नहीं किया गया है</translation>
 <translation id="6892812721183419409">लिंक को <ph name="USER" /> के रूप में खोलें</translation>
 <translation id="6895032998810961280">नुकसान पहुंचाने वाले सॉफ़्टवेयर, सिस्टम की सेटिंग, और उन प्रक्रियाओं की पूरी रिपोर्ट Google को भेजें, जो हटाए जाने की इस प्रक्रिया में आपके कंप्यूटर पर मिली थीं</translation>
+<translation id="6895902329218596456"><ph name="USER_EMAIL" /> को <ph name="MANAGER" /> मैनेज करता है. साथ ही, आपके एडमिन ने इस ईमेल पते से दूसरे खाते के तौर पर साइन इन करने की सुविधा बंद कर दी है</translation>
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6897363604023044284">डेटा मिटाने के लिए साइटें चुनें</translation>
 <translation id="6898440773573063262">किओस्क ऐप्लिकेशन अब इस डिवाइस परअपने-आपलॉन्च होने के लिए कॉन्फ़िगर किए जा सकते हैं.</translation>
@@ -6096,6 +6185,7 @@
 <translation id="7243632151880336635">साफ़ करें और प्रस्थान करें</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (श्रेष्ठ)</translation>
 <translation id="7246230585855757313">अपनी सुरक्षा कुंजी फिर से लगाएं और दोबारा कोशिश करें</translation>
+<translation id="724835896049478274">Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए उपलब्ध खाते</translation>
 <translation id="7249197363678284330">इस सेटिंग को पता बार में जाकर बदलें.</translation>
 <translation id="7250616558727237648">आप जिस डिवाइस के साथ फ़ाइल को शेयर करना चाहते हैं उसने कोई रिस्पॉन्स नहीं दिया. कृपया फिर से कोशिश करें.</translation>
 <translation id="725109152065019550">क्षमा करें, आपके व्यवस्थापक ने आपके खाते पर बाहरी मेमोरी को अक्षम कर दिया है.</translation>
@@ -6154,6 +6244,7 @@
 <translation id="730515362922783851">स्‍थानीय नेटवर्क या इंटरनेट पर किसी भी डिवाइस से डेटा का लेन-देन करें</translation>
 <translation id="7306521477691455105"><ph name="USB_DEVICE_NAME" /> को <ph name="USB_VM_NAME" /> से जोड़ने के लिए 'सेटिंग' खोलें</translation>
 <translation id="7307129035224081534">रोका हुआ है</translation>
+<translation id="7307719647623535470">CloudReady 2.0 की सेटिंग में सुरक्षित डीएनएस को मैनेज करें</translation>
 <translation id="7308643132139167865">वेबसाइट की भाषाएं</translation>
 <translation id="7310598146671372464">लॉगिन नहीं कर पाए. सर्वर पर बताए गए केर्बेरोस सुरक्षा प्रकार काम नहीं करते हैं. कृपया अपने एडमिन से संपर्क करें.</translation>
 <translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
@@ -6178,6 +6269,7 @@
 <translation id="7339898014177206373">नई विंडो</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है.</translation>
 <translation id="7340650977506865820">साइट आपकी स्क्रीन शेयर कर रही है</translation>
+<translation id="7340757554212515731">क्रैश रिपोर्ट, गड़बड़ी की जानकारी, और इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजा जाता है</translation>
 <translation id="7341834142292923918">इस साइट का ऐक्सेस चाहिए</translation>
 <translation id="7343372807593926528">'भेजें' बटन पर क्लिक करने से पहले, समस्या के बारे में बताएं.</translation>
 <translation id="7345706641791090287">अपने पासवर्ड की पुष्टि करें</translation>
@@ -6368,6 +6460,7 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{1 और}one{{NUM_DOWNLOADS} और}other{{NUM_DOWNLOADS} और}}</translation>
 <translation id="7526989658317409655">प्लेसहोल्डर</translation>
 <translation id="7527758104894292229">इसे अपने Google खाते में अपडेट करें, <ph name="ACCOUNT" /></translation>
+<translation id="7528224636098571080">न खोलें</translation>
 <translation id="7529411698175791732">अपना इंटरनेट कनेक्शन जाँचें. अगर समस्या बनी रहती है, तो साइन आउट करें और दोबारा साइन इन करके देखें.</translation>
 <translation id="7529876053219658589">{0,plural, =1{गेस्ट विंडो बंद करें}one{गेस्ट विंडो बंद करें}other{गेस्ट विंडो बंद करें}}</translation>
 <translation id="7530016656428373557">डिस्चार्ज दर वॉट में</translation>
@@ -6507,7 +6600,6 @@
 <translation id="7661259717474717992">साइटों को कुकी डेटा सेव करने और पढ़ने की अनुमति दें</translation>
 <translation id="7661451191293163002">पंजीकरण प्रमाणपत्र नहीं लिया जा सका.</translation>
 <translation id="7662283695561029522">कॉन्फ़िगर करने के लिए टैप करें</translation>
-<translation id="7662419552544645985">अपने <ph name="DEVICE_TYPE" /> पर अपने फ़ोन के कैमरा रोल की मदद से फ़ोटो देखें</translation>
 <translation id="7663719505383602579">प्राप्तकर्ता: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">कीबोर्ड शॉर्टकट उपलब्ध है</translation>
 <translation id="7663859337051362114">ई-सिम प्रोफ़ाइल जोड़ें</translation>
@@ -6545,6 +6637,7 @@
 <translation id="7691163173018300413">"Ok Google"</translation>
 <translation id="7691698019618282776">Crostini को अपग्रेड करें</translation>
 <translation id="769375405463525957">डिवाइस से दूर जाने पर, स्क्रीन अपने-आप लॉक हो जाएगी. डिवाइस के सामने रहने पर, स्क्रीन चालू रहेगी.</translation>
+<translation id="7694052127939518600">Files ऐप्लिकेशन उन फ़ाइलों का क्विक ऐक्सेस देता है जिन्हें आपने Google Drive, बाहरी स्टोरेज या CloudReady 2.0 वाले डिवाइस में सेव किया है.</translation>
 <translation id="7696063401938172191">आपके '<ph name="PHONE_NAME" />' पर:</translation>
 <translation id="7697166915480294040">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट छिपा रहता है</translation>
 <translation id="769824636077131955">यह दस्तावेज़ बहुत बड़ा है, इसलिए इसकी सुरक्षा जांच नहीं की जा सकती. सिर्फ़ 50 एमबी तक के दस्तावेज़ प्रिंट किए जा सकते हैं.</translation>
@@ -6609,6 +6702,7 @@
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">अपने डेस्कटॉप की सीमाएं समायोजित करें</translation>
 <translation id="7760004034676677601">क्या यह वही शुरुआती पन्ना है जिसकी आप अपेक्षा कर रहे थे?</translation>
+<translation id="7762463735017901568">आपके फ़ोन के एडमिन ने सूचनाएं सिंक करने की सुविधा बंद की हुई है</translation>
 <translation id="7764225426217299476">पता जोड़ें</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> से <ph name="DOWNLOAD_RECEIVED" /></translation>
 <translation id="7765158879357617694">ले जाएं</translation>
@@ -6793,6 +6887,7 @@
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूरा हो गया है</translation>
 <translation id="7938594894617528435">वर्तमान में ऑफ़लाइन</translation>
 <translation id="7939062555109487992">अतिरिक्त सेटिंग</translation>
+<translation id="7939321852721702336">आपने CloudReady 2.0 की डीबग करने की सुविधाएं चालू की हैं, जिससे एसएसएचडी डीमन सेट अप हो जाएगा. साथ ही, डिवाइस को यूएसबी ड्राइव से चालू करने की सुविधा चालू हो जाएगी.</translation>
 <translation id="7939412583708276221">फिर भी रखें</translation>
 <translation id="7942349550061667556">लाल</translation>
 <translation id="7943368935008348579">पीडीएफ़ डाउनलोड करें</translation>
@@ -6940,6 +7035,7 @@
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8076835018653442223">आपके एडमिन ने आपके डिवाइस की स्थानीय फ़ाइलों का एक्सेस बंद कर दिया है</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081623398548615289">आपके सेशन को <ph name="MANAGER_NAME" /> मैनेज करता है. एडमिन आपकी प्रोफ़ाइल मिटा सकते हैं और आपके नेटवर्क ट्रैफ़िक की निगरानी भी कर सकते हैं.</translation>
 <translation id="8081989000209387414">ADB डीबग करने की सुविधा बंद करें?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" से जोड़ना चाहते हैं?</translation>
 <translation id="8082390128630131497">ADB डीबग करने की सुविधा बंद करने से यह <ph name="DEVICE_TYPE" /> फ़ैक्ट्री सेटिंग पर रीसेट हो जाएगा. सभी उपयोगकर्ता खातों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
@@ -7140,6 +7236,7 @@
 <translation id="827097179112817503">होम बटन दिखाएं</translation>
 <translation id="8271268254812352141">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर दायां क्लिक करें. अनुवाद करने के लिए, <ph name="LINK_BEGIN" />वेबसाइट की भाषाओं<ph name="LINK_END" /> में अपनी पसंदीदा भाषाएं सेट करें.</translation>
 <translation id="8271379370373330993">अगले कुछ कदम माता-पिता के लिए हैं. आप खाता सेट अप करने के बाद <ph name="DEVICE_TYPE" /> वापस बच्चे को दे सकते हैं.</translation>
+<translation id="8272194309885535896">चित्र डाउनलोड करें</translation>
 <translation id="8272443605911821513">मेन्यू में "ज़्यादा टूल" एक्सटेंशन पर क्लिक करके अपने एक्सटेंशन प्रबंधित करें.</translation>
 <translation id="8274332263553132018">फ़ाइल कास्ट करें</translation>
 <translation id="8274921654076766238">फ़ुल-स्क्रीन पर कॉन्टेंट को बड़ा दिखाने की सुविधा से, स्क्रीन को कीबोर्ड के फ़ोकस के हिसाब से बदलना</translation>
@@ -7483,6 +7580,7 @@
 <translation id="8665110742939124773">आपने गलत ऐक्सेस कोड डाला है. फिर से कोशिश करें.</translation>
 <translation id="8665180165765946056">बैकअप पूरा हुआ</translation>
 <translation id="866611985033792019">ईमेल उपयोगकर्ताओं की पहचान करने के लिए इस प्रमाणपत्र पर विश्वास करें</translation>
+<translation id="8666224701549693691">CloudReady 2.0 में मौजूद, गड़बड़ी की जानकारी देने वाले टेस्ट करें.</translation>
 <translation id="8666584013686199826">जब कोई साइट यूएसबी डिवाइस एक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है और आपका माउस कर्सर बंद कर दिया गया है.</translation>
 <translation id="8668052347555487755">कलर मोड</translation>
@@ -7535,6 +7633,7 @@
 <translation id="8719472795285728850">एक्सटेंशन गतिविधियों के लिए सुना जा रहा है...</translation>
 <translation id="8719653885894320876"><ph name="PLUGIN_NAME" /> डाउनलोड विफल रहा</translation>
 <translation id="8720200012906404956">मोबाइल नेटवर्क ढूंढ रहे हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="8720781020694544444">माफ़ करें, आपका कंप्यूटर किसी गलत हार्डवेयर आईडी से कॉन्फ़िगर किया गया है. इस वजह से CloudReady 2.0 में नए सुरक्षा सुधार अपडेट नहीं हो पा रहे हैं. इसके अलावा, आपके कंप्यूटर को <ph name="BEGIN_BOLD" />नुकसान पहुंचाने वाले हमलों का जोखिम हो सकता है<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">इंस्टॉलेशन-समय विशेषताएं शुरू करने का समय खत्म हो गया है.</translation>
 <translation id="8722912030556880711">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">जब आपको यह आइकॉन दिखाई दे, तब पहचान के लिए या खरीदारियों की अनुमति देने के लिए अपने फ़िंगरप्रिंट का इस्तेमाल करें.</translation>
@@ -7720,6 +7819,7 @@
 <translation id="8890516388109605451">स्रोत</translation>
 <translation id="8890529496706615641">प्रोफ़ाइल का नाम नहीं बदला जा सका. कृपया फिर से कोशिश करें या तकनीकी सहायता पाने के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
 <translation id="8892168913673237979">बिल्कुल तैयार है!</translation>
+<translation id="8893116021193670489">आपके कंप्यूटर में 'ट्रस्टेड प्लैटफ़ॉर्म मॉड्यूल' (टीपीएम) सुरक्षा डिवाइस है. इसका इस्तेमाल, CloudReady 2.0 में कई अहम सुरक्षा सुविधाओं को लागू करने के लिए किया जाता है. ज़्यादा जानकारी पाने के लिए, Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="8893801527741465188">अनइंस्टॉल पूरा हुआ</translation>
 <translation id="8893928184421379330">क्षमा करें, डिवाइस <ph name="DEVICE_LABEL" /> की पहचान नहीं हो सकी.</translation>
 <translation id="8894761918470382415">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) के लिए डेटा ऐक्सेस सुरक्षा</translation>
@@ -7853,6 +7953,7 @@
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> अब काम नहीं करता</translation>
 <translation id="9031549947500880805">'Google डिस्क' में बैक अप लें. अपना डेटा आसानी से वापस लाएं या किसी भी समय डिवाइस बदलें. आपके बैक अप में ऐप्लिकेशन डेटा शामिल होता है.</translation>
 <translation id="9031811691986152304">फिर से कोशिश करें</translation>
+<translation id="9032097289595078011">फ़ास्ट पेयर की सुविधा बंद करें</translation>
 <translation id="9033765790910064284">फिर भी जारी रखें</translation>
 <translation id="9033857511263905942">&amp;चिपकाएं</translation>
 <translation id="903480517321259405">पिन दोबारा डालें</translation>
@@ -7882,6 +7983,7 @@
 <translation id="9063208415146866933">लाइन <ph name="ERROR_LINE_START" /> से <ph name="ERROR_LINE_END" /> तक में गड़बड़ी</translation>
 <translation id="9063800855227801443">गोपनीय कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
 <translation id="9064275926664971810">फ़ॉर्म को एक ही क्लिक में भरने के लिए ऑटोमैटिक भरना चालू करें</translation>
+<translation id="9064599787951583960">CloudReady 2.0 वाले डिवाइस की जानकारी और डेटा को ऐक्सेस करें.</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9066394310994446814">आपने Google की सेवाओं पर हाल ही में क्या-क्या खोजा, देखा, और किया है, इसके आधार पर आपको यह आइटम दिख रहा है. आप <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" /> पर जाकर, अपना डेटा देख सकते हैं, मिटा सकते हैं, और सेटिंग बदल सकते हैं.
         <ph name="BREAK" />
@@ -8056,6 +8158,7 @@
 <translation id="93766956588638423">एक्‍सटेंशन को ठीक करें</translation>
 <translation id="938568644810664664">"Ok Google, यह कौनसा गाना है?" या "Ok Google, मेरी स्क्रीन पर क्या है?" पूछें</translation>
 <translation id="939252827960237676">स्क्रीनशॉट सेव नहीं हो सका</translation>
+<translation id="939401694733344652">फ़िलहाल, इन खातों का इस्तेमाल Android ऐप्लिकेशन के साथ नहीं किया जा रहा है. अगर किसी खाते को इस Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए चुना जाता है, तो उस खाते का इस्तेमाल दूसरे Android ऐप्लिकेशन के साथ भी किया जा सकता है. <ph name="LINK_BEGIN" />सेटिंग &gt; खाते<ph name="LINK_END" /> में जाकर तय किया जा सकता है कि Android ऐप्लिकेशन किसी खाते का इस्तेमाल करे या नहीं.</translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> एक Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
@@ -8112,6 +8215,7 @@
 <translation id="994289308992179865">&amp;लूप</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">सुरक्षित कनेक्शन स्थापित कर रहा है...</translation>
+<translation id="996803490569799917">अपने पसंदीदा लोगों से जुड़ी यादें वगैरह देखें</translation>
 <translation id="99731366405731005">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए, <ph name="LINK1_BEGIN" />Chrome सिंक<ph name="LINK1_END" /> चालू करें. <ph name="LINK2_BEGIN" />ज़्यादा जानें<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">नि&amp;रीक्षण करें</translation>
 </translationbundle>

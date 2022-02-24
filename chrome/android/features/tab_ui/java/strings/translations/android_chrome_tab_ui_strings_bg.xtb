@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Настройки за проследяването на цените</translation>
 <translation id="1378979118429748177">Получаване на известия при понижения на цени</translation>
 <translation id="1403228085774130835">Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome</translation>
+<translation id="1455506303394048917">Активността ви в съответните раздели в режим „инкогнито“ ще бъде изчистена от това устройство</translation>
+<translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2118649612461486615">Информация за магазина</translation>

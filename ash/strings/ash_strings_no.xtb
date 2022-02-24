@@ -330,6 +330,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3105917916468784889">Ta skjermdump</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Fjern forslag</translation>
+<translation id="3120421559657122717">Vil du slå av enheten?</translation>
 <translation id="3126069444801937830">Start på nytt for å oppdatere</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -350,6 +351,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
+<translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
 <translation id="3289674678944039601">Lader via adapter</translation>
 <translation id="3290356915286466215">Usikret</translation>
 <translation id="3294437725009624529">Gjest</translation>
@@ -697,6 +699,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5400461572260843123">Hurtiginnstillinger – trykk på søk + venstre for å åpne varselsenteret.</translation>
 <translation id="5426063383988017631">Innstillinger-menyen er lukket</translation>
 <translation id="5428899915242071344">Begynn å merke</translation>
+<translation id="5429993543155113935">Inkognitovinduer støttes ikke for øyeblikket</translation>
 <translation id="5430931332414098647">Umiddelbar internettdeling</translation>
 <translation id="5431318178759467895">Farge</translation>
 <translation id="5433020815079095860">Innenhet for lyd</translation>
@@ -810,6 +813,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6166852626429024716">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
 <translation id="6179832488876878285">Du kan feste viktige filer her. Åpne Filer-appen for å komme i gang.</translation>
+<translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6431865393913628856">Skjermopptak</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> hendelse</translation>
+<translation id="6449483711453944360">Linux-apper og inkognitovinduer støttes ikke for øyeblikket</translation>
 <translation id="6452181791372256707">Avslå</translation>
 <translation id="6453179446719226835">Språket er endret</translation>
 <translation id="6459472438155181876">Utvider skjermen til <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +939,7 @@ Nylig installert</translation>
 <translation id="7025533177575372252">Koble <ph name="DEVICE_NAME" /> til telefonen</translation>
 <translation id="7026338066939101231">Reduser</translation>
 <translation id="7029814467594812963">Avslutt økten</translation>
+<translation id="7032161822340700104">Kun seks maler er tillatt. Fjern en mal for å lagre en ny.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" /> – Google Assistent</translation>
 <translation id="7042322267639375032">Skjul statusområdet</translation>
 <translation id="7045033600005038336">Vil du erstatte malen?</translation>
@@ -1237,6 +1243,7 @@ Nylig installert</translation>
 <translation id="9000771174482730261">ADMINISTRER LAGRING</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
 <translation id="9024331582947483881">full skjerm</translation>
+<translation id="9034924485347205037">Linux-filer</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skjul varselet</translation>
 <translation id="9065203028668620118">Endre</translation>

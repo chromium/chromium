@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">შემოთავაზების ამოშლა</translation>
+<translation id="3120421559657122717">გსურთ, გათიშოთ მოწყობილობა?</translation>
 <translation id="3126069444801937830">გადატვირთეთ განახლებისთვის</translation>
 <translation id="3139942575505304791">დესკტოპი 1</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">ფანჯარა <ph name="WINDOW_TITLE" /> გადატანილია სამუშაო მაგიდიდან <ph name="ACTIVE_DESK" /> სამუშაო მაგიდაზე <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">რისი გაკეთება შეგიძლია?</translation>
 <translation id="3269597722229482060">მარჯვენა დაწკაპუნება</translation>
+<translation id="3289544412142055976">Linux აპები ამჟამად მხარდაუჭერელია</translation>
 <translation id="3289674678944039601">იტენება ადაპტერის მეშვეობით</translation>
 <translation id="3290356915286466215">დაუცველი</translation>
 <translation id="3294437725009624529">სტუმარი</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">სწრაფი პარამეტრები, შეტყობინებების ცენტრზე წვდომისთვის დააჭირეთ კლავიშთა კომბინაციაზე: search + მარცხნივ მიმართული ისარი.</translation>
 <translation id="5426063383988017631">პარამეტრების მენიუ დახურულია</translation>
 <translation id="5428899915242071344">არჩევის დაწყება</translation>
+<translation id="5429993543155113935">ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია</translation>
 <translation id="5430931332414098647">მყისიერი ტეტერინგი</translation>
 <translation id="5431318178759467895">ფერი</translation>
 <translation id="5433020815079095860">შემავალი აუდიოსიგნალი</translation>
@@ -810,6 +813,7 @@
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166852626429024716">წამოიწყეთ ძიება თქვენს მოწყობილობაში, აპებში, პარამეტრებსა და ვებში...</translation>
 <translation id="6179832488876878285">აქ შეგიძლიათ მნიშვნელოვანი ფაილების ჩამაგრება. დასაწყებად გახსენით ფაილების აპი.</translation>
+<translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
 <translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@
 <translation id="6431865393913628856">ეკრანის ჩანაწერი</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> „<ph name="RECEIVER_NAME" />“-ში</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> მოვლენა</translation>
+<translation id="6449483711453944360">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია</translation>
 <translation id="6452181791372256707">უარყოფა</translation>
 <translation id="6453179446719226835">ენა შეიცვალა</translation>
 <translation id="6459472438155181876">ეკრანის გაგრძელება <ph name="DISPLAY_NAME" />-მდე</translation>
@@ -934,6 +939,7 @@
 <translation id="7025533177575372252">დაუკავშირეთ <ph name="DEVICE_NAME" /> თქვენს ტელეფონს</translation>
 <translation id="7026338066939101231">დეკრემენტი</translation>
 <translation id="7029814467594812963">სესიიდან გამოსვლა</translation>
+<translation id="7032161822340700104">დაშვებულია მხოლოდ 6 შაბლონი. ახლის დასამატებლად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ასისტენტი</translation>
 <translation id="7042322267639375032">სტატუსის არის ჩაკეცვა</translation>
 <translation id="7045033600005038336">გსურთ, ჩაანაცვლოთ შაბლონი?</translation>
@@ -1237,6 +1243,7 @@
 <translation id="9000771174482730261">მეხსიერების მართვა</translation>
 <translation id="9017320285115481645">შეიყვანეთ Family Link-ის წვდომის კოდი მშობლებისთვის.</translation>
 <translation id="9024331582947483881">მთელ ეკრანზე</translation>
+<translation id="9034924485347205037">Linux ფაილები</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა</translation>
 <translation id="9059834730836941392">შეტყობინების ჩაკეცვა</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>

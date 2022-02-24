@@ -330,6 +330,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3105917916468784889">Realizează o captură de ecran</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Elimină sugestia</translation>
+<translation id="3120421559657122717">Închizi dispozitivul?</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139942575505304791">Desktop 1</translation>
 <translation id="315116470104423982">Date mobile</translation>
@@ -350,6 +351,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
+<translation id="3289544412142055976">Aplicațiile Linux nu sunt acceptate</translation>
 <translation id="3289674678944039601">Se încarcă prin adaptor</translation>
 <translation id="3290356915286466215">Nesecurizată</translation>
 <translation id="3294437725009624529">Invitat</translation>
@@ -697,6 +699,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5400461572260843123">Setări rapide, Apasă pe tasta de căutare + stânga pentru a accesa centrul de notificări.</translation>
 <translation id="5426063383988017631">Meniul Setări închis</translation>
 <translation id="5428899915242071344">Începe selectarea</translation>
+<translation id="5429993543155113935">Ferestrele incognito nu sunt acceptate</translation>
 <translation id="5430931332414098647">Tethering instantaneu</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5433020815079095860">Intrare audio</translation>
@@ -836,6 +839,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6431865393913628856">Înregistrarea ecranului</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> eveniment</translation>
+<translation id="6449483711453944360">Aplicațiile Linux și ferestrele incognito nu sunt acceptate</translation>
 <translation id="6452181791372256707">Respingeți</translation>
 <translation id="6453179446719226835">Limba a fost schimbată</translation>
 <translation id="6459472438155181876">Se extinde ecranul pe <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +938,7 @@ Instalare nouă</translation>
 <translation id="7025533177575372252">Conectează-ți dispozitivul <ph name="DEVICE_NAME" /> cu telefonul</translation>
 <translation id="7026338066939101231">Micșorează</translation>
 <translation id="7029814467594812963">Ieși din sesiune</translation>
+<translation id="7032161822340700104">Sunt permise numai șase șabloane. Elimină un șablon pentru a salva altul nou.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Restrânge zona de stare</translation>
 <translation id="7045033600005038336">Înlocuiești șablonul?</translation>
@@ -1237,6 +1242,7 @@ Instalare nouă</translation>
 <translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
 <translation id="9024331582947483881">ecran complet</translation>
+<translation id="9034924485347205037">Fișiere Linux</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Restrânge notificarea</translation>
 <translation id="9065203028668620118">Editează</translation>

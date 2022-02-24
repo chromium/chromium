@@ -1269,6 +1269,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">ഒൻപതാമത്തെ റോൾ</translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
+<translation id="4905659621780993806">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുന്നതിന് മുമ്പ് തുറന്നിരിക്കുന്ന ഇനങ്ങളെല്ലാം സംരക്ഷിക്കുക.</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുക (ഡൗൺലോഡ് ചെയ്യേണ്ടതില്ല)</translation>
 <translation id="4923459931733593730">പേയ്‌മെന്റ് രീതി</translation>
@@ -1682,6 +1683,7 @@
 <translation id="6290238015253830360">നിങ്ങളുടെ നിർദ്ദേശിച്ച ലേഖനങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{നിങ്ങളുടെ ഉപകരണം ഇപ്പോൾ റീസ്റ്റാർട്ട് ചെയ്യും}=1{നിങ്ങളുടെ ഉപകരണം 1 സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="6302269476990306341">Chrome സ്വമേധയാ പൂരിപ്പിക്കൽ നിർത്തുന്നതിലെ Google അസിസ്‌റ്റന്റ് സാന്നിധ്യം</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ലഭ്യമല്ല.</translation>
 <translation id="6312113039770857350">വെബ്പേജ് ലഭ്യമല്ല</translation>
@@ -2005,6 +2007,7 @@
 <translation id="7378627244592794276">വേണ്ട</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">ബാധകമല്ല</translation>
+<translation id="7388594495505979117">{0,plural, =1{നിങ്ങളുടെ ഉപകരണം 1 മിനിറ്റിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # മിനിറ്റിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="7390545607259442187">കാർഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7392089738299859607">വിലാസം അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="7399802613464275309">സുരക്ഷാ പരിശോധന</translation>
@@ -2359,6 +2362,7 @@
 <translation id="8507227106804027148">കമാന്‍ഡ് ലൈന്‍‌</translation>
 <translation id="8508648098325802031">തിരയൽ ഐക്കൺ</translation>
 <translation id="8511402995811232419">കുക്കികൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="8519753333133776369">നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിച്ചിരിക്കുന്ന HID ഉപകരണം</translation>
 <translation id="8522552481199248698">നിങ്ങളുടെ Google അക്കൗണ്ട് പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chrome സഹായിക്കും.</translation>
 <translation id="8530813470445476232">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്‌ക്കുക</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>

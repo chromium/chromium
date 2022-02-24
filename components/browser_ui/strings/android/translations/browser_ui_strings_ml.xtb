@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> എന്ന സൈറ്റ് ചേർത്തൂ</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ഡൗൺലോഡ് താൽക്കാലികമായി നിർത്തി</translation>
+<translation id="1409426117486808224">തുറന്ന ടാബുകൾക്കായി ലളിതവൽക്കരിച്ച കാഴ്ച</translation>
 <translation id="1415402041810619267">URL ചുരുക്കി</translation>
 <translation id="1446450296470737166">MIDI ഉപകരണങ്ങളുടെ പൂർണ്ണ നിയന്ത്രണം അനുവദിക്കുക</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> നീക്കം ചെയ്യുക</translation>
 <translation id="2289270750774289114">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ഒരു സൈറ്റ് താൽപ്പര്യപ്പെടുമ്പോൾ ചോദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="2315043854645842844">ഓപ്പറേറ്റിംഗ് സിസ്റ്റം ക്ലയന്റിന്റെ സർട്ടിഫിക്കറ്റ് തിരഞ്ഞെടുക്കലിനെ പിന്തുണയ്‌ക്കുന്നില്ല.</translation>
+<translation id="2321958826496381788">നിങ്ങൾക്ക് ഇത് സൗകര്യപ്രദമായി വായിക്കാൻ കഴിയുന്നതുവരെ സ്ലൈഡർ വലിക്കുക. ഒരു ഖണ്ഡികയിൽ ഇരട്ട-ടാപ്പ് ചെയ്‌തതിനുശേഷം ടെക്‌സ്റ്റിന് ഈ വലുപ്പമെങ്കിലും ഉണ്ടായിരിക്കണം.</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2379925928934107488">സാധ്യമാകുമ്പോഴെല്ലാം, Chrome ഡാർക്ക് തീം ഉപയോഗിക്കുമ്പോൾ സൈറ്റുകൾക്കും ഡാർക്ക് തീം ബാധകമാക്കുക</translation>
+<translation id="2387895666653383613">ടെക്‌സ്റ്റ് സ്‌കെയിലിംഗ്</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും അനുവദിച്ചു}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> എന്നിവയും മറ്റ് <ph name="NUM_MORE" /> എണ്ണവും അനുവദിച്ചു}}</translation>
 <translation id="2434158240863470628">ഡൗൺലോഡ് പൂർത്തിയായി <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉപയോഗം</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3859306556332390985">മുന്നോട്ട് നീക്കുക</translation>
+<translation id="3895926599014793903">നിർബന്ധിത സൂം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3955193568934677022">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3987993985790029246">ലിങ്ക് പകർത്തുക</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="4008040567710660924">ഒരു പ്രത്യേക സൈറ്റിനായി കുക്കികൾ അനുവദിക്കുക.</translation>
+<translation id="4040330681741629921">ലളിതമാക്കിയ കാഴ്ചയിൽ ഒരു സൈറ്റ് കാണിക്കാൻ കഴിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
+<translation id="4149994727733219643">വെബ് പേജുകൾക്കായി ലളിതവൽക്കരിച്ച കാഴ്ച</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
 <translation id="4194328954146351878">NFC ഉപകരണങ്ങളിലെ വിവരങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്താനും സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ചോദിക്കുക (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="4200726100658658164">ലൊക്കേഷൻ ക്രമീകരണം തുറക്കുക</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">സൈറ്റുകൾ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും ഇത് മായ്‌ക്കും.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ഒരെണ്ണം കൂടി)}other{(+ # എണ്ണം കൂടി)}}</translation>
 <translation id="5403592356182871684">പേരുകൾ</translation>
+<translation id="5412236728747081950">കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ ലഭിക്കുന്നു</translation>
 <translation id="5438097262470833822">ഇത് തിരഞ്ഞെടുക്കുന്നതിലൂടെ <ph name="WEBSITE" /> എന്നതിനുള്ള അനുമതികൾ റീസെറ്റ് ചെയ്യും</translation>
 <translation id="5489227211564503167">ആകെ <ph name="TOTAL_TIME" />-ൽ <ph name="ELAPSED_TIME" /> കഴിഞ്ഞു.</translation>
 <translation id="5494752089476963479">അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങള്‍ കാണിക്കുന്ന സൈറ്റുകളിലെ പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5649053991847567735">യാന്ത്രിക ഡൗൺലോഡുകൾ</translation>
+<translation id="5668404140385795438">സൂം ഇൻ ചെയ്യുന്നത് തടയുന്നതിനുള്ള ഒരു വെബ്സൈറ്റിന്റെ അഭ്യർത്ഥന അസാധുവാക്കുക</translation>
 <translation id="5677928146339483299">തടഞ്ഞു</translation>
 <translation id="5689516760719285838">ലൊക്കേഷൻ</translation>
 <translation id="5690795753582697420">Android ക്രമീകരണത്തിൽ ക്യാമറ ഓഫാക്കിയിരിക്കുന്നു</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് ചിത്രങ്ങളും ടെക്‌സ്‌റ്റും റീഡ് ചെയ്യുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
+<translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="6992289844737586249">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ആദ്യം ചോദിക്കുക (ശുപാർശചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="7000754031042624318">Android ക്രമീകരണത്തിൽ ഓഫാക്കിയിരിക്കുന്നു</translation>
 <translation id="7016516562562142042">നിലവിലെ തിരയൽ യന്ത്രത്തിൽ അനുവദിച്ചിരിക്കുന്നു</translation>
+<translation id="702463548815491781">TalkBack അല്ലെങ്കിൽ സ്വിച്ച് ആക്‌സസ് ഓണായിരിക്കുമ്പോൾ ശുപാർശ ചെയ്യുന്നു</translation>
 <translation id="7053983685419859001">തടയുക</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 തിരഞ്ഞെടുത്തു}other{# തിരഞ്ഞെടുത്തു}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> എണ്ണം തിരഞ്ഞെടുത്തു. സ്‌ക്രീനിന്റെ മുകളിലുള്ള ഭാഗത്തിന് സമീപം ഓപ്‌ഷനുകൾ ലഭ്യമാണ്</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">കണക്ഷൻ സുരക്ഷിതമാണ്</translation>
 <translation id="8249310407154411074">മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
+<translation id="8284326494547611709">അടിക്കുറിപ്പുകൾ</translation>
 <translation id="8300705686683892304">ആപ്പ് മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="8324158725704657629">വീണ്ടും ആവശ്യപ്പെടരുത്</translation>
 <translation id="8372893542064058268">ഒരു പ്രത്യേക സൈറ്റിന് വേണ്ടി പശ്ചാത്തലം സമന്വയിപ്പിക്കൽ അനുവദിക്കുക.</translation>

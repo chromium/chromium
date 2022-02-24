@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Жаңыртылууда (<ph name="PERCENTAGE_VALUE" />% аткарылды)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> тармагы жок</translation>
+<translation id="131421566576084655">Трафиктин колдонулушу жөнүндө маалымат акыркы жолу качан баштапкы абалга келтирилгени белгисиз</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Үй тармагы, роуминг жок</translation>
 <translation id="1327977588028644528">Шлюз</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Менде жуп ачкыч бар</translation>
+<translation id="1435763214710588005">Трафиктин колдонулушу жөнүндө маалымат ар бир айдын тандалган күнү автоматтык түрдө баштапкы абалга келтирилет</translation>
 <translation id="1442433966118452622">Сүрөттүн булагы</translation>
 <translation id="1451536289672181509">Түзмөк — баскычтоп.</translation>
 <translation id="1459693405370120464">Аба ырайы</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> жаңыртылбай жатат</translation>
 <translation id="1567064801249837505">Альбомдор</translation>
 <translation id="1572585716423026576">Тушкагаз катары коюу</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бери колдонулган трафик</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
 <translation id="1641857168437328880">Документтерди берүүчү түзмөк (бир тараптуу)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP тармактык коргоосу</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4155551848414053977">Сканер күйгүзүлгөнүн жана тармак аркылуу жеткиликтүү же түздөн-түз туташууга даяр экенин текшериңиз</translation>
+<translation id="4170180284036919717">Сүрөткө тартуу</translation>
 <translation id="4170700058716978431">АТКАРЫЛГАН ЖОК</translation>
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4213104098953699324">USB баскычтобу</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Кайра коюу</translation>
 <translation id="594552776027197022">Башаламан иретте жуп ачкычты түзүү</translation>
 <translation id="5972388717451707488">Каражатты жаңыртуу</translation>
+<translation id="6034694447310538551">Ай сайын автоматтык түрдө баштапкы абалга келтирүүнү иштетүү</translation>
 <translation id="6037291330010597344">Сканердин документ түрмөгү бош. Документтерди коюп, кайра аракет кылыңыз.</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6040852767465482106">Аноним</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6235460611964961764">Трафиктин колдонулушу жөнүндө маалыматты кол менен баштапкы абалга келтирүү</translation>
 <translation id="6243280677745499710">Учурда тушкагаз катары орнотулган</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">Демейки тармак күтүү убакытынын босогосунан жогору</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> аттуу колдонуучунун <ph name="DEVICE_TYPE" /> түзмөгү</translation>
 <translation id="8919837981463578619">Басылып чыгарылган жок - Такта ордунда эмес</translation>
+<translation id="8923267550422472772">Баштапкы абалга келтирүү күнү</translation>
 <translation id="8928727111548978589">Басылып чыгарылган жок - Кагаз түгөнүп калды</translation>
 <translation id="8930521118335213258">Жупташкан түзмөк</translation>
 <translation id="8930622219860340959">Зымсыз</translation>

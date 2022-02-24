@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Se ha añadido el sitio <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga en pausa</translation>
+<translation id="1409426117486808224">Vista simplificada de las pestañas abiertas</translation>
 <translation id="1415402041810619267">URL truncada</translation>
 <translation id="1446450296470737166">Control total dispositivos MIDI</translation>
 <translation id="1620510694547887537">Cámara</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Eliminar</translation>
 <translation id="2289270750774289114">Preguntar cuando un sitio web quiera buscar dispositivos Bluetooth cercanos (recomendado)</translation>
 <translation id="2315043854645842844">El sistema operativo no admite la selección de certificados de cliente.</translation>
+<translation id="2321958826496381788">Arrastra el control deslizante hasta que puedas leer cómodamente. El texto debe tener al menos este tamaño después de tocar un párrafo dos veces.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">El tema oscuro se aplica a los sitios si Chrome lo usa y es posible</translation>
+<translation id="2387895666653383613">Ajuste de texto</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="NUM_MORE" /> más permitidos}}</translation>
 <translation id="2434158240863470628">Descarga finalizada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3859306556332390985">Buscar hacia delante</translation>
+<translation id="3895926599014793903">Forzar zoom</translation>
 <translation id="3955193568934677022">Permitir que los sitios reproduzcan contenido protegido (recomendado)</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permitir cookies en un sitio específico.</translation>
 <translation id="4046123991198612571">Pista siguiente</translation>
+<translation id="4149994727733219643">Vista simplificada de páginas web</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4194328954146351878">Pregunta antes de permitir que los sitios vean y cambien la información de los dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Ajustes de ubicación</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
+<translation id="5668404140385795438">Ignorar la solicitud de un sitio web para no ampliar la imagen</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
 <translation id="5689516760719285838">Ubicación</translation>
 <translation id="5690795753582697420">La cámara está desactivada en los ajustes de Android</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">Evitar que los sitios lean texto e imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6981982820502123353">Accesibilidad</translation>
 <translation id="6992289844737586249">Preguntar antes de permitir que los sitios utilicen el micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivado en los ajustes de Android</translation>
 <translation id="7016516562562142042">Permitido en el motor de búsqueda actual</translation>
+<translation id="702463548815491781">Se recomienda cuando TalkBack o la accesibilidad con interruptores están activados</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hay opciones disponibles en la parte superior de la pantalla</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una aplicación</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano de un sitio específico.</translation>

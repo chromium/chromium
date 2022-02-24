@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">سائٹ <ph name="SITE_NAME" /> شامل کی گئی</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384959399684842514">ڈاؤن لوڈ موقوف ہوگیا</translation>
+<translation id="1409426117486808224">کھلے ٹیبز کیلئے سادہ منظر</translation>
 <translation id="1415402041810619267">‏URL کو چھوٹا کیا گیا</translation>
 <translation id="1446450296470737166">‏MIDI آلات کے مکمل کنٹرول کی اجازت دیں</translation>
 <translation id="1620510694547887537">کیمرا</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ہٹائیں</translation>
 <translation id="2289270750774289114">اس وقت پوچھیں جب کسی سائٹ میں قریبی بلوٹوتھ آلات کو دریافت کرنا مقصود ہو (تجویز کردہ)</translation>
 <translation id="2315043854645842844">کلائنٹ سائڈ سرٹیفکیٹ کا انتخاب آپریٹنگ سسٹم کے ذریعہ تعاون یافتہ نہیں ہے۔</translation>
+<translation id="2321958826496381788">سلائیڈر کو اس وقت تک گھسیٹیں جب اسے آرام سے پڑھ سکتے ہوں۔ کسی پیراگراف پر دوبار تھپتھپانے کے بعد متن کم از کم اتنا بڑا دکھائی دینا چاہیے۔</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2379925928934107488">‏ممکن ہو تو سائٹس پر گہری تھیم لاگو ہوتی ہے جب Chrome کو گہری تھیم استعمال کرنے کیلئے سیٹ کیا جاتا ہے</translation>
+<translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
 <translation id="2402980924095424747">‎<ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید کی اجازت دی گئی}}</translation>
 <translation id="2434158240863470628">ڈاؤن لوڈ مکمل ہو گیا <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
+<translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
 <translation id="3955193568934677022">سائٹس کو محفوظ کردہ مواد چلانے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3987993985790029246">لنک کاپی کریں</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">مخصوص سائٹ کے لیے کوکیز کی اجازت دیں۔</translation>
+<translation id="4040330681741629921">کسی سائٹ کو سادہ منظر میں دکھائے جانے پر اطلاع حاصل کریں</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
+<translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
 <translation id="4194328954146351878">‏سائٹس کو NFC آلات پر معلومات دیکھنے اور تبدیل کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="4200726100658658164">مقام کی ترتیبات کھولیں</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">اس سے سائٹس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{‏(‎+1 مزید)}other{(# + مزید)}}</translation>
 <translation id="5403592356182871684">نام</translation>
+<translation id="5412236728747081950">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں موصول کرتی ہے</translation>
 <translation id="5438097262470833822">یہ انتخاب <ph name="WEBSITE" /> کے لیے اجازتوں کو ری سیٹ کرے گا</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> میں سے <ph name="ELAPSED_TIME" /> وقت گزر گیا۔</translation>
 <translation id="5494752089476963479">دخل انداز یا گمراہ کن اشتہارات دکھانے والی سائٹس پر اشتہارات کو مسدود کریں</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
+<translation id="5668404140385795438">زوم ان کرنے سے بچنے کیلئے کسی ویب سائٹ کی درخواست کو اوور رائیڈ کریں</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5690795753582697420">‏Android کی ترتیبات میں کیمرا آف ہے</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">سائٹس کو کلپ بورڈ سے ٹیکسٹ اور تصاویر پڑھنے سے مسدود کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
+<translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
 <translation id="7016516562562142042">موجودہ سرچ انجن کیلئے اجازت یافتہ</translation>
+<translation id="702463548815491781">‏TalkBack یا سوئچ رسائی آن ہونے پر تجویز کردہ</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> منتخب ہو گئے۔ اختیارات اسکرین کے اوپری حصہ کے قریب دستیاب ہیں</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
 <translation id="8249310407154411074">اوپر منتقل کریں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
+<translation id="8284326494547611709">کیپشنز</translation>
 <translation id="8300705686683892304">ایپ کے زیر انتظام ہیں</translation>
 <translation id="8324158725704657629">دوبارہ مت پوچھیں</translation>
 <translation id="8372893542064058268">کسی مخصوص سائٹ کیلئے پس منظر کی مطابقت پذیری کی اجازت دیں۔</translation>

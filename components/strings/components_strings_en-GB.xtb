@@ -518,6 +518,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2523886232349826891">Saved on this device only</translation>
 <translation id="2524461107774643265">Add More Information</translation>
 <translation id="2529899080962247600">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be ignored.</translation>
+<translation id="2535585790302968248">Open a new incognito tab to browse privately</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
 <translation id="2539524384386349900">Detect</translation>
@@ -584,6 +585,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2709516037105925701">Auto-fill</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to manage your payments and credit card info in Chrome settings</translation>
+<translation id="271663710482723385">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to exit full screen</translation>
 <translation id="2721148159707890343">Request succeeded</translation>
 <translation id="2723669454293168317">Run a safety check in Chrome settings</translation>
 <translation id="2726001110728089263">Side tray</translation>
@@ -1259,6 +1261,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4854362297993841467">This delivery method isn’t available. Try a different method.</translation>
 <translation id="4854853140771946034">Create a new note in Google Keep quickly</translation>
 <translation id="485902285759009870">Verifying code…</translation>
+<translation id="4866506163384898554">Press |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| to show your cursor</translation>
 <translation id="4876188919622883022">Simplified view</translation>
 <translation id="4876305945144899064">No username</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{None}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
@@ -1272,6 +1275,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Ninth roll</translation>
 <translation id="4901778704868714008">Save...</translation>
+<translation id="4905659621780993806">Your administrator will restart your device automatically at <ph name="TIME" /> on <ph name="DATE" />. Save any open items before your device restarts.</translation>
 <translation id="4913987521957242411">Punch top left</translation>
 <translation id="4918221908152712722">Install <ph name="APP_NAME" /> (no download required)</translation>
 <translation id="4923459931733593730">Payment</translation>
@@ -1481,6 +1485,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5560088892362098740">Expiry Date</translation>
 <translation id="55635442646131152">Document outline</translation>
+<translation id="5565613213060953222">Open incognito tab</translation>
 <translation id="5565735124758917034">Active</translation>
 <translation id="5570825185877910964">Protect account</translation>
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
@@ -1685,6 +1690,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6290238015253830360">Your suggested articles appear here</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Your device will restart now}=1{Your device will restart in 1 second}other{Your device will restart in # seconds}}</translation>
 <translation id="6302269476990306341">Google Assistant in Chrome stopping</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is unreachable.</translation>
 <translation id="6312113039770857350">Web page not available</translation>
@@ -1946,6 +1952,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7192203810768312527">Frees up <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7201591969684833065">Your administrator can see:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter to open a new incognito tab to browse privately</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> doesn't adhere to security standards.</translation>
 <translation id="7210993021468939304">Linux activity within the container, and can install and run Linux apps within the container</translation>
@@ -2008,6 +2015,7 @@ Additional details:
 <translation id="7378627244592794276">Nope</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Not applicable</translation>
+<translation id="7388594495505979117">{0,plural, =1{Your device will restart in 1 minute}other{Your device will restart in # minutes}}</translation>
 <translation id="7390545607259442187">Confirm Card</translation>
 <translation id="7392089738299859607">Update address</translation>
 <translation id="7399802613464275309">Safety check</translation>
@@ -2210,6 +2218,7 @@ Additional details:
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Screen sharing with <ph name="APPLICATION_TITLE" /> was resumed</translation>
 <translation id="7995512525968007366">Not Specified</translation>
+<translation id="7998269595945679889">Open the incognito tab button, press Enter to open a new incognito tab to browse privately</translation>
 <translation id="800218591365569300">Try closing other tabs or programmes to free up memory.</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{This card and its billing address will be saved. You'll be able to use it when signed in to <ph name="USER_EMAIL" />.}other{These cards and their billing addresses will be saved. You'll be able to use them when signed in to <ph name="USER_EMAIL" />.}}</translation>
@@ -2364,6 +2373,7 @@ Additional details:
 <translation id="8507227106804027148">Command line</translation>
 <translation id="8508648098325802031">Search icon</translation>
 <translation id="8511402995811232419">Manage cookies</translation>
+<translation id="8519753333133776369">HID device allowed by your administrator</translation>
 <translation id="8522552481199248698">Chrome can help you protect your Google account and change your password.</translation>
 <translation id="8530813470445476232">Clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>

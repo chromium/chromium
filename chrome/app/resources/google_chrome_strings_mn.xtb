@@ -13,6 +13,7 @@
 <translation id="1142745911746664600">Chrome-г шинэчлэх боломжгүй байна</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
 <translation id="1182414570724401860">Chrome танд энэ файлыг татахгүй эсвэл нээхгүй байхыг зөвлөж байна</translation>
+<translation id="1201241595274620956">CloudReady 2.0-ийн нөхцөл</translation>
 <translation id="1278833599417554002">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах Үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google Chrome үйлдлийн системийн нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
@@ -40,11 +41,15 @@
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1786003790898721085">Та Chrome-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="1812689907177901597">Үүнийг унтрааснаар та Gmail зэрэг Google-н сайтуудад Chrome-д нэвтрэлгүйгээр нэвтэрч болно</translation>
+<translation id="1847459800604232346">CloudReady 2.0-ийг эхлүүлэх</translation>
 <translation id="1860536484129686729">Энэ сайтыг ашиглахын тулд Chrome-д зөвшөөрөл шаардлагатай</translation>
+<translation id="1865667134297225786">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул CloudReady 2.0 таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="1873233029667955273">Google Chrome таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="1874309113135274312">Google Chrome Бета (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
+<translation id="1887927549935943139">Синк нь таны домэйнд боломжгүй тул CloudReady 2.0 таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="1919130412786645364">Chromium-д нэвтрэхийг зөвшөөрөх</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Профайл тус бүр Chrome-н өөрийн мэдээллийг агуулах бөгөөд үүнд хавчуурга, түүх, нууц үг болон бусад мэдээлэл багтана</translation>
 <translation id="2063848847527508675">Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome үйлдлийн системийг дахин эхлүүлнэ үү.</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
@@ -55,12 +60,15 @@
 <translation id="2258103955319320201">Та бүх төхөөрөмж дээрээ Chrome хөтчийн зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу</translation>
 <translation id="2290014774651636340">Google-ийн API түлхүүр байхгүй байна. Google Chrome-ийн зарим функц идэвхгүй болно.</translation>
 <translation id="2290095356545025170">Та Google Chrome-ыг устгах гэж байгаадаа итгэлтэй байна уу?</translation>
+<translation id="2297776811548050971">CloudReady 2.0-ийг <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="2309047409763057870">Энэ нь Google Chrome-н хоёр дахь суулгалт тул таны өгөгдмөл хөтчөөр сонгох боломжгүй.</translation>
 <translation id="2345992953227471816">Эдгээр өргөтгөл хортой программ агуулж байгааг Chrome олж мэдлээ:</translation>
 <translation id="2348335408836342058">Энэ сайтыг ашиглахын тулд Chrome-д таны камер, микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="234869673307233423">Chrome таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="235650106824528204">Энэ профайлыг ашиглах үед үүссэн Chrome-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Цааш</translation>
+<translation id="2371517829376452747">Хэрэв тохиргоог энэ хуудсанд харуулахгүй байвал <ph name="LINK_BEGIN" />
+        CloudReady 2.0-ийн тохиргооноосоо<ph name="LINK_END" /> хайна уу</translation>
 <translation id="2429317896000329049">Таны домэйнд sync хийх боломжгүй учраас Google Chrome нь таны өгөгдлийг sync хийж чадсангүй.</translation>
 <translation id="2467438592969358367">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна. Үүнийг зөвшөөрч байгаа бол Windows-н нууц үгээ оруулна уу.</translation>
 <translation id="2485422356828889247">Устгах</translation>
@@ -89,6 +97,7 @@
 <translation id="2926676257163822632">Сул нууц үгийг таахад хялбар байдаг. Chrome-д <ph name="BEGIN_LINK" />танд зориулан сайн нууц үг үүсгэж, санах<ph name="END_LINK" /> боломж олгоорой.</translation>
 <translation id="2926952073016206995">Chrome-д энэ сайтын камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="2929907241665500097">Chrome-г шинэчлээгүй, ямар нэг алдаа гарлаа. <ph name="BEGIN_LINK" />Chrome-г шинэчлэхтэй холбоотой асуудлууд болон амжилтгүй болсон шинэчлэлтүүдийг засна уу.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">&amp;CloudReady 2.0-ийг шинэчлэхийн тулд дахин ачаална уу</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="303514781271618814">Chrome нь сайтуудад таны өгөгдлийг бага хэмжээгээр ашиглах боломжийг олгодог шинэ боломжуудыг судалж байна</translation>
 <translation id="3037838751736561277">Google Chrome нь суурь горимд байна.</translation>
@@ -115,6 +124,7 @@
 <translation id="3533694711092285624">Хадгалсан ямар ч нууц үг байхгүй байна. Таныг нууц үгсээ хадгалах үед Chrome тэднийг шалгах боломжтой.</translation>
 <translation id="3541482654983822893">Chrome таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу.</translation>
 <translation id="3576528680708590453">Таны системийн админ Google Chrome-г <ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
+<translation id="3582634744482121096">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр CloudReady 2.0-ийн онцлогууд, гүйцэтгэлийг сайжруулахад тусална уу.</translation>
 <translation id="3582972582564653026">Төхөөрөмжүүддээ Chrome-г синк хийж, хувийн болгох</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна}=1{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас шаардаж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
 <translation id="3622797965165704966">Одоо та Google хаягаа ашиглан мөн өөр бусад компьютер дээр Chrome-г ашиглахад хялбар боллоо.</translation>
@@ -135,6 +145,7 @@
 <translation id="4149882025268051530">Суурьлуулагч Archive файлыг задалж чадсангүй. Google Chrome-ыг дахин татаж авна уу.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome-г 1 хоногийн дотор дахин ажиллуулна уу}other{Chrome-г # хоногийн дотор дахин ажиллуулна уу}}</translation>
 <translation id="4205939740494406371">Chrome таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу эсвэл <ph name="BEGIN_LINK" />өөрийн Google Бүртгэл дэх нууц үгсийг шалгана уу<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">CloudReady 2.0 систем</translation>
 <translation id="4242034826641750751">Chrome-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="424864128008805179">Chrome-с гарах уу?</translation>
 <translation id="4251615635259297716">Chrome өгөгдлөө энэ бүртгэл рүү холбох уу?</translation>
@@ -152,7 +163,9 @@
 <translation id="4458462641685292929">Google Chrome-н өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="4480040274068703980">Таныг нэвтрэхэд алдаа гарсны улмаас Chrome-ийн үйлдлийн систем таны датаг синхрончлох боломжгүй байна.</translation>
 <translation id="4521185804071812304">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээх замаар Chrome үйлдлийн системийн онцлогууд болон гүйцэтгэлийг сайжруулахад туслах.</translation>
+<translation id="4539063627668028557">CloudReady 2.0 хувилбар</translation>
 <translation id="4561051373932531560">Google Chrome нь танд веб дээр утасны дугаараа хийж Skype-аар дуудлага хийх боломжийг олгоно.</translation>
+<translation id="4562712242781620537">CloudReady 2.0 систем</translation>
 <translation id="4567424176335768812">Та <ph name="USER_EMAIL_ADDRESS" /> ингэж нэвтэрсэн байна. Одоо та өөрийн нэвтэрсэн бүх төхөөрөмжүүд дээрээ хайлтын жагсаалт, түүх болон бусад тохиргоонууд руугаа нэвтэрч болно.</translation>
 <translation id="4571503333518166079">Chrome-н мэдэгдлийн тохиргоо хэсэгт очих</translation>
 <translation id="459622048091363950">Chrome-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
@@ -178,6 +191,7 @@
 Зарим функц ажиллахгүй байж болох юм. Өөр профайл тодорхойл эсвэл Chrome-ийн шинэ хувилбарыг хэрэглэнэ үү.</translation>
 <translation id="521447420733633466">Хэрэв та төхөөрөмжийг дундаа ашигладаг бол найз нөхөд, гэр бүл тань хөтчөөр тусдаа үзэж, Chrome-г хүссэнээрээ тохируулах боломжтой</translation>
 <translation id="5251420635869119124">Зочид ч бусдаас хоцролгүй Chrome-ийг бүх талаар нь ашиглах боломжтой.</translation>
+<translation id="5307623274346663914">Шинэчлэлтийг хэрэгжүүлэхийн тулд CloudReady 2.0-ийг дахин эхлүүлэх шаардлагатай.</translation>
 <translation id="5334487786912937552">Файл татахын тулд Chrome-д хадгалах санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="5386244825306882791">Энэ нь мөн таныг Chrome эхлүүлэхэд ямар хуудаснуудыг харуулах эсвэл Omnibox-оос хайхыг хянадаг.</translation>
 <translation id="5394833366792865639">Chrome-н таб хуваалцах</translation>
@@ -188,8 +202,10 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chrome блок хийсэн.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас хүсэж байна}=1{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас хүсэж байна. Таны нууцлалтай цонхыг дахин нээхгүй.}other{Энэ шинэчлэлтийг хэрэгжүүлэхийн тулд Chrome-г дахин ачаалахыг таны администратор танаас хүсэж байна. Таны # нууцлалтай цонхыг дахин нээхгүй.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0-ийг нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="5686916850681061684">Google Chrome-г өөрчилж, хянана уу. Та ямар нэг зүйлд анхаарлаа хандуулах шаардлагатай байна. Дэлгэрэнгүй мэдээлэл авахын тулд товшино уу.</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
+<translation id="5706272942857408234">Нэвтрэх алдааны улмаас CloudReady 2.0 таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 секундийн дараа дахин эхэлнэ}other{Google Chrome # секундийн дараа дахин эхэлнэ}}</translation>
 <translation id="5736850870166430177">Хэрэв сайт таны нууц үгийг хулгайлахаар оролдох эсвэл таныг аюултай файл татах үед Chrome URL-г хуудасны бага зэрэг контентын хамт Аюулгүй үзэх рүү мөн илгээж болзошгүй</translation>
 <translation id="573759479754913123">Chrome үйлдлийн системийн тухай</translation>
@@ -222,15 +238,23 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6679975945624592337">Google Chrome-г цаана ажиллуулахыг зөвшөөрөх</translation>
 <translation id="6696915334902295848">Chrome-д энэ сайтад зориулж микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="6739177684496155661">Chrome-н шинэ профайлд үргэлжлүүлэх үү?</translation>
+<translation id="6749459139769042303">CloudReady 2.0-тэй холбоотой тусламж авах</translation>
 <translation id="6750954913813541382">Зөв бичгийн алдааг засахын тулд Chrome таны хөтөч дээр бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="677276454032249905">Chrome-с ямар ч үед гарах уу?</translation>
+<translation id="6814748008107187409">Хэрэв тохиргоог энэ хуудсанд харуулахгүй байвал <ph name="LINK_BEGIN" />
+        Chrome OS-н тохиргооноосоо<ph name="LINK_END" /> хайна уу</translation>
 <translation id="683440813066116847">mDNS-ийг зөвшөөрөх Google Chrome Canary-ийн гадаад дүрэм.</translation>
 <translation id="6881299373831449287">Chrome-г шинэчилж байна</translation>
 <translation id="6885412569789873916">Chrome Бета Апп</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах Үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google CloudReady 2.0-ийн нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
 <translation id="6943584222992551122">Энэ хэрэглэгчийн хөтчийн өгөгдлийг энэ төхөөрөмжөөс устгана. Өгөгдлийг сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="6967962315388095737">mDNS урсгалыг зөвшөөрөх Google Chrome Бета-н дотоод дүрэм.</translation>
 <translation id="6989339256997917931">Google Chrome шинэчлэгдсэн байна, гэхдээ та үүнийг ядаж 30 хоног ч ашиглаагүй байна.</translation>
+<translation id="700644001690392105">CloudReady 2.0-ийн тухай</translation>
 <translation id="7025800014283535195">Та энд Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
+<translation id="7036251913954633326">Хэрэв та энэ бүртгэлийг зөвхөн нэг удаа ашиглахыг хүсвэл Chrome хөтчид <ph name="GUEST_LINK_BEGIN" />Зочны горимыг<ph name="GUEST_LINK_END" /> ашиглах боломжтой. Хэрэв та өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл өөрийн <ph name="DEVICE_TYPE" /> дээр <ph name="LINK_BEGIN" />шинэ хүн нэмнэ үү<ph name="LINK_END" />.
+
+Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Google Бүртгэлүүдээ <ph name="SETTINGS_LINK_BEGIN" />Тохиргоо<ph name="SETTINGS_LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="7062128746136194023">Таны эцэг эх Chrome-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэхийг зөвшөөрдөггүй.</translation>
 <translation id="7085332316435785646">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chrome-н түүхийг багтаах эсэхээ сонгоно уу</translation>
 <translation id="7088681679121566888">Chrome шинэчлэгдсэн байна</translation>
@@ -244,6 +268,9 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7296210096911315575">Ашиглалт болон аюулгүй байдлын чухал мэдээлэл</translation>
 <translation id="7308322188646931570">Файл татахын тулд Chrome-д санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
+<translation id="7388770099345495132">Хэрэв та энэ бүртгэлийг зөвхөн нэг удаа ашиглахыг хүсвэл Chrome хөтчид Зочны горимыг ашиглах боломжтой. Хэрэв та өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл өөрийн <ph name="DEVICE_TYPE" /> дээр <ph name="LINK_BEGIN" />шинэ хүн нэмнэ үү<ph name="LINK_END" />.
+
+Таны вебсайтууд болон аппуудад аль хэдийн өгсөн зөвшөөрөл нь энэ бүртгэлд хэрэгжиж болзошгүй. Та Google Бүртгэлүүдээ <ph name="SETTINGS_LINK_BEGIN" />Тохиргоо<ph name="SETTINGS_LINK_END" /> хэсэгт удирдах боломжтой.</translation>
 <translation id="7398801000654795464">Та <ph name="USER_EMAIL_ADDRESS" /> нэрээр Chrome-д нэвтэрсэн байна. Та дараа дахин нэвтрэхдээ ижил хаяг ашиглан нэвтэрнэ үү.</translation>
 <translation id="7408085963519505752">Chrome OS-ийн нөхцлүүд</translation>
 <translation id="7419046106786626209">Таны домэйн дээр мэдээллийн тохиргоог хийх боломжгүй байгаа тул Chrome OS нь таны мэдээллийн тохиргоог хийх боломжгүй байна.</translation>
@@ -251,6 +278,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7486227612705979895">Chrome хаяг оруулах хэсэгт зөвлөмж харуулахын тулд таны Драйвт хандах болно</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Таны төхөөрөмж шинэчлэгдсэн эсэхийг харахын тулд <ph name="LINK_BEGIN" />Chrome үйлдлийн системийн тохиргоо<ph name="LINK_END" /> руу очно уу</translation>
+<translation id="7580049017368059129">Таны төхөөрөмж шинэчлэгдсэн эсэхийг харахын тулд <ph name="LINK_BEGIN" />CloudReady 2.0-ийн Тохиргоо<ph name="LINK_END" /> руу очно уу</translation>
 <translation id="7592736734348559088">Таны дансандаа нэвтрэх мэдээлэл хуучирсан учраас Google Chrome таны өгөгдлийг синхрончилж чадахгүй.</translation>
 <translation id="7626032353295482388">Chrome-д тавтай морил</translation>
 <translation id="7629695634924605473">Хэрэв таны нууц үг алдагдсан байвал Chrome танд мэдэгдэнэ</translation>

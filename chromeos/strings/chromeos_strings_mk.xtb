@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Се ажурира (завршено е <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1310380015393971138">Нема достапна мрежа <ph name="NETWORK_NAME" /></translation>
+<translation id="131421566576084655">Датумот на последното ресетирање на потрошениот интернет е недостапен</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Домашна мрежа, не е во роаминг</translation>
 <translation id="1327977588028644528">Портал</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Неуспешно - филтерот не успеа</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Имам пар клучеви</translation>
+<translation id="1435763214710588005">Автоматски го ресетира потрошениот интернет секој месец на избраниот датум</translation>
 <translation id="1442433966118452622">Извор на сликата</translation>
 <translation id="1451536289672181509">Уредот е тастатура.</translation>
 <translation id="1459693405370120464">Време</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Не може да се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
+<translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
 <translation id="1639239467298939599">Се вчитува</translation>
 <translation id="1641857168437328880">Внесувач на документи (едностран)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Заштитен ѕид со HTTP</translation>
 <translation id="4147897805161313378">Фотографии на Google</translation>
 <translation id="4155551848414053977">Уверете се дека скенерот е вклучен и достапен преку мрежата или преку директна врска</translation>
+<translation id="4170180284036919717">Фотографирај</translation>
 <translation id="4170700058716978431">НЕУСПЕШЕН</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">Ресетирај</translation>
 <translation id="594552776027197022">Генерирај случаен пар клучеви</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
+<translation id="6034694447310538551">Овозможете автоматско месечно ресетирање</translation>
 <translation id="6037291330010597344">Фиоката за документи на скенерот е празна. Додајте документи и обидете се повторно.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6040852767465482106">Анонимен идентитет</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нема достапни скенери</translation>
 <translation id="6232017090690406397">Батерија</translation>
+<translation id="6235460611964961764">Рачно ресетирајте го потрошениот интернет</translation>
 <translation id="6243280677745499710">Поставен во моментов</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Неуспешно - недостасува фиоката</translation>
+<translation id="8923267550422472772">Ден од месецот за ресетирање</translation>
 <translation id="8928727111548978589">Неуспешно - нема хартија</translation>
 <translation id="8930521118335213258">Споредба</translation>
 <translation id="8930622219860340959">Безжична</translation>

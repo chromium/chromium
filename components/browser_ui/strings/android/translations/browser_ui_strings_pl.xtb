@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Strona <ph name="SITE_NAME" /> została dodana</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
+<translation id="1409426117486808224">Uproszczony widok otwartych kart</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228">Usuń <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
+<translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
+<translation id="2387895666653383613">Skalowanie tekstu</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="3859306556332390985">Przewiń do przodu</translation>
+<translation id="3895926599014793903">Wymuś powiększenie</translation>
 <translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
+<translation id="4040330681741629921">Otrzymuj powiadomienia, gdy witrynę można wyświetlić w widoku uproszczonym</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
+<translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
 <translation id="4194328954146351878">Pytaj, zanim zezwolisz stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC (zalecane)</translation>
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
@@ -182,6 +188,7 @@
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5649053991847567735">Pobieranie automatyczne</translation>
+<translation id="5668404140385795438">Zignoruj żądanie strony, gdy chce zapobiec powiększeniu widoku</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
 <translation id="5689516760719285838">Lokalizacja</translation>
 <translation id="5690795753582697420">Kamera jest wyłączona w ustawieniach Androida</translation>
@@ -237,9 +244,11 @@
 <translation id="6912998170423641340">Zablokuj stronom możliwość odczytywania tekstu i obrazów ze schowka</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
+<translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>
@@ -290,6 +299,7 @@
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
 <translation id="8249310407154411074">Przenieś na początek</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>

@@ -3281,33 +3281,6 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="475479145997699293">Nếu bạn đặt chính sách này thành <ph name="ASK_FILE_HANDLING" />, các ứng dụng web có thể xin cấp quyền truy cập vào các loại tệp thông qua API Xử lý tệp. Nếu bạn đặt chính sách này thành <ph name="BLOCK_FILE_HANDLING" />, các ứng dụng web sẽ không thể truy cập vào các loại tệp.
 
       Nếu bạn không đặt chính sách này, các ứng dụng web sẽ xin cấp quyền truy cập nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
-<translation id="4755492101519343259">Thiết lập danh sách quy tắc để ngăn rò rỉ dữ liệu trên <ph name="PRODUCT_OS_NAME" />.
-      Tình trạng rò rỉ dữ liệu có thể xảy ra khi bạn sao chép và dán dữ liệu, chuyển tệp, in, chia sẻ màn hình hoặc chụp ảnh màn hình, v.v.
-
-      Mỗi quy tắc bao gồm những nội dung sau:
-      – Danh sách các nguồn được xác định là URL. Mọi dữ liệu trong những nguồn đó đều được coi là dữ liệu mật. Sẽ có các mức hạn chế áp dụng cho những dữ liệu mật này.
-      – Danh sách các đích đến được xác định là URL hoặc thành phần mà bạn được phép hoặc không được phép chia sẻ dữ liệu mật.
-      – Danh sách các mức hạn chế áp dụng cho dữ liệu của những nguồn đó.
-
-      Bạn có thể thêm quy tắc để:
-      – Kiểm soát dữ liệu trong bảng nhớ tạm được chia sẻ giữa nguồn và đích đến.
-      – Kiểm soát thao tác chụp ảnh màn hình của nguồn bất kỳ.
-      – Kiểm soát thao tác in của nguồn bất kỳ.
-      – Kiểm soát màn hình bảo vệ quyền riêng tư khi nhìn thấy một nguồn bất kỳ.
-      – Kiểm soát thao tác chia sẻ màn hình của nguồn bất kỳ.
-
-      Bạn có thể đặt mức hạn chế thành BLOCK (CHẶN), ALLOW (CHO PHÉP), REPORT (BÁO CÁO), WARN (CẢNH BÁO).
-      – Nếu bạn đặt thành BLOCK, mức hạn chế này sẽ không cho phép thực hiện thao tác. Nếu bạn đặt chính sách <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> thành True (Đúng), thì quản trị viên sẽ nhận được báo cáo về thao tác bị chặn.
-      – Nếu được đặt thành ALLOW, mức hạn chế này sẽ cho phép thực hiện thao tác.
-      – Nếu bạn đặt mức hạn chế này thành REPORT và đặt chính sách <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> thành True (Đúng), thì quản trị viên sẽ nhận được báo cáo về thao tác.
-      – Nếu bạn đặt mức hạn chế này thành WARN, người dùng sẽ nhận được cảnh báo và họ có thể chọn tiếp tục hoặc huỷ thao tác. Nếu bạn đặt chính sách <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> thành True (Đúng), thì quản trị viên sẽ nhận được báo cáo về việc đưa ra cảnh báo cũng như việc người dùng tiếp tục thao tác.
-
-      Lưu ý:
-      – Mức hạn chế PRIVACY_SCREEN không chặn thao tác bật màn hình bảo vệ quyền riêng tư, mà sẽ thực thi thao tác này khi bạn đặt mức hạn chế thành BLOCK.
-      – Bạn không được để trống các đích đến nếu một trong các mức hạn chế là CLIPBOARD (BẢNG NHỚ TẠM). Tuy nhiên, các đích đến này không tạo ra sự khác biệt nào đối với các mức hạn chế còn lại.
-      – Điều chỉnh mẫu URL theo định dạng này (https://www.chromium.org/administrators/url-blocklist-filter-format).
-
-      Nếu bạn không đặt chính sách này, sẽ không có mức hạn chế nào được áp dụng.</translation>
 <translation id="4757053978738874325">Bật tính năng hỗ trợ tiếp cận về đơn âm.
 
           Tính năng này giúp bạn tạo ra âm thanh nổi, trong đó có các kênh bên phải và bên trái khác nhau nên mỗi tai nghe sẽ có âm thanh khác nhau.

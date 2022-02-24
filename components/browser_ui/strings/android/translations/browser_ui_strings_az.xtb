@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> saytı əlavə edildi</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1384959399684842514">Endirmə durduruldu</translation>
+<translation id="1409426117486808224">Açıq tablar üçün sadələşdirilmiş görünüş</translation>
 <translation id="1415402041810619267">URL tam deyil</translation>
 <translation id="1446450296470737166">MIDI cihazlar üzərində tam nəzarətə icazə verin</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> Silin</translation>
 <translation id="2289270750774289114">Sayt yaxınlıqdakı Bluetooth cihazlarını kəşf etmək istədikdə soruşun (tövsiyə edilir)</translation>
 <translation id="2315043854645842844">Müştəri sayt sertifikatı seçimi əməliyyat sistemi tərəfindən dəstəklənmir.</translation>
+<translation id="2321958826496381788">Rahat oxuya biləcəyinizə qədər slayderi dartın. Abzasa iki dəfə tıklayandan sonra mətn bu böyüklükdə olmalıdır.</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2379925928934107488">Mümkün olduqda, Chrome tünd temadan istifadə edərkən saytlara tünd tema tətbiq edin</translation>
+<translation id="2387895666653383613">Mətn miqyası</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> üçün icazə verilib}}</translation>
 <translation id="2434158240863470628">Endirmə tamamlandı <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">Cihazdan istifadəniz</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İrəli axtarın</translation>
+<translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
 <translation id="3955193568934677022">Saytlara qorunan datanı oxumağa icazə verin (tövsiyə olunur)</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3987993985790029246">Linki kopyalayın</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4008040567710660924">Xüsusi sayt üçün kukilərə icazə verin.</translation>
+<translation id="4040330681741629921">Sayt sadələşdirilmiş görünüşdə göstərilə bildikdə bildiriş alın</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
+<translation id="4149994727733219643">İnternet səhifələr üçün sadələşdirilmiş görünüş</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
 <translation id="4194328954146351878">Saytların NFC cihazlarındakı məlumatları görməsi və dəyişməsinə icazə verməzdən əvvəl soruşun (tövsiyə edilir)</translation>
 <translation id="4200726100658658164">Məkan Ayarlarını açın</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">Bununla saytlar tərəfindən saxlanılan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+1)}other{(+ #)}}</translation>
 <translation id="5403592356182871684">Adlar</translation>
+<translation id="5412236728747081950">Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan maraqlarınızı əldə edir</translation>
 <translation id="5438097262470833822">Bu seçim <ph name="WEBSITE" /> üçün icazələri sıfırlayacaq</translation>
 <translation id="5489227211564503167">Keçən vaxt: <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">İntruziv və aldadıcı reklamlar göstərən saytlardakı reklamları bloklayın</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5649053991847567735">Avtomatik endirmələr</translation>
+<translation id="5668404140385795438">Böyüdülmənin qarşısını almaq üçün saytın sorğusunu kənarlaşdırın</translation>
 <translation id="5677928146339483299">Bloklananlar</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Giriş İmkanı</translation>
 <translation id="6992289844737586249">Saytlara mikrofonunuzu istifadə etmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="7000754031042624318">Android ayarlarında söndürülüb</translation>
 <translation id="7016516562562142042">Cari axtarış sistemi üçün icazə verildi</translation>
+<translation id="702463548815491781">TalkBack və ya Keçid Düyməsi aktiv olduqda tövsiyə olunur</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 element seçildi}other{# element seçildi}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> seçildi. Seçimlər ekranın yuxarısında əlçatandır</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
 <translation id="8249310407154411074">Ən yuxarı</translation>
 <translation id="8261506727792406068">Silin</translation>
+<translation id="8284326494547611709">Başlıqlar</translation>
 <translation id="8300705686683892304">Tədbiq tərəfindən idarə edilən</translation>
 <translation id="8324158725704657629">Daha soruşma</translation>
 <translation id="8372893542064058268">Xüsusi sayt üçün Arxa fon Sinxronizasiyasına icazə verin.</translation>

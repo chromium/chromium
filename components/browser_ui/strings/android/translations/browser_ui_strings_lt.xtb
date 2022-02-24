@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Pridėta svetainė <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
+<translation id="1409426117486808224">Supaprastinta atidarytų skirtukų peržiūra</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1446450296470737166">Leisti visiškai valdyti MIDI įr.</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228">Pašalinti „<ph name="NAME_OF_LIST_ITEM" />“</translation>
 <translation id="2289270750774289114">Paklausti, kai svetainė nori atrasti netoliese esančius „Bluetooth“ įrenginius (rekomenduojama)</translation>
 <translation id="2315043854645842844">Kliento pasirinkto sertifikato nepalaiko operacinė sistema.</translation>
+<translation id="2321958826496381788">Vilkite šliaužiklį, kol bus patogu skaityti šį tekstą. Du kartus palietus pastraipą, tekstas turėtų būti mažiausiai tokio dydžio.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2379925928934107488">Kai galima, taikyti tamsiąją temą svetainėse, kai „Chrome“ naudoja tamsiąją temą</translation>
+<translation id="2387895666653383613">Teksto mastelio keitimas</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">Įrenginio naudojimas</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3859306556332390985">Eiti pirmyn</translation>
+<translation id="3895926599014793903">Priverstinai įgalinti mastelio keitimą</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4008040567710660924">Leisti konkrečios svetainės slapukus.</translation>
 <translation id="4046123991198612571">Kitas takelis</translation>
+<translation id="4149994727733219643">Supaprastinta tinklalapių peržiūra</translation>
 <translation id="4165986682804962316">Svetainės nustatymai</translation>
 <translation id="4194328954146351878">Klausti prieš leidžiant svetainėms peržiūrėti ir keisti informaciją NFC įrenginiuose (rekomenduojama)</translation>
 <translation id="4200726100658658164">Atidaryti vietovės nustatymus</translation>
@@ -182,6 +187,7 @@
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5649053991847567735">Automatiškai atsisiųsti</translation>
+<translation id="5668404140385795438">Nepaisyti svetainės mastelio keitimo vengimo užklausos</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="5690795753582697420">Fotoaparatas išjungtas „Android“ nustatymuose</translation>
@@ -237,9 +243,11 @@
 <translation id="6912998170423641340">Neleisti svetainėms skaityti teksto ir vaizdų iš iškarpinės</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
 <translation id="7000754031042624318">Išjungta „Android“ nustatymuose</translation>
 <translation id="7016516562562142042">Leidžiama dabartiniam paieškos varikliui</translation>
+<translation id="702463548815491781">Rekomenduojama, kai įjungta „TalkBack“ arba prieiga jungikliu</translation>
 <translation id="7053983685419859001">Blokuoti</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Pasirinktas 1 elementas}one{Pasirinktas # elementas}few{Pasirinkti # elementai}many{Pasirinkta # elemento}other{Pasirinkta # elementų}}</translation>
 <translation id="7087918508125750058">Pasirinkta: <ph name="ITEM_COUNT" />. Parinktys pasiekiamos netoli ekrano viršaus</translation>
@@ -290,6 +298,7 @@
 <translation id="8211406090763984747">Ryšys saugus</translation>
 <translation id="8249310407154411074">Perkelti į viršų</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
+<translation id="8284326494547611709">Subtitrai</translation>
 <translation id="8300705686683892304">Valdo programa</translation>
 <translation id="8324158725704657629">Daugiau neklausti</translation>
 <translation id="8372893542064058268">Leisti fono sinchronizavimą konkrečioje svetainėje.</translation>

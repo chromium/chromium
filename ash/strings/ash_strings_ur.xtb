@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">اسکرین شاٹ لیں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="3113926042639749131">تجویز ہٹائیں</translation>
+<translation id="3120421559657122717">آلہ بند کریں؟</translation>
 <translation id="3126069444801937830">اپ ڈیٹ کرنے کیلئے دوبارہ شروع کریں</translation>
 <translation id="3139942575505304791">ڈیسک 1</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ونڈو کو <ph name="ACTIVE_DESK" /> ڈیسک سے <ph name="TARGET_DESK" /> ڈیسک میں منتقل کر دیا گیا ہے</translation>
 <translation id="3255483164551725916">آپ کیا کر سکتی ہیں؟</translation>
 <translation id="3269597722229482060">دائیں طرف کلک کریں</translation>
+<translation id="3289544412142055976">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں</translation>
 <translation id="3289674678944039601">ایڈاپٹر کے ذریعے چارج ہو رہا ہے</translation>
 <translation id="3290356915286466215">غیر محفوظ</translation>
 <translation id="3294437725009624529">مہمان</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">فوری ترتیبات، اطلاع کے مرکز تک رسائی حاصل کرنے کے لیے تلاش + بائیں تیر والے بٹن کو دبائيں۔</translation>
 <translation id="5426063383988017631">ترتیبات کا مینو بند کیا گیا</translation>
 <translation id="5428899915242071344">منتخب کرنا شروع کریں</translation>
+<translation id="5429993543155113935">پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں</translation>
 <translation id="5430931332414098647">فوری ٹیدرنگ</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5433020815079095860">آڈیو ان پٹ</translation>
@@ -810,6 +813,7 @@
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
+<translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹ</translation>
+<translation id="6449483711453944360">‏Linux ایپس اور پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں</translation>
 <translation id="6452181791372256707">مسترد کریں</translation>
 <translation id="6453179446719226835">زبان تبدیل ہو گئی ہے</translation>
 <translation id="6459472438155181876">اسکرین کو <ph name="DISPLAY_NAME" /> میں پھیلایا جا رہا ہے</translation>
@@ -933,6 +938,7 @@
 <translation id="7025533177575372252">اپنے <ph name="DEVICE_NAME" /> کو اپنے فون سے منسلک کریں</translation>
 <translation id="7026338066939101231">تخفیف</translation>
 <translation id="7029814467594812963">سیشن سے خارج ہوں</translation>
+<translation id="7032161822340700104">صرف 6 تمثیلات کی اجازت ہے۔ کوئی نئی تمثیل محفوظ کرنے کے لیے ایک تمثیل ہٹائیں۔</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، Google اسسٹنٹ</translation>
 <translation id="7042322267639375032">اسٹیٹس ایریا کو سکیڑیں</translation>
 <translation id="7045033600005038336">تمثیل تبدیل کریں؟</translation>
@@ -1236,6 +1242,7 @@
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
 <translation id="9017320285115481645">‏Family Link کا والدین کا رسائی کا کوڈ درج کریں۔</translation>
 <translation id="9024331582947483881">پوری اسکرین</translation>
+<translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
 <translation id="9059834730836941392">اطلاع سُکیڑیں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>

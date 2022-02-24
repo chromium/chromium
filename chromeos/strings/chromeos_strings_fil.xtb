@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Nag-a-update (<ph name="PERCENTAGE_VALUE" />% na ang natapos)</translation>
 <translation id="1310380015393971138">Walang available na <ph name="NETWORK_NAME" /> network</translation>
+<translation id="131421566576084655">Hindi available ang petsa ng huling pag-reset ng data</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, hindi roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">May keypair ako</translation>
+<translation id="1435763214710588005">Awtomatikong nire-reset ang paggamit ng data sa piniling araw kada buwan</translation>
 <translation id="1442433966118452622">Source ng larawan</translation>
 <translation id="1451536289672181509">Keyboard ang device.</translation>
 <translation id="1459693405370120464">Lagay ng Panahon</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Hindi ma-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Mga Album</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
+<translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Tiyaking naka-on ang scanner at available ito sa pamamagitan ng iyong network o ng isang direktang koneksyon</translation>
+<translation id="4170180284036919717">Kumuha ng larawan</translation>
 <translation id="4170700058716978431">NABIGO</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4213104098953699324">USB na keyboard</translation>
@@ -391,6 +395,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5939518447894949180">I-reset</translation>
 <translation id="594552776027197022">Bumuo ng random na keypair</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">I-enable ang awtomatikong buwanang pag-reset</translation>
 <translation id="6037291330010597344">Walang laman ang document feeder ng scanner. Magdagdag ng mga dokumento at subukan ulit.</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6040852767465482106">Anonymous na Pagkakakilanlan</translation>
@@ -414,6 +419,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Walang available na scanner</translation>
 <translation id="6232017090690406397">Baterya</translation>
+<translation id="6235460611964961764">Manual na i-reset ang paggamit ng data</translation>
 <translation id="6243280677745499710">Kasalukuyang nakatakda</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ni <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">Hindi na-print - Walang tray</translation>
+<translation id="8923267550422472772">Petsa sa buwan para sa pag-reset</translation>
 <translation id="8928727111548978589">Hindi na-print - Wala nang papel</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

@@ -150,6 +150,7 @@
 <translation id="1139923033416533844">Minnisnotkun</translation>
 <translation id="1140351953533677694">Fá aðgang að Bluetooth og raðtengdu tækjunum þínum</translation>
 <translation id="114036956334641753">Hljóð og skjátextar</translation>
+<translation id="1142002900084379065">Nýlegar myndir</translation>
 <translation id="1143142264369994168">Vottorðsundirritari</translation>
 <translation id="1143816224540441191">{NUM_MINS,plural, =1{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir 1 mínútu}one{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir {NUM_MINS} mínútu}other{Chrome fann engan skaðlegan hugbúnað í tölvunni þinni • Athugað fyrir {NUM_MINS} mínútum}}</translation>
 <translation id="1145593918056169051">Prentun stöðvaðist</translation>
@@ -2394,7 +2395,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3390013585654699824">Upplýsingar um forrit</translation>
 <translation id="3390741581549395454">Tekið var afrit af skrám og forritum í Linux. Uppfærsla hefst eftir skamma stund.</translation>
 <translation id="3391512812407811893">Prufuútgáfur Privacy Sandbox</translation>
-<translation id="339178315942519818">Skoðaðu tilkynningar úr spjallforritum í <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Skjalagreining Chrome</translation>
 <translation id="3394850431319394743">Heimilt að nota auðkenni til að spila varið efni</translation>
 <translation id="3396744558790608201">Hægrismelltu og veldu „Leita í myndum með Google linsu“ til að leita hvar sem er á vefsvæðinu til að fá frekari upplýsingar um myndefnið sem þú sérð á meðan þú vafrar og verslar á netinu.</translation>
@@ -3428,7 +3428,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4432621511648257259">Rangt aðgangsorð</translation>
 <translation id="443454694385851356">Gamalt (óöruggt)</translation>
 <translation id="443475966875174318">Uppfærðu eða fjarlægðu ósamhæf forrit</translation>
-<translation id="4435634292635092844">Skoðaðu myndir úr myndavélarmöppu símans í <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Gegnsætt</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> sendi tilkynningu í símann þinn. Staðfestu að um þig sé að ræða með því að ýta á tilkynninguna „<ph name="NOTIFICATIONTITLE" />“ og fylgja skrefunum.</translation>
 <translation id="4441124369922430666">Viltu ræsa þetta forrit sjálfkrafa þegar kveikt er á vélinni?</translation>
@@ -4924,6 +4923,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6016972670657536680">Hnappur til að velja tungumál og lyklaborð. Tungumál sem nú er valið: <ph name="LANGUAGE" />.</translation>
 <translation id="6017286291357847767"><ph name="ACCOUNT_EMAIL" /> er sjálfgefinn reikningur í Chromebook tölvunni þinni</translation>
 <translation id="6017514345406065928">Grænn</translation>
+<translation id="6019169947004469866">Skera</translation>
 <translation id="6019851026059441029">Frábær – HD</translation>
 <translation id="6020431688553761150">Þjónninn veitti þér ekki aðgang að þessu efni.</translation>
 <translation id="6022526133015258832">Opna á öllum skjánum</translation>
@@ -4955,6 +4955,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum ChromeOS tækis barnsins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Þótt slökkt sé á þessum eiginleika hefur það ekki áhrif á getu þessa tækis til að senda mikilvægar upplýsingar fyrir nauðsynlega þjónustu á borð við kerfisuppfærslur og öryggisþjónustu.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Ef kveikt er á vef- og forritavirkni á Google reikningi barnsins verða gögn barnsins hugsanlega vistuð á Google reikningi þess. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.<ph name="END_PARAGRAPH4" /></translation>
+<translation id="6052284303005792909">•</translation>
 <translation id="6052976518993719690">SSL-vottunarstöð</translation>
 <translation id="6053401458108962351">Hreinsa vafragögn...</translation>
 <translation id="6054284857788651331">Flipahópur sem var lokað nýlega</translation>
@@ -6508,7 +6509,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7661259717474717992">Leyfa vefsvæðum að vista og lesa gögn fótspora</translation>
 <translation id="7661451191293163002">Ekki tókst að sækja skráningarvottorð.</translation>
 <translation id="7662283695561029522">Ýttu til að stilla</translation>
-<translation id="7662419552544645985">Skoðaðu myndir úr myndavélarmöppu símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="7663719505383602579">Móttakandi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Flýtilykill í boði</translation>
 <translation id="7663859337051362114">Bæta við eSIM-prófíl</translation>
@@ -7141,6 +7141,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="827097179112817503">Sýna heimahnapp</translation>
 <translation id="8271268254812352141">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni. Sérstilltu þýðingartungumál í <ph name="LINK_BEGIN" />„Tungumál vefsvæða“<ph name="LINK_END" />.</translation>
 <translation id="8271379370373330993">Foreldrar, það sem kemur næst er ætlað ykkur. Þið getið rétt barninu <ph name="DEVICE_TYPE" /> aftur þegar uppsetningu reikningsins er lokið.</translation>
+<translation id="8272194309885535896">Sækja mynd</translation>
 <translation id="8272443605911821513">Stjórnaðu viðbótunum þínum með því að smella á Viðbætur í valmyndinni „Fleiri verkfæri“.</translation>
 <translation id="8274332263553132018">Senda út skrá</translation>
 <translation id="8274921654076766238">Stækkunargler fylgir lyklaborðsfókus</translation>

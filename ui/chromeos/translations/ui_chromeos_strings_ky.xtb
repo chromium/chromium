@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
 <translation id="1864756863218646478">Бир да файл табылган жок.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Туташуу</translation>
+<translation id="1914901738028575085">CloudReady 2.0 түзмөгү</translation>
 <translation id="1920670151694390848">Малайаламча (транслитерация)</translation>
 <translation id="1920798810075583923">Дарбыз</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> форматталды</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> тандалды.</translation>
 <translation id="872537912056138402">Хорватча</translation>
+<translation id="873847021056608403">CloudReady 2.0 түзмөктөрү</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> cигналдын күчү <ph name="SIGNAL_STRENGTH" />%, администраторуңуз башкарат, туташуу</translation>
 <translation id="8750438273876807512">Текчедеги файлдарды ыкчам ачуу үчүн файлды коё бербей басып туруп, <ph name="ICON" /> сүрөтчөсүн таптап, "Текчеге кадоону" тандаңыз.</translation>
 <translation id="8787254343425541995">Бөлүшүлгөн тармактардын проксилерине уруксат берүү</translation>

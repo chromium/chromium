@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">サイト <ph name="SITE_NAME" /> を追加しました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
+<translation id="1409426117486808224">開いているタブの簡易表示</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
 <translation id="1620510694547887537">カメラ</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />　を削除</translation>
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
+<translation id="2321958826496381788">読みやすくなるまでスライダをドラッグしてください。段落をダブルタップするとテキストがこれより大きくなります。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
+<translation id="2387895666653383613">テキストの拡大と縮小</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限が許可されています}}</translation>
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">デバイスのアクティブ状態</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3859306556332390985">前方にシーク再生</translation>
+<translation id="3895926599014793903">強制的にズームを有効にする</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
+<translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4194328954146351878">サイトが NFC デバイスの情報を参照および変更することを許可する前に確認する（推奨）</translation>
 <translation id="4200726100658658164">位置情報の設定を開く</translation>
@@ -171,6 +176,7 @@
 <translation id="5354152178998424783">サイトにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
+<translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
 <translation id="5438097262470833822">これを選択すると、<ph name="WEBSITE" /> の権限がリセットされます</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>
 <translation id="5494752089476963479">煩わしい広告や誤解を招く広告が表示されるサイトで広告をブロックする</translation>
@@ -182,6 +188,7 @@
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5649053991847567735">自動ダウンロード</translation>
+<translation id="5668404140385795438">ウェブサイトのズーム防止リクエストを上書きします</translation>
 <translation id="5677928146339483299">ブロック中</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
@@ -237,9 +244,11 @@
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="7016516562562142042">現在の検索エンジンに対して許可</translation>
+<translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 件を選択済み}other{# 件を選択済み}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> 件選択されています。オプションは画面上部にあります</translation>
@@ -290,6 +299,7 @@
 <translation id="8211406090763984747">この接続は保護されています</translation>
 <translation id="8249310407154411074">一番上に移動</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">アプリによる管理</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8372893542064058268">特定のサイトに対してバックグラウンド同期を許可します。</translation>

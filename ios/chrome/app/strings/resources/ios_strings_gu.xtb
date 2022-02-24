@@ -12,6 +12,7 @@
 
         
 તમારું શોધ એન્જિન <ph name="DSE_NAME" /> છે. જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તેમની સૂચનાઓ જુઓ.</translation>
+<translation id="1054045277222934172">તમે સેટિંગ પછી કન્ટેન્ટ સેટિંગમાં જઈને ડિફૉલ્ટ સાઇટ વ્યૂ બદલીને ડેસ્કટૉપ વ્યૂ મોડ કરી શકો છો</translation>
 <translation id="1063454504051558093">અન્ય પાસવર્ડનો ઉપયોગ કરો...</translation>
 <translation id="1066060668811609597">સિંક મેનેજ કરો</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
@@ -182,6 +183,7 @@
 <translation id="2690858294534178585">કૅમેરા ઉપયોગમાં છે</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
 <translation id="2695507686909505111">પેજનો અનુવાદ કર્યો</translation>
+<translation id="2700241355396984822">પરવાનગીઓ સેટ કરવાનો વિકલ્પ</translation>
 <translation id="2702801445560668637">વાંચન સૂચિ</translation>
 <translation id="2704491540504985681">ડાઉનલોડ</translation>
 <translation id="2704606927547763573">કૉપિ કર્યું</translation>
@@ -318,6 +320,8 @@
 <translation id="3861486700625780712">અનફૉલો કરો</translation>
 <translation id="3892144330757387737">તમને તમારો ઇતિહાસ અહીં મળશે</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
+<translation id="3904829425754749514">તમારી સંસ્થાએ સિંક બંધ કર્યું છે. તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
+<translation id="3905353503976611311">વેબ પર શોધો</translation>
 <translation id="3913386780052199712">Chromeમાં સાઇન ઇન કર્યું</translation>
 <translation id="3915450441834151894">સાઇટ માહિતી</translation>
 <translation id="3922310737605261887">કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
@@ -347,6 +351,7 @@
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="418156467088430727">ઑફલાઇન વર્ઝન નવા ટૅબમાં જુઓ</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
+<translation id="4223967053752765281">તમારી સંસ્થાએ સાઇન ઇન કરવાનું બંધ કર્યું છે. તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>
@@ -371,6 +376,7 @@
 <translation id="4469418912670346607">સેટઅપ ચાલુ રાખો</translation>
 <translation id="4474494258097106883">તમારા iPhone માટે બનાવાયેલું</translation>
 <translation id="4476574785019001431">સેટિંગ</translation>
+<translation id="448433063499977729">સિંક કરવાની સુવિધા બંદ કરવામાં આવી છે</translation>
 <translation id="4496373720959965247">ટૅબ ઉમેરો અને પેજ વચ્ચે સ્વિચ કરો</translation>
 <translation id="4502566650163919158">હમણાં ચેક કરો</translation>
 <translation id="4505980578794259603">છેલ્લે <ph name="TIME" /> તપાસ્યું.</translation>
@@ -489,6 +495,7 @@
 <translation id="5580834567471114021">પછીથી વાંચવા માટેની વાંચન સૂચિમાં ઉમેરીએ?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> માટે સિંક ચાલુ કરો</translation>
 <translation id="560322036295180549">તમારી સંસ્થા દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
+<translation id="560999923643681074">ઍક્સેસમાં ફેરફાર કરો</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
 <translation id="5626245204502895507">ફાઇલ આ સમયે ડાઉનલોડ કરી શકાઈ નથી.</translation>
 <translation id="5631164295104953411">ચુકવણીની પદ્ધતિ ઉમેરો</translation>
@@ -759,6 +766,7 @@
 <translation id="7840771868269352570">તમે પસંદ કરેલી આઇટમ કાઢી નાખવામાં આવશે.</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
+<translation id="7884694604461143138">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
 <translation id="7911190106180361398">તમારી સંસ્થા તમને બધું જ સિંક કરવાની મંજૂરી આપતી નથી.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +798,7 @@
 <translation id="8076014560081431679">સાચવેલા સાઇટ સેટિંગ ડિલીટ કરવામાં આવશે નહીં અને તે તમારી બ્રાઉઝિંગ ટેવોને પ્રતિબિંબિત કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">આ સેટિંગ મેનેજ કરવામાં આવે છે, વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
+<translation id="809543534949702122">શોધ ઇતિહાસ</translation>
 <translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
@@ -811,6 +820,7 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
+<translation id="8364085047956854021">તમે સાઇટમાંથી બહાર નીકળી જશો ત્યારે "<ph name="SITE_NAME" />"ની પરવાનગીઓ ફરીથી બંધ પર સેટ થશે.</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8386068868580335421">રીસેટ કરો</translation>
 <translation id="8407669440184693619">આ સાઇટ માટે કોઈ પાસવર્ડ મળ્યાં નથી</translation>
@@ -897,6 +907,7 @@
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>
 <translation id="9152539721251340337">QR કોડ બનાવો</translation>
 <translation id="9157836665414082580">સંવાદો નાબૂદ કરો</translation>
+<translation id="9177438225260810839">ખુલ્લી ટૅબ શોધો</translation>
 <translation id="9188680907066685419">મેનેજ થયેલા એકાઉન્ટમાંથી સાઇન આઉટ કરો</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> દિવસ પહેલાં</translation>
 <translation id="9203116392574189331">હેન્ડઓફ</translation>

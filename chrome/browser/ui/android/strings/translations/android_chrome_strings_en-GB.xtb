@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Next</translation>
 <translation id="1202892408424955784">Tracked products</translation>
 <translation id="1204037785786432551">Download link</translation>
+<translation id="1204692632633423444">Chrome action button: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copy link text</translation>
 <translation id="1208340532756947324">To sync and personalise across devices, turn on sync</translation>
 <translation id="1209206284964581585">Hide for now</translation>
@@ -79,7 +80,6 @@
 <translation id="1406000523432664303">‘Do Not Track’</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
-<translation id="1409426117486808224">Simplified view for open tabs</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> download prevented because file already exists.</translation>
 <translation id="1414981605391750300">Contacting Google. This may take a minute…</translation>
 <translation id="1416550906796893042">Application version</translation>
@@ -202,6 +202,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2172905120685242547">Close window?</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2176767904800337188">A virtual card disguises your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
@@ -214,13 +215,13 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2259659629660284697">Export passwords…</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Open app for <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Billing address</translation>
 <translation id="228704530595896923">List of sharing options.</translation>
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="230155349749732438">To use this setting <ph name="BEGIN_LINK" />Make searches and browsing better<ph name="END_LINK" /> must be turned on</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
 <translation id="2321086116217818302">Preparing passwords…</translation>
-<translation id="2321958826496381788">Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328985652426384049">Can’t sign in</translation>
 <translation id="234265804618409743">Can't open your camera. Something went wrong.</translation>
@@ -230,7 +231,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2369533728426058518">open tabs</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
-<translation id="2387895666653383613">Text scaling</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2394602618534698961">Files that you download appear here</translation>
 <translation id="2407481962792080328">When you sign in to your Google account, this feature is turned on</translation>
@@ -267,7 +267,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2549516196460093976">You can use this tablet to sign in on the computer that’s displaying this QR code.</translation>
-<translation id="2558692642259318568">To browse without saving activity to your device, try out Incognito</translation>
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
@@ -334,6 +333,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
+<translation id="2936980480904111527">Chrome notifications make things easier</translation>
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2946420957526726953">Updating Chrome to connect to other devices</translation>
 <translation id="2951071800649516099">Add pages to your reading list for later</translation>
@@ -488,7 +488,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3861633093716975811">Popular videos</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3894427358181296146">Add folder</translation>
-<translation id="3895926599014793903">Force enable zoom</translation>
 <translation id="3899682235662194879">Close all Incognito tabs</translation>
 <translation id="3908308510347173149">Update <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Finding the best from the web…</translation>
@@ -529,7 +528,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="4141536112466364990">Learn Chrome</translation>
-<translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
@@ -676,6 +674,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4961107849584082341">Translate this page to any language</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
 <translation id="497421865427891073">go forward</translation>
+<translation id="4987271110129728827">Can’t find that page. Check your spelling or try a web search.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="5001388021414335527">Follow this site here</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
@@ -733,6 +732,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5342314432463739672">Permission requests</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
+<translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> open tab, tap to switch tabs}other{<ph name="OPEN_TABS_MANY" /> open tabs, tap to switch tabs}}</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
@@ -781,7 +781,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5655963694829536461">Search your downloads</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
-<translation id="5668404140385795438">Override a website’s request to prevent zooming in</translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
@@ -881,6 +880,7 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6162892189396105610">Preloads pages that Chrome thinks that you are likely to visit.</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
+<translation id="620197886010707372">Open app for <ph name="APPNAME" /> with Google Play?</translation>
 <translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
@@ -1031,13 +1031,11 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6963766334940102469">Delete bookmarks</translation>
 <translation id="696447261358045621">Leave Incognito mode</translation>
 <translation id="6979737339423435258">All time</translation>
-<translation id="6981982820502123353">Accessibility</translation>
 <translation id="6987047470128880212">Incognito is not available on this device</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="7001056293070445572">This file is large (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Add to reading list <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Open in browser</translation>
-<translation id="702463548815491781">Recommended when TalkBack or Switch Access are on</translation>
 <translation id="7027549951530753705">Restored <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Position QR code/barcode in this frame.</translation>
 <translation id="7029809446516969842">Passwords</translation>
@@ -1072,6 +1070,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
+<translation id="7237045078887540010">By using Chrome, you agree to the <ph name="BEGIN_TOS_LINK" />Google Terms of Service<ph name="END_TOS_LINK" />, and the <ph name="BEGIN_ATOS_LINK" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_ATOS_LINK" />. The <ph name="BEGIN_PRIVACY_LINK" />privacy policy<ph name="END_PRIVACY_LINK" /> also applies.</translation>
 <translation id="7242755609445462077">Stylised highlight <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7252076891734325316">Place your phone close to the computer</translation>
@@ -1272,13 +1271,13 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8274165955039650276">See downloads</translation>
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
-<translation id="8284326494547611709">Captions</translation>
 <translation id="829672787777123339">Connecting to your device…</translation>
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8352996530981010042">Can’t download reactions. Try again.</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>
+<translation id="8356078935982976590">You’ll be able to easily manage media controls, incognito sessions, downloads and more</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
 <translation id="8364299278605033898">See popular websites</translation>
 <translation id="8368001212524806591">Track price</translation>
@@ -1435,6 +1434,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
+<translation id="9205933215779845960">Can’t find that page. Check your spelling or try a search on <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Can't make calls</translation>
 <translation id="9212845824145208577">Can\u2019t go lower. Try starting from further down the page.</translation>

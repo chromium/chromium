@@ -3294,33 +3294,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="475479145997699293">Si se le asigna el valor <ph name="ASK_FILE_HANDLING" /> a la política, las aplicaciones web podrán solicitar acceso a ciertos tipos de archivo a través de la API File Handling. Si se le asigna el valor <ph name="BLOCK_FILE_HANDLING" />, se denegará el acceso a ciertos tipos de archivo.
 
       Si no se le asigna ningún valor, las aplicaciones web podrán solicitar acceso, pero los usuarios podrán cambiar este ajuste.</translation>
-<translation id="4755492101519343259">Configura una lista de reglas para evitar las filtraciones de datos en <ph name="PRODUCT_OS_NAME" />.
-      Se pueden producir filtraciones de datos cuando se copia y pega información, se transfieren archivos, se imprime, se comparte pantalla o se hacen capturas de pantalla, entre otras acciones.
-
-      Cada regla se compone de lo siguiente:
-      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se considerarán confidenciales y se les aplicarán las restricciones.
-      - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
-      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
-
-      Se pueden añadir reglas para:
-      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
-      - Controlar que se puedan hacer capturas de pantalla de cualquiera de las fuentes.
-      - Controlar la impresión de cualquiera de las fuentes.
-      - Controlar la pantalla de privacidad cuando se muestra alguna de las fuentes.
-      - Controlar la pantalla compartida de cualquiera de las fuentes.
-
-      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, ALLOW, REPORT o WARN.
-      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción bloqueada al administrador.
-      - Si se asigna el valor ALLOW al nivel de restricción, la acción se permitirá.
-      - Si se asigna el valor REPORT al nivel de restricción y se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción al administrador.
-      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará al administrador de que se ha mostrado la advertencia. También se le informará si se continúa con la acción.
-
-      Notas:
-      - La restricción PRIVACY_SCREEN no bloquea la opción de activar la pantalla de privacidad, sino que la requiere cuando la clase de la restricción se define en BLOCK.
-      - Los destinos no pueden estar vacíos en caso de que alguna de las restricciones sea CLIPBOARD, pero no afectan al resto de las restricciones.
-      - Los patrones de URL deben tener el formato que se indica en esta página: https://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.</translation>
 <translation id="4757053978738874325">Habilita la función de accesibilidad de audio en mono.
 
           Esta función permite la salida de audio en estéreo, es decir, audio en el que el canal izquierdo es distinto del derecho, de manera que cada oído escucha diferentes sonidos.

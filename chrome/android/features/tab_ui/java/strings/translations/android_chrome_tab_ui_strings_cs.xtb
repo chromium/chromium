@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Nastavení sledování cen</translation>
 <translation id="1378979118429748177">Dostávejte upozornění na pokles ceny</translation>
 <translation id="1403228085774130835">Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome</translation>
+<translation id="1455506303394048917">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
+<translation id="1499635324672558517">Zavřít všechny anonymní karty?</translation>
 <translation id="1657719826150349398">Přesunout kartu dolů</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="2118649612461486615">Informace o prodejně</translation>

@@ -330,6 +330,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3105917916468784889">Izdelava posnetka zaslona</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Odstrani predlog</translation>
+<translation id="3120421559657122717">Želite zaustaviti napravo?</translation>
 <translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
@@ -350,6 +351,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> je bilo premaknjeno iz namizja <ph name="ACTIVE_DESK" /> v namizje <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Kakšne možnosti so na voljo?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
+<translation id="3289544412142055976">Aplikacije za Linux trenutno niso podprte.</translation>
 <translation id="3289674678944039601">Polnjenje prek napajalnika</translation>
 <translation id="3290356915286466215">Ni varno</translation>
 <translation id="3294437725009624529">Gost</translation>
@@ -697,6 +699,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5400461572260843123">Hitre nastavitve, pritisnite tipko za iskanje in puščico levo, če želite dostopati do središča za obvestila.</translation>
 <translation id="5426063383988017631">Meni z nastavitvami je zaprt</translation>
 <translation id="5428899915242071344">Začni izbiranje</translation>
+<translation id="5429993543155113935">Anonimna okna trenutno niso podprta.</translation>
 <translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
 <translation id="5433020815079095860">Zvočni vhod</translation>
@@ -836,6 +839,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6431865393913628856">Snemanje zaslona</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, dogodki (<ph name="NUMBER" />)</translation>
+<translation id="6449483711453944360">Aplikacije za Linux in anonimna okna trenutno niso podprti.</translation>
 <translation id="6452181791372256707">Zavrni</translation>
 <translation id="6453179446719226835">Jezik je spremenjen</translation>
 <translation id="6459472438155181876">Razširitev zaslon na <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +938,7 @@ Nova namestitev</translation>
 <translation id="7025533177575372252">Povežite napravo <ph name="DEVICE_NAME" /> s telefonom</translation>
 <translation id="7026338066939101231">Pomanjšava</translation>
 <translation id="7029814467594812963">Zapusti sejo</translation>
+<translation id="7032161822340700104">Dovoljenih je samo 6 predlog. Če želite shraniti novo, odstranite eno.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Pomočnik Google</translation>
 <translation id="7042322267639375032">Strnitev območja stanja</translation>
 <translation id="7045033600005038336">Želite zamenjati predlogo?</translation>
@@ -1237,6 +1242,7 @@ Nova namestitev</translation>
 <translation id="9000771174482730261">UPRAVLJANJE PROSTORA ZA SHRANJEVANJE</translation>
 <translation id="9017320285115481645">Vnesite kodo za dostop starša za Family Link.</translation>
 <translation id="9024331582947483881">celozaslonski način</translation>
+<translation id="9034924485347205037">Datoteke za Linux</translation>
 <translation id="9047624247355796468">Odpri nastavitve za <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Strni obvestilo</translation>
 <translation id="9065203028668620118">Uredi</translation>

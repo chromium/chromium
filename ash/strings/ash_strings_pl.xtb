@@ -330,6 +330,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3105917916468784889">Zapisz zrzut ekranu</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Usuń sugestię</translation>
+<translation id="3120421559657122717">Wyłączyć urządzenie?</translation>
 <translation id="3126069444801937830">Uruchom ponownie i zaktualizuj</translation>
 <translation id="3139942575505304791">Biurko 1</translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
@@ -350,6 +351,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
 <translation id="3269597722229482060">Kliknij prawym</translation>
+<translation id="3289544412142055976">Aplikacje na Linuksa nie są obecnie obsługiwane</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
 <translation id="3290356915286466215">Niezabezpieczona</translation>
 <translation id="3294437725009624529">Gość</translation>
@@ -697,6 +699,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5400461572260843123">Szybkie ustawienia, naciśnij Wyszukaj + strzałka w lewo, by otworzyć centrum powiadomień.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
+<translation id="5429993543155113935">Okna incognito nie są obecnie obsługiwane</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
 <translation id="5433020815079095860">Wejście audio</translation>
@@ -836,6 +839,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> zdarzenie</translation>
+<translation id="6449483711453944360">Aplikacje na Linuksa ani okna incognito nie są obecnie obsługiwane</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
 <translation id="6453179446719226835">Język został zmieniony</translation>
 <translation id="6459472438155181876">Rozszerzanie ekranu na <ph name="DISPLAY_NAME" /></translation>
@@ -933,6 +937,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7025533177575372252">Połącz urządzenie <ph name="DEVICE_NAME" /> z telefonem</translation>
 <translation id="7026338066939101231">Zmniejsz</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
+<translation id="7032161822340700104">Dozwolonych jest tylko 6 szablonów. Usuń szablon, aby zapisać nowy.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asystent Google</translation>
 <translation id="7042322267639375032">Zwiń pasek stanu</translation>
 <translation id="7045033600005038336">Zastąpić szablon?</translation>
@@ -1236,6 +1241,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9000771174482730261">ZARZĄDZAJ MIEJSCEM NA DANE</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
+<translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>
 <translation id="9065203028668620118">Edytuj</translation>

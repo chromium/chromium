@@ -138,6 +138,7 @@
 <translation id="1747827819627189109">ઓન-સ્ક્રીન કીબોર્ડ સક્ષમ કર્યું</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> વિન્ડોની સોંપણી બધા ડેસ્કને કરવામાં આવી છે</translation>
 <translation id="1750088060796401187">માત્ર <ph name="MAX_DESK_LIMIT" /> ડેસ્કની મંજૂરી આપવામાં આવી છે. નવી ડેસ્ક ખોલવા માટે, એક ડેસ્ક કાઢી નાખો.</translation>
+<translation id="1756833229520115364">નમૂનો સાચવી ન શક્યાં. ઘણી બધી વિન્ડો અને ટૅબ છે.</translation>
 <translation id="1761222317188459878">નેટવર્ક કનેક્શન ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period કીનો કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Insert કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace કી દબાવો.</translation>
 <translation id="1770726142253415363">પંક્તિ <ph name="ROW_NUMBER" />, કૉલમ <ph name="COLUMN_NUMBER" /> પર ખસેડી.</translation>
@@ -188,6 +189,7 @@
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2083190527011054446">ગુડ નાઇટ <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">નેટવર્કથી કનેક્ટ કરેલું નથી</translation>
+<translation id="2107914222138020205">તમારો USB-C કેબલ Thunderboltને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="2108303511227308752">Alt કી + Backspace કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Delete કીનો ઉપયોગ કરવા માટે <ph name="LAUNCHER_KEY_NAME" /> કી + backspace કી દબાવો.</translation>
 <translation id="211328683600082144">માઇક્રોફોન ચાલુ કરો</translation>
 <translation id="2126242104232412123">નવું ડેસ્ક</translation>
@@ -291,6 +293,8 @@
 <translation id="2865888419503095837">નેટવર્ક માહિતી</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
 <translation id="2878884018241093801">કોઈ તાજેતરની આઇટમ નથી</translation>
+<translation id="2891209721153296020">"પસંદગી રદ કરો"</translation>
+<translation id="2894949423239620203">કાર્યપ્રદર્શન પર કેબલની અસર થઈ શકે છે</translation>
 <translation id="2903844815300039659"><ph name="NAME" />, <ph name="STRENGTH" /> સાથે કનેક્ટ થયેલ</translation>
 <translation id="2914580577416829331">કૅપ્ચર કરેલી સ્ક્રીન</translation>
 <translation id="2941112035454246133">નીચું</translation>
@@ -433,6 +437,7 @@
 <translation id="3702846122927433391">નાઇજીરીયાની વસ્તી</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
+<translation id="3712317119236351467">રેકોર્ડિંગ સાચવી શકાતું નથી</translation>
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3713734891607377840">પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
@@ -492,8 +497,10 @@
 <translation id="4112140312785995938">પાછળ કરો</translation>
 <translation id="4114315158543974537">ફોન હબ ચાલુ કરો</translation>
 <translation id="412298498316631026">વિન્ડો</translation>
+<translation id="4123259114412175274">તમારા Chromebookને અનલૉક કરવા માટે, તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો</translation>
 <translation id="4129129681837227511">તમારી લૉક સ્ક્રીન પર નોટિફિકેશન જોવા માટે, સેટિંગને બદલવા માટે અનલૉક કરો</translation>
 <translation id="4146833061457621061">મ્યુઝિક વગાડો</translation>
+<translation id="4165275524535002941">કેબલ કદાચ ડિસ્પ્લેને સપોર્ટ ન આપતો હોય</translation>
 <translation id="4173958948577803258">ગુ</translation>
 <translation id="4177913004758410636">{0,plural, =1{એક દિવસની અંદર ડિવાઇસ અપડેટ કરો}one{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}other{# દિવસની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4181841719683918333">ભાષાઓ</translation>
@@ -595,6 +602,7 @@
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
+<translation id="4717575069099566988">તમારો USB-C કેબલ USB4ને સપોર્ટ આપતો નથી. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="4730374152663651037">વારંવાર વપરાયેલ</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
@@ -733,6 +741,7 @@
 <translation id="5682642926269496722">હાલના વપરાશકર્તા એકાઉન્ટ માટે Google Assistant ઉપલબ્ધ નથી.</translation>
 <translation id="5689633613396158040">રાત્રિ પ્રકાશથી તમે સરળતાથી તમારી સ્ક્રીનને જોઈ શકો છો અથવા ઓછા પ્રકાશમાં વાંચી શકો છો. રાત્રિ પ્રકાશ ચાલુ થવાનો સમય બદલવા અથવા તેને સંપૂર્ણપણે બંધ કરવા ટૅપ કરો.</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
+<translation id="5707775774148071965">તમારા કેબલ કરતાં તમારું ડિવાઇસ ડેટાના વધુ ઊંચા દરને સપોર્ટ આપે છે. ડિવાઇસનું કાર્યપ્રદર્શન મર્યાદિત હોઈ શકે છે.</translation>
 <translation id="5710450975648804523">ખલેલ પાડશો નહીં ચાલુ છે</translation>
 <translation id="571295407079589142">મોબાઇલ ડેટા બંધ છે</translation>
 <translation id="573413375004481890">આ ડિવાઇસ તમારા બધા ડિસ્પ્લેને સપોર્ટ કરી શક્યું નથી, તેથી એકને ડિસ્કનેક્ટ કરવામાં આવ્યું છે</translation>
@@ -784,6 +793,7 @@
 <translation id="6022924867608035986">શોધબૉક્સમાંથી બધી ટેક્સ્ટ સાફ કરો</translation>
 <translation id="602472752137106327">બધા ડેસ્કમાંની વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="6027518778343897451"><ph name="CURRENT_MONTH_DAY" />ના રોજ કોઈ ઇવેન્ટ નથી. બ્રાઉઝરમાં Google Calendar ખોલવા માટે enter દબાવો.</translation>
 <translation id="6030495522958826102">મેનૂને સ્ક્રીનની નીચેના ડાબા ખૂણામાં ખસેડ્યું.</translation>
 <translation id="6032620807120418574">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે, સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="6040071906258664830">માઇક્રોફોનથી રેકોર્ડ કરો <ph name="STATE" /></translation>
@@ -810,6 +820,7 @@
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6166852626429024716">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો...</translation>
 <translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
+<translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">પેરિફેરલનું કાર્યપ્રદર્શન કદાચ મર્યાદિત કરવામાં આવી શકે</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -860,6 +871,7 @@
 <translation id="6570831796530454248">{0,plural, =1{એક કલાકની અંદર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="6570902864550063460">USB વડે ચાર્જિંગ</translation>
 <translation id="6574587113394758819">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_TITLE" /> નોટિફિકેશન છુપાવેલું છે</translation>
+<translation id="6574622320167699133">તમારા ફોન દ્વારા અનલૉક કરવામાં આવ્યું. દાખલ થવા માટે ટૅપ કરો અથવા ક્લિક કરો.</translation>
 <translation id="6578407462441924264">અનામાંકિત</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> માં સત્ર સમાપ્ત થાય છે.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1033,7 +1045,9 @@
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7654687942625752712">બોલાયેલો પ્રતિસાદ બંધ કરવા પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કીને દબાવી રાખો.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7660160718439869192"><ph name="EMAIL" />ની સાથે લિંક કરેલાં ડિવાઇસ પર તમારું <ph name="NAME" /> દેખાશે</translation>
 <translation id="7662283695561029522">ગોઠવવા માટે ટૅપ કરો</translation>
+<translation id="7670953955701272011">Google Calendarમાં આ તારીખ ખોલો</translation>
 <translation id="7671610481353807627">ઍપને રંગ અનુસાર સૉર્ટ કરવામાં આવી છે</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">નવું સેલ્યુલર નેટવર્ક ઉમેરો</translation>
@@ -1125,6 +1139,7 @@
 <translation id="8236042855478648955">વિરામ લેવાનો સમય</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
+<translation id="8248728785693203669">તમારો USB-C કેબલ ડિસ્પ્લે સાથે કદાચ યોગ્ય રીતે કનેક્ટ ન થાય</translation>
 <translation id="8255234195843591763">અપડેટ કરવા માટે રીસેટ કરો</translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> માટે અનલૉક કરવા Enter દબાવો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
@@ -1154,6 +1169,7 @@
 <translation id="8428213095426709021">સેટિંગ</translation>
 <translation id="8433186206711564395">નેટવર્ક સેટિંગ</translation>
 <translation id="8433977262951327081">શેલ્ફમાં મેનૂ પરપોટો ઇનપુટ વિકલ્પો બતાવવાનો શૉર્ટકટ બદલાયો છે. કૃપા કરીને <ph name="OLD_SHORTCUT" />ને બદલે <ph name="NEW_SHORTCUT" />નો ઉપયોગ કરો.</translation>
+<translation id="8443879455002739353">"કૉપિ કરો"</translation>
 <translation id="8444246603146515890">ડેસ્ક <ph name="DESK_TITILE" /> સક્રિય કર્યું</translation>
 <translation id="8446884382197647889">વધુ જાણો</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
@@ -1221,6 +1237,7 @@
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
 <translation id="888982883502837004">તમારા ડિવાઇસ માટે ફર્મવેયર અપડેટ ઉપલબ્ધ છે. રિવ્યૂ અને અપડેટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />ને કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
+<translation id="8905919797434099235">(કોઈ શીર્ષક નથી)</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
 <translation id="8921554779039049422">H+</translation>
@@ -1237,6 +1254,7 @@
 <translation id="9000771174482730261">સ્ટોરેજ મેનેજ કરો</translation>
 <translation id="9017320285115481645">Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો.</translation>
 <translation id="9024331582947483881">પૂર્ણ સ્ક્રીન</translation>
+<translation id="9034924485347205037">Linux ફાઇલો</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
 <translation id="9059834730836941392">નોટિફિકેશન સંકુચિત કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>

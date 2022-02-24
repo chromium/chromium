@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Налаштування відстеження цін</translation>
 <translation id="1378979118429748177">Отримуйте сповіщення, коли ціни знижуються</translation>
 <translation id="1403228085774130835">Закриті вкладки можна знайти в розділі "Останні вкладки" в головному меню Chrome</translation>
+<translation id="1455506303394048917">Ваші дії на цих анонімних вкладках буде стерто з пристрою</translation>
+<translation id="1499635324672558517">Закрити всі анонімні вкладки?</translation>
 <translation id="1657719826150349398">Перемістити вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="2118649612461486615">Про магазин</translation>

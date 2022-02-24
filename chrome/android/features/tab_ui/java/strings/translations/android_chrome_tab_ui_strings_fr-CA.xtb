@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Paramètres de suivi des prix</translation>
 <translation id="1378979118429748177">Recevez des notifications si les prix baissent</translation>
 <translation id="1403228085774130835">Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome</translation>
+<translation id="1455506303394048917">Votre activité dans ces onglets de navigation privée sera effacée de cet appareil</translation>
+<translation id="1499635324672558517">Fermer tous les onglets de navigation privée?</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2118649612461486615">Renseignements sur le magasin</translation>

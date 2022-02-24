@@ -79,7 +79,6 @@
 <translation id="1406000523432664303">Заявка „Do Not Track“</translation>
 <translation id="1407069428457324124">Тъмна тема</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
-<translation id="1409426117486808224">Опростен изглед на отворените раздели</translation>
 <translation id="1409879593029778104">Изтеглянето на „<ph name="FILE_NAME" />“ е предотвратено, защото файлът вече съществува.</translation>
 <translation id="1414981605391750300">Установява се връзка с Google. Това може да отнеме известно време…</translation>
 <translation id="1416550906796893042">Версия на приложението</translation>
@@ -220,7 +219,6 @@
 <translation id="230155349749732438">За да използвате тази настройка, функцията <ph name="BEGIN_LINK" />Подобряване на търсенията и сърфирането<ph name="END_LINK" /> трябва да е включена</translation>
 <translation id="2318045970523081853">Докоснете за извършване на обаждане</translation>
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
-<translation id="2321958826496381788">Преместете плъзгача, докато можете да четете удобно това. Текстът трябва да изглежда поне толкова голям след двукратно докосване на абзац.</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
 <translation id="2328985652426384049">Влизането в профила не е възможно</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нещо се обърка.</translation>
@@ -230,7 +228,6 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2369533728426058518">отваряне на раздели</translation>
 <translation id="2386938421315164605">Скриване и показване на теми</translation>
-<translation id="2387895666653383613">Мащабиране на текста</translation>
 <translation id="2390510615457643724">Искате ли отново да изтеглите <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">Изтеглените от вас файлове се показват тук</translation>
 <translation id="2407481962792080328">Когато влезете в профила си в Google, тази функция се включва</translation>
@@ -267,7 +264,6 @@
 <translation id="2536728043171574184">Преглеждате офлайн копие на страницата</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
 <translation id="2549516196460093976">Можете да използвате този таблет, за да влезете в профила си на компютъра, на който се показва QR кодът.</translation>
-<translation id="2558692642259318568">За да сърфирате, без активността да се запазва на устройството ви, изпробвайте режим „инкогнито“</translation>
 <translation id="2561519700418191927">Визуализиране на видеоклипове</translation>
 <translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
 <translation id="2567545343356994513">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения</translation>
@@ -488,7 +484,6 @@
 <translation id="3861633093716975811">Популярни видеоклипове</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3894427358181296146">Добавяне на папка</translation>
-<translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
 <translation id="3899682235662194879">Затваряне на всички раздели в режим „инкогнито“</translation>
 <translation id="3908308510347173149">Актуализиране на <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Намираме най-доброто от мрежата…</translation>
@@ -529,7 +524,6 @@
 <translation id="4135200667068010335">Списъкът с устройства, с които да се сподели даден раздел, е затворен.</translation>
 <translation id="4137746084635924146">Текущ език на устройството</translation>
 <translation id="4141536112466364990">Научете повече за Chrome</translation>
-<translation id="4149994727733219643">Опростен изглед на уеб страниците</translation>
 <translation id="4162867837470729563">Списъкът с опции за споделяне е отворен върху целия екран.</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4170011742729630528">Няма достъп до услугата. Опитайте отново по-късно.</translation>
@@ -781,7 +775,6 @@
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5665379678064389456">Създайте събитие в <ph name="APP_NAME" /></translation>
-<translation id="5668404140385795438">Отмяна на искането на уебсайта да не се допуска увеличаване на мащаба</translation>
 <translation id="5683547024293500885">Chrome не може да провери за актуализации</translation>
 <translation id="5686790454216892815">Името на файла е твърде дълго</translation>
 <translation id="569536719314091526">Страницата може да бъде преведена на който и да е език чрез бутона за още опции</translation>
@@ -1031,13 +1024,11 @@
 <translation id="6963766334940102469">Изтриване на отметките</translation>
 <translation id="696447261358045621">Излизане от режим „инкогнито“</translation>
 <translation id="6979737339423435258">За цялото време</translation>
-<translation id="6981982820502123353">Достъпност</translation>
 <translation id="6987047470128880212">Режимът „инкогнито“ не е налице на това устройство</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
 <translation id="7001056293070445572">Този файл е голям (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Списък за четене: Добав. <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
-<translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
 <translation id="7027549951530753705">Файлът „<ph name="ITEM_TITLE" />“ бе възстановен</translation>
 <translation id="7029390216614421513">Разположете QR кода или баркода в тази рамка</translation>
 <translation id="7029809446516969842">Пароли</translation>
@@ -1272,7 +1263,6 @@
 <translation id="8274165955039650276">Преглед на изтеглянията</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>
-<translation id="8284326494547611709">Надписи</translation>
 <translation id="829672787777123339">Установява се връзка с устройството ви…</translation>
 <translation id="8310344678080805313">Стандартни раздели</translation>
 <translation id="831192587911042850">Добавя текущия уебсайт към списъка с тези, които следвате.</translation>

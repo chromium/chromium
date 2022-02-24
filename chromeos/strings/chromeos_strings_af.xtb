@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Opdatering is (<ph name="PERCENTAGE_VALUE" />% voltooi)</translation>
 <translation id="1310380015393971138">Geen <ph name="NETWORK_NAME" />-netwerk beskikbaar nie</translation>
+<translation id="131421566576084655">Datum van laaste dataterugstelling is nie beskikbaar nie</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Tuisnetwerk, swerf tans nie</translation>
 <translation id="1327977588028644528">Deurgang</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Misluk – Filter het misluk</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ek het 'n sleutelpaar</translation>
+<translation id="1435763214710588005">Stel datagebruik outomaties elke maand op ’n gekose dag terug</translation>
 <translation id="1442433966118452622">Prentbron</translation>
 <translation id="1451536289672181509">Toestel is 'n sleutelbord.</translation>
 <translation id="1459693405370120464">Weer</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Kan nie <ph name="DEVICE_NAME" /> opdateer nie</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Stel as muurpapier</translation>
+<translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
@@ -391,6 +394,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5939518447894949180">Stel terug</translation>
 <translation id="594552776027197022">Genereer ewekansige sleutelpaar</translation>
 <translation id="5972388717451707488">Opdateringenjin</translation>
+<translation id="6034694447310538551">Aktiveer outomatiese maandelikse terugstelling</translation>
 <translation id="6037291330010597344">Die skandeerder se dokumentvoerder is leeg. Voeg dokumente by en probeer weer.</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6040852767465482106">Anonieme identiteit</translation>
@@ -414,6 +418,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen skandeerders beskikbaar nie</translation>
 <translation id="6232017090690406397">Battery</translation>
+<translation id="6235460611964961764">Stel datagebruik self terug</translation>
 <translation id="6243280677745499710">Tans gestel</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +630,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> se <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Misluk – Laai ontbreek</translation>
+<translation id="8923267550422472772">Dag van die maand vir terugstelling</translation>
 <translation id="8928727111548978589">Misluk – Papier is op</translation>
 <translation id="8930521118335213258">Eweknie</translation>
 <translation id="8930622219860340959">Draadloos</translation>

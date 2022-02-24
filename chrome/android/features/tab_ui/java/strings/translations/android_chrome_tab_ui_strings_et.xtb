@@ -7,6 +7,8 @@
 <translation id="1302104331113804646">Hinna jälgimise seaded</translation>
 <translation id="1378979118429748177">Saate hinnalanguste kohta märguandeid</translation>
 <translation id="1403228085774130835">Oma suletud vahelehed leiate Chrome'i peamenüüs olevast jaotisest Hiljutised vahelehed</translation>
+<translation id="1455506303394048917">Teie tegevused nendel inkognito vahelehtedel kustutatakse sellest seadmest</translation>
+<translation id="1499635324672558517">Kas sulgeda kõik inkognito vahelehed?</translation>
 <translation id="1657719826150349398">Teisalda vaheleht alla</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="2118649612461486615">Poe teave</translation>

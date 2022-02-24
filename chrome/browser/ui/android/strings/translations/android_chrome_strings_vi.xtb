@@ -79,7 +79,6 @@
 <translation id="1406000523432664303">“Không theo dõi”</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
-<translation id="1409426117486808224">Chế độ xem đơn giản cho thẻ đang mở</translation>
 <translation id="1409879593029778104">Đã ngăn tải xuống <ph name="FILE_NAME" /> do tệp này đã tồn tại.</translation>
 <translation id="1414981605391750300">Đang liên hệ với Google. Quá trình này có thể mất ít phút…</translation>
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
@@ -220,7 +219,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="230155349749732438">Để sử dụng chế độ cài đặt này, bạn phải bật tùy chọn <ph name="BEGIN_LINK" />Cải thiện tính năng tìm kiếm và duyệt web<ph name="END_LINK" /></translation>
 <translation id="2318045970523081853">Nhấn để gọi điện</translation>
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
-<translation id="2321958826496381788">Kéo thanh trượt cho đến khi bạn có thể đọc nội dung này thoải mái. Chữ tối thiểu phải to như này sau khi bấm đúp vào một đoạn.</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
@@ -230,7 +228,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2369533728426058518">thẻ đang mở</translation>
 <translation id="2386938421315164605">Ẩn và hiện chủ đề</translation>
-<translation id="2387895666653383613">Chia tỷ lệ văn bản</translation>
 <translation id="2390510615457643724">Bạn có muốn tải <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) xuống lần nữa?</translation>
 <translation id="2394602618534698961">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
 <translation id="2407481962792080328">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật</translation>
@@ -267,7 +264,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2549516196460093976">Bạn có thể dùng máy tính bảng này để đăng nhập trên chiếc máy tính đang hiển thị mã QR này.</translation>
-<translation id="2558692642259318568">Để duyệt web mà không lưu hoạt động vào thiết bị, hãy thử chế độ Ẩn danh</translation>
 <translation id="2561519700418191927">Bản xem trước video</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
 <translation id="2567545343356994513">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm</translation>
@@ -488,7 +484,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3861633093716975811">Video phổ biến</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
-<translation id="3895926599014793903">Buộc bật thu phóng</translation>
 <translation id="3899682235662194879">Đóng tất cả các thẻ Ẩn danh</translation>
 <translation id="3908308510347173149">Cập nhật <ph name="PRODUCT_NAME" /></translation>
 <translation id="3912508018559818924">Đang tìm dữ liệu thích hợp nhất từ web…</translation>
@@ -529,7 +524,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4135200667068010335">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã đóng.</translation>
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
 <translation id="4141536112466364990">Tìm hiểu Chrome</translation>
-<translation id="4149994727733219643">Chế độ xem đơn giản cho trang web</translation>
 <translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
@@ -781,7 +775,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5655963694829536461">Tìm kiếm trong các tệp đã tải xuống</translation>
 <translation id="5659593005791499971">Email</translation>
 <translation id="5665379678064389456">Tạo sự kiện trong <ph name="APP_NAME" /></translation>
-<translation id="5668404140385795438">Ghi đè yêu cầu của trang web để chặn phóng to</translation>
 <translation id="5683547024293500885">Chrome không thể kiểm tra để tìm các bản cập nhật</translation>
 <translation id="5686790454216892815">Tên tệp quá dài</translation>
 <translation id="569536719314091526">Dịch trang này sang ngôn ngữ bất kỳ từ nút Tùy chọn khác</translation>
@@ -1031,13 +1024,11 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6963766334940102469">Xóa dấu trang</translation>
 <translation id="696447261358045621">Thoát khỏi chế độ Ẩn danh</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
-<translation id="6981982820502123353">Hỗ trợ tiếp cận</translation>
 <translation id="6987047470128880212">Không dùng được chế độ Ẩn danh trên thiết bị này</translation>
 <translation id="6995899638241819463">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="7001056293070445572">Tệp này có kích thước lớn (<ph name="FILE_SIZE" />)</translation>
 <translation id="7020741890149022655">Thêm vào danh sách đọc <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Mở trong trình duyệt</translation>
-<translation id="702463548815491781">Khuyên dùng khi dịch vụ TalkBack hoặc Tiếp cận bằng công tắc đang bật</translation>
 <translation id="7027549951530753705">Đã khôi phục <ph name="ITEM_TITLE" /></translation>
 <translation id="7029390216614421513">Đặt mã QR hoặc mã vạch vào khung này.</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
@@ -1272,7 +1263,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8274165955039650276">Xem tệp đã tải xuống</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
 <translation id="8282297628636750033">Áp dụng giao diện tối khi có thể</translation>
-<translation id="8284326494547611709">Phụ đề</translation>
 <translation id="829672787777123339">Đang kết nối với thiết bị của bạn…</translation>
 <translation id="8310344678080805313">Thẻ chuẩn</translation>
 <translation id="831192587911042850">Thêm trang web hiện tại vào danh sách các trang web bạn đang theo dõi.</translation>

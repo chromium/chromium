@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Kjo dosje është ndarë me Linux</translation>
 <translation id="1864756863218646478">Ky skedar nuk mund të gjendej.</translation>
 <translation id="1884013283844450420">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, lidhu</translation>
+<translation id="1914901738028575085">Pajisja me CloudReady 2.0</translation>
 <translation id="1920670151694390848">Malajalamisht me transliterim</translation>
 <translation id="1920798810075583923">Shalqi</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> u formatua</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">Biçikleta</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> u zgjodh.</translation>
 <translation id="872537912056138402">Kroatisht</translation>
+<translation id="873847021056608403">Pajisjet me CloudReady 2.0</translation>
 <translation id="8743164338060742337">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, lidhu</translation>
 <translation id="8750438273876807512">Prek dhe mbaj të shtypur një skedar, trokit te <ph name="ICON" /> dhe zgjidh "Gozhdo te rafti" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="8787254343425541995">Lejo përfaqësues për rrjete të ndara</translation>

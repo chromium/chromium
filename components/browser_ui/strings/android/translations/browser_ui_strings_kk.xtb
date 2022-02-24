@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> сайты қосылды</translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="1384959399684842514">Жүктеу кідіртілді</translation>
+<translation id="1409426117486808224">Ашық қойындылардың қарапайым көрінісі</translation>
 <translation id="1415402041810619267">URL қысқартылды</translation>
 <translation id="1446450296470737166">MIDI толық бақылауға рұқсат беру</translation>
 <translation id="1620510694547887537">Камера</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> элементін жою</translation>
 <translation id="2289270750774289114">Сайт маңайдағы Bluetooth құрылғыларын анықтағысы келген кезде, рұқсат сұралсын (ұсынылады).</translation>
 <translation id="2315043854645842844">Операциялық жүйе клиенттік сертификатты таңдауға қолдау көрсетпейді.</translation>
+<translation id="2321958826496381788">Сырғытпаны оқу ыңғайлы болғанға дейін сүйреңіз. Абзацты екі рет басқан кезде, мәтіннің үлкендігі осындай болуы керек.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2379925928934107488">Chrome қараңғы тақырып қолданғанда, сайттарға да мүмкіндігінше қараңғы тақырып қолданыңыз.</translation>
+<translation id="2387895666653383613">Мәтін масштабтау</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> және тағы <ph name="NUM_MORE" /> қызметті пайдалануға рұқсат етілген.}}</translation>
 <translation id="2434158240863470628"><ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /> жүктеп алынды</translation>
@@ -112,6 +115,7 @@
 <translation id="3835233591525155343">Құрылғыны пайдалануыңыз</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3859306556332390985">Алға</translation>
+<translation id="3895926599014793903">Масштабтауды мәжбүрлі түрде қосу</translation>
 <translation id="3955193568934677022">Сайттарға қорғалған мазмұнды ойнатуға рұқсат беру (ұсынылады)</translation>
 <translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3987993985790029246">Сілтемені көшіру</translation>
@@ -119,6 +123,7 @@
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4008040567710660924">Белгілі бір сайт үшін cookie файлдарына рұқсат беріңіз.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
+<translation id="4149994727733219643">Веб-беттердің қарапайым көрінісі</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
 <translation id="4194328954146351878">Сайттардың NFC құрылғылары туралы ақпаратты көруіне және өзгертуіне рұқсат бермес бұрын сізден сұрау (ұсынылады)</translation>
 <translation id="4200726100658658164">Орналасу параметрлерін ашу</translation>
@@ -171,6 +176,7 @@
 <translation id="5354152178998424783">Сайттарда сақталған <ph name="DATASIZE" /> деректер мен cookie файлдары өшіріледі.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(Тағы 1)}other{(Тағы #)}}</translation>
 <translation id="5403592356182871684">Атаулары</translation>
+<translation id="5412236728747081950">Бұл сайт сәйкес жарнамаларды көрсету үшін қызығушылықтарыңыз туралы ақпаратты Chrome браузерінен алады.</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" /> веб-сайтына арналған рұқсаттар бастапқы күйіне қайтарылады.</translation>
 <translation id="5489227211564503167">Өткен уақыт: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Мазалайтын не жалған ақпаратты жарнамалар берілетін сайттарда жарнамаларды бөгеу</translation>
@@ -182,6 +188,7 @@
 <translation id="5556459405103347317">Қайта жүктеу</translation>
 <translation id="5596627076506792578">Қосымша опциялар</translation>
 <translation id="5649053991847567735">Автоматты жүктеулер</translation>
+<translation id="5668404140385795438">Веб-сайттардың үлкейтуге тыйым салу туралы сұрауларын елемеу</translation>
 <translation id="5677928146339483299">Тыйым салынған</translation>
 <translation id="5689516760719285838">Локация</translation>
 <translation id="5690795753582697420">Камера Android параметрлерінде өшірілген.</translation>
@@ -237,9 +244,11 @@
 <translation id="6912998170423641340">Сайттардың буфердегі мәтіндер мен кескіндерді оқуына тыйым салу</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6965382102122355670">Жарайды</translation>
+<translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
 <translation id="6992289844737586249">Сайттар микрофонды пайдалану үшін рұқсат сұрайды (ұсынылады)</translation>
 <translation id="7000754031042624318">Android параметрлері ішінде өшірілді</translation>
 <translation id="7016516562562142042">Ағымдағы іздеу жүйесіне рұқсат берілген</translation>
+<translation id="702463548815491781">TalkBack не Ауыстырғышпен кіру қосулы кезде пайдалануға ұсынылады</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 таңдалды}other{# таңдалды}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> таңдалды. Опциялар экранның жоғарғы жағында тұр</translation>
@@ -290,6 +299,7 @@
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
 <translation id="8249310407154411074">Басына жылжыту</translation>
 <translation id="8261506727792406068">Жою</translation>
+<translation id="8284326494547611709">Титрлер</translation>
 <translation id="8300705686683892304">Қолданба басқарады</translation>
 <translation id="8324158725704657629">Қайта сұралмасын</translation>
 <translation id="8372893542064058268">Белгілі бір сайт үшін фондық синхрондауға рұқсат беру.</translation>

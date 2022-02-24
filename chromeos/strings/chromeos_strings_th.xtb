@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">กำลังอัปเดต (เสร็จสมบูรณ์ <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1310380015393971138">ไม่มีเครือข่าย<ph name="NETWORK_NAME" />ที่ใช้งานได้</translation>
+<translation id="131421566576084655">ไม่มีวันที่รีเซ็ตปริมาณการใช้อินเทอร์เน็ตครั้งล่าสุด</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">เครือข่ายในประเทศ ไม่ใช่โรมมิ่ง</translation>
 <translation id="1327977588028644528">เกตเวย์</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">ไม่สำเร็จ - ตัวกรองล้มเหลว</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">ฉันมีคู่คีย์</translation>
+<translation id="1435763214710588005">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตทุกเดือนโดยอัตโนมัติในวันที่เลือก</translation>
 <translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
 <translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">อัปเดต <ph name="DEVICE_NAME" /> ไม่ได้</translation>
 <translation id="1567064801249837505">อัลบั้ม</translation>
 <translation id="1572585716423026576">ตั้งเป็นวอลเปเปอร์</translation>
+<translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
+<translation id="4170180284036919717">ถ่ายรูป</translation>
 <translation id="4170700058716978431">ไม่สำเร็จ</translation>
 <translation id="4176463684765177261">ปิดการทำงาน</translation>
 <translation id="4213104098953699324">แป้นพิมพ์ USB</translation>
@@ -391,6 +395,7 @@
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
+<translation id="6034694447310538551">เปิดใช้การรีเซ็ตทุกเดือนโดยอัตโนมัติ</translation>
 <translation id="6037291330010597344">ไม่มีเอกสารในตัวป้อนเอกสารของเครื่องสแกน ใส่เอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6040852767465482106">ข้อมูลประจำตัวที่ไม่ระบุตัวตน</translation>
@@ -414,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
 <translation id="6232017090690406397">แบตเตอรี่</translation>
+<translation id="6235460611964961764">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตด้วยตนเอง</translation>
 <translation id="6243280677745499710">วอลเปเปอร์ปัจจุบัน</translation>
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ของ <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">ไม่สำเร็จ - ไม่มีถาด</translation>
+<translation id="8923267550422472772">วันที่จะรีเซ็ตในแต่ละเดือน</translation>
 <translation id="8928727111548978589">ไม่สำเร็จ - กระดาษหมด</translation>
 <translation id="8930521118335213258">รายการเทียบเท่า</translation>
 <translation id="8930622219860340959">ไร้สาย</translation>

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Site-ul <ph name="SITE_NAME" /> a fost adăugat</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
+<translation id="1409426117486808224">Afișare simplificată pentru filele deschise</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1446450296470737166">Control complet dispozitive MIDI</translation>
 <translation id="1620510694547887537">Cameră</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228">Elimină <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Întreabă-mă când un site dorește să descopere dispozitive Bluetooth din apropiere (recomandat)</translation>
 <translation id="2315043854645842844">Selectarea certificatelor pe partea de client nu este acceptată de sistemul de operare.</translation>
+<translation id="2321958826496381788">Trage cursorul până poți citi textul cu ușurință. Textul trebuie să fie cel puțin la fel de mare ca acesta după o atingere dublă pe un paragraf.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2379925928934107488">Aplică tema întunecată pe site-uri când Chrome folosește tema întunecată, dacă este posibil</translation>
+<translation id="2387895666653383613">Scalarea textului</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}}</translation>
 <translation id="2434158240863470628">Descărcare finalizată <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">Folosirea dispozitivului</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3859306556332390985">Derulează înainte</translation>
+<translation id="3895926599014793903">Forțează activarea zoomului</translation>
 <translation id="3955193568934677022">Permite site-urilor să redea conținutul protejat (recomandat)</translation>
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3987993985790029246">Copiază linkul</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4008040567710660924">Permite cookie-uri pentru un anumit site.</translation>
+<translation id="4040330681741629921">Primește o notificare atunci când site-ul poate fi afișat într-o vizualizare simplificată</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
+<translation id="4149994727733219643">Afișare simplificată pentru paginile web</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4194328954146351878">Întreabă înainte de a permite site-urilor să vadă și să modifice informații de pe dispozitive NFC (recomandat)</translation>
 <translation id="4200726100658658164">Deschide setările privind locația</translation>
@@ -182,6 +188,7 @@
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5649053991847567735">Descărcări automate</translation>
+<translation id="5668404140385795438">Ignoră solicitarea unui site de a împiedica mărirea</translation>
 <translation id="5677928146339483299">Blocat</translation>
 <translation id="5689516760719285838">Locație</translation>
 <translation id="5690795753582697420">Camera foto este dezactivată în setările Android</translation>
@@ -237,9 +244,11 @@
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
 <translation id="7016516562562142042">Se permite pentru motorul de căutare actual</translation>
+<translation id="702463548815491781">Recomandat atunci când este activată opțiunea TalkBack sau Acces prin comutare</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selectat}few{# selectate}other{# selectate}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selectate.  Opțiunile sunt disponibile în partea de sus a ecranului</translation>
@@ -290,6 +299,7 @@
 <translation id="8211406090763984747">Conexiunea este securizată</translation>
 <translation id="8249310407154411074">Mută la început</translation>
 <translation id="8261506727792406068">Șterge</translation>
+<translation id="8284326494547611709">Subtitrări</translation>
 <translation id="8300705686683892304">Gestionate de aplicație</translation>
 <translation id="8324158725704657629">Nu mai întreba</translation>
 <translation id="8372893542064058268">Permite sincronizarea în fundal pentru un anumit site.</translation>

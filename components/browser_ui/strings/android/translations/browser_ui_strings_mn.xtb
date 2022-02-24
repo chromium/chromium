@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Сайт <ph name="SITE_NAME" /> нэмсэн</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
+<translation id="1409426117486808224">Нээлттэй табын хялбаршуулсан харагдац</translation>
 <translation id="1415402041810619267">URL-г танасан</translation>
 <translation id="1446450296470737166">MIDI төхөөрөмжийг бүрэн хянахыг зөвшөөрөх</translation>
 <translation id="1620510694547887537">Камер</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />-г хасах</translation>
 <translation id="2289270750774289114">Сайт ойролцоох Bluetooth төхөөрөмжийг илрүүлэх хүсэлтэй үед асуух (санал болгосон)</translation>
 <translation id="2315043854645842844">Үйлчлүүлэгч талын сертификатын сонголтыг үйлдлийн системээс дэмжээгүй.</translation>
+<translation id="2321958826496381788">Уншихад тохиромжтой болох хүртэл хүрээг томруулж татна уу. Бичвэр дээр хоёр удаа товшсоны дараагаар текстийн хэмжээ томорч харагдана.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2379925928934107488">Боломжтой бол Chrome бараан загвар ашигласан тохиолдолд сайтуудад бараан загвар ашиглана уу</translation>
+<translation id="2387895666653383613">Текстийн хэмжээс</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г зөвшөөрсөн}}</translation>
 <translation id="2434158240863470628">Татаж дууссан <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">Таны төхөөрөмжийн ашиглалт</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3859306556332390985">Урагш хайх</translation>
+<translation id="3895926599014793903">Ямар ч тохиолдолд томруулан харуулах</translation>
 <translation id="3955193568934677022">Сайтад хамгаалсан агуулгыг тоглохыг зөвшөөрөх (санал болгосон)</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3987993985790029246">Холбоосыг хуулах</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4008040567710660924">Күүкиг тодорхой сайтад зөвшөөрнө үү.</translation>
+<translation id="4040330681741629921">Сайтыг хялбаршуулсан харагдах байдлаар харуулах боломжтой болох үед мэдэгдэл авна уу</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
+<translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">Энэ нь сайтаас хадгалсан <ph name="DATASIZE" /> өгөгдөл болон күүкиг арилгана.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
 <translation id="5403592356182871684">Нэр</translation>
+<translation id="5412236728747081950">Энэ сайт танд илүү хамааралтай зар харуулахын тулд таны сонирхлуудыг Chrome-с авдаг</translation>
 <translation id="5438097262470833822">Энэ сонголт <ph name="WEBSITE" />-н зөвшөөрлийг шинэчилнэ</translation>
 <translation id="5489227211564503167">Өнгөрсөн цаг: <ph name="TOTAL_TIME" />-н <ph name="ELAPSED_TIME" />.</translation>
 <translation id="5494752089476963479">Төвөгтэй эсвэл хуурамч зар харуулдаг сайтуудын зарыг блоклох</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">Дахин ачаал</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5649053991847567735">Автоматаар татаж  авах файл</translation>
+<translation id="5668404140385795438">Томруулах үйлдлээс урьдчилан сэргийлэхийн тулд вэбсайтны хүсэлтийг хүчингүй болгох</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
 <translation id="5689516760719285838">Байршил</translation>
 <translation id="5690795753582697420">Камерыг Android тохиргоо хэсэгт унтраасан байна</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">Сайтыг түр санах ойн текст болон зургийг уншихыг хориглох</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Хандалт</translation>
 <translation id="6992289844737586249">Сайтууд микрофон ашиглах зөвшөөрөл авах (санал болгосон)</translation>
 <translation id="7000754031042624318">Андройдын тохиргоонд унтраасан</translation>
 <translation id="7016516562562142042">Одоогийн хайлтын хэрэгсэлд зөвшөөрсөн</translation>
+<translation id="702463548815491781">TalkBack эсвэл Хандалтыг сэлгэх асаалттай үед тохиромжтой</translation>
 <translation id="7053983685419859001">Блоклох</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 сонгосон}other{# сонгосон}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />-г сонгосон. Сонголт дэлгэцийн дээд хэсэгт боломжтой</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
 <translation id="8249310407154411074">Дээд хэсэг рүү зөөх</translation>
 <translation id="8261506727792406068">Устгах</translation>
+<translation id="8284326494547611709">Тайлбар</translation>
 <translation id="8300705686683892304">Аппаар удирддаг</translation>
 <translation id="8324158725704657629">Дахиж бүү асуу</translation>
 <translation id="8372893542064058268">Тодорхой сайтад дэвсгэрт синк хийхийг зөвшөөрнө.</translation>

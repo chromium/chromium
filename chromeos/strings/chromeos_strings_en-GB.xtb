@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1310380015393971138">No <ph name="NETWORK_NAME" /> network available</translation>
+<translation id="131421566576084655">Date of last data reset is unavailable</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Home network, not roaming</translation>
 <translation id="1327977588028644528">Gateway</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Failed – Filter failed</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">I have a keypair</translation>
+<translation id="1435763214710588005">Automatically resets data usage every month on a selected day</translation>
 <translation id="1442433966118452622">Image source</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1459693405370120464">Weather</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Can't update <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
+<translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Run charge test</translation>
 <translation id="1639239467298939599">Loading</translation>
 <translation id="1641857168437328880">Document feeder (one-sided)</translation>
@@ -231,6 +234,7 @@
 <translation id="4145784616224233563">HTTP firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">Make sure that the scanner is turned on and available via your network or a direct connection</translation>
+<translation id="4170180284036919717">Take a photo</translation>
 <translation id="4170700058716978431">FAILED</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4213104098953699324">USB keyboard</translation>
@@ -391,6 +395,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
 <translation id="5972388717451707488">Update engine</translation>
+<translation id="6034694447310538551">Enable automatic monthly reset</translation>
 <translation id="6037291330010597344">The scanner’s document feeder is empty. Add documents and try again.</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6040852767465482106">Anonymous Identity</translation>
@@ -414,6 +419,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No scanners available</translation>
 <translation id="6232017090690406397">Battery</translation>
+<translation id="6235460611964961764">Manually reset data usage</translation>
 <translation id="6243280677745499710">Currently set</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +631,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Failed – Tray missing</translation>
+<translation id="8923267550422472772">Day of month for reset</translation>
 <translation id="8928727111548978589">Failed – Out of paper</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>

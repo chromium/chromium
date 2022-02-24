@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">საიტი: <ph name="SITE_NAME" /> დამატებულია</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1384959399684842514">ჩამოტვირთვა დაპაუზებულია</translation>
+<translation id="1409426117486808224">გამარტივებული ხედი გახსნილი ჩანართებისთვის</translation>
 <translation id="1415402041810619267">URL შემოკლებულია</translation>
 <translation id="1446450296470737166">MIDI მოწყ. სრული კონტ. დაშვება</translation>
 <translation id="1620510694547887537">კამერა</translation>
@@ -52,8 +53,10 @@
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> — ამოშლა</translation>
 <translation id="2289270750774289114">საიტების მიერ ახლომდებარე Bluetooth მოწყობილობების აღმოჩენის მოთხოვნა (რეკომენდებული)</translation>
 <translation id="2315043854645842844">კლიენტის სერტიფიკატების არჩევა არ არის მხარდაჭერილი ოპერაციული სისტემის მიერ.</translation>
+<translation id="2321958826496381788">გადაათრიეთ ცოცია, რათა აირჩიოთ კითხვისთვის ყველაზე მოსახერხებელი შრიფტის ზომა. აბზაცზე ორჯერ შეხების შედეგად ტექსტი უნდა გადიდდეს ამ ზომამდე.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2379925928934107488">საიტებზე მუქი თემის გამოყენება, როცა Chrome მუქ თემას იყენებს (შეძლებისდაგვარად)</translation>
+<translation id="2387895666653383613">ტექსტის მასშტაბირება</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> მბაიტი</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="NUM_MORE" /> სხვა დაშვებულია}}</translation>
 <translation id="2434158240863470628">ჩამოტვირთვა დასრულდა: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -112,13 +115,16 @@
 <translation id="3835233591525155343">თქვენი მოწყობილობის გამოყენება</translation>
 <translation id="385051799172605136">უკან</translation>
 <translation id="3859306556332390985">წინ ძიება</translation>
+<translation id="3895926599014793903">გადიდების იძულებით ჩართვა</translation>
 <translation id="3955193568934677022">ვებსაიტებისთვის დაცული კონტენტის დაკვრის დაშვება (რეკომენდებული)</translation>
 <translation id="3967822245660637423">ჩამოტვირთვა დასრულდა</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4008040567710660924">ქუქი-ჩანაწერების დაშვება კონკრეტული საიტისთვის.</translation>
+<translation id="4040330681741629921">შეტყობინების მიღება, როცა საიტის ჩვენება შესაძლებელია გამარტივებული ხედით</translation>
 <translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
+<translation id="4149994727733219643">გამარტივებული ხედი ვებგვერდებისთვის</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
 <translation id="4194328954146351878">შეკითხვა საიტებისთვის NFC მოწყობილობებზე ინფორმაციაზე წვდომისა და მისი შეცვლის დაშვებამდე (რეკომენდებული)</translation>
 <translation id="4200726100658658164">მდებარეობის პარამეტრების გახსნა</translation>
@@ -171,6 +177,7 @@
 <translation id="5354152178998424783">ამ მოქმედებით გასუფთავდება საიტების მიერ შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 სხვა)}other{(+ # სხვა)}}</translation>
 <translation id="5403592356182871684">სახელები</translation>
+<translation id="5412236728747081950">ეს საიტი Chrome-იდან იღებს ინფორმაციას თქვენი ინტერესების შესახებ, უფრო შესაფერისი რეკლამა რომ შემოგთავაზოთ</translation>
 <translation id="5438097262470833822">ეს არჩევანი გადააყენებს ნებართვებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="5489227211564503167">გავიდა <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />-დან.</translation>
 <translation id="5494752089476963479">რეკლამის დაბლოკვა იმ საიტებზე, რომლებიც აჩვენებს მომაბეზრებელ ან შეცდომაში შემყვან რეკლამას</translation>
@@ -182,6 +189,7 @@
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5596627076506792578">დამატებითი ვარიანტები</translation>
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
+<translation id="5668404140385795438">ვებსაიტის მიერ მასშტაბირების აკრძალვის გაუქმება</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
 <translation id="5689516760719285838">მდებარეობა</translation>
 <translation id="5690795753582697420">კამერა გამორთულია Android-ის პარამეტრებში</translation>
@@ -237,9 +245,11 @@
 <translation id="6912998170423641340">საიტებისთვის გაცვლის ბუფერში არსებულ ტექსტსა და სურათებზე წვდომის დაბლოკვა</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6965382102122355670">კარგი</translation>
+<translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
 <translation id="6992289844737586249">შეკითხვა საიტებისთვის თქვენი მიკროფონის გამოყენების დაშვებამდე (რეკომენდებული)</translation>
 <translation id="7000754031042624318">გამორთულია Android-ის პარამეტრებიდან</translation>
 <translation id="7016516562562142042">დაშვებულია ამჟამინდელი საძიებო სისტემისთვის</translation>
+<translation id="702463548815491781">რეკომენდებულია, როცა ჩართულია TalkBack ან გადამრთველით წვდომა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{არჩეულია 1}other{არჩეულია #}}</translation>
 <translation id="7087918508125750058">არჩეულია <ph name="ITEM_COUNT" />. ვარიანტები ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
@@ -290,6 +300,7 @@
 <translation id="8211406090763984747">კავშირი დაცულია</translation>
 <translation id="8249310407154411074">თავში გადატანა</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8284326494547611709">ტიტრები</translation>
 <translation id="8300705686683892304">იმართება აპის მიერ</translation>
 <translation id="8324158725704657629">აღარ მკითხო</translation>
 <translation id="8372893542064058268">კონკრეტული საიტისთვის ფონური სინქრონიზაციის დაშვება.</translation>

@@ -3230,33 +3230,6 @@
 <translation id="475479145997699293">如果此政策设为 <ph name="ASK_FILE_HANDLING" />，系统会允许 Web 应用通过 File Handling API 请求访问各类文件。如果此政策设为 <ph name="BLOCK_FILE_HANDLING" />，系统会禁止 Web 应用访问各类文件。
 
       如果此政策未设置，系统会允许 Web 应用请求获取访问权限，但用户可以更改此设置。</translation>
-<translation id="4755492101519343259">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
-      复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
-
-      每条规则均包含以下内容：
-      - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制条件。
-      - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
-      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
-
-      您可通过添加规则来实现以下目的：
-      - 控制在来源和目的地之间共享的剪贴板数据。
-      - 控制针对任何来源的截屏操作。
-      - 控制针对任何来源的打印操作。
-      - 在任何来源可见时控制隐私保护屏幕。
-      - 控制针对任何来源的屏幕共享操作。
-
-      限制级别可设为 BLOCK、ALLOW、REPORT 或 WARN。
-      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告被禁止的操作。
-      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
-      - 如果限制级别设为 REPORT 并且 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告该操作。
-      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，无论是显示了警告消息的情况，还是用户选择了继续该操作的情况，都会被报告给管理员。
-
-      注意：
-      - PRIVACY_SCREEN 限制条件不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
-      - 如果限制条件列表含有 CLIPBOARD，目的地便不能为空，但它们对其余的限制条件没有任何影响。
-      - 所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。
-
-      如果此政策未设置，系统将不会应用任何限制条件。</translation>
 <translation id="4757053978738874325">启用“单声道音频”无障碍功能。
 
           此功能负责输出立体声音频（包括不同的左右声道），因此双耳能够听到不同的声音。

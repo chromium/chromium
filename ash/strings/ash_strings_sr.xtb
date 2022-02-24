@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">Сними екран</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Уклони предлог</translation>
+<translation id="3120421559657122717">Желите да искључите уређај?</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3269597722229482060">Десни клик</translation>
+<translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
 <translation id="3289674678944039601">Пуни се преко адаптера</translation>
 <translation id="3290356915286466215">Незаштићено</translation>
 <translation id="3294437725009624529">Гост</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">Брза подешавања, притисните тастер за претрагу и стрелицу улево да бисте приступили центру за обавештења.</translation>
 <translation id="5426063383988017631">Мени Подешавања је затворен</translation>
 <translation id="5428899915242071344">Покрени бирање</translation>
+<translation id="5429993543155113935">Прозори без архивирања тренутно нису подржани</translation>
 <translation id="5430931332414098647">Тренутно привезивање</translation>
 <translation id="5431318178759467895">У боји</translation>
 <translation id="5433020815079095860">Аудио улаз</translation>
@@ -836,6 +839,7 @@
 <translation id="6431865393913628856">Снимак екрана</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> догађај</translation>
+<translation id="6449483711453944360">Linux апликације и прозори без архивирања тренутно нису подржани</translation>
 <translation id="6452181791372256707">Одбиј</translation>
 <translation id="6453179446719226835">Језик је промењен</translation>
 <translation id="6459472438155181876">Проширивање екрана у <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +938,7 @@
 <translation id="7025533177575372252">Повежите <ph name="DEVICE_NAME" /> са телефоном</translation>
 <translation id="7026338066939101231">Смањење</translation>
 <translation id="7029814467594812963">Изађи из сесије</translation>
+<translation id="7032161822340700104">Дозвољено је само 6 шаблона. Уклоните шаблон да бисте сачували нови.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google помоћник</translation>
 <translation id="7042322267639375032">Скупите област статуса</translation>
 <translation id="7045033600005038336">Желите да замените шаблон?</translation>
@@ -1237,6 +1242,7 @@
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>
 <translation id="9024331582947483881">цео екран</translation>
+<translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9047624247355796468">Отворите подешавања за <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Скупи обавештење</translation>
 <translation id="9065203028668620118">Измени</translation>
