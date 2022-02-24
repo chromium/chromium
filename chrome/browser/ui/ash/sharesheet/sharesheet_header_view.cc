@@ -324,7 +324,6 @@ void SharesheetHeaderView::ShowTextPreview() {
   std::vector<std::unique_ptr<views::Label>> preview_labels =
       ExtractShareText();
 
-  std::u16string filenames_tooltip_text = u"";
   if (intent_->files.has_value() && !intent_->files.value().empty()) {
     std::vector<std::u16string> file_names;
     for (const auto& file : intent_->files.value()) {
@@ -333,6 +332,7 @@ void SharesheetHeaderView::ShowTextPreview() {
       file_names.push_back(file_path.BaseName().LossyDisplayName());
     }
     std::u16string file_text;
+    std::u16string filenames_tooltip_text;
     if (file_names.size() == 1) {
       file_text = file_names[0];
     } else {
@@ -345,9 +345,11 @@ void SharesheetHeaderView::ShowTextPreview() {
       filenames_tooltip_text = ConcatenateFileNames(file_names);
     }
     auto file_label = CreatePreviewLabel(file_text);
-    file_label->SetTooltipText(filenames_tooltip_text);
-    file_label->SetAccessibleName(
-        base::StrCat({file_text, u" ", filenames_tooltip_text}));
+    if (!filenames_tooltip_text.empty()) {
+      file_label->SetTooltipText(filenames_tooltip_text);
+      file_label->SetAccessibleName(
+          base::StrCat({file_text, u" ", filenames_tooltip_text}));
+    }
     preview_labels.push_back(std::move(file_label));
   }
 

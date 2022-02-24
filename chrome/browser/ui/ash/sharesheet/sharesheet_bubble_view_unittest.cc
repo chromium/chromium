@@ -318,6 +318,7 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewOneFile) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"text.txt");
+  ASSERT_EQ(title_text->GetAccessibleName(), u"text.txt");
   CloseBubble();
 }
 
@@ -339,6 +340,7 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFiles) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"2 files");
+  ASSERT_EQ(title_text->GetAccessibleName(), u"2 files file.pdf, text.txt");
   CloseBubble();
 }
 
