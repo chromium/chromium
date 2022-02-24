@@ -12,6 +12,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/bits.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"

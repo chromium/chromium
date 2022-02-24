@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 
+#include "base/bits.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"

@@ -14,7 +14,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"

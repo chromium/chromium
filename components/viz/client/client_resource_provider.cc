@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/stack_trace.h"
 #include "base/threading/thread_task_runner_handle.h"

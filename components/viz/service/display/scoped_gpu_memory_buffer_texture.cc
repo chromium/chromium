@@ -4,7 +4,6 @@
 
 #include "components/viz/service/display/scoped_gpu_memory_buffer_texture.h"
 
-#include "base/bits.h"
 #include "base/check.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_format.h"

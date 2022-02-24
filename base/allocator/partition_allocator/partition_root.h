@@ -61,6 +61,7 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

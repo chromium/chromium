@@ -9,7 +9,6 @@
 #include <vulkan/vulkan.h>
 
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"

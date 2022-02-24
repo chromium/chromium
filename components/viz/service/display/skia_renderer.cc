@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/bits.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

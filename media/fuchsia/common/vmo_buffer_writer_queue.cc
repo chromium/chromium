@@ -7,7 +7,6 @@
 #include <zircon/rights.h>
 #include <algorithm>
 
-#include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/process/process_metrics.h"
 #include "media/base/decoder_buffer.h"
