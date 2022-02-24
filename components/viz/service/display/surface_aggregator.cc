@@ -1060,9 +1060,8 @@ void SurfaceAggregator::AddColorConversionPass() {
         render_pass_id_generator_.GenerateNextId();
   }
 
-  AddRenderPassHelper(output_rect, color_conversion_render_pass_id_,
-                      output_rect, root_render_pass->damage_rect,
-                      root_content_color_usage_,
+  AddRenderPassHelper(color_conversion_render_pass_id_, output_rect,
+                      root_render_pass->damage_rect, root_content_color_usage_,
                       root_render_pass->has_transparent_background,
                       /*pass_is_color_conversion_pass=*/true,
                       /*quad_state_to_target_transform=*/gfx::Transform(),
@@ -1119,7 +1118,7 @@ void SurfaceAggregator::AddRootReadbackPass() {
   bool has_transparent_background =
       root_render_pass->has_transparent_background;
   root_render_pass->has_transparent_background = true;
-  AddRenderPassHelper(output_rect, readback_render_pass_id_, output_rect,
+  AddRenderPassHelper(readback_render_pass_id_, output_rect,
                       root_render_pass->damage_rect, root_content_color_usage_,
                       has_transparent_background,
                       /*pass_is_color_conversion_pass=*/false,
@@ -1149,7 +1148,7 @@ void SurfaceAggregator::AddDisplayTransformPass() {
   }
 
   AddRenderPassHelper(
-      root_render_pass->output_rect, display_transform_render_pass_id_,
+      display_transform_render_pass_id_,
       cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
           root_surface_transform_, root_render_pass->output_rect),
       cc::MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
@@ -1161,10 +1160,9 @@ void SurfaceAggregator::AddDisplayTransformPass() {
 }
 
 void SurfaceAggregator::AddRenderPassHelper(
-    const gfx::Rect& output_rect,
     AggregatedRenderPassId render_pass_id,
     const gfx::Rect& render_pass_output_rect,
-    const gfx::Rect& pass_damage_rect,
+    const gfx::Rect& render_pass_damage_rect,
     gfx::ContentColorUsage pass_color_usage,
     bool pass_has_transparent_background,
     bool pass_is_color_conversion_pass,
@@ -1172,9 +1170,11 @@ void SurfaceAggregator::AddRenderPassHelper(
     bool quad_state_contents_opaque,
     SkBlendMode quad_state_blend_mode,
     AggregatedRenderPassId quad_pass_id) {
+  gfx::Rect current_output_rect = dest_pass_list_->back()->output_rect;
+
   auto render_pass = std::make_unique<AggregatedRenderPass>(1, 1);
-  render_pass->SetAll(render_pass_id, output_rect, pass_damage_rect,
-                      gfx::Transform(),
+  render_pass->SetAll(render_pass_id, render_pass_output_rect,
+                      render_pass_damage_rect, gfx::Transform(),
                       /*filters=*/cc::FilterOperations(),
                       /*backdrop_filters=*/cc::FilterOperations(),
                       /*backdrop_filter_bounds=*/gfx::RRectF(),
@@ -1187,16 +1187,16 @@ void SurfaceAggregator::AddRenderPassHelper(
   auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(
       quad_state_to_target_transform,
-      /*layer_rect=*/output_rect,
-      /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+      /*layer_rect=*/current_output_rect,
+      /*visible_layer_rect=*/current_output_rect, gfx::MaskFilterInfo(),
       /*clip=*/absl::nullopt, quad_state_contents_opaque, /*opacity_f=*/1.f,
       quad_state_blend_mode, /*sorting_context=*/0);
 
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-  quad->SetNew(shared_quad_state, output_rect, output_rect, quad_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::Vector2dF(),
-               gfx::PointF(), gfx::RectF(output_rect),
+  quad->SetNew(shared_quad_state, current_output_rect, current_output_rect,
+               quad_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
+               gfx::Vector2dF(), gfx::PointF(), gfx::RectF(current_output_rect),
                /*force_anti_aliasing_off=*/false,
                /*backdrop_filter_quality*/ 1.0f);
   dest_pass_list_->push_back(std::move(render_pass));
