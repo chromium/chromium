@@ -41,7 +41,7 @@ blink_python_runner("make_generated_permissions_policy_helper") {
   inputs = scripts_for_json5_files + [
              "../../renderer/build/scripts/make_policy_helper_public.py",
              "../../renderer/core/permissions_policy/permissions_policy_features.json5",
-             "../../renderer/build/scripts/templates/policy_helper.cc.tmpl",
+             "../../renderer/build/scripts/templates/policy_helper_public.cc.tmpl",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/public/common/permissions_policy/policy_helper_public.cc" ]
 

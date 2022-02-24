@@ -12,17 +12,22 @@
 
 namespace blink {
 
-// TODO(crbug.com/1297609): Rename to FeatureNameMap and
-// GetDefaultFeatureNameMap() after removing the private version of
-// GetDefaultFeatureNameMap().
-using PublicFeatureNameMap =
+using PermissionsPolicyFeatureToNameMap =
+    base::flat_map<mojom::PermissionsPolicyFeature, base::StringPiece>;
+
+using PermissionsPolicyNameToFeatureMap =
     base::flat_map<base::StringPiece, mojom::PermissionsPolicyFeature>;
 
 // This method defines the feature names which will be recognized by the parser
 // for the Permissions-Policy HTTP header and the <iframe> "allow" attribute, as
 // well as the features which will be recognized by the document or iframe
 // policy object.
-const PublicFeatureNameMap& GetDefaultFeatureNameMapPublic();
+const PermissionsPolicyNameToFeatureMap& GetPermissionsPolicyNameToFeatureMap();
+
+// This method returns an inverted version of the map returned by
+// GetPermissionsPolicyNameToFeatureMap() so that users can look up the string
+// representation of a feature by it's mojo enum value.
+const PermissionsPolicyFeatureToNameMap& GetPermissionsPolicyFeatureToNameMap();
 
 }  // namespace blink
 
