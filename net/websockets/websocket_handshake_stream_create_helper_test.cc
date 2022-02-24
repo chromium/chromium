@@ -200,10 +200,10 @@ class WebSocketHandshakeStreamCreateHelperTest
       case BASIC_HANDSHAKE_STREAM: {
         std::unique_ptr<ClientSocketHandle> socket_handle =
             socket_handle_factory_.CreateClientSocketHandle(
-                WebSocketStandardRequest(
-                    kPath, "www.example.org",
-                    url::Origin::Create(GURL(kOrigin)), "",
-                    WebSocketExtraHeadersToString(extra_request_headers)),
+                WebSocketStandardRequest(kPath, "www.example.org",
+                                         url::Origin::Create(GURL(kOrigin)),
+                                         /*send_additional_request_headers=*/{},
+                                         extra_request_headers),
                 WebSocketStandardResponse(
                     WebSocketExtraHeadersToString(extra_response_headers)));
 

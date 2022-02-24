@@ -33,7 +33,8 @@ namespace {
 TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org",
-      url::Origin::Create(GURL("http://origin.example.org")), "", "");
+      url::Origin::Create(GURL("http://origin.example.org")),
+      /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
   std::string response =
       "HTTP/1.1 404 Not Found\r\n"
       "Content-Length: 0\r\n"
@@ -90,7 +91,8 @@ TEST(WebSocketBasicHandshakeStreamTest, ConnectionClosedOnFailure) {
 TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
   std::string request = WebSocketStandardRequest(
       "/", "www.example.org",
-      url::Origin::Create(GURL("http://origin.example.org")), "", "");
+      url::Origin::Create(GURL("http://origin.example.org")),
+      /*send_additional_request_headers=*/{}, /*extra_headers=*/{});
   std::string response = WebSocketStandardResponse("");
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, 0, request.c_str())};
   MockRead reads[] = {MockRead(SYNCHRONOUS, 1, response.c_str()),

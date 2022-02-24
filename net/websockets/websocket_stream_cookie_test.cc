@@ -49,9 +49,9 @@ class TestBase : public WebSocketStreamCreateTestBase {
           base::EndsWith(cookie_header, "\r\n", base::CompareCase::SENSITIVE));
 
     url_request_context_host_.SetExpectations(
-        WebSocketStandardRequestWithCookies(url.path(), url.host(), origin,
-                                            cookie_header, std::string(),
-                                            std::string()),
+        WebSocketStandardRequestWithCookies(
+            url.path(), url.host(), origin, cookie_header,
+            /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,
                            isolation_info, HttpRequestHeaders(), nullptr);

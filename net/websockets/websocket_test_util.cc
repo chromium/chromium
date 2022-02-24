@@ -63,8 +63,8 @@ std::string WebSocketStandardRequest(
     const std::string& path,
     const std::string& host,
     const url::Origin& origin,
-    const std::string& send_additional_request_headers,
-    const std::string& extra_headers) {
+    const WebSocketExtraHeaders& send_additional_request_headers,
+    const WebSocketExtraHeaders& extra_headers) {
   return WebSocketStandardRequestWithCookies(path, host, origin, std::string(),
                                              send_additional_request_headers,
                                              extra_headers);
@@ -75,8 +75,8 @@ std::string WebSocketStandardRequestWithCookies(
     const std::string& host,
     const url::Origin& origin,
     const std::string& cookies,
-    const std::string& send_additional_request_headers,
-    const std::string& extra_headers) {
+    const WebSocketExtraHeaders& send_additional_request_headers,
+    const WebSocketExtraHeaders& extra_headers) {
   // Unrelated changes in net/http may change the order and default-values of
   // HTTP headers, causing WebSocket tests to fail. It is safe to update this
   // in that case.
@@ -88,7 +88,8 @@ std::string WebSocketStandardRequestWithCookies(
   headers.SetHeader("Connection", "Upgrade");
   headers.SetHeader("Pragma", "no-cache");
   headers.SetHeader("Cache-Control", "no-cache");
-  headers.AddHeadersFromString(send_additional_request_headers);
+  for (const auto& [key, value] : send_additional_request_headers)
+    headers.SetHeader(key, value);
   headers.SetHeader("Upgrade", "websocket");
   headers.SetHeader("Origin", origin.Serialize());
   headers.SetHeader("Sec-WebSocket-Version", "13");
@@ -100,7 +101,8 @@ std::string WebSocketStandardRequestWithCookies(
   headers.SetHeader("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==");
   headers.SetHeader("Sec-WebSocket-Extensions",
                     "permessage-deflate; client_max_window_bits");
-  headers.AddHeadersFromString(extra_headers);
+  for (const auto& [key, value] : extra_headers)
+    headers.SetHeader(key, value);
 
   request_headers << headers.ToString();
   return request_headers.str();
