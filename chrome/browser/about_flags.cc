@@ -248,6 +248,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/i18n/icu_mergeable_data_file.h"
 #include "chrome/browser/lacros/lacros_url_handling.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
@@ -8039,6 +8040,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopCaptureLacrosV2Name,
      flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
+
+    {"lacros-merge-icu-data-file",
+     flag_descriptions::kLacrosMergeIcuDataFileName,
+     flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
 
     {"lacros-non-syncing-profiles",
      flag_descriptions::kLacrosNonSyncingProfilesName,

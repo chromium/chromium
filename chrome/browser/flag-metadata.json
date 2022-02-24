@@ -3821,6 +3821,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-merge-icu-data-file",
+    "owners": [ "andreaorru", "hidehiko", "lacros-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "lacros-non-syncing-profiles",
     "owners": [ "jkrcal", "droger", "chrome-signin@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this
