@@ -266,7 +266,11 @@ TEST_P(AttributionSimulatorInputParseErrorTest, InvalidInputFails) {
   EXPECT_THAT(error_stream.str(), HasSubstr(test_case.expected_failure_substr));
 }
 
-const ParseErrorTestCase kSourceParseErrorTestCases[] = {
+const ParseErrorTestCase kParseErrorTestCases[] = {
+    {
+        "input root: must be a dictionary",
+        R"json(1)json",
+    },
     {
         "sources[0]: source_type",
         R"json({"sources": [{
@@ -406,13 +410,6 @@ const ParseErrorTestCase kSourceParseErrorTestCases[] = {
         "sources: must be a list",
         R"json({"sources": ""})json",
     },
-};
-
-INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidSources,
-                         AttributionSimulatorInputParseErrorTest,
-                         ::testing::ValuesIn(kSourceParseErrorTestCases));
-
-const ParseErrorTestCase kTriggerParseErrorTestCases[] = {
     {
         "triggers[0]: registration_config",
         R"json({"triggers": [{
@@ -451,9 +448,9 @@ const ParseErrorTestCase kTriggerParseErrorTestCases[] = {
     },
 };
 
-INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidTriggers,
+INSTANTIATE_TEST_SUITE_P(AttributionSimulatorInputParserInvalidInputs,
                          AttributionSimulatorInputParseErrorTest,
-                         ::testing::ValuesIn(kTriggerParseErrorTestCases));
+                         ::testing::ValuesIn(kParseErrorTestCases));
 
 }  // namespace
 }  // namespace content

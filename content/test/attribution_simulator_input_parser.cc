@@ -47,6 +47,9 @@ class AttributionSimulatorInputParser {
 
   absl::optional<AttributionSimulationEventAndValues> Parse(
       base::Value input) && {
+    if (!EnsureDictionary(input))
+      return absl::nullopt;
+
     ParseList(input, "sources", &AttributionSimulatorInputParser::ParseSource);
     ParseList(input, "triggers",
               &AttributionSimulatorInputParser::ParseTrigger);
@@ -61,7 +64,7 @@ class AttributionSimulatorInputParser {
   const base::Time offset_time_;
   std::ostream& error_stream_;
 
-  base::StringPiece context_ = "";
+  base::StringPiece context_ = "input root";
   absl::optional<size_t> context_index_;
   bool has_error_ = false;
   std::vector<AttributionSimulationEventAndValue> events_;
