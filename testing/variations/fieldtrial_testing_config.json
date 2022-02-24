@@ -4878,9 +4878,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210726",
+                    "name": "Enabled_20220224",
                     "params": {
-                        "compress_bitmaps": "true"
+                        "compress_bitmaps": "false"
                     },
                     "enable_features": [
                         "PaintPreviewShowOnStartup"
