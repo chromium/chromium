@@ -122,6 +122,18 @@ class TestingDeviceCloudPolicyManagerAsh : public DeviceCloudPolicyManagerAsh {
   }
 
   ~TestingDeviceCloudPolicyManagerAsh() override {}
+
+  ManagedSessionService* GetManagedSessionService() {
+    return managed_session_service_.get();
+  }
+
+  ash::reporting::LoginLogoutReporter* GetLoginLogoutReporter() {
+    return login_logout_reporter_.get();
+  }
+
+  reporting::UserAddedRemovedReporter* GetUserAddedRemovedReporter() {
+    return user_added_removed_reporter_.get();
+  }
 };
 
 class DeviceCloudPolicyManagerAshTest
@@ -140,11 +152,6 @@ class DeviceCloudPolicyManagerAshTest
         chromeos::system::kSerialNumberKeyForTest, "test_sn");
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kHardwareClassKey, "test_hw");
-    std::vector<std::string> state_keys;
-    state_keys.push_back("1");
-    state_keys.push_back("2");
-    state_keys.push_back("3");
-    session_manager_client_.set_server_backed_state_keys(state_keys);
     session_manager_client_.AddObserver(this);
   }
 
@@ -229,10 +236,23 @@ class DeviceCloudPolicyManagerAshTest
     ASSERT_EQ(chromeos::InstallAttributes::LOCK_SUCCESS, result);
   }
 
+  void AddStateKeys() {
+    std::vector<std::string> state_keys;
+    state_keys.push_back("1");
+    state_keys.push_back("2");
+    state_keys.push_back("3");
+    session_manager_client_.set_server_backed_state_keys(state_keys);
+  }
+
   void ConnectManager(bool expectExternalDataManagerConnectCall = true) {
     if (expectExternalDataManagerConnectCall) {
       EXPECT_CALL(*external_data_manager_, Connect(_));
     }
+    AddStateKeys();
+    InitDeviceCloudPolicyInitializer();
+  }
+
+  void InitDeviceCloudPolicyInitializer() {
     manager_->Initialize(&local_state_);
     policy::EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
@@ -347,6 +367,9 @@ TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDevice) {
             job_type);
   // Should create a status uploader for reporting on enrolled devices.
   EXPECT_TRUE(manager_->GetStatusUploader());
+  EXPECT_TRUE(manager_->GetManagedSessionService());
+  EXPECT_TRUE(manager_->GetLoginLogoutReporter());
+  EXPECT_TRUE(manager_->GetUserAddedRemovedReporter());
   VerifyPolicyPopulated();
 
   ShutdownManager();
@@ -385,6 +408,9 @@ TEST_F(DeviceCloudPolicyManagerAshTest, UnmanagedDevice) {
   // Should create a status provider for reporting on enrolled devices, even
   // those that aren't managed.
   EXPECT_TRUE(manager_->GetStatusUploader());
+  EXPECT_TRUE(manager_->GetManagedSessionService());
+  EXPECT_TRUE(manager_->GetLoginLogoutReporter());
+  EXPECT_TRUE(manager_->GetUserAddedRemovedReporter());
 
   // Switch back to ACTIVE, service the policy fetch and let it propagate.
   device_policy_->policy_data().set_state(em::PolicyData::ACTIVE);
@@ -416,9 +442,43 @@ TEST_F(DeviceCloudPolicyManagerAshTest, ConsumerDevice) {
   EXPECT_TRUE(manager_->policies().Equals(bundle));
   // Should not create a status provider for reporting on consumer devices.
   EXPECT_FALSE(manager_->GetStatusUploader());
+  EXPECT_FALSE(manager_->GetManagedSessionService());
+  EXPECT_FALSE(manager_->GetLoginLogoutReporter());
+  EXPECT_FALSE(manager_->GetUserAddedRemovedReporter());
 
   ShutdownManager();
   EXPECT_TRUE(manager_->policies().Equals(bundle));
+}
+
+TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
+  LockDevice();
+  FlushDeviceSettings();
+  EXPECT_EQ(CloudPolicyStore::STATUS_OK, store_->status());
+  EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
+  VerifyPolicyPopulated();
+
+  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+  AllowUninterestingRemoteCommandFetches();
+
+  EXPECT_FALSE(manager_->GetManagedSessionService());
+  EXPECT_FALSE(manager_->GetLoginLogoutReporter());
+  EXPECT_FALSE(manager_->GetUserAddedRemovedReporter());
+
+  InitDeviceCloudPolicyInitializer();
+
+  // Status uploader for reporting on enrolled devices is only created on
+  // connect call.
+  EXPECT_FALSE(manager_->GetStatusUploader());
+  // Managed session service and reporters are created when notified by
+  // |DeviceCloudPolicyInitializer| that the policy store is ready.
+  EXPECT_TRUE(manager_->GetManagedSessionService());
+  EXPECT_TRUE(manager_->GetLoginLogoutReporter());
+  EXPECT_TRUE(manager_->GetUserAddedRemovedReporter());
+
+  ShutdownManager();
+
+  EXPECT_EQ(store_->policy()->service_account_identity(),
+            PolicyBuilder::kFakeServiceAccountIdentity);
 }
 
 class DeviceCloudPolicyManagerAshObserverTest
@@ -521,6 +581,7 @@ class DeviceCloudPolicyManagerAshEnrollmentTest
       EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _))
           .WillOnce(WithArgs<5>(Invoke(CertCallbackSuccess)));
     }
+    AddStateKeys();
   }
 
   void ExpectFailedEnrollment(EnrollmentStatus::Status status) {

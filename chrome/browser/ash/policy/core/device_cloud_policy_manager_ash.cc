@@ -244,24 +244,26 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // themselves track the current state of the monitoring settings and only
   // perform monitoring if it is active.
   if (install_attributes->IsCloudManaged()) {
-    managed_session_service_ =
-        std::make_unique<policy::ManagedSessionService>();
+    CreateManagedSessionServiceAndReporters();
     CreateStatusUploader(managed_session_service_.get());
     syslog_uploader_ =
         std::make_unique<SystemLogUploader>(nullptr, task_runner_);
     heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
         install_attributes->GetDeviceId(), task_runner_);
-    login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
-        managed_session_service_.get());
-    user_added_removed_reporter_ =
-        ::reporting::UserAddedRemovedReporter::Create(
-            managed_session_service_.get());
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
   }
 
   NotifyConnected();
+}
+
+void DeviceCloudPolicyManagerAsh::OnPolicyStoreReady(
+    chromeos::InstallAttributes* install_attributes) {
+  if (!install_attributes->IsCloudManaged()) {
+    return;
+  }
+  CreateManagedSessionServiceAndReporters();
 }
 
 void DeviceCloudPolicyManagerAsh::Unregister(UnregisterCallback callback) {
@@ -331,6 +333,18 @@ void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
   status_uploader_ = std::make_unique<StatusUploader>(
       client(), std::move(collector), task_runner_,
       kDeviceStatusUploadFrequency);
+}
+
+void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
+  if (managed_session_service_) {
+    return;
+  }
+
+  managed_session_service_ = std::make_unique<policy::ManagedSessionService>();
+  login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
+      managed_session_service_.get());
+  user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
+      managed_session_service_.get());
 }
 
 }  // namespace policy

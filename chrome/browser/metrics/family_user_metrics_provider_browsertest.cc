@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -215,6 +218,9 @@ class FamilyUserMetricsProviderEphemeralUserTest
         ->set_ephemeral_users_enabled(true);
 
     device_policy_update.reset();
+
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ash::kReportDeviceLoginLogout, false);
   }
 
   // MixinBasedInProcessBrowserTest:
@@ -232,6 +238,8 @@ class FamilyUserMetricsProviderEphemeralUserTest
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
       embedded_test_server(), this};
+
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 // Tests that regular ephemeral users report 0 for number of secondary accounts.
