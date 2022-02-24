@@ -19,7 +19,7 @@
 // This is a min version of macOS where we want to support SVC encoding via
 // EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
 // but there we see frame drops even with ample bitrate budget. Excessive frame
-// drops were fixed in 12.1.
+// drops were fixed in 12.0.1.
 #define LOW_LATENCY_FLAG_AVAILABLE_VER 12.0.1
 
 namespace media {
