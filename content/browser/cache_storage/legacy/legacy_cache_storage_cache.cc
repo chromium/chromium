@@ -333,7 +333,7 @@ bool FindDuplicateOperations(
 }
 
 GURL RemoveQueryParam(const GURL& url) {
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearQuery();
   return url.ReplaceComponents(replacements);
 }
