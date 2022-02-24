@@ -354,9 +354,8 @@ void GaiaUrls::InitializeDefault() {
     account_capabilities_origin_url_ = GURL(kDefaultAccountCapabilitiesBaseUrl);
   }
   if (!secure_google_url_.is_valid()) {
-    url::Replacements<char> scheme_replacement;
-    scheme_replacement.SetScheme(url::kHttpsScheme,
-                                 url::Component(0, strlen(url::kHttpsScheme)));
+    GURL::Replacements scheme_replacement;
+    scheme_replacement.SetSchemeStr(url::kHttpsScheme);
     secure_google_url_ = google_url_.ReplaceComponents(scheme_replacement);
   }
   if (!captcha_base_url_.is_valid()) {
