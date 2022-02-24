@@ -506,8 +506,8 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
                                     &exclude_browsers,
                                     &exclude_browser_tab_apps](
                                        const apps::AppUpdate& update) {
-      if (update.Readiness() != apps::mojom::Readiness::kReady &&
-          update.Readiness() != apps::mojom::Readiness::kDisabledByPolicy) {
+      if (update.Readiness() != apps::Readiness::kReady &&
+          update.Readiness() != apps::Readiness::kDisabledByPolicy) {
         // We consider apps disabled by policy to be ready as they cause URL
         // loads to be blocked.
         return;

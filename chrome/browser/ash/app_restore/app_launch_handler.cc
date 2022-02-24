@@ -75,7 +75,7 @@ void AppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   // If the app is not ready, don't launch the app for the restoration.
-  if (update.Readiness() != apps::mojom::Readiness::kReady)
+  if (update.Readiness() != apps::Readiness::kReady)
     return;
 
   // If there is no restore data or the launch list for the app is empty, don't
@@ -122,7 +122,7 @@ void AppLaunchHandler::LaunchApps() {
   // for the app.
   std::set<std::string> app_ids;
   cache->ForEachApp([&app_ids, &launch_list](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady &&
+    if (update.Readiness() == apps::Readiness::kReady &&
         launch_list.find(update.AppId()) != launch_list.end()) {
       app_ids.insert(update.AppId());
     }

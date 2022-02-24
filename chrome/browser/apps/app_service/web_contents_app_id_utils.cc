@@ -23,6 +23,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -40,7 +42,7 @@ bool IsAppReady(Profile* profile, const std::string& app_id) {
   bool app_installed = false;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&app_installed](const apps::AppUpdate& update) {
-        app_installed = update.Readiness() == apps::mojom::Readiness::kReady;
+        app_installed = update.Readiness() == apps::Readiness::kReady;
       });
   return app_installed;
 }

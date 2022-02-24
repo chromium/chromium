@@ -111,7 +111,7 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&status](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy)
+        if (update.Readiness() == apps::Readiness::kDisabledByPolicy)
           status = ash::AppStatus::kBlocked;
         else if (update.Paused() == apps::mojom::OptionalBool::kTrue)
           status = ash::AppStatus::kPaused;
@@ -265,7 +265,7 @@ bool ShelfControllerHelper::IsValidIDFromAppService(
       .ForOneApp(app_id, [&is_valid](const apps::AppUpdate& update) {
         if (update.AppType() != apps::mojom::AppType::kArc &&
             update.AppType() != apps::mojom::AppType::kUnknown &&
-            update.Readiness() != apps::mojom::Readiness::kUnknown &&
+            update.Readiness() != apps::Readiness::kUnknown &&
             apps_util::IsInstalled(update.Readiness())) {
           is_valid = true;
         }

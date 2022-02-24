@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace content {
@@ -52,7 +53,7 @@ class ArcAppLauncher : public ArcAppListPrefs::Observer,
  private:
   bool MaybeLaunchApp(const std::string& app_id,
                       const ArcAppListPrefs::AppInfo& app_info,
-                      apps::mojom::Readiness readiness);
+                      apps::Readiness readiness);
 
   // Unowned pointer.
   content::BrowserContext* context_;

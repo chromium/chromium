@@ -35,8 +35,8 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   app->title = update.Name();
   app->notification_permission = std::move(permission_copy);
   app->readiness =
-      mojo::EnumTraits<app_notification::mojom::Readiness, apps::Readiness>::
-          ToMojom(apps::ConvertMojomReadinessToReadiness(update.Readiness()));
+      mojo::EnumTraits<app_notification::mojom::Readiness,
+                       apps::Readiness>::ToMojom(update.Readiness());
 
   return app;
 }

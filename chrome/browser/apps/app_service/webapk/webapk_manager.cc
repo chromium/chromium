@@ -165,7 +165,7 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
     } else {  // New WebAPK.
       // Install if it is eligible for installation.
       if (update.ReadinessChanged() &&
-          update.Readiness() == apps::mojom::Readiness::kReady) {
+          update.Readiness() == apps::Readiness::kReady) {
         QueueInstall(update.AppId());
       }
     }
@@ -279,7 +279,7 @@ WebApkInstallQueue* WebApkManager::GetInstallQueueForTest() {
 }
 
 bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
-  if (app.Readiness() != apps::mojom::Readiness::kReady) {
+  if (app.Readiness() != apps::Readiness::kReady) {
     return false;
   }
 

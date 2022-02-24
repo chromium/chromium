@@ -46,6 +46,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -608,7 +609,7 @@ void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
 void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != GetHighlightsAppId() ||
       !(update.PriorReadiness() == apps::Readiness::kUnknown &&
-        update.GetReadiness() == apps::Readiness::kReady)) {
+        update.Readiness() == apps::Readiness::kReady)) {
     return;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();

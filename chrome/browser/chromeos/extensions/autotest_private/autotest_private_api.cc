@@ -146,6 +146,7 @@
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user.h"
@@ -416,30 +417,29 @@ api::autotest_private::AppWindowType GetAppWindowType(ash::AppType type) {
   return api::autotest_private::AppWindowType::APP_WINDOW_TYPE_NONE;
 }
 
-api::autotest_private::AppReadiness GetAppReadiness(
-    apps::mojom::Readiness readiness) {
+api::autotest_private::AppReadiness GetAppReadiness(apps::Readiness readiness) {
   switch (readiness) {
-    case apps::mojom::Readiness::kReady:
+    case apps::Readiness::kReady:
       return api::autotest_private::AppReadiness::APP_READINESS_READY;
-    case apps::mojom::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByBlocklist:
       return api::autotest_private::AppReadiness::
           APP_READINESS_DISABLEDBYBLACKLIST;
-    case apps::mojom::Readiness::kDisabledByPolicy:
+    case apps::Readiness::kDisabledByPolicy:
       return api::autotest_private::AppReadiness::
           APP_READINESS_DISABLEDBYPOLICY;
-    case apps::mojom::Readiness::kDisabledByUser:
+    case apps::Readiness::kDisabledByUser:
       return api::autotest_private::AppReadiness::APP_READINESS_DISABLEDBYUSER;
-    case apps::mojom::Readiness::kTerminated:
+    case apps::Readiness::kTerminated:
       return api::autotest_private::AppReadiness::APP_READINESS_TERMINATED;
-    case apps::mojom::Readiness::kUninstalledByUser:
+    case apps::Readiness::kUninstalledByUser:
       return api::autotest_private::AppReadiness::
           APP_READINESS_UNINSTALLEDBYUSER;
-    case apps::mojom::Readiness::kRemoved:
+    case apps::Readiness::kRemoved:
       return api::autotest_private::AppReadiness::APP_READINESS_REMOVED;
-    case apps::mojom::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByMigration:
       return api::autotest_private::AppReadiness::
           APP_READINESS_UNINSTALLEDBYMIGRATION;
-    case apps::mojom::Readiness::kUnknown:
+    case apps::Readiness::kUnknown:
       return api::autotest_private::AppReadiness::APP_READINESS_NONE;
   }
   NOTREACHED();

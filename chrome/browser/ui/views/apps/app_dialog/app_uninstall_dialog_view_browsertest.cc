@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,8 +69,8 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
       bool is_uninstalled = false;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_uninstalled, name](const apps::AppUpdate& update) {
-            is_uninstalled = (update.Readiness() ==
-                              apps::mojom::Readiness::kUninstalledByUser);
+            is_uninstalled =
+                (update.Readiness() == apps::Readiness::kUninstalledByUser);
           });
 
       EXPECT_TRUE(is_uninstalled);
@@ -80,8 +81,7 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
       bool is_installed = true;
       app_service_proxy->AppRegistryCache().ForOneApp(
           app_id_, [&is_installed, name](const apps::AppUpdate& update) {
-            is_installed =
-                (update.Readiness() == apps::mojom::Readiness::kReady);
+            is_installed = (update.Readiness() == apps::Readiness::kReady);
           });
 
       EXPECT_TRUE(is_installed);
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
   bool is_installed = true;
   app_service_proxy->AppRegistryCache().ForOneApp(
       app_id_, [&is_installed](const apps::AppUpdate& update) {
-        is_installed = update.Readiness() == apps::mojom::Readiness::kReady;
+        is_installed = update.Readiness() == apps::Readiness::kReady;
       });
   EXPECT_TRUE(is_installed);
 

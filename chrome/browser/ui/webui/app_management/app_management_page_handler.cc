@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
@@ -96,7 +97,7 @@ std::vector<apps::mojom::IntentFilterPtr> GetSupportedLinkIntentFilters(
       ->AppRegistryCache()
       .ForOneApp(app_id,
                  [&app_id, &intent_filters](const apps::AppUpdate& update) {
-                   if (update.Readiness() == apps::mojom::Readiness::kReady) {
+                   if (update.Readiness() == apps::Readiness::kReady) {
                      for (auto& filter : update.IntentFilters()) {
                        if (apps_util::IsSupportedLinkForApp(app_id, filter)) {
                          intent_filters.emplace_back(std::move(filter));
@@ -154,7 +155,7 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady)
           app = CreateUIAppPtr(update);
       });
 
@@ -188,7 +189,7 @@ void AppManagementPageHandler::GetApp(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady)
           app = CreateUIAppPtr(update);
       });
 
@@ -353,7 +354,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement() == apps::mojom::OptionalBool::kTrue &&
-        update.Readiness() == apps::mojom::Readiness::kReady) {
+        update.Readiness() == apps::Readiness::kReady) {
       page_->OnAppAdded(CreateUIAppPtr(update));
     }
 
@@ -378,7 +379,7 @@ void AppManagementPageHandler::OnPreferredAppChanged(const std::string& app_id,
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady)
+        if (update.Readiness() == apps::Readiness::kReady)
           app = CreateUIAppPtr(update);
       });
 

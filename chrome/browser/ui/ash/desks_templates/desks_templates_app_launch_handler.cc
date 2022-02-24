@@ -28,6 +28,7 @@
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "extensions/common/extension.h"
 
 namespace {
@@ -219,7 +220,7 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
   std::set<std::string> app_ids;
   cache.ForEachApp(
       [&app_ids, &app_id_to_launch_list](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::mojom::Readiness::kReady &&
+        if (update.Readiness() == apps::Readiness::kReady &&
             update.AppType() == apps::mojom::AppType::kArc &&
             base::Contains(app_id_to_launch_list, update.AppId())) {
           app_ids.insert(update.AppId());

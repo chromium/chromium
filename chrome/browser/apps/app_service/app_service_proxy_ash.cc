@@ -340,7 +340,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
 
   // Return true, and load the icon for the app block dialog when the app
   // is blocked by policy.
-  if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+  if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
     LoadIconForDialog(
         update, base::BindOnce(&AppServiceProxyAsh::OnLoadIconForBlockDialog,
                                weak_ptr_factory_.GetWeakPtr(), update.Name()));

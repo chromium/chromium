@@ -287,15 +287,19 @@ const std::string& AppUpdate::GetAppId() const {
   return delta_ ? delta_->app_id : state_->app_id;
 }
 
-apps::mojom::Readiness AppUpdate::Readiness() const {
+apps::Readiness AppUpdate::Readiness() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_DEFAULT_VALUE(readiness, apps::Readiness::kUnknown)
+  }
+
   if (mojom_delta_ &&
       (mojom_delta_->readiness != apps::mojom::Readiness::kUnknown)) {
-    return mojom_delta_->readiness;
+    return ConvertMojomReadinessToReadiness(mojom_delta_->readiness);
   }
   if (mojom_state_) {
-    return mojom_state_->readiness;
+    return ConvertMojomReadinessToReadiness(mojom_state_->readiness);
   }
-  return apps::mojom::Readiness::kUnknown;
+  return apps::Readiness::kUnknown;
 }
 
 apps::Readiness AppUpdate::PriorReadiness() const {
@@ -307,9 +311,6 @@ apps::Readiness AppUpdate::PriorReadiness() const {
       mojom_state_ ? mojom_state_->readiness
                    : apps::mojom::Readiness::kUnknown);
 }
-
-apps::Readiness AppUpdate::GetReadiness() const {
-    GET_VALUE_WITH_DEFAULT_VALUE(readiness, apps::Readiness::kUnknown)}
 
 bool AppUpdate::ReadinessChanged() const {
   if (ShouldUseNonMojom()) {
@@ -1051,7 +1052,7 @@ bool AppUpdate::ShouldUseNonMojom() const {
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AppType: " << app.AppType() << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
-  out << "Readiness: " << app.Readiness() << std::endl;
+  out << "Readiness: " << static_cast<int>(app.Readiness()) << std::endl;
   out << "Name: " << app.Name() << std::endl;
   out << "ShortName: " << app.ShortName() << std::endl;
   out << "PublisherId: " << app.PublisherId() << std::endl;

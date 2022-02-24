@@ -46,6 +46,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
@@ -132,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
         EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInLauncher());
         EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInSearch());
         EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInManagement());
-        EXPECT_EQ(apps::mojom::Readiness::kReady, update.Readiness());
+        EXPECT_EQ(apps::Readiness::kReady, update.Readiness());
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -1400,8 +1401,8 @@ class SystemWebAppManagerAppSuspensionBrowserTest
   SystemWebAppManagerAppSuspensionBrowserTest()
       : SystemWebAppManagerBrowserTest(false) {}
 
-  apps::mojom::Readiness GetAppReadiness(const AppId& app_id) {
-    apps::mojom::Readiness readiness;
+  apps::Readiness GetAppReadiness(const AppId& app_id) {
+    apps::Readiness readiness;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
             ->AppRegistryCache()
@@ -1442,8 +1443,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
   DCHECK(settings_id.has_value());
 
-  EXPECT_EQ(apps::mojom::Readiness::kDisabledByPolicy,
-            GetAppReadiness(*settings_id));
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy, GetAppReadiness(*settings_id));
   EXPECT_TRUE(apps::IconEffects::kBlocked &
               GetAppIconKey(*settings_id)->icon_effects);
 
@@ -1454,7 +1454,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     list->ClearList();
   }
   GetAppServiceProxy(browser()->profile())->FlushMojoCallsForTesting();
-  EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
 }
@@ -1467,7 +1467,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   absl::optional<AppId> settings_id =
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS);
   DCHECK(settings_id.has_value());
-  EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
 
   {
     ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
@@ -1478,8 +1478,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
 
   auto* proxy = GetAppServiceProxy(browser()->profile());
   proxy->FlushMojoCallsForTesting();
-  EXPECT_EQ(apps::mojom::Readiness::kDisabledByPolicy,
-            GetAppReadiness(*settings_id));
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy, GetAppReadiness(*settings_id));
   EXPECT_TRUE(apps::IconEffects::kBlocked &
               GetAppIconKey(*settings_id)->icon_effects);
 
@@ -1490,7 +1489,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
     list->ClearList();
   }
   proxy->FlushMojoCallsForTesting();
-  EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(*settings_id));
   EXPECT_FALSE(apps::IconEffects::kBlocked &
                GetAppIconKey(*settings_id)->icon_effects);
 }

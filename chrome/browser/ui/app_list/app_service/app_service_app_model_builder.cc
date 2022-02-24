@@ -11,19 +11,19 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 bool ShouldShowInLauncher(const apps::AppUpdate& update) {
-  apps::mojom::Readiness readiness = update.Readiness();
-  switch (readiness) {
-    case apps::mojom::Readiness::kReady:
-    case apps::mojom::Readiness::kDisabledByUser:
-    case apps::mojom::Readiness::kDisabledByBlocklist:
-    case apps::mojom::Readiness::kDisabledByPolicy:
-    case apps::mojom::Readiness::kTerminated:
+  switch (update.Readiness()) {
+    case apps::Readiness::kReady:
+    case apps::Readiness::kDisabledByUser:
+    case apps::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByPolicy:
+    case apps::Readiness::kTerminated:
       return update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
     default:
       return false;
@@ -80,8 +80,7 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
         unsynced_change = true;
       }
 
-      if (update.Readiness() ==
-          apps::mojom::Readiness::kUninstalledByMigration) {
+      if (update.Readiness() == apps::Readiness::kUninstalledByMigration) {
         // Don't sync migration uninstallations as it will interfere with other
         // devices doing their own migration.
         unsynced_change = true;

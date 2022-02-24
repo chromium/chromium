@@ -26,7 +26,7 @@ class AppUpdateMojomTest : public testing::Test {
         apps::kAppServiceOnAppUpdateWithoutMojom);
   }
 
-  apps::mojom::Readiness expect_readiness_;
+  apps::Readiness expect_readiness_;
   apps::Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
 
@@ -258,7 +258,7 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(app_id, u.AppId());
     EXPECT_EQ(state == nullptr, u.StateIsNull());
 
-    expect_readiness_ = apps::mojom::Readiness::kUnknown;
+    expect_readiness_ = apps::Readiness::kUnknown;
     expect_prior_readiness_ = apps::Readiness::kUnknown;
     expect_name_ = "";
     expect_short_name_ = "";
@@ -307,7 +307,7 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (delta) {
       delta->readiness = apps::mojom::Readiness::kReady;
-      expect_readiness_ = apps::mojom::Readiness::kReady;
+      expect_readiness_ = apps::Readiness::kReady;
       expect_readiness_changed_ = true;
       CheckExpects(u);
 
@@ -327,7 +327,7 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (delta) {
       delta->readiness = apps::mojom::Readiness::kDisabledByPolicy;
-      expect_readiness_ = apps::mojom::Readiness::kDisabledByPolicy;
+      expect_readiness_ = apps::Readiness::kDisabledByPolicy;
       expect_readiness_changed_ = true;
       delta->name = test_name_1;
       expect_name_ = test_name_1;

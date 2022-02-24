@@ -327,7 +327,7 @@ bool HelpAppProvider::ShouldBlockZeroState() const {
 
 void HelpAppProvider::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() == web_app::kHelpAppId && update.ReadinessChanged() &&
-      update.Readiness() == apps::mojom::Readiness::kReady) {
+      update.Readiness() == apps::Readiness::kReady) {
     LoadIcon();
   }
 }

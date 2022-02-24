@@ -94,6 +94,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -1025,7 +1026,7 @@ void ChromeShelfController::OnAppUninstalledPrepared(
                  &is_app_disabled](const apps::AppUpdate& update) {
           show_in_shelf_changed = update.ShowInShelfChanged();
           is_app_disabled =
-              update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy;
+              update.Readiness() == apps::Readiness::kDisabledByPolicy;
         });
     // If the app is hidden and disabled, we need to update the app pin state.
     // We don't remove the pin position from the preferences, in case we want to

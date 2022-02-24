@@ -656,7 +656,7 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   if (!update.ReadinessChanged() ||
-      update.Readiness() != apps::mojom::Readiness::kReady ||
+      update.Readiness() != apps::Readiness::kReady ||
       apps_util::IsInstalled(update.PriorReadiness())) {
     return;
   }

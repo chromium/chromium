@@ -93,7 +93,7 @@ class WebApkManagerTest : public testing::Test {
     bool installed = false;
     app_service_proxy()->AppRegistryCache().ForOneApp(
         app_id, [&](const apps::AppUpdate& app) {
-          installed = app.Readiness() == apps::mojom::Readiness::kReady;
+          installed = app.Readiness() == apps::Readiness::kReady;
         });
     return installed;
   }

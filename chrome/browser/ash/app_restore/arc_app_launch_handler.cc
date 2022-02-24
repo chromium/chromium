@@ -44,6 +44,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/wm_helper.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/display.h"
@@ -270,7 +271,7 @@ void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   }
 
   // If the app is not ready, don't launch the app for the restoration.
-  if (update.Readiness() != apps::mojom::Readiness::kReady)
+  if (update.Readiness() != apps::Readiness::kReady)
     return;
 
   if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId())) {
@@ -387,7 +388,7 @@ void ArcAppLaunchHandler::PrepareLaunchApps() {
   // for the app.
   std::set<std::string> app_ids;
   cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady &&
+    if (update.Readiness() == apps::Readiness::kReady &&
         update.AppType() == apps::mojom::AppType::kArc &&
         base::Contains(app_ids_, update.AppId())) {
       app_ids.insert(update.AppId());

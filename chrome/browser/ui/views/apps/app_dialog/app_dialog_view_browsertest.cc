@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
@@ -129,8 +130,8 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
       bool state_is_set = false;
       app_service_proxy_->AppRegistryCache().ForOneApp(
           app_id_, [&state_is_set](const apps::AppUpdate& update) {
-            state_is_set = (update.Readiness() ==
-                            apps::mojom::Readiness::kDisabledByPolicy);
+            state_is_set =
+                (update.Readiness() == apps::Readiness::kDisabledByPolicy);
           });
 
       EXPECT_TRUE(state_is_set);

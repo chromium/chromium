@@ -12,6 +12,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/session_manager/core/session_manager.h"
 #include "url/gurl.h"
@@ -32,20 +33,20 @@ bool IsPrimaryAndAffiliated(Profile* profile) {
   return is_primary && is_affiliated;
 }
 
-em::AppInfo::Status ExtractStatus(const apps::mojom::Readiness readiness) {
+em::AppInfo::Status ExtractStatus(const apps::Readiness readiness) {
   switch (readiness) {
-    case apps::mojom::Readiness::kReady:
+    case apps::Readiness::kReady:
       return em::AppInfo::Status::AppInfo_Status_STATUS_INSTALLED;
-    case apps::mojom::Readiness::kRemoved:
-    case apps::mojom::Readiness::kUninstalledByUser:
-    case apps::mojom::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kRemoved:
+    case apps::Readiness::kUninstalledByUser:
+    case apps::Readiness::kUninstalledByMigration:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNINSTALLED;
-    case apps::mojom::Readiness::kDisabledByBlocklist:
-    case apps::mojom::Readiness::kDisabledByPolicy:
-    case apps::mojom::Readiness::kDisabledByUser:
-    case apps::mojom::Readiness::kTerminated:
+    case apps::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByPolicy:
+    case apps::Readiness::kDisabledByUser:
+    case apps::Readiness::kTerminated:
       return em::AppInfo::Status::AppInfo_Status_STATUS_DISABLED;
-    case apps::mojom::Readiness::kUnknown:
+    case apps::Readiness::kUnknown:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNKNOWN;
   }
 }

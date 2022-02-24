@@ -100,7 +100,7 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
       ->AppRegistryCache()
       .ForAllApps([&installed_web_apps,
                    &installed_chrome_apps](const apps::AppUpdate& update) {
-        if (update.GetReadiness() != apps::Readiness::kReady)
+        if (update.Readiness() != apps::Readiness::kReady)
           return;
 
         if (update.GetAppType() == apps::AppType::kWeb)

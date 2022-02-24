@@ -26,6 +26,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
@@ -463,7 +464,7 @@ void ApkWebAppService::OnWebAppInstallManagerDestroyed() {
 
 void ApkWebAppService::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppType() == apps::mojom::AppType::kWeb &&
-      update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
+      update.Readiness() == apps::Readiness::kUninstalledByUser) {
     MaybeRemoveArcPackageForWebApp(update.AppId());
   }
 }

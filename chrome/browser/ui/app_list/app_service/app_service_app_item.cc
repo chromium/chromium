@@ -146,7 +146,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
 
   if (in_constructor || app_update.ReadinessChanged() ||
       app_update.PausedChanged()) {
-    if (app_update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+    if (app_update.Readiness() == apps::Readiness::kDisabledByPolicy) {
       SetAppStatus(ash::AppStatus::kBlocked);
     } else if (app_update.Paused() == apps::mojom::OptionalBool::kTrue) {
       SetAppStatus(ash::AppStatus::kPaused);

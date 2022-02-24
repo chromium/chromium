@@ -182,7 +182,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
     EXPECT_EQ(outer.GetAppType(), inner.GetAppType());
     EXPECT_EQ(outer.GetAppId(), inner.GetAppId());
     EXPECT_EQ(outer.StateIsNull(), inner.StateIsNull());
-    EXPECT_EQ(outer.GetReadiness(), inner.GetReadiness());
+    EXPECT_EQ(outer.Readiness(), inner.Readiness());
     EXPECT_EQ(outer.Name(), inner.Name());
   }
 
@@ -304,11 +304,11 @@ class AppRegistryCacheTest : public testing::Test,
 
     if (update.state_ || update.delta_) {
       EXPECT_NE("", update.Name());
-      if (!apps_util::IsInstalled(update.GetReadiness())) {
+      if (!apps_util::IsInstalled(update.Readiness())) {
         return;
       }
       if (update.ReadinessChanged() &&
-          (update.GetReadiness() == Readiness::kReady)) {
+          (update.Readiness() == Readiness::kReady)) {
         num_freshly_installed_++;
       }
       updated_ids_.insert(update.GetAppId());
@@ -319,7 +319,7 @@ class AppRegistryCacheTest : public testing::Test,
         return;
       }
       if (update.ReadinessChanged() &&
-          (update.Readiness() == apps::mojom::Readiness::kReady)) {
+          (update.Readiness() == apps::Readiness::kReady)) {
         num_freshly_installed_++;
       }
       updated_ids_.insert(update.AppId());
@@ -542,7 +542,7 @@ TEST_P(AppRegistryCacheTest, Removed) {
     // We should see one call informing us that the app was uninstalled.
     EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
         .WillOnce(testing::Invoke([&observer, &cache](const AppUpdate& update) {
-          EXPECT_EQ(Readiness::kUninstalledByUser, update.GetReadiness());
+          EXPECT_EQ(Readiness::kUninstalledByUser, update.Readiness());
           // Even though we have queued the removal, checking the cache now
           // shows the app is still present.
           EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));
@@ -554,8 +554,7 @@ TEST_P(AppRegistryCacheTest, Removed) {
     // We should see one call informing us that the app was uninstalled.
     EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
         .WillOnce(testing::Invoke([&observer, &cache](const AppUpdate& update) {
-          EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
-                    update.Readiness());
+          EXPECT_EQ(apps::Readiness::kUninstalledByUser, update.Readiness());
           // Even though we have queued the removal, checking the cache now
           // shows the app is still present.
           EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")));

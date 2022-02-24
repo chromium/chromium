@@ -30,7 +30,7 @@ ArcAppLauncher::ArcAppLauncher(content::BrowserContext* context,
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id_);
   if (!app_info ||
-      !MaybeLaunchApp(app_id, *app_info, apps::mojom::Readiness::kUnknown))
+      !MaybeLaunchApp(app_id, *app_info, apps::Readiness::kUnknown))
     prefs->AddObserver(this);
 
   auto* profile = Profile::FromBrowserContext(context_);
@@ -52,18 +52,18 @@ ArcAppLauncher::~ArcAppLauncher() {
 void ArcAppLauncher::OnAppRegistered(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  MaybeLaunchApp(app_id, app_info, apps::mojom::Readiness::kUnknown);
+  MaybeLaunchApp(app_id, app_info, apps::Readiness::kUnknown);
 }
 
 void ArcAppLauncher::OnAppStatesChanged(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {
-  MaybeLaunchApp(app_id, app_info, apps::mojom::Readiness::kUnknown);
+  MaybeLaunchApp(app_id, app_info, apps::Readiness::kUnknown);
 }
 
 void ArcAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != app_id_ ||
-      update.Readiness() != apps::mojom::Readiness::kReady) {
+      update.Readiness() != apps::Readiness::kReady) {
     return;
   }
 
@@ -75,7 +75,7 @@ void ArcAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (!app_info)
     return;
 
-  MaybeLaunchApp(app_id_, *app_info, apps::mojom::Readiness::kReady);
+  MaybeLaunchApp(app_id_, *app_info, apps::Readiness::kReady);
 }
 
 void ArcAppLauncher::OnAppRegistryCacheWillBeDestroyed(
@@ -85,7 +85,7 @@ void ArcAppLauncher::OnAppRegistryCacheWillBeDestroyed(
 
 bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
                                     const ArcAppListPrefs::AppInfo& app_info,
-                                    apps::mojom::Readiness readiness) {
+                                    apps::Readiness readiness) {
   if (app_launched_)
     return true;
 
@@ -98,21 +98,21 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (readiness == apps::mojom::Readiness::kUnknown) {
+  if (readiness == apps::Readiness::kUnknown) {
     if (proxy->AppRegistryCache().GetAppType(app_id) ==
         apps::mojom::AppType::kUnknown) {
       return false;
     }
 
-    apps::mojom::Readiness readiness = apps::mojom::Readiness::kUnknown;
+    auto readiness = apps::Readiness::kUnknown;
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&readiness](const apps::AppUpdate& update) {
           readiness = update.Readiness();
         });
 
-    if (readiness != apps::mojom::Readiness::kReady)
+    if (readiness != apps::Readiness::kReady)
       return false;
-  } else if (readiness != apps::mojom::Readiness::kReady) {
+  } else if (readiness != apps::Readiness::kReady) {
     return false;
   }
 

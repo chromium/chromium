@@ -168,7 +168,7 @@ class AppUpdateTest : public testing::Test {
   }
 
   void CheckExpects(const AppUpdate& u) {
-    EXPECT_EQ(expect_readiness_, u.GetReadiness());
+    EXPECT_EQ(expect_readiness_, u.Readiness());
     EXPECT_EQ(expect_prior_readiness_, u.PriorReadiness());
     EXPECT_EQ(expect_readiness_changed_, u.ReadinessChanged());
 

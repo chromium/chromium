@@ -7,6 +7,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -18,7 +19,7 @@ ShelfAppServiceAppUpdater::ShelfAppServiceAppUpdater(
       Profile::FromBrowserContext(browser_context));
 
   proxy->AppRegistryCache().ForEachApp([this](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady)
+    if (update.Readiness() == apps::Readiness::kReady)
       this->installed_apps_.insert(update.AppId());
   });
   Observe(&proxy->AppRegistryCache());
@@ -37,25 +38,24 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ReadinessChanged()) {
     std::set<std::string>::const_iterator it = installed_apps_.find(app_id);
     switch (update.Readiness()) {
-      case apps::mojom::Readiness::kReady:
+      case apps::Readiness::kReady:
         if (it == installed_apps_.end()) {
           installed_apps_.insert(app_id);
         }
         delegate()->OnAppInstalled(browser_context(), app_id);
         return;
-      case apps::mojom::Readiness::kUninstalledByUser:
-      case apps::mojom::Readiness::kUninstalledByMigration:
+      case apps::Readiness::kUninstalledByUser:
+      case apps::Readiness::kUninstalledByMigration:
         if (it != installed_apps_.end()) {
           installed_apps_.erase(it);
           const bool by_migration =
-              update.Readiness() ==
-              apps::mojom::Readiness::kUninstalledByMigration;
+              update.Readiness() == apps::Readiness::kUninstalledByMigration;
           delegate()->OnAppUninstalledPrepared(browser_context(), app_id,
                                                by_migration);
           delegate()->OnAppUninstalled(browser_context(), app_id);
         }
         return;
-      case apps::mojom::Readiness::kDisabledByPolicy:
+      case apps::Readiness::kDisabledByPolicy:
         if (update.ShowInShelfChanged()) {
           OnShowInShelfChangedForAppDisabledByPolicy(
               app_id, update.ShowInShelf() == apps::mojom::OptionalBool::kTrue);
@@ -75,7 +75,7 @@ void ShelfAppServiceAppUpdater::OnAppUpdate(const apps::AppUpdate& update) {
     delegate()->OnAppInstalled(browser_context(), app_id);
 
   if (update.ShowInShelfChanged()) {
-    if (update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+    if (update.Readiness() == apps::Readiness::kDisabledByPolicy) {
       OnShowInShelfChangedForAppDisabledByPolicy(
           app_id, update.ShowInShelf() == apps::mojom::OptionalBool::kTrue);
     } else {

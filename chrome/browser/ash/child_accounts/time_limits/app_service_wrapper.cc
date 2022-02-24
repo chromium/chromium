@@ -253,7 +253,7 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
     return;
 
   switch (update.Readiness()) {
-    case apps::mojom::Readiness::kReady:
+    case apps::Readiness::kReady:
       for (auto& listener : listeners_)
         if (update.StateIsNull()) {
           // It is the first update about this app.
@@ -264,14 +264,14 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
           listener.OnAppAvailable(app_id);
         }
       break;
-    case apps::mojom::Readiness::kUninstalledByUser:
-    case apps::mojom::Readiness::kUninstalledByMigration:
+    case apps::Readiness::kUninstalledByUser:
+    case apps::Readiness::kUninstalledByMigration:
       for (auto& listener : listeners_)
         listener.OnAppUninstalled(app_id);
       break;
-    case apps::mojom::Readiness::kDisabledByUser:
-    case apps::mojom::Readiness::kDisabledByPolicy:
-    case apps::mojom::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByUser:
+    case apps::Readiness::kDisabledByPolicy:
+    case apps::Readiness::kDisabledByBlocklist:
       for (auto& listener : listeners_)
         listener.OnAppBlocked(app_id);
       break;

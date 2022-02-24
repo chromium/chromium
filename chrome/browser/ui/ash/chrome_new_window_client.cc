@@ -67,6 +67,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -377,10 +378,10 @@ void ChromeNewWindowClient::OpenFileManager() {
   DCHECK(proxy);
 
   auto launch_files_app = [proxy](const apps::AppUpdate& update) {
-    if (update.Readiness() != apps::mojom::Readiness::kReady) {
+    if (update.Readiness() != apps::Readiness::kReady) {
       LOG(WARNING)
           << "Couldn't launch Files app because it isn't ready, readiness: "
-          << update.Readiness();
+          << static_cast<int>(update.Readiness());
       return;
     }
 
@@ -413,10 +414,10 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
   auto launch_files_app = [proxy,
                            downloads_path](const apps::AppUpdate& update) {
-    if (update.Readiness() != apps::mojom::Readiness::kReady) {
+    if (update.Readiness() != apps::Readiness::kReady) {
       LOG(WARNING)
           << "Couldn't launch Files app because it isn't ready, readiness: "
-          << update.Readiness();
+          << static_cast<int>(update.Readiness());
       return;
     }
 

@@ -46,6 +46,7 @@
 #include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -347,7 +348,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       apps_vector->back()->set_recommendable(
           update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
           update.Paused() != apps::mojom::OptionalBool::kTrue &&
-          update.Readiness() != apps::mojom::Readiness::kDisabledByPolicy);
+          update.Readiness() != apps::Readiness::kDisabledByPolicy);
       apps_vector->back()->set_searchable(update.Searchable() ==
                                           apps::mojom::OptionalBool::kTrue);
 
@@ -382,7 +383,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       icon_cache_.RemoveIcon(update.AppType(), update.AppId());
     }
 
-    if (update.Readiness() == apps::mojom::Readiness::kReady) {
+    if (update.Readiness() == apps::Readiness::kReady) {
       owner()->RefreshAppsAndUpdateResultsDeferred();
     } else {
       owner()->RefreshAppsAndUpdateResults();
