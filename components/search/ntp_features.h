@@ -66,6 +66,12 @@ extern const char kNtpShoppingTasksModuleCacheMaxAgeSParam[];
 // Parameter determining the max age in seconds of the cache for recipe tasks
 // data.
 extern const char kNtpRecipeTasksModuleCacheMaxAgeSParam[];
+// Parameter for communicating the experiment group of the shopping tasks module
+// experiment.
+extern const char kNtpShoppingTasksModuleExperimentGroupParam[];
+// Parameter for communicating the experiment group of the recipe tasks module
+// experiment.
+extern const char kNtpRecipeTasksModuleExperimentGroupParam[];
 // Parameter determining the type of cart data used to render module.
 extern const char kNtpChromeCartModuleDataParam[];
 // Parameter for enabling the abandoned cart discount.
