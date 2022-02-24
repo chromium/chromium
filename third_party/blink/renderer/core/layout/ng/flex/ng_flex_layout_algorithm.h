@@ -115,12 +115,37 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // a layout result, so when breaking before a row, we will insert a
   // fragmentainer break before the first child in a row. |child| and
   // |layout_result| should be those associated with the first child in the row.
-  // |row_break_between| and |has_container_separation| are specific to the row
-  // itself. See |::blink::BreakBeforeChildIfNeeded()| for more documentation.
-  NGBreakStatus BreakBeforeRowIfNeeded(EBreakBetween row_break_between,
+  // |row|, |row_break_between|, |row_index| and |has_container_separation| are
+  // specific to the row itself. See |::blink::BreakBeforeChildIfNeeded()| for
+  // more documentation.
+  NGBreakStatus BreakBeforeRowIfNeeded(const NGFlexLine& row,
+                                       EBreakBetween row_break_between,
+                                       wtf_size_t row_index,
                                        NGLayoutInputNode child,
                                        const NGLayoutResult& layout_result,
                                        bool has_container_separation);
+
+  // Move past the breakpoint before the row, if possible, and return true. Also
+  // update the appeal of breaking before the row (if we're not going
+  // to break before it). If false is returned, it means that we need to break
+  // before the row (or even earlier). See |::blink::MovePastBreakpoint()| for
+  // more documentation.
+  bool MovePastRowBreakPoint(NGBreakAppeal appeal_before,
+                             LayoutUnit fragmentainer_block_offset,
+                             LayoutUnit row_block_size,
+                             wtf_size_t row_index);
+
+  // Attempt to insert a soft break before the row, and return true if we did.
+  // If false is returned, it means that the desired breakpoint is earlier in
+  // the container, and that we need to abort and re-layout to that breakpoint.
+  // |child| and |layout_result| should be those associated with the first child
+  // in the row. |appeal_before| and |fragmentainer_block_offset| are specific
+  // to the row itself. See |::blink::AttemptSoftBreak()| for more
+  // documentation.
+  bool AttemptRowSoftBreak(NGLayoutInputNode child,
+                           const NGLayoutResult& layout_result,
+                           NGBreakAppeal appeal_before,
+                           LayoutUnit fragmentainer_block_offset);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
