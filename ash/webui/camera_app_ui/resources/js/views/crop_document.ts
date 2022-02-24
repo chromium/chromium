@@ -361,7 +361,7 @@ export class CropDocument extends Review<boolean> {
   }
 
   private findDragging(pointerId: number): Corner|null {
-    return this.corners.find(({pointerId: id}) => id === pointerId) || null;
+    return this.corners.find(({pointerId: id}) => id === pointerId) ?? null;
   }
 
   private clearDragging(pointerId: number) {

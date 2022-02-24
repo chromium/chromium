@@ -673,7 +673,7 @@ export class Camera extends View implements CameraViewUI {
         const doCrop = (blob: Blob, corners: Point[], rotation: number) =>
             helper.convertToDocument(blob, corners, rotation, MimeType.JPEG);
         let corners =
-            refCorners || getDefaultScanCorners(originImage.resolution);
+            refCorners ?? getDefaultScanCorners(originImage.resolution);
         // This is definitely assigned in either the async doRecrop or the else
         // branch doCrop.
         let docBlob!: Blob;

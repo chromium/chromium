@@ -564,6 +564,8 @@ module.exports = {
       '@typescript-eslint/prefer-readonly': 'error',
 
       '@typescript-eslint/require-array-sort-compare': 'error',
+
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
     },
   }],
 };

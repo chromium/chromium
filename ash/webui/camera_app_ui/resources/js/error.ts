@@ -26,14 +26,14 @@ const PRODUCT_NAME = 'ChromeOS_CameraApp';
  */
 function toStackFrame(callsite: CallSite): StackFrame {
   // TODO(crbug.com/1072700): Handle native frame.
-  let fileName = callsite.getFileName() || 'unknown';
+  let fileName = callsite.getFileName() ?? 'unknown';
   if (fileName.startsWith(window.location.origin)) {
     fileName = fileName.substring(window.location.origin.length + 1);
   }
   const ensureNumber = (n: number|undefined) => (n === undefined ? -1 : n);
   return {
     fileName,
-    funcName: callsite.getFunctionName() || '[Anonymous]',
+    funcName: callsite.getFunctionName() ?? '[Anonymous]',
     lineNo: ensureNumber(callsite.getLineNumber()),
     colNo: ensureNumber(callsite.getColumnNumber()),
   };
@@ -79,7 +79,7 @@ function getErrorDescription(error: Error): string {
 function formatErrorStack(error: Error, frames: StackFrame[]|null): string {
   const errorDesc = getErrorDescription(error);
   return errorDesc +
-      (frames || [])
+      (frames ?? [])
           .map(({fileName, funcName, lineNo, colNo}) => {
             let position = '';
             if (lineNo !== -1) {

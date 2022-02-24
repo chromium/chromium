@@ -75,7 +75,7 @@ export abstract class ConstraintsPreferrer {
    *     found in user preference.
    */
   getPrefResolution(deviceId: string): Resolution|null {
-    return this.prefResolution.get(deviceId) || null;
+    return this.prefResolution.get(deviceId) ?? null;
   }
 
   /**
@@ -221,7 +221,7 @@ export abstract class ConstraintsPreferrer {
     const result = new Map<number, ResolutionList>();
     for (const r of rs) {
       const ratio = toSupportedPreviewRatio(r);
-      const ratios = result.get(ratio) || [];
+      const ratios = result.get(ratio) ?? [];
       ratios.push(r);
       result.set(ratio, ratios);
     }
@@ -354,8 +354,8 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
 
       const findResol = (width: number, height: number): Resolution|undefined =>
           videoResols.find((r) => r.width === width && r.height === height);
-      let prefR = this.getPrefResolution(deviceId) || findResol(1920, 1080) ||
-          findResol(1280, 720) || new Resolution(0, -1);
+      let prefR = this.getPrefResolution(deviceId) ?? findResol(1920, 1080) ??
+          findResol(1280, 720) ?? new Resolution(0, -1);
       if (findResol(prefR.width, prefR.height) === undefined) {
         prefR = videoResols.reduce(
             (maxR, r) => (maxR.area < r.area ? r : maxR),
@@ -398,7 +398,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
   }
 
   private getMultiStreamSortedCandidates(deviceId: string): CaptureCandidate[] {
-    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+    const prefR = this.getPrefResolution(deviceId) ?? new Resolution(0, -1);
 
     /**
      * Maps specified video resolution to object of resolution and all supported
@@ -495,7 +495,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
           },
         });
 
-    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+    const prefR = this.getPrefResolution(deviceId) ?? new Resolution(0, -1);
     return [...assertExists(this.supportedResolutions.get(deviceId))]
         .flatMap(getFpses)
         .map(({r, fps}) => ({
@@ -567,7 +567,7 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
           pairedResolutions.flatMap(({captureRs}) => captureRs)
               .sort((r1, r2) => r2.area - r1.area));
 
-      let prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
+      let prefR = this.getPrefResolution(deviceId) ?? new Resolution(0, -1);
       const captureRs = this.supportedResolutions.get(deviceId);
       assert(captureRs !== undefined);
       if (!captureRs.some((r) => r.equals(prefR))) {
@@ -589,8 +589,8 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
   }
 
   getSortedCandidates(deviceId: string): CaptureCandidate[] {
-    const prefR = this.getPrefResolution(deviceId) || new Resolution(0, -1);
-    const supportPTZ = this.devicePTZSupportMap.get(deviceId) || false;
+    const prefR = this.getPrefResolution(deviceId) ?? new Resolution(0, -1);
+    const supportPTZ = this.devicePTZSupportMap.get(deviceId) ?? false;
 
     const toCaptureCandidate =
         ({captureRs, previewRs}:

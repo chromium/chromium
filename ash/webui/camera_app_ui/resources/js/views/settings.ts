@@ -424,7 +424,7 @@ export class ResolutionSettings extends BaseSettings {
     if (this.backSetting && this.backSetting.deviceId === deviceId) {
       return this.backSetting;
     }
-    return this.externalSettings.find((e) => e.deviceId === deviceId) || null;
+    return this.externalSettings.find((e) => e.deviceId === deviceId) ?? null;
   }
 
   /**

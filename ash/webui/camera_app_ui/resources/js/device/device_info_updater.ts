@@ -158,7 +158,7 @@ export class DeviceInfoUpdater {
    */
   getDeviceInfo(deviceId: string): MediaDeviceInfo|null {
     const infos = this.getDevicesInfo();
-    return infos.find((d) => d.deviceId === deviceId) || null;
+    return infos.find((d) => d.deviceId === deviceId) ?? null;
   }
 
   /**

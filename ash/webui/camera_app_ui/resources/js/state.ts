@@ -158,7 +158,7 @@ export function set(
   }
 
   document.body.classList.toggle(state, val);
-  const observers = allObservers.get(state) || [];
+  const observers = allObservers.get(state) ?? [];
   for (const observer of observers) {
     observer(val, perfInfo);
   }

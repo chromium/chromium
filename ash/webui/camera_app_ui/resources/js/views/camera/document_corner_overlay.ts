@@ -270,7 +270,7 @@ export class DocumentCornerOverlay {
       let maxEdgeLength = 0;
       const shouldUpdatePOI = (() => {
         let isPreviousPOIOutsideNewDoc = this.prevDocArea === null;
-        const {x: xp, y: yp} = this.prevDocArea?.center || {x: 0, y: 0};
+        const {x: xp, y: yp} = this.prevDocArea?.center ?? {x: 0, y: 0};
         for (let i = 0; i < corners.length; ++i) {
           const {x: x1, y: y1} = corners[i];
           const {x: x2, y: y2} = corners[(i + 1) % 4];

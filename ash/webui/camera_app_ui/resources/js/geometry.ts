@@ -112,8 +112,7 @@ export class Vector {
 /**
  * @return Vector points from |start| to |end|.
  */
-export function vectorFromPoints(end: Point, start?: Point): Vector {
-  start = start || ORIGIN;
+export function vectorFromPoints(end: Point, start = ORIGIN): Vector {
   return new Vector(end.x - start.x, end.y - start.y);
 }
 

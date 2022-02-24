@@ -63,7 +63,7 @@ export function assertInstanceof<T>(
   // message if we don't have to.
   if (!(value instanceof ctor)) {
     assertNotReached(
-        optMessage ||
+        optMessage ??
         'Value ' + value + ' is not a[n] ' + (ctor.name || typeof ctor));
   }
   return value;
@@ -77,7 +77,7 @@ export function assertString(value: unknown, optMessage?: string): string {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'string') {
-    assertNotReached(optMessage || 'Value ' + value + ' is not a string');
+    assertNotReached(optMessage ?? 'Value ' + value + ' is not a string');
   }
   return value;
 }
@@ -90,7 +90,7 @@ export function assertNumber(value: unknown, optMessage?: string): number {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'number') {
-    assertNotReached(optMessage || 'Value ' + value + ' is not a number');
+    assertNotReached(optMessage ?? 'Value ' + value + ' is not a number');
   }
   return value;
 }
@@ -103,7 +103,7 @@ export function assertBoolean(value: unknown, optMessage?: string): boolean {
   // We don't use assert immediately here so that we avoid constructing an error
   // message if we don't have to.
   if (typeof value !== 'boolean') {
-    assertNotReached(optMessage || 'Value ' + value + ' is not a boolean');
+    assertNotReached(optMessage ?? 'Value ' + value + ' is not a boolean');
   }
   return value;
 }

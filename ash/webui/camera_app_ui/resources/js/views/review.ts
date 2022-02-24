@@ -40,7 +40,7 @@ export class Option<T> {
   }) {
     this.exitValue = exitValue;
     this.hasPopup = hasPopup ?? null;
-    this.callback = callback || null;
+    this.callback = callback ?? null;
   }
 }
 
