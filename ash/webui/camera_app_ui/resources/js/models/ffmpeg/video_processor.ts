@@ -312,7 +312,7 @@ class FFMpegVideoProcessor {
       preRun: () => {
         // The FS property are injected by emscripten at runtime.
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        const fs = (config as unknown as {FS: FS})['FS'];
+        const fs = (config as unknown as {FS: FS}).FS;
         assert(fs !== null);
         // 80 is just a random major number that won't collide with other
         // default devices of the Emscripten runtime environment, which uses

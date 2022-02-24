@@ -566,6 +566,9 @@ module.exports = {
       '@typescript-eslint/require-array-sort-compare': 'error',
 
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
+
+      // go/tsstyle#optimization-compatibility-for-property-access
+      '@typescript-eslint/dot-notation': 'error',
     },
   }],
 };

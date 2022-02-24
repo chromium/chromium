@@ -358,8 +358,8 @@ interface PerfEventParam {
  */
 export function sendPerfEvent({event, duration, perfInfo = {}}: PerfEventParam):
     void {
-  const resolution = perfInfo['resolution'] ?? '';
-  const facing = perfInfo['facing'] ?? '';
+  const resolution = perfInfo.resolution ?? '';
+  const facing = perfInfo.facing ?? '';
   sendEvent(
       {
         eventCategory: 'perf',
