@@ -295,7 +295,7 @@ bool SafeBrowsingNavigationObserverManager::IsUserGestureExpired(
 // static
 GURL SafeBrowsingNavigationObserverManager::ClearURLRef(const GURL& url) {
   if (url.has_ref()) {
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearRef();
     return url.ReplaceComponents(replacements);
   }
