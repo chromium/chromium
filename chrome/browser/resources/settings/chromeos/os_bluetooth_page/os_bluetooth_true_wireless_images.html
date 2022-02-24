@@ -3,26 +3,34 @@
     align-items: center;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    margin: 7% 10%;
+    gap: 100px;
+    justify-content: center;
+    margin: 40px 0;
   }
 
   .image-wrapper {
-    padding-bottom: 16px;
+    height: 60px;
+    margin-bottom: 16px;
+    width: 60px;
   }
 
   .image-wrapper img {
-    border: 1px solid lightgrey;
+    border: 1px solid var(--cros-color-primary-dark);
     border-radius: 50%;
-    height: 70px;
-    width: 70px;
+    height: 100%;
+    width: 100%;
   }
 
   .battery-container {
     align-items: center;
     display: flex;
     flex-direction: column;
+    height: 124px;
     justify-content: center;
+  }
+
+  bluetooth-battery-icon-percentage {
+    margin-bottom: 8px;
   }
 
   #notConnectedLabel {
