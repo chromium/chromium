@@ -932,9 +932,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKeepFullscreenWithoutNotificationUrlAllowList,
     ash::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
     base::Value::Type::LIST },
-  { key::kFastPairEnabled,
-    ash::prefs::kFastPairEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kDeviceLoginScreenDefaultLargeCursorEnabled,
     nullptr,
     base::Value::Type::BOOLEAN },
@@ -2197,6 +2194,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
       key::kNearbyShareAllowed, prefs::kNearbySharingEnabledPrefName));
   handlers->AddHandler(std::make_unique<LacrosAvailabilityPolicyHandler>());
+  handlers->AddHandler(std::make_unique<BooleanDisablingPolicyHandler>(
+      key::kFastPairEnabled, ash::prefs::kFastPairEnabled));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On most platforms, there is a legacy policy
