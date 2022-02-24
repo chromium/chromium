@@ -5,6 +5,26 @@
 import("//chromecast/chromecast.gni")
 import("//third_party/cast_core/public/src/proto/proto.gni")
 
+cast_source_set("grpc_factory") {
+  sources = [
+    "grpc_server_builder.cc",
+    "grpc_server_builder.h",
+  ]
+
+  public_deps = [ "//third_party/grpc:grpc++" ]
+}
+
+cast_source_set("grpc_factory_linux") {
+  sources = [ "grpc_factory_linux.cc" ]
+
+  deps = [
+    ":grpc_factory",
+    "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
 cast_source_set("grpc") {
   sources = [
     "cancellable_reactor.h",
@@ -30,6 +50,7 @@ cast_source_set("grpc") {
   ]
 
   public_deps = [
+    ":grpc_factory",
     "//base",
     "//third_party/abseil-cpp:absl",
     "//third_party/grpc:grpc++",
