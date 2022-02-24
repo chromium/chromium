@@ -805,7 +805,8 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
   parsed_letter_spacing_ = builder.ToString();
-  SetFont(GetFontDescription(), font_.GetFontSelector());
+  if (font_.GetFontSelector())
+    SetFont(GetFontDescription(), font_.GetFontSelector());
 }
 
 void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
@@ -828,7 +829,8 @@ void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
   builder.AppendNumber(num_spacing);
   builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
   parsed_word_spacing_ = builder.ToString();
-  SetFont(GetFontDescription(), font_.GetFontSelector());
+  if (font_.GetFontSelector())
+    SetFont(GetFontDescription(), font_.GetFontSelector());
 }
 
 void CanvasRenderingContext2DState::SetTextRendering(
