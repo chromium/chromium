@@ -523,6 +523,9 @@ extern const char kDesktopPWAsWebBundlesDescription[];
 extern const char kDesktopPWAsWindowControlsOverlayName[];
 extern const char kDesktopPWAsWindowControlsOverlayDescription[];
 
+extern const char kDeviceForceScheduledRebootName[];
+extern const char kDeviceForceScheduledRebootDescription[];
+
 extern const char kDevicePostureName[];
 extern const char kDevicePostureDescription[];
 

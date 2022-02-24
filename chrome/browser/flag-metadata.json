@@ -1184,6 +1184,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "device-force-scheduled-reboot",
+    "owners": [ "sanjaperisic"],
+    "expiry_milestone": 101
+  },
+  {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 100

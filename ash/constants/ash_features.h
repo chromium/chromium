@@ -165,6 +165,8 @@ extern const base::Feature kDeviceActiveClientDailyCheckMembership;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDeviceActiveClientMonthlyCheckMembership;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDeviceForceScheduledReboot;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDiacriticsOnPhysicalKeyboardLongpress;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
