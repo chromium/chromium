@@ -6330,6 +6330,28 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONFIRMATION_DISMISS" desc="Text shown on snack bar button. Clicking it indicates that users have understood the content of the snack bar.">
         Got it
       </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V2" desc="Text shown on the consent card for getting discount asking if users would like to give their consent to the feature.">
+        Let Chrome find personalized discounts on your carts?
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3" desc="Text shown on the consent card for getting discount asking if users would like to give their consent to the feature.">
+        Let Google use your cart to find available discounts?
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_MERCHANT_NAME" desc="Text shown on the consent card asking if users would like to give their consent to the feature.">
+        Get discounts for <ph name="MERCHANT_NAME">$1<ex>Amazon</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_TWO_MERCHANT_NAMES" desc="Text shown on the consent card asking if users would like to give their consent to the feature.">
+        Get discounts for <ph name="MERCHANT_NAME">$1<ex>Amazon</ex></ph> and <ph name="MERCHANT_NAME">$2<ex>Walmart</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_THREE_MERCHANT_NAMES" desc="Text shown on the consent card asking if users would like to give their consent to the feature.">
+        Get discounts for <ph name="MERCHANT_NAME">$1<ex>Amazon</ex></ph>, <ph name="MERCHANT_NAME">$2<ex>Walmart</ex></ph> and more
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_CONTINUE" desc="The consent flow is a 2-step process. This text shown on the continue button of the consent card in step 1. See consent request in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_WITH_MERCHANT_NAME.">
+        Continue
+      </message>
+      <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE" desc="The consent flow is a 2-step process. This text shown on the step 2 as the title description.">
+        Get discounts?
+      </message>
+
       <!-- Extensions NTP Middle Slot Promo -->
       <message name="IDS_EXTENSIONS_PROMO_PERFORMANCE">
         Web browsing should be fast. Take a moment to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>check your extensions<ph name="END_LINK">&lt;/a&gt;</ph> now.
