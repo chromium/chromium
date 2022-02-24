@@ -23,7 +23,6 @@ extern const base::Feature kAutofillCreditCardAuthentication;
 extern const base::Feature kAutofillCreditCardUploadFeedback;
 extern const base::Feature kAutofillEnableGoogleIssuedCard;
 extern const base::Feature kAutofillEnableMerchantBoundVirtualCards;
-extern const base::Feature kAutofillEnableOfferNotificationCrossTabTracking;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
@@ -36,7 +35,6 @@ extern const base::Feature
     kAutofillEnableVirtualCardManagementInDesktopSettingsPage;
 extern const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication;
 extern const base::Feature kAutofillFillMerchantPromoCodeFields;
-extern const base::Feature kAutofillFixOfferInIncognito;
 extern const base::FeatureParam<int>
     kAutofillImageFetcherDiskCacheExpirationInMinutes;
 extern const base::Feature kAutofillParseMerchantPromoCodeFields;

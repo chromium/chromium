@@ -324,12 +324,6 @@ const char kAutofillEnableMerchantBoundVirtualCardsDescription[] =
     "When enabled, Autofill will offer to use merchant bound virtual cards in "
     "payment forms.";
 
-const char kAutofillEnableOfferNotificationCrossTabTrackingName[] =
-    "Enable cross tab status tracking for Autofill offer notification";
-const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[] =
-    "When enabled, the offer notification showing will be tracked cross-tab, "
-    "and on one merchant, the notification will only be shown once.";
-
 const char kAutofillEnableOfferNotificationForPromoCodesName[] =
     "Extend Autofill offers and rewards notification to promo code offers";
 const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =
@@ -400,12 +394,6 @@ const char kAutofillFillMerchantPromoCodeFieldsName[] =
 const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
     "When enabled, Autofill will attempt to fill merchant promo/coupon/gift "
     "code fields when data is available.";
-
-const char kAutofillFixOfferInIncognitoName[] =
-    "Enable the fix for Autofill offer in Incognito mode";
-const char kAutofillFixOfferInIncognitoDescription[] =
-    "When enabled, the fix will be enabled and offers should work correctly in "
-    "Incognito mode.";
 
 const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[] =
     "Highlight only changed values in preview mode.";

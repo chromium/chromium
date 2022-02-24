@@ -187,9 +187,6 @@ extern const char kAutofillEnableGoogleIssuedCardDescription[];
 extern const char kAutofillEnableMerchantBoundVirtualCardsName[];
 extern const char kAutofillEnableMerchantBoundVirtualCardsDescription[];
 
-extern const char kAutofillEnableOfferNotificationCrossTabTrackingName[];
-extern const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[];
-
 extern const char kAutofillEnableOfferNotificationForPromoCodesName[];
 extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 
@@ -225,9 +222,6 @@ extern const char
 
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];
-
-extern const char kAutofillFixOfferInIncognitoName[];
-extern const char kAutofillFixOfferInIncognitoDescription[];
 
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];

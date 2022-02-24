@@ -64,12 +64,6 @@ const base::Feature kAutofillEnableMerchantBoundVirtualCards{
     "AutofillEnableMerchantBoundVirtualCards",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to track the cross-tab-status of the offer notification
-// bubble.
-const base::Feature kAutofillEnableOfferNotificationCrossTabTracking{
-    "AutofillEnableOfferNotificationCrossTabTracking",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, a notification will be displayed on page navigation if the
 // domain has an eligible merchant promo code offer or reward.
 const base::Feature kAutofillEnableOfferNotificationForPromoCodes{
@@ -135,10 +129,6 @@ const base::Feature kAutofillEnableVirtualCardsRiskBasedAuthentication{
 // fields when data is available.
 const base::Feature kAutofillFillMerchantPromoCodeFields{
     "AutofillFillMerchantPromoCodeFields", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether to enable the fix for the offer feature in Incognito mode.
-const base::Feature kAutofillFixOfferInIncognito{
-    "AutofillFixOfferInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The merchant bound virtual card feature introduces new customized card art
 // images. This parameter defines the expiration of the fetched image in the

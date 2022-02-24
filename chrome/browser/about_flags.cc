@@ -7405,14 +7405,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseMerchantPromoCodeFields)},
 
-    {"autofill-enable-offer-notification-cross-tab-tracking",
-     flag_descriptions::kAutofillEnableOfferNotificationCrossTabTrackingName,
-     flag_descriptions::
-         kAutofillEnableOfferNotificationCrossTabTrackingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableOfferNotificationCrossTabTracking)},
-
     {"autofill-enable-virtual-cards-risk-based-authentication",
      flag_descriptions::kAutofillEnableVirtualCardsRiskBasedAuthenticationName,
      flag_descriptions::
@@ -7421,11 +7413,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableVirtualCardsRiskBasedAuthentication)},
-
-    {"autofill-fix-offer-in-incognito",
-     flag_descriptions::kAutofillFixOfferInIncognitoName,
-     flag_descriptions::kAutofillFixOfferInIncognitoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillFixOfferInIncognito)},
 
     {"autofill-highlight-only-changed-value-in-preview-mode",
      flag_descriptions::kAutofillHighlightOnlyChangedValuesInPreviewModeName,
