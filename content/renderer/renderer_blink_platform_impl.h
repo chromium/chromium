@@ -13,6 +13,7 @@
 
 #include "base/containers/id_map.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -298,6 +299,10 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       GUARDED_BY(code_cache_host_lock_);
   mojo::SharedRemote<blink::mojom::CodeCacheHost> code_cache_host_
       GUARDED_BY(code_cache_host_lock_);
+
+  // Event that signals `io_thread_id_` is set and ready to be read.
+  mutable base::WaitableEvent io_thread_id_ready_event_;
+  base::PlatformThreadId io_thread_id_ = base::kInvalidThreadId;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
