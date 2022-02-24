@@ -79,6 +79,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -901,7 +902,11 @@ void HandleWindowSnap(AcceleratorAction action) {
                           : WM_EVENT_CYCLE_SNAP_SECONDARY);
   aura::Window* active_window = window_util::GetActiveWindow();
   DCHECK(active_window);
-  WindowState::Get(active_window)->OnWMEvent(&event);
+
+  auto* window_state = WindowState::Get(active_window);
+  window_state->set_snap_action_source(
+      WindowSnapActionSource::kKeyboardShortcutToSnap);
+  window_state->OnWMEvent(&event);
 }
 
 void HandleWindowMinimize() {

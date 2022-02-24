@@ -365,6 +365,15 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     return;
   }
 
+  if (next_state_type == WindowStateType::kPrimarySnapped ||
+      next_state_type == WindowStateType::kSecondarySnapped) {
+    if (type == WM_EVENT_RESTORE) {
+      window_state->set_snap_action_source(
+          WindowSnapActionSource::kSnapByWindowStateRestore);
+    }
+    window_state->RecordAndResetWindowSnapActionSource();
+  }
+
   EnterToNextState(window_state, next_state_type);
 }
 

@@ -288,6 +288,9 @@ class SplitViewController::TabDraggedWindowObserver
   void EndTabDragging(aura::Window* window, bool is_being_destroyed) {
     dragged_window_->RemoveObserver(this);
     dragged_window_ = nullptr;
+
+    WindowState::Get(window)->set_snap_action_source(
+        WindowSnapActionSource::kDragTabToSnap);
     split_view_controller_->EndWindowDragImpl(window, is_being_destroyed,
                                               desired_snap_position_,
                                               last_location_in_screen_);
@@ -564,6 +567,8 @@ class SplitViewController::AutoSnapController
 
     // Snap the window on the non-default side of the screen if split view mode
     // is active.
+    WindowState::Get(window)->set_snap_action_source(
+        WindowSnapActionSource::kAutoSnapBySplitview);
     split_view_controller_->SnapWindow(
         window, (split_view_controller_->default_snap_position() == LEFT)
                     ? RIGHT
@@ -1404,6 +1409,9 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
       OverviewStartAction::kOverviewButtonLongPress,
       OverviewEnterExitType::kImmediateEnter);
 
+  WindowState::Get(target_window)
+      ->set_snap_action_source(
+          WindowSnapActionSource::kLongPressOverviewButtonToSnap);
   SnapWindow(target_window, SplitViewController::LEFT,
              /*activate_window=*/true);
   base::RecordAction(
@@ -1714,6 +1722,9 @@ void SplitViewController::OnOverviewModeEnding(
       // is notified.
       overview_item->RestoreWindow(/*reset_transform=*/false);
       overview_session->RemoveItem(overview_item.get());
+
+      WindowState::Get(window)->set_snap_action_source(
+          WindowSnapActionSource::kAutoSnapBySplitview);
       SnapWindow(window, (default_snap_position_ == LEFT) ? RIGHT : LEFT);
       // If ending overview causes a window to snap, also do not do exiting
       // overview animation.

@@ -328,6 +328,13 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
                            next_state_type == WindowStateType::kPrimarySnapped
                                ? WM_EVENT_SNAP_PRIMARY
                                : WM_EVENT_SNAP_SECONDARY);
+
+      if (event_type == WM_EVENT_RESTORE) {
+        window_state->set_snap_action_source(
+            WindowSnapActionSource::kSnapByWindowStateRestore);
+      }
+      window_state->RecordAndResetWindowSnapActionSource();
+
       // Get the desired window bounds for the snap state.
       gfx::Rect bounds =
           GetSnappedWindowBoundsInParent(window, next_state_type);

@@ -142,6 +142,8 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
   // then snap |window| to the side that corresponds to |desired_snap_state|.
   if (window_state->CanSnap() &&
       window_state->GetStateType() != desired_snap_state) {
+    window_state->RecordAndResetWindowSnapActionSource();
+
     if (Shell::Get()->overview_controller()->InOverviewSession()) {
       // |window| must already be in split view, and so we do not need to check
       // |SplitViewController::CanSnapWindow|, although in general it is more

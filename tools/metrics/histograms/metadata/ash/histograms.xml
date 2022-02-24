@@ -3966,6 +3966,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Wm.WindowSnapActionSource" enum="WindowSnapActionSource"
+    expires_after="2023-02-24">
+  <owner>xdai@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <summary>
+    Emitted when a window is to be snapped. Records different ways for a user to
+    snap a window.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

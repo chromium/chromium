@@ -286,6 +286,9 @@ void TabletModeWindowDragDelegate::EndWindowDrag(
         ShouldDropWindowIntoOverview(snap_position, location_in_screen),
         snap_position != SplitViewController::NONE);
   }
+
+  WindowState::Get(dragged_window_)
+      ->set_snap_action_source(WindowSnapActionSource::kDragDownFromTopToSnap);
   split_view_controller_->OnWindowDragEnded(
       dragged_window_, snap_position, gfx::ToRoundedPoint(location_in_screen));
   split_view_drag_indicators_->SetWindowDraggingState(

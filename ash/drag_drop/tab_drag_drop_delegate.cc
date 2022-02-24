@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
@@ -224,6 +225,8 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
           snap_position) {
     overview_session->MergeWindowIntoOverviewForWebUITabStrip(new_window);
   } else {
+    WindowState::Get(new_window)
+        ->set_snap_action_source(WindowSnapActionSource::kDragTabToSnap);
     split_view_controller->SnapWindow(new_window, snap_position,
                                       /*activate_window=*/true);
   }
@@ -243,6 +246,8 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
   // |source_window_| is itself a child window of the browser since it
   // hosts web content (specifically, the tab strip WebUI). Snap its
   // toplevel window which is the browser window.
+  WindowState::Get(new_window)
+      ->set_snap_action_source(WindowSnapActionSource::kDragTabToSnap);
   split_view_controller->SnapWindow(source_window_, opposite_position);
 }
 

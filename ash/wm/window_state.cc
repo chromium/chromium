@@ -31,6 +31,7 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
@@ -1187,6 +1188,12 @@ bool WindowState::CanUnresizableSnapOnDisplay(display::Display display) const {
   }
 
   return true;
+}
+
+void WindowState::RecordAndResetWindowSnapActionSource() {
+  base::UmaHistogramEnumeration(kWindowSnapActionSourceHistogram,
+                                snap_action_source_);
+  snap_action_source_ = WindowSnapActionSource::kOthers;
 }
 
 }  // namespace ash

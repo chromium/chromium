@@ -294,12 +294,17 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     case WM_EVENT_RESTORE: {
       // We special handle WM_EVENT_RESTORE event here.
       WindowStateType restore_state = window_state->GetRestoreWindowState();
-      if (restore_state == WindowStateType::kPrimarySnapped)
+      if (restore_state == WindowStateType::kPrimarySnapped) {
+        window_state->set_snap_action_source(
+            WindowSnapActionSource::kSnapByWindowStateRestore);
         DoTabletSnap(window_state, WM_EVENT_SNAP_PRIMARY);
-      else if (restore_state == WindowStateType::kSecondarySnapped)
+      } else if (restore_state == WindowStateType::kSecondarySnapped) {
+        window_state->set_snap_action_source(
+            WindowSnapActionSource::kSnapByWindowStateRestore);
         DoTabletSnap(window_state, WM_EVENT_SNAP_SECONDARY);
-      else
+      } else {
         UpdateWindow(window_state, restore_state, /*animate=*/true);
+      }
       break;
     }
     case WM_EVENT_SNAP_PRIMARY:
@@ -533,6 +538,7 @@ void TabletModeWindowState::CycleTabletSnap(
   }
   // If |window| can snap in split view, then snap |window| in |snap_position|.
   if (split_view_controller->CanSnapWindow(window)) {
+    window_state->RecordAndResetWindowSnapActionSource();
     split_view_controller->SnapWindow(window, snap_position);
     return;
   }
@@ -553,6 +559,8 @@ void TabletModeWindowState::DoTabletSnap(WindowState* window_state,
   }
 
   window_state->set_bounds_changed_by_user(true);
+  window_state->RecordAndResetWindowSnapActionSource();
+
   // A snap WMEvent will put the window in tablet split view.
   split_view_controller->OnWindowSnapWMEvent(window, snap_event_type);
 
