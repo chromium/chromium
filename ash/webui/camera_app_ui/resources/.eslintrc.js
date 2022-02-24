@@ -551,6 +551,9 @@ module.exports = {
     '@typescript-eslint/prefer-optional-chain': 'error',
 
     '@typescript-eslint/sort-type-union-intersection-members': 'error',
+
+    'comma-dangle': 'off',
+    '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
   }),
   overrides: [{
     files: ['**/*.ts'],

@@ -285,6 +285,10 @@ class FFMpegVideoProcessor {
     this.outputDevice = new OutputDevice(output);
 
     const outputFile = `/output.${processorArgs.outputExtension}`;
+
+    // clang-format formats one argument per line, which makes the list harder
+    // to read with comments.
+    // clang-format off
     const args = [
       // Make the procssing pipeline start earlier by shorten the initial
       // analyze durtaion from the default 5s to 1s. This reduce the
@@ -299,8 +303,9 @@ class FFMpegVideoProcessor {
       // do not ask anything
       '-nostdin', '-y',
       // output to file
-      outputFile  // eslint-disable-line comma-dangle
+      outputFile,
     ];
+    // clang-format on
 
     const config = {
       arguments: args,
