@@ -391,6 +391,7 @@ builder.
 
   Path regular expressions:
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
+  * [`//DEPS`](https://cs.chromium.org/chromium/src/DEPS)
 
 * [win-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""win-updater-try-builder-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win-updater-try-builder-dbg""))
 

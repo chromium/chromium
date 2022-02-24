@@ -105,7 +105,10 @@ presubmit_builder(
         ],
     },
     tryjob = try_.job(
-        location_regexp = [r".+/[+]/tools/clang/scripts/update.py"],
+        location_regexp = [
+            r".+/[+]/tools/clang/scripts/update.py",
+            r".+/[+]/DEPS",
+        ],
     ),
 )
 
