@@ -5,7 +5,7 @@
 // Interface exposing additional per-screen information.
 // https://github.com/webscreens/window-placement
 [
-  Exposed=Screens,
+  Exposed=Window,
   SecureContext,
   RuntimeEnabled=WindowPlacement
 ] interface ScreenDetailed : Screen {

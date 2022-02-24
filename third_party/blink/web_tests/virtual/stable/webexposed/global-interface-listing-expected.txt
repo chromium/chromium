@@ -7212,10 +7212,34 @@ interface Screen
     getter availWidth
     getter colorDepth
     getter height
+    getter isExtended
+    getter onchange
     getter orientation
     getter pixelDepth
     getter width
+    method addEventListener
     method constructor
+    method dispatchEvent
+    method removeEventListener
+    setter onchange
+interface ScreenDetailed : Screen
+    attribute @@toStringTag
+    getter devicePixelRatio
+    getter isInternal
+    getter isPrimary
+    getter label
+    getter left
+    getter top
+    method constructor
+interface ScreenDetails : EventTarget
+    attribute @@toStringTag
+    getter currentScreen
+    getter oncurrentscreenchange
+    getter onscreenschange
+    getter screens
+    method constructor
+    setter oncurrentscreenchange
+    setter onscreenschange
 interface ScreenOrientation : EventTarget
     attribute @@toStringTag
     getter angle
@@ -10296,6 +10320,7 @@ namespace CSS
     method focus
     method gc
     method getComputedStyle
+    method getScreenDetails
     method getSelection
     method matchMedia
     method moveBy
