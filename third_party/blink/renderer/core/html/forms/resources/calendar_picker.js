@@ -1874,7 +1874,7 @@ function ListView() {
   this.scrollView.setHeight(0);
   this.scrollView.attachTo(this);
 
-  this.element.addEventListener('click', this.onClick, false);
+  this.element.addEventListener('click', this.onClick.bind(this), false);
 
   /**
    * @type {!boolean}
@@ -3945,322 +3945,326 @@ CalendarRowCell.prototype.throwAway = function() {
   this._dayCells.length = 0;
 };
 
-/**
- * @constructor
- * @extends ListView
- * @param {!CalendarPicker} calendarPicker
- */
-function CalendarTableView(calendarPicker) {
-  ListView.call(this);
-  this.element.classList.add(CalendarTableView.ClassNameCalendarTableView);
-  this.element.tabIndex = 0;
+// ----------------------------------------------------------------
 
+class CalendarTableView extends ListView {
   /**
-   * @type {!boolean}
-   * @const
+   * @param {!CalendarPicker} calendarPicker
    */
-  this.hasWeekNumberColumn = calendarPicker.type === 'week';
-  /**
-   * @type {!CalendarPicker}
-   * @const
-   */
-  this.calendarPicker = calendarPicker;
-  /**
-   * @type {!Object}
-   * @const
-   */
-  this._dayCells = {};
-  var headerView = new CalendarTableHeaderView(this.hasWeekNumberColumn);
-  headerView.attachTo(this, this.scrollView);
+  constructor(calendarPicker) {
+    super();
+    this.element.classList.add(CalendarTableView.ClassNameCalendarTableView);
+    this.element.tabIndex = 0;
 
-  /**
-   * @type {!ClearButton}
-   * @const
-   */
-  var clearButton = new ClearButton();
-  clearButton.attachTo(this);
-  clearButton.on(ClearButton.EventTypeButtonClick, this.onClearButtonClick);
-  clearButton.element.textContent = global.params.clearLabel;
-  clearButton.element.setAttribute('aria-label', global.params.clearLabel);
-
-  /**
-   * @type {!CalendarNavigationButton}
-   * @const
-   */
-  var todayButton = new CalendarNavigationButton();
-  todayButton.attachTo(this);
-  todayButton.on(
-      CalendarNavigationButton.EventTypeButtonClick, this.onTodayButtonClick);
-  todayButton.element.textContent = global.params.todayLabel;
-  todayButton.element.classList.add(
-      CalendarHeaderView.GetClassNameTodayButton());
-  if (this.calendarPicker.type === 'week') {
-    todayButton.setDisabled(isWeekOutsideOfRange(
-        Week.createFromToday(), this.calendarPicker.config.minimum,
-        this.calendarPicker.config.maximum));
-  } else {
-    todayButton.setDisabled(isDayOutsideOfRange(
-        Day.createFromToday(), this.calendarPicker.config.minimum,
-        this.calendarPicker.config.maximum));
-  }
-  todayButton.element.setAttribute('aria-label', global.params.todayLabel);
-
-  if (this.hasWeekNumberColumn) {
-    this.setWidth(DayCell.GetWidth() * DaysPerWeek + WeekNumberCell.Width);
     /**
-     * @type {?Array}
+     * @type {!boolean}
      * @const
      */
-    this._weekNumberCells = [];
-  } else {
-    this.setWidth(DayCell.GetWidth() * DaysPerWeek);
+    this.hasWeekNumberColumn = calendarPicker.type === 'week';
+    /**
+     * @type {!CalendarPicker}
+     * @const
+     */
+    this.calendarPicker = calendarPicker;
+    /**
+     * @type {!Object}
+     * @const
+     */
+    this._dayCells = {};
+    var headerView = new CalendarTableHeaderView(this.hasWeekNumberColumn);
+    headerView.attachTo(this, this.scrollView);
+
+    /**
+     * @type {!ClearButton}
+     * @const
+     */
+    var clearButton = new ClearButton();
+    clearButton.attachTo(this);
+    clearButton.on(
+        ClearButton.EventTypeButtonClick, this.onClearButtonClick.bind(this));
+    clearButton.element.textContent = global.params.clearLabel;
+    clearButton.element.setAttribute('aria-label', global.params.clearLabel);
+
+    /**
+     * @type {!CalendarNavigationButton}
+     * @const
+     */
+    var todayButton = new CalendarNavigationButton();
+    todayButton.attachTo(this);
+    todayButton.on(
+        CalendarNavigationButton.EventTypeButtonClick,
+        this.onTodayButtonClick.bind(this));
+    todayButton.element.textContent = global.params.todayLabel;
+    todayButton.element.classList.add(
+        CalendarHeaderView.GetClassNameTodayButton());
+    if (this.calendarPicker.type === 'week') {
+      todayButton.setDisabled(isWeekOutsideOfRange(
+          Week.createFromToday(), this.calendarPicker.config.minimum,
+          this.calendarPicker.config.maximum));
+    } else {
+      todayButton.setDisabled(isDayOutsideOfRange(
+          Day.createFromToday(), this.calendarPicker.config.minimum,
+          this.calendarPicker.config.maximum));
+    }
+    todayButton.element.setAttribute('aria-label', global.params.todayLabel);
+
+    if (this.hasWeekNumberColumn) {
+      this.setWidth(DayCell.GetWidth() * DaysPerWeek + WeekNumberCell.Width);
+      /**
+       * @type {?Array}
+       * @const
+       */
+      this._weekNumberCells = [];
+    } else {
+      this.setWidth(DayCell.GetWidth() * DaysPerWeek);
+    }
+
+    /**
+     * @type {!boolean}
+     * @protected
+     */
+    this._ignoreMouseOutUntillNextMouseOver = false;
+
+    // You shouldn't be able to use the mouse wheel to scroll.
+    this.scrollView.element.removeEventListener(
+        'mousewheel', this.scrollView.onMouseWheel, false);
+    // You shouldn't be able to do gesture scroll.
+    this.scrollView.element.removeEventListener(
+        'touchstart', this.scrollView.onTouchStart, false);
+  }
+
+  static _BorderWidth = 0;
+  static GetBorderWidth() {
+    return CalendarTableView._BorderWidth;
+  }
+  static _TodayButtonHeight = 28;
+  static GetTodayButtonHeight() {
+    return CalendarTableView._TodayButtonHeight;
+  }
+  static ClassNameCalendarTableView = 'calendar-table-view';
+
+  /**
+   * @param {!number} scrollOffset
+   * @return {!number}
+   */
+  rowAtScrollOffset(scrollOffset) {
+    return Math.floor(scrollOffset / CalendarRowCell.GetHeight());
   }
 
   /**
-   * @type {!boolean}
-   * @protected
+   * @param {!number} row
+   * @return {!number}
    */
-  this._ignoreMouseOutUntillNextMouseOver = false;
+  scrollOffsetForRow(row) {
+    return row * CalendarRowCell.GetHeight();
+  }
 
-  this.element.addEventListener('click', this.onClick, false);
+  /**
+   * @param {?Event} event
+   */
+  onClick(event) {
+    if (this.hasWeekNumberColumn) {
+      var weekNumberCellElement = enclosingNodeOrSelfWithClass(
+          event.target, WeekNumberCell.ClassNameWeekNumberCell);
+      if (weekNumberCellElement) {
+        var weekNumberCell = weekNumberCellElement.$view;
+        this.calendarPicker.selectRangeContainingDay(
+            weekNumberCell.week.firstDay());
+        return;
+      }
+    }
+    var dayCellElement =
+        enclosingNodeOrSelfWithClass(event.target, DayCell.ClassNameDayCell);
+    if (!dayCellElement)
+      return;
+    var dayCell = dayCellElement.$view;
+    this.calendarPicker.selectRangeContainingDay(dayCell.day);
+  }
 
-  // You shouldn't be able to use the mouse wheel to scroll.
-  this.scrollView.element.removeEventListener(
-      'mousewheel', this.scrollView.onMouseWheel, false);
-  // You shouldn't be able to do gesture scroll.
-  this.scrollView.element.removeEventListener(
-      'touchstart', this.scrollView.onTouchStart, false);
+  onClearButtonClick() {
+    window.pagePopupController.setValueAndClosePopup(0, '');
+  }
+
+  onTodayButtonClick(sender) {
+    this.calendarPicker.selectRangeContainingDay(Day.createFromToday());
+  }
+
+  /**
+   * @param {!number} row
+   * @return {!CalendarRowCell}
+   */
+  prepareNewCell(row) {
+    var cell = CalendarRowCell._recycleBin.pop() || new CalendarRowCell();
+    cell.reset(row, this);
+    return cell;
+  }
+
+  /**
+   * @return {!number} Height in pixels.
+   */
+  height() {
+    return this.scrollView.height() + CalendarTableHeaderView.GetHeight() +
+        CalendarTableView.GetBorderWidth() * 2 +
+        CalendarTableView.GetTodayButtonHeight();
+  }
+
+  /**
+   * @param {!number} height Height in pixels.
+   */
+  setHeight(height) {
+    this.scrollView.setHeight(
+        height - CalendarTableHeaderView.GetHeight() -
+        CalendarTableView.GetBorderWidth() * 2 -
+        CalendarTableView.GetTodayButtonHeight());
+    this.element.style.height = height + 'px';
+  }
+
+  /**
+   * @param {!Month} month
+   * @param {!boolean} animate
+   */
+  scrollToMonth(month, animate) {
+    var rowForFirstDayInMonth = this.columnAndRowForDay(month.firstDay()).row;
+    this.scrollView.scrollTo(
+        this.scrollOffsetForRow(rowForFirstDayInMonth), animate);
+  }
+
+  /**
+   * @param {!number} column
+   * @param {!number} row
+   * @return {!Day}
+   */
+  dayAtColumnAndRow(column, row) {
+    var daysSinceMinimum = row * DaysPerWeek + column +
+        global.params.weekStartDay - CalendarTableView._MinimumDayWeekDay;
+    return Day.createFromValue(
+        daysSinceMinimum * MillisecondsPerDay +
+        CalendarTableView._MinimumDayValue);
+  }
+
+  static _MinimumDayValue = Day.Minimum.valueOf();
+  static _MinimumDayWeekDay = Day.Minimum.weekDay();
+
+  /**
+   * @param {!Day} day
+   * @return {!Object} Object with properties column and row.
+   */
+  columnAndRowForDay(day) {
+    var daysSinceMinimum =
+        (day.valueOf() - CalendarTableView._MinimumDayValue) /
+        MillisecondsPerDay;
+    var offset = daysSinceMinimum + CalendarTableView._MinimumDayWeekDay -
+        global.params.weekStartDay;
+    var row = Math.floor(offset / DaysPerWeek);
+    var column = offset - row * DaysPerWeek;
+    return {column: column, row: row};
+  }
+
+  updateCells() {
+    super.updateCells();
+
+    var selection = this.calendarPicker.selection();
+    var firstDayInSelection;
+    var lastDayInSelection;
+    if (selection) {
+      firstDayInSelection = selection.firstDay().valueOf();
+      lastDayInSelection = selection.lastDay().valueOf();
+    } else {
+      firstDayInSelection = Infinity;
+      lastDayInSelection = Infinity;
+    }
+    var highlight = this.calendarPicker.highlight();
+    var firstDayInHighlight;
+    var lastDayInHighlight;
+    if (highlight) {
+      firstDayInHighlight = highlight.firstDay().valueOf();
+      lastDayInHighlight = highlight.lastDay().valueOf();
+    } else {
+      firstDayInHighlight = Infinity;
+      lastDayInHighlight = Infinity;
+    }
+    var currentMonth = this.calendarPicker.currentMonth();
+    var firstDayInCurrentMonth = currentMonth.firstDay().valueOf();
+    var lastDayInCurrentMonth = currentMonth.lastDay().valueOf();
+    var activeCell = null;
+    for (var dayString in this._dayCells) {
+      var dayCell = this._dayCells[dayString];
+      var day = dayCell.day;
+      dayCell.setIsToday(Day.createFromToday().equals(day));
+      var isSelected =
+          (day >= firstDayInSelection && day <= lastDayInSelection);
+      dayCell.setSelected(isSelected);
+      if (isSelected && firstDayInSelection == lastDayInSelection) {
+        activeCell = dayCell;
+      }
+      dayCell.setIsInCurrentMonth(
+          day >= firstDayInCurrentMonth && day <= lastDayInCurrentMonth);
+      dayCell.setDisabled(!this.calendarPicker.isValidDay(day));
+    }
+    if (this.hasWeekNumberColumn) {
+      for (var weekString in this._weekNumberCells) {
+        var weekNumberCell = this._weekNumberCells[weekString];
+        var week = weekNumberCell.week;
+        var isSelected = (selection && selection.equals(week));
+        weekNumberCell.setSelected(isSelected);
+        if (isSelected) {
+          activeCell = weekNumberCell;
+        }
+        weekNumberCell.setDisabled(!this.calendarPicker.isValid(week));
+      }
+    }
+    if (activeCell) {
+      // Ensure a layoutObject because an element with no layoutObject doesn't post
+      // activedescendant events. This shouldn't run in the above |for| loop
+      // to avoid CSS transition.
+      activeCell.element.offsetLeft;
+      this.element.setAttribute('aria-activedescendant', activeCell.element.id);
+    }
+  }
+
+  /**
+   * @param {!Day} day
+   * @return {!DayCell}
+   */
+  prepareNewDayCell(day) {
+    var dayCell = DayCell.recycleOrCreate();
+    dayCell.reset(day);
+    if (this.calendarPicker.type == 'month')
+      dayCell.element.setAttribute(
+          'aria-label', Month.createFromDay(day).toLocaleString());
+    this._dayCells[dayCell.day.toString()] = dayCell;
+    return dayCell;
+  }
+
+  /**
+   * @param {!Week} week
+   * @return {!WeekNumberCell}
+   */
+  prepareNewWeekNumberCell(week) {
+    var weekNumberCell = WeekNumberCell.recycleOrCreate();
+    weekNumberCell.reset(week);
+    this._weekNumberCells[weekNumberCell.week.toString()] = weekNumberCell;
+    return weekNumberCell;
+  }
+
+  /**
+   * @param {!DayCell} dayCell
+   */
+  throwAwayDayCell(dayCell) {
+    delete this._dayCells[dayCell.day.toString()];
+    dayCell.throwAway();
+  }
+
+  /**
+   * @param {!WeekNumberCell} weekNumberCell
+   */
+  throwAwayWeekNumberCell(weekNumberCell) {
+    delete this._weekNumberCells[weekNumberCell.week.toString()];
+    weekNumberCell.throwAway();
+  }
 }
 
-CalendarTableView.prototype = Object.create(ListView.prototype);
-
-CalendarTableView._BorderWidth = 0;
-CalendarTableView.GetBorderWidth = function() {
-  return CalendarTableView._BorderWidth;
-};
-CalendarTableView._TodayButtonHeight = 28;
-CalendarTableView.GetTodayButtonHeight = function() {
-  return CalendarTableView._TodayButtonHeight;
-};
-CalendarTableView.ClassNameCalendarTableView = 'calendar-table-view';
-
-/**
- * @param {!number} scrollOffset
- * @return {!number}
- */
-CalendarTableView.prototype.rowAtScrollOffset = function(scrollOffset) {
-  return Math.floor(scrollOffset / CalendarRowCell.GetHeight());
-};
-
-/**
- * @param {!number} row
- * @return {!number}
- */
-CalendarTableView.prototype.scrollOffsetForRow = function(row) {
-  return row * CalendarRowCell.GetHeight();
-};
-
-/**
- * @param {?Event} event
- */
-CalendarTableView.prototype.onClick = function(event) {
-  if (this.hasWeekNumberColumn) {
-    var weekNumberCellElement = enclosingNodeOrSelfWithClass(
-        event.target, WeekNumberCell.ClassNameWeekNumberCell);
-    if (weekNumberCellElement) {
-      var weekNumberCell = weekNumberCellElement.$view;
-      this.calendarPicker.selectRangeContainingDay(
-          weekNumberCell.week.firstDay());
-      return;
-    }
-  }
-  var dayCellElement =
-      enclosingNodeOrSelfWithClass(event.target, DayCell.ClassNameDayCell);
-  if (!dayCellElement)
-    return;
-  var dayCell = dayCellElement.$view;
-  this.calendarPicker.selectRangeContainingDay(dayCell.day);
-};
-
-CalendarTableView.prototype.onClearButtonClick = function() {
-  window.pagePopupController.setValueAndClosePopup(0, '');
-};
-
-CalendarTableView.prototype.onTodayButtonClick = function(sender) {
-  this.calendarPicker.selectRangeContainingDay(Day.createFromToday());
-};
-
-/**
- * @param {!number} row
- * @return {!CalendarRowCell}
- */
-CalendarTableView.prototype.prepareNewCell = function(row) {
-  var cell = CalendarRowCell._recycleBin.pop() || new CalendarRowCell();
-  cell.reset(row, this);
-  return cell;
-};
-
-/**
- * @return {!number} Height in pixels.
- */
-CalendarTableView.prototype.height = function() {
-  return this.scrollView.height() + CalendarTableHeaderView.GetHeight() +
-      CalendarTableView.GetBorderWidth() * 2 +
-      CalendarTableView.GetTodayButtonHeight();
-};
-
-/**
- * @param {!number} height Height in pixels.
- */
-CalendarTableView.prototype.setHeight = function(height) {
-  this.scrollView.setHeight(
-      height - CalendarTableHeaderView.GetHeight() -
-      CalendarTableView.GetBorderWidth() * 2 -
-      CalendarTableView.GetTodayButtonHeight());
-  this.element.style.height = height + 'px';
-};
-
-/**
- * @param {!Month} month
- * @param {!boolean} animate
- */
-CalendarTableView.prototype.scrollToMonth = function(month, animate) {
-  var rowForFirstDayInMonth = this.columnAndRowForDay(month.firstDay()).row;
-  this.scrollView.scrollTo(
-      this.scrollOffsetForRow(rowForFirstDayInMonth), animate);
-};
-
-/**
- * @param {!number} column
- * @param {!number} row
- * @return {!Day}
- */
-CalendarTableView.prototype.dayAtColumnAndRow = function(column, row) {
-  var daysSinceMinimum = row * DaysPerWeek + column +
-      global.params.weekStartDay - CalendarTableView._MinimumDayWeekDay;
-  return Day.createFromValue(
-      daysSinceMinimum * MillisecondsPerDay +
-      CalendarTableView._MinimumDayValue);
-};
-
-CalendarTableView._MinimumDayValue = Day.Minimum.valueOf();
-CalendarTableView._MinimumDayWeekDay = Day.Minimum.weekDay();
-
-/**
- * @param {!Day} day
- * @return {!Object} Object with properties column and row.
- */
-CalendarTableView.prototype.columnAndRowForDay = function(day) {
-  var daysSinceMinimum =
-      (day.valueOf() - CalendarTableView._MinimumDayValue) / MillisecondsPerDay;
-  var offset = daysSinceMinimum + CalendarTableView._MinimumDayWeekDay -
-      global.params.weekStartDay;
-  var row = Math.floor(offset / DaysPerWeek);
-  var column = offset - row * DaysPerWeek;
-  return {column: column, row: row};
-};
-
-CalendarTableView.prototype.updateCells = function() {
-  ListView.prototype.updateCells.call(this);
-
-  var selection = this.calendarPicker.selection();
-  var firstDayInSelection;
-  var lastDayInSelection;
-  if (selection) {
-    firstDayInSelection = selection.firstDay().valueOf();
-    lastDayInSelection = selection.lastDay().valueOf();
-  } else {
-    firstDayInSelection = Infinity;
-    lastDayInSelection = Infinity;
-  }
-  var highlight = this.calendarPicker.highlight();
-  var firstDayInHighlight;
-  var lastDayInHighlight;
-  if (highlight) {
-    firstDayInHighlight = highlight.firstDay().valueOf();
-    lastDayInHighlight = highlight.lastDay().valueOf();
-  } else {
-    firstDayInHighlight = Infinity;
-    lastDayInHighlight = Infinity;
-  }
-  var currentMonth = this.calendarPicker.currentMonth();
-  var firstDayInCurrentMonth = currentMonth.firstDay().valueOf();
-  var lastDayInCurrentMonth = currentMonth.lastDay().valueOf();
-  var activeCell = null;
-  for (var dayString in this._dayCells) {
-    var dayCell = this._dayCells[dayString];
-    var day = dayCell.day;
-    dayCell.setIsToday(Day.createFromToday().equals(day));
-    var isSelected = (day >= firstDayInSelection && day <= lastDayInSelection);
-    dayCell.setSelected(isSelected);
-    if (isSelected && firstDayInSelection == lastDayInSelection) {
-      activeCell = dayCell;
-    }
-    dayCell.setIsInCurrentMonth(
-        day >= firstDayInCurrentMonth && day <= lastDayInCurrentMonth);
-    dayCell.setDisabled(!this.calendarPicker.isValidDay(day));
-  }
-  if (this.hasWeekNumberColumn) {
-    for (var weekString in this._weekNumberCells) {
-      var weekNumberCell = this._weekNumberCells[weekString];
-      var week = weekNumberCell.week;
-      var isSelected = (selection && selection.equals(week));
-      weekNumberCell.setSelected(isSelected);
-      if (isSelected) {
-        activeCell = weekNumberCell;
-      }
-      weekNumberCell.setDisabled(!this.calendarPicker.isValid(week));
-    }
-  }
-  if (activeCell) {
-    // Ensure a layoutObject because an element with no layoutObject doesn't post
-    // activedescendant events. This shouldn't run in the above |for| loop
-    // to avoid CSS transition.
-    activeCell.element.offsetLeft;
-    this.element.setAttribute('aria-activedescendant', activeCell.element.id);
-  }
-};
-
-/**
- * @param {!Day} day
- * @return {!DayCell}
- */
-CalendarTableView.prototype.prepareNewDayCell = function(day) {
-  var dayCell = DayCell.recycleOrCreate();
-  dayCell.reset(day);
-  if (this.calendarPicker.type == 'month')
-    dayCell.element.setAttribute(
-        'aria-label', Month.createFromDay(day).toLocaleString());
-  this._dayCells[dayCell.day.toString()] = dayCell;
-  return dayCell;
-};
-
-/**
- * @param {!Week} week
- * @return {!WeekNumberCell}
- */
-CalendarTableView.prototype.prepareNewWeekNumberCell = function(week) {
-  var weekNumberCell = WeekNumberCell.recycleOrCreate();
-  weekNumberCell.reset(week);
-  this._weekNumberCells[weekNumberCell.week.toString()] = weekNumberCell;
-  return weekNumberCell;
-};
-
-/**
- * @param {!DayCell} dayCell
- */
-CalendarTableView.prototype.throwAwayDayCell = function(dayCell) {
-  delete this._dayCells[dayCell.day.toString()];
-  dayCell.throwAway();
-};
-
-/**
- * @param {!WeekNumberCell} weekNumberCell
- */
-CalendarTableView.prototype.throwAwayWeekNumberCell = function(weekNumberCell) {
-  delete this._weekNumberCells[weekNumberCell.week.toString()];
-  weekNumberCell.throwAway();
-};
+// ----------------------------------------------------------------
 
 /**
  * @constructor
