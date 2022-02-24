@@ -110,7 +110,7 @@ GetPrintPagesParams(const GURL& page_url,
       display_header_footer.value_or(false));
 
   if (print_settings.display_header_footer()) {
-    url::Replacements<char> url_sanitizer;
+    GURL::Replacements url_sanitizer;
     url_sanitizer.ClearUsername();
     url_sanitizer.ClearPassword();
     std::string url = page_url.ReplaceComponents(url_sanitizer).spec();
