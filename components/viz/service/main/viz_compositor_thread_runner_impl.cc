@@ -233,7 +233,8 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   init_params.log_capture_pipeline_in_webrtc =
       features::ShouldWebRtcLogCapturePipeline();
   init_params.debug_renderer_settings = params->debug_renderer_settings;
-  init_params.host_process_id = gpu_service->host_process_id();
+  if (gpu_service)
+    init_params.host_process_id = gpu_service->host_process_id();
   init_params.hint_session_factory = hint_session_factory_.get();
 
   frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(init_params);
