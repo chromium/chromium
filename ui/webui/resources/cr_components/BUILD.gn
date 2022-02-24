@@ -120,7 +120,6 @@ preprocess_if_expr("preprocess_generated") {
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "managed_dialog/managed_dialog.js",
-    "managed_footnote/managed_footnote.js",
     "omnibox/cr_autocomplete_match_list.js",
   ]
 
@@ -228,7 +227,10 @@ preprocess_if_expr("preprocess_generated_ts") {
   deps = [ ":polymer3_elements" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [ "iph_bubble/iph_bubble.ts" ]
+  in_files = [
+    "iph_bubble/iph_bubble.ts",
+    "managed_footnote/managed_footnote.ts",
+  ]
 }
 
 if (is_chromeos_ash) {
@@ -396,7 +398,6 @@ group("closure_compile") {
   deps = [
     "color_change_listener:closure_compile",
     "managed_dialog:closure_compile",
-    "managed_footnote:closure_compile",
     "omnibox:closure_compile",
   ]
 
