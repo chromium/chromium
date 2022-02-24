@@ -28,6 +28,7 @@ class HttpResponseHeaders;
 
 namespace network {
 
+class NetworkContext;
 class SimpleURLLoader;
 
 // Owns an SCT auditing report and handles sending it and retrying on failures.
@@ -89,6 +90,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   };
 
   SCTAuditingReporter(
+      NetworkContext* owner_network_context_,
       net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
       bool is_hashdance,
@@ -132,6 +134,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
  private:
+  void OnCheckReportAllowedStatusComplete(bool allowed);
   // Schedules a |request| using the backoff delay or |minimum_delay|, whichever
   // is greatest.
   void ScheduleRequestWithBackoff(base::OnceClosure request,
@@ -141,6 +144,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
   void MaybeRetryRequest();
+
+  // The NetworkContext which owns the SCTAuditingHandler that created this
+  // Reporter.
+  NetworkContext* owner_network_context_;
 
   net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;

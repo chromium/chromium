@@ -21,6 +21,7 @@
 #include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -198,6 +199,7 @@ void SCTAuditingReporter::SetRetryDelayForTesting(
 }
 
 SCTAuditingReporter::SCTAuditingReporter(
+    NetworkContext* owner_network_context,
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
     bool is_hashdance,
@@ -212,7 +214,8 @@ SCTAuditingReporter::SCTAuditingReporter(
     ReporterUpdatedCallback update_callback,
     ReporterDoneCallback done_callback,
     std::unique_ptr<net::BackoffEntry> persisted_backoff_entry)
-    : reporter_key_(reporter_key),
+    : owner_network_context_(owner_network_context),
+      reporter_key_(reporter_key),
       report_(std::move(report)),
       is_hashdance_(is_hashdance),
       sct_hashdance_metadata_(std::move(sct_hashdance_metadata)),
@@ -266,7 +269,28 @@ void SCTAuditingReporter::Start() {
     return;
   }
 
-  // TODO(nsatragno): Query total number of client reports.
+  // Entrypoint for checking whether the max-reports limit has been reached.
+  // This should only get called once for the lifetime of the Reporter.
+  // TODO(crbug.com/1144205): Once reports are persisted to disk, the Reporter
+  // state should include whether it has been "counted" yet, otherwise if a
+  // Reporter gets persisted and restored many times it would cause the report
+  // cap to trigger. This can likely just be a boolean flag on the Reporter and
+  // the persisted state -- if `true`, this check (and incrementing the report
+  // count) can be skipped.
+  owner_network_context_->CanSendSCTAuditingReport(
+      base::BindOnce(&SCTAuditingReporter::OnCheckReportAllowedStatusComplete,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SCTAuditingReporter::OnCheckReportAllowedStatusComplete(bool allowed) {
+  if (!allowed) {
+    // The maximum report cap has already been reached. Notify the handler that
+    // this Reporter is done. This will delete `this`, so do not add code after
+    // this point.
+    std::move(done_callback_).Run(reporter_key_);
+    return;
+  }
+
   // Calculate an estimated minimum delay after which the log is expected to
   // have been ingested by the server.
   base::TimeDelta random_delay = base::Seconds(
@@ -446,7 +470,9 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
     return;
   }
 
-  // The server does not know about this SCT, and it should. Notify the server.
+  // The server does not know about this SCT, and it should. Notify the
+  // embedder and start sending the full report.
+  owner_network_context_->OnNewSCTAuditingReportSent();
   SendReport();
 }
 

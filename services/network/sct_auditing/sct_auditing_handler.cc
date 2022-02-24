@@ -301,7 +301,7 @@ void SCTAuditingHandler::AddReporter(
       sct_auditing_cache->hashdance_traffic_annotation();
 
   auto reporter = std::make_unique<SCTAuditingReporter>(
-      reporter_key, std::move(report),
+      owner_network_context_, reporter_key, std::move(report),
       mode_ == mojom::SCTAuditingMode::kHashdance, std::move(sct_metadata),
       GetURLLoaderFactory(), log_expected_ingestion_delay,
       log_max_ingestion_random_delay, report_uri, hashdance_lookup_uri,

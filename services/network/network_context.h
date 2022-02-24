@@ -310,6 +310,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   SCTAuditingHandler* sct_auditing_handler() {
     return sct_auditing_handler_.get();
   }
+  void CanSendSCTAuditingReport(base::OnceCallback<void(bool)> callback);
+  void OnNewSCTAuditingReportSent();
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,
