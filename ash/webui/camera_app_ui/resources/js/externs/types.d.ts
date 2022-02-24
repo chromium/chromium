@@ -123,6 +123,7 @@ declare namespace chrome.crashReportPrivate {
 // https://wicg.github.io/idle-detection/
 declare class IdleDetector extends EventTarget {
   screenState: 'locked'|'unlocked';
+
   start: () => Promise<void>;
 }
 

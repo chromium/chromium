@@ -47,12 +47,19 @@ export class AppWindow {
    * launched.
    */
   private readonly readyOnCCASide = new WaitableEvent<string>();
+
   private readonly readyOnTastSide = new WaitableEvent();
+
   private readonly onClosed = new WaitableEvent();
+
   private inClosingItself = false;
+
   private readonly errors: ErrorInfo[] = [];
+
   private readonly perfs: PerfEntry[] = [];
+
   private readonly launchedTime = performance.now();
+
   /**
    * @param fromColdStart Whether this app is launched from a cold start. It is
    *     used for performance measurement.

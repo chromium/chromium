@@ -321,15 +321,23 @@ enum OperationType {
 
 export class OperationScheduler {
   cameraInfo: CameraInfo|null = null;
+
   private pendingUpdateInfo: CameraInfo|null = null;
+
   private readonly firstInfoUpdate = new WaitableEvent();
 
   readonly reconfigurer: Reconfigurer;
+
   readonly capturer: Capturer;
+
   private ongoingOperationType: OperationType|null = null;
+
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
+
   readonly photoPreferrer = new PhotoConstraintsPreferrer();
+
   readonly videoPreferrer = new VideoConstraintsPreferrer();
+
   readonly modes: Modes;
 
   constructor(

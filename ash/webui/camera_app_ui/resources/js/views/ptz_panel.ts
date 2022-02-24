@@ -97,14 +97,23 @@ export class PTZPanel extends View {
   private track: MediaStreamTrack|null = null;
 
   private resetPTZ: (() => Promise<void>)|null = null;
+
   private readonly panel = dom.get('#ptz-panel', HTMLDivElement);
+
   private readonly resetAll = dom.get('#ptz-reset-all', HTMLButtonElement);
+
   private readonly panLeft = dom.get('#pan-left', HTMLButtonElement);
+
   private readonly panRight = dom.get('#pan-right', HTMLButtonElement);
+
   private readonly tiltUp = dom.get('#tilt-up', HTMLButtonElement);
+
   private readonly tiltDown = dom.get('#tilt-down', HTMLButtonElement);
+
   private readonly zoomIn = dom.get('#zoom-in', HTMLButtonElement);
+
   private readonly zoomOut = dom.get('#zoom-out', HTMLButtonElement);
+
   private mirrorObserver: ((mirror: boolean) => void)|null = null;
 
   /**

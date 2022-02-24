@@ -115,7 +115,9 @@ const helpUrl =
  */
 export class PrimarySettings extends BaseSettings {
   private readonly subViews: BaseSettings[];
+
   private headerClickedCount = 0;
+
   private headerClickedLastTime: number|null = null;
 
   constructor(cameraManager: CameraManager) {
@@ -199,6 +201,7 @@ export class ResolutionSettings extends BaseSettings {
 
   private readonly frontPhotoItem =
       dom.get('#settings-front-photores', HTMLElement);
+
   private readonly frontVideoItem =
       dom.get('#settings-front-videores', HTMLElement);
 
@@ -209,15 +212,22 @@ export class ResolutionSettings extends BaseSettings {
 
   private readonly backPhotoItem =
       dom.get('#settings-back-photores', HTMLElement);
+
   private readonly backVideoItem =
       dom.get('#settings-back-videores', HTMLElement);
+
   readonly photoResolutionSettings =
       new BaseSettings(ViewName.PHOTO_RESOLUTION_SETTINGS);
+
   readonly videoResolutionSettings =
       new BaseSettings(ViewName.VIDEO_RESOLUTION_SETTINGS);
+
   private readonly resMenu: HTMLDivElement;
+
   private readonly videoResMenu: HTMLDivElement;
+
   private readonly photoResMenu: HTMLDivElement;
+
   private cameraAvailble = false;
 
   /**

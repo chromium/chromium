@@ -554,6 +554,8 @@ module.exports = {
 
     'comma-dangle': 'off',
     '@typescript-eslint/comma-dangle': ['error', 'always-multiline'],
+
+    '@typescript-eslint/lines-between-class-members': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],

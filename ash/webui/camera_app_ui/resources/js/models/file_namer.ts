@@ -54,6 +54,7 @@ export class Filenamer {
    * Timestamp of camera session.
    */
   private readonly timestamp: number;
+
   /**
    * Number of already saved burst images.
    */

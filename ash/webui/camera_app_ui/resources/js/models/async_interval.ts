@@ -19,7 +19,9 @@ function sleep(delay: number): Promise<void> {
  */
 class AsyncIntervalRunner {
   private readonly stopped = new WaitableEvent();
+
   private readonly runningPromise: Promise<void>;
+
   constructor(
       private readonly handler: () => Promise<void>,
       private readonly delay: number) {

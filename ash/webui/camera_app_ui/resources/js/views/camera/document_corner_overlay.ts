@@ -116,7 +116,9 @@ class Line {
  */
 class Corner {
   private readonly corner: HTMLDivElement;
+
   private readonly prevLine: Line;
+
   private readonly nextLine: Line;
 
   constructor(container: HTMLDivElement) {
@@ -150,12 +152,19 @@ const SHOW_NO_DOCUMENT_TOAST_TIMEOUT_MS = 4000;
 export class DocumentCornerOverlay {
   private readonly overlay =
       dom.get('#preview-document-corner-overlay', HTMLDivElement);
+
   private readonly noDocumentToast: HTMLDivElement;
+
   private readonly cornerContainer: HTMLDivElement;
+
   private deviceId: string|null = null;
+
   private observer: MojoEndpoint|null = null;
+
   private readonly sides: Line[];
+
   private readonly corners: Corner[];
+
   private noDocumentTimerId: number|null = null;
 
   /**

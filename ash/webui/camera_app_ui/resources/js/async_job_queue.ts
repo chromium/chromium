@@ -7,6 +7,7 @@
  */
 export class AsyncJobQueue {
   private promise: Promise<unknown> = Promise.resolve();
+
   private clearing = false;
 
   /**

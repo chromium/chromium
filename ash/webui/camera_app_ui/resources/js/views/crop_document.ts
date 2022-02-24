@@ -138,6 +138,7 @@ export class CropDocument extends Review<boolean> {
   private cornerSpaceSize: Size|null = null;
 
   private readonly cropAreaContainer: SVGElement;
+
   private readonly cropArea: SVGPolygonElement;
 
   /**
@@ -146,6 +147,7 @@ export class CropDocument extends Review<boolean> {
   private rotation = 0;
 
   private initialCorners: Point[] = [];
+
   private readonly corners: Corner[];
 
   constructor() {

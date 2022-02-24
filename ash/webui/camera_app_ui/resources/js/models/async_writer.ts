@@ -20,7 +20,9 @@ export interface AsyncOps {
  */
 export class AsyncWriter {
   private readonly queue = new AsyncJobQueue();
+
   private closed = false;
+
   constructor(private readonly ops: AsyncOps) {}
 
   /**

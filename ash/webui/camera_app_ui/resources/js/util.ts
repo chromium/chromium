@@ -245,7 +245,9 @@ export function getStyleValueInPx(
  */
 export class DelayInterval {
   private intervalId: number|null = null;
+
   private readonly delayTimeoutId: number;
+
   /**
    * @param delayMs Delay milliseconds at start.
    * @param intervalMs Interval in milliseconds.

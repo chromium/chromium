@@ -33,6 +33,7 @@ function rotate(x: number, y: number, orientation: number): [number, number] {
  */
 export class FaceOverlay {
   private readonly canvas = dom.get('#preview-face-overlay', HTMLCanvasElement);
+
   private readonly ctx: CanvasRenderingContext2D;
 
   /**

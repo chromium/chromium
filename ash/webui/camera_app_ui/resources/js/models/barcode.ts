@@ -25,7 +25,9 @@ const ACTIVE_SCAN_RATIO = 1.0;
 export class BarcodeScanner {
   private readonly worker = Comlink.wrap<BarcodeWorkerInterface>(
       new Worker('/js/models/barcode_worker.js', {type: 'module'}));
+
   private intervalId: number|null = null;
+
   /**
    * @param video The video to be scanned for barcode.
    * @param callback The callback for the detected barcodes.

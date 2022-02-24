@@ -21,6 +21,7 @@ export interface MaxTimeOption {
  */
 abstract class RecordTimeBase {
   private readonly recordTime = dom.get('#record-time', HTMLElement);
+
   protected readonly maxTimeOption: MaxTimeOption|null = null;
 
   /**

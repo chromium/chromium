@@ -17,7 +17,9 @@ import {
  */
 export class Camera3DeviceInfo {
   readonly deviceId: string;
+
   readonly videoResols: ResolutionList = [];
+
   readonly videoMaxFps: MaxFpsInfo = {};
 
   /**

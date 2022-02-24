@@ -81,8 +81,11 @@ export class Preview {
   private focusMarker: symbol|null = null;
 
   private facing = Facing.NOT_SET;
+
   private deviceId: string|null = null;
+
   private vidPid: string|null = null;
+
   private isSupportPTZInternal = false;
 
   /**
@@ -92,6 +95,7 @@ export class Preview {
       new Map<string, MediaTrackConstraintSet>();
 
   private constraints: StreamConstraints|null = null;
+
   private onPreviewExpired: WaitableEvent|null = null;
 
   /**

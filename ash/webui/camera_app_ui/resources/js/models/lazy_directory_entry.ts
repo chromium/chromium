@@ -30,6 +30,7 @@ export async function getMaybeLazyDirectory(
  */
 class LazyDirectoryEntry implements DirectoryAccessEntry {
   private directory: DirectoryAccessEntry|null = null;
+
   private creatingDirectory: Promise<DirectoryAccessEntry>|null = null;
 
   /**

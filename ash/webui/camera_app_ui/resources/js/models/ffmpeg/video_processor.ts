@@ -275,8 +275,11 @@ declare global {
  */
 class FFMpegVideoProcessor {
   private readonly inputDevice = new InputDevice();
+
   private readonly outputDevice: OutputDevice;
+
   private readonly jobQueue = new AsyncJobQueue();
+
   /**
    * @param output The output writer.
    */

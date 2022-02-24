@@ -27,8 +27,11 @@ const SUPPORTED_CONSTANT_FPS = [30, 60];
  */
 export class Options implements CameraUI {
   private readonly toggleMic = dom.get('#toggle-mic', HTMLInputElement);
+
   private readonly toggleMirror = dom.get('#toggle-mirror', HTMLInputElement);
+
   private readonly toggleFps = dom.get('#toggle-fps', HTMLInputElement);
+
   private readonly switchDeviceButton =
       dom.get('#switch-device', HTMLButtonElement);
 

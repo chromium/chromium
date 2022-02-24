@@ -72,8 +72,10 @@ import {WarningType} from './warning.js';
  */
 export class Camera extends View implements CameraViewUI {
   private readonly cropDocument = new CropDocument();
+
   private readonly docModeDialogView =
       new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
+
   private readonly subViews: View[];
 
   /**
@@ -99,7 +101,9 @@ export class Camera extends View implements CameraViewUI {
   private activeDeviceId: string|null = null;
 
   protected readonly review = new review.Review();
+
   protected facing = Facing.NOT_SET;
+
   protected shutterType = metrics.ShutterType.UNKNOWN;
 
   /**

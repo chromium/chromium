@@ -7,11 +7,14 @@
  */
 export class WaitableEvent<T = void> {
   private isSignaledInternal = false;
+
   // The field is definitely assigned in the constructor since the argument to
   // the Promise constructor is called immediately, but TypeScript can't
   // recognize that. Disable the check by adding "!" to the property name.
   protected resolve!: (val: T) => void;
+
   protected reject!: (val: Error) => void;
+
   private readonly promise: Promise<T>;
 
   constructor() {

@@ -27,12 +27,18 @@ const preconditions = [
  */
 export class VideoEncoderOptions {
   private readonly videoProfile = dom.get('#video-profile', HTMLSelectElement);
+
   private readonly bitrateSlider = dom.get('#bitrate-slider', HTMLDivElement);
+
   private readonly bitrateMultiplierInput: HTMLInputElement;
+
   private readonly bitrateMultiplerText =
       dom.get('#bitrate-multiplier', HTMLDivElement);
+
   private readonly bitrateText = dom.get('#bitrate-number', HTMLDivElement);
+
   private resolution: Resolution|null = null;
+
   private fps: number|null = null;
 
   /**

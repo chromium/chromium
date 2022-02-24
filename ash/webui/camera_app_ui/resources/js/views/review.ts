@@ -25,8 +25,11 @@ interface UIArgs {
  */
 export class Option<T> {
   readonly exitValue?: T;
+
   readonly hasPopup: boolean|null;
+
   readonly callback: (() => void)|null;
+
   /**
    * @param UIArgs Arguments to create corresponding UI.
    * @param handlerParams Sets |exitValue| if the review page will exit with
@@ -58,6 +61,7 @@ export enum ButtonGroupTemplate {
  */
 export class OptionGroup<T> {
   readonly options: Array<Option<T>>;
+
   readonly template: ButtonGroupTemplate;
 
   /** Constructs Options. */
@@ -73,9 +77,12 @@ export class OptionGroup<T> {
  */
 export class Review<T> extends View {
   protected readonly image: HTMLElement;
+
   protected readonly video: HTMLVideoElement;
+
   private btnGroups: Array<{optionGroup: OptionGroup<T>, el: HTMLDivElement}> =
       [];
+
   private primaryBtn: HTMLButtonElement|null;
 
   /**

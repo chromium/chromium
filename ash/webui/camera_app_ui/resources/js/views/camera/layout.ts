@@ -13,9 +13,12 @@ import {windowController} from '../../window_controller.js';
  */
 export class Layout {
   private readonly previewBox = dom.get('#preview-box', HTMLDivElement);
+
   private readonly faceOverlay =
       dom.get('#preview-face-overlay', HTMLCanvasElement);
+
   private readonly viewportRule = cssStyle('#preview-viewport');
+
   private readonly contentRule = cssStyle('.preview-content');
 
   private setContentSize(width: number, height: number) {

@@ -9,6 +9,7 @@ import {assert} from './assert.js';
  */
 export class OneShotTimer {
   private timeoutId = 0;
+
   /**
    * The parameters are same as the parameters of setTimeout().
    */

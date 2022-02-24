@@ -158,6 +158,7 @@ type RecordType = typeof RecordType[keyof typeof RecordType];
  */
 export class Video extends ModeBase {
   private readonly captureResolution: Resolution;
+
   private captureStream: MediaStream|null = null;
 
   /**

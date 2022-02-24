@@ -45,6 +45,7 @@ class ResumeStateWatchdog {
   // This is definitely assigned in this.start() in the first statement of the
   // while loop.
   private trialDone!: WaitableEvent<boolean>;
+
   private succeed = false;
 
   constructor(private readonly doReconfigure: () => Promise<boolean>) {
@@ -76,7 +77,9 @@ class ResumeStateWatchdog {
  */
 export class CameraManager implements EventListener {
   private hasExternalScreen = false;
+
   private screenOffAuto = false;
+
   /**
    * The last time of all screen state turning from OFF to ON during the app
    * execution. Sets to -Infinity for no such time since app is opened.

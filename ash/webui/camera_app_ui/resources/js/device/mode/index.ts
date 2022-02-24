@@ -121,10 +121,12 @@ export class Modes {
    * Capture controller of current camera mode.
    */
   current: ModeBase|null = null;
+
   /**
    * Parameters to create mode capture controller.
    */
   private captureParams: CaptureParams|null = null;
+
   /**
    * Mode classname and related functions and attributes.
    */

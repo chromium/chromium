@@ -26,7 +26,9 @@ type WarningEnterOptions = string;
  */
 export class PTZPanelOptions {
   readonly stream: MediaStream;
+
   readonly vidPid: string|null;
+
   readonly resetPTZ: () => Promise<void>;
 
   constructor({stream, vidPid, resetPTZ}: {
@@ -81,6 +83,7 @@ export class View {
   private session: WaitableEvent<LeaveCondition>|null = null;
 
   private readonly dismissByEsc: boolean;
+
   private readonly defaultFocusSelector: string;
 
   /**
