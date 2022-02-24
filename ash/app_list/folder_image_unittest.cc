@@ -99,11 +99,9 @@ class FolderImageTest : public testing::Test,
  protected:
   void AddAppWithColoredIcon(const std::string& id, SkColor icon_color) {
     std::unique_ptr<AppListItem> item(new AppListItem(id));
-    item->SetDefaultIconAndColor(
-        CreateSquareBitmapWithColor(
-            SharedAppListConfig::instance().default_grid_icon_dimension(),
-            icon_color),
-        IconColor());
+    item->SetDefaultIcon(CreateSquareBitmapWithColor(
+        SharedAppListConfig::instance().default_grid_icon_dimension(),
+        icon_color));
     static_cast<AppListModel*>(app_list_model_.get())->AddItem(std::move(item));
   }
 
@@ -172,11 +170,9 @@ TEST_P(FolderImageTest, UpdateItemTest) {
   gfx::ImageSkia icon1 = folder_image_->icon();
 
   // Change an item's icon. Ensure that the observer fired and the icon changed.
-  app_list_model_->FindItem("app2")->SetDefaultIconAndColor(
-      CreateSquareBitmapWithColor(
-          SharedAppListConfig::instance().default_grid_icon_dimension(),
-          SK_ColorMAGENTA),
-      IconColor());
+  app_list_model_->FindItem("app2")->SetDefaultIcon(CreateSquareBitmapWithColor(
+      SharedAppListConfig::instance().default_grid_icon_dimension(),
+      SK_ColorMAGENTA));
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   EXPECT_FALSE(ImagesAreEqual(icon1, folder_image_->icon()));

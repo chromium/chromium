@@ -98,14 +98,10 @@ void AppListModel::SetItemMetadata(const std::string& id,
     SetItemName(item, data->name);
   }
 
-  if (data->icon.isNull()) {
-    // Folder icons are generated on ash side so the icon of the metadata passed
-    // from chrome side is null. Do not alter `item` default icon in this case.
+  // Folder icon is generated on ash side and chrome side passes a null
+  // icon here. Skip it.
+  if (data->icon.isNull())
     data->icon = item->GetDefaultIcon();
-    data->icon_color = item->GetDefaultIconColor();
-  } else if (data->icon_color != item->GetDefaultIconColor()) {
-    SetItemDefaultIconAndColor(item, data->icon, data->icon_color);
-  }
 
   if (data->folder_id != item->folder_id())
     MoveItemToFolder(item, data->folder_id);
@@ -402,15 +398,6 @@ void AppListModel::SetRootItemPosition(
   if (index_change)
     return;
 
-  for (auto& observer : observers_)
-    observer.OnAppListItemUpdated(item);
-}
-
-void AppListModel::SetItemDefaultIconAndColor(AppListItem* item,
-                                              const gfx::ImageSkia& icon,
-                                              const IconColor& icon_color) {
-  DCHECK(FindItem(item->id()));
-  item->SetDefaultIconAndColor(icon, icon_color);
   for (auto& observer : observers_)
     observer.OnAppListItemUpdated(item);
 }

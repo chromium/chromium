@@ -274,7 +274,7 @@ void AppServiceAppItem::OnLoadIcon(apps::IconValuePtr icon_value) {
   if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
   }
-  SetIcon(icon_value->uncompressed, icon_value->is_placeholder_icon);
+  SetIcon(icon_value->uncompressed);
 
   if (icon_value->is_placeholder_icon) {
     constexpr bool allow_placeholder_icon = false;

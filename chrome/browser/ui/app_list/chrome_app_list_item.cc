@@ -168,22 +168,20 @@ void ChromeAppListItem::IncrementIconVersion() {
     updater->SetItemIconVersion(id(), metadata_->icon_version);
 }
 
-void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
-                                bool is_place_holder_icon) {
+void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
   metadata_->icon = icon;
   metadata_->icon.EnsureRepsForSupportedScales();
   metadata_->badge_color =
       ash::AppIconColorCache::GetInstance().GetLightVibrantColorForApp(id(),
                                                                        icon);
   metadata_->icon_color =
-      is_place_holder_icon
-          ? ash::IconColor()
-          : app_list::reorder::GetSortableIconColorForApp(id(), icon);
+      app_list::reorder::GetSortableIconColorForApp(id(), icon);
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
-    updater->SetItemIconAndColor(id(), metadata_->icon, metadata_->icon_color);
+    updater->SetItemIcon(id(), metadata_->icon);
     updater->SetNotificationBadgeColor(id(), metadata_->badge_color);
+    updater->SetIconColor(id(), metadata_->icon_color);
   }
 }
 

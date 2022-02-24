@@ -12,8 +12,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
-#include "base/strings/safe_sprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -28,27 +26,11 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
 
 namespace {
-
-// An app manifest file's data. The app name and icon paths wait for filling.
-constexpr char kManifestData[] =
-    R"({ )"
-    /**/ R"("description": "fake",)"
-    /**/ R"("name": "%s",)"
-    /**/ R"("manifest_version": 2,)"
-    /**/ R"("version": "0",)"
-    /**/ R"("icons": %s,)"
-    /**/ R"("app": { )"
-    /**/ R"("launch": {)"
-    /****/ R"("web_url": "https://www.google.com/")"
-    /****/ R"(})"
-    /**/ R"(})"
-    R"(})";
 
 gfx::ImageSkia CreateImageSkia(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -334,11 +316,11 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     // When ordered by color, the apps should be in the following order:
     //   {app2 (red icon), app3 (green icon), app1 (blue icon)}
     model_updater->FindItem(app1_id_)->SetIcon(
-        CreateImageSkia(16, 16, SK_ColorBLUE), /*is_placeholder=*/false);
+        CreateImageSkia(16, 16, SK_ColorBLUE));
     model_updater->FindItem(app2_id_)->SetIcon(
-        CreateImageSkia(16, 16, SK_ColorRED), /*is_placeholder=*/false);
+        CreateImageSkia(16, 16, SK_ColorRED));
     model_updater->FindItem(app3_id_)->SetIcon(
-        CreateImageSkia(16, 16, SK_ColorGREEN), /*is_placeholder=*/false);
+        CreateImageSkia(16, 16, SK_ColorGREEN));
   }
 
   void TearDownOnMainThread() override {
@@ -801,6 +783,29 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
                               2);
 }
 
+// Verify that installing an app under color sort works as expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, InstallAppUnderColorSort) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
+                                   MenuType::kAppListNonFolderItemMenu,
+                                   AnimationTargetStatus::kCompleted);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
+
+  // TODO(https://crbug.com/1293162): verify app 4's position after new item
+  // position calculation under color sorting is fixed.
+  LoadExtension(test_data_dir_.AppendASCII("app4"));
+}
+
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, TransitionToTabletCommitsSort) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
 
@@ -1198,211 +1203,4 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
-}
-
-// Verifies that changing an app's icon under color sort works as expected.
-IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, SetIconUnderColorSort) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
-
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
-
-  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
-                                   MenuType::kAppListNonFolderItemMenu,
-                                   AnimationTargetStatus::kCompleted);
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
-
-  // Set the app 3's icon color to be black.
-  auto* model_updater = test::GetModelUpdater(AppListClientImpl::GetInstance());
-  const syncer::StringOrdinal position_before_setting_black =
-      model_updater->FindItem(app3_id_)->position();
-  model_updater->FindItem(app3_id_)->SetIcon(
-      CreateImageSkia(16, 16, SK_ColorBLACK), /*is_place_holder_icon=*/false);
-  const syncer::StringOrdinal position_after_setting_black =
-      model_updater->FindItem(app3_id_)->position();
-
-  // Verify that the color order is still maintained.
-  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
-            std::vector<std::string>({app2_id_, app1_id_, app3_id_}));
-
-  // Verify that the app 3's position changes.
-  EXPECT_FALSE(
-      position_after_setting_black.Equals(position_before_setting_black));
-
-  // Set the app 3's icon color to be magenta.
-  const std::vector<const ChromeAppListItem*> items_before_setting_magenta =
-      model_updater->GetItems();
-  model_updater->FindItem(app3_id_)->SetIcon(
-      CreateImageSkia(16, 16, SK_ColorMAGENTA), /*is_place_holder_icon=*/false);
-
-  // Verify that there is no position changes. Because after setting the app 3
-  // should still be placed at the end.
-  EXPECT_EQ(items_before_setting_magenta.size(), model_updater->ItemCount());
-  for (const ChromeAppListItem* item : items_before_setting_magenta) {
-    EXPECT_EQ(item->position(),
-              model_updater->FindItem(item->id())->position());
-  }
-
-  // Set the app 1's icon color to be white. But the icon is labeled as a
-  // placeholder.
-  const std::vector<const ChromeAppListItem*> items_before_setting_white =
-      model_updater->GetItems();
-  model_updater->FindItem(app1_id_)->SetIcon(
-      CreateImageSkia(16, 16, SK_ColorWHITE), /*is_place_holder_icon=*/true);
-
-  // Verify that there is no position changes because setting a placeholder icon
-  // should not update item positions.
-  EXPECT_EQ(items_before_setting_white.size(), model_updater->ItemCount());
-  for (const ChromeAppListItem* item : items_before_setting_white) {
-    EXPECT_EQ(item->position(),
-              model_updater->FindItem(item->id())->position());
-  }
-}
-
-// Verifies color sort features by providing an app with the specified icon.
-class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
- public:
-  AppListSortColorOrderBrowserTest() = default;
-  AppListSortColorOrderBrowserTest(const AppListSortColorOrderBrowserTest&) =
-      delete;
-  AppListSortColorOrderBrowserTest& operator=(
-      const AppListSortColorOrderBrowserTest&) = delete;
-  ~AppListSortColorOrderBrowserTest() override = default;
-
-  // AppListSortBrowserTest:
-  void SetUpOnMainThread() override {
-    AppListSortBrowserTest::SetUpOnMainThread();
-
-    ASSERT_TRUE(extension_data_directory_.CreateUniqueTempDir());
-    extension_path_ = SetUpFakeAppWithPureColorIcon(
-        /*app_name=*/"yellow_app", /*icon_color=*/SK_ColorYELLOW);
-  }
-
-  base::FilePath extension_path_;
-
- private:
-  // Sets up the resources of a fake app with the specified name and icon color.
-  // Returns the path to the fake app data.
-  base::FilePath SetUpFakeAppWithPureColorIcon(const std::string& app_name,
-                                               SkColor icon_color) {
-    // The export directory for an extension.
-    const base::FilePath extension_path =
-        extension_data_directory_.GetPath().Append(app_name);
-    base::CreateDirectory(extension_path);
-
-    // Prepare an icon file.
-    constexpr char icon_file_name[] = "icon.png";
-    base::FilePath icon_path = extension_path.AppendASCII(icon_file_name);
-    base::File icon_file(icon_path,
-                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-
-    // Write the data of a circular icon in pure color into the icon file.
-    constexpr int icon_size = 128;
-    gfx::ImageSkia icon;
-    icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-        icon_size / 2, icon_color, icon);
-    const sk_sp<SkImage> image = SkImage::MakeFromBitmap(*icon.bitmap());
-    const sk_sp<SkData> png_data(
-        image->encodeToData(SkEncodedImageFormat::kPNG, /*quality=*/100));
-    icon_file.Write(0, (const char*)png_data->data(), png_data->size());
-    icon_file.Close();
-
-    // Prepare the app manifest file.
-    base::FilePath manifest_path =
-        extension_path.Append("manifest").AddExtension(".json");
-    base::File manifest_file(manifest_path,
-                             base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-
-    // Write data into the manifest file.
-    char json_buffer[30];
-    constexpr char icon_json[] = R"({"%d": "%s"})";
-    base::strings::SafeSPrintf(json_buffer, icon_json, icon_size,
-                               icon_file_name);
-    char manifest_buffer[300];
-    size_t count = base::strings::SafeSPrintf(manifest_buffer, kManifestData,
-                                              app_name.c_str(), json_buffer);
-    EXPECT_EQ(count, manifest_file.Write(0, manifest_buffer, count));
-    manifest_file.Close();
-
-    return extension_path;
-  }
-
-  // A temporary directory acting as a root directory for extension data.
-  base::ScopedTempDir extension_data_directory_;
-};
-
-// Verify that installing an app under color sort works as expected.
-IN_PROC_BROWSER_TEST_F(AppListSortColorOrderBrowserTest,
-                       InstallAppUnderColorSort) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
-
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
-  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
-
-  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
-                                   MenuType::kAppListNonFolderItemMenu,
-                                   AnimationTargetStatus::kCompleted);
-
-  std::string yellow_app_id = LoadExtension(extension_path_)->id();
-  EXPECT_FALSE(yellow_app_id.empty());
-
-  // Verify that the new app's position follows the color order.
-  EXPECT_EQ(
-      GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_, yellow_app_id}),
-      std::vector<std::string>({app2_id_, yellow_app_id, app3_id_, app1_id_}));
-}
-
-class AppListSortLoginTest
-    : public ash::LoginManagerTest,
-      public ::testing::WithParamInterface</*in_tablet=*/bool> {
- public:
-  AppListSortLoginTest() : LoginManagerTest() {
-    login_mixin_.AppendRegularUsers(2);
-    account_id1_ = login_mixin_.users()[0].account_id;
-    account_id2_ = login_mixin_.users()[1].account_id;
-
-    feature_list_.InitWithFeatures(
-        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
-        /*disabled_features=*/{});
-  }
-  ~AppListSortLoginTest() override = default;
-
-  void SetUpOnMainThread() override {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(GetParam());
-    ash::LoginManagerTest::SetUpOnMainThread();
-  }
-
-  AccountId account_id1_;
-  AccountId account_id2_;
-  ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, AppListSortLoginTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(AppListSortLoginTest,
-                       RecordPrefSortOrderOnSessionStart) {
-  // Verify that the pref sort order is recorded when a primary user logs in.
-  base::HistogramTester histogram;
-  LoginUser(account_id1_);
-  const char* histogram_name =
-      GetParam() ? ash::kTabletAppListSortOrderOnSessionStartHistogram
-                 : ash::kClamshellAppListSortOrderOnSessionStartHistogram;
-  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
-                              1);
-
-  // Verify that the pref sort order is recorded when a secondary user logs in.
-  ash::UserAddingScreen::Get()->Start();
-  AddUser(account_id2_);
-  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
-                              2);
-
-  // Switch back to the primary user. Verify that the pref sort order is not
-  // recorded again.
-  user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
-  histogram.ExpectBucketCount(histogram_name, ash::AppListSortOrder::kCustom,
-                              2);
 }

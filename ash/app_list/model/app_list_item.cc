@@ -51,10 +51,8 @@ const gfx::ImageSkia& AppListItem::GetIcon(
   return metadata_->icon;
 }
 
-void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
-                                         const IconColor& color) {
+void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
   metadata_->icon = icon;
-  metadata_->icon_color = color;
 
   // If the item does not have a config specific icon, it will be represented by
   // the (possibly scaled) default icon, which means that changing the default
@@ -71,10 +69,6 @@ void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
 
 const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
   return metadata_->icon;
-}
-
-const IconColor& AppListItem::GetDefaultIconColor() const {
-  return metadata_->icon_color;
 }
 
 void AppListItem::SetIconVersion(int icon_version) {
@@ -96,6 +90,10 @@ void AppListItem::SetNotificationBadgeColor(const SkColor color) {
   for (auto& observer : observers_) {
     observer.ItemBadgeColorChanged();
   }
+}
+
+void AppListItem::SetIconColor(const IconColor color) {
+  metadata_->icon_color = color;
 }
 
 void AppListItem::AddObserver(AppListItemObserver* observer) {
