@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_fragment.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
