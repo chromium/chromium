@@ -224,11 +224,11 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
  private:
   // Must be called at the beginning of every state change action function.
-  void BeforeStateChangeAction();
+  void BeforeStateChangeAction(const char* function);
   // Must be called at the end of every state change action function.
   void AfterStateChangeAction();
   // Must be called at the beginning of every state check action function.
-  void BeforeStateCheckAction();
+  void BeforeStateCheckAction(const char* function);
   // Must be called at the end of every state check action function.
   void AfterStateCheckAction();
 
