@@ -40,7 +40,8 @@ class DeviceCacheImpl : public DeviceCache,
   // device's inquiry_rssi. This is used for sorting unpaired devices based on
   // their signal strength.
   struct UnpairedDevice {
-    explicit UnpairedDevice(const device::BluetoothDevice* device);
+    UnpairedDevice(const device::BluetoothDevice* device,
+                   FastPairDelegate* fast_pair_delegate);
     ~UnpairedDevice();
 
     mojom::BluetoothDevicePropertiesPtr device_properties;

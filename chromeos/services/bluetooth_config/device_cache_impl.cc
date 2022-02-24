@@ -15,10 +15,10 @@ namespace chromeos {
 namespace bluetooth_config {
 
 DeviceCacheImpl::UnpairedDevice::UnpairedDevice(
-    const device::BluetoothDevice* device)
-    : device_properties(GenerateBluetoothDeviceMojoProperties(
-          device,
-          /*fast_pair_delegate=*/nullptr)),
+    const device::BluetoothDevice* device,
+    FastPairDelegate* fast_pair_delegate)
+    : device_properties(
+          GenerateBluetoothDeviceMojoProperties(device, fast_pair_delegate)),
       inquiry_rssi(device->GetInquiryRSSI()) {}
 
 DeviceCacheImpl::UnpairedDevice::~UnpairedDevice() = default;
@@ -183,7 +183,8 @@ void DeviceCacheImpl::FetchInitialDeviceLists() {
       paired_devices_.push_back(
           GeneratePairedBluetoothDeviceProperties(device));
     } else {
-      unpaired_devices_.push_back(std::make_unique<UnpairedDevice>(device));
+      unpaired_devices_.push_back(
+          std::make_unique<UnpairedDevice>(device, fast_pair_delegate_));
     }
   }
 
@@ -277,7 +278,8 @@ bool DeviceCacheImpl::AttemptSetDeviceInUnpairedDeviceList(
   // Remove the old (stale) properties, if they exist.
   RemoveFromUnpairedDeviceList(device);
 
-  unpaired_devices_.push_back(std::make_unique<UnpairedDevice>(device));
+  unpaired_devices_.push_back(
+      std::make_unique<UnpairedDevice>(device, fast_pair_delegate_));
   SortUnpairedDeviceList();
   return true;
 }

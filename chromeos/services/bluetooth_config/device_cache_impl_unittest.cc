@@ -32,6 +32,7 @@ using NiceMockDevice =
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
 const char kTestBluetoothNickname[] = "nickname";
+constexpr char kTestDefaultImage[] = "data:image/png;base64,TestDefaultImage";
 
 class FakeObserver : public DeviceCache::Observer {
  public:
@@ -97,7 +98,8 @@ class DeviceCacheImplTest : public testing::Test {
                  std::string* id_out,
                  const absl::optional<int8_t> inquiry_rssi = absl::nullopt,
                  const device::BluetoothDeviceType device_type =
-                     device::BluetoothDeviceType::AUDIO) {
+                     device::BluetoothDeviceType::AUDIO,
+                 DeviceImageInfo* image_info = nullptr) {
     // We use the number of devices created in this test as the address.
     std::string address = base::NumberToString(num_devices_created_);
     ++num_devices_created_;
@@ -115,6 +117,9 @@ class DeviceCacheImplTest : public testing::Test {
         .WillByDefault(testing::Return(inquiry_rssi));
     ON_CALL(*mock_device, GetDeviceType())
         .WillByDefault(testing::Return(device_type));
+
+    if (image_info)
+      fake_fast_pair_delegate_.SetDeviceImageInfo(*id_out, *image_info);
 
     device::BluetoothDevice* device = mock_device.get();
     mock_devices_.push_back(std::move(mock_device));
@@ -732,6 +737,94 @@ TEST_F(DeviceCacheImplTest, UnknownPairedDeviceReturned) {
   EXPECT_TRUE(GetPairedDevices().empty());
   EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
   EXPECT_TRUE(GetUnpairedDevices().empty());
+}
+
+TEST_F(DeviceCacheImplTest, PairedDeviceImageInfo) {
+  // Add a paired device with image info before initializing.
+  std::string paired_device_id1;
+  DeviceImageInfo image_info = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
+      /*right_bud_image=*/"", /*case_image=*/"");
+  AddDevice(/*bonded=*/true, /*connected=*/false, &paired_device_id1,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO, &image_info);
+  Init();
+  EXPECT_TRUE(GetUnpairedDevices().empty());
+  EXPECT_EQ(0u, GetNumPairedDeviceListObserverEvents());
+  PairedDeviceList paired_list = GetPairedDevices();
+  EXPECT_EQ(1u, paired_list.size());
+  EXPECT_EQ(paired_device_id1, paired_list[0]->device_properties->id);
+  EXPECT_TRUE(paired_list[0]->device_properties->image_info);
+  RemoveDevice(paired_device_id1);
+  EXPECT_EQ(1u, GetNumPairedDeviceListObserverEvents());
+
+  // Add a paired device without image info. This should notify observers.
+  std::string paired_device_id2;
+  AddDevice(/*bonded=*/true, /*connected=*/false, &paired_device_id2,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO);
+  EXPECT_EQ(2u, GetNumPairedDeviceListObserverEvents());
+  paired_list = GetPairedDevices();
+  EXPECT_EQ(1u, paired_list.size());
+  EXPECT_EQ(paired_device_id2, paired_list[0]->device_properties->id);
+  EXPECT_FALSE(paired_list[0]->device_properties->image_info);
+  RemoveDevice(paired_device_id2);
+  EXPECT_EQ(3u, GetNumPairedDeviceListObserverEvents());
+
+  // Add a paired device with image info. This should notify observers.
+  std::string paired_device_id3;
+  AddDevice(/*bonded=*/true, /*connected=*/false, &paired_device_id3,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO, &image_info);
+  EXPECT_EQ(4u, GetNumPairedDeviceListObserverEvents());
+  paired_list = GetPairedDevices();
+  EXPECT_EQ(1u, paired_list.size());
+  EXPECT_EQ(paired_device_id3, paired_list[0]->device_properties->id);
+  EXPECT_TRUE(paired_list[0]->device_properties->image_info);
+}
+
+TEST_F(DeviceCacheImplTest, UnpairedDeviceImageInfo) {
+  // Add an unpaired device with image info before initializing.
+  std::string unpaired_device_id1;
+  DeviceImageInfo image_info = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
+      /*right_bud_image=*/"", /*case_image=*/"");
+  AddDevice(/*bonded=*/false, /*connected=*/false, &unpaired_device_id1,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO, &image_info);
+  Init();
+  EXPECT_TRUE(GetPairedDevices().empty());
+  EXPECT_EQ(0u, GetNumUnpairedDeviceListObserverEvents());
+  UnpairedDeviceList unpaired_list = GetUnpairedDevices();
+  EXPECT_EQ(1u, unpaired_list.size());
+  EXPECT_EQ(unpaired_device_id1, unpaired_list[0]->id);
+  EXPECT_TRUE(unpaired_list[0]->image_info);
+  RemoveDevice(unpaired_device_id1);
+  EXPECT_EQ(1u, GetNumUnpairedDeviceListObserverEvents());
+
+  // Add an unpaired device without image info. This should notify observers.
+  std::string unpaired_device_id2;
+  AddDevice(/*bonded=*/false, /*connected=*/false, &unpaired_device_id2,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO);
+  EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
+  unpaired_list = GetUnpairedDevices();
+  EXPECT_EQ(1u, unpaired_list.size());
+  EXPECT_EQ(unpaired_device_id2, unpaired_list[0]->id);
+  EXPECT_FALSE(unpaired_list[0]->image_info);
+  RemoveDevice(unpaired_device_id2);
+  EXPECT_EQ(3u, GetNumUnpairedDeviceListObserverEvents());
+
+  // Add an unpaired device with image info. This should notify observers.
+  std::string unpaired_device_id3;
+  AddDevice(/*bonded=*/false, /*connected=*/false, &unpaired_device_id3,
+            /*inquiry_rssi=*/1,
+            /*device_type=*/device::BluetoothDeviceType::AUDIO, &image_info);
+  EXPECT_EQ(4u, GetNumUnpairedDeviceListObserverEvents());
+  unpaired_list = GetUnpairedDevices();
+  EXPECT_EQ(1u, unpaired_list.size());
+  EXPECT_EQ(unpaired_device_id3, unpaired_list[0]->id);
+  EXPECT_TRUE(unpaired_list[0]->image_info);
 }
 
 }  // namespace bluetooth_config
