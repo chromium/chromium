@@ -111,21 +111,21 @@ class DynamicImageProvider {
     }
   }
 
-  gfx::ImageSkia GetImageForAssetSize(
+  const PhotoWithDetails& GetTopicForAssetSize(
       const absl::optional<gfx::Size>& asset_size) {
-    gfx::ImageSkia image;
+    const PhotoWithDetails* topic = nullptr;
     // If the |asset_size| is unavailable, this is unexpected but not fatal. The
     // choice to default to portrait is arbitrary.
     if (!asset_size || IsPortrait(*asset_size)) {
-      image = GetNextImage(/*primary_topic_set=*/portrait_set_,
+      topic = GetNextTopic(/*primary_topic_set=*/portrait_set_,
                            /*secondary_topic_set=*/landscape_set_);
     } else {
-      image = GetNextImage(/*primary_topic_set=*/landscape_set_,
+      topic = GetNextTopic(/*primary_topic_set=*/landscape_set_,
                            /*secondary_topic_set=*/portrait_set_);
     }
-    DCHECK(!image.isNull());
+    DCHECK(topic);
     TryResetCurrentTopicIndices();
-    return image;
+    return *topic;
   }
 
  private:
@@ -155,21 +155,20 @@ class DynamicImageProvider {
     return size.height() > size.width();
   }
 
-  static gfx::ImageSkia GetNextImageFromTopicSet(TopicSet& topic_set) {
+  static const PhotoWithDetails* GetNextTopicFromTopicSet(TopicSet& topic_set) {
     if (topic_set.current_topic_idx >= topic_set.topics.size())
-      return gfx::ImageSkia();
+      return nullptr;
 
-    gfx::ImageSkia image =
-        topic_set.topics[topic_set.current_topic_idx].get().photo;
+    const PhotoWithDetails* topic =
+        &topic_set.topics[topic_set.current_topic_idx].get();
     ++topic_set.current_topic_idx;
-    return image;
+    return topic;
   }
 
-  static gfx::ImageSkia GetNextImage(TopicSet& primary_topic_set,
-                                     TopicSet& secondary_topic_set) {
-    gfx::ImageSkia image = GetNextImageFromTopicSet(primary_topic_set);
-    return image.isNull() ? GetNextImageFromTopicSet(secondary_topic_set)
-                          : image;
+  static const PhotoWithDetails* GetNextTopic(TopicSet& primary_topic_set,
+                                              TopicSet& secondary_topic_set) {
+    const PhotoWithDetails* topic = GetNextTopicFromTopicSet(primary_topic_set);
+    return topic ? topic : GetNextTopicFromTopicSet(secondary_topic_set);
   }
 
   void TryResetCurrentTopicIndices() {
@@ -315,12 +314,24 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
   }
 }
 
+void AmbientAnimationPhotoProvider::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void AmbientAnimationPhotoProvider::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
 void AmbientAnimationPhotoProvider::RefreshDynamicImageAssets() {
   DVLOG(4) << __func__;
   DynamicImageProvider image_provider(backend_model_->all_decoded_topics());
+  base::flat_map<std::string, std::reference_wrapper<const PhotoWithDetails>>
+      new_topics;
   for (const auto& dynamic_asset : dynamic_assets_) {
-    gfx::ImageSkia assigned_image =
-        image_provider.GetImageForAssetSize(dynamic_asset->size());
+    const PhotoWithDetails& assigned_topic =
+        image_provider.GetTopicForAssetSize(dynamic_asset->size());
+    new_topics.emplace(dynamic_asset->asset_id(), std::cref(assigned_topic));
+    gfx::ImageSkia assigned_image = assigned_topic.photo;
     if (dynamic_asset->size()) {
       DCHECK(assigned_image.bitmap());
       // Crop the image such that it exactly matches the aspect ratio of the
@@ -333,6 +344,9 @@ void AmbientAnimationPhotoProvider::RefreshDynamicImageAssets() {
                   << " missing dimensions in lottie file";
     }
     dynamic_asset->AssignNewImage(std::move(assigned_image));
+  }
+  for (Observer& obs : observers_) {
+    obs.OnDynamicImageAssetsRefreshed(new_topics);
   }
 }
 
