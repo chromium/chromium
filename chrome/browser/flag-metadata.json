@@ -5461,17 +5461,17 @@
   {
     "name" : "side-search",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 100
+    "expiry_milestone" : 104
   },
   {
     "name" : "side-search-clear-cache-when-closed",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 100
+    "expiry_milestone" : 104
   },
   {
     "name" : "side-search-state-per-tab",
     "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 100
+    "expiry_milestone" : 104
   },
   {
     "name": "single-cell-content-suggestions",
