@@ -124,14 +124,16 @@ void VirtualCardManualFallbackBubbleViews::Init() {
       .AddRows(1, views::TableLayout::kFixedSize);  // CVC.
 
   // Virtual card number.
-  AddChildView(
+  card_information_section->AddChildView(
       CreateRowItemLabel(controller_->GetVirtualCardNumberFieldLabel()));
-  AddChildView(CreateRowItemButtonForField(
+  card_information_section->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kCardNumber));
 
   // Expiration date.
-  AddChildView(CreateRowItemLabel(controller_->GetExpirationDateFieldLabel()));
-  auto* expiry_row = AddChildView(std::make_unique<views::View>());
+  card_information_section->AddChildView(
+      CreateRowItemLabel(controller_->GetExpirationDateFieldLabel()));
+  auto* expiry_row =
+      card_information_section->AddChildView(std::make_unique<views::View>());
   expiry_row->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
@@ -153,13 +155,15 @@ void VirtualCardManualFallbackBubbleViews::Init() {
       VirtualCardManualFallbackBubbleField::kExpirationYear));
 
   // Cardholder name.
-  AddChildView(CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
-  AddChildView(CreateRowItemButtonForField(
+  card_information_section->AddChildView(
+      CreateRowItemLabel(controller_->GetCardholderNameFieldLabel()));
+  card_information_section->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kCardholderName));
 
   // CVC.
-  AddChildView(CreateRowItemLabel(controller_->GetCvcFieldLabel()));
-  AddChildView(
+  card_information_section->AddChildView(
+      CreateRowItemLabel(controller_->GetCvcFieldLabel()));
+  card_information_section->AddChildView(
       CreateRowItemButtonForField(VirtualCardManualFallbackBubbleField::kCvc));
   UpdateButtonTooltipsAndAccessibleNames();
 }
