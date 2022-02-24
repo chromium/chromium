@@ -426,7 +426,7 @@ bool WebNavigationTabObserver::IsReferenceFragmentNavigation(
   if (existing_url == url)
     return false;
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearRef();
   return existing_url.ReplaceComponents(replacements) ==
          url.ReplaceComponents(replacements);
