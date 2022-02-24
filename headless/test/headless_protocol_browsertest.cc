@@ -223,13 +223,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeSessionStorage,
 HEADLESS_PROTOCOL_TEST(VirtualTimeStarvation,
                        "emulation/virtual-time-starvation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeVideo, "emulation/virtual-time-video.js")
-// Flaky on Linux and Mac. https://crbug.com/1295644
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_VirtualTimeErrorLoop DISABLED_VirtualTimeErrorLoop
-#else
-#define MAYBE_VirtualTimeErrorLoop VirtualTimeErrorLoop
-#endif
-HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeErrorLoop,
+// Flaky on all platforms. https://crbug.com/1295644
+HEADLESS_PROTOCOL_TEST(DISABLED_VirtualTimeErrorLoop,
                        "emulation/virtual-time-error-loop.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeFetchStream,
                        "emulation/virtual-time-fetch-stream.js")
