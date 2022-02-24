@@ -7255,26 +7255,6 @@
             ]
         }
     ],
-    "WebRTC-DataChannel-Dcsctp": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-VP8ConferenceTemporalLayers": [
         {
             "platforms": [
