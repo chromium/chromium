@@ -1388,6 +1388,7 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
 
   if (ash::features::IsCryptohomeRecoveryFlowEnabled() &&
       ShouldPrepareForRecovery(populated_account_id_)) {
+    populated_account_id_.clear();
     auto callback = base::BindOnce(&GaiaScreenHandler::OnGaiaReauthTokenFetched,
                                    weak_factory_.GetWeakPtr(), context);
     gaia_reauth_token_fetcher_ =

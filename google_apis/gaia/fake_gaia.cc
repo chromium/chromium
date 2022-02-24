@@ -58,6 +58,7 @@ const char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
 const char kTestOAuthLoginSID[] = "fake-oauth-SID-cookie";
 const char kTestOAuthLoginLSID[] = "fake-oauth-LSID-cookie";
 const char kTestOAuthLoginAuthCode[] = "fake-oauth-auth-code";
+const char kTestReauthProofToken[] = "fake-reauth-proof-token";
 // Add SameSite=None and Secure because these cookies are needed in a
 // cross-site context.
 const char kTestCookieAttributes[] =
@@ -583,6 +584,7 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
   }
 
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -722,6 +724,13 @@ void FakeGaia::HandleEmbeddedSigninChallenge(const HttpRequest& request,
                                              BasicHttpResponse* http_response) {
   std::string email;
   GetQueryParameter(request.content, "identifier", &email);
+
+  std::string reauth_request_token;
+  if (GetQueryParameter(request.content, "rart", &reauth_request_token)) {
+    http_response->AddCustomHeader(
+        "Set-Cookie", base::StringPrintf("RAPT=%s%s", kTestReauthProofToken,
+                                         kTestCookieAttributes));
+  }
 
   if (!merge_session_params_.auth_sid_cookie.empty() &&
       !merge_session_params_.auth_lsid_cookie.empty()) {

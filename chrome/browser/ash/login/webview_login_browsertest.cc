@@ -6,6 +6,7 @@
 #include <iterator>
 #include <string>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -33,10 +34,12 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
+#include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -64,6 +67,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -90,6 +94,7 @@
 #include "components/sync/driver/trusted_vault_client.h"
 #include "components/sync/trusted_vault/securebox.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_certificate_delegate.h"
@@ -138,6 +143,7 @@ constexpr char kTestCookieValue[] = "present";
 constexpr char kTestCookieHost[] = "host1.com";
 constexpr char kClientCert1Name[] = "client_1";
 constexpr char kClientCert2Name[] = "client_2";
+constexpr char kTestTokenHandle[] = "test_token_handle";
 
 constexpr test::UIPath kPrimaryButton = {"gaia-signin", "signin-frame-dialog",
                                          "primary-action-button"};
@@ -757,6 +763,104 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
             reauth_user_.account_id.GetUserEmail());
+}
+
+class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {
+ public:
+  ReauthTokenWebviewLoginTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kCryptohomeRecoveryFlow);
+    login_manager_mixin_.AppendRegularUsers(1);
+    user_with_invalid_token_ = login_manager_mixin_.users().back().account_id;
+  }
+
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    ReauthWebviewLoginTest::SetUpInProcessBrowserTestFixture();
+    TokenHandleUtil::SetInvalidTokenForTesting(kTestTokenHandle);
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    TokenHandleUtil::SetInvalidTokenForTesting(nullptr);
+    ReauthWebviewLoginTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  AccountId user_with_invalid_token_;
+  FakeRecoveryServiceMixin fake_recovery_service_{&mixin_host_,
+                                                  embedded_test_server()};
+};
+
+IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
+  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
+  // Force to remain in OOBE after login instead of start session, so we could
+  // verify the value in UserContext.
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetPendingOnboardingScreen(user_with_invalid_token_,
+                                  MarketingOptInScreenView::kScreenId.name);
+  // Focus triggers token check and updates the user pod to online sign-in
+  // state.
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(
+      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
+  // Focus triggers online signin.
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            user_with_invalid_token_.GetUserEmail());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->reauth_request_token(),
+            "fake-reauth-request-token");
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
+
+  chromeos::UserContext* user_context = LoginDisplayHost::default_host()
+                                            ->GetWizardContext()
+                                            ->extra_factors_auth_session.get();
+  EXPECT_EQ(user_context->GetReauthProofToken(), "fake-reauth-proof-token");
+}
+
+IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
+  fake_recovery_service_.SetErrorResponse("/v1/rart",
+                                          net::HTTP_SERVICE_UNAVAILABLE);
+  TokenHandleUtil::StoreTokenHandle(user_with_invalid_token_, kTestTokenHandle);
+  // Force to remain in OOBE after login instead of start session, so we could
+  // verify the value in UserContext.
+  user_manager::KnownUser(g_browser_process->local_state())
+      .SetPendingOnboardingScreen(user_with_invalid_token_,
+                                  MarketingOptInScreenView::kScreenId.name);
+  // Focus triggers token check and updates the user pod to online sign-in
+  // state.
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(
+      LoginScreenTestApi::IsForcedOnlineSignin(user_with_invalid_token_));
+  // Focus triggers online signin.
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(user_with_invalid_token_));
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            user_with_invalid_token_.GetUserEmail());
+  EXPECT_TRUE(fake_gaia_.fake_gaia()->reauth_request_token().empty());
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
+  chromeos::UserContext* user_context = LoginDisplayHost::default_host()
+                                            ->GetWizardContext()
+                                            ->extra_factors_auth_session.get();
+  EXPECT_TRUE(user_context->GetReauthProofToken().empty());
 }
 
 class ReauthEndpointWebviewLoginTest : public WebviewLoginTest {

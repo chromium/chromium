@@ -14,9 +14,10 @@ gaia.chromeOSLogin.shouldSendCloseView = true;
 
 const urlParams = new URLSearchParams(window.location.search);
 const useNativeNavigation = !!urlParams.get('use_native_navigation');
+const reauthRequestToken = urlParams.get('rart')
+const prefillEmail = urlParams.get('Email')
 
 function goFirstPage() {
-console.error('On first page');
   document.getElementById('page1').hidden = false;
   document.getElementById('page2').hidden = true;
   history.replaceState({}, '', window.location.pathname + '#identifier');
@@ -172,7 +173,11 @@ function goNext() {
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };
-    request.send('identifier=' + encodeURIComponent(email));
+    content = 'identifier=' + encodeURIComponent(email);
+    if (reauthRequestToken) {
+      content += ('&rart=' + reauthRequestToken);
+    }
+    request.send(content);
 
     gaia.chromeOSLogin.attemptLogin(email, password);
   }
@@ -181,6 +186,9 @@ function goNext() {
 function onLoad() {
   if (useNativeNavigation) {
     document.getElementById("nextButton").remove();
+  }
+  if (prefillEmail) {
+    document.getElementById("identifier").value = prefillEmail;
   }
   gaia.chromeOSLogin.registerHtml5Listener();
 }

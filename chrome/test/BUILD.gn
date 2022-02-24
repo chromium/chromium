@@ -3407,6 +3407,8 @@ if (!is_android) {
         "../browser/ash/login/test/fake_arc_tos_mixin.h",
         "../browser/ash/login/test/fake_eula_mixin.cc",
         "../browser/ash/login/test/fake_eula_mixin.h",
+        "../browser/ash/login/test/fake_recovery_service_mixin.cc",
+        "../browser/ash/login/test/fake_recovery_service_mixin.h",
         "../browser/ash/login/test/guest_session_mixin.cc",
         "../browser/ash/login/test/guest_session_mixin.h",
         "../browser/ash/login/test/hid_controller_mixin.cc",
