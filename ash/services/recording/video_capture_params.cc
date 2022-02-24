@@ -122,8 +122,7 @@ class WindowCaptureParams : public VideoCaptureParams {
 
     frame_sink_id_ = new_frame_sink_id;
     capturer->ChangeTarget(
-        viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_),
-        /*crop_version=*/0);
+        viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_));
 
     // If the movement to another display results in changes in the frame sink
     // size or DSF, OnVideoSizeMayHaveChanged() will be called by the below
@@ -291,8 +290,7 @@ void VideoCaptureParams::InitializeVideoCapturer(
   // conversions.
   capturer->SetFormat(media::PIXEL_FORMAT_I420);
   capturer->ChangeTarget(
-      viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_),
-      /*crop_version=*/0);
+      viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_));
 }
 
 gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(

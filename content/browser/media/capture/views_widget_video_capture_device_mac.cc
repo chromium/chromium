@@ -55,8 +55,7 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
           FROM_HERE,
           base::BindOnce(
               &FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
-              viz::VideoCaptureTarget(scoped_cg_window_id_->GetFrameSinkId()),
-              /*crop_version=*/0));
+              viz::VideoCaptureTarget(scoped_cg_window_id_->GetFrameSinkId())));
     } else {
       // It is entirely possible (although unlikely) that the window
       // corresponding to |cg_window_id| be destroyed between when the capture

@@ -313,17 +313,9 @@ void FrameSinkVideoCapturerImpl::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void FrameSinkVideoCapturerImpl::ChangeTarget(
-    const absl::optional<VideoCaptureTarget>& target,
-    uint32_t crop_version) {
+    const absl::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(crop_version, crop_version_);
-
   target_ = target;
-  crop_version_ = crop_version;
-
-  // TODO(crbug.com/1266378): Use |crop_version_| to annotate frames delivered
-  // or dropped.
-
   ResolveTarget();
 }
 

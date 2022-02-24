@@ -74,19 +74,8 @@ void ClientFrameSinkVideoCapturer::ChangeTarget(
     const absl::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ChangeTarget(target, crop_version_);
-}
-
-void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const absl::optional<VideoCaptureTarget>& target,
-    uint32_t crop_version) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(crop_version, crop_version_);
-
   target_ = target;
-  crop_version_ = crop_version;
-
-  capturer_remote_->ChangeTarget(target, crop_version);
+  capturer_remote_->ChangeTarget(target);
 }
 
 void ClientFrameSinkVideoCapturer::Start(
@@ -206,7 +195,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
   if (target_) {
-    capturer_remote_->ChangeTarget(target_.value(), crop_version_);
+    capturer_remote_->ChangeTarget(target_.value());
   }
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());
