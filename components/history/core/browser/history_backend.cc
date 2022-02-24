@@ -189,7 +189,7 @@ void MergeUpdateIntoExistingModelAnnotations(
 }  // namespace
 
 std::u16string FormatUrlForRedirectComparison(const GURL& url) {
-  url::Replacements<char> remove_port;
+  GURL::Replacements remove_port;
   remove_port.ClearPort();
   return url_formatter::FormatUrl(
       url.ReplaceComponents(remove_port),
