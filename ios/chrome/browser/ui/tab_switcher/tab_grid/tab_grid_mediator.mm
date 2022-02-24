@@ -602,6 +602,17 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   [self populateConsumerItems];
 }
 
+- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
+                                   completion:(void (^)(size_t))completion {
+  TabsSearchService* search_service =
+      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+  const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);
+  search_service->SearchHistory(searchTerm,
+                                base::BindOnce(^(size_t resultCount) {
+                                  completion(resultCount);
+                                }));
+}
+
 #pragma mark GridCommands helpers
 
 - (void)insertNewItemAtIndex:(NSUInteger)index withURL:(const GURL&)newTabURL {
