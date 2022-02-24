@@ -73,7 +73,7 @@ async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
     /**
      * Force repaint before applying the animation.
      */
-    el.offsetWidth;
+    void el.offsetWidth;
     el.classList.add('animate');
     await Promise.allSettled(
         getAnimations({el, onChild}).map((a) => a.finished));

@@ -373,8 +373,7 @@ export class DocumentCornerOverlay {
       });
     });
 
-    /** @suppress {suspiciousCode} */
-    this.cornerContainer.offsetParent;  // Force start state of transition.
+    void this.cornerContainer.offsetParent;  // Force start state of transition.
 
     // Set end of dot transition.
     corners.forEach((corn, i) => {
