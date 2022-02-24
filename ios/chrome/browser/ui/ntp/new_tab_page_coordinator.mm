@@ -85,11 +85,6 @@
 
 namespace {
 
-// Kill switch guarding a fix an NTP/discover memory leak fix. Behind a feature
-// flag so we can validate the impact, as well as safety for a stable respin.
-const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace
 
 @interface NewTabPageCoordinator () <AppStateObserver,
@@ -647,9 +642,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 - (void)updateNTPForFeed {
   DCHECK(self.ntpViewController);
 
-  static bool update_ntp_for_feed_fix =
-      base::FeatureList::IsEnabled(kUpdateNTPForFeedFix);
-  if (update_ntp_for_feed_fix && !self.started) {
+  if (!self.started) {
     return;
   }
 
