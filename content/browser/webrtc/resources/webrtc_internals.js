@@ -501,6 +501,8 @@ function addStandardStats(data) {
           + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
     }
 
+    // Mark active local-candidate, remote candidate and candidate pair
+    // bold in the table.
     const statsContainer =
         document.getElementById(peerConnectionElement.id + '-table-container');
     const activeConnectionClass = 'stats-table-active-connection';
@@ -512,11 +514,29 @@ function addStandardStats(data) {
       if (innerText.startsWith(activeCandidatePair.id)
           || innerText.startsWith(localCandidate.id)
           || innerText.startsWith(remoteCandidate.id)) {
-        node.classList.add(activeConnectionClass);
+        node.firstElementChild.classList.add(activeConnectionClass);
       } else {
-        node.classList.remove(activeConnectionClass);
+        node.firstElementChild.classList.remove(activeConnectionClass);
       }
     });
+    // Mark active candidate-pair graph bold.
+    const statsGraphContainers = peerConnectionElement
+      .getElementsByClassName('stats-graph-container');
+    for (let i = 0; i < statsGraphContainers.length; i++) {
+      const node = statsGraphContainers[i];
+      if (node.nodeName !== 'DETAILS') {
+        continue;
+      }
+      if (!node.id.startsWith(pcId + '-candidate-pair')) {
+        continue;
+      }
+      if (node.id === pcId + '-candidate-pair-' + activeCandidatePair.id
+          + '-graph-container') {
+        node.firstElementChild.classList.add(activeConnectionClass);
+      } else {
+        node.firstElementChild.classList.remove(activeConnectionClass);
+      }
+    }
   } else {
     candidateElement.innerText = '(not connected)';
   }
