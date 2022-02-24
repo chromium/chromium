@@ -402,27 +402,16 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 // created decoder. We should instead keep track of multiple evaluators, and
 // then decide how to aggregate/report those metrics.
 // Play multiple videos simultaneously from start to finish.
-TEST_F(VideoDecoderTest,
-       MeasureUncappedPerformance_MultipleConcurrentDecoders) {
+TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
   // Set RLIMIT_NOFILE soft limit to its hard limit value.
   if (sandbox::ResourceLimits::AdjustCurrent(
           RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
     DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
   }
 
-// The minimal number of concurrent decoders we expect to be supported on
-// platforms.
-#if defined(USE_VAAPI)
-  constexpr size_t kMinSupportedConcurrentDecoders =
-      VaapiVideoDecoder::kMaxNumOfInstances;
-#elif defined(USE_V4L2_CODEC)
-  constexpr size_t kMinSupportedConcurrentDecoders = 10;
-#else
-  constexpr size_t kMinSupportedConcurrentDecoders = 10;
-#endif
+  constexpr size_t kNumConcurrentDecoders = 10;
 
-  std::vector<std::unique_ptr<VideoPlayer>> players(
-      kMinSupportedConcurrentDecoders);
+  std::vector<std::unique_ptr<VideoPlayer>> players(kNumConcurrentDecoders);
   for (auto&& player : players) {
     player = CreateVideoPlayer(g_env->Video());
     // Increase the timeout for older machines that cannot decode as
