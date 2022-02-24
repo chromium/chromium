@@ -2034,11 +2034,6 @@
     "expiry_milestone": 103
   },
   {
-    "name": "enable-experimental-accessibility-dictation-offline",
-    "owners": [ "akihiroota", "katie" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "enable-experimental-accessibility-dictation-with-pumpkin",
     "owners": [ "akihiroota"],
     "expiry_milestone": 104

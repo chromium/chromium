@@ -226,8 +226,7 @@ void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {
 
 void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
     int download_progress) {
-  if (!::features::IsExperimentalAccessibilityDictationOfflineEnabled() ||
-      !visible_preferred())
+  if (!visible_preferred())
     return;
 
   bool download_in_progress = download_progress > 0 && download_progress < 100;

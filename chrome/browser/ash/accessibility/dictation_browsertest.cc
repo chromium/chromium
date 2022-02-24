@@ -279,13 +279,6 @@ class DictationBaseTest
         test_helper_.GetEnabledFeatures();
     std::vector<base::Feature> disabled_features =
         test_helper_.GetDisabledFeatures();
-    if (GetParam() == speech::SpeechRecognitionType::kOnDevice) {
-      enabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
-    } else {
-      disabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -680,7 +673,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, Metrics) {
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // Ensure that we recorded the correct locale.
-  const std::string locale = on_device ? "en-US" : "en";
+  const std::string locale = "en-US";
   histogram_tester_.ExpectUniqueSample(/*name=*/kLocaleMetric,
                                        /*sample=*/base::HashMetricName(locale),
                                        /*expected_bucket_count=*/1);

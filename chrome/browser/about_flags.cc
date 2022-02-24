@@ -4400,11 +4400,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityDictationExtension)},
-    {"enable-experimental-accessibility-dictation-offline",
-     flag_descriptions::kExperimentalAccessibilityDictationOfflineName,
-     flag_descriptions::kExperimentalAccessibilityDictationOfflineDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kExperimentalAccessibilityDictationOffline)},
     {"enable-experimental-accessibility-dictation-commands",
      flag_descriptions::kExperimentalAccessibilityDictationCommandsName,
      flag_descriptions::kExperimentalAccessibilityDictationCommandsDescription,

@@ -268,15 +268,6 @@ Polymer({
     },
 
     /** @private */
-    areDictationLocalePrefsAllowed_: {
-      type: Boolean,
-      readOnly: true,
-      value() {
-        return loadTimeData.getBoolean('areDictationLocalePrefsAllowed');
-      }
-    },
-
-    /** @private */
     dictationLocaleOptions_: {
       type: Array,
       value() {
@@ -763,9 +754,7 @@ Polymer({
 
   /** @private */
   onChangeDictationLocaleButtonClicked_() {
-    if (this.areDictationLocalePrefsAllowed_) {
-      this.showDictationLocaleMenu_ = true;
-    }
+    this.showDictationLocaleMenu_ = true;
   },
 
   /** @private */

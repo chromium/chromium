@@ -115,19 +115,9 @@ bool IsDockedMagnifierResizingEnabled() {
   return base::FeatureList::IsEnabled(::features::kDockedMagnifierResizing);
 }
 
-const base::Feature kExperimentalAccessibilityDictationOffline{
-    "ExperimentalAccessibilityDictationOffline",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsExperimentalAccessibilityDictationOfflineEnabled() {
+bool IsDictationOfflineAvailable() {
   return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityDictationOffline);
-}
-
-bool IsDictationOfflineAvailableAndEnabled() {
-  return base::FeatureList::IsEnabled(
-             ash::features::kOnDeviceSpeechRecognition) &&
-         IsExperimentalAccessibilityDictationOfflineEnabled();
+      ash::features::kOnDeviceSpeechRecognition);
 }
 
 const base::Feature kExperimentalAccessibilityDictationCommands{

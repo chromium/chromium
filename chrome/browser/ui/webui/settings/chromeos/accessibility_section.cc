@@ -342,10 +342,6 @@ bool AreTabletNavigationButtonsAllowed() {
          ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
 }
 
-bool AreDictationLocalePrefsAllowed() {
-  return ::features::IsExperimentalAccessibilityDictationOfflineEnabled();
-}
-
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -748,9 +744,7 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddLocalizedString(
       "dictationDescription",
-      ::features::IsExperimentalAccessibilityDictationOfflineEnabled()
-          ? IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION
-          : IDS_SETTINGS_ACCESSIBILITY_DICTATION_DESCRIPTION);
+      IDS_SETTINGS_ACCESSIBILITY_DICTATION_NEW_DESCRIPTION);
 
   html_source->AddString("a11yLearnMoreUrl",
                          chrome::kChromeAccessibilityHelpURL);
@@ -768,9 +762,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean(
       "isMagnifierContinuousMouseFollowingModeSettingEnabled",
       IsMagnifierContinuousMouseFollowingModeSettingEnabled());
-
-  html_source->AddBoolean("areDictationLocalePrefsAllowed",
-                          AreDictationLocalePrefsAllowed());
 
   html_source->AddBoolean(
       "isDictationCommandsFeatureEnabled",

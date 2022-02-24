@@ -130,7 +130,7 @@ void AccessibilityHandler::OnJavascriptAllowed() {
 }
 
 void AccessibilityHandler::OnJavascriptDisallowed() {
-  if (features::IsDictationOfflineAvailableAndEnabled())
+  if (features::IsDictationOfflineAvailable())
     soda_observation_.Reset();
 }
 
@@ -151,7 +151,7 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
 }
 
 void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
-  if (!features::IsDictationOfflineAvailableAndEnabled())
+  if (!features::IsDictationOfflineAvailable())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
@@ -234,9 +234,6 @@ void AccessibilityHandler::OnSodaLanguagePackError(
 }
 
 void AccessibilityHandler::MaybeAddDictationLocales() {
-  if (!features::IsExperimentalAccessibilityDictationOfflineEnabled())
-    return;
-
   base::flat_map<std::string, ash::Dictation::LocaleData> locales =
       ash::Dictation::GetAllSupportedLocales();
 

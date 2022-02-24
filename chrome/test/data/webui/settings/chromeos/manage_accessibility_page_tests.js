@@ -276,14 +276,9 @@ suite('ManageAccessibilityPageTests', function() {
   });
 
   test('Dictation labels', async () => {
-    // Setup. Ensure that the Dictation locale menu is shown by doing the
-    // following:
-    // 1. Set the dictation pref to true (done in default prefs).
-    // 2. Ensure dictation locale prefs are allowed.
-    // 3. Populate dictation locale options with mock data.
-    loadTimeData.overrideValues({
-      areDictationLocalePrefsAllowed: true,
-    });
+    // Ensure that the Dictation locale menu is shown by setting the dictation
+    // pref to true (done in default prefs) and populating dictation locale
+    // options with mock data.
     initPage();
     const locales = [{
       name: 'English (United States)',
@@ -294,9 +289,6 @@ suite('ManageAccessibilityPageTests', function() {
     }];
     cr.webUIListenerCallback('dictation-locales-set', locales);
     Polymer.dom.flush();
-    // Sanity checks.
-    assertTrue(loadTimeData.getBoolean('areDictationLocalePrefsAllowed'));
-    assertTrue(page.areDictationLocalePrefsAllowed_);
 
     // Dictation toggle.
     const dictationSetting = page.$$('#enableDictation');

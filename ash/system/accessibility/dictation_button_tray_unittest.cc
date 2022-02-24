@@ -193,7 +193,6 @@ class DictationButtonTraySodaTest
     DictationButtonTrayTest::SetUp();
 
     std::vector<base::Feature> enabled_features = {
-        ::features::kExperimentalAccessibilityDictationOffline,
         features::kOnDeviceSpeechRecognition};
     std::vector<base::Feature> disabled_features;
 

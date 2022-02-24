@@ -367,9 +367,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kExperimentalAccessibilityDictationOffline,
-         ash::features::kOnDeviceSpeechRecognition},
-        {});
+        {ash::features::kOnDeviceSpeechRecognition}, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -1152,18 +1150,12 @@ class AccessibilityManagerDictationDialogTest
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     if (GetParam() == DictationDialogTestVariant::kOfflineEnabledAndAvailable) {
-      enabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
       enabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
     } else if (GetParam() ==
                DictationDialogTestVariant::kOfflineEnabledAndUnavailable) {
-      // Offline dictation is enabled but SODA isn't available on this device.
-      enabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
+      // SODA isn't available on this device.
       disabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
     } else {
-      disabled_features.push_back(
-          ::features::kExperimentalAccessibilityDictationOffline);
       disabled_features.push_back(ash::features::kOnDeviceSpeechRecognition);
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);

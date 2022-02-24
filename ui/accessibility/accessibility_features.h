@@ -95,14 +95,7 @@ AX_BASE_EXPORT extern const base::Feature kDockedMagnifierResizing;
 // bottom of Docked Magnifier is enabled.
 AX_BASE_EXPORT bool IsDockedMagnifierResizingEnabled();
 
-// Enables dictation to use on-device speech recognition when available.
-AX_BASE_EXPORT extern const base::Feature
-    kExperimentalAccessibilityDictationOffline;
-
-// Returns true if experimental accessibility offline dictation is enabled.
-AX_BASE_EXPORT bool IsExperimentalAccessibilityDictationOfflineEnabled();
-
-AX_BASE_EXPORT bool IsDictationOfflineAvailableAndEnabled();
+AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
 // Enables text-editing commands in the dictation.
 AX_BASE_EXPORT extern const base::Feature

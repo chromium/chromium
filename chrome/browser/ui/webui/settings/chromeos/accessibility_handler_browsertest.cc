@@ -51,9 +51,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kExperimentalAccessibilityDictationOffline,
-         features::kOnDeviceSpeechRecognition},
-        {});
+        {features::kOnDeviceSpeechRecognition}, {});
   }
 
   void SetUpOnMainThread() override {

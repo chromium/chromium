@@ -688,9 +688,7 @@ class TrayAccessibilitySodaTest : public TrayAccessibilityTest {
     // `ChromeBrowserMainPartsAsh` initializes). Create it here so that
     // calling speech::SodaInstaller::GetInstance() returns a valid instance.
     scoped_feature_list_.InitWithFeatures(
-        {::features::kExperimentalAccessibilityDictationOffline,
-         ash::features::kOnDeviceSpeechRecognition},
-        {});
+        {ash::features::kOnDeviceSpeechRecognition}, {});
     soda_installer_impl_ =
         std::make_unique<speech::SodaInstallerImplChromeOS>();
     soda_installer()->UninstallSodaForTesting();
