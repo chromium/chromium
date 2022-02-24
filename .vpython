@@ -70,7 +70,7 @@ wheel: <
 # //third_party/catapult/telemetry/telemetry/internal/util/external_modules.py
 wheel: <
   name: "infra/python/wheels/psutil/${vpython_platform}"
-  version: "version:5.8.0.chromium.2"
+  version: "version:5.8.0.chromium.3"
 >
 
 # Used by:
@@ -408,7 +408,7 @@ wheel: <
 #   //content/test/gpu
 wheel: <
   name: "infra/python/wheels/pathos/${vpython_platform}"
-  version: "version:0.2.7.chromium.4"
+  version: "version:0.2.7.chromium.5"
   not_match_tag <
     abi: "cp27mu"
     platform: "manylinux1_i686"
