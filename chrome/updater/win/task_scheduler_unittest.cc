@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/task_scheduler.h"
 
+#include <lmsname.h>
 #include <mstask.h>
 #include <security.h>
 #include <shlobj.h>
@@ -70,6 +71,7 @@ class TaskSchedulerTests : public ::testing::Test {
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName2));
     ASSERT_FALSE(IsProcessRunning(kTestProcessExecutableName));
+    EXPECT_TRUE(IsServiceRunning(SERVICE_SCHEDULE));
   }
 
   void TearDown() override {

@@ -677,4 +677,33 @@ std::wstring BuildMsiCommandLine(const std::wstring& arguments,
        msi_installer.value(), L"\" /log \"", msi_installer.value(), L".log\""});
 }
 
+bool IsServiceRunning(const std::wstring& service_name) {
+  ScopedScHandle scm(::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT));
+  if (!scm.IsValid()) {
+    LOG(ERROR) << "::OpenSCManager failed. service_name: " << service_name
+               << ", error: " << std::hex << HRESULTFromLastError();
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_STATUS));
+  if (!service.IsValid()) {
+    LOG(ERROR) << "::OpenService failed. service_name: " << service_name
+               << ", error: " << std::hex << HRESULTFromLastError();
+    return false;
+  }
+
+  SERVICE_STATUS status = {0};
+  if (!::QueryServiceStatus(service.Get(), &status)) {
+    LOG(ERROR) << "::QueryServiceStatus failed. service_name: " << service_name
+               << ", error: " << std::hex << HRESULTFromLastError();
+    return false;
+  }
+
+  VLOG(1) << "IsServiceRunning. service_name: " << service_name
+          << ", status: " << std::hex << status.dwCurrentState;
+  return status.dwCurrentState == SERVICE_RUNNING ||
+         status.dwCurrentState == SERVICE_START_PENDING;
+}
+
 }  // namespace updater

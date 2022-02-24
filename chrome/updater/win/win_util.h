@@ -37,6 +37,27 @@ struct std::hash<IID> {
 
 namespace updater {
 
+class ScHandleTraits {
+ public:
+  using Handle = SC_HANDLE;
+
+  ScHandleTraits() = delete;
+  ScHandleTraits(const ScHandleTraits&) = delete;
+  ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
+  static bool CloseHandle(SC_HANDLE handle) {
+    return ::CloseServiceHandle(handle) != FALSE;
+  }
+
+  static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
+
+  static SC_HANDLE NullHandle() { return nullptr; }
+};
+
+using ScopedScHandle =
+    base::win::GenericScopedHandle<ScHandleTraits,
+                                   base::win::DummyVerifierTraits>;
+
 class ProcessFilterName : public base::ProcessFilter {
  public:
   explicit ProcessFilterName(const std::wstring& process_name);
@@ -198,6 +219,9 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // MSI installer.
 std::wstring BuildMsiCommandLine(const std::wstring& arguments,
                                  const base::FilePath& msi_installer);
+
+// Returns `true` if the service specified is currently running or starting.
+bool IsServiceRunning(const std::wstring& service_name);
 
 }  // namespace updater
 
