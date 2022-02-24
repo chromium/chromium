@@ -20,10 +20,12 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "third_party/re2/src/re2/re2.h"
 
 using AllowStatus = borealis::BorealisFeatures::AllowStatus;
@@ -178,6 +180,11 @@ AllowStatus BorealisFeatures::MightBeAllowed() {
       profile_->GetProfilePolicyConnector()->IsManaged()) {
     return AllowStatus::kUserPrefBlocked;
   }
+
+  version_info::Channel c = chrome::GetChannel();
+  if (c == version_info::Channel::STABLE || c == version_info::Channel::BETA)
+    return AllowStatus::kBlockedOnBetaStable;
+
   return AllowStatus::kAllowed;
 }
 
@@ -209,6 +216,9 @@ std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
                    "disabled)";
     case AllowStatus::kUserPrefBlocked:
       return os << "Your admin has blocked borealis (for your account)";
+    case AllowStatus::kBlockedOnBetaStable:
+      return os << "Your ChromeOS channel must be set to Dev or Canary "
+                   "to run Borealis";
     case AllowStatus::kUnsupportedModel:
       return os << "Borealis is not supported on this model hardware";
     case AllowStatus::kHardwareChecksFailed:

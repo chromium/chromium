@@ -28,6 +28,7 @@ class BorealisFeatures {
     kBlockedOnChildAccount,
     kVmPolicyBlocked,
     kUserPrefBlocked,
+    kBlockedOnBetaStable,
     kUnsupportedModel,
     kHardwareChecksFailed,
   };
