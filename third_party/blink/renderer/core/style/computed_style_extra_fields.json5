@@ -149,22 +149,6 @@
       custom_copy: true,
       custom_compare: true,
     },
-    {
-      name: "AffectedByPseudoInSubjectHas",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_copy: true,
-      custom_compare: true,
-    },
-    {
-      name: "DynamicRestyleFlagsForSubjectHas",
-      field_template: "primitive",
-      field_group: "*",
-      field_size: 4,
-      default_value: "0",
-      type_name: "unsigned",
-      inherited: true,
-    },
     // A non-inherited property references a variable or @apply is used
     {
       name: "HasVariableReferenceFromNonInheritedProperty",

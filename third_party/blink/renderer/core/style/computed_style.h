@@ -393,47 +393,6 @@ class ComputedStyle : public ComputedStyleBase,
                                IsAtShadowBoundary = kNotAtShadowBoundary);
   void CopyNonInheritedFromCached(const ComputedStyle&);
 
-  bool AncestorsAffectedByHoverInSubjectHas() const {
-    return DynamicRestyleFlagsForSubjectHas() &
-           kAncestorsAffectedByHoverInSubjectHas;
-  }
-
-  void SetAncestorsAffectedByHoverInSubjectHas() {
-    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
-                                        kAncestorsAffectedByHoverInSubjectHas);
-  }
-
-  bool AncestorsAffectedByActiveInSubjectHas() const {
-    return DynamicRestyleFlagsForSubjectHas() &
-           kAncestorsAffectedByActiveInSubjectHas;
-  }
-
-  void SetAncestorsAffectedByActiveInSubjectHas() {
-    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
-                                        kAncestorsAffectedByActiveInSubjectHas);
-  }
-
-  bool AncestorsAffectedByFocusInSubjectHas() const {
-    return DynamicRestyleFlagsForSubjectHas() &
-           kAncestorsAffectedByFocusInSubjectHas;
-  }
-
-  void SetAncestorsAffectedByFocusInSubjectHas() {
-    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
-                                        kAncestorsAffectedByFocusInSubjectHas);
-  }
-
-  bool AncestorsAffectedByFocusVisibleInSubjectHas() const {
-    return DynamicRestyleFlagsForSubjectHas() &
-           kAncestorsAffectedByFocusVisibleInSubjectHas;
-  }
-
-  void SetAncestorsAffectedByFocusVisibleInSubjectHas() {
-    SetDynamicRestyleFlagsForSubjectHas(
-        DynamicRestyleFlagsForSubjectHas() |
-        kAncestorsAffectedByFocusVisibleInSubjectHas);
-  }
-
   PseudoId StyleType() const {
     return static_cast<PseudoId>(StyleTypeInternal());
   }

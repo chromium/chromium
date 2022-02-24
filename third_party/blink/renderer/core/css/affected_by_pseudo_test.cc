@@ -32,8 +32,8 @@ class AffectedByPseudoTest : public PageTestBase {
     kAffectedByNonSubjectHas,
     kAncestorsOrAncestorSiblingsAffectedByHas,
     kSiblingsAffectedByHas,
-    kAffectedByPseudoInSubjectHas,
-    kAncestorsAffectedByHoverInSubjectHas
+    kAffectedByPseudoInHas,
+    kAncestorsOrSiblingsAffectedByHoverInHas
   };
   void CheckAffectedByFlagsForHas(
       const char* element_id,
@@ -89,17 +89,14 @@ void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
         actual = GetElementById(element_id)->SiblingsAffectedByHas();
         flag_name = "SiblingsAffectedByHas";
         break;
-      case kAffectedByPseudoInSubjectHas:
-        actual = GetElementById(element_id)
-                     ->GetComputedStyle()
-                     ->AffectedByPseudoInSubjectHas();
-        flag_name = "AffectedByPseudoInSubjectHas";
+      case kAffectedByPseudoInHas:
+        actual = GetElementById(element_id)->AffectedByPseudoInHas();
+        flag_name = "AffectedByPseudoInHas";
         break;
-      case kAncestorsAffectedByHoverInSubjectHas:
+      case kAncestorsOrSiblingsAffectedByHoverInHas:
         actual = GetElementById(element_id)
-                     ->GetComputedStyle()
-                     ->AncestorsAffectedByHoverInSubjectHas();
-        flag_name = "AncestorsAffectedByHoverInSubjectHas";
+                     ->AncestorsOrSiblingsAffectedByHoverInHas();
+        flag_name = "AncestorsOrSiblingsAffectedByHoverInHas";
         break;
     }
     DCHECK(flag_name);
@@ -484,7 +481,7 @@ TEST_F(AffectedByPseudoTest,
 }
 
 TEST_F(AffectedByPseudoTest,
-       AffectedByDescendantPseudoStateAndAncestorsAffectedByHover) {
+       AffectedByPseudoInHasAndAncestorsOrSiblingsAffectedByHoverInHas1) {
   SetHtmlInnerHTML(R"HTML(
     <style>
       .a:has(.b:hover) { background-color: lime; }
@@ -512,42 +509,42 @@ TEST_F(AffectedByPseudoTest,
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  CheckAffectedByFlagsForHas("div2",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div3",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div4",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div5",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div6",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div7",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div8",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div9",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div10",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div11",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div12",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div13",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div5", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div6", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div7", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div8", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div9", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div10", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div11", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div12", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div13", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->SetHovered(true);
@@ -570,17 +567,17 @@ TEST_F(AffectedByPseudoTest,
   GetElementById("div4")->setAttribute(html_names::kClassAttr, "b");
   UpdateAllLifecyclePhasesForTest();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
-  ASSERT_EQ(3U, element_count);
+  ASSERT_EQ(1U, element_count);
 
-  CheckAffectedByFlagsForHas("div2",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div3",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div4",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->setAttribute(html_names::kClassAttr, "b");
@@ -588,15 +585,15 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  CheckAffectedByFlagsForHas("div2",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div3",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div4",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->SetHovered(true);
@@ -620,37 +617,253 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  CheckAffectedByFlagsForHas("div2",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div3",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
-  CheckAffectedByFlagsForHas("div4",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div4")->setAttribute(html_names::kClassAttr, "");
   UpdateAllLifecyclePhasesForTest();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
-  ASSERT_EQ(3U, element_count);
+  ASSERT_EQ(1U, element_count);
 
-  CheckAffectedByFlagsForHas("div2",
-                             {{kAffectedByPseudoInSubjectHas, true},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div3",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
-  CheckAffectedByFlagsForHas("div4",
-                             {{kAffectedByPseudoInSubjectHas, false},
-                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div6")->SetHovered(true);
   UpdateAllLifecyclePhasesForTest();
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div6")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div7")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
+  GetElementById("div7")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div9")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div9")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div10")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div10")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div12")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div12")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div13")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div13")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(AffectedByPseudoTest,
+       AffectedByPseudoInHasAndAncestorsOrSiblingsAffectedByHoverInHas2) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .a:has(.b:hover) .f { background-color: lime; }
+      .c:has(:hover) .g { background-color: green; }
+      .d:has(.e) .h { background-color: blue }
+    </style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3></div>
+        <div id=div4></div>
+        <div><div class='f'></div></div>
+      </div>
+      <div id=div5 class='a'>
+        <div id=div6></div>
+        <div id=div7 class='b'></div>
+        <div><div class='f'></div></div>
+      </div>
+      <div id=div8 class='c'>
+        <div id=div9></div>
+        <div id=div10></div>
+        <div><div class='g'></div></div>
+      </div>
+      <div id=div11 class='d'>
+        <div id=div12></div>
+        <div id=div13></div>
+        <div><div class='h'></div></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div5", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div6", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div7", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div8", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div9", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div10", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div11", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div12", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div13", {{kAffectedByPseudoInHas, false},
+                {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div3")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+  GetElementById("div4")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div3")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+  GetElementById("div4")->SetHovered(false);
+  UpdateAllLifecyclePhasesForTest();
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->setAttribute(html_names::kClassAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedByPseudoInHas, true},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+  CheckAffectedByFlagsForHas(
+      "div4", {{kAffectedByPseudoInHas, false},
+               {kAncestorsOrSiblingsAffectedByHoverInHas, true}});
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div6")->SetHovered(true);
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
   GetElementById("div6")->SetHovered(false);
   UpdateAllLifecyclePhasesForTest();
 

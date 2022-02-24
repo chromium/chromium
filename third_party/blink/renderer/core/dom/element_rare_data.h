@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -156,7 +157,66 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   }
 
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
+
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
+  bool AffectedByNonSubjectHas() const {
+    return has_invalidation_flags_.affected_by_non_subject_has;
+  }
+  void SetAffectedByNonSubjectHas() {
+    has_invalidation_flags_.affected_by_non_subject_has = true;
+  }
+  bool AncestorsOrAncestorSiblingsAffectedByHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_ancestor_siblings_affected_by_has;
+  }
+  void SetAncestorsOrAncestorSiblingsAffectedByHas() {
+    has_invalidation_flags_.ancestors_or_ancestor_siblings_affected_by_has =
+        true;
+  }
+  bool SiblingsAffectedByHas() const {
+    return has_invalidation_flags_.siblings_affected_by_has;
+  }
+  void SetSiblingsAffectedByHas() {
+    has_invalidation_flags_.siblings_affected_by_has = true;
+  }
+  bool AffectedByPseudoInHas() const {
+    return has_invalidation_flags_.affected_by_pseudos_in_has;
+  }
+  void SetAffectedByPseudoInHas() {
+    has_invalidation_flags_.affected_by_pseudos_in_has = true;
+  }
+  bool AncestorsOrSiblingsAffectedByHoverInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_hover_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByHoverInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByActiveInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_active_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_focus_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
+    has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
+  }
 
   void Trace(blink::Visitor*) const;
 
@@ -176,6 +236,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   AtomicString is_value_;
   Member<ResizeObserverSize> last_intrinsic_size_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
+  HasInvalidationFlags has_invalidation_flags_;
 };
 
 class ElementRareData final : public NodeRareData {
@@ -344,16 +405,66 @@ class ElementRareData final : public NodeRareData {
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
     scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
   }
-  bool AffectedByNonSubjectHas() const { return affected_by_non_subject_has_; }
-  void SetAffectedByNonSubjectHas() { affected_by_non_subject_has_ = true; }
+  bool AffectedByNonSubjectHas() const {
+    return super_rare_data_ ? super_rare_data_->AffectedByNonSubjectHas()
+                            : false;
+  }
+  void SetAffectedByNonSubjectHas() {
+    EnsureSuperRareData().SetAffectedByNonSubjectHas();
+  }
   bool AncestorsOrAncestorSiblingsAffectedByHas() const {
-    return ancestors_or_ancestor_siblings_affected_by_has_;
+    return super_rare_data_
+               ? super_rare_data_->AncestorsOrAncestorSiblingsAffectedByHas()
+               : false;
   }
   void SetAncestorsOrAncestorSiblingsAffectedByHas() {
-    ancestors_or_ancestor_siblings_affected_by_has_ = true;
+    EnsureSuperRareData().SetAncestorsOrAncestorSiblingsAffectedByHas();
   }
-  bool SiblingsAffectedByHas() const { return siblings_affected_by_has_; }
-  void SetSiblingsAffectedByHas() { siblings_affected_by_has_ = true; }
+  bool SiblingsAffectedByHas() const {
+    return super_rare_data_ ? super_rare_data_->SiblingsAffectedByHas() : false;
+  }
+  bool AffectedByPseudoInHas() const {
+    return super_rare_data_ ? super_rare_data_->AffectedByPseudoInHas() : false;
+  }
+  void SetAffectedByPseudoInHas() {
+    EnsureSuperRareData().SetAffectedByPseudoInHas();
+  }
+  void SetSiblingsAffectedByHas() {
+    EnsureSuperRareData().SetSiblingsAffectedByHas();
+  }
+  bool AncestorsOrSiblingsAffectedByHoverInHas() const {
+    return super_rare_data_
+               ? super_rare_data_->AncestorsOrSiblingsAffectedByHoverInHas()
+               : false;
+  }
+  void SetAncestorsOrSiblingsAffectedByHoverInHas() {
+    EnsureSuperRareData().SetAncestorsOrSiblingsAffectedByHoverInHas();
+  }
+  bool AncestorsOrSiblingsAffectedByActiveInHas() const {
+    return super_rare_data_
+               ? super_rare_data_->AncestorsOrSiblingsAffectedByActiveInHas()
+               : false;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveInHas() {
+    EnsureSuperRareData().SetAncestorsOrSiblingsAffectedByActiveInHas();
+  }
+  bool AncestorsOrSiblingsAffectedByFocusInHas() const {
+    return super_rare_data_
+               ? super_rare_data_->AncestorsOrSiblingsAffectedByFocusInHas()
+               : false;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusInHas() {
+    EnsureSuperRareData().SetAncestorsOrSiblingsAffectedByFocusInHas();
+  }
+  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
+    return super_rare_data_
+               ? super_rare_data_
+                     ->AncestorsOrSiblingsAffectedByFocusVisibleInHas()
+               : false;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
+    EnsureSuperRareData().SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
+  }
 
   AccessibleNode* GetAccessibleNode() const {
     if (super_rare_data_)
@@ -472,82 +583,6 @@ class ElementRareData final : public NodeRareData {
   unsigned style_should_force_legacy_layout_ : 1;
   unsigned has_undo_stack_ : 1;
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
-
-  // Flags for :has() invalidation.
-  //
-  // - affected_by_non_subject_has_ :
-  //     Indicates that this element may match a non-subject :has() selector,
-  //     which means we need to schedule descendant and sibling invalidation
-  //     sets on this element when the :has() state changes.
-  //
-  // - ancestors_or_ancestor_siblings_affected_by_has_
-  //     Indicates that this element possibly matches any of the :has()
-  //     subselectors, and we need to walk ancestors or siblings of ancestors to
-  //     find the elements affected by subject or non-subject :has() state
-  //     change. Please refer the comments in SelectorChecker::CheckPseudoHas()
-  //     for more details.
-  //
-  // - siblings_affected_by_has_
-  //     Indicates that this element possibly matches any of the :has()
-  //     subselectors, and we need to walk siblings to find the elements
-  //     affected by subject or non-subject :has() state change.
-  //
-  // Please refer the comments in WalkUpAndSetDynamicRestyleFlagForHas() in
-  // selector_checker.cc and HasArgumentSubtreeIterator::operator++() for more
-  // details.
-  //
-  //
-  // Example 1) Subject :has() (has only descendant relationship)
-  //  <style> .a:has(.b) {...} </style>
-  //  <div>
-  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
-  //      <div>           <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //        <div></div>   <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //        <div></div>   <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //      </div>
-  //    </div>
-  //  </div>
-  //
-  //
-  // Example 2) Non-subject :has()
-  //  <style> .a:has(.b) .c {...} </style>
-  //  <div>
-  //    <div class=a>          <!-- AffectedByNonSubjectHas -->
-  //      <div>                <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //        <div></div>        <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //        <div class=c></div><!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //      </div>
-  //    </div>
-  //  </div>
-  //
-  //
-  // Example 3) Subject :has() (has only sibling relationship)
-  //  <style> .a:has(~ .b) {...} </style>
-  //  <div>
-  //    <div></div>
-  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
-  //      <div></div>
-  //    </div>
-  //    <div></div>    <!-- SiblingsAffectedByHas -->
-  //    <div></div>    <!-- SiblingsAffectedByHas -->
-  //  </div>
-  //
-  //
-  // Example 4) Subject :has() (has both sibling and descendant relationship)
-  //  <style> .a:has(~ .b .c) {...} </style>
-  //  <div>
-  //    <div></div>
-  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
-  //    </div>
-  //    <div>          <!-- SiblingsAffectedByHas -->
-  //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //      <div></div>  <!-- AncestorsOrAncestorSiblingsAffectedByHas -->
-  //    </div>
-  //  </div>
-  //
-  unsigned affected_by_non_subject_has_ : 1;
-  unsigned ancestors_or_ancestor_siblings_affected_by_has_ : 1;
-  unsigned siblings_affected_by_has_ : 1;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

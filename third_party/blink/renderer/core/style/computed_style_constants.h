@@ -376,19 +376,6 @@ enum EPaintOrder {
   kPaintOrderMarkersStrokeFill
 };
 
-// To prevent increasing NodeRareData, the dynamic restyle flags for subject
-// ':has()' are defined as ComputedStyle extra field flags.
-// Unlike using the DynamicRestyleFlags, the ComputedStyle extra field flag
-// only works for the subject elements. So the filtering with these flags is
-// less targeted then the filtering with DynamicRestyleFlags which works
-// directly for the descendant elements being changed.
-enum EDynamicRestyleFlagsForSubjectHas {
-  kAncestorsAffectedByHoverInSubjectHas = 1 << 0,
-  kAncestorsAffectedByActiveInSubjectHas = 1 << 1,
-  kAncestorsAffectedByFocusInSubjectHas = 1 << 2,
-  kAncestorsAffectedByFocusVisibleInSubjectHas = 1 << 3,
-};
-
 constexpr size_t kViewportUnitFlagBits = 2;
 enum class ViewportUnitFlag {
   // v*, sv*, lv*

@@ -1046,6 +1046,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetAncestorsOrAncestorSiblingsAffectedByHas();
   bool SiblingsAffectedByHas() const;
   void SetSiblingsAffectedByHas();
+  bool AffectedByPseudoInHas() const;
+  void SetAffectedByPseudoInHas();
+  bool AncestorsOrSiblingsAffectedByHoverInHas() const;
+  void SetAncestorsOrSiblingsAffectedByHoverInHas();
+  bool AncestorsOrSiblingsAffectedByActiveInHas() const;
+  void SetAncestorsOrSiblingsAffectedByActiveInHas();
+  bool AncestorsOrSiblingsAffectedByFocusInHas() const;
+  void SetAncestorsOrSiblingsAffectedByFocusInHas();
+  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const;
+  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
 
   void SaveIntrinsicSize(ResizeObserverSize* size);
   const ResizeObserverSize* LastIntrinsicSize() const;

@@ -372,7 +372,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void PseudoStateChangedForElement(CSSSelector::PseudoType,
                                     Element&,
                                     bool invalidate_descendants_or_siblings,
-                                    bool invalidate_ancestors);
+                                    bool invalidate_ancestors_or_siblings);
   void PartChangedForElement(Element&);
   void ExportpartsChangedForElement(Element&);
 

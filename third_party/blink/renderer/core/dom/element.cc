@@ -3706,37 +3706,37 @@ void Element::setEditContext(EditContext* edit_context) {
 
 struct Element::AffectedByPseudoStateChange {
   bool children_or_siblings{true};
-  bool ancestors{false};
+  bool ancestors_or_siblings{false};
 
   AffectedByPseudoStateChange(CSSSelector::PseudoType pseudo_type,
                               Element& element) {
     switch (pseudo_type) {
       case CSSSelector::kPseudoFocus:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByFocus();
-        if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusInSubjectHas();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByFocusInHas();
         break;
       case CSSSelector::kPseudoFocusVisible:
         children_or_siblings =
             element.ChildrenOrSiblingsAffectedByFocusVisible();
-        if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusVisibleInSubjectHas();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByFocusVisibleInHas();
         break;
       case CSSSelector::kPseudoFocusWithin:
         children_or_siblings =
             element.ChildrenOrSiblingsAffectedByFocusWithin();
-        if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusInSubjectHas();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByFocusInHas();
         break;
       case CSSSelector::kPseudoHover:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByHover();
-        if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByHoverInSubjectHas();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByHoverInHas();
         break;
       case CSSSelector::kPseudoActive:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByActive();
-        if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByActiveInSubjectHas();
+        ancestors_or_siblings =
+            element.AncestorsOrSiblingsAffectedByActiveInHas();
         break;
 
       case CSSSelector::kPseudoChecked:
@@ -3753,14 +3753,14 @@ struct Element::AffectedByPseudoStateChange {
       case CSSSelector::kPseudoReadWrite:
       case CSSSelector::kPseudoRequired:
       case CSSSelector::kPseudoValid:
-        ancestors = true;
+        ancestors_or_siblings = true;
         break;
       default:
         break;
     }
   }
 
-  AffectedByPseudoStateChange() : ancestors(true) {}  // For testing
+  AffectedByPseudoStateChange() : ancestors_or_siblings(true) {}  // For testing
 };
 
 void Element::PseudoStateChanged(CSSSelector::PseudoType pseudo) {
@@ -3782,7 +3782,7 @@ void Element::PseudoStateChanged(
     return;
   GetDocument().GetStyleEngine().PseudoStateChangedForElement(
       pseudo, *this, affected_by_pseudo.children_or_siblings,
-      affected_by_pseudo.ancestors);
+      affected_by_pseudo.ancestors_or_siblings);
 }
 
 void Element::SetAnimationStyleChange(bool animation_style_change) {
@@ -4864,6 +4864,54 @@ bool Element::SiblingsAffectedByHas() const {
 
 void Element::SetSiblingsAffectedByHas() {
   EnsureElementRareData().SetSiblingsAffectedByHas();
+}
+
+bool Element::AffectedByPseudoInHas() const {
+  return HasRareData() ? GetElementRareData()->AffectedByPseudoInHas() : false;
+}
+
+void Element::SetAffectedByPseudoInHas() {
+  EnsureElementRareData().SetAffectedByPseudoInHas();
+}
+
+bool Element::AncestorsOrSiblingsAffectedByHoverInHas() const {
+  return HasRareData()
+             ? GetElementRareData()->AncestorsOrSiblingsAffectedByHoverInHas()
+             : false;
+}
+
+void Element::SetAncestorsOrSiblingsAffectedByHoverInHas() {
+  EnsureElementRareData().SetAncestorsOrSiblingsAffectedByHoverInHas();
+}
+
+bool Element::AncestorsOrSiblingsAffectedByActiveInHas() const {
+  return HasRareData()
+             ? GetElementRareData()->AncestorsOrSiblingsAffectedByActiveInHas()
+             : false;
+}
+
+void Element::SetAncestorsOrSiblingsAffectedByActiveInHas() {
+  EnsureElementRareData().SetAncestorsOrSiblingsAffectedByActiveInHas();
+}
+
+bool Element::AncestorsOrSiblingsAffectedByFocusInHas() const {
+  return HasRareData()
+             ? GetElementRareData()->AncestorsOrSiblingsAffectedByFocusInHas()
+             : false;
+}
+
+void Element::SetAncestorsOrSiblingsAffectedByFocusInHas() {
+  EnsureElementRareData().SetAncestorsOrSiblingsAffectedByFocusInHas();
+}
+
+bool Element::AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
+  return HasRareData() ? GetElementRareData()
+                             ->AncestorsOrSiblingsAffectedByFocusVisibleInHas()
+                       : false;
+}
+
+void Element::SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
+  EnsureElementRareData().SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
 }
 
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,

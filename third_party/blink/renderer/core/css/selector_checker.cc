@@ -1130,8 +1130,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoFocus:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInSubjectHas();
+          element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else {
           if (!context.in_rightmost_compound)
             element.SetChildrenOrSiblingsAffectedByFocus();
@@ -1141,8 +1140,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoFocusVisible:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusVisibleInSubjectHas();
+          element.SetAncestorsOrSiblingsAffectedByFocusVisibleInHas();
         } else {
           if (!context.in_rightmost_compound)
             element.SetChildrenOrSiblingsAffectedByFocusVisible();
@@ -1152,8 +1150,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoFocusWithin:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInSubjectHas();
+          element.SetAncestorsOrSiblingsAffectedByFocusInHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByFocusWithin();
@@ -1169,8 +1166,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHover:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByHoverInSubjectHas();
+          element.SetAncestorsOrSiblingsAffectedByHoverInHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByHover();
@@ -1188,8 +1184,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByActiveInSubjectHas();
+          element.SetAncestorsOrSiblingsAffectedByActiveInHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByActive();
@@ -1397,18 +1392,19 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoHas:
       if (mode_ == kResolvingStyle) {
-        if (context.in_rightmost_compound) {
-          // Set 'AffectedBySubjectHas' flag to indicate that the element is
-          // affected by a subject ':has()' state. It means that, when we have
-          // a mutation on a descendant of the element, we may need to
-          // invalidate the style of the element because the mutation can affect
-          // the state of this ':has()' selector.
+        // Set 'AffectedBySubjectHas' or 'AffectedByNonSubjectHas' flag to
+        // indicate that the element is affected by a subject or non-subject
+        // ':has()' state change. It means that, when we have a mutation on
+        // an element in the downward subtree of the element, we may need to
+        // invalidate the style of the element because the mutation can affect
+        // the state of this ':has()' selector.
+        if (context.in_rightmost_compound)
           element_style_->SetAffectedBySubjectHas();
-          if (selector.ContainsPseudoInsideHasPseudoClass())
-            element_style_->SetAffectedByPseudoInSubjectHas();
-        } else {
+        else
           element.SetAffectedByNonSubjectHas();
-        }
+
+        if (selector.ContainsPseudoInsideHasPseudoClass())
+          element.SetAffectedByPseudoInHas();
       }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeLeftmost:

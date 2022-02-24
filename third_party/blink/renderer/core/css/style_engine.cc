@@ -976,25 +976,25 @@ void StyleEngine::InvalidateAncestorsOrSiblingsAffectedByHasInternal(
 
     const ComputedStyle* style = element->GetComputedStyle();
 
-    if (style && style->AffectedBySubjectHas() &&
-        (!for_pseudo_change || style->AffectedByPseudoInSubjectHas())) {
-      // TODO(blee@igalia.com) Need filtering for irrelevant elements.
-      // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
-      // value 'd' can invalidate ancestor with class value 'a' because we don't
-      // have any filtering for this case.
-      element->SetNeedsStyleRecalc(
-          StyleChangeType::kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(
-              blink::style_change_reason::kStyleInvalidator));
-    }
+    if (!for_pseudo_change || element->AffectedByPseudoInHas()) {
+      if (style && style->AffectedBySubjectHas()) {
+        // TODO(blee@igalia.com) Need filtering for irrelevant elements.
+        // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
+        // value 'd' can invalidate ancestor with class value 'a' because we
+        // don't have any filtering for this case.
+        element->SetNeedsStyleRecalc(
+            StyleChangeType::kLocalStyleChange,
+            StyleChangeReasonForTracing::Create(
+                blink::style_change_reason::kStyleInvalidator));
+      }
 
-    if (element->AffectedByNonSubjectHas()) {
-      // TODO(blee@igalia.com) Need filtering for pseudos in non-subject :has().
-      InvalidationLists invalidation_lists;
-      features.CollectInvalidationSetsForPseudoClass(
-          invalidation_lists, *element, CSSSelector::kPseudoHas);
-      pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
-                                                             *element);
+      if (element->AffectedByNonSubjectHas()) {
+        InvalidationLists invalidation_lists;
+        features.CollectInvalidationSetsForPseudoClass(
+            invalidation_lists, *element, CSSSelector::kPseudoHas);
+        pending_invalidations_.ScheduleInvalidationSetsForNode(
+            invalidation_lists, *element);
+      }
     }
 
     if (traverse_siblings) {
@@ -1238,8 +1238,8 @@ void StyleEngine::PseudoStateChangedForElement(
     CSSSelector::PseudoType pseudo_type,
     Element& element,
     bool invalidate_descendants_or_siblings,
-    bool invalidate_ancestors) {
-  if (!invalidate_descendants_or_siblings && !invalidate_ancestors)
+    bool invalidate_ancestors_or_siblings) {
+  if (!invalidate_descendants_or_siblings && !invalidate_ancestors_or_siblings)
     return;
 
   if (ShouldSkipInvalidationFor(element))
@@ -1247,7 +1247,8 @@ void StyleEngine::PseudoStateChangedForElement(
 
   const RuleFeatureSet& features = GetRuleFeatureSet();
 
-  if (invalidate_ancestors && RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+  if (invalidate_ancestors_or_siblings &&
+      RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
       PossiblyAffectingHasState(element)) {
     if (features.NeedsHasInvalidationForPseudoClass(pseudo_type))
       InvalidateAncestorsOrSiblingsAffectedByHasForPseudoChange(element);
