@@ -101,7 +101,8 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
     device::BluetoothDevice* device,
     bool is_now_connected) {
   // Check to see if the device supports Message Streams.
-  if (!device || !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
+  if (!device || !device->IsPaired() ||
+      !base::Contains(device->GetUUIDs(), kMessageStreamUuid)) {
     return;
   }
 
