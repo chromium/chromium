@@ -517,8 +517,9 @@ void FrameTree::CreateProxiesForSiteInstance(
     RenderViewHostImpl* render_view_host =
         GetRenderViewHost(site_instance).get();
     if (render_view_host) {
-      root()->render_manager()->EnsureRenderViewInitialized(render_view_host,
-                                                            site_instance);
+      root()->render_manager()->EnsureRenderViewInitialized(
+          render_view_host,
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
     } else {
       // Due to the check above, we are creating either an opener proxy (when
       // source is null) or a main frame proxy due to a subframe navigation

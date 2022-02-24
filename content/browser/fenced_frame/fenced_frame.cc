@@ -171,7 +171,9 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   RenderViewHost* rvh =
       inner_render_manager->current_frame_host()->GetRenderViewHost();
   if (!inner_render_manager->InitRenderView(
-          inner_render_manager->current_frame_host()->GetSiteInstance(),
+          inner_render_manager->current_frame_host()
+              ->GetSiteInstance()
+              ->group(),
           static_cast<RenderViewHostImpl*>(rvh), nullptr)) {
     return;
   }
