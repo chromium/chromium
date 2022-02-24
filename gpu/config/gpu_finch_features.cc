@@ -341,8 +341,10 @@ bool IsDrDcEnabled() {
 
 bool IsUsingThreadSafeMediaForWebView() {
 #if BUILDFLAG(IS_ANDROID)
-  // SurfaceTexture can't be thread-safe.
-  if (!IsAImageReaderEnabled())
+  // SurfaceTexture can't be thread-safe. Also thread safe media code currently
+  // requires AImageReader max size to be at least 2 since one image could be
+  // accessed by each gpu thread in webview.
+  if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
     return false;
 
   // Not yet compatible with Vulkan.
