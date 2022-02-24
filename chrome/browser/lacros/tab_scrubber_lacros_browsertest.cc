@@ -43,7 +43,8 @@ TabStrip* GetTabStrip(Browser* browser) {
 // It verifies that triggering a tab scrubbing request when a lacros window
 // is upfront and active, does not activates the logic in Ash, and forwards
 // the call to Lacros.
-IN_PROC_BROWSER_TEST_F(TabScrubberBrowserTest, Smoke) {
+// TODO(crbug.com/1298835): Flaking very badly
+IN_PROC_BROWSER_TEST_F(TabScrubberBrowserTest, DISABLED_Smoke) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
   // This test requires the tab scrubbing API.
