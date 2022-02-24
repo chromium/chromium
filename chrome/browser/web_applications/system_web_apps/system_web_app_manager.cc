@@ -462,7 +462,7 @@ absl::optional<SystemAppType> SystemWebAppManager::GetCapturingSystemAppForURL(
     // move this into the camera one.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (type == SystemAppType::CAMERA) {
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearQuery();
     replacements.ClearRef();
     if (url.ReplaceComponents(replacements).spec() !=
