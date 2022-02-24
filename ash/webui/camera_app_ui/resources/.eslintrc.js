@@ -499,6 +499,14 @@ module.exports = {
 
     // go/tsstyle#interfaces-vs-type-aliases
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+
+    // go/tsstyle#import-export-type
+    '@typescript-eslint/consistent-type-imports': [
+      'error',
+      {
+        prefer: 'no-type-imports',
+      },
+    ],
   }),
   'overrides': [{
     files: ['**/*.ts'],
