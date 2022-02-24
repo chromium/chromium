@@ -280,6 +280,13 @@
     },
     "css-backgrounds": {
      "animations": {
+      "background-color-animation-backdrop-infinite-duration-crash.html": [
+       "40aa54debccf33fe0391d686386387d695bc80ef",
+       [
+        null,
+        {}
+       ]
+      ],
       "background-color-animation-field-crash.html": [
        "8e702fbac630b69d2b490005749575bac5718e08",
        [
@@ -1623,6 +1630,13 @@
      ],
      "first-line-first-letter-insert-crash.html": [
       "bc22aae409b80ee62f3079cb31e89b2130da8270",
+      [
+       null,
+       {}
+      ]
+     ],
+     "placeholder-as-multicol-crash.html": [
+      "8407f95d7f3489de2f476a8993c10326fe5801ac",
       [
        null,
        {}
@@ -312591,7 +312605,7 @@
      ]
     },
     "idlharness-shadowrealm.js": [
-     "89990400d24f6795aadb77b91d77be6e986f48f4",
+     "f9c1e37c1c427ad5258dc699b1ec2a173f0b94af",
      []
     ],
     "idlharness.js": [
@@ -362018,7 +362032,7 @@
        ]
       ],
       "box-shadow-interpolation.html": [
-       "d6c438737d1192c542aef194b8bf7bfdf9d07102",
+       "4ed55abc9e6c914493d3caca42dd126e4dd7e659",
        [
         null,
         {}
