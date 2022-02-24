@@ -305,6 +305,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Rect? capture_update_rect;
 
   gfx.mojom.Rect? region_capture_rect;
+  uint32 crop_version;
 
   bool has_copy_mode;
   CopyMode copy_mode;

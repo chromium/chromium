@@ -837,6 +837,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
         scale_factor ? ScaleToEnclosingRect(capture_region, 1.0f / scale_factor)
                      : capture_region;
   }
+  // Note that this is done unconditionally, as a new crop version may indicate
+  // that the stream has been successfully uncropped.
+  metadata.crop_version = crop_version_;
 
   CaptureRequestProperties request_properties(
       capture_frame_number, oracle_frame_number, content_version_, content_rect,

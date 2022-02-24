@@ -72,6 +72,10 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.texture_origin_is_top_left;
   }
 
+  static uint32_t crop_version(const media::VideoFrameMetadata& input) {
+    return input.crop_version;
+  }
+
   GENERATE_OPT_SERIALIZATION(int, capture_counter, 0)
 
   GENERATE_OPT_SERIALIZATION(
