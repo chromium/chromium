@@ -150,7 +150,7 @@ function waitForAnimationEndTimeBased(getValue) {
   })
 }
 
-function waitForEvent(eventTarget, eventName, timeoutMs = 1000) {
+function waitForEvent(eventTarget, eventName, timeoutMs = 2000) {
   return new Promise((resolve, reject) => {
     const eventListener = (evt) => {
       clearTimeout(timeout);
@@ -165,7 +165,7 @@ function waitForEvent(eventTarget, eventName, timeoutMs = 1000) {
   });
 }
 
-function waitForScrollEvent(eventTarget, timeoutMs = 1000) {
+function waitForScrollEvent(eventTarget, timeoutMs = 2000) {
   return waitForEvent(eventTarget, 'scroll', timeoutMs);
 }
 
