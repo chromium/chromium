@@ -214,9 +214,11 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (HTMLSelectMenuElement* select_menu =
-                   HTMLSelectMenuElement::OwnerSelectMenu(this)) {
-      select_menu->OptionElementValueChanged(*this);
+    } else if (UNLIKELY(is_descendant_of_select_menu_)) {
+      if (HTMLSelectMenuElement* select_menu =
+              HTMLSelectMenuElement::OwnerSelectMenu(this)) {
+        select_menu->OptionElementValueChanged(*this);
+      }
     }
   } else if (name == html_names::kDisabledAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
