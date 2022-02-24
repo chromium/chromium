@@ -20,9 +20,4 @@ bool IsFedCmAutoSigninEnabled() {
       features::kFedCm, features::kFedCmAutoSigninFieldTrialParamName, false);
 }
 
-bool IsFedCmInterceptionEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-      features::kFedCm, features::kFedCmInterceptionFieldTrialParamName, false);
-}
-
 }  // namespace content

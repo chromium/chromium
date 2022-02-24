@@ -322,10 +322,6 @@ const base::Feature kFedCm{"FedCm", base::FEATURE_ENABLED_BY_DEFAULT};
 // sign-in is enabled.
 const char kFedCmAutoSigninFieldTrialParamName[] = "AutoSignin";
 
-// Field trial boolean parameter which indicates whether FedCM HTTP filtering is
-// enabled.
-const char kFedCmInterceptionFieldTrialParamName[] = "Interception";
-
 // Enables usage of First Party Sets to determine cookie availability.
 constexpr base::Feature kFirstPartySets{"FirstPartySets",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

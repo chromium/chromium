@@ -2045,8 +2045,6 @@ source_set("browser") {
     "webauth/webauth_request_security_checker.h",
     "webid/fedcm_metrics.cc",
     "webid/fedcm_metrics.h",
-    "webid/federated_auth_navigation_throttle.cc",
-    "webid/federated_auth_navigation_throttle.h",
     "webid/federated_auth_request_impl.cc",
     "webid/federated_auth_request_impl.h",
     "webid/federated_auth_request_service.cc",

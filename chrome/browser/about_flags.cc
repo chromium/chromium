@@ -2360,14 +2360,9 @@ const FeatureEntry::FeatureVariation kDrawPredictedPointVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kFedCmVariationAutoSignin[] = {
     {features::kFedCmAutoSigninFieldTrialParamName, "true"}};
-const FeatureEntry::FeatureParam kFedCmVariationInterception[] = {
-    {features::kFedCmInterceptionFieldTrialParamName, "true"}};
 const FeatureEntry::FeatureVariation kFedCmFeatureVariations[] = {
     {"- with FedCM auto-signin", kFedCmVariationAutoSignin,
-     base::size(kFedCmVariationAutoSignin), nullptr},
-    {"- with FedCM HTTP filtering (very experimental)",
-     kFedCmVariationInterception, base::size(kFedCmVariationInterception),
-     nullptr}};
+     base::size(kFedCmVariationAutoSignin), nullptr}};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

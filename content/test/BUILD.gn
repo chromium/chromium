@@ -2296,7 +2296,6 @@ test("content_unittests") {
     "../browser/web_package/web_bundle_reader_unittest.cc",
     "../browser/web_package/web_bundle_url_loader_factory_unittest.cc",
     "../browser/web_package/web_bundle_utils_unittest.cc",
-    "../browser/webid/federated_auth_navigation_throttle_unittest.cc",
     "../browser/webid/federated_auth_request_impl_unittest.cc",
     "../browser/webid/idp_network_request_manager_unittest.cc",
     "../browser/webid/test/fake_identity_request_dialog_controller.cc",
