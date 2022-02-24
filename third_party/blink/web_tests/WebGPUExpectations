@@ -583,3 +583,7 @@ crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,ex
 crbug.com/dawn/1288 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:dimension="3d";* [ Failure ]
 crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:mip_levels:dimension="3d";* [ Failure ]
 crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:dimension="3d";* [ Failure ]
+
+# FXC failures on Windows
+crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,barrier:workgroup_barrier_store_load:* [ Failure ]
+crbug.com/tint/1452 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,memory_model,weak:message_passing_workgroup_memory:* [ Failure ]
