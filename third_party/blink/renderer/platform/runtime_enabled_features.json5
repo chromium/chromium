@@ -2273,6 +2273,13 @@
     // only if a drag cannot be started).
     {
       name: "TouchDragAndContextMenu",
+      implied_by: ["TouchDragOnShortPress"],
+    },
+    // This feature makes touch dragging to occur at the short-press gesture,
+    // which occurs right before the long-press gesture.  This feature assumes
+    // that TouchDragAndContextMenu is enabled.
+    {
+      name: "TouchDragOnShortPress",
     },
     // Many websites disable mouse support when touch APIs are available.  We'd
     // like to enable this always but can't until more websites fix this bug.

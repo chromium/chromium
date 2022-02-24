@@ -3087,7 +3087,7 @@ TEST_F(WebViewTest, ContextMenuOnLinkAndImageLongPress) {
 }
 
 TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
-  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(true);
+  ScopedTouchDragOnShortPressForTest touch_drag_on_short_press(true);
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 
   url_test_helpers::RegisterMockedURLLoad(
@@ -3114,7 +3114,7 @@ TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
 }
 
 TEST_F(WebViewTest, ContextMenuAndDragOnLinkLongPress) {
-  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(true);
+  ScopedTouchDragOnShortPressForTest touch_drag_on_short_press(true);
 
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 
