@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -20,13 +21,15 @@
 
 class TabStrip;
 class TabGroupHeader;
+class TabHoverCardController;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainer : public views::View, public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(TabContainer);
 
-  explicit TabContainer(TabStripController* controller_);
+  TabContainer(TabStripController* controller_,
+               TabHoverCardController* hover_card_controller_);
   ~TabContainer() override;
 
   Tab* AddTab(std::unique_ptr<Tab> tab, int model_index, TabPinned pinned);
@@ -55,6 +58,9 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   Tab* GetTabAtModelIndex(int index) const;
 
   int GetTabCount() const;
+
+  void UpdateHoverCard(Tab* tab,
+                       TabController::HoverCardUpdateType update_type);
 
   // Updates the indexes and count for AX data on all tabs. Used by some screen
   // readers (e.g. ChromeVox).
@@ -143,6 +149,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   views::ViewModelT<Tab> tabs_view_model_;
 
   TabStripController* controller_;
+
+  TabHoverCardController* hover_card_controller_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;

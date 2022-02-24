@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -234,8 +235,10 @@ void TabContainer::RemoveTabDelegate::AnimationCanceled(
   AnimationEnded(animation);
 }
 
-TabContainer::TabContainer(TabStripController* controller)
+TabContainer::TabContainer(TabStripController* controller,
+                           TabHoverCardController* hover_card_controller)
     : controller_(controller),
+      hover_card_controller_(hover_card_controller),
       bounds_animator_(this),
       layout_helper_(std::make_unique<TabStripLayoutHelper>(
           controller,
@@ -271,6 +274,8 @@ void TabContainer::MoveTab(Tab* tab, int from_model_index, int to_model_index) {
 }
 
 void TabContainer::RemoveTabFromViewModel(int index) {
+  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kTabRemoved);
+
   Tab* tab = GetTabAtModelIndex(index);
   tabs_view_model_.Remove(index);
   layout_helper_->RemoveTabAt(index, tab);
@@ -338,6 +343,24 @@ int TabContainer::GetTabCount() const {
   return tabs_view_model_.view_size();
 }
 
+void TabContainer::UpdateHoverCard(
+    Tab* tab,
+    TabController::HoverCardUpdateType update_type) {
+  // Some operations (including e.g. starting a drag) can cause the tab focus
+  // to change at the same time as the tabstrip is starting to animate; the
+  // hover card should not be visible at this time.
+  // See crbug.com/1220840 for an example case.
+  if (bounds_animator_.IsAnimating()) {
+    tab = nullptr;
+    update_type = TabController::HoverCardUpdateType::kAnimating;
+  }
+
+  if (!hover_card_controller_)
+    return;
+
+  hover_card_controller_->UpdateHoverCard(tab, update_type);
+}
+
 void TabContainer::UpdateAccessibleTabIndices() {
   const int num_tabs = GetTabCount();
   for (int i = 0; i < num_tabs; ++i)
@@ -396,6 +419,8 @@ void TabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 }
 
 void TabContainer::AnimateToIdealBounds() {
+  UpdateHoverCard(nullptr, TabController::HoverCardUpdateType::kAnimating);
+
   for (int i = 0; i < GetTabCount(); ++i) {
     // If the tab is being dragged manually, skip it.
     Tab* tab = GetTabAtModelIndex(i);

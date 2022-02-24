@@ -781,9 +781,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
-      tab_container_(
-          AddChildView(std::make_unique<TabContainer>(controller_.get()))),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
+      tab_container_(AddChildView(
+          std::make_unique<TabContainer>(controller_.get(),
+                                         hover_card_controller_.get()))),
       drag_context_(std::make_unique<TabDragContextImpl>(this)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
@@ -1095,7 +1096,7 @@ void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
   // move in terms of model indices.
   OnGroupMoved(group);
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 }
 
 void TabStrip::OnGroupVisualsChanged(
@@ -1111,7 +1112,7 @@ void TabStrip::OnGroupVisualsChanged(
   if (!is_collapsing)
     ExitTabClosingMode();
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 }
 
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
@@ -1159,7 +1160,7 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
   tab_container_->layout_helper()->RemoveGroupHeader(group);
 
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
   tab_container_->group_views().erase(group);
 }
 
@@ -1310,7 +1311,7 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
     // width--because PrepareForCloseAt() will have set
     // |override_available_width_for_tabs_| already.
     UpdateIdealBounds();
-    AnimateToIdealBounds();
+    tab_container_->AnimateToIdealBounds();
   } else {
     // As in the animating case above, the selection change will have
     // affected the desired bounds of the tabs, but since we're not animating
@@ -1676,19 +1677,7 @@ void TabStrip::OnMouseEventInTab(views::View* source,
 }
 
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
-  // Some operations (including e.g. starting a drag) can cause the tab focus
-  // to change at the same time as the tabstrip is starting to animate; the
-  // hover card should not be visible at this time.
-  // See crbug.com/1220840 for an example case.
-  if (tab_container_->bounds_animator().IsAnimating()) {
-    tab = nullptr;
-    update_type = HoverCardUpdateType::kAnimating;
-  }
-
-  if (!hover_card_controller_)
-    return;
-
-  hover_card_controller_->UpdateHoverCard(tab, update_type);
+  tab_container_->UpdateHoverCard(tab, update_type);
 }
 
 bool TabStrip::ShowDomainInHoverCards() const {
@@ -2097,7 +2086,7 @@ void TabStrip::StartInsertTabAnimation(int model_index) {
 
   // Animate in to the full width.
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 }
 
 void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
@@ -2141,7 +2130,7 @@ void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
   RemoveTabFromViewModel(model_index);
 
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 
   if (in_tab_close_ && model_count > 0 &&
       override_available_width_for_tabs_ >
@@ -2159,12 +2148,6 @@ void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
 void TabStrip::StartMoveTabAnimation() {
   PrepareForAnimation();
   UpdateIdealBounds();
-  AnimateToIdealBounds();
-}
-
-void TabStrip::AnimateToIdealBounds() {
-  UpdateHoverCard(nullptr, HoverCardUpdateType::kAnimating);
-
   tab_container_->AnimateToIdealBounds();
 }
 
@@ -2287,8 +2270,6 @@ void TabStrip::RemoveTabFromViewModel(int index) {
   Tab* closing_tab = tab_at(index);
   bool closing_tab_was_active = closing_tab->IsActive();
 
-  UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
-
   // We still need to keep the tab alive until the remove tab animation
   // completes. Defer destroying it until then.
   tab_container_->RemoveTabFromViewModel(index);
@@ -2321,7 +2302,7 @@ void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
 
     // Animate the view back to its correct position.
     UpdateIdealBounds();
-    AnimateToIdealBounds();
+    tab_container_->AnimateToIdealBounds();
   }
 
   tab_container_->StartResetDragAnimation(tab_data_index);
@@ -2741,7 +2722,7 @@ int TabStrip::GetAvailableWidthForTabStrip() const {
 void TabStrip::StartResizeLayoutAnimation() {
   PrepareForAnimation();
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 }
 
 void TabStrip::StartPinnedTabAnimation() {
@@ -2750,7 +2731,7 @@ void TabStrip::StartPinnedTabAnimation() {
   PrepareForAnimation();
 
   UpdateIdealBounds();
-  AnimateToIdealBounds();
+  tab_container_->AnimateToIdealBounds();
 }
 
 const gfx::Rect& TabStrip::ideal_bounds(tab_groups::TabGroupId group) const {

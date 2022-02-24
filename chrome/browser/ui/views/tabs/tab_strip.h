@@ -429,11 +429,6 @@ class TabStrip : public views::View,
   // move.
   void StartMoveTabAnimation();
 
-  // Animates all the views to their ideal bounds.
-  // NOTE: this does *not* invoke UpdateIdealBounds, it uses the bounds
-  // currently set in ideal_bounds.
-  void AnimateToIdealBounds();
-
   void ExitTabClosingMode();
 
   // Returns whether the close button should be highlighted after a remove.
@@ -588,6 +583,8 @@ class TabStrip : public views::View,
 
   std::unique_ptr<TabStripController> controller_;
 
+  std::unique_ptr<TabHoverCardController> hover_card_controller_;
+
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
 
@@ -658,8 +655,6 @@ class TabStrip : public views::View,
   float radial_highlight_opacity_ = 1.0f;
 
   SkColor separator_color_ = gfx::kPlaceholderColor;
-
-  std::unique_ptr<TabHoverCardController> hover_card_controller_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
