@@ -24,4 +24,11 @@ test_invalid_value('container-name', 'foo, bar');
 test_invalid_value('container-name', '#fff');
 test_invalid_value('container-name', '1px');
 test_invalid_value('container-name', 'default'); /* reserved */
+
+test_invalid_value('container-name', '"initial"');
+test_invalid_value('container-name', '"inherit"');
+test_invalid_value('container-name', '"unset"');
+test_invalid_value('container-name', '"revert"');
+test_invalid_value('container-name', '"none"');
+test_invalid_value('container-name', '"foo"');
 </script>

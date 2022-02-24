@@ -140,4 +140,7 @@
   test_container_selector_invalid('type(block-size)');
   test_container_selector_invalid('name(bar) type(block-size)');
   test_container_selector_invalid('type(block-size) name(bar)');
+  test_container_selector_invalid('"foo"');
+  test_container_selector_invalid('"inherit"');
+  test_container_selector_invalid('name("foo")');
 </script>
