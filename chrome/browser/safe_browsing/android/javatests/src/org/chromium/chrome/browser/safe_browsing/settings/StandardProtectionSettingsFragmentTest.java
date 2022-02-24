@@ -173,6 +173,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @DisableFeatures({ChromeFeatureList.LEAK_DETECTION_UNAUTHENTICATED})
     public void testPasswordLeakDetectionPreferenceDisabledWithoutAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
