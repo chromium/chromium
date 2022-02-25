@@ -20,10 +20,10 @@
   ({requestExtraInfo} = await helper.fetchWithExtraInfo(firstPartyUrl));
 
   const issues = await Promise.all(issuePromises);
-  const sameSiteIssues = issues.filter(issue => issue.params.issue.code === 'SameSiteCookieIssue');
+  const cookieIssues = issues.filter(issue => issue.params.issue.code === 'CookieIssue');
 
   testRunner.log(requestExtraInfo.params.associatedCookies, 'Javascript initiated subresource associated cookies:');
-  testRunner.log(sameSiteIssues[0].params.issue, "Issue reported: ", ['requestId']);
+  testRunner.log(cookieIssues[0].params.issue, "Issue reported: ", ['requestId']);
 
   testRunner.completeTest();
 })

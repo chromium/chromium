@@ -240,12 +240,12 @@ void FencedFrameCreated(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
     FencedFrame* fenced_frame);
 
-void ReportSameSiteCookieIssue(
+void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
     const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    blink::mojom::SameSiteCookieOperation operation,
+    blink::mojom::CookieOperation operation,
     const absl::optional<std::string>& devtools_request_id);
 
 enum class AttributionReportingIssueType {

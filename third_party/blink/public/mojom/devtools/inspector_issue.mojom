@@ -13,7 +13,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // A code that uniquely identifies an issue. This type should be descriptive
 // enough for the front-end to provide a clear description of the issue.
 enum InspectorIssueCode {
-  kSameSiteCookieIssue,
+  kCookieIssue,
   kMixedContentIssue,
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
@@ -107,18 +107,18 @@ struct ContentSecurityPolicyIssueDetails {
   int32 violating_node_id = 0;
 };
 
-enum SameSiteCookieOperation {
+enum CookieOperation {
   kSetCookie, kReadCookie
 };
 
-enum SameSiteCookieExclusionReason {
+enum CookieExclusionReason {
   kExcludeSameSiteUnspecifiedTreatedAsLax,
   kExcludeSameSiteNoneInsecure,
   kExcludeSameSiteLax,
   kExcludeSameSiteStrict,
 };
 
-enum SameSiteCookieWarningReason {
+enum CookieWarningReason {
   kWarnSameSiteUnspecifiedCrossSiteContext,
   kWarnSameSiteNoneInsecure,
   kWarnSameSiteUnspecifiedLaxAllowUnsafe,
@@ -129,12 +129,12 @@ enum SameSiteCookieWarningReason {
   kWarnSameSiteLaxCrossDowngradeLax,
 };
 
-// Specific information about |kSameSiteCookieIssue| type issues.
-struct SameSiteCookieIssueDetails {
+// Specific information about |kCookieIssue| type issues.
+struct CookieIssueDetails {
   AffectedCookie cookie;
-  array<SameSiteCookieExclusionReason> exclusion_reason;
-  array<SameSiteCookieWarningReason> warning_reason;
-  SameSiteCookieOperation operation;
+  array<CookieExclusionReason> exclusion_reason;
+  array<CookieWarningReason> warning_reason;
+  CookieOperation operation;
   url.mojom.Url? site_for_cookies;
   url.mojom.Url? cookie_url;
   AffectedRequest? request;
@@ -219,7 +219,7 @@ struct GenericIssueDetails {
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
-  SameSiteCookieIssueDetails? samesite_cookie_issue_details;
+  CookieIssueDetails? cookie_issue_details;
   MixedContentIssueDetails? mixed_content_issue_details;
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;

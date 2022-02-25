@@ -49,7 +49,7 @@ class DevToolsIssueStorageBrowserTest : public DevToolsProtocolTest {
     std::unique_ptr<base::DictionaryValue> notification =
         WaitForNotification("Audits.issueAdded", true);
     EXPECT_EQ(*(notification->FindDictPath("issue")->FindStringPath("code")),
-              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue);
+              protocol::Audits::InspectorIssueCodeEnum::CookieIssue);
   }
 };
 
@@ -59,8 +59,7 @@ void ReportDummyIssue(RenderFrameHostImpl* rfh) {
   auto issueDetails = protocol::Audits::InspectorIssueDetails::Create();
   auto inspector_issue =
       protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue)
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::CookieIssue)
           .SetDetails(issueDetails.Build())
           .Build();
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfh,

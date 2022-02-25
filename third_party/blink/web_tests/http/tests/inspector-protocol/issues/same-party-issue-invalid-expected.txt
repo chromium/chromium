@@ -1,9 +1,9 @@
 Verifies that Set-Cookie lines with invalid SameParty attribute usage file an issue.
 
 Issue reported: {
-    code : SameSiteCookieIssue
+    code : CookieIssue
     details : {
-        sameSiteCookieIssueDetails : {
+        cookieIssueDetails : {
             cookieExclusionReasons : [
                 [0] : ExcludeInvalidSameParty
             ]
@@ -17,9 +17,9 @@ Issue reported: {
     }
 }
 Issue reported: {
-    code : SameSiteCookieIssue
+    code : CookieIssue
     details : {
-        sameSiteCookieIssueDetails : {
+        cookieIssueDetails : {
             cookieExclusionReasons : [
                 [0] : ExcludeInvalidSameParty
             ]

@@ -2279,7 +2279,7 @@ bool Internals::executeCommand(Document* document,
 void Internals::triggerTestInspectorIssue(Document* document) {
   DCHECK(document);
   auto info = mojom::blink::InspectorIssueInfo::New(
-      mojom::InspectorIssueCode::kSameSiteCookieIssue,
+      mojom::InspectorIssueCode::kCookieIssue,
       mojom::blink::InspectorIssueDetails::New());
   document->GetFrame()->AddInspectorIssue(std::move(info));
 }

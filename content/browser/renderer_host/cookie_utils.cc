@@ -121,12 +121,12 @@ void EmitCookieWarningsAndMetrics(
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
     if (ShouldReportDevToolsIssueForStatus(cookie->access_result.status)) {
-      devtools_instrumentation::ReportSameSiteCookieIssue(
+      devtools_instrumentation::ReportCookieIssue(
           root_frame_host, cookie, cookie_details->url,
           cookie_details->site_for_cookies,
           cookie_details->type == CookieAccessDetails::Type::kRead
-              ? blink::mojom::SameSiteCookieOperation::kReadCookie
-              : blink::mojom::SameSiteCookieOperation::kSetCookie,
+              ? blink::mojom::CookieOperation::kReadCookie
+              : blink::mojom::CookieOperation::kSetCookie,
           cookie_details->devtools_request_id);
     }
 

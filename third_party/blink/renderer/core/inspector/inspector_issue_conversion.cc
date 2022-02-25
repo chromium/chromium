@@ -41,8 +41,8 @@ std::unique_ptr<protocol::Audits::AffectedFrame> BuildAffectedFrame(
 blink::protocol::String InspectorIssueCodeValue(
     mojom::blink::InspectorIssueCode code) {
   switch (code) {
-    case mojom::blink::InspectorIssueCode::kSameSiteCookieIssue:
-      return protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue;
+    case mojom::blink::InspectorIssueCode::kCookieIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::CookieIssue;
     case mojom::blink::InspectorIssueCode::kMixedContentIssue:
       return protocol::Audits::InspectorIssueCodeEnum::MixedContentIssue;
     case mojom::blink::InspectorIssueCode::kBlockedByResponseIssue:
@@ -70,31 +70,26 @@ blink::protocol::String InspectorIssueCodeValue(
 }
 
 protocol::String BuildCookieExclusionReason(
-    mojom::blink::SameSiteCookieExclusionReason exclusion_reason) {
+    mojom::blink::CookieExclusionReason exclusion_reason) {
   switch (exclusion_reason) {
-    case blink::mojom::blink::SameSiteCookieExclusionReason::
+    case blink::mojom::blink::CookieExclusionReason::
         kExcludeSameSiteUnspecifiedTreatedAsLax:
-      return protocol::Audits::SameSiteCookieExclusionReasonEnum::
+      return protocol::Audits::CookieExclusionReasonEnum::
           ExcludeSameSiteUnspecifiedTreatedAsLax;
-    case blink::mojom::blink::SameSiteCookieExclusionReason::
+    case blink::mojom::blink::CookieExclusionReason::
         kExcludeSameSiteNoneInsecure:
-      return protocol::Audits::SameSiteCookieExclusionReasonEnum::
+      return protocol::Audits::CookieExclusionReasonEnum::
           ExcludeSameSiteNoneInsecure;
-    case blink::mojom::blink::SameSiteCookieExclusionReason::
-        kExcludeSameSiteLax:
-      return protocol::Audits::SameSiteCookieExclusionReasonEnum::
-          ExcludeSameSiteLax;
-    case blink::mojom::blink::SameSiteCookieExclusionReason::
-        kExcludeSameSiteStrict:
-      return protocol::Audits::SameSiteCookieExclusionReasonEnum::
-          ExcludeSameSiteStrict;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeSameSiteLax:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteLax;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeSameSiteStrict:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict;
   }
 }
 
 std::unique_ptr<std::vector<blink::protocol::String>>
 BuildCookieExclusionReasons(
-    const WTF::Vector<mojom::blink::SameSiteCookieExclusionReason>&
-        exclusion_reasons) {
+    const WTF::Vector<mojom::blink::CookieExclusionReason>& exclusion_reasons) {
   auto protocol_exclusion_reasons =
       std::make_unique<std::vector<blink::protocol::String>>();
   for (const auto& reason : exclusion_reasons) {
@@ -104,46 +99,44 @@ BuildCookieExclusionReasons(
 }
 
 protocol::String BuildCookieWarningReason(
-    mojom::blink::SameSiteCookieWarningReason warning_reason) {
+    mojom::blink::CookieWarningReason warning_reason) {
   switch (warning_reason) {
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteUnspecifiedCrossSiteContext:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteUnspecifiedCrossSiteContext;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
-        kWarnSameSiteNoneInsecure:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+    case blink::mojom::blink::CookieWarningReason::kWarnSameSiteNoneInsecure:
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteNoneInsecure;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteUnspecifiedLaxAllowUnsafe:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteUnspecifiedLaxAllowUnsafe;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteStrictLaxDowngradeStrict:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteStrictLaxDowngradeStrict;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteStrictCrossDowngradeStrict:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteStrictCrossDowngradeStrict;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteStrictCrossDowngradeLax:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteStrictCrossDowngradeLax;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteLaxCrossDowngradeStrict:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteLaxCrossDowngradeStrict;
-    case blink::mojom::blink::SameSiteCookieWarningReason::
+    case blink::mojom::blink::CookieWarningReason::
         kWarnSameSiteLaxCrossDowngradeLax:
-      return protocol::Audits::SameSiteCookieWarningReasonEnum::
+      return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteLaxCrossDowngradeLax;
   }
 }
 
 std::unique_ptr<std::vector<blink::protocol::String>> BuildCookieWarningReasons(
-    const WTF::Vector<mojom::blink::SameSiteCookieWarningReason>&
-        warning_reasons) {
+    const WTF::Vector<mojom::blink::CookieWarningReason>& warning_reasons) {
   auto protocol_warning_reasons =
       std::make_unique<std::vector<blink::protocol::String>>();
   for (const auto& reason : warning_reasons) {
@@ -151,13 +144,12 @@ std::unique_ptr<std::vector<blink::protocol::String>> BuildCookieWarningReasons(
   }
   return protocol_warning_reasons;
 }
-protocol::String BuildCookieOperation(
-    mojom::blink::SameSiteCookieOperation operation) {
+protocol::String BuildCookieOperation(mojom::blink::CookieOperation operation) {
   switch (operation) {
-    case blink::mojom::blink::SameSiteCookieOperation::kSetCookie:
-      return protocol::Audits::SameSiteCookieOperationEnum::SetCookie;
-    case blink::mojom::blink::SameSiteCookieOperation::kReadCookie:
-      return protocol::Audits::SameSiteCookieOperationEnum::ReadCookie;
+    case blink::mojom::blink::CookieOperation::kSetCookie:
+      return protocol::Audits::CookieOperationEnum::SetCookie;
+    case blink::mojom::blink::CookieOperation::kReadCookie:
+      return protocol::Audits::CookieOperationEnum::ReadCookie;
   }
 }
 
@@ -335,10 +327,10 @@ std::unique_ptr<protocol::Audits::InspectorIssue>
 ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
   auto issueDetails = protocol::Audits::InspectorIssueDetails::create();
 
-  if (issue->Details()->samesite_cookie_issue_details) {
-    const auto* d = issue->Details()->samesite_cookie_issue_details.get();
-    auto sameSiteCookieDetails =
-        std::move(protocol::Audits::SameSiteCookieIssueDetails::create()
+  if (issue->Details()->cookie_issue_details) {
+    const auto* d = issue->Details()->cookie_issue_details.get();
+    auto cookieDetails =
+        std::move(protocol::Audits::CookieIssueDetails::create()
                       .setCookie(BuildAffectedCookie(d->cookie))
                       .setCookieExclusionReasons(
                           BuildCookieExclusionReasons(d->exclusion_reason))
@@ -347,15 +339,15 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
                       .setOperation(BuildCookieOperation(d->operation)));
 
     if (d->site_for_cookies) {
-      sameSiteCookieDetails.setSiteForCookies(*d->site_for_cookies);
+      cookieDetails.setSiteForCookies(*d->site_for_cookies);
     }
     if (d->cookie_url) {
-      sameSiteCookieDetails.setCookieUrl(*d->cookie_url);
+      cookieDetails.setCookieUrl(*d->cookie_url);
     }
     if (d->request) {
-      sameSiteCookieDetails.setRequest(BuildAffectedRequest(d->request));
+      cookieDetails.setRequest(BuildAffectedRequest(d->request));
     }
-    issueDetails.setSameSiteCookieIssueDetails(sameSiteCookieDetails.build());
+    issueDetails.setCookieIssueDetails(cookieDetails.build());
   }
 
   if (issue->Details()->mixed_content_issue_details) {

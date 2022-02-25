@@ -24,9 +24,9 @@ Javascript initiated subresource associated cookies:[
     }
 ]
 Issue reported: {
-    code : SameSiteCookieIssue
+    code : CookieIssue
     details : {
-        sameSiteCookieIssueDetails : {
+        cookieIssueDetails : {
             cookie : {
                 domain : cookie.test
                 name : name

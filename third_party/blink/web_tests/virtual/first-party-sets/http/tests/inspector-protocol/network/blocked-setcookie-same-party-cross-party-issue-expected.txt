@@ -25,9 +25,9 @@ Javascript initiated subresource blocked set-cookies:[
     }
 ]
 Issue reported: {
-    code : SameSiteCookieIssue
+    code : CookieIssue
     details : {
-        sameSiteCookieIssueDetails : {
+        cookieIssueDetails : {
             cookie : {
                 domain : cookie.test
                 name : name

@@ -1017,39 +1017,33 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
-    exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeSameSiteUnspecifiedTreatedAsLax);
+    exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
+                                     ExcludeSameSiteUnspecifiedTreatedAsLax);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE)) {
-    exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeSameSiteNoneInsecure);
+    exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
+                                     ExcludeSameSiteNoneInsecure);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_LAX)) {
     exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeSameSiteLax);
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteLax);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMESITE_STRICT)) {
     exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeSameSiteStrict);
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY)) {
     exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeInvalidSameParty);
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeInvalidSameParty);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT)) {
-    exclusion_reasons->push_back(
-        protocol::Audits::SameSiteCookieExclusionReasonEnum::
-            ExcludeSamePartyCrossPartyContext);
+    exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
+                                     ExcludeSamePartyCrossPartyContext);
   }
 
   return exclusion_reasons;
@@ -1061,76 +1055,67 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
   if (status.HasWarningReason(
           net::CookieInclusionStatus::
               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteUnspecifiedCrossSiteContext);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteUnspecifiedCrossSiteContext);
   }
   if (status.HasWarningReason(
           net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE)) {
     warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteNoneInsecure);
+        protocol::Audits::CookieWarningReasonEnum::WarnSameSiteNoneInsecure);
   }
   if (status.HasWarningReason(net::CookieInclusionStatus::
                                   WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteUnspecifiedLaxAllowUnsafe);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteUnspecifiedLaxAllowUnsafe);
   }
 
   // There can only be one of the following warnings.
   if (status.HasWarningReason(net::CookieInclusionStatus::
                                   WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteStrictLaxDowngradeStrict);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteStrictLaxDowngradeStrict);
   } else if (status.HasWarningReason(
                  net::CookieInclusionStatus::
                      WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteStrictCrossDowngradeStrict);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteStrictCrossDowngradeStrict);
   } else if (status.HasWarningReason(
                  net::CookieInclusionStatus::
                      WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteStrictCrossDowngradeLax);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteStrictCrossDowngradeLax);
   } else if (status.HasWarningReason(
                  net::CookieInclusionStatus::
                      WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteLaxCrossDowngradeStrict);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteLaxCrossDowngradeStrict);
   } else if (status.HasWarningReason(
                  net::CookieInclusionStatus::
                      WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE)) {
-    warning_reasons->push_back(
-        protocol::Audits::SameSiteCookieWarningReasonEnum::
-            WarnSameSiteLaxCrossDowngradeLax);
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnSameSiteLaxCrossDowngradeLax);
   }
 
   return warning_reasons;
 }
 
-protocol::String BuildCookieOperation(
-    blink::mojom::SameSiteCookieOperation operation) {
+protocol::String BuildCookieOperation(blink::mojom::CookieOperation operation) {
   switch (operation) {
-    case blink::mojom::SameSiteCookieOperation::kReadCookie:
-      return protocol::Audits::SameSiteCookieOperationEnum::ReadCookie;
-    case blink::mojom::SameSiteCookieOperation::kSetCookie:
-      return protocol::Audits::SameSiteCookieOperationEnum::SetCookie;
+    case blink::mojom::CookieOperation::kReadCookie:
+      return protocol::Audits::CookieOperationEnum::ReadCookie;
+    case blink::mojom::CookieOperation::kSetCookie:
+      return protocol::Audits::CookieOperationEnum::SetCookie;
   }
 }
 
 }  // namespace
 
-void ReportSameSiteCookieIssue(
+void ReportCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
     const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    blink::mojom::SameSiteCookieOperation operation,
+    blink::mojom::CookieOperation operation,
     const absl::optional<std::string>& devtools_request_id) {
   auto exclusion_reasons =
       BuildExclusionReasons(excluded_cookie->access_result.status);
@@ -1151,8 +1136,8 @@ void ReportSameSiteCookieIssue(
                            .Build();
   }
 
-  auto same_site_details =
-      protocol::Audits::SameSiteCookieIssueDetails::Create()
+  auto cookie_issue_details =
+      protocol::Audits::CookieIssueDetails::Create()
           .SetCookieExclusionReasons(std::move(exclusion_reasons))
           .SetCookieWarningReasons(std::move(warning_reasons))
           .SetOperation(BuildCookieOperation(operation))
@@ -1167,27 +1152,25 @@ void ReportSameSiteCookieIssue(
                                .SetPath(cookie.Path())
                                .SetDomain(cookie.Domain())
                                .Build();
-    same_site_details->SetCookie(std::move(affected_cookie));
+    cookie_issue_details->SetCookie(std::move(affected_cookie));
   } else {
     CHECK(excluded_cookie->cookie_or_line->is_cookie_string());
-    same_site_details->SetRawCookieLine(
+    cookie_issue_details->SetRawCookieLine(
         excluded_cookie->cookie_or_line->get_cookie_string());
   }
 
   if (!site_for_cookies.IsNull()) {
-    same_site_details->SetSiteForCookies(
+    cookie_issue_details->SetSiteForCookies(
         site_for_cookies.RepresentativeUrl().spec());
   }
 
-  auto details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetSameSiteCookieIssueDetails(std::move(same_site_details))
-          .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetCookieIssueDetails(std::move(cookie_issue_details))
+                     .Build();
 
   auto issue =
       protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::SameSiteCookieIssue)
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::CookieIssue)
           .SetDetails(std::move(details))
           .Build();
 

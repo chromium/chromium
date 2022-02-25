@@ -1025,7 +1025,7 @@ void TestRunnerBindings::TriggerTestInspectorIssue(gin::Arguments* args) {
   if (invalid_)
     return;
   GetWebFrame()->AddInspectorIssue(
-      blink::mojom::InspectorIssueCode::kSameSiteCookieIssue);
+      blink::mojom::InspectorIssueCode::kCookieIssue);
 }
 
 bool TestRunnerBindings::IsCommandEnabled(const std::string& command) {
