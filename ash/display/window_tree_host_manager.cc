@@ -863,7 +863,7 @@ const display::Display* WindowTreeHostManager::GetDisplayById(
     int64_t display_id) const {
   const display::Display& display =
       GetDisplayManager()->GetDisplayForId(display_id);
-  return display.id() == display::kInvalidDisplayId ? nullptr : &display;
+  return display.is_valid() ? &display : nullptr;
 }
 
 void WindowTreeHostManager::SetCurrentEventTargeterSourceHost(
