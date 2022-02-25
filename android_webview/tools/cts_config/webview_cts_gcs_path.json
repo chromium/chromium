@@ -79,6 +79,10 @@
           {
             "match": "android.webkit.cts.WebSettingsTest#testAppCacheEnabled",
             "_bug_id": "crbug.com/1246334"
+          },
+          {
+            "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHit",
+            "_bug_id": "crbug.com/1300977"
           }
         ]
       },
