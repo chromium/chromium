@@ -6147,6 +6147,7 @@
     "TabAudioMuting": [
         {
             "platforms": [
+                "chromeos",
                 "chromeos_lacros",
                 "linux",
                 "mac",
@@ -6158,7 +6159,7 @@
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:tab_audio_muting_iph_triggered;comparator:==0;window:120;storage:365",
-                        "event_used": "name:ab_audio_muting_toggle_viewed;comparator:==0;window:120;storage:365",
+                        "event_used": "name:tab_audio_muting_toggle_viewed;comparator:==0;window:120;storage:365",
                         "session_rate": "==0"
                     },
                     "enable_features": [
