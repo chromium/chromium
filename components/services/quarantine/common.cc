@@ -25,7 +25,7 @@ GURL SanitizeUrlForQuarantine(const GURL& source_url) {
     return source_url;
   }
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
 
