@@ -78,6 +78,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false)
                     .put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false)
                     .put(ChromeFeatureList.DYNAMIC_COLOR_ANDROID, true)
+                    .put(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID, false)
                     .put(ChromeFeatureList.INSTANT_START, false)
                     .put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, true)
                     .put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false)

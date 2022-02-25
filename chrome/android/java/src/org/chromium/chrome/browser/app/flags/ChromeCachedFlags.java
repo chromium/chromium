@@ -85,6 +85,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID);
                 add(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE);
                 add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
+                add(ChromeFeatureList.DYNAMIC_COLOR_BUTTONS_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);

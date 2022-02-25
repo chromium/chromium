@@ -51677,6 +51677,7 @@ from previous Chrome versions.
   <int value="-1928198763" label="enable-async-dns"/>
   <int value="-1927968708" label="OmniboxPedalsAndroidBatch1:disabled"/>
   <int value="-1927080237" label="Vulkan:enabled"/>
+  <int value="-1926236767" label="DynamicColorButtonsAndroid:enabled"/>
   <int value="-1926124919" label="WebViewOriginTrials:enabled"/>
   <int value="-1925453192" label="BlockInsecurePrivateNetworkRequests:enabled"/>
   <int value="-1925214028"
@@ -53895,6 +53896,7 @@ from previous Chrome versions.
   <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-392813122" label="LibinputHandleTouchpad"/>
+  <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
   <int value="-390624541" label="RestrictedApiOrigins:disabled"/>
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>

@@ -1411,9 +1411,14 @@
     "expiry_milestone": 110
   },
   {
-      "name": "dynamic-color-android",
-      "owners": [ "skym", "clank-sbui-team@google.com" ],
-      "expiry_milestone": 100
+    "name": "dynamic-color-android",
+    "owners": [ "skym", "clank-sbui-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
+    "name": "dynamic-color-buttons-android",
+    "owners": [ "skym", "sinansahin@google.com", "clank-sbui-team@google.com" ],
+    "expiry_milestone": 105
   },
   {
     "name": "dynamic-color-gamut",

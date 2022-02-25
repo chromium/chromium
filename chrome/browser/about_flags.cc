@@ -7650,6 +7650,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kDynamicColorAndroid,
                                     kDynamicColorAndroidVariations,
                                     "AndroidDynamicColor")},
+    {"dynamic-color-buttons-android",
+     flag_descriptions::kDynamicColorButtonsAndroidName,
+     flag_descriptions::kDynamicColorButtonsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDynamicColorButtonsAndroid)},
 #endif  //   BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

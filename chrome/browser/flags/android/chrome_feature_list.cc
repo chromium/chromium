@@ -225,6 +225,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
     &kDynamicColorAndroid,
+    &kDynamicColorButtonsAndroid,
     &kEnableDangerousDownloadDialog,
     &kEnableDuplicateDownloadDialog,
     &kExperimentsForAgsa,
@@ -629,6 +630,9 @@ const base::Feature kDuetTabStripIntegrationAndroid{
 
 const base::Feature kDynamicColorAndroid{"DynamicColorAndroid",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kDynamicColorButtonsAndroid{
+    "DynamicColorButtonsAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableDangerousDownloadDialog{
     "EnableDangerousDownloadDialog", base::FEATURE_ENABLED_BY_DEFAULT};
