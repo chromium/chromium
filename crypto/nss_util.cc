@@ -16,6 +16,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -84,9 +85,8 @@ char* PKCS11PasswordFunc(PK11SlotInfo* slot, PRBool retry, void* arg) {
       reinterpret_cast<crypto::CryptoModuleBlockingPasswordDelegate*>(arg);
   if (delegate) {
     bool cancelled = false;
-    std::string password = delegate->RequestPassword(PK11_GetTokenName(slot),
-                                                     retry != PR_FALSE,
-                                                     &cancelled);
+    std::string password = delegate->RequestPassword(
+        PK11_GetTokenName(slot), retry != PR_FALSE, &cancelled);
     if (cancelled)
       return nullptr;
     char* result = PORT_Strdup(password.c_str());
@@ -105,9 +105,7 @@ class NSPRInitSingleton {
  private:
   friend struct base::LazyInstanceTraitsBase<NSPRInitSingleton>;
 
-  NSPRInitSingleton() {
-    PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 0);
-  }
+  NSPRInitSingleton() { PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 0); }
 
   // NOTE(willchan): We don't actually cleanup on destruction since we leak NSS
   // to prevent non-joinable threads from using NSS after it's already been
@@ -115,8 +113,8 @@ class NSPRInitSingleton {
   ~NSPRInitSingleton() = delete;
 };
 
-base::LazyInstance<NSPRInitSingleton>::Leaky
-    g_nspr_singleton = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<NSPRInitSingleton>::Leaky g_nspr_singleton =
+    LAZY_INSTANCE_INITIALIZER;
 
 // Force a crash with error info on NSS_NoDB_Init failure.
 void CrashOnNSSInitFailure() {
@@ -130,6 +128,55 @@ void CrashOnNSSInitFailure() {
 }
 
 class NSSInitSingleton {
+ public:
+  // NOTE(willchan): We don't actually cleanup on destruction since we leak NSS
+  // to prevent non-joinable threads from using NSS after it's already been
+  // shut down.
+  ~NSSInitSingleton() = delete;
+
+  ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
+                                   const std::string& description) {
+    base::AutoLock lock(slot_map_lock_);
+
+    auto slot_map_iter = slot_map_.find(path);
+    if (slot_map_iter != slot_map_.end()) {
+      // PK11_ReferenceSlot returns a new PK11Slot instance which refers
+      // to the same slot.
+      return ScopedPK11Slot(PK11_ReferenceSlot(slot_map_iter->second.get()));
+    }
+
+    const std::string modspec =
+        base::StringPrintf("configDir='sql:%s' tokenDescription='%s'",
+                           path.value().c_str(), description.c_str());
+    PK11SlotInfo* db_slot_info = SECMOD_OpenUserDB(modspec.c_str());
+    if (db_slot_info) {
+      if (PK11_NeedUserInit(db_slot_info))
+        PK11_InitPin(db_slot_info, nullptr, nullptr);
+      slot_map_[path] = ScopedPK11Slot(PK11_ReferenceSlot(db_slot_info));
+    } else {
+      LOG(ERROR) << "Error opening persistent database (" << modspec
+                 << "): " << GetNSSErrorMessage();
+    }
+
+    return ScopedPK11Slot(db_slot_info);
+  }
+
+  SECStatus CloseSoftwareNSSDB(PK11SlotInfo* slot) {
+    if (!slot) {
+      return SECFailure;
+    }
+
+    base::AutoLock lock(slot_map_lock_);
+    CK_SLOT_ID slot_id = PK11_GetSlotID(slot);
+    for (auto const& [stored_path, stored_slot] : slot_map_) {
+      if (PK11_GetSlotID(stored_slot.get()) == slot_id) {
+        slot_map_.erase(stored_path);
+        return SECMOD_CloseUserDB(slot);
+      }
+    }
+    return SECFailure;
+  }
+
  private:
   friend struct base::LazyInstanceTraitsBase<NSSInitSingleton>;
 
@@ -167,8 +214,8 @@ class NSSInitSingleton {
 #endif
       if (status != SECSuccess) {
         LOG(ERROR) << "Error initializing NSS with a persistent "
-                      "database (" << nss_config_dir
-                   << "): " << GetNSSErrorMessage();
+                      "database ("
+                   << nss_config_dir << "): " << GetNSSErrorMessage();
       }
     }
     if (status != SECSuccess) {
@@ -203,35 +250,35 @@ class NSSInitSingleton {
     // Disable MD5 certificate signatures. (They are disabled by default in
     // NSS 3.14.)
     NSS_SetAlgorithmPolicy(SEC_OID_MD5, 0, NSS_USE_ALG_IN_CERT_SIGNATURE);
-    NSS_SetAlgorithmPolicy(SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION,
-                           0, NSS_USE_ALG_IN_CERT_SIGNATURE);
+    NSS_SetAlgorithmPolicy(SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION, 0,
+                           NSS_USE_ALG_IN_CERT_SIGNATURE);
   }
 
-  // NOTE(willchan): We don't actually cleanup on destruction since we leak NSS
-  // to prevent non-joinable threads from using NSS after it's already been
-  // shut down.
-  ~NSSInitSingleton() = delete;
+  // Stores opened software NSS databases.
+  base::flat_map<base::FilePath, /*slot=*/ScopedPK11Slot> slot_map_
+      GUARDED_BY(slot_map_lock_);
+  // Ensures thread-safety for the methods that modify slot_map_.
+  // Performance considerations:
+  // Opening/closing a database is a rare operation in Chrome. Actually opening
+  // a database is a blocking I/O operation. Chrome doesn't open a lot of
+  // different databases in parallel. So, waiting for another thread to finish
+  // opening a database and (almost certainly) reusing the result is comparable
+  // to opening the same database twice in parallel (but the latter is not
+  // supported by NSS).
+  base::Lock slot_map_lock_;
 };
 
-base::LazyInstance<NSSInitSingleton>::Leaky
-    g_nss_singleton = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<NSSInitSingleton>::Leaky g_nss_singleton =
+    LAZY_INSTANCE_INITIALIZER;
 }  // namespace
 
 ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
                                  const std::string& description) {
-  const std::string modspec =
-      base::StringPrintf("configDir='sql:%s' tokenDescription='%s'",
-                         path.value().c_str(),
-                         description.c_str());
-  PK11SlotInfo* db_slot = SECMOD_OpenUserDB(modspec.c_str());
-  if (db_slot) {
-    if (PK11_NeedUserInit(db_slot))
-      PK11_InitPin(db_slot, nullptr, nullptr);
-  } else {
-    LOG(ERROR) << "Error opening persistent database (" << modspec
-               << "): " << GetNSSErrorMessage();
-  }
-  return ScopedPK11Slot(db_slot);
+  return g_nss_singleton.Get().OpenSoftwareNSSDB(path, description);
+}
+
+SECStatus CloseSoftwareNSSDB(PK11SlotInfo* slot) {
+  return g_nss_singleton.Get().CloseSoftwareNSSDB(slot);
 }
 
 void EnsureNSPRInit() {
@@ -247,9 +294,9 @@ bool CheckNSSVersion(const char* version) {
 }
 
 AutoSECMODListReadLock::AutoSECMODListReadLock()
-      : lock_(SECMOD_GetDefaultModuleListLock()) {
-    SECMOD_GetReadLock(lock_);
-  }
+    : lock_(SECMOD_GetDefaultModuleListLock()) {
+  SECMOD_GetReadLock(lock_);
+}
 
 AutoSECMODListReadLock::~AutoSECMODListReadLock() {
   SECMOD_ReleaseReadLock(lock_);

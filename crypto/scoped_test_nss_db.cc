@@ -38,9 +38,9 @@ ScopedTestNSSDB::~ScopedTestNSSDB() {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   if (slot_) {
-    SECStatus status = SECMOD_CloseUserDB(slot_.get());
+    SECStatus status = CloseSoftwareNSSDB(slot_.get());
     if (status != SECSuccess)
-      PLOG(ERROR) << "SECMOD_CloseUserDB failed: " << PORT_GetError();
+      PLOG(ERROR) << "CloseSoftwareNSSDB failed: " << PORT_GetError();
   }
 
   if (!temp_dir_.Delete())

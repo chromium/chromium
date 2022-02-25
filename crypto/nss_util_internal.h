@@ -23,11 +23,21 @@ class FilePath;
 
 namespace crypto {
 
-// Opens an NSS software database in folder |path|, with the (potentially)
-// user-visible description |description|. Returns the slot for the opened
-// database, or nullptr if the database could not be opened.
+// Opens an NSS software database in folder `path`, with the (potentially)
+// user-visible description `description`. Returns the slot for the opened
+// database, or nullptr if the database could not be opened. Can be called
+// multiple times for the same `path`, thread-safe.
 CRYPTO_EXPORT ScopedPK11Slot OpenSoftwareNSSDB(const base::FilePath& path,
                                                const std::string& description);
+
+// Closes the underlying database for the `slot`. All remaining slots
+// referencing the same database will remain valid objects, but won't be able to
+// successfully retrieve certificates, etc. Should be used for all databases
+// that were opened with `OpenSoftwareNSSDB` (instead of `SECMOD_CloseUserDB`).
+// Can be called multiple times. Returns `SECSuccess` if the database was
+// successfully closed, returns `SECFailure` if it was never opened, was already
+// closed by an earlier call, or failed to close. Thread-safe.
+CRYPTO_EXPORT SECStatus CloseSoftwareNSSDB(PK11SlotInfo* slot);
 
 // A helper class that acquires the SECMOD list read lock while the
 // AutoSECMODListReadLock is in scope.

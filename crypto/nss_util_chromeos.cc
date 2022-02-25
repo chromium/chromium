@@ -53,9 +53,9 @@ class ChromeOSUserData {
 
   ~ChromeOSUserData() {
     if (public_slot_) {
-      SECStatus status = SECMOD_CloseUserDB(public_slot_.get());
+      SECStatus status = CloseSoftwareNSSDB(public_slot_.get());
       if (status != SECSuccess)
-        PLOG(ERROR) << "SECMOD_CloseUserDB failed: " << PORT_GetError();
+        PLOG(ERROR) << "CloseSoftwareNSSDB failed: " << PORT_GetError();
     }
   }
 

@@ -80,9 +80,9 @@ void ScopedTestSystemNSSKeySlotMixin::DestroyOnIo() {
   crypto::ResetSystemSlotForTesting();
 
   if (slot_) {
-    SECStatus status = SECMOD_CloseUserDB(slot_.get());
+    SECStatus status = crypto::CloseSoftwareNSSDB(slot_.get());
     if (status != SECSuccess)
-      PLOG(ERROR) << "SECMOD_CloseUserDB failed: " << PORT_GetError();
+      PLOG(ERROR) << "CloseSoftwareNSSDB failed: " << PORT_GetError();
   }
 }
 

@@ -4253,6 +4253,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
+      "../browser/lacros/cert_db_initializer_browsertest.cc",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
 
       # download_controller_client_lacros_browsertest.cc should become a unit

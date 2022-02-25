@@ -109,6 +109,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/client_cert_store_lacros.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace {
@@ -890,6 +891,22 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Configure cert verifier to use the same software NSS database as Chrome is
+  // currently using (secondary profiles don't have their own databases at the
+  // moment).
+  cert_verifier_creation_params->nss_full_path.reset();
+  if (profile_->IsMainProfile()) {
+    DCHECK(chromeos::LacrosService::Get());
+    DCHECK(chromeos::LacrosService::Get()->init_params());
+    const crosapi::mojom::DefaultPathsPtr& default_paths =
+        chromeos::LacrosService::Get()->init_params()->default_paths;
+    // `default_paths` can be nullptr in tests.
+    if (default_paths && default_paths->user_nss_database.has_value()) {
+      cert_verifier_creation_params->nss_full_path =
+          default_paths->user_nss_database.value();
+    }
+  }
+
   PopulateInitialAdditionalCerts(relative_partition_path,
                                  network_context_params);
 #endif
