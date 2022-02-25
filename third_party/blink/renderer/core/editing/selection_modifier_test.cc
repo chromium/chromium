@@ -49,6 +49,39 @@ TEST_F(SelectionModifierTest, MoveForwardByWordNone) {
 }
 
 TEST_F(SelectionModifierTest, MoveByLineBlockInInline) {
+  // TODO(crbug.com/1300781): This test does not work as expected when `<b>` is
+  // not culled.
+  if (RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled())
+    return;
+
+  LoadAhem();
+  InsertStyleElement(
+      "div {"
+      "font: 10px/20px Ahem;"
+      "padding: 10px;"
+      "writing-mode: horizontal-tb;"
+      "}"
+      "b { background: orange; }");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DEF</p>de|f</b></div>",
+            MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc<b><p>ABC</p><p>DE|F</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc<b><p>AB|C</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>ab|c<b><p>ABC</p><p>DEF</p>def</b></div>",
+            MoveBackwardByLine(modifier));
+}
+
+TEST_F(SelectionModifierTest, MoveByLineBlockInInlineCulled) {
   LoadAhem();
   InsertStyleElement(
       "div {"
