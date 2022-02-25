@@ -696,13 +696,14 @@ class CC_EXPORT GpuImageDecodeCache
   void UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
       const DrawImage& draw_image,
       ImageData* image_data,
-      sk_sp<SkColorSpace> decoded_target_colorspace);
+      sk_sp<SkColorSpace> decoded_target_colorspace,
+      absl::optional<TargetColorParams> target_color_params);
   void UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
       const DrawImage& draw_image,
       ImageData* image_data,
       bool needs_adjusted_color_space,
       sk_sp<SkColorSpace> decoded_target_colorspace,
-      sk_sp<SkColorSpace> color_space);
+      absl::optional<TargetColorParams> target_color_params);
   void UploadImageIfNecessary_GpuCpu_YUVA(
       const DrawImage& draw_image,
       ImageData* image_data,

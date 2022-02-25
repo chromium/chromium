@@ -47,16 +47,18 @@ CC_PAINT_EXPORT size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format);
 class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
     : public ClientTransferCacheEntryBase<TransferCacheEntryType::kImage> {
  public:
-  explicit ClientImageTransferCacheEntry(const SkPixmap* pixmap,
-                                         const SkColorSpace* target_color_space,
-                                         bool needs_mips);
-  explicit ClientImageTransferCacheEntry(
+  ClientImageTransferCacheEntry(
+      const SkPixmap* pixmap,
+      bool needs_mips,
+      absl::optional<TargetColorParams> target_color_params);
+  ClientImageTransferCacheEntry(
       const SkPixmap yuva_pixmaps[],
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling,
       const SkColorSpace* decoded_color_space,
       SkYUVColorSpace yuv_color_space,
-      bool needs_mips);
+      bool needs_mips,
+      absl::optional<TargetColorParams> target_color_params);
   ~ClientImageTransferCacheEntry() final;
 
   uint32_t Id() const final;
@@ -71,6 +73,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
  private:
   const bool needs_mips_ = false;
+  absl::optional<TargetColorParams> target_color_params_;
   SkYUVAInfo::PlaneConfig plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   uint32_t id_;
   uint32_t size_ = 0;
@@ -78,9 +81,6 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
 
   // RGBX-only members.
   const raw_ptr<const SkPixmap> pixmap_;
-  const raw_ptr<const SkColorSpace>
-      target_color_space_;  // Unused for YUV because Skia handles colorspaces
-                            // at raster.
 
   // YUVA-only members.
   absl::optional<std::array<const SkPixmap*, SkYUVAInfo::kMaxPlanes>>

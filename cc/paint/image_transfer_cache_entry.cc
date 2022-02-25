@@ -26,10 +26,6 @@
 namespace cc {
 namespace {
 
-// TODO(https://crbug.com/1286076): Plumb the true parameters in here.
-constexpr float kTempMaxLuminanceNits = 100.f;
-constexpr float kTempHDRMaxLuminanceRelative = 1.f;
-
 struct Context {
   const std::vector<sk_sp<SkImage>> sk_planes_;
 };
@@ -199,6 +195,57 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
   return true;
 }
 
+size_t TargetColorParamsSize(
+    const absl::optional<TargetColorParams>& target_color_params) {
+  // uint32 for whether or not there are going to be parameters.
+  size_t target_color_params_size = sizeof(uint32_t);
+  if (target_color_params) {
+    // The target color space.
+    target_color_params_size +=
+        sizeof(uint64_t) +
+        target_color_params->color_space.ToSkColorSpace()->writeToMemory(
+            nullptr);
+    // Floats for the SDR and HDR maximum luminance.
+    target_color_params_size += sizeof(float);
+    target_color_params_size += sizeof(float);
+  }
+  return target_color_params_size;
+}
+
+void WriteTargetColorParams(
+    PaintOpWriter& writer,
+    const absl::optional<TargetColorParams>& target_color_params) {
+  const uint32_t has_target_color_params = target_color_params ? 1 : 0;
+  writer.Write(has_target_color_params);
+  if (target_color_params) {
+    writer.Write(target_color_params->color_space.ToSkColorSpace().get());
+    writer.Write(target_color_params->sdr_max_luminance_nits);
+    writer.Write(target_color_params->hdr_max_luminance_relative);
+  }
+}
+
+bool ReadTargetColorParams(
+    PaintOpReader& reader,
+    absl::optional<TargetColorParams>& target_color_params) {
+  uint32_t has_target_color_params;
+  reader.Read(&has_target_color_params);
+  if (!has_target_color_params) {
+    target_color_params = absl::nullopt;
+    return true;
+  }
+
+  target_color_params = TargetColorParams();
+  sk_sp<SkColorSpace> target_color_space;
+  reader.Read(&target_color_space);
+  if (!target_color_space)
+    return false;
+
+  target_color_params->color_space = gfx::ColorSpace(*target_color_space);
+  reader.Read(&target_color_params->sdr_max_luminance_nits);
+  reader.Read(&target_color_params->hdr_max_luminance_relative);
+  return true;
+}
+
 }  // namespace
 
 size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
@@ -217,15 +264,13 @@ size_t NumberOfPlanesForYUVDecodeFormat(YUVDecodeFormat format) {
 
 ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     const SkPixmap* pixmap,
-    const SkColorSpace* target_color_space,
-    bool needs_mips)
+    bool needs_mips,
+    absl::optional<TargetColorParams> target_color_params)
     : needs_mips_(needs_mips),
+      target_color_params_(target_color_params),
       id_(GetNextId()),
       pixmap_(pixmap),
-      target_color_space_(target_color_space),
       decoded_color_space_(nullptr) {
-  size_t target_color_space_size =
-      target_color_space ? target_color_space->writeToMemory(nullptr) : 0u;
   size_t pixmap_color_space_size =
       pixmap_->colorSpace() ? pixmap_->colorSpace()->writeToMemory(nullptr)
                             : 0u;
@@ -244,7 +289,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
   safe_size += sizeof(uint32_t);  // has mips
   safe_size += sizeof(uint64_t) + align;  // pixels size + alignment
   safe_size += sizeof(uint64_t) + align;  // row bytes + alignment
-  safe_size += target_color_space_size + sizeof(uint64_t) + align;
+  safe_size += TargetColorParamsSize(target_color_params_);
   safe_size += pixmap_color_space_size + sizeof(uint64_t) + align;
   // Include 4 bytes of padding so we can always align our data pointer to a
   // 4-byte boundary.
@@ -259,12 +304,13 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
     SkYUVAInfo::Subsampling subsampling,
     const SkColorSpace* decoded_color_space,
     SkYUVColorSpace yuv_color_space,
-    bool needs_mips)
+    bool needs_mips,
+    absl::optional<TargetColorParams> target_color_params)
     : needs_mips_(needs_mips),
+      target_color_params_(target_color_params),
       plane_config_(plane_config),
       id_(GetNextId()),
       pixmap_(nullptr),
-      target_color_space_(nullptr),
       decoded_color_space_(decoded_color_space),
       subsampling_(subsampling),
       yuv_color_space_(yuv_color_space) {
@@ -290,6 +336,7 @@ ClientImageTransferCacheEntry::ClientImageTransferCacheEntry(
 
   safe_size += sizeof(uint32_t);  // has mips
   safe_size += sizeof(uint64_t);  // target color space stub (is nullptr)
+  safe_size += TargetColorParamsSize(target_color_params_);
 
   safe_size += sizeof(uint32_t);  // plane_config
   safe_size += sizeof(uint32_t);  // subsampling
@@ -336,7 +383,7 @@ bool ClientImageTransferCacheEntry::Serialize(base::span<uint8_t> data) const {
   PaintOpWriter writer(data.data(), data.size(), options);
 
   writer.Write(static_cast<uint32_t>(needs_mips_ ? 1 : 0));
-  writer.Write(target_color_space_);
+  WriteTargetColorParams(writer, target_color_params_);
   writer.Write(plane_config_);
 
   if (plane_config_ != SkYUVAInfo::PlaneConfig::kUnknown) {
@@ -440,16 +487,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   uint32_t needs_mips;
   reader.Read(&needs_mips);
   has_mips_ = needs_mips;
-  sk_sp<SkColorSpace> target_color_space;
-  reader.Read(&target_color_space);
   absl::optional<TargetColorParams> target_color_params;
-  if (target_color_space) {
-    target_color_params = TargetColorParams();
-    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
-    target_color_params->sdr_max_luminance_nits = kTempMaxLuminanceNits;
-    target_color_params->hdr_max_luminance_relative =
-        kTempHDRMaxLuminanceRelative;
-  }
+  ReadTargetColorParams(reader, target_color_params);
   plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   reader.Read(&plane_config_);
 
