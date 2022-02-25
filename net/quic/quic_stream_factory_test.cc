@@ -3255,7 +3255,6 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
     if (VersionUsesHttp3(version_.transport_version)) {
       client_maker_.set_connection_id(cid_on_old_path);
     }
-    if (version_.UsesTls()) {
       if (VersionUsesHttp3(version_.transport_version)) {
         socket_data.AddWrite(
             SYNCHRONOUS,
@@ -3276,28 +3275,6 @@ void QuicStreamFactoryTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
                 quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
                 "net error"));
       }
-    } else {
-      if (VersionUsesHttp3(version_.transport_version)) {
-        socket_data.AddWrite(
-            SYNCHRONOUS,
-            client_maker_.MakeDataRstAckAndConnectionClosePacket(
-                packet_num++, false, GetQpackDecoderStreamId(),
-                StreamCancellationQpackDecoderInstruction(0),
-                GetNthClientInitiatedBidirectionalStreamId(0),
-                quic::QUIC_STREAM_CANCELLED, 1, 1,
-                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
-      } else {
-        socket_data.AddWrite(
-            SYNCHRONOUS,
-            client_maker_.MakeRstAckAndConnectionClosePacket(
-                packet_num++, false,
-                GetNthClientInitiatedBidirectionalStreamId(0),
-                quic::QUIC_STREAM_CANCELLED, 1, 1,
-                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
-      }
-    }
   }
 
   socket_data.AddSocketDataToFactory(socket_factory_.get());
@@ -6488,7 +6465,6 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
     if (VersionUsesHttp3(version_.transport_version)) {
       client_maker_.set_connection_id(cid_on_old_path);
     }
-    if (version_.UsesTls()) {
       if (VersionUsesHttp3(version_.transport_version)) {
         socket_data.AddWrite(
             SYNCHRONOUS,
@@ -6509,28 +6485,6 @@ void QuicStreamFactoryTestBase::TestMigrateSessionEarlyNonMigratableStream(
                 quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
                 "net error"));
       }
-    } else {
-      if (VersionUsesHttp3(version_.transport_version)) {
-        socket_data.AddWrite(
-            SYNCHRONOUS,
-            client_maker_.MakeDataRstAckAndConnectionClosePacket(
-                packet_num++, false, GetQpackDecoderStreamId(),
-                StreamCancellationQpackDecoderInstruction(0),
-                GetNthClientInitiatedBidirectionalStreamId(0),
-                quic::QUIC_STREAM_CANCELLED, 1, 1,
-                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
-      } else {
-        socket_data.AddWrite(
-            SYNCHRONOUS,
-            client_maker_.MakeRstAckAndConnectionClosePacket(
-                packet_num++, false,
-                GetNthClientInitiatedBidirectionalStreamId(0),
-                quic::QUIC_STREAM_CANCELLED, 1, 1,
-                quic::QUIC_CONNECTION_MIGRATION_NO_MIGRATABLE_STREAMS,
-                "net error"));
-      }
-    }
   }
 
   socket_data.AddSocketDataToFactory(socket_factory_.get());
