@@ -33,10 +33,10 @@ namespace {
 constexpr int kPaddingBetweenBottomAndLastTrayItem = 4;
 
 // Width of the bubble itself (dp).
-constexpr int kBubbleWidth = 372;
+constexpr int kBubbleWidth = 288;
 
 // Insets for the views (dp).
-constexpr gfx::Insets kPenViewPadding(4, 0, 0, 24);
+constexpr gfx::Insets kPenViewPadding(4, 24, 0, 24);
 
 // Spacing between buttons (dp).
 constexpr int kButtonsPadding = 20;
@@ -51,6 +51,7 @@ constexpr int kColorButtonViewRadius = 28;
 // Colors.
 constexpr SkColor kRedPenColor = SkColorSetRGB(0xEA, 0x43, 0x35);
 constexpr SkColor kYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
+constexpr SkColor kBluePenColor = SkColorSetRGB(0x1A, 0x73, 0xE8);
 
 // TODO(b/201664243): Use AnnotatorToolType.
 enum ProjectorTool { kToolNone, kToolPen };
@@ -179,17 +180,7 @@ void ProjectorAnnotationTray::ShowBubble() {
     box_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     box_layout->set_minimum_cross_axis_size(kMenuRowHeight);
-    views::BoxLayout* layout_ptr =
-        marker_view_container->SetLayoutManager(std::move(box_layout));
-
-    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    gfx::ImageSkia icon =
-        CreateVectorIcon(kInkPenIcon, kMenuIconSize, icon_color);
-    pen_view_ = marker_view_container->AddChildView(
-        std::make_unique<HoverHighlightView>(this));
-    pen_view_->AddIconAndLabel(icon, l10n_util::GetStringUTF16(IDS_PEN_BUTTON));
-    layout_ptr->SetFlexForView(pen_view_, 1, true);
+    marker_view_container->SetLayoutManager(std::move(box_layout));
 
     // TODO(b/201664243): Only draw outer circle on hover or selection.
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
@@ -197,6 +188,16 @@ void ProjectorAnnotationTray::ShowBubble() {
                             base::Unretained(this), kRedPenColor),
         kRedPenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_RED_COLOR_BUTTON)));
+    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), kBluePenColor),
+        kBluePenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
+        l10n_util::GetStringUTF16(IDS_BLUE_COLOR_BUTTON)));
+    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), SK_ColorWHITE),
+        SK_ColorWHITE, kColorButtonColorViewSize, kColorButtonViewRadius,
+        l10n_util::GetStringUTF16(IDS_WHITE_COLOR_BUTTON)));
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
         base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
                             base::Unretained(this), kYellowPenColor),
@@ -207,11 +208,6 @@ void ProjectorAnnotationTray::ShowBubble() {
                             base::Unretained(this), SK_ColorBLACK),
         SK_ColorBLACK, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_BLACK_COLOR_BUTTON)));
-    marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
-                            base::Unretained(this), SK_ColorWHITE),
-        SK_ColorWHITE, kColorButtonColorViewSize, kColorButtonViewRadius,
-        l10n_util::GetStringUTF16(IDS_WHITE_COLOR_BUTTON)));
 
     setup_layered_view(marker_view_container);
   }
@@ -231,18 +227,6 @@ views::Widget* ProjectorAnnotationTray::GetBubbleWidget() const {
 
 void ProjectorAnnotationTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  UpdateIcon();
-}
-
-void ProjectorAnnotationTray::OnViewClicked(views::View* sender) {
-  auto* projector_controller = ProjectorControllerImpl::Get();
-  DCHECK(projector_controller);
-
-  if (sender == pen_view_) {
-    projector_controller->OnMarkerPressed();
-  }
-
-  CloseBubble();
   UpdateIcon();
 }
 

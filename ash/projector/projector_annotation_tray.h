@@ -15,8 +15,7 @@ class TrayBubbleWrapper;
 
 // Status area tray which allows you to access the annotation tools for
 // Projector.
-class ProjectorAnnotationTray : public TrayBackgroundView,
-                                public ViewClickListener {
+class ProjectorAnnotationTray : public TrayBackgroundView {
  public:
   explicit ProjectorAnnotationTray(Shelf* shelf);
   ProjectorAnnotationTray(const ProjectorAnnotationTray&) = delete;
@@ -34,9 +33,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   void OnThemeChanged() override;
-
-  // ViewClickListener:
-  void OnViewClicked(views::View* sender) override;
 
  private:
   // Deactives any annotation tool that is currently enabled and update the UI.
