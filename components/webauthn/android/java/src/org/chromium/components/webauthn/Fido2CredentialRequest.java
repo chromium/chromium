@@ -123,8 +123,12 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         args.writeInt(1); // This indicates that the following options are present.
 
         try {
-            Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options,
-                    Uri.parse(convertOriginToString(origin)), /* clientDataHash= */ null, args);
+            if (mSupportLevel == WebAuthenticationDelegate.Support.BROWSER) {
+                Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options,
+                        Uri.parse(convertOriginToString(origin)), /* clientDataHash= */ null, args);
+            } else {
+                Fido2Api.appendMakeCredentialOptionsToParcel(options, args);
+            }
         } catch (NoSuchAlgorithmException e) {
             returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
             return;
@@ -203,8 +207,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options, Uri.parse(callerOriginString), clientDataHash, args);
+
+        if (mSupportLevel == WebAuthenticationDelegate.Support.BROWSER) {
+            Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+                    options, Uri.parse(callerOriginString), clientDataHash, args);
+        } else {
+            Fido2Api.appendGetAssertionOptionsToParcel(options, args);
+        }
 
         Task<PendingIntent> task = call.run(
                 Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
