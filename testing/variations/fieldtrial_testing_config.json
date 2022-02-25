@@ -1078,28 +1078,6 @@
             ]
         }
     ],
-    "AvoidUnnecessaryBeforeUnloadCheck": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheck"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCache": [
         {
             "platforms": [
@@ -1694,41 +1672,6 @@
             ]
         }
     ],
-    "ClankStartupOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "NoPreloadOrPri_1",
-                    "enable_features": [
-                        "ElidePrioritizationOfPreNativeBootstrapTasks",
-                        "ElideTabPreloadAtStartup",
-                        "TreatBootstrapAsDefault"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ClankStartupOptimizationsWebViewAndWebLayer": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "NoPreloadOrPri_1",
-                    "enable_features": [
-                        "ElidePrioritizationOfPreNativeBootstrapTasks",
-                        "ElideTabPreloadAtStartup",
-                        "TreatBootstrapAsDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "CleanUndecryptablePasswordsLinuxDuringInitialSync": [
         {
             "platforms": [
@@ -1892,9 +1835,7 @@
     "CombinedNavigationOptimizations": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
@@ -1903,14 +1844,19 @@
                         "CreateCompositorWorkerContext": "true"
                     },
                     "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheck",
                         "EarlyCodeCache",
                         "EarlyEstablishGpuChannel",
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
                         "FontManagerEarlyInit",
+                        "IncludeIpcOverheadInNavigationStart",
                         "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
                         "OptimizeEarlyNavigation",
                         "OptimizeLookalikeUrlNavigationThrottle",
                         "PrefetchAndroidFonts",
+                        "TreatBootstrapAsDefault",
                         "URLLoaderSyncClient"
                     ]
                 }
@@ -1933,12 +1879,51 @@
                         "CreateCompositorWorkerContext": "true"
                     },
                     "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheck",
                         "EarlyCodeCache",
                         "EarlyEstablishGpuChannel",
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
                         "FontManagerEarlyInit",
+                        "IncludeIpcOverheadInNavigationStart",
                         "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
+                        "OptimizeEarlyNavigation",
                         "OptimizeLookalikeUrlNavigationThrottle",
+                        "PrefetchAndroidFonts",
+                        "TreatBootstrapAsDefault",
+                        "URLLoaderSyncClient"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CombinedNavigationOptimizationsWebView": [
+        {
+            "platforms": [
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CreateCompositorWorkerContext": "true"
+                    },
+                    "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheck",
+                        "EarlyCodeCache",
+                        "EarlyEstablishGpuChannel",
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
+                        "FontManagerEarlyInit",
+                        "IncludeIpcOverheadInNavigationStart",
+                        "NavigationRequestPreconnect",
+                        "NavigationThreadingOptimizations",
+                        "OptimizeEarlyNavigation",
+                        "OptimizeLookalikeUrlNavigationThrottle",
+                        "PrefetchAndroidFonts",
+                        "TreatBootstrapAsDefault",
                         "URLLoaderSyncClient"
                     ]
                 }
@@ -3689,28 +3674,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IncludeInitiallyInvisibleImagesInLCP"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IncludeIpcOverheadInNavigationStart": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncludeIpcOverheadInNavigationStart"
                     ]
                 }
             ]
