@@ -1708,13 +1708,15 @@ class TouchEventConverterEvdevTouchNoiseTest
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
   ui::MockTouchEventConverterEvdev* dev = device();
   EventDeviceInfo devinfo;
-  EXPECT_TRUE(CapabilitiesToDeviceInfo(kWilsonBeachActiveStylus, &devinfo));
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kEveStylus, &devinfo));
   dev->Initialize(devinfo);
 
   struct input_event mock_kernel_queue[]{
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 1},
       {{0, 0}, EV_ABS, ABS_X, 9170},
       {{0, 0}, EV_ABS, ABS_Y, 3658},
+      {{0, 0}, EV_ABS, ABS_TILT_X, 0},
+      {{0, 0}, EV_ABS, ABS_TILT_Y, 0},
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
       {{0, 0}, EV_KEY, BTN_TOUCH, 1},
       {{0, 0}, EV_ABS, ABS_PRESSURE, 60},
@@ -1722,6 +1724,8 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
       {{0, 0}, EV_KEY, BTN_TOUCH, 0},
       {{0, 0}, EV_ABS, ABS_X, 9173},
       {{0, 0}, EV_ABS, ABS_Y, 3906},
+      {{0, 0}, EV_ABS, ABS_TILT_X, 30},
+      {{0, 0}, EV_ABS, ABS_TILT_Y, 50},
       {{0, 0}, EV_ABS, ABS_PRESSURE, 0},
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
       {{0, 0}, EV_KEY, BTN_TOOL_PEN, 0},
@@ -1737,7 +1741,9 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
   EXPECT_EQ(9170, down_event.location.x());
   EXPECT_EQ(3658, down_event.location.y());
   EXPECT_EQ(EventPointerType::kPen, down_event.pointer_details.pointer_type);
-  EXPECT_EQ(60.f / 1024, down_event.pointer_details.force);
+  EXPECT_EQ(60.f / 2047, down_event.pointer_details.force);
+  EXPECT_EQ(0, down_event.pointer_details.tilt_x);
+  EXPECT_EQ(0, down_event.pointer_details.tilt_y);
 
   auto up_event = dispatched_touch_event(1);
   EXPECT_EQ(ET_TOUCH_RELEASED, up_event.type);
@@ -1745,6 +1751,8 @@ TEST_F(TouchEventConverterEvdevTest, ActiveStylusTouchAndRelease) {
   EXPECT_EQ(3906, up_event.location.y());
   EXPECT_EQ(EventPointerType::kPen, up_event.pointer_details.pointer_type);
   EXPECT_EQ(0.f, up_event.pointer_details.force);
+  EXPECT_EQ(30, up_event.pointer_details.tilt_x);
+  EXPECT_EQ(50, up_event.pointer_details.tilt_y);
 }
 
 TEST_F(TouchEventConverterEvdevTest, ActiveStylusMotion) {

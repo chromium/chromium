@@ -45,7 +45,7 @@ namespace {
 
 const int kMaxTrackingId = 0xffff;  // TRKID_MAX in kernel.
 
-// Convert tilt from [min, min + num_values) to [-90deg, +90deg)
+// Convert tilt from [min, min + num_values] to [-90deg, +90deg]
 float ScaleTilt(int value, int min_value, int num_values) {
   return 180.f * (value - min_value) / num_values - 90.f;
 }
@@ -195,8 +195,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     y_res = info.GetAbsInfoByCode(ABS_Y).resolution;
     tilt_x_min_ = info.GetAbsMinimum(ABS_TILT_X);
     tilt_y_min_ = info.GetAbsMinimum(ABS_TILT_Y);
-    tilt_x_range_ = info.GetAbsMaximum(ABS_TILT_X) - tilt_x_min_ + 1;
-    tilt_y_range_ = info.GetAbsMaximum(ABS_TILT_Y) - tilt_y_min_ + 1;
+    tilt_x_range_ = info.GetAbsMaximum(ABS_TILT_X) - tilt_x_min_;
+    tilt_y_range_ = info.GetAbsMaximum(ABS_TILT_Y) - tilt_y_min_;
 
     // No orientation without mt.
     orientation_min_ = orientation_max_ = 0;
