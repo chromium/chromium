@@ -249,9 +249,9 @@
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/user_action_recorder.mojom.h"
 #include "chromeos/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom.h"

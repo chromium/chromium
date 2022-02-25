@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 
 #include <algorithm>
 #include <sstream>
@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/settings/ash/search/search_concept.h"
+#include "chrome/browser/ui/webui/settings/chromeos/search/search_concept.h"
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
