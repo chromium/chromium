@@ -75,6 +75,8 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat width,
       jfloat height,
       jboolean visible,
+      jint tint,
+      jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateModelSelectorButton(

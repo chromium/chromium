@@ -170,11 +170,13 @@ void TabStripSceneLayer::UpdateNewTabButton(
     jfloat width,
     jfloat height,
     jboolean visible,
+    jint tint,
+    jfloat button_alpha,
     const JavaParamRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
-  ui::Resource* button_resource = resource_manager->GetResource(
-      ui::ANDROID_RESOURCE_TYPE_STATIC, resource_id);
+  ui::Resource* button_resource =
+      resource_manager->GetStaticResourceWithTint(resource_id, tint);
 
   new_tab_button_->SetUIResourceId(button_resource->ui_resource()->id());
   float left_offset = (width - button_resource->size().width()) / 2;
@@ -182,6 +184,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
   new_tab_button_->SetPosition(gfx::PointF(x + left_offset, y + top_offset));
   new_tab_button_->SetBounds(button_resource->size());
   new_tab_button_->SetHideLayerAndSubtree(!visible);
+  new_tab_button_->SetOpacity(button_alpha);
 }
 
 void TabStripSceneLayer::UpdateModelSelectorButton(
