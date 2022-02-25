@@ -1,6 +1,11 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
+# Chrome Root Store.
+#
+# proto-file: googleclient/chrome/security/pki_metadata/chrome_root_store/root_store.proto
+# proto-message: chrome_browser_chrome_root_store.RootStore
+
+# Version # should always be incremented up whenever this (or any pem file that
+# it references) is changed.
+version_major: 1
 
 # Actalis Authentication Root CA
 trust_anchors {
