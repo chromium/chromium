@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.base;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.SystemClock;
 
 import androidx.collection.SimpleArrayMap;
@@ -14,6 +15,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 
 /**
  * Handles preloading split Contexts on a background thread. Loading a new isolated split
@@ -87,7 +89,13 @@ public class SplitPreloader {
 
         private Context createSplitContext() {
             if (BundleUtils.isIsolatedSplitInstalled(mContext, mName)) {
-                return BundleUtils.createIsolatedSplitContext(mContext, mName);
+                Context context = BundleUtils.createIsolatedSplitContext(mContext, mName);
+                if (GlobalAppLocaleController.getInstance().isOverridden()) {
+                    Configuration config =
+                            GlobalAppLocaleController.getInstance().getOverrideConfig(context);
+                    context = context.createConfigurationContext(config);
+                }
+                return context;
             }
             return mContext;
         }
