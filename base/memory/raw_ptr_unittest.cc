@@ -17,6 +17,10 @@
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 using testing::Test;
 
 static_assert(sizeof(raw_ptr<void>) == sizeof(void*),
@@ -961,6 +965,31 @@ TEST_F(RawPtrTest, DerivedStructsComparison) {
   EXPECT_NE(static_cast<BaseStruct*>(checked_derived1_ptr.get()),
             checked_derived2_ptr);
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST_F(RawPtrTest, TracedValueSupport) {
+  // Serialise nullptr.
+  EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>()), "0x0");
+
+  {
+    // If the pointer is non-null, its dereferenced value will be serialised.
+    int value = 42;
+    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>(&value)), "42");
+  }
+
+  struct WithTraceSupport {
+    void WriteIntoTrace(perfetto::TracedValue ctx) const {
+      std::move(ctx).WriteString("result");
+    }
+  };
+
+  {
+    WithTraceSupport value;
+    EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<WithTraceSupport>(&value)),
+              "result");
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 class PmfTestBase {
  public:

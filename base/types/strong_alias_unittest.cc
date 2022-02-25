@@ -17,6 +17,10 @@
 #include "base/template_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 namespace base {
 
 namespace {
@@ -380,5 +384,12 @@ void StreamOperatorExists() {
   static_assert(
       !base::internal::SupportsOstreamOperator<NonStreamableAlias>::value, "");
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(StrongAliasTest, TracedValueSupport) {
+  using IntAlias = StrongAlias<class FooTag, int>;
+  EXPECT_EQ(perfetto::TracedValueToString(IntAlias(42)), "42");
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace base

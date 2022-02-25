@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -826,6 +827,14 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
                                            raw_ptr& rhs) noexcept {
     Impl::IncrementSwapCountForTest();
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
+  }
+
+  // If T can be serialised into trace, its alias is also
+  // serialisable.
+  template <class U = T>
+  typename perfetto::check_traced_value_support<U>::type WriteIntoTrace(
+      perfetto::TracedValue&& context) const {
+    perfetto::WriteIntoTracedValue(std::move(context), get());
   }
 
  private:
