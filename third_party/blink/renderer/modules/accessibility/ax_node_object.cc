@@ -4585,9 +4585,26 @@ void AXNodeObject::ChildrenChangedWithCleanLayout() {
   // now layout is clean.
   SetNeedsToUpdateChildren();
 
-  SANITIZER_CHECK(LastKnownIsIncludedInTreeValue())
-      << "Should only fire children changed on included nodes: "
-      << ToString(true, true);
+  // The caller, AXObjectCacheImpl::ChildrenChangedWithCleanLayout(), is only
+  // Between the time that AXObjectCacheImpl::ChildrenChanged() determines
+  // which included parent to use and now, it's possible that the parent will
+  // no longer be ignored. This is rare, but is covered by this test:
+  // external/wpt/accessibility/crashtests/delayed-ignored-change.html/
+  //
+  // If this object is no longer included in the tree, then our parent needs to
+  // recompute its included-in-the-tree children vector. (And if our parent
+  // isn't included in the tree either, it will recursively update its parent
+  // and so on.)
+  //
+  // The first ancestor that's included in the tree will
+  // be the one that actually fires the ChildrenChanged
+  // event notification.
+  if (!LastKnownIsIncludedInTreeValue()) {
+    if (AXObject* ax_parent = CachedParentObject()) {
+      ax_parent->ChildrenChangedWithCleanLayout();
+      return;
+    }
+  }
 
   // TODO(accessibility) Move this up.
   if (!CanHaveChildren())
