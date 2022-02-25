@@ -443,7 +443,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       [convertedSuggestions addObjectsFromArray:self.actionButtonItems];
     }
   } else if (sectionInfo == self.singleCellSectionInfo) {
-    self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
+    if (!self.parentItem) {
+      self.parentItem = [[ContentSuggestionsParentItem alloc] initWithType:0];
+    }
     if (_notificationPromo->CanShow() && !self.shouldHidePromoAfterTap) {
       ContentSuggestionsWhatsNewItem* item =
           [[ContentSuggestionsWhatsNewItem alloc] initWithType:0];
