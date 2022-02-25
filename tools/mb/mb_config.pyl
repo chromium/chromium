@@ -608,10 +608,10 @@
     },
 
     'chromium.swangle': {
-      'linux-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols_reclient',
-      'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
-      'linux-swangle-x64': 'angle_deqp_release_trybot_reclient',
+      'linux-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
+      'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
+      'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot',
+      'linux-swangle-x64': 'angle_deqp_release_trybot',
       'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_minimal_symbols',
       'win-swangle-chromium-x86': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting',
       'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
@@ -1670,10 +1670,6 @@
 
     'angle_deqp_release_trybot': [
       'angle_deqp_tests', 'shared_release_bot_dcheck_always_on',
-    ],
-
-    'angle_deqp_release_trybot_reclient': [
-      'angle_deqp_tests', 'shared_release_bot_dcheck_always_on', 'reclient',
     ],
 
     'angle_deqp_release_trybot_x86': [
