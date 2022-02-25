@@ -10,6 +10,7 @@
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
@@ -324,23 +325,26 @@ struct StructTraits<media::mojom::SpatialLayerDataView,
 };
 
 template <>
-struct EnumTraits<media::mojom::Bitrate_Mode, media::Bitrate::Mode> {
-  static media::mojom::Bitrate_Mode ToMojom(media::Bitrate::Mode input);
+struct StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate> {
+  static uint32_t target(const media::Bitrate& input) { return input.target(); }
 
-  static bool FromMojom(media::mojom::Bitrate_Mode,
-                        media::Bitrate::Mode* output);
+  static bool Read(media::mojom::ConstantBitrateDataView input,
+                   media::Bitrate* output);
 };
 
 template <>
-struct StructTraits<media::mojom::BitrateDataView, media::Bitrate> {
-  static media::Bitrate::Mode mode(const media::Bitrate& input) {
-    return input.mode();
-  }
-
+struct StructTraits<media::mojom::VariableBitrateDataView, media::Bitrate> {
   static uint32_t target(const media::Bitrate& input) { return input.target(); }
-
   static uint32_t peak(const media::Bitrate& input) { return input.peak(); }
+  static bool Read(media::mojom::VariableBitrateDataView input,
+                   media::Bitrate* output);
+};
 
+template <>
+struct UnionTraits<media::mojom::BitrateDataView, media::Bitrate> {
+  static media::mojom::BitrateDataView::Tag GetTag(const media::Bitrate& input);
+  static media::Bitrate constant(const media::Bitrate& input) { return input; }
+  static media::Bitrate variable(const media::Bitrate& input) { return input; }
   static bool Read(media::mojom::BitrateDataView input, media::Bitrate* output);
 };
 

@@ -494,6 +494,14 @@ mojom("mojom") {
           cpp = "::media::SVCScalabilityMode"
         },
         {
+          mojom = "media.mojom.VariableBitrate"
+          cpp = "::media::Bitrate"
+        },
+        {
+          mojom = "media.mojom.ConstantBitrate"
+          cpp = "::media::Bitrate"
+        },
+        {
           mojom = "media.mojom.Bitrate"
           cpp = "::media::Bitrate"
         },
