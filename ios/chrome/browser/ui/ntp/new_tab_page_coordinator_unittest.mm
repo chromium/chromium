@@ -107,7 +107,6 @@ TEST_F(NewTabPageCoordinatorTest, StartOnTheRecord) {
   UIViewController* viewController = [coordinator_ viewController];
   EXPECT_FALSE([viewController isKindOfClass:[IncognitoViewController class]]);
   [coordinator_ stop];
-  [coordinator_ disconnect];
 }
 
 // Tests that the coordinator vends an incognito VC off the record.
