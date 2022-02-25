@@ -1606,13 +1606,18 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   NSInteger tappedHeaderSectionIdentifier = headerTapped.tag;
 
   if (sender.state == UIGestureRecognizerStateEnded) {
-    [self toggleExpansionOfSectionIdentifier:tappedHeaderSectionIdentifier];
-
     NSInteger section = [self.tableViewModel
         sectionForSectionIdentifier:tappedHeaderSectionIdentifier];
+    ListItem* headerItem = [self.tableViewModel headerForSection:section];
+    // Suggested actions header is not interactable.
+    if (headerItem.type == ItemTypeSuggestedActionsHeader) {
+      return;
+    }
+
+    [self toggleExpansionOfSectionIdentifier:tappedHeaderSectionIdentifier];
+
     UITableViewHeaderFooterView* headerView =
         [self.tableView headerViewForSection:section];
-    ListItem* headerItem = [self.tableViewModel headerForSection:section];
     // Highlight and collapse the section header being tapped.
     // Don't for the Loading Other Devices section header.
     if (headerItem.type == ItemTypeRecentlyClosedHeader ||
