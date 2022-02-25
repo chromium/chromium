@@ -64,41 +64,41 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.
-  void GetAccounts(const base::Value::ConstListView args);
+  void GetAccounts(const base::Value::List& args);
 
   // Requested by the Projector SWA to check the new screencast precondition
   // state.
-  void GetNewScreencastPrecondition(const base::Value::ConstListView args);
+  void GetNewScreencastPrecondition(const base::Value::List& args);
 
   // Requested by the Projector SWA to start a new Projector session if it is
   // possible.
-  void StartProjectorSession(const base::Value::ConstListView args);
+  void StartProjectorSession(const base::Value::List& args);
 
   // Requested by the Projector SWA to get access to the OAuth token for the
   // account email provided in the `args`.
-  void GetOAuthTokenForAccount(const base::Value::ConstListView args);
+  void GetOAuthTokenForAccount(const base::Value::List& args);
 
   // Requested by the Projector SWA to send XHR request.
-  void SendXhr(const base::Value::ConstListView args);
+  void SendXhr(const base::Value::List& args);
 
   // Requested by the Projector SWA to check if SODA is not available and should
   // be downloaded. Returns false if the device doesn't support SODA.
-  void ShouldDownloadSoda(const base::Value::ConstListView args);
+  void ShouldDownloadSoda(const base::Value::List& args);
 
   // Requested by the Projector SWA to trigger SODA installation.
-  void InstallSoda(const base::Value::ConstListView args);
+  void InstallSoda(const base::Value::List& args);
 
   // Called by the Projector SWA when an error occurred.
-  void OnError(const base::Value::ConstListView args);
+  void OnError(const base::Value::List& args);
 
   // Requested by the Projector SWA to get access to a particular user pref.
-  void GetUserPref(const base::Value::ConstListView args);
+  void GetUserPref(const base::Value::List& args);
 
   // Requested by the Projector SWA to set the value of a user pref.
-  void SetUserPref(const base::Value::ConstListView args);
+  void SetUserPref(const base::Value::List& args);
 
   // Requested by the Projector SWA to open the Chrome feedback dialog.
-  void OpenFeedbackDialog(const base::Value::ConstListView args);
+  void OpenFeedbackDialog(const base::Value::List& args);
 
   // Called when OAuth token fetch request is completed by
   // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
@@ -118,7 +118,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   // Requested by the Projector SWA to fetch a list of screencasts pending to
   // upload or failed to upload.
-  void GetPendingScreencasts(const base::Value::ConstListView args);
+  void GetPendingScreencasts(const base::Value::List& args);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   std::unique_ptr<ProjectorXhrSender> xhr_sender_;

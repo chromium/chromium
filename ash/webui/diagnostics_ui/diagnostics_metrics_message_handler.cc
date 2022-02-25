@@ -66,7 +66,7 @@ DiagnosticsMetricsMessageHandler::~DiagnosticsMetricsMessageHandler() {
 void DiagnosticsMetricsMessageHandler::RegisterMessages() {
   DCHECK(web_ui());
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       kRecordNavigation,
       base::BindRepeating(
           &DiagnosticsMetricsMessageHandler::HandleRecordNavigation,
@@ -94,7 +94,7 @@ void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(
 
 // Message Handlers:
 void DiagnosticsMetricsMessageHandler::HandleRecordNavigation(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_EQ(2u, args.size());
   DCHECK_NE(args[0], args[1]);
   const NavigationView from_view = ConvertToNavigationView(args[0]);

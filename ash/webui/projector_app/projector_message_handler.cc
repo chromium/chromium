@@ -166,52 +166,52 @@ base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
 }
 
 void ProjectorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getAccounts", base::BindRepeating(&ProjectorMessageHandler::GetAccounts,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getNewScreencastPreconditionState",
       base::BindRepeating(
           &ProjectorMessageHandler::GetNewScreencastPrecondition,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "startProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
                                      base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "shouldDownloadSoda",
       base::BindRepeating(&ProjectorMessageHandler::ShouldDownloadSoda,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "installSoda", base::BindRepeating(&ProjectorMessageHandler::InstallSoda,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPendingScreencasts",
       base::BindRepeating(&ProjectorMessageHandler::GetPendingScreencasts,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getUserPref", base::BindRepeating(&ProjectorMessageHandler::GetUserPref,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setUserPref", base::BindRepeating(&ProjectorMessageHandler::SetUserPref,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
                           base::Unretained(this)));
@@ -247,7 +247,7 @@ void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
                     precondition.ToValue());
 }
 
-void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
+void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
   AllowJavascript();
 
   // Check that there is only one argument which is the callback id.
@@ -275,7 +275,7 @@ void ProjectorMessageHandler::GetAccounts(base::Value::ConstListView args) {
 }
 
 void ProjectorMessageHandler::GetNewScreencastPrecondition(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // Check that there is only one argument which is the callback id.
@@ -288,7 +288,7 @@ void ProjectorMessageHandler::GetNewScreencastPrecondition(
 }
 
 void ProjectorMessageHandler::StartProjectorSession(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // There are two arguments. The first is the callback and the second is a list
@@ -323,7 +323,7 @@ void ProjectorMessageHandler::StartProjectorSession(
 }
 
 void ProjectorMessageHandler::GetOAuthTokenForAccount(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing the account for which to fetch the oauth token.
   DCHECK_EQ(args.size(), 2u);
@@ -342,7 +342,7 @@ void ProjectorMessageHandler::GetOAuthTokenForAccount(
                      GetWeakPtr(), oauth_token_fetch_callback));
 }
 
-void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
+void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
   // Two arguments. The first is callback id, and the second is the list
   // containing function arguments for making the request.
   DCHECK_EQ(args.size(), 2u);
@@ -371,7 +371,7 @@ void ProjectorMessageHandler::SendXhr(const base::Value::ConstListView args) {
 }
 
 void ProjectorMessageHandler::ShouldDownloadSoda(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // The device should be eligible to download SODA and SODA should not have
@@ -380,20 +380,18 @@ void ProjectorMessageHandler::ShouldDownloadSoda(
       args[0], base::Value(ProjectorAppClient::Get()->ShouldDownloadSoda()));
 }
 
-void ProjectorMessageHandler::InstallSoda(
-    const base::Value::ConstListView args) {
+void ProjectorMessageHandler::InstallSoda(const base::Value::List& args) {
   AllowJavascript();
   ProjectorAppClient::Get()->InstallSoda();
   ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
-void ProjectorMessageHandler::OnError(const base::Value::ConstListView args) {
+void ProjectorMessageHandler::OnError(const base::Value::List& args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
 }
 
-void ProjectorMessageHandler::GetUserPref(
-    const base::Value::ConstListView args) {
+void ProjectorMessageHandler::GetUserPref(const base::Value::List& args) {
   AllowJavascript();
 
   std::string user_pref;
@@ -405,8 +403,7 @@ void ProjectorMessageHandler::GetUserPref(
   ResolveJavascriptCallback(args[0], *(pref_service_->Get(user_pref)));
 }
 
-void ProjectorMessageHandler::SetUserPref(
-    const base::Value::ConstListView args) {
+void ProjectorMessageHandler::SetUserPref(const base::Value::List& args) {
   AllowJavascript();
   SetUserPrefArgs parsed_args;
   if (!GetSetUserPrefArgs(args[1], &parsed_args)) {
@@ -419,7 +416,7 @@ void ProjectorMessageHandler::SetUserPref(
 }
 
 void ProjectorMessageHandler::OpenFeedbackDialog(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   ProjectorAppClient::Get()->OpenFeedbackDialog();
   ResolveJavascriptCallback(args[0], base::Value());
@@ -463,7 +460,7 @@ void ProjectorMessageHandler::OnXhrRequestCompleted(
 }
 
 void ProjectorMessageHandler::GetPendingScreencasts(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   // Check that there is only one argument which is the callback id.
   DCHECK_EQ(args.size(), 1u);

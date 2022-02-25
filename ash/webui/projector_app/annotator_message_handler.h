@@ -37,9 +37,9 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler {
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
-  void OnToolSet(base::Value::ConstListView args);
-  void OnUndoRedoAvailabilityChanged(base::Value::ConstListView args);
-  void OnError(base::Value::ConstListView args);
+  void OnToolSet(const base::Value::List& args);
+  void OnUndoRedoAvailabilityChanged(const base::Value::List& args);
+  void OnError(const base::Value::List& args);
 };
 
 }  // namespace ash
