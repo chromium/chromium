@@ -11,6 +11,7 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.util.Pair;
 
@@ -786,6 +787,7 @@ public class SiteSettingsTest {
      */
     @Test
     @SmallTest
+    @DisableIf.Build(message = "https://crbug.com/1300979", sdk_is_less_than = VERSION_CODES.N)
     @Feature({"Preferences"})
     public void testPopupsNotBlocked() {
         new TwoStatePermissionTestCase(
