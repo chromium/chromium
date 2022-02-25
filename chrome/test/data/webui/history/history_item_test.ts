@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import 'chrome://history/history.js';
+
+import {BrowserServiceImpl, HistoryItemElement, HistoryListElement} from 'chrome://history/history.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -25,14 +28,14 @@ const SEARCH_HISTORY_RESULTS = [
 ];
 
 suite('<history-item> unit test', function() {
-  let item;
+  let item: HistoryItemElement;
 
   setup(function() {
     document.body.innerHTML = '';
     BrowserServiceImpl.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');
-    item.item = TEST_HISTORY_RESULTS[0];
+    item.item = TEST_HISTORY_RESULTS[0]!;
     document.body.appendChild(item);
   });
 
@@ -61,14 +64,14 @@ suite('<history-item> unit test', function() {
 
     time.dispatchEvent(new CustomEvent('mouseover'));
     const initialTitle = time.title;
-    item.item = TEST_HISTORY_RESULTS[5];
+    item.item = TEST_HISTORY_RESULTS[5]!;
     time.dispatchEvent(new CustomEvent('mouseover'));
     assertNotEquals(initialTitle, time.title);
   });
 });
 
 suite('<history-item> integration test', function() {
-  let element;
+  let element: HistoryListElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -82,60 +85,61 @@ suite('<history-item> integration test', function() {
   });
 
   function getHistoryData() {
-    return element.$['infinite-list'].items;
+    return element.$['infinite-list'].items!;
   }
 
   test('basic separator insertion', function() {
-    element.addNewResults(TEST_HISTORY_RESULTS);
+    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
     return flushTasks().then(function() {
       flush();
       // Check that the correct number of time gaps are inserted.
-      const items = element.shadowRoot.querySelectorAll('history-item');
+      const items = element.shadowRoot!.querySelectorAll('history-item');
 
-      assertTrue(items[0].hasTimeGap);
-      assertTrue(items[1].hasTimeGap);
-      assertFalse(items[2].hasTimeGap);
-      assertTrue(items[3].hasTimeGap);
-      assertFalse(items[4].hasTimeGap);
-      assertFalse(items[5].hasTimeGap);
+      assertTrue(items[0]!.hasTimeGap);
+      assertTrue(items[1]!.hasTimeGap);
+      assertFalse(items[2]!.hasTimeGap);
+      assertTrue(items[3]!.hasTimeGap);
+      assertFalse(items[4]!.hasTimeGap);
+      assertFalse(items[5]!.hasTimeGap);
     });
   });
 
   test('separator insertion for search', function() {
-    element.addNewResults(SEARCH_HISTORY_RESULTS);
+    element.addNewResults(SEARCH_HISTORY_RESULTS, false, true);
     element.searchedTerm = 'search';
 
     return flushTasks().then(function() {
       flush();
-      const items = element.shadowRoot.querySelectorAll('history-item');
+      const items = element.shadowRoot!.querySelectorAll('history-item');
 
-      assertTrue(items[0].hasTimeGap);
-      assertFalse(items[1].hasTimeGap);
-      assertFalse(items[2].hasTimeGap);
+      assertTrue(items[0]!.hasTimeGap);
+      assertFalse(items[1]!.hasTimeGap);
+      assertFalse(items[2]!.hasTimeGap);
     });
   });
 
-  test('separator insertion after deletion', function() {
-    element.addNewResults(TEST_HISTORY_RESULTS);
-    return flushTasks().then(function() {
-      flush();
-      const items = element.shadowRoot.querySelectorAll('history-item');
+  test('separator insertion after deletion', async function() {
+    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
+    await flushTasks();
+    const items = element.shadowRoot!.querySelectorAll('history-item');
 
-      element.removeItemsByIndex_([3]);
-      assertEquals(5, getHistoryData().length);
+    element.removeItemsByIndexForTesting([3]);
+    await flushTasks();
 
-      // Checks that a new time gap separator has been inserted.
-      assertTrue(items[2].hasTimeGap);
+    // Checks that a new time gap separator has been inserted.
+    assertEquals(5, getHistoryData().length);
+    assertTrue(items[2]!.hasTimeGap);
 
-      element.removeItemsByIndex_([3]);
+    element.removeItemsByIndexForTesting([3]);
+    await flushTasks();
 
-      // Checks time gap separator is removed.
-      assertFalse(items[2].hasTimeGap);
-    });
+    // Checks time gap separator is removed.
+    assertEquals(4, element.$['infinite-list'].items!.length);
+    assertFalse(items[2]!.hasTimeGap);
   });
 
   test('remove bookmarks', function() {
-    element.addNewResults(TEST_HISTORY_RESULTS);
+    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
     return flushTasks()
         .then(function() {
           element.set('historyData_.1.starred', true);
@@ -143,10 +147,13 @@ suite('<history-item> integration test', function() {
           return flushTasks();
         })
         .then(function() {
-          const items = element.shadowRoot.querySelectorAll('history-item');
+          const items = element.shadowRoot!.querySelectorAll('history-item');
 
-          items[1].$$('#bookmark-star').focus();
-          items[1].$$('#bookmark-star').click();
+          const star = items[1]!.shadowRoot!.querySelector<HTMLElement>(
+              '#bookmark-star');
+          assertTrue(!!star);
+          star.focus();
+          star.click();
 
           // Check that all items matching this url are unstarred.
           assertEquals(getHistoryData()[1].starred, false);

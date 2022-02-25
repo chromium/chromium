@@ -36,6 +36,7 @@ export interface HistorySyncedDeviceCardElement {
   $: {
     'card-heading': HTMLDivElement,
     'collapse': IronCollapseElement,
+    'collapse-button': HTMLElement,
     'menu-button': HTMLElement,
   };
 }

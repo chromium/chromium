@@ -102,8 +102,8 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   private guestSession_: boolean = loadTimeData.getBoolean('isGuestSession');
   private signInAllowed_: boolean = loadTimeData.getBoolean('isSignInAllowed');
   private debouncer_: Debouncer|null = null;
-  private signInState: boolean;
 
+  signInState: boolean;
   searchTerm: string;
   sessionList: Array<ForeignSession>;
 

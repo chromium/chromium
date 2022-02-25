@@ -338,6 +338,10 @@ export class HistoryListElement extends HistoryListElementBase {
     this.notifySplices('historyData_', splices);
   }
 
+  removeItemsByIndexForTesting(indices: Array<number>) {
+    this.removeItemsByIndex_(indices);
+  }
+
   /**
    * Closes the overflow menu.
    */
