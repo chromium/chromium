@@ -24,10 +24,21 @@ function resetDocument() {
   simulateFormFocusChange(false);
 }
 
-
 /** @return {number} */
 function getCurrentPage() {
   return getViewer().viewport.getMostVisiblePage();
+}
+
+function getAllPossibleKeyModifiers() {
+  const modifiers = ['shift', 'ctrl', 'alt', 'meta'];
+  modifiers.push(
+      ['shift', 'ctrl'], ['shift', 'alt'], ['shift', 'meta'], ['ctrl', 'alt'],
+      ['ctrl', 'meta'], ['alt', 'meta']);
+  modifiers.push(
+      ['shift', 'ctrl', 'alt'], ['shift', 'ctrl', 'meta'],
+      ['shift', 'alt', 'meta'], ['ctrl', 'alt', 'meta']);
+  modifiers.push(['shift', 'ctrl', 'alt', 'meta']);
+  return modifiers;
 }
 
 const tests = [
@@ -68,15 +79,29 @@ const tests = [
   },
 
   /**
-   * Test that when the document.documentElement is in fit to page, pressing
-   * page up/page down changes page back/forth.
+   * Test that when the PDF Viewer is in fit-to-page mode:
+   *  - Pressing page up/page down changes page back/forth.
+   *  - Pressing any modifiers + page up/page down does not.
    */
   function testPageDownInFitPage() {
     getViewer().viewport.fitToPage();
 
+    // Modifiers + Page down -> Does not change the page.
+    const modifiers = getAllPossibleKeyModifiers();
+    for (const mods of modifiers) {
+      pressAndReleaseKeyOn(document.documentElement, 34, mods, 'PageDown');
+      chrome.test.assertEq(0, getCurrentPage());
+    }
+
     // Page down -> Go to page 2.
     pressAndReleaseKeyOn(document.documentElement, 34, '', 'PageDown');
     chrome.test.assertEq(1, getCurrentPage());
+
+    // Modifiers + Page up -> Does not change the page.
+    for (const mods of modifiers) {
+      pressAndReleaseKeyOn(document.documentElement, 33, mods, 'PageUp');
+      chrome.test.assertEq(1, getCurrentPage());
+    }
 
     // Page up -> Back to page 1.
     pressAndReleaseKeyOn(document.documentElement, 33, '', 'PageUp');
