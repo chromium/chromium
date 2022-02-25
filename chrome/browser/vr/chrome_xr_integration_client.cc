@@ -48,7 +48,7 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
                                bool in_use) override {
     DVLOG(3) << __func__ << ": web_contents=" << web_contents
              << ", in_use=" << in_use << ", num_runtimes_with_camera_in_use_="
-             << num_runtimes_with_camera_in_use_ << ", ui_=" << ui_;
+             << num_runtimes_with_camera_in_use_ << ", ui_=" << ui_.get();
     // If `in_use` is true, we need to have a non-null `web_contents` to be able
     // to register the media stream:
     DCHECK(!in_use || web_contents);
