@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/widget/input/input_metrics.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 
@@ -734,6 +735,9 @@ WebInputEventResult WebPagePopupImpl::HandleGestureEvent(
       HitTestResult resultScroll =
           MainFrame().GetEventHandler().HitTestResultAtLocation(locationScroll);
       scrollable_node_ = FindFirstScroller(resultScroll.InnerNode());
+      RecordScrollReasonsMetric(
+          event.SourceDevice(),
+          cc::MainThreadScrollingReason::kPopupNoThreadedInput);
       return WebInputEventResult::kHandledSystem;
     }
     if (event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {

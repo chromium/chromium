@@ -33,6 +33,7 @@ struct CC_EXPORT MainThreadScrollingReason {
     // Non-transient scrolling reasons. These are set on the ScrollNode.
     kHasBackgroundAttachmentFixedObjects = 1 << 1,
     kThreadedScrollingDisabled = 1 << 3,
+    kPopupNoThreadedInput = 1 << 26,
 
     // Style-related scrolling on main reasons. Subpixel (LCD) text rendering
     // requires blending glyphs with the background at a specific screen
@@ -59,7 +60,7 @@ struct CC_EXPORT MainThreadScrollingReason {
     kWheelEventHandlerRegion = 1 << 24,
     kTouchEventHandlerRegion = 1 << 25,
 
-    kMainThreadScrollingReasonLast = 25,
+    kMainThreadScrollingReasonLast = 26,
   };
 
   static const uint32_t kNonCompositedReasons =
