@@ -269,6 +269,13 @@ void ScreenManagerAsh::GetWindowVideoCapturer(
   CreateVideoCaptureDevice(std::move(receiver), id);
 }
 
+aura::Window* ScreenManagerAsh::GetWindowById(uint64_t id) const {
+  if (!window_capturer_impl_)
+    return nullptr;
+
+  return window_capturer_impl_->LookupWindow(id);
+}
+
 ScreenManagerAsh::ScreenCapturerImpl*
 ScreenManagerAsh::GetScreenCapturerImpl() {
   if (!screen_capturer_impl_)

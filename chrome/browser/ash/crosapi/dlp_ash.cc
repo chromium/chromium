@@ -7,6 +7,9 @@
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
@@ -57,17 +60,28 @@ policy::DlpContentRestrictionSet ConvertMojoToDlpContentRestrictionSet(
 
 content::DesktopMediaID AreaToDesktopMediaID(
     const mojom::ScreenShareAreaPtr& area) {
-  aura::Window* window = area->window_id.has_value()
-                             ? GetShellSurfaceWindow(area->window_id.value())
-                             : ash::Shell::GetPrimaryRootWindow();
+  // Fullscreen share.
+  if (!area->window_id.has_value() && area->snapshot_source_id == 0) {
+    return content::DesktopMediaID::RegisterNativeWindow(
+        content::DesktopMediaID::TYPE_SCREEN,
+        ash::Shell::GetPrimaryRootWindow());
+  }
+
+  aura::Window* window = nullptr;
+  if (area->window_id.has_value()) {
+    window = GetShellSurfaceWindow(area->window_id.value());
+  } else if (area->snapshot_source_id != 0) {
+    window = crosapi::CrosapiManager::Get()
+                 ->crosapi_ash()
+                 ->screen_manager_ash()
+                 ->GetWindowById(area->snapshot_source_id);
+  }
+
   if (!window)
     return content::DesktopMediaID();
 
-  const content::DesktopMediaID::Type media_type =
-      area->window_id.has_value() ? content::DesktopMediaID::TYPE_WINDOW
-                                  : content::DesktopMediaID::TYPE_SCREEN;
-
-  return content::DesktopMediaID::RegisterNativeWindow(media_type, window);
+  return content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_WINDOW, window);
 }
 
 }  // namespace

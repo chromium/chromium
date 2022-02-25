@@ -290,6 +290,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
+  ScreenManagerAsh* screen_manager_ash() { return screen_manager_ash_.get(); }
+
   // Caller is responsible for ensuring that the pointer stays valid.
   void SetTestControllerForTesting(TestControllerReceiver* test_controller);
 

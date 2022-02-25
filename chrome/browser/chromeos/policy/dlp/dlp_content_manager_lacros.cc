@@ -18,6 +18,9 @@ namespace policy {
 
 namespace {
 
+// Min version of DLP crosapi with |ScreenShareArea.snapshot_source_id| field.
+constexpr int kSnapshotSourceIdMinVersion = 3;
+
 crosapi::mojom::DlpRestrictionLevel ConvertLevelToMojo(
     DlpRulesManager::Level level) {
   switch (level) {
@@ -67,12 +70,15 @@ crosapi::mojom::ScreenShareAreaPtr ConvertToScreenShareArea(
   }
   DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
   aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
-  // TODO(crbug.com/1293023): Should not normally happen when |window_id| will
-  // be correctly set.
-  if (media_id.window_id == 0 || !window) {
+  if (window) {
+    result->window_id = lacros_window_utility::GetRootWindowUniqueId(window);
+  } else if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+                 crosapi::mojom::Dlp::Uuid_) < kSnapshotSourceIdMinVersion) {
+    // TODO(crbug.com/1273189): Should not normally happen when |window_id| will
+    // be correctly set.
     return nullptr;
   }
-  result->window_id = lacros_window_utility::GetRootWindowUniqueId(window);
+  result->snapshot_source_id = media_id.id;
   return result;
 }
 

@@ -37,7 +37,10 @@ struct DlpRestrictionSet {
 [Stable, Extensible]
 struct ScreenShareArea {
   // All root windows if |window_id| is null.
-  string? window_id;
+  string? window_id@0;
+
+  // Unique identifier for a window from SnapshotSource in screen_manager.mojom.
+  [MinVersion=3] uint64 snapshot_source_id@1 = 0;
 };
 
 // Callback to control the state (pause/resume) of a remote screen share.
@@ -54,7 +57,7 @@ interface StateChangeDelegate {
 // Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
 // about changes in restrictions applied to web content in Lacros.
 //
-// Next MinVersion: 3
+// Next MinVersion: 4
 // Next ID: 4
 [Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
 interface Dlp {

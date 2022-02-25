@@ -47,6 +47,9 @@ class ScreenManagerAsh : public mojom::ScreenManager {
       mojo::PendingReceiver<mojom::VideoCaptureDevice> receiver,
       uint64_t window_id) override;
 
+  // Returns window by ID if present.
+  aura::Window* GetWindowById(uint64_t id) const;
+
  private:
   class ScreenCapturerImpl;
   class WindowCapturerImpl;
