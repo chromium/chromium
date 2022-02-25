@@ -15,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/escape.h"
 #include "url/url_constants.h"
@@ -66,19 +65,17 @@ SuggestionAnswer::TextField& SuggestionAnswer::TextField::operator=(
     TextField&&) noexcept = default;
 
 // static
-bool SuggestionAnswer::TextField::ParseTextField(const base::Value& field_json,
-                                                 TextField* text_field) {
-  if (!field_json.is_dict()) {
-    return false;
-  }
-  const std::string* text = field_json.FindStringKey(kAnswerJsonText);
-  absl::optional<int> type = field_json.FindIntKey(kAnswerJsonTextType);
+bool SuggestionAnswer::TextField::ParseTextField(
+    const base::Value::Dict& field_json,
+    TextField* text_field) {
+  const std::string* text = field_json.FindString(kAnswerJsonText);
+  absl::optional<int> type = field_json.FindInt(kAnswerJsonTextType);
   const bool parsed = text && !text->empty() && type;
   if (parsed) {
     text_field->type_ = *type;
     text_field->text_ = net::UnescapeForHTML(base::UTF8ToUTF16(*text));
 
-    absl::optional<int> num_lines = field_json.FindIntKey(kAnswerJsonNumLines);
+    absl::optional<int> num_lines = field_json.FindInt(kAnswerJsonNumLines);
     text_field->has_num_lines_ = num_lines.has_value();
     if (num_lines) {
       text_field->has_num_lines_ = true;
@@ -115,28 +112,25 @@ SuggestionAnswer::ImageLine& SuggestionAnswer::ImageLine::operator=(
 SuggestionAnswer::ImageLine::~ImageLine() {}
 
 // static
-bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
-                                                 ImageLine* image_line) {
-  if (!line_json.is_dict()) {
-    return false;
-  }
-  const base::Value* inner_json = line_json.FindKeyOfType(
-      kAnswerJsonImageLine, base::Value::Type::DICTIONARY);
-  if (!inner_json || !inner_json->is_dict()) {
+bool SuggestionAnswer::ImageLine::ParseImageLine(
+    const base::Value::Dict& line_json,
+    ImageLine* image_line) {
+  const base::Value::Dict* inner_json =
+      line_json.FindDict(kAnswerJsonImageLine);
+  if (!inner_json) {
     return false;
   }
 
-  const base::Value* fields_json =
-      inner_json->FindKeyOfType(kAnswerJsonText, base::Value::Type::LIST);
-  if (!fields_json || fields_json->GetListDeprecated().empty()) {
+  const base::Value::List* fields_json = inner_json->FindList(kAnswerJsonText);
+  if (!fields_json || fields_json->empty()) {
     return false;
   }
 
   bool found_num_lines = false;
-  for (const base::Value& field_json : fields_json->GetListDeprecated()) {
+  for (const base::Value& field_json : *fields_json) {
     TextField text_field;
     if (!field_json.is_dict() ||
-        !TextField::ParseTextField(field_json, &text_field)) {
+        !TextField::ParseTextField(field_json.GetDict(), &text_field)) {
       return false;
     }
 
@@ -147,32 +141,30 @@ bool SuggestionAnswer::ImageLine::ParseImageLine(const base::Value& line_json,
     }
   }
 
-  const base::Value* additional_text_json =
-      inner_json->FindKey(kAnswerJsonAdditionalText);
+  const base::Value::Dict* additional_text_json =
+      inner_json->FindDict(kAnswerJsonAdditionalText);
   if (additional_text_json) {
     image_line->additional_text_ = TextField();
-    if (!additional_text_json->is_dict() ||
-        !TextField::ParseTextField(*additional_text_json,
+    if (!TextField::ParseTextField(*additional_text_json,
                                    &image_line->additional_text_.value())) {
       return false;
     }
   }
 
-  const base::Value* status_text_json =
-      inner_json->FindKey(kAnswerJsonStatusText);
+  const base::Value::Dict* status_text_json =
+      inner_json->FindDict(kAnswerJsonStatusText);
   if (status_text_json) {
     image_line->status_text_ = TextField();
-    if (!status_text_json->is_dict() ||
-        !TextField::ParseTextField(*status_text_json,
+    if (!TextField::ParseTextField(*status_text_json,
                                    &image_line->status_text_.value())) {
       return false;
     }
   }
 
-  const base::Value* image_json = inner_json->FindKey(kAnswerJsonImage);
-  if (image_json && image_json->is_dict()) {
+  const base::Value::Dict* image_json = inner_json->FindDict(kAnswerJsonImage);
+  if (image_json) {
     const std::string* url_string =
-        image_json->FindStringKey(kAnswerJsonImageData);
+        image_json->FindString(kAnswerJsonImageData);
     if (!url_string || url_string->empty()) {
       return false;
     }
@@ -299,12 +291,9 @@ SuggestionAnswer& SuggestionAnswer::operator=(SuggestionAnswer&&) noexcept =
 SuggestionAnswer::~SuggestionAnswer() = default;
 
 // static
-bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
+bool SuggestionAnswer::ParseAnswer(const base::Value::Dict& answer_json,
                                    const std::u16string& answer_type_str,
                                    SuggestionAnswer* result) {
-  if (!answer_json.is_dict()) {
-    return false;
-  }
   int answer_type = 0;
   if (!base::StringToInt(answer_type_str, &answer_type)) {
     return false;
@@ -312,29 +301,26 @@ bool SuggestionAnswer::ParseAnswer(const base::Value& answer_json,
 
   result->set_type(answer_type);
 
-  const base::Value* lines_json =
-      answer_json.FindKeyOfType(kAnswerJsonLines, base::Value::Type::LIST);
-  if (!lines_json || lines_json->GetListDeprecated().size() != 2) {
+  const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
+  if (!lines_json || lines_json->size() != 2) {
     return false;
   }
 
-  const base::Value& first_line_json = lines_json->GetListDeprecated()[0];
-  if (!first_line_json.is_dict() ||
-      !ImageLine::ParseImageLine(first_line_json, &result->first_line_)) {
+  const base::Value::Dict* first_line_dict = (*lines_json)[0].GetIfDict();
+  if (!first_line_dict ||
+      !ImageLine::ParseImageLine(*first_line_dict, &result->first_line_)) {
     return false;
   }
 
-  const base::Value& second_line_json = lines_json->GetListDeprecated()[1];
-  if (!second_line_json.is_dict() ||
-      !ImageLine::ParseImageLine(second_line_json, &result->second_line_)) {
+  const base::Value::Dict* second_line_dict = (*lines_json)[1].GetIfDict();
+  if (!second_line_dict ||
+      !ImageLine::ParseImageLine(*second_line_dict, &result->second_line_)) {
     return false;
   }
 
   const std::string* image_url;
-  const base::Value* optional_image =
-      answer_json.FindKeyOfType("i", base::Value::Type::DICTIONARY);
-  if (optional_image && optional_image->is_dict() &&
-      (image_url = optional_image->FindStringKey("d"))) {
+  const base::Value::Dict* optional_image = answer_json.FindDict("i");
+  if (optional_image && (image_url = optional_image->FindString("d"))) {
     result->image_url_ = GURL(*image_url);
   } else {
     result->image_url_ = result->second_line_.image_url();

@@ -699,8 +699,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
         const std::string* answer_type =
             suggestion_detail.FindStringKey("ansb");
         if (answer_json && answer_type) {
-          if (SuggestionAnswer::ParseAnswer(
-                  *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
+          if (SuggestionAnswer::ParseAnswer(answer_json->GetDict(),
+                                            base::UTF8ToUTF16(*answer_type),
+                                            &answer)) {
             base::UmaHistogramSparse("Omnibox.AnswerParseType", answer.type());
             answer_parsed_successfully = true;
           }

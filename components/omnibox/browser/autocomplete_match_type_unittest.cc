@@ -53,7 +53,7 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 
   // ParseAnswer previously did not change the default answer type of -1, so
   // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(*value, u"-1", answer);
+  return SuggestionAnswer::ParseAnswer(value->GetDict(), u"-1", answer);
 }
 
 }  // namespace
