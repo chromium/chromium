@@ -6,7 +6,6 @@
 
 load("./args.star", "args")
 load("./nodes.star", "nodes")
-load("//project.star", "settings")
 
 # TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
 
@@ -512,7 +511,10 @@ def _get_mirroring_builders(node):
 
 def _builder_id(node):
     return dict(
-        project = settings.project,
+        # TODO(crbug.com/868153) Once the configs for all chromium builders are
+        # migrated src-side, switch this to settings.project and remove the use
+        # of project_trigger_override within the starlark
+        project = "chromium",
         bucket = node.props.bucket,
         builder = node.props.name,
     )
