@@ -32,6 +32,7 @@
 namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
+constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 
 }  // namespace
 
@@ -186,6 +187,20 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(create_tabgroup_step);
 
+    // Getting the new tab group (hidden step).
+    TutorialDescription::Step new_tab_group_step(
+        0, 0, ui::InteractionSequence::StepType::kShown,
+        kTabGroupHeaderElementId, std::string(), HelpBubbleArrow::kNone,
+        ui::CustomElementEventType(), /* must_remain_visible =*/true,
+        /* transition_only_on_event =*/true,
+        base::BindRepeating(
+            [](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
+              sequence->NameElement(
+                  element, base::StringPiece(kTabGroupHeaderElementName));
+              return true;
+            }));
+    description.steps.emplace_back(std::move(new_tab_group_step));
+
     // The menu step.
     TutorialDescription::Step bubble_menu_edit_step(
         0, IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE,
@@ -219,8 +234,8 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
     // Click to collapse the tab group.
     TutorialDescription::Step collapse_step(
         0, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
-        ui::InteractionSequence::StepType::kShown, kTabGroupHeaderElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
+        ui::InteractionSequence::StepType::kShown, ui::ElementIdentifier(),
+        kTabGroupHeaderElementName, HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(collapse_step));
 
     // Completion of the tutorial.
