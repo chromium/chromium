@@ -245,14 +245,14 @@ static constexpr pool_handle kConfigurablePoolHandle = 3;
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
 #if defined(PA_HAS_MEMORY_TAGGING)
-// Returns whether the tag of a pointer/slot overflowed and slot needs to be
-// moved to quarantine.
-constexpr ALWAYS_INLINE bool HasOverflowTag(uintptr_t ptr) {
+// Returns whether the tag of |object| overflowed and the containing slot needs
+// to be moved to quarantine.
+ALWAYS_INLINE bool HasOverflowTag(void* object) {
   // The tag with which the slot is put to quarantine.
   constexpr uintptr_t kOverflowTag = 0x0f00000000000000uLL;
   static_assert((kOverflowTag & ~kMemTagUnmask) != 0,
                 "Overflow tag must be in tag bits");
-  return (ptr & ~kMemTagUnmask) == kOverflowTag;
+  return (reinterpret_cast<uintptr_t>(object) & ~kMemTagUnmask) == kOverflowTag;
 }
 #endif  // defined(PA_HAS_MEMORY_TAGGING)
 

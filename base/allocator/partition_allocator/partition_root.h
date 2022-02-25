@@ -562,15 +562,16 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
     return quarantine_mode == QuarantineMode::kEnabled;
   }
 
-  ALWAYS_INLINE bool ShouldQuarantine(uintptr_t slot_start) const {
+  ALWAYS_INLINE bool ShouldQuarantine(void* object) const {
     if (UNLIKELY(quarantine_mode != QuarantineMode::kEnabled))
       return false;
 #if defined(PA_HAS_MEMORY_TAGGING)
     if (UNLIKELY(quarantine_always_for_testing))
       return true;
-    // If quarantine is enabled and tag overflows, move slot to quarantine, to
-    // prevent the attacker from exploiting a pointer that has old tag.
-    return HasOverflowTag(slot_start);
+    // If quarantine is enabled and the tag overflows, move the containing slot
+    // to quarantine, to prevent the attacker from exploiting a pointer that has
+    // an old tag.
+    return HasOverflowTag(object);
 #else
     return true;
 #endif
@@ -1090,11 +1091,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
 #if defined(PA_HAS_MEMORY_TAGGING)
   const size_t slot_size = slot_span->bucket->slot_size;
   if (LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
-    // Incrementing the memory range returns the true underlying tag, so
-    // RemaskPtr is not required here.
     // TODO(bartekn): |slot_start| shouldn't have MTE tag.
     slot_start = ::partition_alloc::internal::TagMemoryRangeIncrement(
         slot_start, slot_size);
+    // Incrementing the MTE-tag in the memory range invalidates the |object|'s
+    // tag, so it must be retagged.
     object = ::partition_alloc::internal::RemaskPtr(object);
   }
 #else
@@ -1114,7 +1115,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
 
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
-  if (UNLIKELY(root->ShouldQuarantine(slot_start))) {
+  if (UNLIKELY(root->ShouldQuarantine(object))) {
     // PCScan safepoint. Call before potentially scheduling scanning task.
     PCScan::JoinScanIfNeeded();
     if (LIKELY(internal::IsManagedByNormalBuckets(slot_start))) {
