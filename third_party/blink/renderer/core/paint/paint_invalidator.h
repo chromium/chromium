@@ -24,7 +24,9 @@ struct CORE_EXPORT PaintInvalidatorContext {
   explicit PaintInvalidatorContext(const PaintInvalidatorContext& parent)
       : parent_context(&parent),
         subtree_flags(parent.subtree_flags),
-        painting_layer(parent.painting_layer) {}
+        painting_layer(parent.painting_layer),
+        inside_opaque_layout_shift_root(
+            parent.inside_opaque_layout_shift_root) {}
 
   bool NeedsSubtreeWalk() const {
     return subtree_flags &
@@ -65,6 +67,10 @@ struct CORE_EXPORT PaintInvalidatorContext {
   PhysicalOffset old_paint_offset;
 
   const FragmentData* fragment_data = nullptr;
+
+  // Set when we have entered something that shouldn't track layout shift
+  // inside (multicol container).
+  bool inside_opaque_layout_shift_root = false;
 
  private:
   friend class PaintInvalidator;

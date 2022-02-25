@@ -1411,6 +1411,9 @@ crbug.com/591099 external/wpt/html/links/manifest/wrong-mime-type-text-plain-man
 ### external/wpt/html/semantics/interactive-elements/the-popup-element/
 crbug.com/1178754 external/wpt/html/semantics/interactive-elements/the-popup-element/popup-light-dismiss.tentative.html [ Crash ]
 
+### external/wpt/layout-instability
+crbug.com/829028 external/wpt/layout-instability/multicol-001.html [ Failure ]
+
 ### virtual/stable/compositing/filters/
 crbug.com/591099 virtual/stable/compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 

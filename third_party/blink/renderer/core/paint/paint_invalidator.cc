@@ -93,7 +93,8 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   if (!object.ShouldCheckGeometryForPaintInvalidation())
     return;
 
-  if (tree_builder_context.this_or_ancestor_opacity_is_zero) {
+  if (tree_builder_context.this_or_ancestor_opacity_is_zero ||
+      context.inside_opaque_layout_shift_root) {
     object.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(true);
     return;
   }
@@ -156,11 +157,18 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
   old_rect.Move(adjusted_old_paint_offset);
 
+  // TODO(crbug.com/1178618): We may want to do better than this. For now, just
+  // don't report anything inside multicol containers.
+  const auto* block_flow = DynamicTo<LayoutBlockFlow>(&box);
+  if (block_flow && block_flow->IsFragmentationContextRoot() &&
+      block_flow->IsLayoutNGObject())
+    context.inside_opaque_layout_shift_root = true;
+
   bool should_create_containing_block_scope =
       // TODO(crbug.com/1178618): Support multiple-fragments when switching to
       // LayoutNGFragmentTraversal.
-      context.fragment_data == &box.FirstFragment() &&
-      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
+      context.fragment_data == &box.FirstFragment() && block_flow &&
+      block_flow->ChildrenInline() && block_flow->FirstChild();
   if (should_create_containing_block_scope) {
     // For layout shift tracking of contained LayoutTexts.
     context.containing_block_scope_.emplace(
