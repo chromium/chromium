@@ -13,6 +13,7 @@ preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
 
 web_component_files = [
+  "file_handling_item.ts",
   "icons.ts",
   "more_permissions_item.ts",
   "permission_item.ts",

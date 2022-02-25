@@ -74,4 +74,6 @@ export enum AppManagementUserAction {
   WindowModeChangedToWindow = 26,
   RunOnOsLoginModeTurnedOn = 27,
   RunOnOsLoginModeTurnedOff = 28,
+  FileHandlingTurnedOn = 29,
+  FileHandlingTurnedOff = 30,
 }

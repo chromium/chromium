@@ -60,6 +60,11 @@ export class FakePageHandler implements PageHandlerInterface {
     this.app_.runOnOsLogin!.loginMode = loginMode;
     this.page_.onAppChanged(this.app_);
   }
+
+  setFileHandlingEnabled(_appId: string, fileHandlingEnabled: boolean) {
+    this.app_.fileHandlingState!.enabled = fileHandlingEnabled;
+    this.page_.onAppChanged(this.app_);
+  }
 }
 
 export class TestAppManagementBrowserProxy implements BrowserProxy {

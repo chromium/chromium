@@ -30,6 +30,7 @@ struct App {
   bool hide_resize_locked;
   array<string> supported_links;
   apps.mojom.RunOnOsLogin? run_on_os_login;
+  FileHandlingState? file_handling_state;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be
@@ -69,6 +70,9 @@ interface PageHandler {
   // of an app via app_management_page_handler.
   SetRunOnOsLoginMode(string app_id,
     apps.mojom.RunOnOsLoginMode run_on_os_login_mode);
+  // Used to set the state of the File Handling API from the frontend inside
+  // app_management_page_handler.
+  SetFileHandlingEnabled(string app_id, bool enabled);
 };
 
 // Frontend interface.
@@ -76,4 +80,10 @@ interface Page {
   OnAppAdded(App app);
   OnAppChanged(App update);
   OnAppRemoved(string app_id);
+};
+
+struct FileHandlingState {
+  bool enabled;
+  bool is_managed;
+  string user_visible_types;
 };

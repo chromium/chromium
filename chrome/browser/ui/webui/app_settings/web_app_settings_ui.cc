@@ -29,6 +29,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"title", IDS_WEB_APP_SETTINGS_TITLE},
       {"appManagementAppInstalledByPolicyLabel",
        IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING},
+      {"appManagementFileHandlingHeader",
+       IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},

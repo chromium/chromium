@@ -17,6 +17,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -144,6 +147,14 @@ AppManagementPageHandler::AppManagementPageHandler(
       &apps::AppServiceProxyFactory::GetForProfile(profile_)
            ->AppRegistryCache());
   preferred_apps_list_handle_observer_.Observe(&preferred_apps_list_handle_);
+
+  // On Chrome OS, file handler updates are already plumbed through
+  // `OnAppUpdate()` since the change will also affect the intent filters.
+  // There's no need to update twice.
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  registrar_observation_.Observe(&provider->registrar());
+#endif
 }
 
 AppManagementPageHandler::~AppManagementPageHandler() {}
@@ -303,6 +314,32 @@ void AppManagementPageHandler::SetRunOnOsLoginMode(
 #endif
 }
 
+void AppManagementPageHandler::SetFileHandlingEnabled(const std::string& app_id,
+                                                      bool enabled) {
+  web_app::PersistFileHandlersUserChoice(profile_, app_id, enabled,
+                                         base::DoNothing());
+}
+
+void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
+    const web_app::AppId& app_id) {
+#if BUILDFLAG(IS_CHROMEOS)
+  NOTREACHED();
+#endif
+  app_management::mojom::AppPtr app;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::Readiness::kReady)
+          app = CreateUIAppPtr(update);
+      });
+
+  if (!app)
+    return;
+
+  page_->OnAppChanged(std::move(app));
+}
+
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   base::flat_map<apps::mojom::PermissionType, apps::mojom::PermissionPtr>
@@ -347,6 +384,27 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->window_mode = update.WindowMode();
   app->supported_links = GetSupportedLinks(profile_, app->id);
   app->run_on_os_login = update.RunOnOsLogin();
+
+// TODO(crbug/1245293): implement on Chrome OS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (update.AppType() == apps::mojom::AppType::kWeb) {
+    auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    const bool fh_enabled =
+        !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
+    std::string file_handling_types;
+    if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
+            app->id) &&
+        !provider->registrar().GetAppFileHandlers(app->id)->empty()) {
+      // TODO(crbug/1245293): elide types and add clickable link.
+      file_handling_types = base::UTF16ToUTF8(
+          web_app::GetFileTypeAssociationsHandledByWebAppForDisplay(profile_,
+                                                                    app->id));
+    }
+    // TODO(crbug/1252505): add file handling policy support.
+    app->file_handling_state = app_management::mojom::FileHandlingState::New(
+        fh_enabled, /*is_managed=*/false, file_handling_types);
+  }
+#endif
 
   return app;
 }

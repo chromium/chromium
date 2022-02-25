@@ -109,6 +109,7 @@ export class FakePageHandler {
       hideResizeLocked: true,
       supportedLinks: [],
       runOnOsLogin: null,
+      fileHandlingState: null,
     };
 
     if (optConfig) {
@@ -310,6 +311,14 @@ export class FakePageHandler {
    * @param {apps.mojom.RunOnOsLoginMode} runOnOsLoginMode
    */
   setRunOnOsLoginMode(appId, runOnOsLoginMode) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {string} appId
+   * @param {boolean} fileHandlingEnabled
+   */
+  setFileHandlingEnabled(appId, fileHandlingEnabled) {
     assertNotReached();
   }
 

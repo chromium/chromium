@@ -78,9 +78,15 @@
             permission-type="kMicrophone">
         </app-management-permission-item>
       </div>
+    </div>
+    <app-management-file-handling-item
+        class="permission-card-row separated-row"
+        file-handling-header="$i18n{appManagementFileHandlingHeader}"
+        app="[[app_]]">
+    </app-management-file-handling-item>
+    <app-management-more-permissions-item
+        class="permission-card-row separated-row" app="[[app_]]"
+        more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
+    </app-management-more-permissions-item>
   </div>
-  <app-management-more-permissions-item
-      class="permission-card-row separated-row" app="[[app_]]"
-      more-permissions-label="$i18n{appManagementMorePermissionsLabel}">
-  </app-management-more-permissions-item>
 </div>

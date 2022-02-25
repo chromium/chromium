@@ -35,6 +35,8 @@ suite('AppSettingsAppTest', () => {
       hideResizeLocked: true,
       supportedLinks: [],
       runOnOsLogin: {loginMode: RunOnOsLoginMode.kNotRun, isManaged: false},
+      fileHandlingState:
+          {enabled: false, isManaged: false, userVisibleTypes: 'TXT'},
     };
 
     const permissionTypes = [
@@ -89,6 +91,19 @@ suite('AppSettingsAppTest', () => {
     runOnOsLoginItem.click();
     assertEquals(
         runOnOsLoginItem.app.runOnOsLogin!.loginMode, RunOnOsLoginMode.kNotRun);
+  });
+
+  test('Toggle File Handling', function() {
+    const fileHandlingItem = appSettingsApp.shadowRoot!.querySelector(
+        'app-management-file-handling-item')!;
+    assertTrue(!!fileHandlingItem);
+    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
+
+    fileHandlingItem.click();
+    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, true);
+
+    fileHandlingItem.click();
+    assertEquals(fileHandlingItem.app.fileHandlingState!.enabled, false);
   });
 
   test('Toggle window mode', function() {
