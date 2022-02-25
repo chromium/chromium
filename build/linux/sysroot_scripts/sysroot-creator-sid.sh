@@ -298,6 +298,8 @@ DEBIAN_PACKAGES="\
   libudev1
   libunbound8
   libunistring2
+  libutempter-dev
+  libutempter0
   libuuid1
   libva-dev
   libva-drm2

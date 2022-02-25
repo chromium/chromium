@@ -187,6 +187,8 @@ https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libt/libth
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libt/libtirpc/libtirpc3_1.3.2-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libt/libtool/libltdl7_2.4.6-15_i386.deb
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libu/libunistring/libunistring2_0.9.10-6_i386.deb
+https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libu/libutempter/libutempter0_1.2.1-2_i386.deb
+https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libu/libutempter/libutempter-dev_1.2.1-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libv/libva/libva2_2.12.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libv/libva/libva-dev_2.12.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210819T144544Z/pool/main/libv/libva/libva-drm2_2.12.0-2_i386.deb
