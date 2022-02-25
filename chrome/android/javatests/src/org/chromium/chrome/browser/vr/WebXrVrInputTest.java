@@ -12,7 +12,6 @@ import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_V
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_NON_DAYDREAM;
 
 import android.graphics.PointF;
-import android.os.Build;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +31,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -93,14 +92,11 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
-    @DisableIf
-            .Build(message = "Flaky on K/L crbug.com/762126",
-                    sdk_is_less_than = Build.VERSION_CODES.M)
-            @Restriction(RESTRICTION_TYPE_SVR)
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void
-            testScreenTapsNotRegistered_WebXr() throws InterruptedException {
+    @DisabledTest(message = "https://crbug.com/1300966")
+    @Restriction(RESTRICTION_TYPE_SVR)
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testScreenTapsNotRegistered_WebXr() throws InterruptedException {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
 
@@ -133,6 +129,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1300966")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -392,6 +389,7 @@ public class WebXrVrInputTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1300966")
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
