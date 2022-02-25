@@ -25,30 +25,6 @@ constexpr auto enabled_by_default_desktop_only =
 
 }  // namespace
 
-bool IsJourneysEnabled(const std::string& locale) {
-  if (!base::FeatureList::IsEnabled(internal::kJourneys))
-    return false;
-
-  // Allow comma and colon as delimiters to the language list.
-  auto allowlist =
-      base::SplitString(kLocaleOrLanguageAllowlist.Get(),
-                        ",:", base::WhitespaceHandling::TRIM_WHITESPACE,
-                        base::SplitResult::SPLIT_WANT_NONEMPTY);
-  if (allowlist.empty())
-    return true;
-
-  // Allow any exact locale matches, and also allow any users where the primary
-  // language subtag, e.g. "en" from "en-US" to match any element of the list.
-  return base::Contains(allowlist, locale) ||
-         base::Contains(allowlist, l10n_util::GetLanguage(locale));
-}
-
-// Default to "", because defaulting it to a specific locale makes it hard to
-// allow all locales, since the FeatureParam code interprets an empty string as
-// undefined, and instead returns the default value.
-const base::FeatureParam<std::string> kLocaleOrLanguageAllowlist{
-    &internal::kJourneys, "JourneysLocaleOrLanguageAllowlist", ""};
-
 const base::FeatureParam<int> kMaxVisitsToCluster{
     &internal::kJourneys, "JourneysMaxVisitsToCluster", 1000};
 
