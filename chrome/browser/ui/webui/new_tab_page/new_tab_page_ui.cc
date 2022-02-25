@@ -46,6 +46,7 @@
 #include "chrome/grit/new_tab_page_resources.h"
 #include "chrome/grit/new_tab_page_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
@@ -82,6 +83,19 @@ namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 constexpr char kSignedOutNtpModulesSwitch[] = "signed-out-ntp-modules";
+
+void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
+  int discount_consent_variation = commerce::kDiscountConsentNtpVariation.Get();
+
+  if (discount_consent_variation ==
+      static_cast<int>(commerce::DiscountConsentNtpVariation::kStringChange)) {
+    source->AddLocalizedString(
+        "modulesCartDiscountConsentContent",
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V2);
+  }
+  // TODO(crbug/1298116): Add resource for the inline and dialog variation,
+  // including finch params.
+}
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   content::WebUIDataSource* source =
@@ -287,8 +301,6 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_CART_DISCOUNT_CHIP_AMOUNT},
       {"modulesCartDiscountChipUpToAmount",
        IDS_NTP_MODULES_CART_DISCOUNT_CHIP_UP_TO_AMOUNT},
-      {"modulesCartDiscountConsentContent",
-       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT},
       {"modulesCartDiscountConsentAccept",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT},
       {"modulesCartDiscountConsentAcceptConfirmation",
@@ -307,8 +319,15 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3},
       {"modulesCartDiscountConentTitle",
        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE},
-     };
+  };
   source->AddLocalizedStrings(kStrings);
+
+  if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {
+    AddResourcesForCartDiscountConsentV2(source);
+  } else {
+    source->AddLocalizedString("modulesCartDiscountConsentContent",
+                               IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT);
+  }
 
 #if !defined(OFFICIAL_BUILD)
   source->AddBoolean(

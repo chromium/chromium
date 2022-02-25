@@ -8105,7 +8105,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-discount-consent-v2", flag_descriptions::kDiscountConsentV2Name,
      flag_descriptions::kDiscountConsentV2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(commerce::kDiscountConsentV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kDiscountConsentV2,
+                                    commerce::kDiscountConsentV2Variations,
+                                    "DiscountConsentV2")},
 #endif
 
     {"autofill-enable-unmask-card-request-set-instrument-id",
