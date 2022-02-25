@@ -52,9 +52,10 @@ sys.path.append(
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
+from build import (LLVM_BOOTSTRAP_DIR)
 
-# Trunk on 2/10/2021
-RUST_REVISION = '502d6aa'
+# Trunk on 2/24/2022
+RUST_REVISION = '4b043fa'
 RUST_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s-%s-%s' % (RUST_REVISION, RUST_SUB_REVISION,
@@ -127,14 +128,14 @@ def CheckoutRust(commit, dir):
   sys.exit(1)
 
 
-def Configure():
+def Configure(llvm_libs_root):
   # Read the config.toml template file...
   with open(RUST_CONFIG_TEMPLATE_PATH, 'r') as input:
     template = string.Template(input.read())
 
   subs = {}
   subs['INSTALL_DIR'] = RUST_TOOLCHAIN_OUT_DIR
-  subs['LLVM_ROOT'] = LLVM_BUILD_DIR
+  subs['LLVM_ROOT'] = llvm_libs_root
   subs['PACKAGE_VERSION'] = PACKAGE_VERSION
 
   # ...and apply substitutions, writing to config.toml in Rust tree.
@@ -173,8 +174,8 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
   RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']
   os.chdir(RUST_SRC_DIR)
   cmd = [sys.executable, 'x.py', sub]
-  if verbose:
-    cmd.append('-v')
+  if verbose and verbose > 0:
+    cmd.append('-' + verbose * 'v')
   RunCommand(cmd + args, env=RUSTENV)
 
 
@@ -183,7 +184,7 @@ def main():
       description='Build and package Rust toolchain')
   parser.add_argument('-v',
                       '--verbose',
-                      action='store_true',
+                      action='count',
                       help='run subcommands with verbosity')
   parser.add_argument(
       '--skip-checkout',
@@ -201,11 +202,26 @@ def main():
   parser.add_argument(
       '--fetch-llvm-libs',
       action='store_true',
-      help='fetch Clang/LLVM libs and extract into LLVM_BUILD_DIR')
+      help='fetch Clang/LLVM libs and extract into LLVM_BUILD_DIR. Useless '
+      'without --llvm-not-bootstrap-dir.')
+  parser.add_argument(
+      '--llvm-not-bootstrap-dir',
+      action='store_true',
+      help='use libs in LLVM_BUILD_DIR instead of LLVM_BOOTSTRAP_DIR. Useful '
+      'with --fetch-llvm-libs for local builds.')
   args = parser.parse_args()
 
   if args.fetch_llvm_libs:
     UpdatePackage('clang-libs', GetDefaultHostOs())
+
+  # Get the LLVM root for libs. We use LLVM_BUILD_DIR tools either way.
+  #
+  # TODO(https://crbug.com/1245714): use LTO libs from LLVM_BUILD_DIR for
+  # stage 2+.
+  if args.llvm_not_bootstrap_dir:
+    llvm_libs_root = LLVM_BUILD_DIR
+  else:
+    llvm_libs_root = LLVM_BOOTSTRAP_DIR
 
   # Fetch GCC package to build against same libstdc++ as Clang. This function
   # will only download it if necessary.
@@ -223,7 +239,7 @@ def main():
       shutil.rmtree(dir)
 
   # Set up config.toml in Rust source tree to configure build.
-  Configure()
+  Configure(llvm_libs_root)
 
   if not args.skip_clean:
     RunXPy('clean', [], args.gcc_toolchain, args.verbose)
