@@ -49,6 +49,9 @@ class TestPageLoadMetricsEmbedder
     return false;
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
+  bool IsSidePanel(content::WebContents* web_contents) override {
+    return false;
+  }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(

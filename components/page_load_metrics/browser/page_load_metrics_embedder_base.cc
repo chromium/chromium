@@ -24,7 +24,7 @@ PageLoadMetricsEmbedderBase::~PageLoadMetricsEmbedderBase() = default;
 
 void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   // Register observers used by all embedders
-  if (!IsNoStatePrefetch(web_contents())) {
+  if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents())) {
     tracker->AddObserver(
         std::make_unique<BackForwardCachePageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());

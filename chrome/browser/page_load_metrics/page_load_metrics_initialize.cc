@@ -43,6 +43,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
@@ -85,6 +86,7 @@ class PageLoadMetricsEmbedder
   bool IsNewTabPageUrl(const GURL& url) override;
   bool IsNoStatePrefetch(content::WebContents* web_contents) override;
   bool IsExtensionUrl(const GURL& url) override;
+  bool IsSidePanel(content::WebContents* web_contents) override;
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -103,6 +105,10 @@ PageLoadMetricsEmbedder::~PageLoadMetricsEmbedder() = default;
 
 void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     page_load_metrics::PageLoadTracker* tracker) {
+  // TODO(crbug.com/1299103): Integrate side panel metrics with UKM.
+  if (IsSidePanel(web_contents()))
+    return;
+
   if (!IsNoStatePrefetch(web_contents())) {
     tracker->AddObserver(std::make_unique<AbortsPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<AMPPageLoadMetricsObserver>());
@@ -202,6 +208,14 @@ bool PageLoadMetricsEmbedder::IsExtensionUrl(const GURL& url) {
 #else
   return false;
 #endif
+}
+
+bool PageLoadMetricsEmbedder::IsSidePanel(content::WebContents* web_contents) {
+#if BUILDFLAG(ENABLE_SIDE_SEARCH)
+  return side_search::IsSidePanelWebContents(web_contents);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 }
 
 page_load_metrics::PageLoadMetricsMemoryTracker*

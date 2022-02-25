@@ -53,6 +53,10 @@ void SetSideSearchTabStateFromRestoreData(
     content::WebContents* web_contents,
     const std::map<std::string, std::string>& extra_data);
 
+// Returns true if `web_contents` is to be embedded in the side panel for the
+// side search feature.
+bool IsSidePanelWebContents(content::WebContents* web_contents);
+
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile);
