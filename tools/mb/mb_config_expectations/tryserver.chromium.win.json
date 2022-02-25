@@ -239,21 +239,6 @@
       "use_goma": true
     }
   },
-  "win10-rel-orchestrator": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": false,
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
-      "dcheck_always_on": true,
-      "enable_resource_allowlist_generation": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
