@@ -155,6 +155,22 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
+    public void getPropertyModels_longScreenshotEnabledNoTab_excludesLongScreenshot() {
+        Mockito.when(mTabProvider.hasValue()).thenReturn(false);
+        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
+                /*printingEnabled=*/true, LinkGeneration.MAX);
+        List<PropertyModel> propertyModels =
+                mChromeProvidedSharingOptionsProvider.getPropertyModels(
+                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
+                        DetailedContentType.NOT_SPECIFIED,
+                        /*isMultiWindow=*/false);
+
+        assertFalse("Property models should not contain long screenshots.",
+                propertyModelsContain(propertyModels, R.string.sharing_long_screenshot));
+    }
+
+    @Test
+    @MediumTest
     public void getPropertyModels_printingEnabledNoTab_excludesPrinting() {
         Mockito.when(mTabProvider.hasValue()).thenReturn(false);
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
