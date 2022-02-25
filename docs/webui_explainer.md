@@ -258,7 +258,7 @@ void OvenHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void OvenHandler::HandleBakeDonuts(base::Value::ConstListView args) {
+void OvenHandler::HandleBakeDonuts(const base::Value::List& args) {
   AllowJavascript();
 
   // IMPORTANT: Fully validate `args`.

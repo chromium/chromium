@@ -37,7 +37,7 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
 
  private:
   // This method is called from JavaScript.
-  void OnPageLoaded(base::Value::ConstListView args);
+  void OnPageLoaded(const base::Value::List& args);
 
   void GotIsTPMTokenEnabledOnUIThread(bool is_tpm_token_enabled);
 

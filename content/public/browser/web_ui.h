@@ -73,27 +73,29 @@ class CONTENT_EXPORT WebUI {
   virtual void AddMessageHandler(
       std::unique_ptr<WebUIMessageHandler> handler) = 0;
 
-  // TODO(crbug.com/1300095): new version of DeprecatedMessageCallback2 that
-  // takes base::Value::List as a parameter needs to be introduced. Afterwards
-  // existing callers of RegisterDeprecatedMessageCallback2() should be migrated
-  // to the new RegisterMessageCallback() (not yet introduced) version.
-  //
   // Used by WebUIMessageHandlers. If the given message is already registered,
   // the call has no effect.
+  using MessageCallback =
+      base::RepeatingCallback<void(const base::Value::List&)>;
+  virtual void RegisterMessageCallback(base::StringPiece message,
+                                       MessageCallback callback) = 0;
+
+  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback2()
+  // should be migrated to RegisterMessageCallback() above if possible.
+  //
+  // Used by WebUIMessageHandlers. If the given message is already registered,
+  // the call has no effect. Use RegisterMessageCallback() above in new code.
   using DeprecatedMessageCallback2 =
       base::RepeatingCallback<void(base::Value::ConstListView)>;
   virtual void RegisterDeprecatedMessageCallback2(
       base::StringPiece message,
       DeprecatedMessageCallback2 callback) = 0;
 
-  // TODO(crbug.com/1300095): new version of DeprecatedMessageCallback that
-  // takes base::Value::List as a parameter needs to be introduced. Afterwards
-  // existing callers of RegisterDeprecatedMessageCallback() should be migrated
-  // to the new RegisterMessageCallback() (not yet introduced) version if
-  // possible.
+  // TODO(crbug.com/1300095): Instances of RegisterDeprecatedMessageCallback()
+  // should be migrated to RegisterMessageCallback() above if possible.
   //
   // Used by WebUIMessageHandlers. If the given message is already registered,
-  // the call has no effect.
+  // the call has no effect. Use RegisterMessageCallback() above in new code.
   using DeprecatedMessageCallback =
       base::RepeatingCallback<void(const base::ListValue*)>;
   virtual void RegisterDeprecatedMessageCallback(

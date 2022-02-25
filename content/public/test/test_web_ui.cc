@@ -27,14 +27,25 @@ void TestWebUI::ClearTrackedCalls() {
 
 void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
                                       const base::ListValue* args) {
-  const auto callbacks_map_it =
+  const auto callbacks_map_it = message_callbacks_.find(handler_name);
+  if (callbacks_map_it != message_callbacks_.end()) {
+    // Create a copy of the callbacks before running them. Without this, it
+    // could be possible for the callback's handler to register a new message
+    // handler during iteration of the vector, resulting in undefined behavior.
+    std::vector<MessageCallback> callbacks_to_run = callbacks_map_it->second;
+    for (auto& callback : callbacks_to_run)
+      callback.Run(args->GetList());
+    return;
+  }
+
+  const auto deprecated_callbacks_2_map_it =
       deprecated_message_callbacks_2_.find(handler_name);
-  if (callbacks_map_it != deprecated_message_callbacks_2_.end()) {
+  if (deprecated_callbacks_2_map_it != deprecated_message_callbacks_2_.end()) {
     // Create a copy of the callbacks before running them. Without this, it
     // could be possible for the callback's handler to register a new message
     // handler during iteration of the vector, resulting in undefined behavior.
     std::vector<DeprecatedMessageCallback2> callbacks_to_run =
-        callbacks_map_it->second;
+        deprecated_callbacks_2_map_it->second;
     for (auto& callback : callbacks_to_run)
       callback.Run(args->GetListDeprecated());
     return;
@@ -96,6 +107,12 @@ void TestWebUI::AddMessageHandler(
   handler->set_web_ui(this);
   handler->RegisterMessages();
   handlers_.push_back(std::move(handler));
+}
+
+void TestWebUI::RegisterMessageCallback(base::StringPiece message,
+                                        MessageCallback callback) {
+  message_callbacks_[static_cast<std::string>(message)].push_back(
+      std::move(callback));
 }
 
 void TestWebUI::RegisterDeprecatedMessageCallback2(
