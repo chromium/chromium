@@ -1148,7 +1148,7 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(
   if (web_contents->GetURL() !=
       GURL("chrome://app-settings/" + app_state->id)) {
     OpenAppSettingsFromChromeApps(site_mode);
-    CheckBrowserNavigationIsAppSettings("SiteA");
+    CheckBrowserNavigationIsAppSettings(site_mode);
   }
 
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1628,7 +1628,8 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
 
 void WebAppIntegrationTestDriver::BeforeStateChangeAction(
     const char* function) {
-  LOG(INFO) << "BeforeStateChangeAction: " << function;
+  LOG(INFO) << "BeforeStateChangeAction: "
+            << std::string(executing_action_level_, ' ') << function;
   ++executing_action_level_;
   std::unique_ptr<StateSnapshot> current_state = ConstructStateSnapshot();
   if (after_state_change_action_state_) {
@@ -1664,8 +1665,9 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
 }
 
 void WebAppIntegrationTestDriver::BeforeStateCheckAction(const char* function) {
-  LOG(INFO) << "BeforeStateCheckAction: " << function;
   ++executing_action_level_;
+  LOG(INFO) << "BeforeStateCheckAction: "
+            << std::string(executing_action_level_, ' ') << function;
   DCHECK(after_state_change_action_state_);
 }
 

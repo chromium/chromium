@@ -74,7 +74,7 @@ def compare_and_print_tests_to_remove_and_add(
                 tests_added_to_partition.add(test.id)
             filename = partition.generate_browsertest_filepath(platforms)
             print(f"\n\nAdd this following tests to {filename}:\n")
-            for test in tests_to_add:
+            for test in tests_to_add_partition:
                 print(test.generate_browsertest(partition) + "\n")
 
         # All remaining tests go into the default partition
