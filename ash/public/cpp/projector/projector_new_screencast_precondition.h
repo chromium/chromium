@@ -39,7 +39,9 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
   kSodaDownloadInProgress = 5,
   kOutOfDiskSpace = 6,
   kNoMic = 7,
-  kOthers = 8
+  kDriveFsUnmounted = 8,    // Drive could be re-enabled from the Setting.
+  kDriveFsMountFailed = 9,  // Drive will not be automatically retried to mount.
+  kOthers = 10,
 };
 
 // Struct used to provide the new screen cast precondition state and the reasons

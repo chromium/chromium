@@ -60,5 +60,7 @@ export const NewScreencastPreconditionReason = {
   SODA_DOWNLOAD_IN_PROGRESS: 5,
   OUT_OF_DISK_SPACE: 6,
   NO_MIC: 7,
-  OTHERS: 8,
+  DRIVE_FS_UNMOUNTED: 8,
+  DRIVE_FS_MOUNT_FAILED: 9,
+  OTHERS: 10,
 };
