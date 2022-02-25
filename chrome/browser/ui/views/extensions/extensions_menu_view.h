@@ -29,7 +29,7 @@ class View;
 
 class Browser;
 class ExtensionsContainer;
-class ExtensionsMenuItemView;
+class InstalledExtensionMenuItemView;
 
 // This bubble view displays a list of user extensions and a button to get to
 // managing the user's extensions (chrome://extensions).
@@ -65,7 +65,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   static ExtensionsMenuView* GetExtensionsMenuViewForTesting();
 
   // Returns the children of a section for the given `site_interaction`.
-  static std::vector<ExtensionsMenuItemView*>
+  static std::vector<InstalledExtensionMenuItemView*>
   GetSortedItemsForSectionForTesting(
       extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
@@ -91,7 +91,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 
-  base::flat_set<ExtensionsMenuItemView*> extensions_menu_items_for_testing() {
+  base::flat_set<InstalledExtensionMenuItemView*>
+  extensions_menu_items_for_testing() {
     return extensions_menu_items_;
   }
   views::Button* manage_extensions_button_for_testing() {
@@ -144,7 +145,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
   // Inserts the menu item into the appropriate section (but not necessarily at
   // the right spot).
-  void InsertMenuItem(ExtensionsMenuItemView* menu_item);
+  void InsertMenuItem(InstalledExtensionMenuItemView* menu_item);
 
   // Adds a menu item for a newly-added extension.
   void CreateAndInsertNewItem(const ToolbarActionsModel::ActionId& id);
@@ -169,7 +170,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
   // A collection of all menu item views in the menu. Note that this is
   // *unordered*, since the menu puts extensions into different sections.
-  base::flat_set<ExtensionsMenuItemView*> extensions_menu_items_;
+  base::flat_set<InstalledExtensionMenuItemView*> extensions_menu_items_;
 
   raw_ptr<views::LabelButton> manage_extensions_button_ = nullptr;
 

@@ -58,12 +58,25 @@ class AdditionalBrowser {
 };
 
 std::vector<std::string> GetNamesFromMenuItems(
-    std::vector<ExtensionsMenuItemView*> item_views) {
+    std::vector<InstalledExtensionMenuItemView*> item_views) {
   std::vector<std::string> names;
   names.resize(item_views.size());
   std::transform(
       item_views.begin(), item_views.end(), names.begin(),
-      [](ExtensionsMenuItemView* item) {
+      [](InstalledExtensionMenuItemView* item) {
+        return base::UTF16ToUTF8(item->primary_action_button_for_testing()
+                                     ->label_text_for_testing());
+      });
+  return names;
+}
+
+std::vector<std::string> GetNamesFromSiteAccessMenuItems(
+    std::vector<SiteAccessMenuItemView*> item_views) {
+  std::vector<std::string> names;
+  names.resize(item_views.size());
+  std::transform(
+      item_views.begin(), item_views.end(), names.begin(),
+      [](SiteAccessMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
       });
@@ -98,25 +111,25 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   ExtensionsTabbedMenuView* extensions_tabbed_menu() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting();
   }
-  std::vector<ExtensionsMenuItemView*> installed_items() {
+  std::vector<InstalledExtensionMenuItemView*> installed_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetInstalledItemsForTesting();
   }
-  std::vector<ExtensionsMenuItemView*> has_access_items() {
+  std::vector<SiteAccessMenuItemView*> has_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetHasAccessItemsForTesting();
   }
-  std::vector<ExtensionsMenuItemView*> requests_access_items() {
+  std::vector<SiteAccessMenuItemView*> requests_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetRequestsAccessItemsForTesting();
   }
 
   // Asserts there is exactly one installed menu item and then returns it.
-  ExtensionsMenuItemView* GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* GetOnlyInstalledMenuItem();
   // Asserts there is exactly one has access menu item and then returns it.
-  ExtensionsMenuItemView* GetOnlyHasAccessMenuItem();
+  SiteAccessMenuItemView* GetOnlyHasAccessMenuItem();
   // Asserts there is exactly one requests access menu item and then returns it.
-  ExtensionsMenuItemView* GetOnlyRequestsAccessMenuItem();
+  SiteAccessMenuItemView* GetOnlyRequestsAccessMenuItem();
 
   // Opens the tabbed menu in the installed tab.
   void ShowInstalledTabInMenu();
@@ -125,10 +138,12 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 
   void ClickSiteAccessButton();
   void ClickExtensionsButton();
-  void ClickPrimaryActionButton(ExtensionsMenuItemView* item);
-  void ClickPinButton(ExtensionsMenuItemView* installed_item);
-  void ClickContextMenuButton(ExtensionsMenuItemView* installed_item);
-  void SelectSiteAccessInCombobox(ExtensionsMenuItemView* site_access_item,
+
+  void ClickPrimaryActionButton(InstalledExtensionMenuItemView* item);
+  void ClickPrimaryActionButton(SiteAccessMenuItemView* item);
+  void ClickPinButton(InstalledExtensionMenuItemView* installed_item);
+  void ClickContextMenuButton(InstalledExtensionMenuItemView* installed_item);
+  void SelectSiteAccessInCombobox(SiteAccessMenuItemView* site_access_item,
                                   int index);
 
   void LayoutMenuIfNecessary() {
@@ -155,9 +170,9 @@ void ExtensionsTabbedMenuViewUnitTest::SetUp() {
   web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
-ExtensionsMenuItemView*
+InstalledExtensionMenuItemView*
 ExtensionsTabbedMenuViewUnitTest::GetOnlyInstalledMenuItem() {
-  std::vector<ExtensionsMenuItemView*> items = installed_items();
+  std::vector<InstalledExtensionMenuItemView*> items = installed_items();
   if (items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
     return nullptr;
@@ -165,9 +180,9 @@ ExtensionsTabbedMenuViewUnitTest::GetOnlyInstalledMenuItem() {
   return *items.begin();
 }
 
-ExtensionsMenuItemView*
+SiteAccessMenuItemView*
 ExtensionsTabbedMenuViewUnitTest::GetOnlyHasAccessMenuItem() {
-  std::vector<ExtensionsMenuItemView*> items = has_access_items();
+  std::vector<SiteAccessMenuItemView*> items = has_access_items();
   if (items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
     return nullptr;
@@ -175,9 +190,9 @@ ExtensionsTabbedMenuViewUnitTest::GetOnlyHasAccessMenuItem() {
   return *items.begin();
 }
 
-ExtensionsMenuItemView*
+SiteAccessMenuItemView*
 ExtensionsTabbedMenuViewUnitTest::GetOnlyRequestsAccessMenuItem() {
-  std::vector<ExtensionsMenuItemView*> items = requests_access_items();
+  std::vector<SiteAccessMenuItemView*> items = requests_access_items();
   if (items.size() != 1u) {
     ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
     return nullptr;
@@ -208,24 +223,30 @@ void ExtensionsTabbedMenuViewUnitTest::ClickExtensionsButton() {
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ClickPrimaryActionButton(
-    ExtensionsMenuItemView* item) {
+    InstalledExtensionMenuItemView* item) {
+  ClickButton(item->primary_action_button_for_testing());
+  WaitForAnimation();
+}
+
+void ExtensionsTabbedMenuViewUnitTest::ClickPrimaryActionButton(
+    SiteAccessMenuItemView* item) {
   ClickButton(item->primary_action_button_for_testing());
   WaitForAnimation();
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ClickPinButton(
-    ExtensionsMenuItemView* installed_item) {
+    InstalledExtensionMenuItemView* installed_item) {
   ClickButton(installed_item->pin_button_for_testing());
   WaitForAnimation();
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ClickContextMenuButton(
-    ExtensionsMenuItemView* installed_item) {
+    InstalledExtensionMenuItemView* installed_item) {
   ClickButton(installed_item->context_menu_button_for_testing());
 }
 
 void ExtensionsTabbedMenuViewUnitTest::SelectSiteAccessInCombobox(
-    ExtensionsMenuItemView* site_access_item,
+    SiteAccessMenuItemView* site_access_item,
     int index) {
   content::WindowedNotificationObserver permissions_observer(
       extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
@@ -338,7 +359,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   ShowInstalledTabInMenu();
 
-  std::vector<ExtensionsMenuItemView*> items = installed_items();
+  std::vector<InstalledExtensionMenuItemView*> items = installed_items();
   ASSERT_EQ(items.size(), 4u);
 
   // Basic std::sort would do A,C,Z,b however we want A,b,C,Z
@@ -354,7 +375,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   ShowInstalledTabInMenu();
 
-  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* installed_item = GetOnlyInstalledMenuItem();
   ASSERT_TRUE(installed_item);
   ToolbarActionViewController* controller = installed_item->view_controller();
   EXPECT_FALSE(extensions_container()->IsActionVisibleOnToolbar(controller));
@@ -383,7 +404,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   ShowInstalledTabInMenu();
 
-  std::vector<ExtensionsMenuItemView*> items = installed_items();
+  std::vector<InstalledExtensionMenuItemView*> items = installed_items();
 
   // Verify the order of the extensions is A,B,C.
   {
@@ -446,7 +467,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
       CreateBrowser(browser()->profile(), browser()->type(),
                     /* hosted_app */ false, /* browser_window */ nullptr));
 
-  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* installed_item = GetOnlyInstalledMenuItem();
   ASSERT_TRUE(installed_item);
   ClickPinButton(installed_item);
 
@@ -474,7 +495,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify the order of the extensions is A,C.
   {
-    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    std::vector<InstalledExtensionMenuItemView*> items = installed_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
     EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
@@ -488,7 +509,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Extension should be added in the correct place.
   // Verify the new order is A,B,C.
   {
-    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    std::vector<InstalledExtensionMenuItemView*> items = installed_items();
     ASSERT_EQ(items.size(), 3u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionB,
                                             kExtensionC};
@@ -501,7 +522,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify the new order is A,C.
   {
-    std::vector<ExtensionsMenuItemView*> items = installed_items();
+    std::vector<InstalledExtensionMenuItemView*> items = installed_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
     EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
@@ -515,7 +536,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   ShowInstalledTabInMenu();
 
-  ExtensionsMenuItemView* menu_item = GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* menu_item = GetOnlyInstalledMenuItem();
   EXPECT_EQ(installed_items().size(), 1u);
   ClickPinButton(menu_item);
 
@@ -551,7 +572,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, InstalledTab_ReloadExtension) {
 
   ShowInstalledTabInMenu();
 
-  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* installed_item = GetOnlyInstalledMenuItem();
   EXPECT_EQ(installed_items().size(), 1u);
 
   ClickPinButton(installed_item);
@@ -589,7 +610,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, InstalledTab_ReloadExtensionFailed) {
 
   ShowInstalledTabInMenu();
 
-  ExtensionsMenuItemView* installed_item = GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* installed_item = GetOnlyInstalledMenuItem();
   EXPECT_EQ(installed_items().size(), 1u);
 
   ClickPinButton(installed_item);
@@ -815,10 +836,10 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Note that extensions installed with all urls permissions have access by
   // default.
   {
-    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    std::vector<SiteAccessMenuItemView*> has_acess_items = has_access_items();
     ASSERT_EQ(has_acess_items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
-    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+    EXPECT_EQ(GetNamesFromSiteAccessMenuItems(has_acess_items), expected_names);
   }
 
   // Add a new extension while the menu is open.
@@ -829,11 +850,11 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify the new order is A,B,C under the has access section
   {
-    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    std::vector<SiteAccessMenuItemView*> has_acess_items = has_access_items();
     ASSERT_EQ(has_acess_items.size(), 3u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionB,
                                             kExtensionC};
-    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+    EXPECT_EQ(GetNamesFromSiteAccessMenuItems(has_acess_items), expected_names);
   }
 
   // Remove a extension while the menu is open
@@ -842,10 +863,10 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify the new order is A,C.
   {
-    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    std::vector<SiteAccessMenuItemView*> has_acess_items = has_access_items();
     ASSERT_EQ(has_acess_items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
-    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+    EXPECT_EQ(GetNamesFromSiteAccessMenuItems(has_acess_items), expected_names);
   }
 }
 
@@ -868,8 +889,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify site access sections are empty.
   {
-    EXPECT_THAT(GetNamesFromMenuItems(has_access_items()), testing::IsEmpty());
-    EXPECT_THAT(GetNamesFromMenuItems(requests_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(has_access_items()),
+                testing::IsEmpty());
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(requests_access_items()),
                 testing::IsEmpty());
   }
 
@@ -881,9 +903,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Verify the extension is in the "has access" section with "on site"
   // access.
   {
-    EXPECT_THAT(GetNamesFromMenuItems(has_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(has_access_items()),
                 testing::ElementsAre(kExtension));
-    EXPECT_THAT(GetNamesFromMenuItems(requests_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(requests_access_items()),
                 testing::IsEmpty());
     EXPECT_THAT(GetOnlyHasAccessMenuItem()
                     ->site_access_combobox_for_testing()
@@ -899,9 +921,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Verify the extension is still in "has access" section with "on site"
   // access.
   {
-    EXPECT_THAT(GetNamesFromMenuItems(has_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(has_access_items()),
                 testing::ElementsAre(kExtension));
-    EXPECT_THAT(GetNamesFromMenuItems(requests_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(requests_access_items()),
                 testing::IsEmpty());
     EXPECT_EQ(GetOnlyHasAccessMenuItem()
                   ->site_access_combobox_for_testing()
@@ -917,8 +939,9 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
 
   // Verify site access sections are empty.
   {
-    EXPECT_THAT(GetNamesFromMenuItems(has_access_items()), testing::IsEmpty());
-    EXPECT_THAT(GetNamesFromMenuItems(requests_access_items()),
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(has_access_items()),
+                testing::IsEmpty());
+    EXPECT_THAT(GetNamesFromSiteAccessMenuItems(requests_access_items()),
                 testing::IsEmpty());
   }
 }

@@ -45,7 +45,8 @@ namespace {
 constexpr int kSecondaryIconSizeDp = 16;
 // Set secondary item insets to get to square buttons.
 constexpr gfx::Insets kSecondaryButtonInsets = gfx::Insets(
-    (ExtensionsMenuItemView::kMenuItemHeightDp - kSecondaryIconSizeDp) / 2);
+    (InstalledExtensionMenuItemView::kMenuItemHeightDp - kSecondaryIconSizeDp) /
+    2);
 constexpr int EXTENSION_CONTEXT_MENU = 13;
 constexpr int EXTENSION_PINNING = 14;
 
@@ -61,38 +62,51 @@ void SetButtonIconWithColor(HoverButton* button,
                        SkColorSetA(icon_color, gfx::kDisabledControlAlpha)));
 }
 
-}  // namespace
-
-// static
-constexpr gfx::Size ExtensionsMenuItemView::kIconSize;
-
-ExtensionsMenuItemView::ExtensionsMenuItemView(
-    MenuItemType item_type,
+ExtensionsMenuButton* CreatePrimaryActionButton(
     Browser* browser,
-    std::unique_ptr<ToolbarActionViewController> controller,
-    bool allow_pinning)
-    : item_type_(item_type),
-      browser_(browser),
-      primary_action_button_(
-          new ExtensionsMenuButton(browser, controller.get(), allow_pinning)),
-      controller_(std::move(controller)),
-      model_(ToolbarActionsModel::Get(browser_->profile())) {
-  // Items with kSiteAccess type should only be created if their
-  // associated extension has or requests access to the current page.
-  if (item_type == MenuItemType::kSiteAccess) {
-    DCHECK(controller_->GetSiteInteraction(
-               browser->tab_strip_model()->GetActiveWebContents()) !=
-           extensions::SitePermissionsHelper::SiteInteraction::kNone);
-  }
+    ToolbarActionViewController* controller,
+    bool allow_pinning) {
+  auto* button = new ExtensionsMenuButton(browser, controller, allow_pinning);
+  button->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  return button;
+}
+
+void SetFlexLayout(views::View* view) {
+  views::FlexLayout* layout_manager_ =
+      view->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetIgnoreDefaultMainAxisMargins(true);
 
   // Set so the extension button receives enter/exit on children to retain hover
   // status when hovering child views.
-  SetNotifyEnterExitOnChild(true);
+  view->SetNotifyEnterExitOnChild(true);
+}
 
-  views::FlexLayout* layout_manager_ =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetIgnoreDefaultMainAxisMargins(true);
+}  // namespace
+
+// static
+constexpr gfx::Size InstalledExtensionMenuItemView::kIconSize;
+
+SiteAccessMenuItemView::SiteAccessMenuItemView(
+    Browser* browser,
+    std::unique_ptr<ToolbarActionViewController> controller,
+    bool allow_pinning)
+    : browser_(browser),
+      controller_(std::move(controller)),
+      primary_action_button_(
+          CreatePrimaryActionButton(browser_,
+                                    controller_.get(),
+                                    /*allow_pinning=*/false)) {
+  // Items with kSiteAccess type should only be created if their
+  // associated extension has or requests access to the current page.
+  DCHECK(controller_->GetSiteInteraction(
+             browser->tab_strip_model()->GetActiveWebContents()) !=
+         extensions::SitePermissionsHelper::SiteInteraction::kNone);
+
+  SetFlexLayout(this);
 
   AddChildView(primary_action_button_.get());
   primary_action_button_->SetProperty(
@@ -100,33 +114,90 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
-  if (item_type_ == MenuItemType::kExtensions) {
-    AddPinButton();
-    AddContextMenuButton();
-  } else {
-    AddSiteAccessCombobox();
-  }
+  AddSiteAccessCombobox();
 }
 
-ExtensionsMenuItemView::~ExtensionsMenuItemView() = default;
+SiteAccessMenuItemView::~SiteAccessMenuItemView() = default;
 
-void ExtensionsMenuItemView::OnThemeChanged() {
+void SiteAccessMenuItemView::Update() {
+  view_controller()->UpdateState();
+
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents)
+    return;
+  int index = site_access_combobox_model_->GetCurrentSiteAccessIndex();
+  site_access_combobox_->SetSelectedIndex(index);
+}
+
+// TODO(emiliapaz): Use views::Builder to construct the combobox, and consider
+// moving to constructor.
+void SiteAccessMenuItemView::AddSiteAccessCombobox() {
+  auto* extension = extensions::ExtensionRegistry::Get(browser_->profile())
+                        ->enabled_extensions()
+                        .GetByID(controller_->GetId());
+
+  auto combobox_model =
+      std::make_unique<ExtensionSiteAccessComboboxModel>(browser_, extension);
+  site_access_combobox_model_ = combobox_model.get();
+
+  auto combobox = std::make_unique<views::Combobox>(std::move(combobox_model));
+  site_access_combobox_ = AddChildView(std::move(combobox));
+
+  site_access_combobox_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ACCNAME_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX));
+  site_access_combobox_->SetCallback(
+      base::BindRepeating(&SiteAccessMenuItemView::OnComboboxSelectionChanged,
+                          base::Unretained(this)));
+}
+
+void SiteAccessMenuItemView::OnComboboxSelectionChanged() {
+  int selected_index = site_access_combobox_->GetSelectedIndex();
+  site_access_combobox_model_->HandleSelection(selected_index);
+}
+
+InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
+    Browser* browser,
+    std::unique_ptr<ToolbarActionViewController> controller,
+    bool allow_pinning)
+    : browser_(browser),
+      controller_(std::move(controller)),
+      model_(ToolbarActionsModel::Get(browser_->profile())),
+      primary_action_button_(CreatePrimaryActionButton(browser_,
+                                                       controller_.get(),
+                                                       allow_pinning)) {
+  SetFlexLayout(this);
+
+  AddChildView(primary_action_button_.get());
+  primary_action_button_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+
+  AddPinButton();
+  AddContextMenuButton();
+}
+
+InstalledExtensionMenuItemView::~InstalledExtensionMenuItemView() = default;
+
+void InstalledExtensionMenuItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (item_type_ == MenuItemType::kExtensions) {
-    const SkColor icon_color =
-        GetAdjustedIconColor(GetColorProvider()->GetColor(ui::kColorMenuIcon));
+  const SkColor icon_color =
+      GetAdjustedIconColor(GetColorProvider()->GetColor(ui::kColorMenuIcon));
 
-    if (pin_button_)
-      views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+  if (pin_button_)
+    views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
 
-    SetButtonIconWithColor(context_menu_button_, kBrowserToolsIcon, icon_color);
+  SetButtonIconWithColor(context_menu_button_, kBrowserToolsIcon, icon_color);
 
-    UpdatePinButton();
-  }
+  UpdatePinButton();
 }
 
-void ExtensionsMenuItemView::UpdatePinButton() {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
+void InstalledExtensionMenuItemView::Update() {
+  view_controller()->UpdateState();
+}
+
+void InstalledExtensionMenuItemView::UpdatePinButton() {
   if (!pin_button_)
     return;
 
@@ -158,19 +229,12 @@ void ExtensionsMenuItemView::UpdatePinButton() {
                          icon_color);
 }
 
-bool ExtensionsMenuItemView::IsContextMenuRunningForTesting() const {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
-  return context_menu_controller_->IsMenuRunning();
-}
-
-bool ExtensionsMenuItemView::IsPinned() const {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
+bool InstalledExtensionMenuItemView::IsPinned() const {
   // |model_| can be null in unit tests.
   return model_ && model_->IsActionPinned(controller_->GetId());
 }
 
-void ExtensionsMenuItemView::ContextMenuPressed() {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
+void InstalledExtensionMenuItemView::OnContextMenuPressed() {
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.MoreActionsButtonPressedFromMenu"));
   // TODO(crbug.com/998298): Cleanup the menu source type.
@@ -179,9 +243,7 @@ void ExtensionsMenuItemView::ContextMenuPressed() {
       ui::MenuSourceType::MENU_SOURCE_MOUSE);
 }
 
-void ExtensionsMenuItemView::PinButtonPressed() {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
-
+void InstalledExtensionMenuItemView::OnPinButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("Extensions.Toolbar.PinButtonPressed"));
   model_->SetActionVisibility(controller_->GetId(), !IsPinned());
@@ -189,29 +251,16 @@ void ExtensionsMenuItemView::PinButtonPressed() {
       IsPinned() ? IDS_EXTENSION_PINNED : IDS_EXTENSION_UNPINNED));
 }
 
-void ExtensionsMenuItemView::Update() {
-  view_controller()->UpdateState();
-  if (item_type_ == MenuItemType::kSiteAccess) {
-    content::WebContents* web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents)
-      return;
-    int index = site_access_combobox_model_->GetCurrentSiteAccessIndex();
-    site_access_combobox_->SetSelectedIndex(index);
-  }
+bool InstalledExtensionMenuItemView::IsContextMenuRunningForTesting() const {
+  return context_menu_controller_->IsMenuRunning();
 }
 
-ExtensionsMenuButton*
-ExtensionsMenuItemView::primary_action_button_for_testing() {
-  return primary_action_button_;
-}
-
-void ExtensionsMenuItemView::AddPinButton() {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
-
+// TODO(emiliapaz): Use views::Builder to construct the pin button, and consider
+// moving to constructor.
+void InstalledExtensionMenuItemView::AddPinButton() {
   if (primary_action_button_->CanShowIconInToolbar()) {
     auto pin_button = std::make_unique<HoverButton>(
-        base::BindRepeating(&ExtensionsMenuItemView::PinButtonPressed,
+        base::BindRepeating(&InstalledExtensionMenuItemView::OnPinButtonPressed,
                             base::Unretained(this)),
         std::u16string());
     pin_button->SetID(EXTENSION_PINNING);
@@ -223,9 +272,9 @@ void ExtensionsMenuItemView::AddPinButton() {
   UpdatePinButton();
 }
 
-void ExtensionsMenuItemView::AddContextMenuButton() {
-  DCHECK_EQ(item_type_, MenuItemType::kExtensions);
-
+// TODO(emiliapaz): Use views::Builder to construct the context menu button, and
+// consider moving to constructor.
+void InstalledExtensionMenuItemView::AddContextMenuButton() {
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
       controller_.get(),
       extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
@@ -240,42 +289,16 @@ void ExtensionsMenuItemView::AddContextMenuButton() {
   context_menu_button->SetButtonController(
       std::make_unique<views::MenuButtonController>(
           context_menu_button.get(),
-          base::BindRepeating(&ExtensionsMenuItemView::ContextMenuPressed,
-                              base::Unretained(this)),
+          base::BindRepeating(
+              &InstalledExtensionMenuItemView::OnContextMenuPressed,
+              base::Unretained(this)),
           std::make_unique<views::Button::DefaultButtonControllerDelegate>(
               context_menu_button.get())));
   context_menu_button_ = AddChildView(std::move(context_menu_button));
 }
 
-void ExtensionsMenuItemView::AddSiteAccessCombobox() {
-  DCHECK_EQ(item_type_, MenuItemType::kSiteAccess);
-
-  auto* extension = extensions::ExtensionRegistry::Get(browser_->profile())
-                        ->enabled_extensions()
-                        .GetByID(controller_->GetId());
-
-  auto combobox_model =
-      std::make_unique<ExtensionSiteAccessComboboxModel>(browser_, extension);
-  site_access_combobox_model_ = combobox_model.get();
-
-  auto combobox = std::make_unique<views::Combobox>(std::move(combobox_model));
-  site_access_combobox_ = AddChildView(std::move(combobox));
-
-  site_access_combobox_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ACCNAME_EXTENSIONS_MENU_SITE_ACCESS_COMBOBOX));
-  site_access_combobox_->SetCallback(
-      base::BindRepeating(&ExtensionsMenuItemView::OnComboboxSelectionChanged,
-                          base::Unretained(this)));
-}
-
-void ExtensionsMenuItemView::OnComboboxSelectionChanged() {
-  DCHECK_EQ(item_type_, MenuItemType::kSiteAccess);
-
-  int selected_index = site_access_combobox_->GetSelectedIndex();
-  site_access_combobox_model_->HandleSelection(selected_index);
-}
-
-SkColor ExtensionsMenuItemView::GetAdjustedIconColor(SkColor icon_color) const {
+SkColor InstalledExtensionMenuItemView::GetAdjustedIconColor(
+    SkColor icon_color) const {
   const SkColor background_color =
       GetColorProvider()->GetColor(ui::kColorBubbleBackground);
   if (background_color != SK_ColorTRANSPARENT) {
@@ -284,5 +307,8 @@ SkColor ExtensionsMenuItemView::GetAdjustedIconColor(SkColor icon_color) const {
   return icon_color;
 }
 
-BEGIN_METADATA(ExtensionsMenuItemView, views::View)
+BEGIN_METADATA(SiteAccessMenuItemView, views::View)
+END_METADATA
+
+BEGIN_METADATA(InstalledExtensionMenuItemView, views::View)
 END_METADATA

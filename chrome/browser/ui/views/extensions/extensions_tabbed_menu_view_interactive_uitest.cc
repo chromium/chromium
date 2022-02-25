@@ -37,31 +37,31 @@ class ExtensionsTabbedMenuViewInteractiveUITest
   const ExtensionsTabbedMenuViewInteractiveUITest& operator=(
       const ExtensionsTabbedMenuViewInteractiveUITest&) = delete;
 
-  std::vector<ExtensionsMenuItemView*> installed_items() {
+  std::vector<InstalledExtensionMenuItemView*> installed_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetInstalledItemsForTesting();
   }
 
-  std::vector<ExtensionsMenuItemView*> requests_access_items() {
+  std::vector<SiteAccessMenuItemView*> requests_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetRequestsAccessItemsForTesting();
   }
 
-  std::vector<ExtensionsMenuItemView*> has_access_items() {
+  std::vector<SiteAccessMenuItemView*> has_access_items() {
     return ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting()
         ->GetHasAccessItemsForTesting();
   }
 
   // Asserts there is exactly one installed menu item and then returns it.
-  ExtensionsMenuItemView* GetOnlyInstalledMenuItem();
+  InstalledExtensionMenuItemView* GetOnlyInstalledMenuItem();
 
   // Opens the tabbed menu in the installed tab.
   void ShowInstalledTabInMenu();
   // Opens the tabbed menu in the site access tab.
   void ShowSiteAccessTabInMenu();
 
-  void ClickPrimaryButton(ExtensionsMenuItemView* item);
-  void ClickPinButton(ExtensionsMenuItemView* installed_item);
+  void ClickPrimaryButton(InstalledExtensionMenuItemView* item);
+  void ClickPinButton(InstalledExtensionMenuItemView* installed_item);
   void RightClickExtensionInToolbar(ToolbarActionView* extension);
 
   void ShowUi(const std::string& name) override;
@@ -96,9 +96,9 @@ ExtensionsTabbedMenuViewInteractiveUITest::
       features::kExtensionsMenuAccessControl);
 }
 
-ExtensionsMenuItemView*
+InstalledExtensionMenuItemView*
 ExtensionsTabbedMenuViewInteractiveUITest::GetOnlyInstalledMenuItem() {
-  std::vector<ExtensionsMenuItemView*> items = installed_items();
+  std::vector<InstalledExtensionMenuItemView*> items = installed_items();
   if (items.size() != 1) {
     ADD_FAILURE() << "Not exactly one item; size is: " << items.size();
     return nullptr;
@@ -132,13 +132,13 @@ void ExtensionsTabbedMenuViewInteractiveUITest::RightClickExtensionInToolbar(
 }
 
 void ExtensionsTabbedMenuViewInteractiveUITest::ClickPrimaryButton(
-    ExtensionsMenuItemView* item) {
+    InstalledExtensionMenuItemView* item) {
   ClickButton(item->primary_action_button_for_testing());
   WaitForAnimation();
 }
 
 void ExtensionsTabbedMenuViewInteractiveUITest::ClickPinButton(
-    ExtensionsMenuItemView* installed_item) {
+    InstalledExtensionMenuItemView* installed_item) {
   ClickButton(installed_item->pin_button_for_testing());
   WaitForAnimation();
 }

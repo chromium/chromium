@@ -20,7 +20,8 @@ class View;
 class TabbedPane;
 }  // namespace views
 
-class ExtensionsMenuItemView;
+class InstalledExtensionMenuItemView;
+class SiteAccessMenuItemView;
 class ExtensionsContainer;
 class SiteSettingsExpandButton;
 
@@ -64,15 +65,16 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
 
   // Returns the currently-showing extension items in the extensions tab, if any
   // exists.
-  std::vector<ExtensionsMenuItemView*> GetInstalledItemsForTesting() const;
+  std::vector<InstalledExtensionMenuItemView*> GetInstalledItemsForTesting()
+      const;
 
   // Returns the currently-showing `has_access_` extension items in the site
   // access tab, if any exists.
-  std::vector<ExtensionsMenuItemView*> GetHasAccessItemsForTesting() const;
+  std::vector<SiteAccessMenuItemView*> GetHasAccessItemsForTesting() const;
 
   // Returns the currently-showing `requests_access_` extension items in the
   // site access tab, if any exists.
-  std::vector<ExtensionsMenuItemView*> GetRequestsAccessItemsForTesting() const;
+  std::vector<SiteAccessMenuItemView*> GetRequestsAccessItemsForTesting() const;
 
   // Returns the currently-showing `discover_more_button_` in the extensions
   // tab, if any exists.
@@ -150,7 +152,7 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
       const ToolbarActionsModel::ActionId& id);
 
   // Adds `item` to the items list of `section`.
-  void InsertSiteAccessItem(std::unique_ptr<ExtensionsMenuItemView> item,
+  void InsertSiteAccessItem(std::unique_ptr<SiteAccessMenuItemView> item,
                             SiteAccessSection* section);
 
   // Moves items between site access sections if their site access status

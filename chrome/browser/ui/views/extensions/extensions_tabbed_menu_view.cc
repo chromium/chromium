@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -83,50 +84,100 @@ void CreateTab(raw_ptr<views::TabbedPane> tabbed_pane,
                              std::move(tab_container));
 }
 
-// A helper method to convert to an ExtensionsMenuItemView. This cannot be used
-// to *determine* if a view is an ExtensionsMenuItemView (it should only be used
-// when the view is known to be one). It is only used as an extra measure to
-// prevent bad static casts.
-ExtensionsMenuItemView* GetAsMenuItemView(views::View* view) {
-  DCHECK(views::IsViewClass<ExtensionsMenuItemView>(view));
-  return static_cast<ExtensionsMenuItemView*>(view);
+// Converts a view to a InstalledExtensionsMenuItemView. This cannot
+// be used to *determine* if a view is an InstalledExtensionMenuItemView (it
+// should only be used when the view is known to be one). It is only used as an
+// extra measure to prevent bad static casts.
+InstalledExtensionMenuItemView* GetAsInstalledExtensionMenuItem(
+    views::View* view) {
+  DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
+  return views::AsViewClass<InstalledExtensionMenuItemView>(view);
 }
 
-// Returns the menu item view of `action_id` if it is a children of
-// `parent_view`.
-ExtensionsMenuItemView* GetMenuItemView(
+// Converts a view to a SiteAccessMenuItemView. This cannot
+// be used to *determine* if a view is an SiteAccessMenuItemView (it
+// should only be used when the view is known to be one). It is only used as an
+// extra measure to prevent bad static casts.
+SiteAccessMenuItemView* GetAsSiteAccessMenuItem(views::View* view) {
+  DCHECK(views::IsViewClass<SiteAccessMenuItemView>(view));
+  return views::AsViewClass<SiteAccessMenuItemView>(view);
+}
+
+// Returns the InstalledExtensionsMenuItemView corresponding to `action_id` if
+// it is a children of `parent_view`. The children of the parent view must be
+// InstalledExtensionsMenuItemView, otherwise it will DCHECK.
+InstalledExtensionMenuItemView* GetInstalledExtensionMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
   for (auto* view : parent_view->children()) {
-    auto* item_view = GetAsMenuItemView(view);
+    auto* item_view = GetAsInstalledExtensionMenuItem(view);
     if (item_view->view_controller()->GetId() == action_id)
       return item_view;
   }
   return nullptr;
 }
 
+// Returns the SiteAccessMenuItemView corresponding to `action_id` if it is a
+// children of `parent_view`. The children of the parent view must be
+// SiteAccessMenuItemView, otherwise it will DCHECK.
+SiteAccessMenuItemView* GetSiteAccessMenuItem(
+    views::View* parent_view,
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (auto* view : parent_view->children()) {
+    auto* item_view = GetAsSiteAccessMenuItem(view);
+    if (item_view->view_controller()->GetId() == action_id)
+      return item_view;
+  }
+  return nullptr;
+}
+
+// Returns the view controller of `view`. The view must be
+// InstalledExtensionMenuItemView or SiteAccessMenuItemView, since both have the
+// same controller, otherwise it will return a nullptr.
+ToolbarActionViewController* GetMenuItemViewController(views::View* view) {
+  if (views::IsViewClass<InstalledExtensionMenuItemView>(view))
+    return GetAsInstalledExtensionMenuItem(view)->view_controller();
+  else if (views::IsViewClass<SiteAccessMenuItemView>(view))
+    return GetAsSiteAccessMenuItem(view)->view_controller();
+  NOTREACHED();
+  return nullptr;
+}
+
 // Returns the current index or insert position of `extension_name` in
 // `parent_view`, based on alphabetical order.
-int FindIndex(const std::u16string extension_name, views::View* parent_view) {
+int FindIndex(views::View* parent_view, const std::u16string extension_name) {
   const auto& children = parent_view->children();
-  return std::find_if(children.begin(), children.end(),
-                      [extension_name](views::View* v) {
-                        return base::i18n::ToLower(extension_name) <=
-                               base::i18n::ToLower(GetAsMenuItemView(v)
-                                                       ->view_controller()
-                                                       ->GetActionName());
-                      }) -
+  return std::find_if(
+             children.begin(), children.end(),
+             [extension_name](views::View* v) {
+               return base::i18n::ToLower(extension_name) <=
+                      base::i18n::ToLower(
+                          GetMenuItemViewController(v)->GetActionName());
+             }) -
          children.begin();
 }
 
-// Updates the `item_view` state and its position under `parent_view`.
-void UpdateMenuItemView(ExtensionsMenuItemView* item_view,
-                        views::View* parent_view) {
-  item_view->Update();
+// Updates the `installed_extension_view` state and its position under
+// `parent_view`.
+void UpdateInstalledExtensionMenuItem(
+    views::View* parent_view,
+    InstalledExtensionMenuItemView* installed_extension_view) {
+  installed_extension_view->Update();
 
   int new_index =
-      FindIndex(item_view->view_controller()->GetActionName(), parent_view);
-  parent_view->ReorderChildView(item_view, new_index);
+      FindIndex(parent_view,
+                installed_extension_view->view_controller()->GetActionName());
+  parent_view->ReorderChildView(installed_extension_view, new_index);
+}
+
+// Updates the `site_access_view` state and its position under `parent_view`.
+void UpdateSiteAccessMenuItem(views::View* parent_view,
+                              SiteAccessMenuItemView* site_access_view) {
+  site_access_view->Update();
+
+  int new_index = FindIndex(
+      parent_view, site_access_view->view_controller()->GetActionName());
+  parent_view->ReorderChildView(site_access_view, new_index);
 }
 
 }  // namespace
@@ -224,32 +275,32 @@ ExtensionsTabbedMenuView::GetExtensionsTabbedMenuViewForTesting() {
   return g_extensions_dialog;
 }
 
-std::vector<ExtensionsMenuItemView*>
+std::vector<InstalledExtensionMenuItemView*>
 ExtensionsTabbedMenuView::GetInstalledItemsForTesting() const {
-  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  std::vector<InstalledExtensionMenuItemView*> menu_item_views;
   if (IsShowing()) {
     for (views::View* view : installed_items_->children())
-      menu_item_views.push_back(GetAsMenuItemView(view));
+      menu_item_views.push_back(GetAsInstalledExtensionMenuItem(view));
   }
   return menu_item_views;
 }
 
-std::vector<ExtensionsMenuItemView*>
+std::vector<SiteAccessMenuItemView*>
 ExtensionsTabbedMenuView::GetHasAccessItemsForTesting() const {
-  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  std::vector<SiteAccessMenuItemView*> menu_item_views;
   if (IsShowing()) {
     for (views::View* view : has_access_.items->children())
-      menu_item_views.push_back(GetAsMenuItemView(view));
+      menu_item_views.push_back(GetAsSiteAccessMenuItem(view));
   }
   return menu_item_views;
 }
 
-std::vector<ExtensionsMenuItemView*>
+std::vector<SiteAccessMenuItemView*>
 ExtensionsTabbedMenuView::GetRequestsAccessItemsForTesting() const {
-  std::vector<ExtensionsMenuItemView*> menu_item_views;
+  std::vector<SiteAccessMenuItemView*> menu_item_views;
   if (IsShowing()) {
     for (views::View* view : requests_access_.items->children())
-      menu_item_views.push_back(GetAsMenuItemView(view));
+      menu_item_views.push_back(GetAsSiteAccessMenuItem(view));
   }
   return menu_item_views;
 }
@@ -291,7 +342,7 @@ void ExtensionsTabbedMenuView::OnTabStripModelChanged(
 void ExtensionsTabbedMenuView::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   auto extension_name = toolbar_model_->GetExtensionName(action_id);
-  auto index = FindIndex(extension_name, installed_items_);
+  auto index = FindIndex(installed_items_, extension_name);
   CreateAndInsertInstalledExtension(action_id, index);
 
   MaybeCreateAndInsertSiteAccessItem(action_id);
@@ -302,16 +353,17 @@ void ExtensionsTabbedMenuView::OnToolbarActionAdded(
 
 void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto remove_item = [](views::View* parent_view,
-                        const ToolbarActionsModel::ActionId& action_id) {
-    auto* item_view = GetMenuItemView(parent_view, action_id);
+  auto remove_item = [](views::View* parent_view, views::View* item_view) {
     if (item_view)
       parent_view->RemoveChildViewT(item_view);
   };
 
-  remove_item(installed_items_, action_id);
-  remove_item(requests_access_.items, action_id);
-  remove_item(has_access_.items, action_id);
+  remove_item(installed_items_,
+              GetInstalledExtensionMenuItem(installed_items_, action_id));
+  remove_item(requests_access_.items,
+              GetSiteAccessMenuItem(requests_access_.items, action_id));
+  remove_item(has_access_.items,
+              GetSiteAccessMenuItem(has_access_.items, action_id));
 
   UpdateSiteAccessSectionsVisibility();
 
@@ -320,16 +372,25 @@ void ExtensionsTabbedMenuView::OnToolbarActionRemoved(
 
 void ExtensionsTabbedMenuView::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  auto update_item = [](views::View* parent_view,
-                        const ToolbarActionsModel::ActionId& action_id) {
-    auto* item_view = GetMenuItemView(parent_view, action_id);
-    if (item_view)
-      UpdateMenuItemView(item_view, parent_view);
-  };
+  auto update_installed_extension_item =
+      [](views::View* parent_view,
+         const ToolbarActionsModel::ActionId& action_id) {
+        auto* item_view = GetInstalledExtensionMenuItem(parent_view, action_id);
+        if (item_view)
+          UpdateInstalledExtensionMenuItem(parent_view, item_view);
+      };
 
-  update_item(installed_items_, action_id);
-  update_item(requests_access_.items, action_id);
-  update_item(has_access_.items, action_id);
+  auto update_site_access_item =
+      [](views::View* parent_view,
+         const ToolbarActionsModel::ActionId& action_id) {
+        auto* item_view = GetSiteAccessMenuItem(parent_view, action_id);
+        if (item_view)
+          UpdateSiteAccessMenuItem(parent_view, item_view);
+      };
+
+  update_installed_extension_item(installed_items_, action_id);
+  update_site_access_item(requests_access_.items, action_id);
+  update_site_access_item(has_access_.items, action_id);
 
   MoveItemsBetweenSectionsIfNecessary();
 
@@ -347,7 +408,7 @@ void ExtensionsTabbedMenuView::OnToolbarModelInitialized() {
 
 void ExtensionsTabbedMenuView::OnToolbarPinnedActionsChanged() {
   for (views::View* view : installed_items_->children())
-    GetAsMenuItemView(view)->UpdatePinButton();
+    GetAsInstalledExtensionMenuItem(view)->UpdatePinButton();
 }
 
 void ExtensionsTabbedMenuView::Populate() {
@@ -393,8 +454,8 @@ void ExtensionsTabbedMenuView::Update() {
   has_access_.items->RemoveAllChildViews();
 
   for (views::View* view : installed_items_->children()) {
-    auto* item_view = GetAsMenuItemView(view);
-    UpdateMenuItemView(item_view, installed_items_);
+    auto* item_view = GetAsInstalledExtensionMenuItem(view);
+    UpdateInstalledExtensionMenuItem(installed_items_, item_view);
     MaybeCreateAndInsertSiteAccessItem(item_view->view_controller()->GetId());
   }
 
@@ -537,9 +598,8 @@ void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
   std::unique_ptr<ExtensionActionViewController> controller =
       ExtensionActionViewController::Create(id, browser_,
                                             extensions_container_);
-  auto item = std::make_unique<ExtensionsMenuItemView>(
-      ExtensionsMenuItemView::MenuItemType::kExtensions, browser_,
-      std::move(controller), allow_pinning_);
+  auto item = std::make_unique<InstalledExtensionMenuItemView>(
+      browser_, std::move(controller), allow_pinning_);
   installed_items_->AddChildViewAt(std::move(item), index);
 }
 
@@ -557,20 +617,19 @@ void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
   if (!section)
     return;
 
-  auto item = std::make_unique<ExtensionsMenuItemView>(
-      ExtensionsMenuItemView::MenuItemType::kSiteAccess, browser_,
-      std::move(controller), allow_pinning_);
+  auto item = std::make_unique<SiteAccessMenuItemView>(
+      browser_, std::move(controller), allow_pinning_);
 
   InsertSiteAccessItem(std::move(item), section);
 }
 
 void ExtensionsTabbedMenuView::InsertSiteAccessItem(
-    std::unique_ptr<ExtensionsMenuItemView> item,
+    std::unique_ptr<SiteAccessMenuItemView> item,
     SiteAccessSection* section) {
   DCHECK(section);
 
   int index =
-      FindIndex(item->view_controller()->GetActionName(), section->items);
+      FindIndex(section->items, item->view_controller()->GetActionName());
   section->items->AddChildViewAt(std::move(item), index);
 }
 
@@ -582,9 +641,9 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
       [web_contents, this](SiteAccessSection* section) {
         // Collect the views to move separately, so that we don't change the
         // children of the view during iteration.
-        std::vector<ExtensionsMenuItemView*> items_to_move;
+        std::vector<SiteAccessMenuItemView*> items_to_move;
         for (views::View* view : section->items->children()) {
-          auto* item_view = GetAsMenuItemView(view);
+          auto* item_view = GetAsSiteAccessMenuItem(view);
           auto site_interaction =
               item_view->view_controller()->GetSiteInteraction(web_contents);
           if (site_interaction == section->site_interaction)
@@ -593,7 +652,7 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
           items_to_move.push_back(item_view);
         }
 
-        for (ExtensionsMenuItemView* item_view : items_to_move) {
+        for (SiteAccessMenuItemView* item_view : items_to_move) {
           auto item_view_to_move = section->items->RemoveChildViewT(item_view);
           auto site_interaction =
               item_view_to_move->view_controller()->GetSiteInteraction(
@@ -652,10 +711,10 @@ void ExtensionsTabbedMenuView::ConsistencyCheck() {
     std::vector<std::u16string> item_names;
     for (views::View* view : parent_view->children()) {
       DCHECK(Contains(view));
-      auto* item_view = GetAsMenuItemView(view);
-      DCHECK(base::Contains(action_ids, item_view->view_controller()->GetId()));
+      auto* view_controller = GetMenuItemViewController(view);
+      DCHECK(base::Contains(action_ids, view_controller->GetId()));
       item_names.push_back(
-          base::i18n::ToLower(item_view->view_controller()->GetActionName()));
+          base::i18n::ToLower(view_controller->GetActionName()));
     }
 
     // Verify that all items are properly sorted.

@@ -24,34 +24,76 @@ namespace views {
 class Combobox;
 }  // namespace views
 
-// ExtensionsMenuItemView is a single row inside the extensions menu for a
-// particular extension. Includes information about the extension in addition to
-// a button to pin the extension to the toolbar and a button for accessing the
-// associated context menu.
-class ExtensionsMenuItemView : public views::View {
+// SiteAccessMenuItemView is a single row inside the extensions menu for an
+// extension with host permissions. Includes information about the extension and
+// a dropdown to select host permission options.
+class SiteAccessMenuItemView : public views::View {
  public:
-  METADATA_HEADER(ExtensionsMenuItemView);
-
-  enum class MenuItemType {
-    // Used by the extensions tab in ExtensionsTabbedMenu to add a pin button
-    // and a context menu button to the item view.
-    kExtensions,
-    // Used by the site access tab in ExtensionsTabbedMenu to add a dropdown
-    // button to the item view.
-    kSiteAccess
-  };
+  METADATA_HEADER(SiteAccessMenuItemView);
 
   static constexpr int kMenuItemHeightDp = 40;
   static constexpr gfx::Size kIconSize{28, 28};
 
-  ExtensionsMenuItemView(
-      MenuItemType item_type,
+  SiteAccessMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller,
       bool allow_pinning);
-  ExtensionsMenuItemView(const ExtensionsMenuItemView&) = delete;
-  ExtensionsMenuItemView& operator=(const ExtensionsMenuItemView&) = delete;
-  ~ExtensionsMenuItemView() override;
+  SiteAccessMenuItemView(const SiteAccessMenuItemView&) = delete;
+  SiteAccessMenuItemView& operator=(const SiteAccessMenuItemView&) = delete;
+  ~SiteAccessMenuItemView() override;
+
+  // Updates the controller and child views to be on sync with the parent views.
+  void Update();
+
+  ToolbarActionViewController* view_controller() { return controller_.get(); }
+
+  ExtensionsMenuButton* primary_action_button_for_testing() {
+    return primary_action_button_;
+  }
+  views::Combobox* site_access_combobox_for_testing() {
+    return site_access_combobox_;
+  }
+
+ private:
+  void AddSiteAccessCombobox();
+
+  // Handles the selection of an option in a combobox. This is passed as a
+  // callback to `site_access_combobox`.
+  void OnComboboxSelectionChanged();
+
+  const raw_ptr<Browser> browser_;
+
+  // Controller responsible for an action that is shown in the toolbar.
+  std::unique_ptr<ToolbarActionViewController> controller_;
+
+  const raw_ptr<ExtensionsMenuButton> primary_action_button_;
+
+  raw_ptr<views::Combobox> site_access_combobox_ = nullptr;
+  raw_ptr<ExtensionSiteAccessComboboxModel> site_access_combobox_model_ =
+      nullptr;
+};
+
+// InstalledExtensionMenuItemView is a single row inside the extensions menu for
+// a every installed extension. Includes information about the extension, a
+// button to pin the extension to the toolbar and a button for accessing the
+// associated context menu.
+class InstalledExtensionMenuItemView : public views::View {
+ public:
+  METADATA_HEADER(InstalledExtensionMenuItemView);
+
+  // TODO(emiliapaz): Consider moving these variables outside this class.
+  static constexpr int kMenuItemHeightDp = 40;
+  static constexpr gfx::Size kIconSize{28, 28};
+
+  InstalledExtensionMenuItemView(
+      Browser* browser,
+      std::unique_ptr<ToolbarActionViewController> controller,
+      bool allow_pinning);
+  InstalledExtensionMenuItemView(const InstalledExtensionMenuItemView&) =
+      delete;
+  InstalledExtensionMenuItemView& operator=(
+      const InstalledExtensionMenuItemView&) = delete;
+  ~InstalledExtensionMenuItemView() override;
 
   // views::View:
   void OnThemeChanged() override;
@@ -59,19 +101,20 @@ class ExtensionsMenuItemView : public views::View {
   // Updates the controller and child views to be on sync with the parent views.
   void Update();
 
-  // Updates the pin button. `item_type_` must be `ItemType::kExtensions`.
+  // Updates the pin button.
   void UpdatePinButton();
 
   // Returns whether the action corresponding to this view is pinned to the
-  // toolbar. `item_type_` must be `ItemType::kExtensions`.
+  // toolbar.
   bool IsPinned() const;
 
-  // Displays the context menu. `item_type_` must be `ItemType::kExtensions`.
-  void ContextMenuPressed();
+  // Handles the context menu button press. This is passed as a callback to
+  // `context_menu_button_`.
+  void OnContextMenuPressed();
 
-  // Pins or unpins the action in the toolbar. `item_type_` must be
-  // `ItemType::kExtensions`.
-  void PinButtonPressed();
+  // Handles the pin button press. This is passed as a callback to
+  // `pin_button_`.
+  void OnPinButtonPressed();
 
   ToolbarActionViewController* view_controller() { return controller_.get(); }
   const ToolbarActionViewController* view_controller() const {
@@ -79,62 +122,41 @@ class ExtensionsMenuItemView : public views::View {
   }
 
   bool IsContextMenuRunningForTesting() const;
-  ExtensionsMenuButton* primary_action_button_for_testing();
+  ExtensionsMenuButton* primary_action_button_for_testing() {
+    return primary_action_button_;
+  }
   HoverButton* context_menu_button_for_testing() {
     return context_menu_button_;
   }
   HoverButton* pin_button_for_testing() { return pin_button_; }
-  views::Combobox* site_access_combobox_for_testing() {
-    return site_access_combobox_;
-  }
 
  private:
-  // Adds a pin button as a child view. `item_type_` must be
-  // `ItemType::kExtensions`.
+  // Adds a pin button as a child view.
   void AddPinButton();
 
-  // Adds a context menu button as a child view. `item_type_` must be
-  // `ItemType::kExtensions`.
+  // Adds a context menu button as a child view.
   void AddContextMenuButton();
 
-  // Adds a site access combobox as a child view. `item_type_` must be
-  // `ItemType::kSiteAccess`.
-  void AddSiteAccessCombobox();
-
-  // Handles the selection of a combobox option. `item_type_` must be
-  // `ItemType::kSiteAccess`.
-  void OnComboboxSelectionChanged();
-
-  // Maybe adjust |icon_color| to assure high enough contrast with the
+  // Maybe adjust `icon_color` to assure high enough contrast with the
   // background.
   SkColor GetAdjustedIconColor(SkColor icon_color) const;
 
-  // Determines which views will be added as children of this item view.
-  const MenuItemType item_type_;
-
   const raw_ptr<Browser> browser_;
-
-  // Extension action button present in `ItemType::kSiteAccess` and
-  // `ItemType::kExtensions`.
-  const raw_ptr<ExtensionsMenuButton> primary_action_button_;
-  // Pin button present in `ItemType::kExtensions`.
-  raw_ptr<HoverButton> pin_button_ = nullptr;
-  // Context menu button present in `ItemType::kExtensions`.
-  raw_ptr<HoverButton> context_menu_button_ = nullptr;
-  // Dropdown list present in `ItemType::kSiteAccess`.
-  raw_ptr<views::Combobox> site_access_combobox_ = nullptr;
 
   // Controller responsible for an action that is shown in the toolbar.
   std::unique_ptr<ToolbarActionViewController> controller_;
-  // Controller responsible for showing the context menu for an extension.
-  std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
 
   // Model for the browser actions toolbar that provides information such as the
   // action pin status or visibility.
   const raw_ptr<ToolbarActionsModel> model_;
-  // Model for `site_access_combobox_` to select an option.
-  raw_ptr<ExtensionSiteAccessComboboxModel> site_access_combobox_model_ =
-      nullptr;
+
+  const raw_ptr<ExtensionsMenuButton> primary_action_button_;
+
+  raw_ptr<HoverButton> pin_button_ = nullptr;
+
+  raw_ptr<HoverButton> context_menu_button_ = nullptr;
+  // Controller responsible for showing the context menu for an extension.
+  std::unique_ptr<ExtensionContextMenuController> context_menu_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_ITEM_VIEW_H_

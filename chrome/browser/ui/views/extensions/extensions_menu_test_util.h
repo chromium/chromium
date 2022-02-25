@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
-class ExtensionsMenuItemView;
+class InstalledExtensionMenuItemView;
 class ExtensionsMenuView;
 class ExtensionsToolbarContainer;
 
@@ -58,9 +58,9 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
   class MenuViewObserver;
   class Wrapper;
 
-  // Returns the ExtensionsMenuItemView for the given `id` from the
+  // Returns the InstalledExtensionMenuItemView for the given `id` from the
   // `menu_view`.
-  ExtensionsMenuItemView* GetMenuItemViewForId(
+  InstalledExtensionMenuItemView* GetMenuItemViewForId(
       const extensions::ExtensionId& id);
 
   // An override to allow test instances of the ExtensionsMenuView.
