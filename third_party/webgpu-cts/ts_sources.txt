@@ -258,9 +258,15 @@ src/webgpu/shader/execution/builtin/atan.spec.ts
 src/webgpu/shader/execution/builtin/ceil.spec.ts
 src/webgpu/shader/execution/builtin/clamp.spec.ts
 src/webgpu/shader/execution/builtin/cos.spec.ts
+src/webgpu/shader/execution/builtin/countLeadingZeros.spec.ts
+src/webgpu/shader/execution/builtin/countTrailingZeros.spec.ts
+src/webgpu/shader/execution/builtin/extractBits.spec.ts
+src/webgpu/shader/execution/builtin/firstLeadingBit.spec.ts
+src/webgpu/shader/execution/builtin/firstTrailingBit.spec.ts
 src/webgpu/shader/execution/builtin/float_built_functions.spec.ts
 src/webgpu/shader/execution/builtin/floor.spec.ts
 src/webgpu/shader/execution/builtin/fract.spec.ts
+src/webgpu/shader/execution/builtin/insertBits.spec.ts
 src/webgpu/shader/execution/builtin/integer_built_in_functions.spec.ts
 src/webgpu/shader/execution/builtin/inversesqrt.spec.ts
 src/webgpu/shader/execution/builtin/logical_built_in_functions.spec.ts
