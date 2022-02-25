@@ -4,26 +4,43 @@
 
 #include "remoting/host/mojo_ipc/mojo_caller_security_checker.h"
 
+#include <array>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/scoped_handle.h"
+#include "remoting/host/win/trust_util.h"
+#endif
 
 namespace remoting {
 namespace {
 
 constexpr auto kAllowedCallerProgramNames =
-    base::MakeFixedFlatSet<base::StringPiece>({
-        "remote-open-url",
-        "remote-webauthn",
+    base::MakeFixedFlatSet<base::FilePath::StringPieceType>({
+#if BUILDFLAG(IS_LINUX)
+      "remote-open-url", "remote-webauthn",
+#elif BUILDFLAG(IS_WIN)
+      L"remote_open_url.exe", L"remote_webauthn.exe",
+#else
+      // MakeFixedFlatSet() requires at least one element.
+      "unsupported",
+#endif
     });
 
 base::FilePath GetProcessImagePath(base::ProcessId pid) {
+#if BUILDFLAG(IS_LINUX)
   // We don't get the image path from the command line, since it's spoofable by
   // the process itself.
   base::FilePath process_exe_path(
@@ -31,6 +48,23 @@ base::FilePath GetProcessImagePath(base::ProcessId pid) {
   base::FilePath process_image_path;
   base::ReadSymbolicLink(process_exe_path, &process_image_path);
   return process_image_path;
+#elif BUILDFLAG(IS_WIN)
+  base::win::ScopedHandle process_handle(
+      OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid));
+  std::array<wchar_t, MAX_PATH + 1> buffer;
+  DWORD size = buffer.size();
+  if (!QueryFullProcessImageName(process_handle.Get(), 0, buffer.data(),
+                                 &size)) {
+    PLOG(ERROR) << "QueryFullProcessImageName failed";
+    return base::FilePath();
+  }
+  DCHECK_GT(size, 0u);
+  DCHECK_LT(size, buffer.size());
+  return base::FilePath(base::FilePath::StringPieceType(buffer.data(), size));
+#else
+  NOTIMPLEMENTED();
+  return base::FilePath();
+#endif
 }
 
 }  // namespace
@@ -53,10 +87,11 @@ bool IsTrustedMojoEndpoint(base::ProcessId caller_pid) {
                << " is not under " << current_process_image_path->DirName();
     return false;
   }
-  std::string program_name = caller_process_image_path.BaseName().value();
+  base::FilePath::StringType program_name =
+      caller_process_image_path.BaseName().value();
   if (!kAllowedCallerProgramNames.contains(program_name)) {
-#if !defined(NDEBUG)
-    // Binaries generated in out/Debug are underscore-separated. To make
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+    // Linux binaries generated in out/Debug are underscore-separated. To make
     // debugging easier, we just check the name again with underscores replaced
     // with hyphens.
     std::string program_name_hyphenated;
@@ -64,12 +99,17 @@ bool IsTrustedMojoEndpoint(base::ProcessId caller_pid) {
     if (kAllowedCallerProgramNames.contains(program_name_hyphenated)) {
       return true;
     }
-#endif  // !defined(NDEBUG)
+#endif  // BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
     LOG(ERROR) << caller_process_image_path.BaseName()
                << " is not in the list of allowed caller programs.";
     return false;
   }
+#if BUILDFLAG(IS_WIN)
+  return IsBinaryTrusted(caller_process_image_path);
+#else
+  // Linux binaries are not code-signed, so we just return true.
   return true;
+#endif
 }
 
 }  // namespace remoting

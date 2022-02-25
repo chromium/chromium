@@ -99,6 +99,15 @@ source_set("acl_util") {
   deps = [ "//base" ]
 }
 
+source_set("trust_util") {
+  sources = [
+    "trust_util.cc",
+    "trust_util.h",
+  ]
+  deps = [ "//base" ]
+  libs = [ "Wintrust.lib" ]
+}
+
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",

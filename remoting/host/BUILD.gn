@@ -574,10 +574,7 @@ static_library("common") {
       "touch_injector_win.h",
       "usage_stats_consent_win.cc",
     ]
-    libs += [
-      "crypt32.lib",
-      "Wintrust.lib",
-    ]
+    libs += [ "crypt32.lib" ]
     deps += [
       # On Windows, we use //media/gpu/MediaFoundationVideoEncodeAcceleratorWin
       # to detect whether HW encoder is supported by the system.
@@ -588,6 +585,7 @@ static_library("common") {
       "//remoting/host/win",
       "//remoting/host/win:messages",
       "//remoting/host/win:remoting_lib_idl",
+      "//remoting/host/win:trust_util",
     ]
 
     public_deps += [ "//remoting/host/win" ]
