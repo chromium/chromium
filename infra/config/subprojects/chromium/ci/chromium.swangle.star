@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.swangle builder group."""
 
 load("//lib/builders.star", "goma", "sheriff_rotations")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -43,6 +43,9 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -51,6 +54,9 @@ ci.gpu.linux_builder(
         category = "ToT ANGLE|Linux",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -59,6 +65,9 @@ ci.gpu.linux_builder(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -68,6 +77,9 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.mac_builder(
