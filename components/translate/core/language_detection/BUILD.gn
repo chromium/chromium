@@ -74,4 +74,15 @@ source_set("unit_tests") {
     "//third_party/icu",
     "//url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ ":unit_tests_bundle_data" ]
+  }
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/translate/valid_model.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

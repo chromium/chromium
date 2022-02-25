@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -14,18 +14,21 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/download/public/background_service/test/mock_download_service.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/services/unzip/content/unzip_service.h"
+#include "components/optimization_guide/core/prediction_model_download_observer.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
+
+#if !BUILDFLAG(IS_IOS)
+#include "components/services/unzip/content/unzip_service.h"  // nogncheck
+#endif
 
 namespace optimization_guide {
 
@@ -66,15 +69,18 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   ~PredictionModelDownloadManagerTest() override = default;
 
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(temp_download_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(temp_models_dir_.CreateUniqueTempDir());
     mock_download_service_ =
         std::make_unique<download::test::MockDownloadService>();
     download_manager_ = std::make_unique<PredictionModelDownloadManager>(
-        mock_download_service_.get(),
+        mock_download_service_.get(), temp_models_dir_.GetPath(),
         task_environment_.GetMainThreadTaskRunner());
 
+#if !BUILDFLAG(IS_IOS)
     unzip::SetUnzipperLaunchOverrideForTesting(
         base::BindRepeating(&unzip::LaunchInProcessUnzipper));
+#endif
   }
 
   void TearDown() override {
@@ -127,20 +133,22 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
     switch (file_status) {
       case PredictionModelDownloadFileStatus::kUnverifiedFile:
-        return temp_dir_.GetPath().AppendASCII("unverified.crx3");
+        return temp_download_dir_.GetPath().AppendASCII("unverified.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidPublisher:
-        return temp_dir_.GetPath().AppendASCII("invalidpublisher.crx3");
+        return temp_download_dir_.GetPath().AppendASCII(
+            "invalidpublisher.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles:
-        return temp_dir_.GetPath().AppendASCII("nofiles.crx3");
+        return temp_download_dir_.GetPath().AppendASCII("nofiles.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile:
-        return temp_dir_.GetPath().AppendASCII("badmodelinfo.crx3");
+        return temp_download_dir_.GetPath().AppendASCII("badmodelinfo.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithInvalidModelInfo:
-        return temp_dir_.GetPath().AppendASCII("invalidmodelinfo.crx3");
+        return temp_download_dir_.GetPath().AppendASCII(
+            "invalidmodelinfo.crx3");
       case PredictionModelDownloadFileStatus::
           kVerfiedCrxWithValidModelInfoNoModelFile:
-        return temp_dir_.GetPath().AppendASCII("nomodel.crx3");
+        return temp_download_dir_.GetPath().AppendASCII("nomodel.crx3");
       case PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles:
-        return temp_dir_.GetPath().AppendASCII("good.crx3");
+        return temp_download_dir_.GetPath().AppendASCII("good.crx3");
     }
   }
 
@@ -188,17 +196,19 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     }
 
     if (status == PredictionModelDownloadFileStatus::kVerifiedCrxWithNoFiles) {
-      base::FilePath invalid_crx_model = source_root_dir.AppendASCII("chrome")
-                                             .AppendASCII("test")
-                                             .AppendASCII("data")
-                                             .AppendASCII("optimization_guide")
-                                             .AppendASCII("invalid_model.crx3");
+      base::FilePath invalid_crx_model =
+          source_root_dir.AppendASCII("components")
+              .AppendASCII("test")
+              .AppendASCII("data")
+              .AppendASCII("optimization_guide")
+              .AppendASCII("invalid_model.crx3");
       ASSERT_TRUE(base::CopyFile(invalid_crx_model,
                                  GetFilePathForDownloadFileStatus(status)));
       return;
     }
 
-    base::FilePath zip_dir = temp_dir_.GetPath().AppendASCII("zip_dir");
+    base::FilePath zip_dir =
+        temp_download_dir_.GetPath().AppendASCII("zip_dir");
     ASSERT_TRUE(base::CreateDirectory(zip_dir));
     if (status ==
         PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile) {
@@ -229,7 +239,8 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::ScopedTempDir temp_dir_;
+  base::ScopedTempDir temp_download_dir_;
+  base::ScopedTempDir temp_models_dir_;
   std::unique_ptr<download::test::MockDownloadService> mock_download_service_;
   std::unique_ptr<PredictionModelDownloadManager> download_manager_;
 };

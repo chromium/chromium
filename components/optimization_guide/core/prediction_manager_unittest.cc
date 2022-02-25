@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 
 #include <map>
 #include <memory>
@@ -15,14 +15,10 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -32,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
@@ -39,9 +36,6 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_web_contents_factory.h"
-#include "content/public/test/web_contents_tester.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -114,8 +108,10 @@ class FakePredictionModelDownloadManager
     : public PredictionModelDownloadManager {
  public:
   explicit FakePredictionModelDownloadManager(
+      const base::FilePath& models_dir_path,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
       : PredictionModelDownloadManager(/*download_service=*/nullptr,
+                                       models_dir_path,
                                        task_runner) {}
   ~FakePredictionModelDownloadManager() override = default;
 
@@ -342,12 +338,19 @@ class TestPredictionManager : public PredictionManager {
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile)
-      : PredictionManager(model_and_features_store,
-                          url_loader_factory,
-                          pref_service,
-                          profile,
-                          /*optimization_guide_logger=*/nullptr) {}
+      bool off_the_record,
+      const std::string& application_locale,
+      const base::FilePath& models_dir_path)
+      : PredictionManager(
+            model_and_features_store,
+            url_loader_factory,
+            pref_service,
+            off_the_record,
+            application_locale,
+            models_dir_path,
+            /*optimization_guide_logger=*/nullptr,
+            /*background_download_service_provider=*/
+            base::OnceCallback<download::BackgroundDownloadService*()>()) {}
 
   ~TestPredictionManager() override = default;
 };
@@ -365,7 +368,6 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
   void SetUp() override {
     ProtoDatabaseProviderTestBase::SetUp();
-    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
@@ -387,7 +389,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     model_and_features_store_ = CreateModelAndHostModelFeaturesStore();
     prediction_manager_ = std::make_unique<TestPredictionManager>(
         model_and_features_store_->AsWeakPtr(), url_loader_factory_,
-        pref_service_.get(), &testing_profile_);
+        pref_service_.get(), false, "en-US", temp_dir());
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
@@ -436,7 +438,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   FakePredictionModelDownloadManager* prediction_model_download_manager()
       const {
     return static_cast<FakePredictionModelDownloadManager*>(
-        prediction_manager()->prediction_model_download_manager());
+        temp_dir(), prediction_manager()->prediction_model_download_manager());
   }
 
   TestOptimizationGuideStore* models_and_features_store() const {
@@ -450,16 +452,12 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
   TestingPrefServiceSimple* pref_service() const { return pref_service_.get(); }
 
-  TestingProfile* profile() { return &testing_profile_; }
-
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
 
-  content::BrowserTaskEnvironment* task_environment() {
-    return &task_environment_;
-  }
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   void SetOptimizationGuideFetchingPrefEnabled(bool enabled) {
     pref_service_->SetBoolean(prefs::kOptimizationGuideFetchingEnabled,
@@ -473,7 +471,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   StoreEntryMap db_store_;
@@ -481,9 +479,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<TestPredictionManager> prediction_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  TestingProfile testing_profile_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
 };
 
 class PredictionManagerRemoteFetchingDisabledTest
@@ -517,8 +513,11 @@ class PredictionManagerTest : public PredictionManagerTestBase {
   PredictionManagerTest() {
     // This needs to be done before any tasks are run that might check if a
     // feature is enabled, to avoid tsan errors.
-    feature_list_.InitAndEnableFeature(
-        features::kRemoteOptimizationGuideFetching);
+
+    feature_list_.InitWithFeatures(
+        {features::kRemoteOptimizationGuideFetching,
+         features::kOptimizationGuideModelDownloading},
+        {});
   }
 
  private:
@@ -864,7 +863,7 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
-          task_environment()->GetMainThreadTaskRunner()));
+          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
   prediction_model_download_manager()->SetAvailableForDownloads(false);
 
   FakeOptimizationTargetModelObserver observer;
@@ -889,7 +888,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
-          task_environment()->GetMainThreadTaskRunner()));
+          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
@@ -983,6 +982,9 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchFailed));
+  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
+      std::make_unique<FakePredictionModelDownloadManager>(
+          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
@@ -1007,8 +1009,9 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithModels));
-
-  g_browser_process->SetApplicationLocale("en-US");
+  prediction_manager()->SetPredictionModelDownloadManagerForTesting(
+      std::make_unique<FakePredictionModelDownloadManager>(
+          temp_dir(), task_environment()->GetMainThreadTaskRunner()));
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(

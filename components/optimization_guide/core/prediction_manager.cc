@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 
 #include <memory>
 #include <utility>
@@ -23,13 +23,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/background_download_service_factory.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/common/chrome_paths.h"
-#include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -40,14 +33,13 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#include "content/public/browser/network_service_instance.h"
-#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -205,16 +197,21 @@ PredictionManager::PredictionManager(
     base::WeakPtr<OptimizationGuideStore> model_and_features_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    Profile* profile,
-    OptimizationGuideLogger* optimization_guide_logger)
+    bool off_the_record,
+    const std::string& application_locale,
+    const base::FilePath& models_dir_path,
+    OptimizationGuideLogger* optimization_guide_logger,
+    BackgroundDownloadServiceProvider background_download_service_provider)
     : prediction_model_download_manager_(nullptr),
       model_and_features_store_(model_and_features_store),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
       pref_service_(pref_service),
-      profile_(profile),
-      clock_(base::DefaultClock::GetInstance()) {
-  Initialize();
+      clock_(base::DefaultClock::GetInstance()),
+      off_the_record_(off_the_record),
+      application_locale_(application_locale),
+      models_dir_path_(models_dir_path) {
+  Initialize(std::move(background_download_service_provider));
 }
 
 PredictionManager::~PredictionManager() {
@@ -222,12 +219,14 @@ PredictionManager::~PredictionManager() {
     prediction_model_download_manager_->RemoveObserver(this);
 }
 
-void PredictionManager::Initialize() {
+void PredictionManager::Initialize(
+    BackgroundDownloadServiceProvider background_download_service_provider) {
   if (model_and_features_store_) {
     model_and_features_store_->Initialize(
         switches::ShouldPurgeModelAndFeaturesStoreOnStartup(),
         base::BindOnce(&PredictionManager::OnStoreInitialized,
-                       ui_weak_ptr_factory_.GetWeakPtr()));
+                       ui_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(background_download_service_provider)));
   }
 }
 
@@ -363,7 +362,7 @@ void PredictionManager::FetchModels() {
   if (switches::IsModelOverridePresent())
     return;
 
-  if (!ShouldFetchModels(profile_->IsOffTheRecord(), pref_service_))
+  if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
 
   // Models should not be fetched if there are no optimization targets
@@ -399,8 +398,8 @@ void PredictionManager::FetchModels() {
   // Active field trials convey some sort of user information, so
   // ensure that the user has opted into the right permissions before adding
   // these fields to the request.
-  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          profile_->IsOffTheRecord(), pref_service_)) {
+  if (IsUserPermittedToFetchFromRemoteOptimizationGuide(off_the_record_,
+                                                        pref_service_)) {
     google::protobuf::RepeatedPtrField<proto::FieldTrial> current_field_trials =
         GetActiveFieldTrialsAllowedForFetch();
     active_field_trials = std::vector<proto::FieldTrial>(
@@ -450,7 +449,7 @@ void PredictionManager::FetchModels() {
   bool fetch_initiated =
       prediction_model_fetcher_->FetchOptimizationGuideServiceModels(
           models_info, active_field_trials, proto::CONTEXT_BATCH_UPDATE_MODELS,
-          g_browser_process->GetApplicationLocale(),
+          application_locale_,
           base::BindOnce(&PredictionManager::OnModelsFetched,
                          ui_weak_ptr_factory_.GetWeakPtr()));
 
@@ -622,19 +621,22 @@ void PredictionManager::OnPredictionModelsStored() {
       "OptimizationGuide.PredictionManager.PredictionModelsStored", true);
 }
 
-void PredictionManager::OnStoreInitialized() {
+void PredictionManager::OnStoreInitialized(
+    BackgroundDownloadServiceProvider background_download_service_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_is_ready_ = true;
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.StoreInitialized", true);
 
   // Create the download manager here if we are allowed to.
-  if (features::IsModelDownloadingEnabled() && !profile_->IsOffTheRecord() &&
+  if (features::IsModelDownloadingEnabled() && !off_the_record_ &&
       !prediction_model_download_manager_) {
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(
-            BackgroundDownloadServiceFactory::GetForKey(
-                profile_->GetProfileKey()),
+            background_download_service_provider
+                ? std::move(background_download_service_provider).Run()
+                : nullptr,
+            models_dir_path_,
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
@@ -792,7 +794,7 @@ void PredictionManager::StoreLoadedModelInfo(
 }
 
 void PredictionManager::MaybeFetchModels() {
-  if (!ShouldFetchModels(profile_->IsOffTheRecord(), pref_service_))
+  if (!ShouldFetchModels(off_the_record_, pref_service_))
     return;
 
   // Add a slight delay to allow the rest of the browser startup process to

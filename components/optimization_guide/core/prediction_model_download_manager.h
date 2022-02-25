@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
 
 #include <map>
 #include <set>
@@ -34,6 +34,7 @@ class PredictionModelDownloadManager {
  public:
   PredictionModelDownloadManager(
       download::BackgroundDownloadService* download_service,
+      const base::FilePath& models_dir_path,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   virtual ~PredictionModelDownloadManager();
   PredictionModelDownloadManager(const PredictionModelDownloadManager&) =
@@ -111,6 +112,7 @@ class PredictionModelDownloadManager {
   // Must be called on the background thread, as it performs file I/O. This is a
   // stateless func to avoid needing weird lifetime stuff.
   static absl::optional<proto::PredictionModel> ProcessUnzippedContents(
+      const base::FilePath& model_dir_path,
       const base::FilePath& unzipped_dir_path);
 
   // Notifies |observers_| that a model is ready.
@@ -138,6 +140,9 @@ class PredictionModelDownloadManager {
   // Whether the download should be verified. Should only be false for testing.
   bool should_verify_download_ = true;
 
+  // The path to the dir containing models.
+  base::FilePath models_dir_path_;
+
   // Background thread where download file processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
@@ -152,4 +157,4 @@ class PredictionModelDownloadManager {
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_DOWNLOAD_MANAGER_H_

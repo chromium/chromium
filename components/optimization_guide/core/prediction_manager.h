@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MANAGER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MANAGER_H_
+#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MANAGER_H_
+#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -12,17 +12,22 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
 #include "components/optimization_guide/core/model_enums.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/prediction_model_download_observer.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "url/origin.h"
+
+namespace download {
+class BackgroundDownloadService;
+}  // namespace download
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -30,7 +35,6 @@ class SharedURLLoaderFactory;
 
 class OptimizationGuideLogger;
 class PrefService;
-class Profile;
 
 namespace optimization_guide {
 
@@ -46,12 +50,21 @@ class ModelInfo;
 // for an OptimizationTarget.
 class PredictionManager : public PredictionModelDownloadObserver {
  public:
+  // BackgroundDownloadService is only available once the profile is fully
+  // initialized and that cannot be done as part of |Initialize|. Get a provider
+  // to retrieve the service when it is needed.
+  typedef base::OnceCallback<download::BackgroundDownloadService*(void)>
+      BackgroundDownloadServiceProvider;
+
   PredictionManager(
       base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
-      Profile* profile,
-      OptimizationGuideLogger* optimization_guide_logger);
+      bool off_the_record,
+      const std::string& application_locale,
+      const base::FilePath& models_dir_path,
+      OptimizationGuideLogger* optimization_guide_logger,
+      BackgroundDownloadServiceProvider background_dowload_service_provider);
 
   PredictionManager(const PredictionManager&) = delete;
   PredictionManager& operator=(const PredictionManager&) = delete;
@@ -125,9 +138,11 @@ class PredictionManager : public PredictionModelDownloadObserver {
  private:
   friend class PredictionManagerTestBase;
 
-  // Called on construction to initialize the prediction model and host model
-  // features store, and register as an observer to the network quality tracker.
-  void Initialize();
+  // Called on construction to initialize the prediction model.
+  // |background_dowload_service_provider| can provide the
+  // BackgroundDownloadService if needed to download models.
+  void Initialize(
+      BackgroundDownloadServiceProvider background_dowload_service_provider);
 
   // Called to make a request to fetch models from the remote Optimization Guide
   // Service. Used to fetch models for the registered optimization targets.
@@ -145,7 +160,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // initialized. The prediction manager can load models from
   // the store for registered optimization targets. |store_is_ready_| is set to
   // true.
-  void OnStoreInitialized();
+  void OnStoreInitialized(
+      BackgroundDownloadServiceProvider background_dowload_service_provider);
 
   // Callback run after prediction models are stored in
   // |model_and_features_store_|.
@@ -255,9 +271,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
-  // A reference to the profile. Not owned.
-  raw_ptr<Profile> profile_ = nullptr;
-
   // The timer used to schedule fetching prediction models and host model
   // features from the remote Optimization Guide Service.
   base::OneShotTimer fetch_timer_;
@@ -273,6 +286,15 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // for use.
   bool host_model_features_loaded_ = false;
 
+  // Whether the profile for this PredictionManager is off the record.
+  bool off_the_record_ = false;
+
+  // The locale of the application.
+  std::string application_locale_;
+
+  // The path to the directory containing the models.
+  base::FilePath models_dir_path_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get |weak_ptr_| to self on the UI thread.
@@ -281,4 +303,4 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PREDICTION_PREDICTION_MANAGER_H_
+#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MANAGER_H_

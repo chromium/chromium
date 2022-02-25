@@ -25,6 +25,10 @@ class BrowserContext;
 class NavigationHandle;
 }  // namespace content
 
+namespace download {
+class BackgroundDownloadService;
+}  // namespace download
+
 namespace optimization_guide {
 namespace android {
 class AndroidPushNotificationManagerJavaTest;
@@ -169,6 +173,8 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback) override;
+
+  download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 
   raw_ptr<content::BrowserContext> browser_context_;
 

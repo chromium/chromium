@@ -217,7 +217,16 @@ source_set("unit_tests") {
       "execution/model_execution_manager_impl_unittest.cc",
       "execution/segmentation_model_executor_unittest.cc",
     ]
+    deps += [ ":unit_tests_bundle_data" ]
   }
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/segmentation_platform/adder.tflite" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 if (is_android) {

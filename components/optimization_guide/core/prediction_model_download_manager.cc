@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
@@ -18,8 +18,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_observer.h"
-#include "chrome/common/chrome_paths.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/optimization_guide/core/model_util.h"
@@ -27,10 +25,16 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/services/unzip/content/unzip_service.h"
+#include "components/optimization_guide/core/prediction_model_download_observer.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "crypto/sha2.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "components/services/unzip/in_process_unzipper.h"  // nogncheck
+#else
+#include "components/services/unzip/content/unzip_service.h"  // nogncheck
+#endif
 
 namespace optimization_guide {
 
@@ -95,10 +99,12 @@ void RecordPredictionModelDownloadStatus(PredictionModelDownloadStatus status) {
 
 PredictionModelDownloadManager::PredictionModelDownloadManager(
     download::BackgroundDownloadService* download_service,
+    const base::FilePath& models_dir_path,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : download_service_(download_service),
       is_available_for_downloads_(true),
       api_key_(features::GetOptimizationGuideServiceAPIKey()),
+      models_dir_path_(models_dir_path),
       background_task_runner_(background_task_runner) {}
 
 PredictionModelDownloadManager::~PredictionModelDownloadManager() = default;
@@ -269,8 +275,13 @@ void PredictionModelDownloadManager::StartUnzipping(
   if (!unzip_paths)
     return;
 
+#if BUILDFLAG(IS_IOS)
+  auto unzipper = unzip::LaunchInProcessUnzipper();
+#else
+  auto unzipper = unzip::LaunchUnzipper();
+#endif
   unzip::Unzip(
-      unzip::LaunchUnzipper(), unzip_paths->first, unzip_paths->second,
+      std::move(unzipper), unzip_paths->first, unzip_paths->second,
       base::BindOnce(&PredictionModelDownloadManager::OnDownloadUnzipped,
                      ui_weak_ptr_factory_.GetWeakPtr(), unzip_paths->first,
                      unzip_paths->second));
@@ -296,7 +307,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PredictionModelDownloadManager::ProcessUnzippedContents,
-                     unzipped_dir_path),
+                     models_dir_path_, unzipped_dir_path),
       base::BindOnce(&PredictionModelDownloadManager::NotifyModelReady,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
@@ -304,6 +315,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
 // static
 absl::optional<proto::PredictionModel>
 PredictionModelDownloadManager::ProcessUnzippedContents(
+    const base::FilePath& model_dir_path,
     const base::FilePath& unzipped_dir_path) {
   // Clean up temp dir when this function finishes.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -330,9 +342,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     return absl::nullopt;
   }
 
-  base::FilePath models_dir;
-  if (!base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
-                              &models_dir)) {
+  if (model_dir_path.empty()) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kOptGuideDirectoryDoesNotExist);
 
@@ -341,7 +351,8 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 
   // Move each packaged file away from temp directory into a new directory.
 
-  base::FilePath store_dir = GetDirectoryForModelInfo(models_dir, model_info);
+  base::FilePath store_dir =
+      GetDirectoryForModelInfo(model_dir_path, model_info);
   if (!base::CreateDirectory(store_dir)) {
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kCouldNotCreateDirectory);

@@ -9,9 +9,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
 #include "components/download/public/background_service/download_metadata.h"
+#include "components/optimization_guide/core/prediction_manager.h"
+#include "components/optimization_guide/core/prediction_model_download_manager.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 namespace optimization_guide {

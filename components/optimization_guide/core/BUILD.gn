@@ -184,6 +184,7 @@ static_library("core") {
   public_deps = [
     ":entities",
     ":model_executor",
+    "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//third_party/re2",
   ]
@@ -202,7 +203,6 @@ static_library("core") {
   deps = [
     ":bloomfilter",
     "//base",
-    "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
     "//components/unified_consent",
@@ -220,6 +220,32 @@ static_library("core") {
     data_deps = [
       "//components/optimization_guide/internal:optimization_guide_internal",
     ]
+  }
+}
+
+static_library("prediction") {
+  sources = [
+    "prediction_manager.cc",
+    "prediction_manager.h",
+    "prediction_model_download_manager.cc",
+    "prediction_model_download_manager.h",
+    "prediction_model_download_observer.h",
+  ]
+  deps = [
+    "//components/crx_file",
+    "//components/download/public/background_service:public",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/services/unzip/public/cpp",
+    "//crypto",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+  ]
+  if (is_ios) {
+    deps += [ "//components/services/unzip:in_process" ]
+  } else {
+    deps += [ "//components/services/unzip/content" ]
   }
 }
 
@@ -310,6 +336,8 @@ source_set("unit_tests") {
     "optimization_hints_component_update_listener_unittest.cc",
     "optimization_metadata_unittest.cc",
     "page_content_annotation_job_unittest.cc",
+    "prediction_manager_unittest.cc",
+    "prediction_model_download_manager_unittest.cc",
     "prediction_model_fetcher_unittest.cc",
     "store_update_data_unittest.cc",
     "url_pattern_with_wildcards_unittest.cc",
@@ -335,12 +363,17 @@ source_set("unit_tests") {
     ":bloomfilter",
     ":core",
     ":entities",
+    ":prediction",
     ":test_support",
+    ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/download/public/background_service/test:test_support",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/services/unzip:in_process",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/unified_consent",
@@ -350,8 +383,13 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/zlib/google:zip",
+    "//ui/base",
     "//url:url",
   ]
+  if (!is_ios) {
+    deps += [ "//components/services/unzip/content" ]
+  }
   if (build_with_tflite_lib) {
     deps += [
       "//third_party/abseil-cpp:absl",
@@ -361,6 +399,18 @@ source_set("unit_tests") {
       "//third_party/tflite_support:tflite_support_proto",
     ]
   }
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [
+    "//components/test/data/optimization_guide/bert_page_topics_model.tflite",
+    "//components/test/data/optimization_guide/invalid_model.crx3",
+    "//components/test/data/optimization_guide/simple_test.tflite",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 if (is_android) {

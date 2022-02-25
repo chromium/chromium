@@ -9,18 +9,21 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -33,6 +36,7 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/prediction_manager.h"
 #include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -155,6 +159,12 @@ OptimizationGuideKeyedService::~OptimizationGuideKeyedService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
+download::BackgroundDownloadService*
+OptimizationGuideKeyedService::BackgroundDownloadServiceProvider() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  return BackgroundDownloadServiceFactory::GetForKey(profile->GetProfileKey());
+}
+
 void OptimizationGuideKeyedService::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -238,9 +248,20 @@ void OptimizationGuideKeyedService::Initialize() {
       tab_url_provider_.get(), url_loader_factory,
       MaybeCreatePushNotificationManager(profile),
       optimization_guide_logger_.get());
+  base::FilePath models_dir;
+  base::PathService::Get(chrome::DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,
+                         &models_dir);
+
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,
-      profile->GetPrefs(), profile, optimization_guide_logger_.get());
+      profile->GetPrefs(), profile->IsOffTheRecord(),
+      g_browser_process->GetApplicationLocale(), models_dir,
+      optimization_guide_logger_.get(),
+      base::BindOnce(
+          &OptimizationGuideKeyedService::BackgroundDownloadServiceProvider,
+          // It's safe to use |base::Unretained(this)| here because
+          // |this| owns |prediction_manager_|.
+          base::Unretained(this)));
 
   // The previous store paths were written in incorrect locations. Delete the
   // old paths. Remove this code in 04/2022 since it should be assumed that all
