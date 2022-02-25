@@ -116,7 +116,36 @@ testcase.openOfficeFromDrive = async () => {
     actionId: actionId
   };
   const taskDescriptor = await getExecutedTask(appId);
-  chrome.test.assertEq(taskDescriptor, expectedDescriptor);
+  chrome.test.assertEq(expectedDescriptor, taskDescriptor);
+
+  // Remove fakes.
+  const removedCount = await remoteCall.callRemoteTestUtil(
+      'removeAllForegroundFakes', appId, []);
+  chrome.test.assertEq(1, removedCount);
+};
+
+testcase.openOfficeFromDriveOffline = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.smallDocxPinned]);
+
+  // Fake chrome.fileManagerPrivate.executeTask to return
+  // chrome.fileManagerPrivate.TaskResult.OPENED.
+  const fakeData = {
+    'chrome.fileManagerPrivate.executeTask': ['static_fake', ['opened']],
+  };
+  await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
+
+  // Open file.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('openFile', appId, ['pinned.docx']));
+
+  // When offline, the Web Drive Office task should not be available: another
+  // task should have been executed instead (QuickOffice or generic task).
+  const taskDescriptor = await getExecutedTask(appId);
+  const webDriveOfficeActionId =
+      (remoteCall.isSwaMode() ? FILE_SWA_BASE_URL + '?' : '') +
+      'open-web-drive-office';
+  chrome.test.assertFalse(taskDescriptor.actionId == webDriveOfficeActionId);
 
   // Remove fakes.
   const removedCount = await remoteCall.callRemoteTestUtil(

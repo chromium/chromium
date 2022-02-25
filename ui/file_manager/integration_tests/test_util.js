@@ -818,7 +818,20 @@ export const ENTRIES = {
     lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
     nameText: 'text.docx',
     sizeText: '8.7 KB',
-    typeText: 'Office document'
+    typeText: 'Office document',
+  }),
+
+  smallDocxPinned: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.docx',
+    targetPath: 'pinned.docx',
+    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
+.document`,
+    lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
+    nameText: 'pinned.docx',
+    sizeText: '8.7 KB',
+    typeText: 'Office document',
+    pinned: true,
   }),
 
   pinned: new TestEntryInfo({

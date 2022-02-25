@@ -1596,7 +1596,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openOfficeFromMyFiles").EnableWebDriveOffice(),
         TestCase("openOfficeFromMyFiles").EnableWebDriveOffice().FilesSwa(),
         TestCase("openOfficeFromDrive").EnableWebDriveOffice(),
-        TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa()));
+        TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa(),
+        TestCase("openOfficeFromDriveOffline").EnableWebDriveOffice().Offline(),
+        TestCase("openOfficeFromDriveOffline")
+            .EnableWebDriveOffice()
+            .Offline()
+            .FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.js */

@@ -338,7 +338,9 @@ void PostProcessFoundTasks(
     }
   }
 
-  if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice) ||
+      drive::util::GetDriveConnectionStatus(profile) !=
+          drive::util::DRIVE_CONNECTED) {
     disabled_actions.emplace("open-web-drive-office");
   } else {
     for (const auto& entry : entries) {
