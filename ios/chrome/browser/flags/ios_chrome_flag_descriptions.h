@@ -168,6 +168,11 @@ extern const char kEnableDiscoverFeedShorterCacheDescription[];
 extern const char kEnableDiscoverFeedStaticResourceServingName[];
 extern const char kEnableDiscoverFeedStaticResourceServingDescription[];
 
+// Title and description for the flag to enable favicon for the Password
+// Manager.
+extern const char kEnableFaviconForPasswordsName[];
+extern const char kEnableFaviconForPasswordsDescription[];
+
 // Title and description for the flag to test the FRE default browser promo
 // experiment.
 extern const char kEnableFREDefaultBrowserScreenTestingName[];

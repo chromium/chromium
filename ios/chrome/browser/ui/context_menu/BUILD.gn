@@ -22,6 +22,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/context_menu/link_preview",
+    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/image_util:web",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",

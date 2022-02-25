@@ -71,6 +71,7 @@ source_set("bookmarks") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",

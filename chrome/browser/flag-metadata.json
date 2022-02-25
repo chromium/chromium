@@ -2086,6 +2086,11 @@
     "expiry_milestone": -1
   },
   {
+      "name": "enable-favicon-passwords",
+      "owners": [ "veronguyen", "gambard" ],
+      "expiry_milestone": 105
+  },
+  {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
     "expiry_milestone": 110

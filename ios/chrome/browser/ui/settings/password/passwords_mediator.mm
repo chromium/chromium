@@ -9,10 +9,13 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_manager.h"
@@ -64,6 +67,13 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 // of the Passwords Screen.
 @property(nonatomic, strong, readonly) NSDate* successfulReauthTime;
 
+// The coordinator's BrowserState.
+@property(nonatomic, assign) ChromeBrowserState* browserState;
+
+// FaviconLoader is a keyed service that uses LargeIconService to retrieve
+// favicon images.
+@property(nonatomic, assign) FaviconLoader* faviconLoader;
+
 @end
 
 @implementation PasswordsMediator
@@ -71,9 +81,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
-                                 syncService:(SyncSetupService*)syncService {
+                                 syncService:(SyncSetupService*)syncService
+                               faviconLoader:(FaviconLoader*)faviconLoader {
   self = [super init];
   if (self) {
+    _faviconLoader = faviconLoader;
+
     _syncService = syncService;
 
     _passwordCheckManager = passwordCheckManager;
@@ -322,6 +335,17 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
 - (NSDate*)lastSuccessfulReauthTime {
   return [self successfulReauthTime];
+}
+
+#pragma mark - TableViewFaviconDataSource
+
+- (void)faviconForURL:(CrURL*)URL
+           completion:(void (^)(FaviconAttributes*))completion {
+  self.faviconLoader->FaviconForPageUrl(
+      URL.gurl, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+        completion(attributes);
+      });
 }
 
 @end

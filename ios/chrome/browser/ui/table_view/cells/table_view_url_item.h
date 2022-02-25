@@ -25,6 +25,8 @@
 @property(nonatomic, readwrite, copy) NSString* supplementalURLText;
 // Delimiter used to separate the URL hostname and the supplemental text.
 @property(nonatomic, readwrite, copy) NSString* supplementalURLTextDelimiter;
+// Detail text to be displayed instead of the URL.
+@property(nonatomic, strong) NSString* detailText;
 // Metadata text displayed at the trailing edge of the cell.
 @property(nonatomic, readwrite, copy) NSString* metadata;
 // The image for the badge view added over the favicon.

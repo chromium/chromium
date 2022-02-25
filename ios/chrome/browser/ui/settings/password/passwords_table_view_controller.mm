@@ -58,12 +58,15 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -177,9 +180,25 @@ void RemoveFormsToBeDeleted(
   });
 }
 
+// Return if the feature flag for the favicon is enabled.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+bool IsFaviconEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kEnableFaviconForPasswords);
+}
+
 }  // namespace
 
-@interface PasswordFormContentItem : TableViewDetailTextItem
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+@interface LegacyPasswordFormContentItem : TableViewDetailTextItem
+@property(nonatomic) password_manager::PasswordForm form;
+@end
+@implementation LegacyPasswordFormContentItem
+@end
+
+@interface PasswordFormContentItem : TableViewURLItem
 @property(nonatomic) password_manager::PasswordForm form;
 @end
 @implementation PasswordFormContentItem
@@ -315,6 +334,13 @@ void RemoveFormsToBeDeleted(
 // Stores the PasswordFormContentItem which has form attribute's username and
 // site equivalent to that of |mostRecentlyUpdatedPassword|.
 @property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
+
+// Stores the PasswordFormContentItem which has form attribute's username and
+// site equivalent to that of |legacyMostRecentlyUpdatedItem|.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+@property(nonatomic, weak)
+    LegacyPasswordFormContentItem* legacyMostRecentlyUpdatedItem;
 
 // YES, if the user has tapped on the "Check Now" button.
 @property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
@@ -895,9 +921,10 @@ void RemoveFormsToBeDeleted(
                   forForm:(const password_manager::PasswordForm&)form {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeSavedPassword];
-  passwordItem.text = text;
+  passwordItem.title = text;
   passwordItem.form = form;
   passwordItem.detailText = detailText;
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(form.url)];
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   if (self.mostRecentlyUpdatedPassword) {
@@ -916,6 +943,46 @@ void RemoveFormsToBeDeleted(
                     forForm:(const password_manager::PasswordForm&)form {
   PasswordFormContentItem* passwordItem =
       [[PasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
+  passwordItem.title = text;
+  passwordItem.form = form;
+  passwordItem.URL = [[CrURL alloc] initWithGURL:GURL(form.url)];
+  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  return passwordItem;
+}
+
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+- (LegacyPasswordFormContentItem*)
+    legacySavedFormItemWithText:(NSString*)text
+                  andDetailText:(NSString*)detailText
+                        forForm:(const password_manager::PasswordForm&)form {
+  LegacyPasswordFormContentItem* passwordItem =
+      [[LegacyPasswordFormContentItem alloc]
+          initWithType:ItemTypeSavedPassword];
+  passwordItem.text = text;
+  passwordItem.form = form;
+  passwordItem.detailText = detailText;
+  passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  if (self.mostRecentlyUpdatedPassword) {
+    if (self.mostRecentlyUpdatedPassword->username_value ==
+            form.username_value &&
+        self.mostRecentlyUpdatedPassword->signon_realm == form.signon_realm) {
+      self.legacyMostRecentlyUpdatedItem = passwordItem;
+      self.mostRecentlyUpdatedPassword = absl::nullopt;
+    }
+  }
+  return passwordItem;
+}
+
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+- (LegacyPasswordFormContentItem*)
+    legacyBlockedFormItemWithText:(NSString*)text
+                          forForm:(const password_manager::PasswordForm&)form {
+  LegacyPasswordFormContentItem* passwordItem =
+      [[LegacyPasswordFormContentItem alloc] initWithType:ItemTypeBlocked];
   passwordItem.text = text;
   passwordItem.form = form;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -1355,9 +1422,13 @@ void RemoveFormsToBeDeleted(
           ![detailText localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:[self savedFormItemWithText:text
-                                   andDetailText:detailText
-                                         forForm:form]
+      [model addItem:(IsFaviconEnabled()
+                          ? [self savedFormItemWithText:text
+                                          andDetailText:detailText
+                                                forForm:form]
+                          : [self legacySavedFormItemWithText:text
+                                                andDetailText:detailText
+                                                      forForm:form])
           toSectionWithIdentifier:SectionIdentifierSavedPasswords];
     }
   }
@@ -1371,7 +1442,10 @@ void RemoveFormsToBeDeleted(
                     ![text localizedCaseInsensitiveContainsString:searchTerm];
       if (hidden)
         continue;
-      [model addItem:[self blockedFormItemWithText:text forForm:form]
+      [model addItem:(IsFaviconEnabled()
+                          ? [self blockedFormItemWithText:text forForm:form]
+                          : [self legacyBlockedFormItemWithText:text
+                                                        forForm:form])
           toSectionWithIdentifier:SectionIdentifierBlocked];
     }
   }
@@ -1633,16 +1707,22 @@ void RemoveFormsToBeDeleted(
   std::vector<password_manager::PasswordForm> blockedToDelete;
 
   for (NSIndexPath* indexPath in indexPaths) {
+    // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
+    // is removed.
+    password_manager::PasswordForm form =
+        IsFaviconEnabled()
+            ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                  [self.tableViewModel itemAtIndexPath:indexPath])
+                  .form
+            : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
+                  [self.tableViewModel itemAtIndexPath:indexPath])
+                  .form;
     // Only form items are editable.
-    PasswordFormContentItem* item =
-        base::mac::ObjCCastStrict<PasswordFormContentItem>(
-            [self.tableViewModel itemAtIndexPath:indexPath]);
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
     BOOL blocked = (itemType == ItemTypeBlocked);
-    blocked ? blockedToDelete.push_back(item.form)
-            : passwordsToDelete.push_back(item.form);
+    blocked ? blockedToDelete.push_back(form)
+            : passwordsToDelete.push_back(form);
   }
-
   RemoveFormsToBeDeleted(_savedForms, passwordsToDelete);
   RemoveFormsToBeDeleted(_blockedForms, blockedToDelete);
 
@@ -1710,6 +1790,15 @@ void RemoveFormsToBeDeleted(
                           atScrollPosition:UITableViewScrollPositionTop
                                   animated:NO];
     self.mostRecentlyUpdatedItem = nil;
+  } else if (self.legacyMostRecentlyUpdatedItem) {
+    // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag
+    // is removed.
+    NSIndexPath* indexPath = [self.tableViewModel
+        indexPathForItem:self.legacyMostRecentlyUpdatedItem];
+    [self.tableView scrollToRowAtIndexPath:indexPath
+                          atScrollPosition:UITableViewScrollPositionTop
+                                  animated:NO];
+    self.legacyMostRecentlyUpdatedItem = nil;
   }
 }
 
@@ -1767,19 +1856,29 @@ void RemoveFormsToBeDeleted(
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
                 [model sectionIdentifierForSection:indexPath.section]);
-      PasswordFormContentItem* saveFormItem =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
-              [model itemAtIndexPath:indexPath]);
-      [self.handler showDetailedViewForForm:saveFormItem.form];
+      password_manager::PasswordForm form =
+          IsFaviconEnabled()
+              ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                    [model itemAtIndexPath:indexPath])
+                    .form
+              : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
+                    [model itemAtIndexPath:indexPath])
+                    .form;
+      [self.handler showDetailedViewForForm:form];
       break;
     }
     case ItemTypeBlocked: {
       DCHECK_EQ(SectionIdentifierBlocked,
                 [model sectionIdentifierForSection:indexPath.section]);
-      PasswordFormContentItem* blockedItem =
-          base::mac::ObjCCastStrict<PasswordFormContentItem>(
-              [model itemAtIndexPath:indexPath]);
-      [self.handler showDetailedViewForForm:blockedItem.form];
+      password_manager::PasswordForm form =
+          IsFaviconEnabled()
+              ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
+                    [model itemAtIndexPath:indexPath])
+                    .form
+              : base::mac::ObjCCastStrict<LegacyPasswordFormContentItem>(
+                    [model itemAtIndexPath:indexPath])
+                    .form;
+      [self.handler showDetailedViewForForm:form];
       break;
     }
     case ItemTypeExportPasswordsButton:
@@ -1916,13 +2015,45 @@ void RemoveFormsToBeDeleted(
     }
     case ItemTypeSavedPassword:
     case ItemTypeBlocked: {
-      TableViewDetailTextCell* textCell =
-          base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
-      textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      if (IsFaviconEnabled()) {
+        TableViewURLCell* urlCell =
+            base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+        urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+        // Load the favicon from cache.
+        [self loadFaviconAtIndexPath:indexPath forCell:cell];
+      } else {
+        TableViewDetailTextCell* textCell =
+            base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
+        textCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+      }
       break;
     }
   }
   return cell;
+}
+
+// Asynchronously loads favicon for given index path that is of type
+// `ItemTypeSavedPassword` or `ItemTypeBlocked`. The loads are cancelled upon
+// cell reuse automatically.
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
+                       forCell:(UITableViewCell*)cell {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  DCHECK(item);
+  DCHECK(cell);
+
+  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
+  TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
+
+  NSString* itemIdentifier = URLItem.uniqueIdentifier;
+  [self.imageDataSource
+      faviconForURL:URLItem.URL
+         completion:^(FaviconAttributes* attributes) {
+           // Only set favicon if the cell hasn't been reused.
+           if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
+             DCHECK(attributes);
+             [URLCell.faviconView configureWithAttributes:attributes];
+           }
+         }];
 }
 
 #pragma mark PasswordExporterDelegate

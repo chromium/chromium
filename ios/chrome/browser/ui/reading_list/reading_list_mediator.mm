@@ -14,6 +14,7 @@
 #include "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_data_sink.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
@@ -32,11 +33,6 @@ namespace {
 bool EntrySorter(const ReadingListEntry* rhs, const ReadingListEntry* lhs) {
   return rhs->UpdateTime() > lhs->UpdateTime();
 }
-// Desired width and height of favicon.
-const CGFloat kFaviconWidthHeight = 24;
-// Minimum favicon size to retrieve.
-const CGFloat kFaviconMinWidthHeight = 16;
-
 }  // namespace
 
 @interface ReadingListMediator ()<ReadingListModelBridgeObserver> {
@@ -169,7 +165,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
         [strongSelf.dataSink itemHasChangedAfterDelay:strongItem];
       };
   self.faviconLoader->FaviconForPageUrl(
-      item.faviconPageURL, kFaviconWidthHeight, kFaviconMinWidthHeight,
+      item.faviconPageURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, completionBlock);
 }
 

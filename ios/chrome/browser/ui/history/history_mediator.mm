@@ -7,17 +7,11 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Desired width and height of favicon.
-const CGFloat kFaviconWidthHeight = 24;
-// Minimum favicon size to retrieve.
-const CGFloat kFaviconMinWidthHeight = 16;
-}  // namespace
 
 @interface HistoryMediator ()
 // FaviconLoader is a keyed service that uses LargeIconService to retrieve
@@ -44,7 +38,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
 - (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   self.faviconLoader->FaviconForPageUrl(
-      URL.gurl, kFaviconWidthHeight, kFaviconMinWidthHeight,
+      URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });

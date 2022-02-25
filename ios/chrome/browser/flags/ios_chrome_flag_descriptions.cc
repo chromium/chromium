@@ -186,6 +186,12 @@ const char kEnableFREDefaultBrowserScreenTestingDescription[] =
     "This test display the FRE default browser screen and other default "
     "browser promo depending on experiment.";
 
+const char kEnableFaviconForPasswordsName[] =
+    "Enable favicons in the Password Manager";
+const char kEnableFaviconForPasswordsDescription[] =
+    "Show favicons in the Password Manager settings for the Saved Passwords "
+    "and Never Saved sections.";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module with options";
 const char kEnableFREUIModuleIOSDescription[] =
     "Use the new FRE UI module for first run. There are 4 UI options: Identity "

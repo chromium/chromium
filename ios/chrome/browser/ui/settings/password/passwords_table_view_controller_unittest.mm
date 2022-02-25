@@ -19,6 +19,8 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
@@ -104,7 +106,10 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
         initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                          GetForBrowserState(
                                              browser_->GetBrowserState())
-                         syncService:nil];
+                         syncService:nil
+                       faviconLoader:IOSChromeFaviconLoaderFactory::
+                                         GetForBrowserState(
+                                             browser_->GetBrowserState())];
 
     // Inject some fake passwords to pass the loading state.
     PasswordsTableViewController* passwords_controller =
@@ -320,6 +325,40 @@ TEST_F(PasswordsTableViewControllerTest, AddSavedAndBlocked) {
 
 // Tests the order in which the saved passwords are displayed.
 TEST_F(PasswordsTableViewControllerTest, TestSavedPasswordsOrder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kEnableFaviconForPasswords);
+
+  AddSavedForm2();
+
+  CheckURLCellTitleAndDetailText(@"example2.com", @"test@egmail.com",
+                                 GetSectionIndex(SavedPasswords), 0);
+
+  AddSavedForm1();
+  CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com",
+                                 GetSectionIndex(SavedPasswords), 0);
+  CheckURLCellTitleAndDetailText(@"example2.com", @"test@egmail.com",
+                                 GetSectionIndex(SavedPasswords), 1);
+}
+
+// Tests the order in which the blocked passwords are displayed.
+TEST_F(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kEnableFaviconForPasswords);
+
+  AddBlockedForm2();
+  CheckURLCellTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 0);
+
+  AddBlockedForm1();
+  CheckURLCellTitle(@"secret.com", GetSectionIndex(SavedPasswords), 0);
+  CheckURLCellTitle(@"secret2.com", GetSectionIndex(SavedPasswords), 1);
+}
+
+// Tests the order in which the saved passwords are displayed.
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+TEST_F(PasswordsTableViewControllerTest, TestSavedPasswordsOrderLegacy) {
   AddSavedForm2();
 
   CheckTextCellTextAndDetailText(@"example2.com", @"test@egmail.com",
@@ -333,7 +372,9 @@ TEST_F(PasswordsTableViewControllerTest, TestSavedPasswordsOrder) {
 }
 
 // Tests the order in which the blocked passwords are displayed.
-TEST_F(PasswordsTableViewControllerTest, TestBlockedPasswordsOrder) {
+// TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
+// removed.
+TEST_F(PasswordsTableViewControllerTest, TestBlockedPasswordsOrderLegacy) {
   AddBlockedForm2();
   CheckTextCellText(@"secret2.com", GetSectionIndex(SavedPasswords), 0);
 

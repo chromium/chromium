@@ -27,6 +27,10 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 #endif
 };
 
+// Enables favicons in Password Manager.
+const base::Feature kEnableFaviconForPasswords{
+    "EnableFaviconForPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables UI that allows the user to create a strong password even if the field
 // wasn't parsed as a new password field.
 // TODO(crbug/1181254): Remove once it's launched.

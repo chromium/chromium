@@ -15,6 +15,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
@@ -116,9 +118,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     consumer_ = [[FakePasswordsConsumer alloc] init];
 
-    mediator_ =
-        [[PasswordsMediator alloc] initWithPasswordCheckManager:password_check_
-                                                    syncService:syncService()];
+    mediator_ = [[PasswordsMediator alloc]
+        initWithPasswordCheckManager:password_check_
+                         syncService:syncService()
+                       faviconLoader:IOSChromeFaviconLoaderFactory::
+                                         GetForBrowserState(
+                                             browser_state_.get())];
     mediator_.consumer = consumer_;
   }
 

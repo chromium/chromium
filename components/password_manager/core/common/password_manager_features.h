@@ -21,6 +21,7 @@ namespace features {
 
 extern const base::Feature kBiometricTouchToFill;
 extern const base::Feature kDetectFormSubmissionOnFormClear;
+extern const base::Feature kEnableFaviconForPasswords;
 extern const base::Feature kEnableManualPasswordGeneration;
 extern const base::Feature kEnableOverwritingPlaceholderUsernames;
 extern const base::Feature kEnablePasswordsAccountStorage;

@@ -28,6 +28,7 @@ source_set("history") {
     "//ios/chrome/browser/ui/activity_services",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/history/public",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",

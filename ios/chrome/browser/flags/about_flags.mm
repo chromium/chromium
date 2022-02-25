@@ -778,6 +778,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMuteCompromisedPasswordsName,
      flag_descriptions::kMuteCompromisedPasswordsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
+    {"enable-favicon-passwords",
+     flag_descriptions::kEnableFaviconForPasswordsName,
+     flag_descriptions::kEnableFaviconForPasswordsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kEnableFaviconForPasswords)},
     {"autofill-enable-sending-bcn-in-get-upload-details",
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsName,
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsDescription,

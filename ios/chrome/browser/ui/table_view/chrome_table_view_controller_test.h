@@ -82,6 +82,18 @@ class ChromeTableViewControllerTest : public BlockCleanupTest {
                                       int section,
                                       int item);
 
+  // Verifies that the URL cell at |item| in |section| has a title property
+  // which matches |expected_title|.
+  void CheckURLCellTitle(NSString* expected_title, int section, int item);
+
+  // Verifies that the URL cell at |item| in |section| has a title and
+  // detailText properties which match strings for |expected_title| and
+  // |expected_detail_text|, respectively.
+  void CheckURLCellTitleAndDetailText(NSString* expected_title,
+                                      NSString* expected_detail_text,
+                                      int section,
+                                      int item);
+
   // Verifies that the text cell at |item| in |section| has a text and
   // detailText properties which match strings for |expected_text| and
   // |expected_detail_text|, respectively.

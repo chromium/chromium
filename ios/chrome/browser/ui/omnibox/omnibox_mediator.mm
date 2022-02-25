@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -19,10 +20,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-const CGFloat kOmniboxIconSize = 16;
-}  // namespace
 
 @interface OmniboxMediator () <SearchEngineObserving>
 
@@ -156,7 +153,7 @@ const CGFloat kOmniboxIconSize = 16;
   // Download the favicon.
   // The code below mimics that in OmniboxPopupMediator.
   self.faviconLoader->FaviconForPageUrl(
-      pageURL, kOmniboxIconSize, kOmniboxIconSize,
+      pageURL, kMinFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, handleFaviconResult);
 }
 
@@ -206,7 +203,7 @@ const CGFloat kOmniboxIconSize = 16;
   __weak __typeof(self) weakSelf = self;
   self.latestDefaultSearchEngine = defaultProvider;
   auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
-    DCHECK_LE(faviconCacheResult.faviconImage.size.width, kOmniboxIconSize);
+    DCHECK_LE(faviconCacheResult.faviconImage.size.width, kMinFaviconSizePt);
     if (weakSelf.latestDefaultSearchEngine != defaultProvider ||
         !faviconCacheResult.faviconImage ||
         faviconCacheResult.usesDefaultImage) {
@@ -229,13 +226,13 @@ const CGFloat kOmniboxIconSize = 16;
         TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     self.faviconLoader->FaviconForPageUrl(
-        GURL(emptyPageUrl), kOmniboxIconSize, kOmniboxIconSize,
+        GURL(emptyPageUrl), kMinFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/YES, handleFaviconResult);
   } else {
     // Download the favicon.
     // The code below mimics that in OmniboxPopupMediator.
     self.faviconLoader->FaviconForIconUrl(defaultProvider->favicon_url(),
-                                          kOmniboxIconSize, kOmniboxIconSize,
+                                          kMinFaviconSizePt, kMinFaviconSizePt,
                                           handleFaviconResult);
   }
 }

@@ -8,6 +8,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
@@ -105,10 +107,14 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordCheckManager:[self passwordCheckManager]
                        syncService:SyncSetupServiceFactory::GetForBrowserState(
-                                       self.browser->GetBrowserState())];
+                                       browserState)
+                     faviconLoader:faviconLoader];
   self.reauthModule = [[ReauthenticationModule alloc]
       initWithSuccessfulReauthTimeAccessor:self.mediator];
 
@@ -120,6 +126,7 @@
   self.passwordsViewController.dispatcher = self.dispatcher;
   self.passwordsViewController.presentationDelegate = self;
   self.passwordsViewController.reauthenticationModule = self.reauthModule;
+  self.passwordsViewController.imageDataSource = self.mediator;
 
   self.mediator.consumer = self.passwordsViewController;
 

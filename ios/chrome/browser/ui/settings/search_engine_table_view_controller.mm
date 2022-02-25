@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
@@ -45,8 +46,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 const CGFloat kTableViewSeparatorLeadingInset = 56;
-const int kFaviconDesiredSizeInPoint = 32;
-const int kFaviconMinSizeInPoint = 16;
 constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
 const size_t kMaxcustomSearchEngines = 3;
 const char kUmaSelectDefaultSearchEngine[] =
@@ -397,7 +396,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   if (item.type == ItemTypePrepopulatedEngine) {
     _faviconLoader->FaviconForPageUrl(
-        engineItem.URL, kFaviconDesiredSizeInPoint, kFaviconMinSizeInPoint,
+        engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/YES, ^(FaviconAttributes* attributes) {
           // Only set favicon if the cell hasn't been reused.
           if (urlCell.cellUniqueIdentifier == engineItem.uniqueIdentifier) {
@@ -407,7 +406,7 @@ const char kUmaSelectDefaultSearchEngine[] =
         });
   } else {
     _faviconLoader->FaviconForIconUrl(
-        engineItem.URL, kFaviconDesiredSizeInPoint, kFaviconMinSizeInPoint,
+        engineItem.URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         ^(FaviconAttributes* attributes) {
           // Only set favicon if the cell hasn't been reused.
           if (urlCell.cellUniqueIdentifier == engineItem.uniqueIdentifier) {

@@ -94,6 +94,9 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 
 // Returns the text to use when configuring a TableViewURLCell's URL label.
 - (NSString*)URLLabelText {
+  // Use detail text instead of the URL if there is one set.
+  if (self.detailText)
+    return self.detailText;
   // If there's no title text, the URL is used as the cell title.  Add the
   // supplemental text to the URL label below if it exists.
   if (!self.title.length)

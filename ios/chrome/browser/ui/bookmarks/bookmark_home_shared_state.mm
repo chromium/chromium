@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,12 +14,6 @@
 #endif
 
 namespace {
-// Minimal acceptable favicon size, in points.
-const CGFloat kMinFaviconSizePt = 16.0;
-
-// Desired favicon size, in points.
-const CGFloat kDesiredFaviconSizePt = 32.0;
-
 // Minimium spacing between keyboard and the titleText when creating new folder,
 // in points.
 const CGFloat kKeyboardSpacingPt = 16.0;
@@ -80,7 +75,7 @@ const NSUInteger kMaxDownloadFaviconCount = 50;
 }
 
 + (CGFloat)desiredFaviconSizePt {
-  return kDesiredFaviconSizePt;
+  return kDesiredMediumFaviconSizePt;
 }
 
 + (CGFloat)keyboardSpacingPt {

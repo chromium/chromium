@@ -152,6 +152,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/favicon:constants",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/location_bar:constants",

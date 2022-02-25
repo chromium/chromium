@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/ui/favicon/favicon_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -25,13 +26,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-// Desired width and height of favicon.
-const CGFloat kFaviconWidthHeight = 24;
-// Minimum favicon size to retrieve.
-const CGFloat kFaviconMinWidthHeight = 16;
-}  // namespace
 
 @interface RecentTabsMediator () <SyncedSessionsObserver,
                                   WebStateListObserving> {
@@ -168,7 +162,7 @@ const CGFloat kFaviconMinWidthHeight = 16;
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
   faviconLoader->FaviconForPageUrl(
-      URL.gurl, kFaviconWidthHeight, kFaviconMinWidthHeight,
+      URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
