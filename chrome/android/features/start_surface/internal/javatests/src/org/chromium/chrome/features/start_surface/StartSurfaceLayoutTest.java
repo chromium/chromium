@@ -257,6 +257,7 @@ public class StartSurfaceLayoutTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @DisabledTest(message = "https://crbug.com/1300962")
     @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
     public void testRenderGrid_10WebTabs() throws IOException {
         // clang-format on
