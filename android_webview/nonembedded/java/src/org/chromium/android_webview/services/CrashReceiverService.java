@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * Service that is responsible for receiving crash dumps from an application, for upload.
  */
@@ -32,6 +34,8 @@ public class CrashReceiverService extends Service {
     private static final String TAG = "CrashReceiverService";
 
     private final Object mCopyingLock = new Object();
+
+    @GuardedBy("mCopyingLock")
     private boolean mIsCopying;
 
     private final ICrashReceiverService.Stub mBinder = new ICrashReceiverService.Stub() {
