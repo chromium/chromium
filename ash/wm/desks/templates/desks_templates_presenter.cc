@@ -80,7 +80,7 @@ DesksTemplatesPresenter::DesksTemplatesPresenter(
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-  GetAllEntries();
+  GetAllEntries(base::GUID());
 }
 
 DesksTemplatesPresenter::~DesksTemplatesPresenter() {
@@ -130,11 +130,11 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
   }
 }
 
-void DesksTemplatesPresenter::GetAllEntries() {
+void DesksTemplatesPresenter::GetAllEntries(const base::GUID& item_to_focus) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->GetAllEntries(
       base::BindOnce(&DesksTemplatesPresenter::OnGetAllEntries,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), item_to_focus));
 }
 
 void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
@@ -143,7 +143,6 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
       template_uuid,
       base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
                      weak_ptr_factory_.GetWeakPtr(), template_uuid));
-  cached_saved_template_uuid_.reset();
 }
 
 void DesksTemplatesPresenter::LaunchDeskTemplate(
@@ -189,25 +188,22 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
 
   if (is_update)
     desk_template->set_updated_time(base::Time::Now());
-
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  if (!is_update) {
+  else
     RecordWindowAndTabCountHistogram(desk_template.get());
-    cached_saved_template_uuid_ = desk_template->uuid();
-  } else {
-    cached_saved_template_uuid_.reset();
-  }
 
-  // TODO(richui): Look into passing the entire template and not just the
-  // UUID.
-  const std::string template_uuid = desk_template->uuid().AsLowercaseString();
+  // Clone the desk template so one can be sent to the model, and the other as
+  // part of the callback.
+  // TODO: Investigate if we can modify the model to send the template as one of
+  // the callback args.
+  auto desk_template_clone = desk_template->Clone();
 
   // Save or update `desk_template` as an entry in DeskModel.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template),
       base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
-                     weak_ptr_factory_.GetWeakPtr(), is_update, template_uuid));
+                     weak_ptr_factory_.GetWeakPtr(), is_update,
+                     std::move(desk_template_clone)));
 }
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
@@ -225,6 +221,7 @@ void DesksTemplatesPresenter::EntriesRemovedRemotely(
 }
 
 void DesksTemplatesPresenter::OnGetAllEntries(
+    const base::GUID& item_to_focus,
     desks_storage::DeskModel::GetAllEntriesStatus status,
     const std::vector<DeskTemplate*>& entries) {
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
@@ -243,45 +240,15 @@ void DesksTemplatesPresenter::OnGetAllEntries(
           static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
       grid_view->PopulateGridUI(entries,
                                 overview_grid->GetGridEffectiveBounds());
-      if (cached_saved_template_uuid_) {
-        for (auto* item_view : grid_view->grid_items()) {
-          if (cached_saved_template_uuid_ ==
-              item_view->desk_template()->uuid()) {
-            // If a template was newly added, set focus on that template item's
-            // name view.
-            DCHECK(!item_view->name_view()->GetReadOnly());
-            item_view->name_view()->RequestFocus();
-            // Check if name nudge needs to be removed.
-            item_view->MaybeRemoveNameNumber();
-            cached_saved_template_uuid_.reset();
-            break;
-          }
-        }
-      }
+      auto* focused_item_view = grid_view->RequestFocusForUUID(item_to_focus);
+      // Check if name number needs to be removed.
+      if (focused_item_view)
+        focused_item_view->MaybeRemoveNameNumber();
     }
   }
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
-}
-
-void DesksTemplatesPresenter::GetEntryByUUID(const std::string& template_uuid) {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  GetDeskModel()->GetEntryByUUID(
-      template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnGetEntryByUUID,
-                                    weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DesksTemplatesPresenter::OnGetEntryByUUID(
-    desks_storage::DeskModel::GetEntryByUuidStatus status,
-    std::unique_ptr<ash::DeskTemplate> entry) {
-  if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
-    return;
-
-  if (!entry)
-    return;
-
-  AddOrUpdateUIEntries({entry.get()});
 }
 
 void DesksTemplatesPresenter::OnDeleteEntry(
@@ -326,7 +293,7 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     bool was_update,
-    const std::string& template_uuid,
+    std::unique_ptr<DeskTemplate> desk_template,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
   RecordAddOrUpdateTemplateStatusHistogram(status);
 
@@ -345,22 +312,41 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;
 
-  // If the templates grid is already shown, just update the entry.
-  if (overview_session_->IsShowingDesksTemplatesGrid()) {
-    GetEntryByUUID(template_uuid);
+  // If the templates grid has already been shown before, update the entry.
+  const auto& grid_list = overview_session_->grid_list();
+  DCHECK(!grid_list.empty());
+  const bool is_zero_state = grid_list.front()->desks_bar_view()->IsZeroState();
+
+  views::Widget* grid_widget = grid_list.front()->desks_templates_grid_widget();
+  if (grid_widget) {
+    AddOrUpdateUIEntries({desk_template.get()});
+
+    if (!was_update) {
+      // Shows the grid if it was hidden. This will not call `GetAllEntries`.
+      overview_session_->ShowDesksTemplatesGrids(is_zero_state, base::GUID());
+      auto* grid_view =
+          static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+      grid_view->RequestFocusForUUID(desk_template->uuid());
+    }
+
+    if (on_update_ui_closure_for_testing_)
+      std::move(on_update_ui_closure_for_testing_).Run();
     return;
   }
 
-  // Update the button here in case it has been disabled.
-  const auto& grid_list = overview_session_->grid_list();
-  DCHECK(!grid_list.empty());
+  // This will update the templates button and save as desks button too. This
+  // will call `GetAllEntries`.
   overview_session_->ShowDesksTemplatesGrids(
-      grid_list.front()->desks_bar_view()->IsZeroState());
+      grid_list.front()->desks_bar_view()->IsZeroState(),
+      desk_template->uuid());
 
   if (!was_update) {
     RecordNewTemplateHistogram();
     RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
   }
+
+  // Note we do not run `on_update_ui_closure_for_testing` here as we want to
+  // wait for the `GetAllEntries` fired in `ShowDesksTemplatesGrids`.
 }
 
 void DesksTemplatesPresenter::AddOrUpdateUIEntries(

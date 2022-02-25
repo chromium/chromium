@@ -1015,9 +1015,13 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
   return window == active_window_before_overview_;
 }
 
-void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state) {
+void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state,
+                                              const base::GUID& item_to_focus) {
   if (IsShowingDesksTemplatesGrid())
     return;
+
+  const bool created_grid_widgets =
+      !grid_list_.front()->desks_templates_grid_widget();
 
   // Send an a11y alert.
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
@@ -1025,7 +1029,10 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state) {
 
   for (auto& grid : grid_list_)
     grid->ShowDesksTemplatesGrid(was_zero_state);
-  desks_templates_presenter_->GetAllEntries();
+  // Only ask for all entries if it is the first time creating the grid widgets.
+  // Otherwise, add or update the entries one at a time.
+  if (created_grid_widgets)
+    desks_templates_presenter_->GetAllEntries(item_to_focus);
   UpdateNoWindowsWidgetOnEachGrid();
 }
 
@@ -1274,7 +1281,8 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
         return;
 
       DCHECK(!grid_list_.empty());
-      ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState());
+      ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState(),
+                              base::GUID());
       break;
 #else
       return;

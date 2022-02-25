@@ -1618,7 +1618,6 @@ TEST_F(DesksTemplatesTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
   // created. There should still be only one template item and one feedback
   // button.
   ShowDesksTemplatesGrids();
-  WaitForDesksTemplatesUI();
   ASSERT_EQ(2ul, templates_grid_view->children().size());
 }
 

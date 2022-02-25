@@ -161,6 +161,10 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
 void DesksTemplatesGridView::PopulateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
+  DCHECK(grid_items_.empty());
+
+  // TODO(richui|sammiequon): See if this can be removed as this function should
+  // only be called once per overview session.
   if (desk_templates.empty()) {
     RemoveAllChildViews();
     grid_items_.clear();
@@ -347,6 +351,21 @@ bool DesksTemplatesGridView::IntersectsWithGridItem(
       return true;
   }
   return false;
+}
+
+DesksTemplatesItemView* DesksTemplatesGridView::RequestFocusForUUID(
+    const base::GUID& uuid) {
+  if (!uuid.is_valid())
+    return nullptr;
+
+  for (auto* item_view : grid_items_) {
+    if (uuid == item_view->desk_template()->uuid()) {
+      DCHECK(!item_view->name_view()->GetReadOnly());
+      item_view->name_view()->RequestFocus();
+      return item_view;
+    }
+  }
+  return nullptr;
 }
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,

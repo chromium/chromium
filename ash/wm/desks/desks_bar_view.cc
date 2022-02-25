@@ -1204,7 +1204,8 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
   RecordLoadTemplateHistogram();
-  overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());
+  overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState(),
+                                                              base::GUID());
 }
 
 void DesksBarView::OnContentsScrolled() {

@@ -22,6 +22,7 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
@@ -290,7 +291,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Shows the desks templates grids on all displays. If `was_zero_state` is
   // true then we will expand the desks bars.
-  void ShowDesksTemplatesGrids(bool was_zero_state);
+  void ShowDesksTemplatesGrids(bool was_zero_state,
+                               const base::GUID& item_to_focus);
+
   void HideDesksTemplatesGrids();
   bool IsShowingDesksTemplatesGrid() const;
 
