@@ -4,7 +4,7 @@
 
 #include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/gurl.h"
@@ -18,11 +18,9 @@ constexpr char kExampleJsonUrlType[] =
     R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})";
 constexpr char kExampleJsonUrlTypeNoUrl[] = R"({"endpoint_type":"url"})";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1280545): Enable test when VM DataTransferEndpoint endpoint
-// types are built in Lacros.
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kExampleJsonNonUrlType[] = R"({"endpoint_type":"crostini"})";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -52,9 +50,7 @@ TEST(DataTransferEndpointSerializerTest,
   EXPECT_EQ(nullptr, actual);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1280545): Enable test when VM DataTransferEndpoint endpoint
-// types are built in Lacros.
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(DataTransferEndpointSerializerTest, DataTransferEndpointToJsonNonUrl) {
   const DataTransferEndpoint example(EndpointType::kCrostini,
                                      /*notify_if_restricted=*/true);
@@ -71,6 +67,6 @@ TEST(DataTransferEndpointSerializerTest, JsonToDataTransferEndpointNonUrl) {
   EXPECT_EQ(EndpointType::kCrostini, actual->type());
   EXPECT_EQ(nullptr, actual->GetURL());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui
