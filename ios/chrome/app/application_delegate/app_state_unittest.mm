@@ -523,6 +523,8 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
 
   base::TimeTicks now = base::TimeTicks::Now();
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
   [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
     [invocation setReturnValue:(void*)&now];
   }] appLaunchTime];
@@ -543,7 +545,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
   swizzleSafeModeShouldStart(YES);
-
 
   // Action.
   BOOL result = [appState requiresHandlingAfterLaunchWithOptions:launchOptions
@@ -578,6 +579,8 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
       @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
 
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   [[[getWindowMock() stub] andReturn:nil] rootViewController];
 
@@ -708,6 +711,8 @@ TEST_F(AppStateWithThreadTest, willTerminate) {
 // Tests that -applicationWillEnterForeground resets components as needed.
 TEST_F(AppStateTest, applicationWillEnterForeground) {
   swizzleSafeModeShouldStart(NO);
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Setup.
   ios::TestChromeBrowserProvider::GetTestProvider()
@@ -778,6 +783,8 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   swizzleSafeModeShouldStart(NO);
 
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Actions.
   [getAppStateWithMock() applicationWillEnterForeground:application
@@ -791,6 +798,8 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
 // Tests that -applicationDidEnterBackground calls the metrics mediator.
 TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
   swizzleSafeModeShouldStart(NO);
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Setup.
   ScopedKeyWindow scopedKeyWindow;
@@ -837,6 +846,8 @@ TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
 // never been in a Foreground stage.
 TEST_F(AppStateTest, applicationDidEnterBackgroundStageBackground) {
   swizzleSafeModeShouldStart(NO);
+  [[getStartupInformationMock() stub] setIsFirstRun:YES];
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Setup.
   ScopedKeyWindow scopedKeyWindow;

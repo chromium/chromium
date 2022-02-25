@@ -9,6 +9,7 @@
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/policy_namespace.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#include "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 #import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/application_context.h"
@@ -73,6 +74,17 @@ constexpr CGFloat kTimeout = 30;
 }
 
 #pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    willTransitionToInitStage:(InitStage)nextInitStage {
+  if (nextInitStage != InitStageEnterprise) {
+    return;
+  }
+
+  // Ensure to have the information available on time.
+  self.appState.startupInformation.isFirstRun =
+      ShouldPresentFirstRunExperience();
+}
 
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
@@ -192,7 +204,7 @@ constexpr CGFloat kTimeout = 30;
       machineLevelUserCloudPolicyManager =
           self.policyConnector->machine_level_user_cloud_policy_manager();
 
-  return ShouldPresentFirstRunExperience() &&
+  return self.appState.startupInformation.isFirstRun &&
          self.policyConnector->chrome_browser_cloud_management_controller()
              ->IsEnabled() &&
          machineLevelUserCloudPolicyManager &&
