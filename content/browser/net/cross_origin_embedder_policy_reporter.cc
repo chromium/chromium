@@ -17,7 +17,7 @@ namespace {
 constexpr char kType[] = "coep";
 
 GURL StripUsernameAndPassword(const GURL& url) {
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   replacements.ClearUsername();
   replacements.ClearPassword();
   return url.ReplaceComponents(replacements);
