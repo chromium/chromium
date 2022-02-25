@@ -137,6 +137,8 @@ struct CORE_EXPORT GridItemData {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(node); }
+
   NGBlockNode node;
   GridArea resolved_position;
 
@@ -172,7 +174,7 @@ struct CORE_EXPORT GridItemData {
   OutOfFlowItemPlacement row_placement;
 };
 
-using GridItemStorageVector = Vector<GridItemData, 4>;
+using GridItemStorageVector = HeapVector<GridItemData, 4>;
 
 struct CORE_EXPORT GridItems {
   DISALLOW_NEW();
@@ -207,7 +209,7 @@ struct CORE_EXPORT GridItems {
 
    private:
     GridItemStorageVector* item_data_;
-    Vector<wtf_size_t>::const_iterator current_index_;
+    HeapVector<wtf_size_t>::const_iterator current_index_;
   };
 
   Iterator begin() {
@@ -227,6 +229,8 @@ struct CORE_EXPORT GridItems {
   wtf_size_t Size() const { return item_data.size(); }
   bool IsEmpty() const { return item_data.IsEmpty(); }
 
+  void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
+
   // Grid items are appended in document order, but we want to rearrange them in
   // order-modified document order since auto-placement and painting rely on it
   // later in the algorithm.
@@ -235,5 +239,7 @@ struct CORE_EXPORT GridItems {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GridItemData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_ITEM_H_

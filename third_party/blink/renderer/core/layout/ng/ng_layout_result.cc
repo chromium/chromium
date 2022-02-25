@@ -357,6 +357,7 @@ void NGLayoutResult::Trace(Visitor* visitor) const {
 
 void NGLayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
+  visitor->Trace(column_spanner);
 }
 
 }  // namespace blink

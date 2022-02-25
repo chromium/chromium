@@ -594,19 +594,18 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *grid_layout_data_.get();
   }
 
-  bool HasBreakTokenData() const { return break_token_data_.get(); }
+  bool HasBreakTokenData() const { return break_token_data_; }
 
   NGBlockBreakTokenData* EnsureBreakTokenData() {
     if (!HasBreakTokenData())
-      break_token_data_ = std::make_unique<NGBlockBreakTokenData>();
-    return break_token_data_.get();
+      break_token_data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
+    return break_token_data_;
   }
 
-  NGBlockBreakTokenData* GetBreakTokenData() { return break_token_data_.get(); }
+  NGBlockBreakTokenData* GetBreakTokenData() { return break_token_data_; }
 
-  void SetBreakTokenData(
-      std::unique_ptr<NGBlockBreakTokenData> break_token_data) {
-    break_token_data_ = std::move(break_token_data);
+  void SetBreakTokenData(NGBlockBreakTokenData* break_token_data) {
+    break_token_data_ = break_token_data;
   }
 
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
@@ -723,8 +722,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Table specific types.
   absl::optional<PhysicalRect> table_grid_rect_;
-  absl::optional<NGTableFragmentData::ColumnGeometries>
-      table_column_geometries_;
+  NGTableFragmentData::ColumnGeometries table_column_geometries_;
   scoped_refptr<const NGTableBorders> table_collapsed_borders_;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
@@ -733,7 +731,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Table cell specific types.
   absl::optional<wtf_size_t> table_cell_column_index_;
 
-  std::unique_ptr<NGBlockBreakTokenData> break_token_data_;
+  NGBlockBreakTokenData* break_token_data_ = nullptr;
 
   // Grid specific types.
   std::unique_ptr<NGGridLayoutData> grid_layout_data_;

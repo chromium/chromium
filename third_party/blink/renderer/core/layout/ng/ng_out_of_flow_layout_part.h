@@ -154,6 +154,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
           default_writing_direction(default_writing_direction),
           fixedpos_containing_block(fixedpos_containing_block),
           inline_container(inline_container) {}
+
+    void Trace(Visitor* visitor) const;
   };
 
   // Stores the calculated offset for an OOF positioned node, along with the

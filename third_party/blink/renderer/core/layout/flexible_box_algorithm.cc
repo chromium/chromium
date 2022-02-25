@@ -278,6 +278,7 @@ void FlexItem::ComputeStretchedSize() {
 
 void FlexItem::Trace(Visitor* visitor) const {
   visitor->Trace(box_);
+  visitor->Trace(ng_input_node_);
   visitor->Trace(layout_result_);
 }
 
@@ -801,7 +802,7 @@ LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
 
 void FlexLayoutAlgorithm::AlignFlexLines(
     LayoutUnit cross_axis_content_extent,
-    Vector<NGFlexLine>* flex_line_outputs) {
+    HeapVector<NGFlexLine>* flex_line_outputs) {
   const StyleContentAlignmentData align_content = ResolvedAlignContent(*style_);
   if (align_content.GetPosition() == ContentPosition::kFlexStart &&
       gap_between_lines_ == 0) {

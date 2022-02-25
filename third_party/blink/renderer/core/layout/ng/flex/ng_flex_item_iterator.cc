@@ -9,7 +9,7 @@
 
 namespace blink {
 
-NGFlexItemIterator::NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
+NGFlexItemIterator::NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
                                        const NGBlockBreakToken* break_token,
                                        bool is_horizontal_flow)
     : flex_lines_(flex_lines),

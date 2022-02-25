@@ -12,9 +12,14 @@
 namespace blink {
 
 struct NGFlexItem {
+  DISALLOW_NEW();
+
+ public:
   NGFlexItem() : ng_input_node(nullptr) {}
 
   const ComputedStyle& Style() const { return ng_input_node.Style(); }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(ng_input_node); }
 
   LayoutUnit main_axis_final_size;
   // This will originally be set to the total block size of the item before
@@ -27,14 +32,22 @@ struct NGFlexItem {
 };
 
 struct NGFlexLine {
+  DISALLOW_NEW();
+
+ public:
   explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(line_items); }
 
   LayoutUnit line_cross_size;
   LayoutUnit cross_axis_offset;
   LayoutUnit item_offset_adjustment;
-  Vector<NGFlexItem> line_items;
+  HeapVector<NGFlexItem> line_items;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexItem)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGFlexLine)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_LINE_H_

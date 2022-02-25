@@ -32,7 +32,10 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
           offset(offset),
           result(std::move(result)) {}
 
-    void Trace(Visitor* visitor) const { visitor->Trace(result); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(child);
+      visitor->Trace(result);
+    }
 
     NGBlockNode child;
     NGBoxStrut margins;

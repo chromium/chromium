@@ -334,6 +334,7 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
 // back to LayoutObject.
 class ColumnGeometriesBuilder {
   STACK_ALLOCATED();
+
  public:
   void VisitCol(const NGLayoutInputNode& col,
                 wtf_size_t start_column_index,

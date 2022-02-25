@@ -33,18 +33,28 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
     NGBoxStrut margins;
     NGBlockNode node = nullptr;
 
-    void Trace(Visitor* visitor) const { visitor->Trace(result); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(result);
+      visitor->Trace(node);
+    }
   };
 
- private:
   struct SubSupPair {
     DISALLOW_NEW();
+
+   public:
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(sub);
+      visitor->Trace(sup);
+    }
+
     NGBlockNode sub = nullptr;
     NGBlockNode sup = nullptr;
   };
 
+ private:
   void GatherChildren(NGBlockNode* base,
-                      Vector<SubSupPair>*,
+                      HeapVector<SubSupPair>*,
                       NGBlockNode* prescripts,
                       unsigned* first_prescript_index,
                       NGBoxFragmentBuilder* = nullptr) const;
@@ -77,5 +87,7 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
     blink::NGMathScriptsLayoutAlgorithm::ChildAndMetrics)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGMathScriptsLayoutAlgorithm::SubSupPair)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_NG_MATH_SCRIPTS_LAYOUT_ALGORITHM_H_

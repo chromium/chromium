@@ -45,7 +45,10 @@ class CORE_EXPORT NGTableLayoutAlgorithm
     DISALLOW_NEW();
 
    public:
-    void Trace(Visitor* visitor) const { visitor->Trace(layout_result); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(node);
+      visitor->Trace(layout_result);
+    }
 
     NGBlockNode node;
     Member<const NGLayoutResult> layout_result;

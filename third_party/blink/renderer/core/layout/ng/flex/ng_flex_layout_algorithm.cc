@@ -834,8 +834,10 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
-  Vector<NGFlexLine> flex_line_outputs;
   Vector<EBreakBetween> row_break_between_outputs;
+  HeapVector<NGFlexLine> flex_line_outputs;
+  ClearCollectionScope<HeapVector<NGFlexLine>> scope(&flex_line_outputs);
+
   bool use_empty_line_block_size;
   if (IsResumingLayout(BreakToken())) {
     const NGFlexBreakTokenData* flex_data =
@@ -943,9 +945,10 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 #endif
 
   if (ConstraintSpace().HasBlockFragmentation()) {
-    container_builder_.SetBreakTokenData(std::make_unique<NGFlexBreakTokenData>(
-        container_builder_.GetBreakTokenData(), flex_line_outputs,
-        row_break_between_outputs, total_intrinsic_block_size_));
+    container_builder_.SetBreakTokenData(
+        MakeGarbageCollected<NGFlexBreakTokenData>(
+            container_builder_.GetBreakTokenData(), flex_line_outputs,
+            row_break_between_outputs, total_intrinsic_block_size_));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -956,7 +959,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
 }
 
 void NGFlexLayoutAlgorithm::PlaceFlexItems(
-    Vector<NGFlexLine>* flex_line_outputs) {
+    HeapVector<NGFlexLine>* flex_line_outputs) {
   ConstructAndAppendFlexItems();
 
   LayoutUnit main_axis_start_offset;
@@ -1072,8 +1075,8 @@ void NGFlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
 }
 
 void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
-    Vector<NGFlexLine>* flex_line_outputs) {
-  Vector<FlexLine>& line_contexts = algorithm_.FlexLines();
+    HeapVector<NGFlexLine>* flex_line_outputs) {
+  auto& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
       line_contexts.IsEmpty() ? LayoutUnit()
                               : line_contexts[0].cross_axis_offset_;
@@ -1111,7 +1114,7 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
 }
 
 NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
-    Vector<NGFlexLine>* flex_line_outputs,
+    HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(!IsResumingLayout(BreakToken()));
   LayoutUnit final_content_cross_size;
@@ -1232,7 +1235,7 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
 NGLayoutResult::EStatus
 NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
-    Vector<NGFlexLine>* flex_line_outputs,
+    HeapVector<NGFlexLine>* flex_line_outputs,
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(involved_in_block_fragmentation_);
 
@@ -1773,7 +1776,7 @@ bool NGFlexLayoutAlgorithm::MovePastRowBreakPoint(
 
 #if DCHECK_IS_ON()
 void NGFlexLayoutAlgorithm::CheckFlexLines(
-    const Vector<NGFlexLine>& flex_line_outputs) const {
+    const HeapVector<NGFlexLine>& flex_line_outputs) const {
   const Vector<FlexLine>& flex_lines = algorithm_.flex_lines_;
 
   DCHECK_EQ(flex_line_outputs.size(), flex_lines.size());

@@ -23,7 +23,7 @@ const NGBlockBreakToken* CreateBreakToken(
       node, &node.Style(), /* space */ nullptr,
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
   DCHECK(!builder.HasBreakTokenData());
-  builder.SetBreakTokenData(std::make_unique<NGBlockBreakTokenData>());
+  builder.SetBreakTokenData(MakeGarbageCollected<NGBlockBreakTokenData>());
   if (has_seen_all_children)
     builder.SetHasSeenAllChildren();
   if (child_break_tokens) {

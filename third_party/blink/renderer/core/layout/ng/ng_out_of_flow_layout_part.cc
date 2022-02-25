@@ -2037,11 +2037,16 @@ void NGOutOfFlowLayoutPart::MulticolChildInfo::Trace(Visitor* visitor) const {
   visitor->Trace(parent_break_token);
 }
 
+void NGOutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(node);
+}
+
 void NGOutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
 }
 
 void NGOutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {
+  visitor->Trace(node_info);
   visitor->Trace(offset_info);
   visitor->Trace(break_token);
   visitor->Trace(containing_block_fragment);

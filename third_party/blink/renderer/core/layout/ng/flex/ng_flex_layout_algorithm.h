@@ -32,7 +32,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
   const NGLayoutResult* LayoutInternal();
 
-  void PlaceFlexItems(Vector<NGFlexLine>* flex_line_outputs);
+  void PlaceFlexItems(HeapVector<NGFlexLine>* flex_line_outputs);
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
@@ -72,12 +72,13 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
   void ConstructAndAppendFlexItems();
-  void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
+  void ApplyFinalAlignmentAndReversals(
+      HeapVector<NGFlexLine>* flex_line_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSize(
-      Vector<NGFlexLine>* flex_line_outputs,
+      HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs);
   NGLayoutResult::EStatus GiveItemsFinalPositionAndSizeForFragmentation(
-      Vector<NGFlexLine>* flex_line_outputs,
+      HeapVector<NGFlexLine>* flex_line_outputs,
       Vector<EBreakBetween>* row_break_between_outputs);
   NGLayoutResult::EStatus PropagateFlexItemInfo(FlexItem* flex_item,
                                                 wtf_size_t flex_line_idx,
@@ -135,7 +136,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                              wtf_size_t row_index);
 
 #if DCHECK_IS_ON()
-  void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
+  void CheckFlexLines(const HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
 
   const bool is_column_;

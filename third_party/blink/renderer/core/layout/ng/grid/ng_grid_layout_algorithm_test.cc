@@ -50,20 +50,20 @@ class NGGridLayoutAlgorithmTest
         algorithm.ComputeAutomaticRepetitions(kForColumns),
         algorithm.ComputeAutomaticRepetitions(kForRows));
 
-    grid_items_ = algorithm.Node().ConstructGridItems(&placement_data);
+    items_->grid_items_ = algorithm.Node().ConstructGridItems(&placement_data);
 
     // Build block track collections.
     NGGridBlockTrackCollection column_block_track_collection(kForColumns);
     NGGridBlockTrackCollection row_block_track_collection(kForRows);
-    algorithm.BuildBlockTrackCollections(placement_data, &grid_items_,
+    algorithm.BuildBlockTrackCollections(placement_data, &items_->grid_items_,
                                          &column_block_track_collection,
                                          &row_block_track_collection);
 
     LayoutUnit unused_intrinsic_block_size;
     grid_geometry_ = algorithm.ComputeGridGeometry(
-        column_block_track_collection, row_block_track_collection, &grid_items_,
-        &unused_intrinsic_block_size, &column_track_collection_,
-        &row_track_collection_);
+        column_block_track_collection, row_block_track_collection,
+        &items_->grid_items_, &unused_intrinsic_block_size,
+        &column_track_collection_, &row_track_collection_);
   }
 
   NGGridLayoutAlgorithmTrackCollection& TrackCollection(
@@ -75,7 +75,7 @@ class NGGridLayoutAlgorithmTest
   LayoutUnit BaseRowSizeForChild(const NGGridLayoutAlgorithm& algorithm,
                                  wtf_size_t index) {
     LayoutUnit offset, size;
-    algorithm.ComputeGridItemOffsetAndSize(grid_items_.item_data[index],
+    algorithm.ComputeGridItemOffsetAndSize(items_->grid_items_.item_data[index],
                                            grid_geometry_.row_geometry,
                                            kForRows, &offset, &size);
     return size;
@@ -83,11 +83,11 @@ class NGGridLayoutAlgorithmTest
 
   // Helper methods to access private data on NGGridLayoutAlgorithm. This class
   // is a friend of NGGridLayoutAlgorithm but the individual tests are not.
-  wtf_size_t GridItemCount() { return grid_items_.item_data.size(); }
+  wtf_size_t GridItemCount() { return items_->grid_items_.item_data.size(); }
 
   Vector<GridArea> GridItemGridAreas(const NGGridLayoutAlgorithm& algorithm) {
     Vector<GridArea> results;
-    for (const auto& item : grid_items_.item_data)
+    for (const auto& item : items_->grid_items_.item_data)
       results.push_back(item.resolved_position);
     return results;
   }
@@ -97,7 +97,8 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (grid_items_.item_data[i].column_span_properties.HasProperty(property))
+      if (items_->grid_items_.item_data[i].column_span_properties.HasProperty(
+              property))
         results.push_back(i);
     }
     return results;
@@ -108,7 +109,8 @@ class NGGridLayoutAlgorithmTest
       TrackSpanProperties::PropertyId property) {
     Vector<wtf_size_t> results;
     for (wtf_size_t i = 0; i < GridItemCount(); ++i) {
-      if (grid_items_.item_data[i].row_span_properties.HasProperty(property))
+      if (items_->grid_items_.item_data[i].row_span_properties.HasProperty(
+              property))
         results.push_back(i);
     }
     return results;
@@ -162,7 +164,14 @@ class NGGridLayoutAlgorithmTest
     return fragment->DumpFragmentTree(flags);
   }
 
-  GridItems grid_items_;
+  struct Items final : public GarbageCollected<Items> {
+   public:
+    GridItems grid_items_;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(grid_items_); }
+  };
+  Persistent<Items> items_ = MakeGarbageCollected<Items>();
+
   NGGridGeometry grid_geometry_;
   NGGridLayoutAlgorithmTrackCollection column_track_collection_;
   NGGridLayoutAlgorithmTrackCollection row_track_collection_;

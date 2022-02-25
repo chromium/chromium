@@ -43,14 +43,15 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
   has_unpositioned_list_marker_ =
       static_cast<bool>(builder->UnpositionedListMarker());
   DCHECK(builder->HasBreakTokenData());
-  data_ = std::move(builder->break_token_data_);
+  data_ = builder->break_token_data_;
+  builder->break_token_data_ = nullptr;
   for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i)
     child_break_tokens_[i] = builder->child_break_tokens_[i];
 }
 
 NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGLayoutInputNode node)
     : NGBreakToken(kBlockBreakToken, node),
-      data_(std::make_unique<NGBlockBreakTokenData>()),
+      data_(MakeGarbageCollected<NGBlockBreakTokenData>()),
       const_num_children_(0) {}
 
 const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
@@ -100,6 +101,7 @@ String NGBlockBreakToken::ToString() const {
 #endif  // DCHECK_IS_ON()
 
 void NGBlockBreakToken::Trace(Visitor* visitor) const {
+  visitor->Trace(data_);
   // Looking up |ChildBreakTokens()| in Trace() here is safe because
   // |const_num_children_| is const.
   for (auto& child : ChildBreakTokens())

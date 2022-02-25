@@ -188,12 +188,12 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
       has_fragment_items = true;
   }
 
-  bool has_rare_data =
-      builder->mathml_paint_info_ ||
-      builder->table_grid_rect_ || builder->table_column_geometries_ ||
-      builder->table_collapsed_borders_ ||
-      builder->table_collapsed_borders_geometry_ ||
-      builder->table_cell_column_index_;
+  bool has_rare_data = builder->mathml_paint_info_ ||
+                       builder->table_grid_rect_ ||
+                       !builder->table_column_geometries_.IsEmpty() ||
+                       builder->table_collapsed_borders_ ||
+                       builder->table_collapsed_borders_geometry_ ||
+                       builder->table_cell_column_index_;
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
@@ -511,8 +511,8 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
     : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
-  if (builder->table_column_geometries_)
-    table_column_geometries = *builder->table_column_geometries_;
+  if (!builder->table_column_geometries_.IsEmpty())
+    table_column_geometries = builder->table_column_geometries_;
   if (builder->table_collapsed_borders_)
     table_collapsed_borders = std::move(builder->table_collapsed_borders_);
   if (builder->table_collapsed_borders_geometry_) {
@@ -1785,6 +1785,8 @@ void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
   NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
-void NGPhysicalBoxFragment::RareData::Trace(Visitor* visitor) const {}
+void NGPhysicalBoxFragment::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(table_column_geometries);
+}
 
 }  // namespace blink

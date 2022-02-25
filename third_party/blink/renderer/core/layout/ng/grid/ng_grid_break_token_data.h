@@ -22,8 +22,6 @@ struct GridItemOffsets {
 };
 
 struct NGGridBreakTokenData final : NGBlockBreakTokenData {
-  USING_FAST_MALLOC(NGGridBreakTokenData);
-
  public:
   NGGridBreakTokenData(const NGBlockBreakTokenData* break_token_data,
                        const NGGridGeometry& grid_geometry,

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_ITEM_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ class CORE_EXPORT NGFlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
+  NGFlexItemIterator(const HeapVector<NGFlexLine>& flex_lines,
                      const NGBlockBreakToken* break_token,
                      bool is_horizontal_flow);
 
@@ -43,7 +44,7 @@ class CORE_EXPORT NGFlexItemIterator {
   NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
 
   NGFlexItem* next_unstarted_item_ = nullptr;
-  const Vector<NGFlexLine>& flex_lines_;
+  const HeapVector<NGFlexLine>& flex_lines_;
   const NGBlockBreakToken* break_token_;
   // TODO(almaher): This likely won't be the right check once writing mode roots
   // are no longer treated as monolithic.
