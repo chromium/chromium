@@ -151,11 +151,10 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   }
 
  private:
-  sk_sp<SkImage> MakeSkImage(
-      const SkPixmap& pixmap,
-      absl::optional<TargetColorParams> target_color_params);
-
   raw_ptr<GrDirectContext> context_ = nullptr;
+  // The individual planes that are used by `image_` when `image_` is a YUVA
+  // image. The planes are kept around for use in EnsureMips(), memory dumps,
+  // and unit tests.
   std::vector<sk_sp<SkImage>> plane_images_;
   SkYUVAInfo::PlaneConfig plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   std::vector<size_t> plane_sizes_;
@@ -163,6 +162,8 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   absl::optional<SkYUVAInfo::Subsampling> subsampling_;
   absl::optional<SkYUVColorSpace> yuv_color_space_;
   bool has_mips_ = false;
+  // The value of `size_` is computed during deserialization and never updated
+  // (even if the size of the image changes due to mipmaps being requested).
   size_t size_ = 0;
   bool fits_on_gpu_ = false;
 };
