@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -29,7 +30,7 @@ InputInjectorEvdev::InputInjectorEvdev(
     CursorDelegateEvdev* cursor)
     : cursor_(cursor), dispatcher_(std::move(dispatcher)) {}
 
-InputInjectorEvdev::~InputInjectorEvdev() {}
+InputInjectorEvdev::~InputInjectorEvdev() = default;
 
 void InputInjectorEvdev::InjectMouseButton(EventFlags button, bool down) {
   unsigned int code;
@@ -66,8 +67,16 @@ void InputInjectorEvdev::MoveCursorTo(const gfx::PointF& location) {
 
   cursor_->MoveCursorTo(location);
 
+  // Mouse warping moves the mouse cursor to the adjacent display if the mouse
+  // is positioned at the edge of the current display.
+  // This is useful/needed for real mouse movements (as without mouse warping
+  // the mouse would be stuck on one display).
+  // Here we use absolute coordinates though, so mouse warping is not desirable
+  // as our coordinates already cover all available displays.
+  const int event_flags = EF_NOT_SUITABLE_FOR_MOUSE_WARPING;
+
   dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
-      kDeviceIdForInjection, EF_NONE, cursor_->GetLocation(),
+      kDeviceIdForInjection, event_flags, cursor_->GetLocation(),
       nullptr /* ordinal_delta */, PointerDetails(EventPointerType::kMouse),
       EventTimeForNow()));
 }
