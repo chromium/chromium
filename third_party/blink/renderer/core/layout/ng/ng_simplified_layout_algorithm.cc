@@ -162,15 +162,17 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   } else {
     container_builder_.SetIntrinsicBlockSize(result.IntrinsicBlockSize());
 
-    LayoutUnit new_block_size = ComputeBlockSizeForFragment(
-        ConstraintSpace(), Style(), BorderPadding(),
-        result.IntrinsicBlockSize(),
-        container_builder_.InitialBorderBoxSize().inline_size);
+    auto ComputeNewBlockSize = [&]() -> LayoutUnit {
+      return ComputeBlockSizeForFragment(
+          ConstraintSpace(), Style(), BorderPadding(),
+          result.IntrinsicBlockSize(),
+          container_builder_.InitialBorderBoxSize().inline_size);
+    };
 
     // Only block-flow is allowed to change its block-size during "simplified"
     // layout, all other layout types must remain the same size.
     if (is_block_flow) {
-      container_builder_.SetFragmentBlockSize(new_block_size);
+      container_builder_.SetFragmentBlockSize(ComputeNewBlockSize());
     } else {
       LayoutUnit old_block_size =
           NGFragment(writing_direction_, physical_fragment).BlockSize();
@@ -179,7 +181,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
       if (!physical_fragment.IsTableNG() &&
           !physical_fragment.IsTableNGSection() &&
           !physical_fragment.IsTableNGRow())
-        DCHECK_EQ(old_block_size, new_block_size);
+        DCHECK_EQ(old_block_size, ComputeNewBlockSize());
 #endif
       container_builder_.SetFragmentBlockSize(old_block_size);
     }
