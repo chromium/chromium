@@ -4717,17 +4717,17 @@
   },
   {
     "name": "password-change-in-settings",
-    "owners": [ "kolos", "selakovic@google.com", "treib" ],
-    "expiry_milestone": 100
+    "owners": [ "kolos", "treib", "brunobraga" ],
+    "expiry_milestone": 112
   },
   {
     "name": "password-change-support",
-    "owners": [ "kolos", "selakovic@google.com", "treib" ],
-    "expiry_milestone": 100
+    "owners": [ "kolos", "treib", "brunobraga" ],
+    "expiry_milestone": 112
   },
   {
     "name": "password-domain-capabilities-fetching",
-    "owners": [ "vizcay", "treib" ],
+    "owners": [ "vizcay", "treib", "brunobraga" ],
     "expiry_milestone": 105
   },
   {
@@ -4739,8 +4739,8 @@
   },
   {
     "name": "password-scripts-fetching",
-    "owners": [ "kolos", "selakovic@google.com", "treib" ],
-    "expiry_milestone": 100
+    "owners": [ "kolos", "selakovic@google.com", "treib", "brunobraga" ],
+    "expiry_milestone": 105
   },
   {
     "name": "passwords-account-storage-revised-opt-in-flow",
