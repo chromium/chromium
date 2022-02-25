@@ -107,13 +107,13 @@ void OnExportedCallback(const std::string& interface_name,
 // alive until these functions are called back.
 
 void ReplyToClose(scoped_refptr<storage::FileSystemContext> fs_context,
-                  dbus::MethodCall* method,
+                  dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender sender,
                   base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
@@ -122,13 +122,13 @@ void ReplyToClose(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReplyToOpenFailure(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method,
+                        dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender sender,
                         base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
@@ -138,13 +138,13 @@ void ReplyToOpenFailure(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method,
+                        dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender sender,
                         base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
@@ -154,7 +154,7 @@ void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReplyToReadTypical(scoped_refptr<storage::FileSystemContext> fs_context,
-                        dbus::MethodCall* method,
+                        dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender sender,
                         std::unique_ptr<storage::FileStreamReader> fs_reader,
                         scoped_refptr<net::IOBuffer> buffer,
@@ -162,7 +162,7 @@ void ReplyToReadTypical(scoped_refptr<storage::FileSystemContext> fs_context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   if (length < 0) {
@@ -189,7 +189,7 @@ void ReplyToReadTypical(scoped_refptr<storage::FileSystemContext> fs_context,
 
 void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
                     storage::FileSystemURL fs_url,
-                    dbus::MethodCall* method,
+                    dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender sender,
                     int64_t offset,
                     int64_t length) {
@@ -200,7 +200,7 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
   if (!fs_reader) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&ReplyToReadFailure, std::move(fs_context),
-                                  method, std::move(sender),
+                                  method_call, std::move(sender),
                                   base::File::Error::FILE_ERROR_INVALID_URL));
     return;
   }
@@ -216,8 +216,8 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
 
   auto pair = base::SplitOnceCallback(base::BindPostTask(
       content::GetUIThreadTaskRunner({}),
-      base::BindOnce(&ReplyToReadTypical, fs_context, method, std::move(sender),
-                     std::move(fs_reader), buffer)));
+      base::BindOnce(&ReplyToReadTypical, fs_context, method_call,
+                     std::move(sender), std::move(fs_reader), buffer)));
 
   int result =
       saved_fs_reader->Read(buffer.get(), length, std::move(pair.first));
@@ -227,14 +227,14 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
 }
 
 void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
-                 dbus::MethodCall* method,
+                 dbus::MethodCall* method_call,
                  dbus::ExportedObject::ResponseSender sender,
                  base::File::Error error_code,
                  const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(error_code));
@@ -289,14 +289,14 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
 }
 
 void FuseBoxServiceProvider::Close(
-    dbus::MethodCall* method,
+    dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  dbus::MessageReader reader(method);
+  dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
                  common.error_code);
     return;
   }
@@ -304,33 +304,34 @@ void FuseBoxServiceProvider::Close(
   uint64_t handle = 0;
   if (!reader.PopUint64(&handle)) {
     LOG(ERROR) << "No Handle";
-    ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+    ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
                  base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
   trackers_.erase(handle);
 
-  ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+  ReplyToClose(std::move(common.fs_context), method_call, std::move(sender),
                base::File::Error::FILE_OK);
 }
 
-void FuseBoxServiceProvider::Open(dbus::MethodCall* method,
+void FuseBoxServiceProvider::Open(dbus::MethodCall* method_call,
                                   dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  dbus::MessageReader reader(method);
+  dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToOpenFailure(std::move(common.fs_context), method, std::move(sender),
-                       common.error_code);
+    ReplyToOpenFailure(std::move(common.fs_context), method_call,
+                       std::move(sender), common.error_code);
     return;
   }
 
   int32_t flags = 0;
   if (!reader.PopInt32(&flags)) {
     LOG(ERROR) << "No Flags";
-    ReplyToOpenFailure(std::move(common.fs_context), method, std::move(sender),
+    ReplyToOpenFailure(std::move(common.fs_context), method_call,
+                       std::move(sender),
                        base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
@@ -350,8 +351,8 @@ void FuseBoxServiceProvider::Open(dbus::MethodCall* method,
   auto reply_to_open_typical = base::BindPostTask(
       base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&FuseBoxServiceProvider::ReplyToOpenTypical,
-                     weak_ptr_factory_.GetWeakPtr(), common.fs_context, method,
-                     std::move(sender)));
+                     weak_ptr_factory_.GetWeakPtr(), common.fs_context,
+                     method_call, std::move(sender)));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -364,7 +365,7 @@ void FuseBoxServiceProvider::Open(dbus::MethodCall* method,
 
 void FuseBoxServiceProvider::ReplyToOpenTypical(
     scoped_refptr<storage::FileSystemContext> fs_context,  // See (§) above.
-    dbus::MethodCall* method,
+    dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender sender,
     base::File file,
     base::OnceClosure on_close_callback) {
@@ -382,7 +383,7 @@ void FuseBoxServiceProvider::ReplyToOpenTypical(
   }
 
   std::unique_ptr<dbus::Response> response =
-      dbus::Response::FromMethodCall(method);
+      dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
 
   writer.AppendInt32(static_cast<int32_t>(file.error_details()));
@@ -410,48 +411,50 @@ void FuseBoxServiceProvider::ReplyToOpenTypical(
           std::move(file), tracker));
 }
 
-void FuseBoxServiceProvider::Read(dbus::MethodCall* method,
+void FuseBoxServiceProvider::Read(dbus::MethodCall* method_call,
                                   dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  dbus::MessageReader reader(method);
+  dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
-    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
-                       common.error_code);
+    ReplyToReadFailure(std::move(common.fs_context), method_call,
+                       std::move(sender), common.error_code);
     return;
   }
 
   int64_t offset = 0;
   if (!reader.PopInt64(&offset)) {
     LOG(ERROR) << "No Offset";
-    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
+    ReplyToReadFailure(std::move(common.fs_context), method_call,
+                       std::move(sender),
                        base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
   int32_t length = 0;
   if (!reader.PopInt32(&length)) {
     LOG(ERROR) << "No Length";
-    ReplyToReadFailure(std::move(common.fs_context), method, std::move(sender),
+    ReplyToReadFailure(std::move(common.fs_context), method_call,
+                       std::move(sender),
                        base::File::Error::FILE_ERROR_INVALID_OPERATION);
     return;
   }
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ReadOnIOThread, common.fs_context, common.fs_url, method,
-                     std::move(sender), offset, static_cast<int64_t>(length)));
+      FROM_HERE, base::BindOnce(&ReadOnIOThread, common.fs_context,
+                                common.fs_url, method_call, std::move(sender),
+                                offset, static_cast<int64_t>(length)));
 }
 
-void FuseBoxServiceProvider::Stat(dbus::MethodCall* method,
+void FuseBoxServiceProvider::Stat(dbus::MethodCall* method_call,
                                   dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  dbus::MessageReader reader(method);
+  dbus::MessageReader reader(method_call);
   auto common = ParseCommonDBusMethodArguments(&reader);
   if (common.error_code != base::File::Error::FILE_OK) {
     base::File::Info info;
-    ReplyToStat(std::move(common.fs_context), method, std::move(sender),
+    ReplyToStat(std::move(common.fs_context), method_call, std::move(sender),
                 common.error_code, info);
     return;
   }
@@ -463,8 +466,8 @@ void FuseBoxServiceProvider::Stat(dbus::MethodCall* method,
 
   auto callback =
       base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                         base::BindOnce(&ReplyToStat, common.fs_context, method,
-                                        std::move(sender)));
+                         base::BindOnce(&ReplyToStat, common.fs_context,
+                                        method_call, std::move(sender)));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

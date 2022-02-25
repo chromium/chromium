@@ -65,17 +65,17 @@ class FuseBoxServiceProvider
   // corresponds to the standard stat function described by "man 2 stat".
   //
   // TODO(nigeltao): add ReadDir, etc.
-  void Close(dbus::MethodCall* method,
+  void Close(dbus::MethodCall* method_call,
              dbus::ExportedObject::ResponseSender sender);
-  void Open(dbus::MethodCall* method,
+  void Open(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
-  void Read(dbus::MethodCall* method,
+  void Read(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
-  void Stat(dbus::MethodCall* method,
+  void Stat(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender sender);
 
   void ReplyToOpenTypical(scoped_refptr<storage::FileSystemContext> fs_context,
-                          dbus::MethodCall* method,
+                          dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender sender,
                           base::File file,
                           base::OnceClosure on_close_callback);
