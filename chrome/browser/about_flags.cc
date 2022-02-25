@@ -1504,6 +1504,8 @@ const FeatureEntry::FeatureParam kNtpPhotosModuleOptInFavoriteTitle[] = {
     {ntp_features::kNtpPhotosModuleOptInTitleParam, "1"}};
 const FeatureEntry::FeatureParam kNtpPhotosModuleOptInPersonalizedTitle[] = {
     {ntp_features::kNtpPhotosModuleOptInTitleParam, "2"}};
+const FeatureEntry::FeatureParam kNtpPhotosModuleOptInTripsTitle[] = {
+    {ntp_features::kNtpPhotosModuleOptInTitleParam, "3"}};
 
 const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInTitleVariations[] = {
     {" - Recent Highlights", kNtpPhotosModuleOptInRHTitle,
@@ -1511,7 +1513,9 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInTitleVariations[] = {
     {" - Favorite people", kNtpPhotosModuleOptInFavoriteTitle,
      base::size(kNtpPhotosModuleOptInFavoriteTitle), nullptr},
     {" - Personalized title", kNtpPhotosModuleOptInPersonalizedTitle,
-     base::size(kNtpPhotosModuleOptInPersonalizedTitle), nullptr}};
+     base::size(kNtpPhotosModuleOptInPersonalizedTitle), nullptr},
+    {" - Trips title", kNtpPhotosModuleOptInTripsTitle,
+     base::size(kNtpPhotosModuleOptInTripsTitle), nullptr}};
 
 const FeatureEntry::FeatureParam kNtpPhotosModuleLogo1ArtWork[] = {
     {ntp_features::kNtpPhotosModuleOptInArtWorkParam, "1"}};

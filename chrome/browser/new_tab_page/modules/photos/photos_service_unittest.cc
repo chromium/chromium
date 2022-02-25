@@ -878,3 +878,38 @@ TEST_F(PhotosServiceFavoritePeopleTitleEnabledTest, showsRHTitle) {
   EXPECT_EQ(expected_string,
             service_->GetOptInTitleText(std::move(memory_list)));
 }
+
+class PhotosServiceTripTitleEnabledTest : public PhotosServiceTest {
+ public:
+  PhotosServiceTripTitleEnabledTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpPhotosModuleCustomizedOptInTitle,
+        {{"NtpPhotosModuleOptInTitleParam",
+          base::NumberToString(static_cast<int>(
+              PhotosService::OptInCardTitle::kOptInTripsTitle))}});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(PhotosServiceTripTitleEnabledTest, showsTripsTitle) {
+  std::vector<photos::mojom::MemoryPtr> memory_list;
+
+  auto recent_highlight = photos::mojom::Memory::New();
+  recent_highlight->title = "Recent Highlights";
+  memory_list.push_back(std::move(recent_highlight));
+
+  auto n_years_ago = photos::mojom::Memory::New();
+  n_years_ago->title = "6 Years Ago";
+  memory_list.push_back(std::move(n_years_ago));
+
+  auto mojo_memory = photos::mojom::Memory::New();
+  mojo_memory->title = "Trip to India";
+  memory_list.push_back(std::move(mojo_memory));
+
+  std::string expected_string = l10n_util::GetStringUTF8(
+      IDS_NTP_MODULES_PHOTOS_MEMORIES_TRIPS_WELCOME_TITLE);
+  EXPECT_EQ(expected_string,
+            service_->GetOptInTitleText(std::move(memory_list)));
+}

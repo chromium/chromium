@@ -6246,6 +6246,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Title of the opt-in UI for Google Photos in the new tab page emphasizing on favorite people.">
         See memories of your favorite people and more
       </message>
+      <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_TRIPS_WELCOME_TITLE"
+        desc="Title of the opt-in UI for Google Photos in the new tab page emphasizing on trips.">
+        See memories of your recent trips and more
+      </message>
       <message name="IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TEXT" desc="Text for the opt-in UI for Google Photos in the new tab page.">
         Start exploring your memories from Google Photos, whenever you’re signed in.
       </message>

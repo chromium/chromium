@@ -261,6 +261,11 @@ std::string PhotosService::GetOptInTitleText(
     return ConstructPersonalizedString(std::move(memories));
   }
 
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInTripsTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_TRIPS_WELCOME_TITLE);
+  }
+
   return l10n_util::GetStringUTF8(
       IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
 }
