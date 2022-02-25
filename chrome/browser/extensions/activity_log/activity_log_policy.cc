@@ -90,7 +90,7 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
 
   // Strip query parameters, username/password, etc., from URLs.
   if (action->page_url().is_valid() || action->arg_url().is_valid()) {
-    url::Replacements<char> url_sanitizer;
+    GURL::Replacements url_sanitizer;
     url_sanitizer.ClearUsername();
     url_sanitizer.ClearPassword();
     url_sanitizer.ClearQuery();
