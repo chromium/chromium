@@ -49,6 +49,7 @@ desks_storage::DeskModel* GetDeskModel() {
 // Callback ran after creating and activating a new desk for launching a
 // template. Launches apps into the active desk.
 void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
+                                 base::Time time_launch_started,
                                  base::TimeDelta delay,
                                  aura::Window* root_window,
                                  bool on_create_activate_success) {
@@ -56,7 +57,7 @@ void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
     return;
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
-      std::move(desk_template), delay);
+      std::move(desk_template), time_launch_started, delay);
 
   OverviewSession* overview_session =
       Shell::Get()->overview_controller()->overview_session();
@@ -168,7 +169,8 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
   GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksTemplatesPresenter::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), delay, root_window));
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now(), delay,
+                     root_window));
 }
 
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate(
@@ -263,6 +265,7 @@ void DesksTemplatesPresenter::OnDeleteEntry(
 }
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
+    base::Time time_launch_started,
     base::TimeDelta delay,
     aura::Window* root_window,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
@@ -282,8 +285,9 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   // function in the anonymous namespace.
   const auto template_name = entry->template_name();
   DesksController::Get()->CreateAndActivateNewDeskForTemplate(
-      template_name, base::BindOnce(&OnNewDeskCreatedForTemplate,
-                                    std::move(entry), delay, root_window));
+      template_name,
+      base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry),
+                     time_launch_started, delay, root_window));
 
   if (on_update_ui_closure_for_testing)
     std::move(on_update_ui_closure_for_testing).Run();

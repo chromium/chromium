@@ -1938,6 +1938,28 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
 }
 
+// Tests that launching a desk template records the appropriate performance
+// metric.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       LaunchTemplateRecordsLoadTimeMetric) {
+  base::HistogramTester histogram_tester;
+
+  // Create the settings app, which is a system web app.
+  CreateSettingsSystemWebApp(browser()->profile());
+
+  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
+  CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2), GURL(kExampleUrl3)});
+
+  // Save and launch a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  ClickSaveDeskAsTemplateButton();
+  ClickFirstTemplateItem();
+
+  // Verify that the metric was recorded.
+  histogram_tester.ExpectTotalCount("Ash.DeskTemplate.TimeToLoadTemplate", 1ul);
+}
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {

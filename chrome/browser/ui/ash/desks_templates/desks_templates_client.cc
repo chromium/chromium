@@ -16,6 +16,8 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,9 +25,12 @@
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
 #include "components/app_constants/constants.h"
+#include "components/app_restore/full_restore_info.h"
+#include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/desk_sync_service.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/sync/model/model_type_store.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -41,6 +46,8 @@ constexpr char kLaunchFromTemplateHistogramName[] =
     "Ash.DeskTemplate.LaunchFromTemplate";
 constexpr char kUserTemplateCountHistogramName[] =
     "Ash.DeskTemplate.UserTemplateCount";
+constexpr char kTimeToLoadTemplateHistogramName[] =
+    "Ash.DeskTemplate.TimeToLoadTemplate";
 
 // Error strings
 constexpr char kMaximumDesksOpenedError[] =
@@ -53,13 +60,112 @@ constexpr char kBadProfileError[] =
     "Either the profile is not valid or there is not an active proflile.";
 constexpr char kNoSavedTemplatesError[] = "You can create up to 6 templates.";
 
-// Returns true if |profile| is a supported profile in desk template feature.
+// Timeout time used in LaunchPerformanceTracker
+constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
+
+// Returns true if `profile` is a supported profile in desk template feature.
 bool IsSupportedProfile(Profile* profile) {
   // Public users & guest users are not supported.
   return profile && profile->IsRegularProfile();
 }
 
+// Creates a set of window IDs for the launch tracker to monitor for.
+std::set<int> GetWindowIDSetFromTemplate(
+    const ash::DeskTemplate* desk_template) {
+  std::set<int> window_ids;
+  const app_restore::RestoreData* desk_restore_data =
+      desk_template->desk_restore_data();
+
+  for (const auto& app : desk_restore_data->app_id_to_launch_list()) {
+    for (const auto& window : app.second)
+      window_ids.insert(window.first);
+  }
+
+  return window_ids;
+}
+
+// Records the time to load a template based on the starting time `time_started`
+// passed into this function and a call to base::Time::Now called at the
+// beginning of this function.
+void RecordTimeToLoadTemplateHistogram(const base::Time time_started) {
+  base::UmaHistogramMediumTimes(kTimeToLoadTemplateHistogramName,
+                                base::Time::Now() - time_started);
+}
+
 }  // namespace
+
+// Tracks a set of WindowIDs through the launching process, records a
+// launch performance metric when the set of window_ids have all been
+// launched
+class DesksTemplatesClient::LaunchPerformanceTracker
+    : public full_restore::FullRestoreInfo::Observer {
+ public:
+  LaunchPerformanceTracker(base::Time time_launch_started,
+                           const std::set<int>& window_ids,
+                           base::GUID template_id,
+                           DesksTemplatesClient* templates_client)
+      : tracked_window_ids_(window_ids),
+        time_launch_started_(time_launch_started),
+        template_id_(template_id),
+        templates_client_(templates_client) {
+    scoped_observation_.Observe(full_restore::FullRestoreInfo::GetInstance());
+    timeout_timer_ = std::make_unique<base::OneShotTimer>();
+    timeout_timer_->Start(
+        FROM_HERE, kLaunchPerformanceTimeout,
+        base::BindOnce(
+            &DesksTemplatesClient::LaunchPerformanceTracker::OnTimeout,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  LaunchPerformanceTracker(const LaunchPerformanceTracker&) = delete;
+  LaunchPerformanceTracker& operator=(const LaunchPerformanceTracker&) = delete;
+  ~LaunchPerformanceTracker() override {}
+
+  // Removes window ID from tracked set because the window has been launched.
+  // full_restore::FullRestoreInfo::Observer
+  void OnWidgetInitialized(views::Widget* widget) override {
+    tracked_window_ids_.erase(widget->GetNativeWindow()->GetProperty(
+        app_restore::kRestoreWindowIdKey));
+    MaybeRecordMetric();
+  }
+
+  // Removes `window_id` from the tracked set because the window has already
+  // been launched by another process.
+  void OnMovedSingleInstanceApp(int32_t window_id) {
+    tracked_window_ids_.erase(window_id);
+    MaybeRecordMetric();
+  }
+
+ private:
+  // Records performance metric iff `tracked_window_ids_` are empty.
+  void MaybeRecordMetric() {
+    if (tracked_window_ids_.empty()) {
+      RecordTimeToLoadTemplateHistogram(time_launch_started_);
+      templates_client_->RemoveLaunchPerformanceTracker(template_id_);
+    }
+  }
+
+  // Called when timeout timer runs out. Records time metric.
+  void OnTimeout() {
+    tracked_window_ids_.clear();
+    MaybeRecordMetric();
+  }
+
+  std::set<int> tracked_window_ids_;
+  base::Time time_launch_started_;
+  base::GUID template_id_;
+  std::unique_ptr<base::OneShotTimer> timeout_timer_;
+
+  // Pointer back to the owning templates client. This is done to facilitate
+  // this object's removal from the mapping of template id's to trackers after
+  // this object has recorded its metric.
+  DesksTemplatesClient* templates_client_;
+
+  base::ScopedObservation<full_restore::FullRestoreInfo,
+                          full_restore::FullRestoreInfo::Observer>
+      scoped_observation_{this};
+  base::WeakPtrFactory<LaunchPerformanceTracker> weak_ptr_factory_{this};
+};
 
 DesksTemplatesClient::DesksTemplatesClient()
     : desks_controller_(ash::DesksController::Get()) {
@@ -176,6 +282,8 @@ void DesksTemplatesClient::GetTemplateJson(const std::string uuid,
 void DesksTemplatesClient::LaunchDeskTemplate(
     const std::string& template_uuid,
     LaunchDeskTemplateCallback callback) {
+  base::Time launch_started = base::Time::Now();
+
   if (!active_profile_) {
     std::move(callback).Run(std::string(kNoCurrentUserError));
     return;
@@ -186,7 +294,7 @@ void DesksTemplatesClient::LaunchDeskTemplate(
 
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
-        std::move(callback),
+        std::move(callback), base::Time(),
         desks_storage::DeskModel::GetEntryByUuidStatus::kOk,
         launch_template_for_test_->Clone());
     return;
@@ -195,11 +303,13 @@ void DesksTemplatesClient::LaunchDeskTemplate(
   GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksTemplatesClient::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     launch_started));
 }
 
 void DesksTemplatesClient::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template,
+    base::Time time_launch_started,
     base::TimeDelta delay) {
   DCHECK(desk_template);
   const app_restore::RestoreData* restore_data =
@@ -209,6 +319,12 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
 
   MaybeCreateAppLaunchHandler();
   DCHECK(app_launch_handler_);
+
+  template_ids_to_launch_performance_trackers_[desk_template->uuid()] =
+      std::make_unique<LaunchPerformanceTracker>(
+          time_launch_started, GetWindowIDSetFromTemplate(desk_template.get()),
+          desk_template->uuid(), this);
+
   app_launch_handler_->set_delay(delay);
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
 }
@@ -256,6 +372,11 @@ void DesksTemplatesClient::RemovePolicyPreconfiguredTemplate(
 
   if (profile == active_profile_)
     GetDeskModel()->RemovePolicyDeskTemplates();
+}
+
+void DesksTemplatesClient::NotifyMovedSingleInstanceApp(int32_t window_id) {
+  for (auto& id_to_tracker : template_ids_to_launch_performance_trackers_)
+    id_to_tracker.second->OnMovedSingleInstanceApp(window_id);
 }
 
 void DesksTemplatesClient::MaybeCreateAppLaunchHandler() {
@@ -317,6 +438,7 @@ void DesksTemplatesClient::RecordTemplateCountHistogram() {
 
 void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
     LaunchDeskTemplateCallback callback,
+    base::Time time_launch_started,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<ash::DeskTemplate> entry) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
@@ -332,12 +454,13 @@ void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
       template_name,
       base::BindOnce(&DesksTemplatesClient::OnCreateAndActivateNewDesk,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
-                     std::move(callback)));
+                     std::move(callback), time_launch_started));
 }
 
 void DesksTemplatesClient::OnCreateAndActivateNewDesk(
     std::unique_ptr<ash::DeskTemplate> desk_template,
     LaunchDeskTemplateCallback callback,
+    base::Time time_launch_started,
     bool on_create_activate_success) {
   if (!on_create_activate_success) {
     // This only returns false if the number of desks is at a maximum.
@@ -351,7 +474,8 @@ void DesksTemplatesClient::OnCreateAndActivateNewDesk(
     return;
   }
 
-  LaunchAppsFromTemplate(std::move(desk_template), base::TimeDelta());
+  LaunchAppsFromTemplate(std::move(desk_template), time_launch_started,
+                         base::TimeDelta());
   std::move(callback).Run(std::string(""));
 }
 
@@ -440,4 +564,9 @@ void DesksTemplatesClient::OnGetTemplateJson(
       std::string(status != desks_storage::DeskModel::GetTemplateJsonStatus::kOk
                       ? kStorageError
                       : ""));
+}
+
+void DesksTemplatesClient::RemoveLaunchPerformanceTracker(
+    base::GUID tracker_uuid) {
+  template_ids_to_launch_performance_trackers_.erase(tracker_uuid);
 }

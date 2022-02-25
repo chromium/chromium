@@ -56,6 +56,9 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
   // current desk template launch is considered done.
   void ClearDeskTemplateReadHandlerRestoreData();
 
+  // Notifies observers that a single instance app has moved.
+  void NotifyMovedSingleInstanceApp(int32_t window_id);
+
   // chromeos::AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 

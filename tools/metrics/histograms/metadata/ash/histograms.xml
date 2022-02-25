@@ -1500,6 +1500,16 @@ chromium-metrics-reviews@google.com.
   <summary>Records the number of tabs in a template when it is saved.</summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.TimeToLoadTemplate" units="ms"
+    expires_after="2023-01-18">
+  <owner>avynn@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Measures the amount of time it takes to launch a template from the time that
+    the launch is invoked to the time that the last window is opened.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.UnsupportedAppDialogShow" units="count"
     expires_after="2023-01-04">
   <owner>avynn@google.com</owner>

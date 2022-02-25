@@ -96,6 +96,7 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   // Launches DeskTemplate after retrieval from storage.
   void OnGetTemplateForDeskLaunch(
+      base::Time time_launch_started,
       base::TimeDelta delay,
       aura::Window* root_window,
       desks_storage::DeskModel::GetEntryByUuidStatus status,

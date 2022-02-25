@@ -73,7 +73,7 @@ namespace ash {
 
 class DesksTemplatesTest : public OverviewTestBase {
  public:
-  DesksTemplatesTest() = default;
+  DesksTemplatesTest() {}
   DesksTemplatesTest(const DesksTemplatesTest&) = delete;
   DesksTemplatesTest& operator=(const DesksTemplatesTest&) = delete;
   ~DesksTemplatesTest() override = default;

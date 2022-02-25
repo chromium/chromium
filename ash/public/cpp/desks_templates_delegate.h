@@ -88,6 +88,7 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
   // debugging.
   virtual void LaunchAppsFromTemplate(
       std::unique_ptr<DeskTemplate> desk_template,
+      base::Time time_launch_started,
       base::TimeDelta delay) = 0;
 
   // Checks whether `window` is supported in the desks templates feature.

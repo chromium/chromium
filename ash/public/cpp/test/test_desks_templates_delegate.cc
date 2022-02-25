@@ -50,6 +50,7 @@ void TestDesksTemplatesDelegate::GetIconForAppId(
 
 void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<DeskTemplate> desk_template,
+    base::Time time_launch_started,
     base::TimeDelta delay) {}
 
 bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(

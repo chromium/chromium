@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -123,8 +125,17 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   if (is_multi_instance_window)
     return true;
 
-  return ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
-      app_id, launch_list);
+  const bool should_launch =
+      ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
+          app_id, launch_list);
+
+  // Notify performance tracker that some tracked windows will be moving.
+  if (!should_launch) {
+    for (const auto& window : launch_list)
+      NotifyMovedSingleInstanceApp(window.first);
+  }
+
+  return should_launch;
 }
 
 void DesksTemplatesAppLaunchHandler::OnExtensionLaunching(
@@ -236,6 +247,8 @@ void DesksTemplatesAppLaunchHandler::MaybeLaunchArcApps() {
     DCHECK(it != app_id_to_launch_list.end());
     if (!ash::DesksController::Get()->OnSingleInstanceAppLaunchingFromTemplate(
             app_id, it->second)) {
+      for (auto& window : it->second)
+        NotifyMovedSingleInstanceApp(window.first);
       restore_data()->RemoveApp(app_id);
     }
   }
@@ -259,4 +272,9 @@ void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   // TODO: Add UMA Histogram.
   NOTIMPLEMENTED();
+}
+
+void DesksTemplatesAppLaunchHandler::NotifyMovedSingleInstanceApp(
+    int32_t window_id) {
+  DesksTemplatesClient::Get()->NotifyMovedSingleInstanceApp(window_id);
 }
