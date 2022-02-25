@@ -186,6 +186,8 @@ or:
 UmaHistogramEnumeration("NewTabPageAction", action);
 ```
 
+where `action` is an enumerator of the enumeration type `NewTabPageAction`.
+
 Logging histograms from Java should look similar:
 
 ```java
