@@ -41,15 +41,8 @@ class PLATFORM_EXPORT DarkModeFilter {
 
   size_t GetInvertedColorCacheSizeForTesting();
 
-  // Decides whether to apply dark mode or not based on |src| and |dst|.
-  // DarkModeResult::kDoNotApplyFilter - Dark mode filter should not be applied.
-  // DarkModeResult::kApplyFilter - Dark mode filter should be applied and to
-  // get the color filter GetImageFilter() should be called.
-  // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
-  // get the color filter ApplyToImage() should be called. This API is
-  // thread-safe.
-  bool ImageShouldHaveFilterAppliedBasedOnSizes(const SkIRect& src,
-                                                const SkIRect& dst) const;
+  // Decides whether to apply dark mode or not.
+  bool ShouldApplyFilterToImage(const SkIRect& dst, const SkIRect& src) const;
 
   // Returns dark mode color filter based on the classification done on
   // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
@@ -79,6 +72,10 @@ class PLATFORM_EXPORT DarkModeFilter {
     std::unique_ptr<DarkModeColorFilter> color_filter;
     sk_sp<SkColorFilter> image_filter;
   };
+
+  // Decides whether to apply dark mode or not based on |dst| and |src|.
+  bool ImageShouldHaveFilterAppliedBasedOnSizes(const SkIRect& dst,
+                                                const SkIRect& src) const;
 
   bool ShouldApplyToColor(SkColor color, ElementRole role);
 

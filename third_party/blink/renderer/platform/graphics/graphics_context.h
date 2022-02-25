@@ -156,6 +156,9 @@ class PLATFORM_EXPORT GraphicsContext {
   }
 
   DarkModeFilter* GetDarkModeFilter();
+  DarkModeFilter* GetDarkModeFilterForImage(const AutoDarkMode& auto_dark_mode,
+                                            const gfx::RectF& dest,
+                                            const gfx::RectF& src);
 
   void UpdateDarkModeSettingsForTest(const DarkModeSettings&);
 

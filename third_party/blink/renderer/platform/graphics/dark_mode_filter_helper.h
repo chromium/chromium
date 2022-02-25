@@ -19,11 +19,10 @@ class Image;
 
 class PLATFORM_EXPORT DarkModeFilterHelper {
  public:
-  static void ApplyToImageIfNeeded(DarkModeFilter& filter,
-                                   Image* image,
-                                   cc::PaintFlags* flags,
-                                   const SkRect& src,
-                                   const SkRect& dst);
+  static void ApplyFilterToImage(DarkModeFilter& filter,
+                                 Image* image,
+                                 cc::PaintFlags* flags,
+                                 const SkRect& src);
 };
 
 }  // namespace blink

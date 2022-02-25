@@ -68,42 +68,33 @@ sk_sp<SkColorFilter> GetDarkModeFilterForImageOnMainThread(
 }  // namespace
 
 // static
-void DarkModeFilterHelper::ApplyToImageIfNeeded(DarkModeFilter& filter,
-                                                Image* image,
-                                                cc::PaintFlags* flags,
-                                                const SkRect& src,
-                                                const SkRect& dst) {
+void DarkModeFilterHelper::ApplyFilterToImage(DarkModeFilter& filter,
+                                              Image* image,
+                                              cc::PaintFlags* flags,
+                                              const SkRect& src) {
   DCHECK(image);
   DCHECK(flags);
+  DCHECK_NE(filter.GetDarkModeImagePolicy(), DarkModeImagePolicy::kFilterNone);
 
-  DarkModeImagePolicy image_policy = filter.GetDarkModeImagePolicy();
-  if (image_policy == DarkModeImagePolicy::kFilterNone)
-    return;
-
-  if (image_policy == DarkModeImagePolicy::kFilterAll) {
+  if (filter.GetDarkModeImagePolicy() == DarkModeImagePolicy::kFilterAll) {
     flags->setColorFilter(filter.GetImageFilter());
     return;
   }
 
-  SkIRect rounded_src = src.roundOut();
-  SkIRect rounded_dst = dst.roundOut();
-  if (filter.ImageShouldHaveFilterAppliedBasedOnSizes(rounded_src,
-                                                      rounded_dst)) {
-    // Raster-side dark mode path - Just set the dark mode on flags and dark
-    // mode will be applied at compositor side during rasterization.
-    if (ShouldUseRasterSidePath(image)) {
-      flags->setUseDarkModeForImage(true);
-      return;
-    }
-
-    // Blink-side dark mode path - Apply dark mode to images in main thread
-    // only. If the result is not cached, calling this path is expensive and
-    // will block main thread.
-    sk_sp<SkColorFilter> color_filter =
-        GetDarkModeFilterForImageOnMainThread(filter, image, rounded_src);
-    if (color_filter)
-      flags->setColorFilter(std::move(color_filter));
+  // Raster-side dark mode path - Just set the dark mode on flags and dark
+  // mode will be applied at compositor side during rasterization.
+  if (ShouldUseRasterSidePath(image)) {
+    flags->setUseDarkModeForImage(true);
+    return;
   }
+
+  // Blink-side dark mode path - Apply dark mode to images in main thread
+  // only. If the result is not cached, calling this path is expensive and
+  // will block main thread.
+  sk_sp<SkColorFilter> color_filter =
+      GetDarkModeFilterForImageOnMainThread(filter, image, src.roundOut());
+  if (color_filter)
+    flags->setColorFilter(std::move(color_filter));
 }
 
 }  // namespace blink

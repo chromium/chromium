@@ -311,12 +311,11 @@ void BitmapImage::Draw(cc::PaintCanvas* canvas,
 
   const cc::PaintFlags* image_flags = &flags;
   absl::optional<cc::PaintFlags> dark_mode_flags;
-  if (draw_options.apply_dark_mode) {
+  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
     dark_mode_flags = flags;
-    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
-    DarkModeFilterHelper::ApplyToImageIfNeeded(
-        *dark_mode_filter, this, &dark_mode_flags.value(),
-        gfx::RectFToSkRect(src_rect), gfx::RectFToSkRect(dst_rect));
+    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this,
+                                             &dark_mode_flags.value(),
+                                             gfx::RectFToSkRect(src_rect));
     image_flags = &dark_mode_flags.value();
   }
   canvas->drawImageRect(

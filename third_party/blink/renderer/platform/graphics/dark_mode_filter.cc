@@ -93,9 +93,19 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   return color;
 }
 
+bool DarkModeFilter::ShouldApplyFilterToImage(const SkIRect& dst,
+                                              const SkIRect& src) const {
+  DarkModeImagePolicy image_policy = GetDarkModeImagePolicy();
+  if (image_policy == DarkModeImagePolicy::kFilterNone)
+    return false;
+  if (image_policy == DarkModeImagePolicy::kFilterAll)
+    return true;
+  return ImageShouldHaveFilterAppliedBasedOnSizes(dst, src);
+}
+
 bool DarkModeFilter::ImageShouldHaveFilterAppliedBasedOnSizes(
-    const SkIRect& src,
-    const SkIRect& dst) const {
+    const SkIRect& dst,
+    const SkIRect& src) const {
   // Images being drawn from very smaller |src| rect, i.e. one of the dimensions
   // is very small, can be used for the border around the content or showing
   // separator. Consider these images irrespective of size of the rect being

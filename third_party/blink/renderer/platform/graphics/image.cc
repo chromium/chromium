@@ -292,11 +292,9 @@ void Image::DrawPattern(GraphicsContext& context,
   cc::PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
-  if (draw_options.apply_dark_mode) {
-    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
-    DarkModeFilterHelper::ApplyToImageIfNeeded(*dark_mode_filter, this, &flags,
-                                               gfx::RectToSkRect(subset_rect),
-                                               gfx::RectFToSkRect(dest_rect));
+  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
+    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this, &flags,
+                                             gfx::RectToSkRect(subset_rect));
   }
 
   context.DrawRect(gfx::RectFToSkRect(dest_rect), flags,
@@ -341,11 +339,9 @@ bool Image::ApplyShader(cc::PaintFlags& flags,
   if (!image)
     return false;
 
-  if (draw_options.apply_dark_mode) {
-    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
-    DarkModeFilterHelper::ApplyToImageIfNeeded(*dark_mode_filter, this, &flags,
-                                               gfx::RectFToSkRect(src_rect),
-                                               gfx::RectFToSkRect(dst_rect));
+  if (auto* dark_mode_filter = draw_options.dark_mode_filter) {
+    DarkModeFilterHelper::ApplyFilterToImage(*dark_mode_filter, this, &flags,
+                                             gfx::RectFToSkRect(src_rect));
   }
   flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
                                          SkTileMode::kClamp, &local_matrix));
