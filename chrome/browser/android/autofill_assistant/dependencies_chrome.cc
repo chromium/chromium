@@ -11,6 +11,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -21,9 +22,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
+using ::autofill::PersonalDataManager;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::content::WebContents;
+using ::password_manager::PasswordManagerClient;
 using ::variations::VariationsService;
 
 namespace autofill_assistant {
@@ -47,15 +50,18 @@ DependenciesChrome::CreateFieldTrialUtil() const {
   return std::make_unique<AssistantFieldTrialUtilChrome>();
 }
 
-variations::VariationsService* DependenciesChrome::GetVariationsService()
-    const {
+VariationsService* DependenciesChrome::GetVariationsService() const {
   return g_browser_process->variations_service();
 }
 
-autofill::PersonalDataManager* DependenciesChrome::GetPersonalDataManager()
-    const {
+PersonalDataManager* DependenciesChrome::GetPersonalDataManager() const {
   return autofill::PersonalDataManagerFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
+}
+
+PasswordManagerClient* DependenciesChrome::GetPasswordManagerClient(
+    WebContents* web_contents) const {
+  return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
 std::string DependenciesChrome::GetChromeSignedInEmailAddress(
@@ -72,8 +78,7 @@ AnnotateDomModelService* DependenciesChrome::GetOrCreateAnnotateDomModelService(
   return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context);
 }
 
-bool DependenciesChrome::IsCustomTab(
-    const content::WebContents& web_contents) const {
+bool DependenciesChrome::IsCustomTab(const WebContents& web_contents) const {
   auto* tab_android = TabAndroid::FromWebContents(&web_contents);
   if (!tab_android) {
     return false;

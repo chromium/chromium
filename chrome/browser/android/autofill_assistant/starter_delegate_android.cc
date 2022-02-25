@@ -13,7 +13,6 @@
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/autofill_assistant/android/jni_headers_public/Starter_jni.h"
 #include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
@@ -53,7 +52,7 @@ StarterDelegateAndroid::StarterDelegateAndroid(
     : content::WebContentsUserData<StarterDelegateAndroid>(*web_contents),
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
-          ChromePasswordManagerClient::FromWebContents(web_contents),
+          dependencies_->GetPasswordManagerClient(web_contents),
           web_contents)) {
   // Create the AnnotateDomModelService when the browser starts, such that it
   // starts listening to model changes early enough.

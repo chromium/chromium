@@ -22,9 +22,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDirectActionImpl_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change_success_tracker_factory.h"
-#include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
 #include "components/autofill_assistant/browser/display_strings_util.h"
@@ -536,7 +534,7 @@ autofill::PersonalDataManager* ClientAndroid::GetPersonalDataManager() const {
 WebsiteLoginManager* ClientAndroid::GetWebsiteLoginManager() const {
   if (!website_login_manager_) {
     website_login_manager_ = std::make_unique<WebsiteLoginManagerImpl>(
-        ChromePasswordManagerClient::FromWebContents(GetWebContents()),
+        dependencies_->GetPasswordManagerClient(GetWebContents()),
         GetWebContents());
   }
   return website_login_manager_.get();
