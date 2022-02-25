@@ -11,6 +11,7 @@
 
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -79,7 +80,8 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
                    base::TimeTicks connect_to_service_start_time,
                    const CreateMessageStreamAttemptType& type,
                    scoped_refptr<device::BluetoothSocket> socket);
-  void OnConnectError(const CreateMessageStreamAttemptType& type,
+  void OnConnectError(std::string device_address,
+                      const CreateMessageStreamAttemptType& type,
                       const std::string& error_message);
 
   // Helper function to disconnect socket from a MessageStream instance and
@@ -98,6 +100,8 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
 
   base::flat_map<std::string, std::unique_ptr<MessageStream>> message_streams_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
+
+  base::flat_set<std::string> pending_connect_requests_;
 
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>

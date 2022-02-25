@@ -102,6 +102,12 @@ class MessageStreamFakeBluetoothDevice
   void ConnectToService(const device::BluetoothUUID& uuid,
                         ConnectToServiceCallback callback,
                         ConnectToServiceErrorCallback error_callback) override {
+    connect_to_service_count_++;
+
+    if (dont_invoke_callback_) {
+      return;
+    }
+
     if (error_) {
       std::move(error_callback).Run(/*message=*/error_message_);
       return;
@@ -115,6 +121,10 @@ class MessageStreamFakeBluetoothDevice
     error_message_ = error_message;
   }
 
+  int connect_to_service_count() { return connect_to_service_count_; }
+
+  void DontInvokeCallback() { dont_invoke_callback_ = true; }
+
   // Move-only class
   MessageStreamFakeBluetoothDevice(const MessageStreamFakeBluetoothDevice&) =
       delete;
@@ -122,6 +132,8 @@ class MessageStreamFakeBluetoothDevice
       const MessageStreamFakeBluetoothDevice&) = delete;
 
  protected:
+  int connect_to_service_count_ = 0;
+  bool dont_invoke_callback_ = false;
   bool error_ = false;
   std::string error_message_;
   MessageStreamFakeBluetoothAdapter* fake_adapter_;
@@ -544,6 +556,19 @@ TEST_F(MessageStreamLookupImplTest, EmptyDeviceRemoved) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetMessageStream(), nullptr);
+}
+
+TEST_F(MessageStreamLookupImplTest, InFlightConnections) {
+  device_->AddUUID(kMessageStreamUuid);
+  device_->SetPaired(true);
+  device_->DontInvokeCallback();
+
+  EXPECT_EQ(GetMessageStream(), nullptr);
+  DeviceConnectedStateChanged(/*is_now_connected=*/true);
+  DeviceChanged();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(device_->connect_to_service_count(), 1);
 }
 
 }  // namespace quick_pair

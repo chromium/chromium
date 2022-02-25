@@ -210,6 +210,13 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
     return;
   }
 
+  if (base::Contains(pending_connect_requests_, device->GetAddress())) {
+    QP_LOG(VERBOSE) << __func__ << ": Ignoring due to matching pending request";
+    return;
+  }
+
+  pending_connect_requests_.insert(device->GetAddress());
+
   device->ConnectToService(
       /*uuid=*/kMessageStreamUuid, /*callback=*/
       base::BindOnce(&MessageStreamLookupImpl::OnConnected,
@@ -217,7 +224,7 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
                      base::TimeTicks::Now(), type),
       /*error_callback=*/
       base::BindOnce(&MessageStreamLookupImpl::OnConnectError,
-                     weak_ptr_factory_.GetWeakPtr(), type));
+                     weak_ptr_factory_.GetWeakPtr(), device_address, type));
 }
 
 void MessageStreamLookupImpl::OnConnected(
@@ -238,9 +245,11 @@ void MessageStreamLookupImpl::OnConnected(
     observer.OnMessageStreamConnected(device_address, message_stream.get());
 
   message_streams_[device_address] = std::move(message_stream);
+  pending_connect_requests_.erase(device_address);
 }
 
 void MessageStreamLookupImpl::OnConnectError(
+    std::string device_address,
     const CreateMessageStreamAttemptType& type,
     const std::string& error_message) {
   // Because we need to attempt to create MessageStreams at many different
@@ -250,6 +259,7 @@ void MessageStreamLookupImpl::OnConnectError(
                << "]. Type = " << CreateMessageStreamAttemptTypeToString(type);
   RecordMessageStreamConnectToServiceResult(/*success=*/false);
   RecordMessageStreamConnectToServiceError(error_message);
+  pending_connect_requests_.erase(device_address);
 }
 
 }  // namespace quick_pair
