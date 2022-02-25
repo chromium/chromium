@@ -225,6 +225,14 @@
               Vital="yes"/>
       </Component>
 
+      <Component Id="remote_webauthn" Guid="*">
+        <File Id="remote_webauthn.exe"
+              DiskId="1"
+              KeyPath="yes"
+              Name="remote_webauthn.exe"
+              Vital="yes"/>
+      </Component>
+
       <Component Id="remote_open_url_registration" Guid="*">
         <!-- ProgID -->
         <RegistryKey Id="remote_open_url_prog_id_reg_key"
@@ -309,6 +317,14 @@
               DiskId="1"
               KeyPath="yes"
               Name="com.google.chrome.remote_assistance-firefox.json"
+              Vital="yes"/>
+      </Component>
+
+      <Component Id="remote_webauthn_manifest" Guid="*">
+        <File Id="com.google.chrome.remote_webauthn.json"
+              DiskId="1"
+              KeyPath="yes"
+              Name="com.google.chrome.remote_webauthn.json"
               Vital="yes"/>
       </Component>
 
@@ -668,6 +684,20 @@
         <CreateFolder/>
       </Component>
 
+      <Component Id="remote_webauthn_registry" Guid="*">
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\Google\chrome\NativeMessagingHosts"
+                     Action="create">
+          <RegistryKey Key="com.google.chrome.remote_webauthn"
+                       Action="create">
+            <RegistryValue
+                Type="string"
+                Value="[binaries]com.google.chrome.remote_webauthn.json"/>
+          </RegistryKey>
+        </RegistryKey>
+        <CreateFolder/>
+      </Component>
+
       <Component Id="remoting_logging_registry"
                  Guid="b640a025-18dd-49b9-b26d-b31252a12f8a">
         <RegistryKey Root="HKLM"
@@ -763,6 +793,9 @@
       <ComponentRef Id="remote_assistance_host_manifest"/>
       <ComponentRef Id="remote_assistance_host_registry"/>
       <ComponentRef Id="remote_assistance_host_uiaccess"/>
+      <ComponentRef Id="remote_webauthn"/>
+      <ComponentRef Id="remote_webauthn_manifest"/>
+      <ComponentRef Id="remote_webauthn_registry"/>
 
       <ComponentRef Id="remote_open_url"/>
       <ComponentRef Id="remote_open_url_registration"/>

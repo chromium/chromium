@@ -1697,11 +1697,8 @@ void HostProcess::StartHost() {
   // The feature is enabled for all Googlers using a supported platform.
   desktop_environment_options_.set_enable_remote_open_url(is_googler_);
 
-#if BUILDFLAG(IS_LINUX) || !defined(NDEBUG)
-  // Experimental feature. Enabled on Linux for easier testing.
-  if (is_googler_) {
-    desktop_environment_options_.set_enable_remote_webauthn(true);
-  }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  desktop_environment_options_.set_enable_remote_webauthn(is_googler_);
 #endif
 
   if (max_clipboard_size_.has_value()) {

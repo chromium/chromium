@@ -18,6 +18,7 @@ action("remoting_me2me_host_archive") {
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/it2me:remote_assistance_host_uiaccess",
     "//remoting/host/remote_open_url",
+    "//remoting/host/webauthn:remote_webauthn",
     "//remoting/host/win:remoting_core",
     "//remoting/host/win:remoting_desktop",
     "//remoting/host/win:remoting_me2me_host",
@@ -56,6 +57,7 @@ action("remoting_me2me_host_archive") {
     "$root_out_dir/remote_assistance_host_uiaccess.exe",
     "$root_out_dir/remote_open_url.exe",
     "$root_out_dir/remote_security_key.exe",
+    "$root_out_dir/remote_webauthn.exe",
     "$root_out_dir/remoting_core.dll",
     "$root_out_dir/remoting_desktop.exe",
     "$root_out_dir/remoting_host.exe",
@@ -66,6 +68,7 @@ action("remoting_me2me_host_archive") {
     "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
+    "$root_out_dir/remoting/com.google.chrome.remote_webauthn.json",
     "$root_out_dir/icudtl.dat",
   ]
 
@@ -86,6 +89,7 @@ action("remoting_me2me_host_archive") {
     "files/remote_assistance_host_uiaccess.exe",
     "files/remote_open_url.exe",
     "files/remote_security_key.exe",
+    "files/remote_webauthn.exe",
     "files/remoting_core.dll",
     "files/remoting_desktop.exe",
     "files/remoting_host.exe",
@@ -96,6 +100,7 @@ action("remoting_me2me_host_archive") {
     "files/com.google.chrome.remote_assistance-firefox.json",
     "files/com.google.chrome.remote_desktop.json",
     "files/com.google.chrome.remote_desktop-firefox.json",
+    "files/com.google.chrome.remote_webauthn.json",
     "files/icudtl.dat",
     "files/chromoting.ico",
   ]
