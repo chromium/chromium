@@ -3512,13 +3512,6 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().getRenderProcess(mNativeAwContents, AwContents.this);
     }
 
-    public String getVariationsHeader() {
-        if (isDestroyed(NO_WARN)) {
-            return "";
-        }
-        return AwContentsJni.get().getVariationsHeader(mNativeAwContents);
-    }
-
     @VisibleForTesting
     public AwDisplayCutoutController getDisplayCutoutController() {
         return mDisplayCutoutController;
@@ -4432,6 +4425,5 @@ public class AwContents implements SmartClipProvider {
         WebMessageListenerInfo[] getJsObjectsInfo(
                 long nativeAwContents, AwContents caller, Class clazz);
         void onConfigurationChanged(long nativeAwContents);
-        String getVariationsHeader(long nativeAwContents);
     }
 }

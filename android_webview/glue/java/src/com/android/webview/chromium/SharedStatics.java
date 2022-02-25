@@ -122,4 +122,8 @@ public class SharedStatics {
     public boolean isMultiProcessEnabled() {
         return AwContentsStatics.isMultiProcessEnabled();
     }
+
+    public String getVariationsHeader() {
+        return AwContentsStatics.getVariationsHeader();
+    }
 }

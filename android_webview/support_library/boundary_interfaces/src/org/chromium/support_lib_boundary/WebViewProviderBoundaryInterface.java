@@ -28,5 +28,4 @@ public interface WebViewProviderBoundaryInterface {
     /* WebViewRendererClient */ InvocationHandler getWebViewRendererClient();
     void setWebViewRendererClient(
             /* WebViewRendererClient */ InvocationHandler webViewRendererClient);
-    String getVariationsHeader();
 }

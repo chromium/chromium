@@ -135,10 +135,4 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         ? new SupportLibWebViewRendererClientAdapter(webViewRendererClient)
                         : null);
     }
-
-    @Override
-    public String getVariationsHeader() {
-        recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
-        return mSharedWebViewChromium.getVariationsHeader();
-    }
 }

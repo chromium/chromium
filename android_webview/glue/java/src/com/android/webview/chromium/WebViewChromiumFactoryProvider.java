@@ -659,6 +659,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     public boolean isMultiProcessEnabled() {
                         return sharedStatics.isMultiProcessEnabled();
                     }
+
+                    public String getVariationsHeader() {
+                        return sharedStatics.getVariationsHeader();
+                    }
                 };
             }
         }

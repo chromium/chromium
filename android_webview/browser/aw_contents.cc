@@ -418,18 +418,6 @@ ScopedJavaLocalRef<jobject> AwContents::GetRenderProcess(
   return render_process->GetJavaObject();
 }
 
-ScopedJavaLocalRef<jstring> AwContents::GetVariationsHeader(JNIEnv* env) {
-  const bool is_signed_in = false;
-  auto headers =
-      variations::VariationsIdsProvider::GetInstance()->GetClientDataHeaders(
-          is_signed_in);
-  if (!headers)
-    return ConvertUTF8ToJavaString(env, "");
-  return ConvertUTF8ToJavaString(
-      env,
-      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY));
-}
-
 void AwContents::Destroy(JNIEnv* env) {
   java_ref_.reset();
   delete this;

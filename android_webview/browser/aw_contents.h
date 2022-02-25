@@ -111,7 +111,6 @@ class AwContents : public FindHelper::Listener,
   base::android::ScopedJavaLocalRef<jobject> GetRenderProcess(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  base::android::ScopedJavaLocalRef<jstring> GetVariationsHeader(JNIEnv* env);
 
   void Destroy(JNIEnv* env);
   void DocumentHasImages(JNIEnv* env,

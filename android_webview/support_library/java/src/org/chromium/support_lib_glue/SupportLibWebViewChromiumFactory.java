@@ -284,6 +284,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             recordApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
             return mSharedStatics.isMultiProcessEnabled();
         }
+
+        @Override
+        public String getVariationsHeader() {
+            recordApiCall(ApiCall.GET_VARIATIONS_HEADER);
+            return mSharedStatics.getVariationsHeader();
+        }
     }
 
     @Override
