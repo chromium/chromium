@@ -10,8 +10,6 @@
 
 extern const base::Feature kSearchPrefetchServicePrefetching;
 
-extern const char kSearchPrefetchServiceCommandLineFlag[];
-
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 
