@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 
 namespace blink {
 

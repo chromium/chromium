@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
 
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
 

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_upload.h"
 
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"

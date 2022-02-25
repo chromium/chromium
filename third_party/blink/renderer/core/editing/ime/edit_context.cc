@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/editing/ime/text_update_event.h"
 #include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/editing/state_machines/forward_grapheme_boundary_state_machine.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
