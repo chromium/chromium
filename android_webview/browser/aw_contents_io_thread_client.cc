@@ -233,15 +233,15 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
   IoThreadClientData client_data;
   bool found = RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
                                                           &client_data);
-
-  if (!found || client_data.pending_association) {
-    return nullptr;
-  } else {
+  if (found) {
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> java_delegate =
         client_data.io_thread_client.get(env);
-    return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+    if (java_delegate) {
+      return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+    }
   }
+  return nullptr;
 }
 
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
@@ -249,15 +249,15 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
   IoThreadClientData client_data;
   bool found = RfhToIoThreadClientMap::GetInstance()->Get(frame_tree_node_id,
                                                           &client_data);
-
-  if (!found || client_data.pending_association) {
-    return nullptr;
-  } else {
+  if (found) {
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> java_delegate =
         client_data.io_thread_client.get(env);
-    return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+    if (java_delegate) {
+      return std::make_unique<AwContentsIoThreadClient>(java_delegate);
+    }
   }
+  return nullptr;
 }
 
 // static
