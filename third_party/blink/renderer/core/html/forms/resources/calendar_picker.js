@@ -2608,143 +2608,136 @@ function YearListCell(shortMonthLabels) {
   };
 }
 
-/**
- * @constructor
- * @extends ListView
- * @param {!Month} minimumMonth
- * @param {!Month} maximumMonth
- */
-function YearListView(minimumMonth, maximumMonth, config) {
-  ListView.call(this);
-  this.element.classList.add('year-list-view');
-
+class YearListView extends ListView {
   /**
-   * @type {?Month}
+   * @param {!Month} minimumMonth
+   * @param {!Month} maximumMonth
    */
-  this._selectedMonth = null;
-  /**
-   * @type {!Month}
-   * @const
-   * @protected
-   */
-  this._minimumMonth = minimumMonth;
-  /**
-   * @type {!Month}
-   * @const
-   * @protected
-   */
-  this._maximumMonth = maximumMonth;
+  constructor(minimumMonth, maximumMonth, config) {
+    super();
+    this.element.classList.add('year-list-view');
 
-  this.scrollView.minimumContentOffset =
-      (this._minimumMonth.year - 1) * YearListCell.GetHeight();
-  this.scrollView.maximumContentOffset =
-      (this._maximumMonth.year - 1) * YearListCell.GetHeight() +
-      YearListCell.GetSelectedHeight();
+    /**
+     * @type {?Month}
+     */
+    this._selectedMonth = null;
+    /**
+     * @type {!Month}
+     * @const
+     * @protected
+     */
+    this._minimumMonth = minimumMonth;
+    /**
+     * @type {!Month}
+     * @const
+     * @protected
+     */
+    this._maximumMonth = maximumMonth;
 
-  /**
-   * @type {!Object}
-   * @const
-   * @protected
-   */
-  this._runningAnimators = {};
-  /**
-   * @type {!Array}
-   * @const
-   * @protected
-   */
-  this._animatingRows = [];
-  /**
-   * @type {!boolean}
-   * @protected
-   */
-  this._ignoreMouseOutUntillNextMouseOver = false;
+    this.scrollView.minimumContentOffset =
+        (this._minimumMonth.year - 1) * YearListCell.GetHeight();
+    this.scrollView.maximumContentOffset =
+        (this._maximumMonth.year - 1) * YearListCell.GetHeight() +
+        YearListCell.GetSelectedHeight();
 
-  /**
-   * @type {!ScrubbyScrollBar}
-   * @const
-   */
-  this.scrubbyScrollBar = new ScrubbyScrollBar(this.scrollView);
-  this.scrubbyScrollBar.attachTo(this);
+    /**
+     * @type {!Object}
+     * @const
+     * @protected
+     */
+    this._runningAnimators = {};
+    /**
+     * @type {!Array}
+     * @const
+     * @protected
+     */
+    this._animatingRows = [];
+    /**
+     * @type {!boolean}
+     * @protected
+     */
+    this._ignoreMouseOutUntillNextMouseOver = false;
 
-  this.element.addEventListener('keydown', this.onKeyDown, false);
+    /**
+     * @type {!ScrubbyScrollBar}
+     * @const
+     */
+    this.scrubbyScrollBar = new ScrubbyScrollBar(this.scrollView);
+    this.scrubbyScrollBar.attachTo(this);
 
-  if (config && config.mode == 'month') {
-    this.type = 'month';
-    this._dateTypeConstructor = Month;
+    this.element.addEventListener('keydown', this.onKeyDown.bind(this));
 
-    this._setValidDateConfig(config);
+    if (config && config.mode == 'month') {
+      this.type = 'month';
+      this._dateTypeConstructor = Month;
 
-    this._hadValidValueWhenOpened = false;
-    var initialSelection = parseDateString(config.currentValue);
-    if (initialSelection) {
-      this._hadValidValueWhenOpened = this.isValid(initialSelection);
-      this._selectedMonth = this.getNearestValidRange(
-          initialSelection, /*lookForwardFirst*/ true);
+      this._setValidDateConfig(config);
+
+      this._hadValidValueWhenOpened = false;
+      var initialSelection = parseDateString(config.currentValue);
+      if (initialSelection) {
+        this._hadValidValueWhenOpened = this.isValid(initialSelection);
+        this._selectedMonth = this.getNearestValidRange(
+            initialSelection, /*lookForwardFirst*/ true);
+      } else {
+        // Ensure that the next month closest to today is selected to start with
+        // so that the user can simply submit the popup to choose it.
+        this._selectedMonth = this.getValidRangeNearestToDay(
+            this._dateTypeConstructor.createFromToday(),
+            /*lookForwardFirst*/ true);
+      }
+
+      this._initialSelectedMonth = this._selectedMonth;
     } else {
-      // Ensure that the next month closest to today is selected to start with so that
-      // the user can simply submit the popup to choose it.
-      this._selectedMonth = this.getValidRangeNearestToDay(
-          this._dateTypeConstructor.createFromToday(),
-          /*lookForwardFirst*/ true);
+      // This is a month switcher menu embedded in another calendar control.
+      // Set up our config so that getNearestValidRangeLookingForward(Backward)
+      // when called on this YearListView will navigate by month.
+      this.config = {};
+      this.config.minimumValue = minimumMonth;
+      this.config.maximumValue = maximumMonth;
+      this.config.step = Month.DefaultStep;
+      this.config.stepBase = Month.DefaultStepBase;
+      this._dateTypeConstructor = Month;
     }
-
-    this._initialSelectedMonth = this._selectedMonth;
-  } else {
-    // This is a month switcher menu embedded in another calendar control.
-    // Set up our config so that getNearestValidRangeLookingForward(Backward)
-    // when called on this YearListView will navigate by month.
-    this.config = {};
-    this.config.minimumValue = minimumMonth;
-    this.config.maximumValue = maximumMonth;
-    this.config.step = Month.DefaultStep;
-    this.config.stepBase = Month.DefaultStepBase;
-    this._dateTypeConstructor = Month;
   }
-}
 
-{
-  YearListView.prototype = Object.create(ListView.prototype);
-  Object.assign(YearListView.prototype, DateRangeManager);
-
-  YearListView._VisibleYears = 4;
-  YearListView._Height = YearListCell._SelectedHeight - 1 +
+  static _VisibleYears = 4;
+  static _Height = YearListCell._SelectedHeight - 1 +
       YearListView._VisibleYears * YearListCell._Height;
-  YearListView.GetHeight = function() {
+  static GetHeight() {
     return YearListView._Height;
   };
-  YearListView.EventTypeYearListViewDidHide = 'yearListViewDidHide';
-  YearListView.EventTypeYearListViewDidSelectMonth =
-      'yearListViewDidSelectMonth';
+  static EventTypeYearListViewDidHide = 'yearListViewDidHide';
+  static EventTypeYearListViewDidSelectMonth = 'yearListViewDidSelectMonth';
 
   /**
    * @param {!number} width Width in pixels.
    * @override
    */
-  YearListView.prototype.setWidth = function(width) {
-    ListView.prototype.setWidth.call(
-        this, width - this.scrubbyScrollBar.element.offsetWidth);
+  setWidth(width) {
+    super.setWidth(width - this.scrubbyScrollBar.element.offsetWidth);
     this.element.style.width = width + 'px';
-  };
+  }
 
   /**
    * @param {!number} height Height in pixels.
    * @override
    */
-  YearListView.prototype.setHeight = function(height) {
-    ListView.prototype.setHeight.call(this, height);
+  setHeight(height) {
+    super.setHeight(height);
     this.scrubbyScrollBar.setHeight(height);
-  };
+  }
 
   /**
    * @enum {number}
    */
-  YearListView.RowAnimationDirection = {Opening: 0, Closing: 1};
+  static RowAnimationDirection = {Opening: 0, Closing: 1};
 
   /**
    * @param {!number} row
    * @param {!YearListView.RowAnimationDirection} direction
    */
-  YearListView.prototype._animateRow = function(row, direction) {
+  _animateRow(row, direction) {
     var fromValue = direction === YearListView.RowAnimationDirection.Closing ?
         YearListCell.GetSelectedHeight() :
         YearListCell.GetHeight();
@@ -2755,7 +2748,7 @@ function YearListView(minimumMonth, maximumMonth, config) {
     }
     var cell = this.cellAtRow(row);
     var animator = new TransitionAnimator();
-    animator.step = this.onCellHeightAnimatorStep;
+    animator.step = this.onCellHeightAnimatorStep.bind(this);
     animator.setFrom(fromValue);
     animator.setTo(
         direction === YearListView.RowAnimationDirection.Opening ?
@@ -2765,38 +2758,39 @@ function YearListView(minimumMonth, maximumMonth, config) {
     animator.duration = 300;
     animator.row = row;
     animator.on(
-        Animator.EventTypeDidAnimationStop, this.onCellHeightAnimatorDidStop);
+        Animator.EventTypeDidAnimationStop,
+        this.onCellHeightAnimatorDidStop.bind(this));
     this._runningAnimators[row] = animator;
     this._animatingRows.push(row);
     this._animatingRows.sort();
     animator.start();
-  };
+  }
 
   /**
    * @param {?Animator} animator
    */
-  YearListView.prototype.onCellHeightAnimatorDidStop = function(animator) {
+  onCellHeightAnimatorDidStop(animator) {
     delete this._runningAnimators[animator.row];
     var index = this._animatingRows.indexOf(animator.row);
     this._animatingRows.splice(index, 1);
-  };
+  }
 
   /**
    * @param {!Animator} animator
    */
-  YearListView.prototype.onCellHeightAnimatorStep = function(animator) {
+  onCellHeightAnimatorStep(animator) {
     var cell = this.cellAtRow(animator.row);
     if (cell)
       cell.setHeight(animator.currentValue);
     this.updateCells();
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  YearListView.prototype.onClick = function(event) {
+  onClick(event) {
     var oldSelectedRow = this.selectedRow;
-    ListView.prototype.onClick.call(this, event);
+    super.onClick(event);
     var year = this.selectedRow + 1;
     if (this.selectedRow !== oldSelectedRow) {
       // Always start with first month when changing the year.
@@ -2813,14 +2807,14 @@ function YearListView(minimumMonth, maximumMonth, config) {
           YearListView.EventTypeYearListViewDidSelectMonth, this,
           new Month(year, month));
     }
-  };
+  }
 
   /**
    * @param {!number} scrollOffset
    * @return {!number}
    * @override
    */
-  YearListView.prototype.rowAtScrollOffset = function(scrollOffset) {
+  rowAtScrollOffset(scrollOffset) {
     var remainingOffset = scrollOffset;
     var lastAnimatingRow = 0;
     var rowsWithIrregularHeight = this._animatingRows.slice();
@@ -2846,14 +2840,14 @@ function YearListView(minimumMonth, maximumMonth, config) {
     }
     return lastAnimatingRow +
         Math.floor(remainingOffset / YearListCell.GetHeight());
-  };
+  }
 
   /**
    * @param {!number} row
    * @return {!number}
    * @override
    */
-  YearListView.prototype.scrollOffsetForRow = function(row) {
+  scrollOffsetForRow(row) {
     var scrollOffset = row * YearListCell.GetHeight();
     for (var i = 0; i < this._animatingRows.length; ++i) {
       var animatingRow = this._animatingRows[i];
@@ -2868,14 +2862,14 @@ function YearListView(minimumMonth, maximumMonth, config) {
           YearListCell.GetSelectedHeight() - YearListCell.GetHeight();
     }
     return scrollOffset;
-  };
+  }
 
   /**
    * @param {!number} row
    * @return {!YearListCell}
    * @override
    */
-  YearListView.prototype.prepareNewCell = function(row) {
+  prepareNewCell(row) {
     var cell = YearListCell._recycleBin.pop() ||
         new YearListCell(global.params.shortMonthLabels);
     cell.reset(row);
@@ -2915,12 +2909,12 @@ function YearListView(minimumMonth, maximumMonth, config) {
     else
       cell.setHeight(YearListCell.GetHeight());
     return cell;
-  };
+  }
 
   /**
    * @override
    */
-  YearListView.prototype.updateCells = function() {
+  updateCells() {
     var firstVisibleRow = this.firstVisibleRow();
     var lastVisibleRow = this.lastVisibleRow();
     console.assert(firstVisibleRow <= lastVisibleRow);
@@ -2938,12 +2932,12 @@ function YearListView(minimumMonth, maximumMonth, config) {
         this.addCellIfNecessary(i);
     }
     this.setNeedsUpdateCells(false);
-  };
+  }
 
   /**
    * @override
    */
-  YearListView.prototype.deselect = function() {
+  deselect() {
     if (this.selectedRow === ListView.NoSelection)
       return;
     var selectedCell = this._cells[this.selectedRow];
@@ -2953,9 +2947,9 @@ function YearListView(minimumMonth, maximumMonth, config) {
         this.selectedRow, YearListView.RowAnimationDirection.Closing);
     this.selectedRow = ListView.NoSelection;
     this.setNeedsUpdateCells(true);
-  };
+  }
 
-  YearListView.prototype.deselectWithoutAnimating = function() {
+  deselectWithoutAnimating() {
     if (this.selectedRow === ListView.NoSelection)
       return;
     var selectedCell = this._cells[this.selectedRow];
@@ -2965,13 +2959,13 @@ function YearListView(minimumMonth, maximumMonth, config) {
     }
     this.selectedRow = ListView.NoSelection;
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!number} row
    * @override
    */
-  YearListView.prototype.select = function(row) {
+  select(row) {
     if (this.selectedRow === row)
       return;
     this.deselect();
@@ -2986,12 +2980,12 @@ function YearListView(minimumMonth, maximumMonth, config) {
         selectedCell.setSelected(true);
     }
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!number} row
    */
-  YearListView.prototype.selectWithoutAnimating = function(row) {
+  selectWithoutAnimating(row) {
     if (this.selectedRow === row)
       return;
     this.deselectWithoutAnimating();
@@ -3006,13 +3000,13 @@ function YearListView(minimumMonth, maximumMonth, config) {
       }
     }
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!Month} month
    * @return {?HTMLDivElement}
    */
-  YearListView.prototype.buttonForMonth = function(month) {
+  buttonForMonth(month) {
     if (!month)
       return null;
     var row = month.year - 1;
@@ -3020,9 +3014,9 @@ function YearListView(minimumMonth, maximumMonth, config) {
     if (!cell)
       return null;
     return cell.monthButtons[month.month];
-  };
+  }
 
-  YearListView.prototype.dehighlightMonth = function() {
+  dehighlightMonth() {
     if (!this.highlightedMonth)
       return;
     var monthButton = this.buttonForMonth(this.highlightedMonth);
@@ -3031,12 +3025,12 @@ function YearListView(minimumMonth, maximumMonth, config) {
     }
     this.highlightedMonth = null;
     this.element.removeAttribute('aria-activedescendant');
-  };
+  }
 
   /**
    * @param {!Month} month
    */
-  YearListView.prototype.highlightMonth = function(month) {
+  highlightMonth(month) {
     if (this.highlightedMonth && this.highlightedMonth.equals(month))
       return;
     this.dehighlightMonth();
@@ -3048,9 +3042,9 @@ function YearListView(minimumMonth, maximumMonth, config) {
       monthButton.classList.add(YearListCell.ClassNameHighlighted);
       this.element.setAttribute('aria-activedescendant', monthButton.id);
     }
-  };
+  }
 
-  YearListView.prototype.setSelectedMonth = function(month) {
+  setSelectedMonth(month) {
     var oldMonthButton = this.buttonForMonth(this._selectedMonth);
     if (oldMonthButton) {
       oldMonthButton.classList.remove(YearListCell.ClassNameSelected);
@@ -3065,52 +3059,52 @@ function YearListView(minimumMonth, maximumMonth, config) {
       this.element.setAttribute('aria-activedescendant', newMonthButton.id);
       newMonthButton.setAttribute('aria-selected', true);
     }
-  };
+  }
 
-  YearListView.prototype.setSelectedMonthAndUpdateView = function(month) {
+  setSelectedMonthAndUpdateView(month) {
     this.setSelectedMonth(month);
 
     this.select(this._selectedMonth.year - 1);
 
     this.scrollView.scrollTo(this.selectedRow * YearListCell.GetHeight(), true);
-  };
+  }
 
-  YearListView.prototype.showSelectedMonth = function() {
+  showSelectedMonth() {
     var monthButton = this.buttonForMonth(this._selectedMonth);
     if (monthButton) {
       monthButton.classList.add(YearListCell.ClassNameSelected);
     }
-  };
+  }
 
   /**
    * @param {!Month} month
    */
-  YearListView.prototype.show = function(month) {
+  show(month) {
     this._ignoreMouseOutUntillNextMouseOver = true;
 
     this.scrollToRow(month.year - 1, false);
     this.selectWithoutAnimating(month.year - 1);
     this.showSelectedMonth();
-  };
+  }
 
-  YearListView.prototype.hide = function() {
+  hide() {
     this.dispatchEvent(YearListView.EventTypeYearListViewDidHide, this);
-  };
+  }
 
   /**
    * @param {!Month} month
    */
-  YearListView.prototype._moveHighlightTo = function(month) {
+  _moveHighlightTo(month) {
     this.highlightMonth(month);
     this.select(this.highlightedMonth.year - 1);
     this.scrollView.scrollTo(this.selectedRow * YearListCell.GetHeight(), true);
     return true;
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  YearListView.prototype.onKeyDown = function(event) {
+  onKeyDown(event) {
     var key = event.key;
     var eventHandled = false;
     if (this._selectedMonth) {
@@ -3198,8 +3192,10 @@ function YearListView(minimumMonth, maximumMonth, config) {
       event.stopPropagation();
       event.preventDefault();
     }
-  };
+  }
 }
+
+Object.assign(YearListView.prototype, DateRangeManager);
 
 /**
  * @constructor
