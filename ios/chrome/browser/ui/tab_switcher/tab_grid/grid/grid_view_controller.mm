@@ -339,7 +339,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (mode == TabGridModeNormal) {
     [self.selectedEditingItemIDs removeAllObjects];
     [self.selectedSharableEditingItemIDs removeAllObjects];
-    self.searchText = nil;
+    if (IsTabsSearchEnabled())
+      self.searchText = nil;
     // After transition from the selection mode to the normal mode, the
     // selection border doesn't show around the selection item. The collection
     // view needs to be updated with the selected item again for it to appear
@@ -1556,7 +1557,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 #pragma mark Suggested Actions Section
 
 - (void)updateSuggestedActionsSection {
-  DCHECK(IsTabsSearchEnabled());
   if (!self.suggestedActionsDelegate)
     return;
   // In search mode if there is already a search query, and the suggested
