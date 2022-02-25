@@ -127,9 +127,11 @@ class PasswordStoreAndroidBackendBridgeImpl {
             api_error_code = ((ApiException) exception).getStatusCode();
 
             if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
-                    && exception instanceof ResolvableApiException) {
+                    && exception instanceof ResolvableApiException
+                    && api_error_code != ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE) {
                 // Backend error is user-recoverable, launch pending intent to allow the user to
-                // resolve it.
+                // resolve it. Resolution for the authentication errors is not launched as
+                // user is requested to reauthenticate by Google services and Sync in Chrome.
                 ResolvableApiException resolvableApiException = (ResolvableApiException) exception;
                 PendingIntent pendingIntent = resolvableApiException.getResolution();
                 try {
