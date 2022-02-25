@@ -3111,13 +3111,6 @@ source_set("browser") {
       "profiling_utils.cc",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "accessibility/browser_accessibility_state_impl_lacros.cc",
-      "accessibility/browser_accessibility_state_impl_lacros.h",
-    ]
-  }
 }
 
 if (is_android) {

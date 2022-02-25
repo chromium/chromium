@@ -10,10 +10,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,9 +26,7 @@ namespace crosapi {
 
 // The ash-chrome implementation of the Prefs crosapi interface.
 // This class must only be used from the main thread.
-class PrefsAsh : public mojom::Prefs,
-                 public ProfileManagerObserver,
-                 public ProfileObserver {
+class PrefsAsh : public mojom::Prefs, public ProfileManagerObserver {
  public:
   PrefsAsh(ProfileManager* profile_manager, PrefService* local_state);
   PrefsAsh(const PrefsAsh&) = delete;
@@ -51,9 +46,6 @@ class PrefsAsh : public mojom::Prefs,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
-
-  // ProfileObserver:
-  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // Used to inject |profile| as a primary profile for testing.
   void OnPrimaryProfileReadyForTesting(Profile* profile) {
@@ -81,18 +73,18 @@ class PrefsAsh : public mojom::Prefs,
   ProfileManager* profile_manager_;
   // In production, owned by g_browser_process, which outlives this object.
   PrefService* const local_state_;
+  // Owned by the primary profile. This will be set after the profile is
+  // initialized.
+  PrefService* profile_prefs_ = nullptr;
 
   PrefChangeRegistrar local_state_registrar_;
-  std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
+  PrefChangeRegistrar profile_prefs_registrar_;
 
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Prefs> receivers_;
 
   // This class supports any number of observers.
   std::map<mojom::PrefPath, mojo::RemoteSet<mojom::PrefObserver>> observers_;
-
-  // Observe profile destruction to reset prefs observation.
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace crosapi

@@ -5187,6 +5187,8 @@ static_library("browser") {
       "lacros/chrome_browser_main_extra_parts_lacros.h",
       "lacros/client_cert_store_lacros.cc",
       "lacros/client_cert_store_lacros.h",
+      "lacros/crosapi_pref_observer.cc",
+      "lacros/crosapi_pref_observer.h",
       "lacros/device_settings_lacros.cc",
       "lacros/device_settings_lacros.h",
       "lacros/download_controller_client_lacros.cc",

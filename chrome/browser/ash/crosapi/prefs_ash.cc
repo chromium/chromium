@@ -49,7 +49,7 @@ PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
 PrefsAsh::~PrefsAsh() {
   // Remove this observer, if the Primary logged in profile is not yet created.
   // On actual shutdown, the ProfileManager will destruct before CrosapiManager.
-  if (ProfileManagerObserver::IsInObserverList() && profile_manager_) {
+  if (IsInObserverList() && profile_manager_) {
     profile_manager_->RemoveObserver(this);
   }
 }
@@ -89,7 +89,6 @@ void PrefsAsh::AddObserver(mojom::PrefPath path,
   mojo::Remote<mojom::PrefObserver> remote(std::move(observer));
   remote->OnPrefChanged(value->Clone());
 
-  DCHECK(state->registrar);
   if (!state->registrar->IsObserved(state->path)) {
     // Unretained() is safe since PrefChangeRegistrar and RemoteSet within
     // observers_ are owned by this and wont invoke if PrefsAsh is destroyed.
@@ -119,12 +118,11 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       return State{local_state_, &local_state_registrar_,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
-      if (!profile_prefs_registrar_) {
+      if (!profile_prefs_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
       }
-      return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(),
+      return State{profile_prefs_, &profile_prefs_registrar_,
                    ash::prefs::kAccessibilitySpokenFeedbackEnabled};
     case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
       return State{local_state_, &local_state_registrar_,
@@ -143,11 +141,6 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
 
 void PrefsAsh::OnProfileManagerDestroying() {
   profile_manager_ = nullptr;
-}
-
-void PrefsAsh::OnProfileWillBeDestroyed(Profile* profile) {
-  profile_observation_.Reset();
-  profile_prefs_registrar_.reset();
 }
 
 void PrefsAsh::OnPrefChanged(mojom::PrefPath path) {
@@ -173,9 +166,8 @@ void PrefsAsh::OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id) {
 
 void PrefsAsh::OnPrimaryProfileReady(Profile* profile) {
   profile_manager_->RemoveObserver(this);
-
-  profile_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  profile_prefs_registrar_->Init(profile->GetPrefs());
+  profile_prefs_ = profile->GetPrefs();
+  profile_prefs_registrar_.Init(profile_prefs_);
 }
 
 }  // namespace crosapi
