@@ -3,14 +3,11 @@ ${copyrightHeader}
 # This is generated, do not edit. Update BuildConfigGenerator.groovy and
 # 3ppFetch.template instead.
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
 import re
-
-from six.moves import urllib
+import urllib.request
 
 _REPO_URL = '${dependency.repoUrl}'
 _GROUP_NAME = '${dependency.group.replace('.', '/')}'

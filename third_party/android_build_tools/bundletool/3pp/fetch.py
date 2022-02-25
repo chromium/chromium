@@ -1,15 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
-
-from six.moves import urllib
+import urllib.request
 
 _RELEASES_URL = 'https://api.github.com/repos/google/bundletool/releases/latest'
 _RELEASE_URL = 'https://api.github.com/repos/google/bundletool/releases/tags/{}'

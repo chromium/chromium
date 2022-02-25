@@ -2,14 +2,14 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import argparse
 import functools
 import json
 import math
 import os
 import sys
-
-from six.moves import urllib
+import urllib.request
 
 # MIN_VERSION is the earliest working version of the updater for self-update
 # testing. If a backwards-incompatible change to the updater is made, it may be

@@ -17,8 +17,6 @@ This script is normally called by 3pp framework from chromium_3pp recipe module.
 
 """
 
-from __future__ import print_function
-
 import argparse
 import hashlib
 import os

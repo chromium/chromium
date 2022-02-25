@@ -6,14 +6,11 @@
 # This is generated, do not edit. Update BuildConfigGenerator.groovy and
 # 3ppFetch.template instead.
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
 import re
-
-from six.moves import urllib
+import urllib.request
 
 _REPO_URL = 'https://dl.google.com/dl/android/maven2'
 _GROUP_NAME = 'com/google/android/play'

@@ -1,16 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import datetime
 import json
 import os
-
-from six.moves import urllib
+import urllib.request
 
 _COMMITS_URL = 'https://api.github.com/repos/google/turbine/commits?per_page=1&until={}'
 _ARCHIVE_URL = 'https://github.com/google/turbine/archive/{}.tar.gz'

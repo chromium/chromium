@@ -1,16 +1,13 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import argparse
 import json
 import os
 import re
-
-from six.moves import urllib
+import urllib.request
 
 _FILE_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/{0}/aapt2-{0}-linux.jar'
 _GROUP_INDEX_URL = 'https://dl.google.com/dl/android/maven2/com/android/tools/build/group-index.xml'

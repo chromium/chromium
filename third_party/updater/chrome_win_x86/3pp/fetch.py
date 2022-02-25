@@ -2,13 +2,13 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import argparse
 import datetime
 import json
 import os
 import sys
-
-from six.moves import urllib
+import urllib.request
 
 # TODO(crbug.com/1268555): This is compared lexically. Remove it before M1000.
 MIN_VERSION = '100.0.4876.0'
