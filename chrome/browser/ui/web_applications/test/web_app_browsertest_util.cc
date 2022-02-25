@@ -5,15 +5,18 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 
 #include <memory>
+#include <ostream>
 #include <string>
+#include <utility>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/one_shot_event.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,28 +31,31 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
@@ -62,6 +68,16 @@
 #include <shellapi.h>
 #include "ui/gfx/icon_util.h"
 #endif
+
+class GURL;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 using ui_test_utils::BrowserChangeObserver;
 
@@ -221,7 +237,7 @@ ExternalInstallOptions CreateInstallOptions(const GURL& url) {
   return install_options;
 }
 
-webapps::InstallResultCode ExternallyManagedAppManagerInstall(
+ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(
     Profile* profile,
     ExternalInstallOptions install_options) {
   DCHECK(profile);
@@ -229,19 +245,19 @@ webapps::InstallResultCode ExternallyManagedAppManagerInstall(
   DCHECK(provider);
   test::WaitUntilReady(provider);
   base::RunLoop run_loop;
-  webapps::InstallResultCode result_code;
+  ExternallyManagedAppManager::InstallResult result;
 
   provider->externally_managed_app_manager().Install(
       std::move(install_options),
       base::BindLambdaForTesting(
-          [&result_code, &run_loop](
+          [&result, &run_loop](
               const GURL& provided_url,
-              ExternallyManagedAppManager::InstallResult result) {
-            result_code = result.code;
+              ExternallyManagedAppManager::InstallResult install_result) {
+            result = install_result;
             run_loop.Quit();
           }));
   run_loop.Run();
-  return result_code;
+  return result;
 }
 
 void NavigateToURLAndWait(Browser* browser,
