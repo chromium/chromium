@@ -485,13 +485,15 @@ if (is_win) {
       "//chrome/common:version_header",
     ]
 
+    ldflags = []
+
     if (enable_stripping) {
       # At link time, preserve the global symbols specified in the .exports
       # file. All other global symbols will be marked as private. The default
       # //build/config/mac:strip_all config will then remove the remaining
       # local and debug symbols.
-      ldflags = [ "-Wl,-exported_symbols_list," +
-                  rebase_path("app/app.exports", root_build_dir) ]
+      ldflags += [ "-Wl,-exported_symbols_list," +
+                   rebase_path("app/app.exports", root_build_dir) ]
     }
 
     if (is_component_build) {
@@ -499,7 +501,7 @@ if (is_win) {
       # executable because dlopen() and loading all the dependent dylibs
       # is time-consuming, see https://crbug.com/1197495.
       deps += [ ":chrome_framework+link" ]
-      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
+      ldflags += [ "-Wl,-rpath,@executable_path/../Frameworks" ]
 
       # The Framework is packaged inside the .app bundle. But when using the
       # component build, all the dependent shared libraries of :chrome_dll are
@@ -512,6 +514,70 @@ if (is_win) {
 
     if (enable_chromium_updater) {
       deps += [ ":chromium_updater_privileged_helper" ]
+    }
+
+    if (is_chrome_branded && is_official_build && current_cpu == "x64") {
+      # This is for https://crbug.com/1300598, and more generally,
+      # https://crbug.com/1297588 (and all of the associated bugs). It's
+      # horrible!
+      #
+      # When the main executable is updated on disk while the application is
+      # running, and the offset of the Mach-O image at the main executable's
+      # path changes from the offset that was determined when the executable was
+      # loaded, SecCode ceases to be able to work with the executable. This may
+      # be triggered when the product is updated on disk but the application has
+      # not yet relaunched. This affects SecCodeCopySelf and
+      # SecCodeCopyGuestWithAttributes. Bugs are evident even when validation
+      # (SecCodeCheckValidity) is not attempted.
+      #
+      # Practically, this is only a concern for fat (universal) files, because
+      # the offset of a Mach-O image in a thin (single-architecture) file is
+      # always 0. The branded product always ships a fat executable, and because
+      # some uses of SecCode are in OS code beyond Chrome's control, an effort
+      # is made to freeze the geometry of the branded (is_chrome_branded)
+      # for-public-release (is_official_build) main executable.
+      #
+      # The fat file is produced by installer/mac/universalizer.py. The x86_64
+      # slice always precedes the arm64 slice: lipo, as used by
+      # universalizer.py, always places the arm64 slice last. See Xcode 12.0
+      # https://github.com/apple-oss-distributions/cctools/blob/cctools-973.0.1/misc/lipo.c#L2672
+      # cmp_qsort, used by create_fat at #L962. universalizer.py ensures that
+      # the first slice in the file is located at a constant offset (16kB since
+      # 98.0.4758.80), but if the first slice's size changes, it can affect the
+      # offset of the second slice, the arm64 one, triggering SecCode-related
+      # bugs for arm64 users across updates.
+      #
+      # As quite a hack of a workaround, the offset of the arm64 slice within
+      # the fat main executable is fixed at a constant value by introducing
+      # padding to the x86_64 slice that precedes it. The arm64 slice needs to
+      # remain at offset 304kB (since 98.0.4758.80), so enough padding is added
+      # to the x86_64 slice to ensure that the arm64 slice lands where it needs
+      # to be when universalized. This padding needs to be added to the thin
+      # form of the x86_64 image before being fed to universalizer.py.
+      #
+      # To make things extra tricky, the final size of the x86_64 image is not
+      # known when it is linked, because code signing will contribute more data
+      # to the file. Typically, official code signing adds a non-constant
+      # 22-23kB. The non-constancy makes a precise computation of the required
+      # padding at this stage of the build impossible. Luckily, the size of the
+      # x86_64 image doesn't need to be so precise. The arm64 slice that follows
+      # it in the fat file will be 16kB-aligned, so it's enough to ensure that
+      # the x86_64 slice ends at an offset in the range (288kB, 304kB], or,
+      # since the x86_64 slice itself begins at offset 16kB, its total size once
+      # signed must be in the range (272kB, 288kB]. Targeting size 280kB, right
+      # in the middle of that range, and assuming an expected 23200-byte
+      # contribution from code signing, the unsigned x86_64 image should be
+      # padded to 263520 bytes. Code signing may then add any amount in the
+      # range (15008 bytes, 31392 bytes] and the result, when universalized,
+      # will have its arm64 slice at the required 304kB offset.
+      #
+      # -Wcrl,pad_linkedit runs //build/toolchain/apple/pad_linkedit.py, and can
+      # only increase the size of the image. It will raise an error on an
+      # attempt to decrease the size. Fortunately, the x86_64 main executable in
+      # this build configuration is currently (at the time of this writing)
+      # smaller than this size, and is expected to shrink even further in the
+      # future.
+      ldflags += [ "-Wcrl,pad_linkedit,263520" ]
     }
   }
 
