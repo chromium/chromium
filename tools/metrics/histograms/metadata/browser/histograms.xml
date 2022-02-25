@@ -335,7 +335,8 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Replaced by Browser.Responsiveness.JankyIntervalsPerThirtySeconds3
   </obsolete>
-  <owner>erikchen@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
     This metric is emitted every 30 seconds after main message loop start, when
@@ -386,7 +387,8 @@ chromium-metrics-reviews@google.com.
     units="janks" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
-  <owner>erikchen@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is emitted every 30 seconds [when there is user activity]. Each
