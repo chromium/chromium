@@ -14,6 +14,7 @@ namespace {
 constexpr char kPendingScreencastName[] = "name";
 constexpr char kPendingScreencastUploadProgress[] = "uploadProgress";
 constexpr char kPendingScreencastCreatedTime[] = "createdTime";
+constexpr char kPendingScreencastUploadFailed[] = "uploadFailed";
 constexpr int64_t kPendingScreencastDiffThresholdInBytes = 600 * 1024;
 
 ProjectorAppClient* g_instance = nullptr;
@@ -31,6 +32,9 @@ base::Value PendingScreencast::ToValue() const {
              base::Value(created_time.is_null()
                              ? 0
                              : created_time.ToJsTimeIgnoringNull()));
+
+  // TODO(b/200179137): Calculate upload status.
+  val.SetKey(kPendingScreencastUploadFailed, base::Value(false));
   return val;
 }
 

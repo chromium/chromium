@@ -378,6 +378,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
   const auto& screencast = list_view[0];
   EXPECT_EQ(*(screencast.FindStringPath("name")), name);
   EXPECT_EQ(*(screencast.FindDoublePath("createdTime")), 0);
+  EXPECT_EQ(*(screencast.FindBoolPath("uploadFailed")), false);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {

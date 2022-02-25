@@ -173,6 +173,12 @@ projectorApp.PendingScreencast.prototype.uploadProgress;
  */
 projectorApp.PendingScreencast.prototype.createdTime;
 
+/**
+ * Whether this screencast is failed to upload.
+ * @type {boolean}
+ */
+projectorApp.PendingScreencast.prototype.uploadFailed;
+
 // TODO(b/205334821): We may want to provide duration field to
 // PendingScreencast.
 
