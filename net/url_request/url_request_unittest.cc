@@ -9978,9 +9978,8 @@ TEST_F(HTTPSRequestTest, HSTSCrossOriginAddHeaders) {
 
   GURL hsts_http_url(base::StringPrintf("http://example.net:%d/somehstssite",
                                         test_server.host_port_pair().port()));
-  url::Replacements<char> replacements;
-  const char kNewScheme[] = "https";
-  replacements.SetScheme(kNewScheme, url::Component(0, strlen(kNewScheme)));
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr("https");
   GURL hsts_https_url = hsts_http_url.ReplaceComponents(replacements);
 
   TestDelegate d;
