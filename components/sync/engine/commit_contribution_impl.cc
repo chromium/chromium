@@ -237,12 +237,9 @@ void CommitContributionImpl::PopulateCommitProto(
           commit_proto->set_folder(true);
           break;
       }
-      // position_in_parent field is set only for legacy reasons.  See comments
-      // in sync.proto for more information.
       const UniquePosition unique_position = UniquePosition::FromProto(
           entity_data.specifics.bookmark().unique_position());
       DCHECK(unique_position.IsValid());
-      commit_proto->set_position_in_parent(unique_position.ToInt64());
       *commit_proto->mutable_unique_position() = unique_position.ToProto();
       // parent_id field is set only for legacy clients only, before M99.
       if (!entity_data.legacy_parent_id.empty()) {

@@ -567,16 +567,6 @@ TEST_F(PositionFromIntTest, IsValid) {
   }
 }
 
-TEST_F(PositionFromIntTest, RoundTripConversion) {
-  for (size_t i = 0; i < kNumTestValues; ++i) {
-    const int64_t expected_value = kTestValues[i];
-    const UniquePosition pos =
-        UniquePosition::FromInt64(kTestValues[i], NextSuffix());
-    const int64_t value = pos.ToInt64();
-    EXPECT_EQ(expected_value, value) << "i = " << i;
-  }
-}
-
 template <typename T, typename LessThan = std::less<T>>
 class IndexedLessThan {
  public:

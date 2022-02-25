@@ -103,7 +103,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   EXPECT_EQ(kValue, entity.specifics().preference().value());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
@@ -146,7 +145,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   EXPECT_FALSE(entity.folder());
   EXPECT_FALSE(entity.parent_id_string().empty());
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_NE(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
@@ -189,7 +187,6 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   EXPECT_TRUE(entity.folder());
   EXPECT_FALSE(entity.parent_id_string().empty());
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_NE(0, entity.position_in_parent());
 }
 
 // Verifies how PASSWORDS protos are committed on the wire, making sure the data
@@ -251,7 +248,6 @@ TEST(CommitContributionImplTest,
   EXPECT_FALSE(entity.specifics().password().encrypted().blob().empty());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 // Same as above but uses CUSTOM_PASSPHRASE. In this case, field
@@ -308,7 +304,6 @@ TEST(CommitContributionImplTest,
   EXPECT_FALSE(entity.specifics().password().has_unencrypted_metadata());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
-  EXPECT_EQ(0, entity.position_in_parent());
 }
 
 TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {

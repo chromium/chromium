@@ -48,7 +48,6 @@ MockConnectionManager::MockConnectionManager()
       throttling_(false),
       partial_failure_(false),
       fail_non_periodic_get_updates_(false),
-      next_position_in_parent_(2),
       num_get_updates_requests_(0) {
   SetNewTimestamp(0);
   SetAccessToken(kValidAccessToken);
@@ -225,11 +224,9 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
     int64_t version,
     int64_t sync_ts,
     bool is_dir,
-    int64_t position,
     const sync_pb::EntitySpecifics& specifics) {
   sync_pb::SyncEntity* ent =
       AddUpdateMeta(id, parent_id, name, version, sync_ts);
-  ent->set_position_in_parent(position);
   ent->mutable_specifics()->CopyFrom(specifics);
   ent->set_folder(is_dir);
   return ent;
@@ -242,12 +239,11 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
     int64_t version,
     int64_t sync_ts,
     bool is_dir,
-    int64_t position,
     const sync_pb::EntitySpecifics& specifics,
     const string& originator_cache_guid,
     const string& originator_client_item_id) {
-  sync_pb::SyncEntity* ent = AddUpdateSpecifics(
-      id, parent_id, name, version, sync_ts, is_dir, position, specifics);
+  sync_pb::SyncEntity* ent = AddUpdateSpecifics(id, parent_id, name, version,
+                                                sync_ts, is_dir, specifics);
   ent->set_originator_cache_guid(originator_cache_guid);
   ent->set_originator_client_item_id(originator_client_item_id);
   return ent;
@@ -267,7 +263,6 @@ sync_pb::SyncEntity* MockConnectionManager::SetNigori(
   ent->set_version(version);
   ent->set_mtime(sync_ts);
   ent->set_ctime(1);
-  ent->set_position_in_parent(0);
   ent->set_folder(false);
   ent->mutable_specifics()->CopyFrom(specifics);
   return ent;
@@ -318,7 +313,6 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateMeta(
   ent->set_version(version);
   ent->set_mtime(sync_ts);
   ent->set_ctime(1);
-  ent->set_position_in_parent(GeneratePositionInParent());
 
   // This isn't perfect, but it works well enough.  This is an update, which
   // means the ID is a server ID, which means it never changes.  By making

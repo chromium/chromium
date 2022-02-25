@@ -94,7 +94,6 @@ class MockConnectionManager : public ServerConnectionManager {
       int64_t version,
       int64_t sync_ts,
       bool is_dir,
-      int64_t position,
       const sync_pb::EntitySpecifics& specifics);
   sync_pb::SyncEntity* AddUpdateSpecifics(
       const std::string& id,
@@ -103,7 +102,6 @@ class MockConnectionManager : public ServerConnectionManager {
       int64_t version,
       int64_t sync_ts,
       bool is_dir,
-      int64_t position,
       const sync_pb::EntitySpecifics& specifics,
       const std::string& originator_cache_guid,
       const std::string& originator_client_item_id);
@@ -273,11 +271,6 @@ class MockConnectionManager : public ServerConnectionManager {
   // a TRANSIENT_ERROR response.
   bool ShouldTransientErrorThisId(const std::string& id);
 
-  // Generate a numeric position_in_parent value.  We use a global counter
-  // that only decreases; this simulates new objects always being added to the
-  // front of the ordering.
-  int64_t GeneratePositionInParent() { return next_position_in_parent_--; }
-
   // Get a mutable update response which will eventually be returned to the
   // client.
   sync_pb::GetUpdatesResponse* GetUpdateResponse();
@@ -350,9 +343,6 @@ class MockConnectionManager : public ServerConnectionManager {
 
   std::unique_ptr<sync_pb::ClientCommand> gu_client_command_;
   std::unique_ptr<sync_pb::ClientCommand> commit_client_command_;
-
-  // The next value to use for the position_in_parent property.
-  int64_t next_position_in_parent_;
 
   ModelTypeSet expected_filter_;
 

@@ -304,13 +304,13 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
   const sync_pb::EntitySpecifics pref = MakeSpecifics(PREFERENCES);
 
   // Normal sync, all the data types should get synced.
-  mock_server_->AddUpdateSpecifics("1", "0", "A", 10, 10, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "A", 10, 10, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "B", 10, 10, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "B", 10, 10, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "C", 10, 10, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "C", 10, 10, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "D", 10, 10, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "D", 10, 10, false, pref);
 
   EXPECT_TRUE(SyncShareNudge());
   // Initial state. Everything is normal.
@@ -325,13 +325,13 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
   mock_server_->set_throttling(true);
   mock_server_->SetPartialFailureTypes(throttled_types);
 
-  mock_server_->AddUpdateSpecifics("1", "0", "E", 20, 20, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "E", 20, 20, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "F", 20, 20, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "F", 20, 20, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "G", 20, 20, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "G", 20, 20, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "H", 20, 20, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "H", 20, 20, false, pref);
   EXPECT_TRUE(SyncShareNudge());
 
   // PREFERENCES continues to work normally (not throttled).
@@ -342,13 +342,13 @@ TEST_F(SyncerTest, GetUpdatesPartialThrottled) {
   // Unthrottled BOOKMARKS, then BOOKMARKS should get synced now.
   mock_server_->set_throttling(false);
 
-  mock_server_->AddUpdateSpecifics("1", "0", "E", 30, 30, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "E", 30, 30, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "F", 30, 30, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "F", 30, 30, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "G", 30, 30, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "G", 30, 30, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "H", 30, 30, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "H", 30, 30, false, pref);
   EXPECT_TRUE(SyncShareNudge());
   // BOOKMARKS unthrottled.
   EXPECT_EQ(2U, GetProcessor(BOOKMARKS)->GetNumUpdateResponses());
@@ -359,13 +359,13 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
   const sync_pb::EntitySpecifics pref = MakeSpecifics(PREFERENCES);
 
   // Normal sync, all the data types should get synced.
-  mock_server_->AddUpdateSpecifics("1", "0", "A", 10, 10, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "A", 10, 10, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "B", 10, 10, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "B", 10, 10, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "C", 10, 10, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "C", 10, 10, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "D", 10, 10, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "D", 10, 10, false, pref);
 
   EXPECT_TRUE(SyncShareNudge());
   // Initial state. Everything is normal.
@@ -380,13 +380,13 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
   mock_server_->set_partial_failure(true);
   mock_server_->SetPartialFailureTypes(failed_types);
 
-  mock_server_->AddUpdateSpecifics("1", "0", "E", 20, 20, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "E", 20, 20, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "F", 20, 20, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "F", 20, 20, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "G", 20, 20, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "G", 20, 20, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "H", 20, 20, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "H", 20, 20, false, pref);
   EXPECT_TRUE(SyncShareNudge());
 
   // PREFERENCES continues to work normally (not throttled).
@@ -397,13 +397,13 @@ TEST_F(SyncerTest, GetUpdatesPartialFailure) {
   // Set BOOKMARKS not partial failed, then BOOKMARKS should get synced now.
   mock_server_->set_partial_failure(false);
 
-  mock_server_->AddUpdateSpecifics("1", "0", "E", 30, 30, true, 0, bookmark,
+  mock_server_->AddUpdateSpecifics("1", "0", "E", 30, 30, true, bookmark,
                                    foreign_cache_guid(), "-1");
-  mock_server_->AddUpdateSpecifics("2", "1", "F", 30, 30, false, 2, bookmark,
+  mock_server_->AddUpdateSpecifics("2", "1", "F", 30, 30, false, bookmark,
                                    foreign_cache_guid(), "-2");
-  mock_server_->AddUpdateSpecifics("3", "1", "G", 30, 30, false, 1, bookmark,
+  mock_server_->AddUpdateSpecifics("3", "1", "G", 30, 30, false, bookmark,
                                    foreign_cache_guid(), "-3");
-  mock_server_->AddUpdateSpecifics("4", "0", "H", 30, 30, false, 0, pref);
+  mock_server_->AddUpdateSpecifics("4", "0", "H", 30, 30, false, pref);
   EXPECT_TRUE(SyncShareNudge());
   // BOOKMARKS not failed.
   EXPECT_EQ(2U, GetProcessor(BOOKMARKS)->GetNumUpdateResponses());
