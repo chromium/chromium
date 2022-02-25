@@ -4216,12 +4216,12 @@
   {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 102
   },
   {
     "name": "notification-scheduler-debug-options",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 106
   },
   {
     "name": "ntp-cache-one-google-bar",
