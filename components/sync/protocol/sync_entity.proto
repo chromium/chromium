@@ -115,45 +115,11 @@ message SyncEntity {
   reserved 14;
   reserved "bookmark_favicon";
 
-  // Supplies a numeric position for this item, relative to other items with the
-  // same parent.  Deprecated in M26, though clients are still required to set
-  // it.
-  //
-  // Present in both GetUpdatesResponse and CommitMessage.
-  //
-  // At one point this was used as an alternative / supplement to
-  // the deprecated |insert_after_item_id|, but now it, too, has been
-  // deprecated.
-  //
-  // In order to maintain compatibility with older clients, newer clients should
-  // still set this field.  Its value should be based on the first 8 bytes of
-  // this item's |unique_position|.
-  //
-  // Nerwer clients must also support the receipt of items that contain
-  // |position_in_parent| but no |unique_position|.  They should locally convert
-  // the given int64 position to a UniquePosition.
-  //
-  // The conversion from int64 to UniquePosition is as follows:
-  // The int64 value will have its sign bit flipped then placed in big endian
-  // order as the first 8 bytes of the UniquePosition.  The subsequent bytes of
-  // the UniquePosition will consist of the item's unique suffix.
-  //
-  // Conversion from UniquePosition to int64 reverses this process: the first 8
-  // bytes of the position are to be interpreted as a big endian int64 value
-  // with its sign bit flipped.
+  // Ancient fields, predecessors for |unique_position|, deprecated with M26 and
+  // still supported to deal with old incoming data. See field |unique_position|
+  // for details as well as the data-upgrading implementation in
+  // GetUniquePositionFromSyncEntity().
   optional int64 position_in_parent = 15 [deprecated = true];
-
-  // Contains the ID of the element (under the same parent) after which this
-  // element resides. An empty string indicates that the element is the first
-  // element in the parent.  This value is used during commits to specify
-  // a relative position for a position change.  In the context of
-  // a GetUpdatesMessage, |position_in_parent| is used instead to
-  // communicate position.
-  //
-  // Present only in CommitMessage.
-  //
-  // This is deprecated.  Clients are allowed to omit this as long as they
-  // include |position_in_parent| instead.
   optional string insert_after_item_id = 16 [deprecated = true];
 
   reserved 17;
@@ -163,7 +129,7 @@ message SyncEntity {
   // Present in both GetUpdatesResponse and CommitMessage.
   optional bool deleted = 18 [default = false];
 
-  // A GUID that identifies the the sync client who initially committed
+  // A unique ID that identifies the the sync client who initially committed
   // this entity.  This value corresponds to |cache_guid| in CommitMessage.
   // This field, along with |originator_client_item_id|, can be used to
   // reunite the original with its official committed version in the case
@@ -222,32 +188,28 @@ message SyncEntity {
   // May be present in CommitMessages for the initial creation of an entity.
   // If present in Commit updates for the entity, it will be ignored.
   //
-  // Available in version 24+.
-  //
   // May be returned in GetUpdatesMessage and sent up in CommitMessage.
-  //
   optional string client_defined_unique_tag = 23;
 
-  // This positioning system had a relatively short life.  It was made obsolete
-  // by |unique_position| before either the client or server made much of an
-  // attempt to support it.  In fact, no client ever read or set this field.
-  //
-  // Deprecated in M26.
-  optional bytes ordinal_in_parent = 24 [deprecated = true];
+  reserved 24;
+  reserved "ordinal_in_parent";
 
-  // This is the fourth attempt at positioning.
+  // Introduced in M26, represents ordering among entities, in practice used for
+  // bookmarks only. Clients should not assume it is always populated in
+  // GetUpdatesMessage due to the following caveats:
+  // 1. Tombstones and permanent folders do not populate it (ordering is
+  //    irrelevant).
+  // 2. It may remain unset by future versions of the client, as long as the
+  //    field with the same name is populated inside BookmarkSpecifics. M94 and
+  //    above populate both for backward compatibility reasons, but when support
+  //    for M93 is retired, modern clients at the time may stop populating this
+  //    field.
+  // 3. Very old data (last committed by M25 or below, before the field was
+  //    introduced) does not include this field, and in that case the legacy
+  //    fields |position_in_parent| or |insert_after_item_id| must be honored
+  //    instead.
   //
-  // This field is present in both GetUpdatesResponse and CommitMessage, if the
-  // item's type requires it and the client that wrote the item supports it (M26
-  // or higher).  Clients must also be prepared to handle updates from clients
-  // that do not set this field.
-  //
-  // This field will not be set for items whose type ignores positioning.
-  // Clients should not attempt to read this field on the receipt of an item of
-  // a type that ignores positioning.
-  //
-  // Refer to its definition in unique_position.proto for more information about
-  // its internal representation.
+  // May be returned in GetUpdatesMessage and sent up in CommitMessage.
   optional UniquePosition unique_position = 25;
 
   // This used to be a list of sync attachment IDs, but it was never launched
