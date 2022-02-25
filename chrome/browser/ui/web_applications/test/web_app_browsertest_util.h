@@ -5,20 +5,25 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "url/gurl.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 class Browser;
+class GURL;
 class Profile;
+
+namespace base {
+class FilePath;
+}
 
 namespace webapps {
 enum class InstallResultCode;
@@ -27,6 +32,7 @@ enum class InstallResultCode;
 namespace web_app {
 
 struct ExternalInstallOptions;
+class WebAppInstallManager;
 
 // For InstallWebAppFromInfo see web_app_install_test_utils.h
 
@@ -54,7 +60,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 ExternalInstallOptions CreateInstallOptions(const GURL& url);
 
 // Synchronous version of ExternallyManagedAppManager::Install.
-webapps::InstallResultCode ExternallyManagedAppManagerInstall(
+ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(
     Profile*,
     ExternalInstallOptions);
 

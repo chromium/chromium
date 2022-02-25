@@ -6,19 +6,29 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <map>
 #include <memory>
+#include <ostream>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/checked_iterators.h"
+#include "base/containers/checked_range.h"
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
@@ -31,26 +41,25 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
-#include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/sync/base/ordinal.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "extensions/common/constants.h"
+#include "url/gurl.h"
 
 using syncer::UserSelectableOsType;
 using syncer::UserSelectableType;
@@ -245,16 +254,27 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       continue;
     }
 
-    // Handle Web App ids
-    const GURL web_app_url(*policy_entry);
-    if (web_app_url.is_valid()) {
-      absl::optional<web_app::AppId> web_app_id =
-          web_app::WebAppProvider::GetDeprecated(helper->profile())
-              ->registrar()
-              .LookupExternalAppId(web_app_url);
-      if (web_app_id.has_value())
-        result.emplace_back(web_app_id.value());
-      continue;
+    // URLs provided through policy might not match exactly (eg. missing
+    // trailing slash), so check the normalized version of valid URLs too.
+    std::vector<std::string> policy_entries_to_check{*policy_entry};
+    const GURL normalized_policy_url(*policy_entry);
+    if (normalized_policy_url.is_valid() &&
+        normalized_policy_url.spec() != *policy_entry) {
+      policy_entries_to_check.push_back(normalized_policy_url.spec());
+    }
+
+    // Handle App Service policy IDs (currently Web Apps only)
+    if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+            helper->profile())) {
+      apps::AppServiceProxyFactory::GetForProfile(helper->profile())
+          ->AppRegistryCache()
+          .ForEachApp([&result, &policy_entries_to_check](
+                          const apps::AppUpdate& update) {
+            if (base::Contains(policy_entries_to_check, update.PolicyId())) {
+              DCHECK(!base::Contains(result, update.AppId()));
+              result.emplace_back(update.AppId());
+            }
+          });
     }
 
     // Handle Arc++ App ids
