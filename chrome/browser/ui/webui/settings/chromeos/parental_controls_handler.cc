@@ -35,13 +35,13 @@ ParentalControlsHandler::ParentalControlsHandler(Profile* profile)
 ParentalControlsHandler::~ParentalControlsHandler() = default;
 
 void ParentalControlsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showAddSupervisionDialog",
       base::BindRepeating(
           &ParentalControlsHandler::HandleShowAddSupervisionDialog,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "launchFamilyLinkSettings",
       base::BindRepeating(
           &ParentalControlsHandler::HandleLaunchFamilyLinkSettings,

@@ -278,81 +278,81 @@ std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
 CupsPrintersHandler::~CupsPrintersHandler() = default;
 
 void CupsPrintersHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCupsSavedPrintersList",
       base::BindRepeating(&CupsPrintersHandler::HandleGetCupsSavedPrintersList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCupsEnterprisePrintersList",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetCupsEnterprisePrintersList,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleUpdateCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleRemoveCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleAddCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "reconfigureCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleReconfigureCupsPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPrinterInfo",
       base::BindRepeating(&CupsPrintersHandler::HandleGetPrinterInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCupsPrinterManufacturersList",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetCupsPrinterManufacturers,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCupsPrinterModelsList",
       base::BindRepeating(&CupsPrintersHandler::HandleGetCupsPrinterModels,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "selectPPDFile",
       base::BindRepeating(&CupsPrintersHandler::HandleSelectPPDFile,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startDiscoveringPrinters",
       base::BindRepeating(&CupsPrintersHandler::HandleStartDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "stopDiscoveringPrinters",
       base::BindRepeating(&CupsPrintersHandler::HandleStopDiscovery,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPrinterPpdManufacturerAndModel",
       base::BindRepeating(
           &CupsPrintersHandler::HandleGetPrinterPpdManufacturerAndModel,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addDiscoveredPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleAddDiscoveredPrinter,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelPrinterSetUp",
       base::BindRepeating(&CupsPrintersHandler::HandleSetUpCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getEulaUrl", base::BindRepeating(&CupsPrintersHandler::HandleGetEulaUrl,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "queryPrintServer",
       base::BindRepeating(&CupsPrintersHandler::HandleQueryPrintServer,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openPrintManagementApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openScanningApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
                           base::Unretained(this)));

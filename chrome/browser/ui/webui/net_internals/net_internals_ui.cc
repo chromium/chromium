@@ -105,46 +105,46 @@ NetInternalsMessageHandler::NetInternalsMessageHandler(content::WebUI* web_ui)
 void NetInternalsMessageHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "reloadProxySettings",
       base::BindRepeating(&NetInternalsMessageHandler::OnReloadProxySettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearBadProxies",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearBadProxies,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearHostResolverCache",
       base::BindRepeating(&NetInternalsMessageHandler::OnClearHostResolverCache,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "domainSecurityPolicyDelete",
       base::BindRepeating(
           &NetInternalsMessageHandler::OnDomainSecurityPolicyDelete,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "hstsQuery", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSQuery,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "hstsAdd", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSAdd,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "expectCTQuery",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTQuery,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "expectCTAdd",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTAdd,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "expectCTTestReport",
       base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTTestReport,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "closeIdleSockets",
       base::BindRepeating(&NetInternalsMessageHandler::OnCloseIdleSockets,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "flushSocketPools",
       base::BindRepeating(&NetInternalsMessageHandler::OnFlushSocketPools,
                           base::Unretained(this)));

@@ -51,20 +51,20 @@ void GoogleAssistantHandler::OnAudioNodesChanged() {
 }
 
 void GoogleAssistantHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showGoogleAssistantSettings",
       base::BindRepeating(
           &GoogleAssistantHandler::HandleShowGoogleAssistantSettings,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "retrainAssistantVoiceModel",
       base::BindRepeating(&GoogleAssistantHandler::HandleRetrainVoiceModel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "syncVoiceModelStatus",
       base::BindRepeating(&GoogleAssistantHandler::HandleSyncVoiceModelStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initializeGoogleAssistantPage",
       base::BindRepeating(&GoogleAssistantHandler::HandleInitialized,
                           base::Unretained(this)));

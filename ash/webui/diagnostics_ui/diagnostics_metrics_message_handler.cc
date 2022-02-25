@@ -66,7 +66,7 @@ DiagnosticsMetricsMessageHandler::~DiagnosticsMetricsMessageHandler() {
 void DiagnosticsMetricsMessageHandler::RegisterMessages() {
   DCHECK(web_ui());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRecordNavigation,
       base::BindRepeating(
           &DiagnosticsMetricsMessageHandler::HandleRecordNavigation,

@@ -268,77 +268,77 @@ AboutHandler::~AboutHandler() {
 }
 
 void AboutHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "aboutPageReady", base::BindRepeating(&AboutHandler::HandlePageReady,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "refreshUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openFeedbackDialog",
       base::BindRepeating(&AboutHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openHelpPage", base::BindRepeating(&AboutHandler::HandleOpenHelpPage,
                                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openDiagnostics",
       base::BindRepeating(&AboutHandler::HandleOpenDiagnostics,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openFirmwareUpdatesPage",
       base::BindRepeating(&AboutHandler::HandleOpenFirmwareUpdates,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openOsHelpPage", base::BindRepeating(&AboutHandler::HandleOpenOsHelpPage,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
                                            base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestUpdateOverCellular",
       base::BindRepeating(&AboutHandler::HandleRequestUpdateOverCellular,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getVersionInfo", base::BindRepeating(&AboutHandler::HandleGetVersionInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getRegulatoryInfo",
       base::BindRepeating(&AboutHandler::HandleGetRegulatoryInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getChannelInfo", base::BindRepeating(&AboutHandler::HandleGetChannelInfo,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "canChangeChannel",
       base::BindRepeating(&AboutHandler::HandleCanChangeChannel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "refreshTPMFirmwareUpdateStatus",
       base::BindRepeating(&AboutHandler::HandleRefreshTPMFirmwareUpdateStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getEndOfLifeInfo",
       base::BindRepeating(&AboutHandler::HandleGetEndOfLifeInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "launchReleaseNotes",
       base::BindRepeating(&AboutHandler::HandleLaunchReleaseNotes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "checkInternetConnection",
       base::BindRepeating(&AboutHandler::HandleCheckInternetConnection,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(IS_MAC)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "promoteUpdater", base::BindRepeating(&AboutHandler::PromoteUpdater,
                                             base::Unretained(this)));
 #endif

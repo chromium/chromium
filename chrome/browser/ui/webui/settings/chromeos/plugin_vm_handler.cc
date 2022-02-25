@@ -24,12 +24,12 @@ PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
 PluginVmHandler::~PluginVmHandler() = default;
 
 void PluginVmHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isRelaunchNeededForNewPermissions",
       base::BindRepeating(
           &PluginVmHandler::HandleIsRelaunchNeededForNewPermissions,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "relaunchPluginVm",
       base::BindRepeating(&PluginVmHandler::HandleRelaunchPluginVm,
                           base::Unretained(this)));

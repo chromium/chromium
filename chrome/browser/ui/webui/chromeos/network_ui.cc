@@ -169,7 +169,7 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
   ~NetworkDiagnosticsMessageHandler() override = default;
 
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "OpenFeedbackDialog",
         base::BindRepeating(
             &NetworkDiagnosticsMessageHandler::OpenFeedbackDialog,
@@ -201,59 +201,59 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kAddNetwork,
         base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kGetNetworkProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillNetworkProperties,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kGetDeviceProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillDeviceProperties,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kGetEthernetEAP,
         base::BindRepeating(&NetworkConfigMessageHandler::GetShillEthernetEAP,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kOpenCellularActivationUi,
         base::BindRepeating(
             &NetworkConfigMessageHandler::OpenCellularActivationUi,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kResetESimCache,
         base::BindRepeating(&NetworkConfigMessageHandler::ResetESimCache,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kDisableESimProfile,
         base::BindRepeating(
             &NetworkConfigMessageHandler::DisableActiveESimProfile,
             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kResetEuicc,
         base::BindRepeating(&NetworkConfigMessageHandler::ResetEuicc,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kShowNetworkConfig,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kShowAddNewWifiNetworkDialog,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowAddNewWifi,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kGetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::GetHostname,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         kSetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::SetHostname,
                             base::Unretained(this)));

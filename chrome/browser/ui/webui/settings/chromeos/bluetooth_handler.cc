@@ -31,11 +31,11 @@ BluetoothHandler::BluetoothHandler() {
 BluetoothHandler::~BluetoothHandler() {}
 
 void BluetoothHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kIsDeviceBlockedByPolicy,
       base::BindRepeating(&BluetoothHandler::HandleIsDeviceBlockedByPolicy,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRequestFastPairDeviceSupport,
       base::BindRepeating(&BluetoothHandler::HandleRequestFastPairDeviceSupport,
                           base::Unretained(this)));

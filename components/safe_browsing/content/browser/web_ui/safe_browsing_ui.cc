@@ -2657,92 +2657,92 @@ void SafeBrowsingUIHandler::NotifyDeepScanJsListener(
 #endif
 
 void SafeBrowsingUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getExperiments",
       base::BindRepeating(&SafeBrowsingUIHandler::GetExperiments,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPolicies", base::BindRepeating(&SafeBrowsingUIHandler::GetPolicies,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPrefs", base::BindRepeating(&SafeBrowsingUIHandler::GetPrefs,
                                       base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCookie", base::BindRepeating(&SafeBrowsingUIHandler::GetCookie,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSavedPasswords",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSavedPasswords,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getDatabaseManagerInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetDatabaseManagerInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getDownloadUrlsChecked",
       base::BindRepeating(&SafeBrowsingUIHandler::GetDownloadUrlsChecked,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSentClientDownloadRequests",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentClientDownloadRequests,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getReceivedClientDownloadResponses",
       base::BindRepeating(
           &SafeBrowsingUIHandler::GetReceivedClientDownloadResponses,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSentClientPhishingRequests",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentClientPhishingRequests,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getReceivedClientPhishingResponses",
       base::BindRepeating(
           &SafeBrowsingUIHandler::GetReceivedClientPhishingResponses,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSentCSBRRs",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentCSBRRs,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPGEvents", base::BindRepeating(&SafeBrowsingUIHandler::GetPGEvents,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSecurityEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSecurityEvents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPGPings", base::BindRepeating(&SafeBrowsingUIHandler::GetPGPings,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPGResponses",
       base::BindRepeating(&SafeBrowsingUIHandler::GetPGResponses,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getRTLookupPings",
       base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupPings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getRTLookupResponses",
       base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupResponses,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getLogMessages",
       base::BindRepeating(&SafeBrowsingUIHandler::GetLogMessages,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getReferrerChain",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferrerChain,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getReferringAppInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferringAppInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getReportingEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReportingEvents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getDeepScans", base::BindRepeating(&SafeBrowsingUIHandler::GetDeepScans,
                                           base::Unretained(this)));
 }

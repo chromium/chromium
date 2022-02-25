@@ -90,17 +90,17 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui,
 ClearBrowsingDataHandler::~ClearBrowsingDataHandler() = default;
 
 void ClearBrowsingDataHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getInstalledApps",
       base::BindRepeating(
           &ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));

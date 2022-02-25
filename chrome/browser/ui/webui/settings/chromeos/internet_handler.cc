@@ -78,24 +78,24 @@ InternetHandler::~InternetHandler() {
 }
 
 void InternetHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kAddThirdPartyVpnMessage,
       base::BindRepeating(&InternetHandler::AddThirdPartyVpn,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kConfigureThirdPartyVpnMessage,
       base::BindRepeating(&InternetHandler::ConfigureThirdPartyVpn,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRequestGmsCoreNotificationsDisabledDeviceNames,
       base::BindRepeating(
           &InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kShowCarrierAccountDetail,
       base::BindRepeating(&InternetHandler::ShowCarrierAccountDetail,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kShowCellularSetupUI,
       base::BindRepeating(&InternetHandler::ShowCellularSetupUI,
                           base::Unretained(this)));

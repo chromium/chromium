@@ -139,22 +139,22 @@ PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}
 PowerHandler::~PowerHandler() {}
 
 void PowerHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updatePowerStatus",
       base::BindRepeating(&PowerHandler::HandleUpdatePowerStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setPowerSource", base::BindRepeating(&PowerHandler::HandleSetPowerSource,
                                             base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestPowerManagementSettings",
       base::BindRepeating(&PowerHandler::HandleRequestPowerManagementSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setLidClosedBehavior",
       base::BindRepeating(&PowerHandler::HandleSetLidClosedBehavior,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setIdleBehavior",
       base::BindRepeating(&PowerHandler::HandleSetIdleBehavior,
                           base::Unretained(this)));

@@ -19,7 +19,7 @@ PersonalizationHubHandler::~PersonalizationHubHandler() = default;
 
 void PersonalizationHubHandler::RegisterMessages() {
   DCHECK(ash::features::IsPersonalizationHubEnabled());
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openPersonalizationHub",
       base::BindRepeating(
           &PersonalizationHubHandler::HandleOpenPersonalizationHub,

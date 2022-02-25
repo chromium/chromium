@@ -120,15 +120,15 @@ void EduAccountLoginHandler::ProfileImageFetcher::OnImageFetched(
 }
 
 void EduAccountLoginHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isNetworkReady",
       base::BindRepeating(&EduAccountLoginHandler::HandleIsNetworkReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getParents",
       base::BindRepeating(&EduAccountLoginHandler::HandleGetParents,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "parentSignin",
       base::BindRepeating(&EduAccountLoginHandler::HandleParentSignin,
                           base::Unretained(this)));

@@ -40,12 +40,12 @@ void DeviceNameHandler::OnJavascriptDisallowed() {
 }
 
 void DeviceNameHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "notifyReadyForDeviceName",
       base::BindRepeating(&DeviceNameHandler::HandleNotifyReadyForDeviceName,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "attemptSetDeviceName",
       base::BindRepeating(&DeviceNameHandler::HandleAttemptSetDeviceName,
                           base::Unretained(this)));

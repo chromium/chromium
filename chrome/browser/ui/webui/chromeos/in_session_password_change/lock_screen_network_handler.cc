@@ -58,21 +58,21 @@ NetworkConfigMessageHandler::NetworkConfigMessageHandler() {}
 NetworkConfigMessageHandler::~NetworkConfigMessageHandler() = default;
 
 void NetworkConfigMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kInitialize, base::BindRepeating(&NetworkConfigMessageHandler::Initialize,
                                        weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kAddNetwork, base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
                                        weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kShowNetworkDetails,
       base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kShowNetworkConfig,
       base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kGetHostname,
       base::BindRepeating(&NetworkConfigMessageHandler::GetHostname,
                           weak_ptr_factory_.GetWeakPtr()));

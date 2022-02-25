@@ -19,7 +19,7 @@ ExtensionControlHandler::ExtensionControlHandler() {}
 ExtensionControlHandler::~ExtensionControlHandler() {}
 
 void ExtensionControlHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "disableExtension",
       base::BindRepeating(&ExtensionControlHandler::HandleDisableExtension,
                           base::Unretained(this)));

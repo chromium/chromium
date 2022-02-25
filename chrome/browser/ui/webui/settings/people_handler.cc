@@ -225,72 +225,72 @@ PeopleHandler::~PeopleHandler() {
 
 void PeopleHandler::RegisterMessages() {
   InitializeSyncBlocker();
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupDidClosePage",
       base::BindRepeating(&PeopleHandler::OnDidClosePage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupSetDatatypes",
       base::BindRepeating(&PeopleHandler::HandleSetDatatypes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupSetEncryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetEncryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupSetDecryptionPassphrase",
       base::BindRepeating(&PeopleHandler::HandleSetDecryptionPassphrase,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupShowSetupUI",
       base::BindRepeating(&PeopleHandler::HandleShowSyncSetupUI,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupGetSyncStatus",
       base::BindRepeating(&PeopleHandler::HandleGetSyncStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncPrefsDispatch",
       base::BindRepeating(&PeopleHandler::HandleSyncPrefsDispatch,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncTrustedVaultBannerStateDispatch",
       base::BindRepeating(&PeopleHandler::HandleTrustedVaultBannerStateDispatch,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "AttemptUserExit",
       base::BindRepeating(&PeopleHandler::HandleAttemptUserExit,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "TurnOnSync", base::BindRepeating(&PeopleHandler::HandleTurnOnSync,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "TurnOffSync", base::BindRepeating(&PeopleHandler::HandleTurnOffSync,
                                          base::Unretained(this)));
 #else
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupSignout", base::BindRepeating(&PeopleHandler::HandleSignout,
                                               base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupPauseSync", base::BindRepeating(&PeopleHandler::HandlePauseSync,
                                                 base::Unretained(this)));
 #endif
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupGetStoredAccounts",
       base::BindRepeating(&PeopleHandler::HandleGetStoredAccounts,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncSetupStartSyncingWithEmail",
       base::BindRepeating(&PeopleHandler::HandleStartSyncingWithEmail,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "SyncStartKeyRetrieval",
       base::BindRepeating(&PeopleHandler::HandleStartKeyRetrieval,
                           base::Unretained(this)));

@@ -53,34 +53,34 @@ ManageProfileHandler::ManageProfileHandler(Profile* profile)
 ManageProfileHandler::~ManageProfileHandler() {}
 
 void ManageProfileHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAvailableIcons",
       base::BindRepeating(&ManageProfileHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setProfileIconToGaiaAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToGaiaAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setProfileIconToDefaultAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToDefaultAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setProfileName",
       base::BindRepeating(&ManageProfileHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestProfileShortcutStatus",
       base::BindRepeating(
           &ManageProfileHandler::HandleRequestProfileShortcutStatus,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleAddProfileShortcut,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleRemoveProfileShortcut,
                           base::Unretained(this)));

@@ -19,17 +19,17 @@ AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
 AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
 
 void AnnotatorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "onToolSet", base::BindRepeating(&AnnotatorMessageHandler::OnToolSet,
                                        base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "onUndoRedoAvailabilityChanged",
       base::BindRepeating(
           &AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "onError", base::BindRepeating(&AnnotatorMessageHandler::OnError,
                                      base::Unretained(this)));
 }

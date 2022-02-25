@@ -240,12 +240,12 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "getAccounts",
       base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAccountsNotAvailableInArc",
       base::BindRepeating(
           &InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "makeAvailableInArc",
       base::BindRepeating(
           &InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog,
@@ -254,7 +254,7 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "skipWelcomePage",
       base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openGuestWindow",
       base::BindRepeating(
           &InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog,

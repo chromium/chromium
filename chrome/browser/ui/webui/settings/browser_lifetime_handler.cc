@@ -63,30 +63,30 @@ BrowserLifetimeHandler::BrowserLifetimeHandler() {}
 BrowserLifetimeHandler::~BrowserLifetimeHandler() {}
 
 void BrowserLifetimeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "restart", base::BindRepeating(&BrowserLifetimeHandler::HandleRestart,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "relaunch", base::BindRepeating(&BrowserLifetimeHandler::HandleRelaunch,
                                       base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "signOutAndRestart",
       base::BindRepeating(&BrowserLifetimeHandler::HandleSignOutAndRestart,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "factoryReset",
       base::BindRepeating(&BrowserLifetimeHandler::HandleFactoryReset,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "shouldShowRelaunchConfirmationDialog",
       base::BindRepeating(
           &BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getRelaunchConfirmationDialogDescription",
       base::BindRepeating(&BrowserLifetimeHandler::
                               HandleGetRelaunchConfirmationDialogDescription,

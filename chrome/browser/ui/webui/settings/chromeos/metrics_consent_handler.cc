@@ -36,12 +36,12 @@ MetricsConsentHandler::MetricsConsentHandler(
 MetricsConsentHandler::~MetricsConsentHandler() = default;
 
 void MetricsConsentHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdateMetricsConsent,
       base::BindRepeating(&MetricsConsentHandler::HandleUpdateMetricsConsent,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kGetMetricsConsentState,
       base::BindRepeating(&MetricsConsentHandler::HandleGetMetricsConsentState,
                           weak_ptr_factory_.GetWeakPtr()));

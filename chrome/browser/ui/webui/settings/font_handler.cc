@@ -38,7 +38,7 @@ FontHandler::FontHandler(Profile* profile) {
 FontHandler::~FontHandler() {}
 
 void FontHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "fetchFontsData", base::BindRepeating(&FontHandler::HandleFetchFontsData,
                                             base::Unretained(this)));
 }

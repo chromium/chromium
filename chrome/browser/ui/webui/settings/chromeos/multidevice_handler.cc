@@ -101,59 +101,59 @@ MultideviceHandler::MultideviceHandler(
 MultideviceHandler::~MultideviceHandler() {}
 
 void MultideviceHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showMultiDeviceSetupDialog",
       base::BindRepeating(&MultideviceHandler::HandleShowMultiDeviceSetupDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPageContentData",
       base::BindRepeating(&MultideviceHandler::HandleGetPageContent,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setFeatureEnabledState",
       base::BindRepeating(&MultideviceHandler::HandleSetFeatureEnabledState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeHostDevice",
       base::BindRepeating(&MultideviceHandler::HandleRemoveHostDevice,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "retryPendingHostSetup",
       base::BindRepeating(&MultideviceHandler::HandleRetryPendingHostSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setUpAndroidSms",
       base::BindRepeating(&MultideviceHandler::HandleSetUpAndroidSms,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSmartLockSignInEnabled",
       base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setSmartLockSignInEnabled",
       base::BindRepeating(&MultideviceHandler::HandleSetSmartLockSignInEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSmartLockSignInAllowed",
       base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAndroidSmsInfo",
       base::BindRepeating(&MultideviceHandler::HandleGetAndroidSmsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "attemptNotificationSetup",
       base::BindRepeating(&MultideviceHandler::HandleAttemptNotificationSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelNotificationSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelNotificationSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "attemptAppsSetup",
       base::BindRepeating(&MultideviceHandler::HandleAttemptAppsSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelAppsSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelAppsSetup,
                           base::Unretained(this)));

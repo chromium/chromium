@@ -119,7 +119,7 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
     const std::string& message,
     base::RepeatingCallback<void(base::Value::ConstListView)> callback) {
-  web_ui()->RegisterMessageCallback(message, std::move(callback));
+  web_ui()->RegisterDeprecatedMessageCallback2(message, std::move(callback));
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::

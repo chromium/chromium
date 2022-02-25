@@ -459,50 +459,50 @@ PrintPreviewHandler::PrintPreviewHandler() {
 PrintPreviewHandler::~PrintPreviewHandler() = default;
 
 void PrintPreviewHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPrinters",
       base::BindRepeating(&PrintPreviewHandler::HandleGetPrinters,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPreview", base::BindRepeating(&PrintPreviewHandler::HandleGetPreview,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "print", base::BindRepeating(&PrintPreviewHandler::HandlePrint,
                                    base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPrinterCapabilities",
       base::BindRepeating(&PrintPreviewHandler::HandleGetPrinterCapabilities,
                           base::Unretained(this)));
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showSystemDialog",
       base::BindRepeating(&PrintPreviewHandler::HandleShowSystemDialog,
                           base::Unretained(this)));
 #endif
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "signIn", base::BindRepeating(&PrintPreviewHandler::HandleSignin,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "closePrintPreviewDialog",
       base::BindRepeating(&PrintPreviewHandler::HandleClosePreviewDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "hidePreview",
       base::BindRepeating(&PrintPreviewHandler::HandleHidePreview,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelPendingPrintRequest",
       base::BindRepeating(&PrintPreviewHandler::HandleCancelPendingPrintRequest,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "saveAppState",
       base::BindRepeating(&PrintPreviewHandler::HandleSaveAppState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getInitialSettings",
       base::BindRepeating(&PrintPreviewHandler::HandleGetInitialSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "managePrinters",
       base::BindRepeating(&PrintPreviewHandler::HandleManagePrinters,
                           base::Unretained(this)));

@@ -55,14 +55,14 @@ ImportDataHandler::~ImportDataHandler() {
 void ImportDataHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initializeImportDialog",
       base::BindRepeating(&ImportDataHandler::HandleInitializeImportDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importData", base::BindRepeating(&ImportDataHandler::HandleImportData,
                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importFromBookmarksFile",
       base::BindRepeating(&ImportDataHandler::HandleImportFromBookmarksFile,
                           base::Unretained(this)));

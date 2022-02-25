@@ -258,16 +258,16 @@ void WebUIImpl::CallJavascriptFunctionUnsafe(
   ExecuteJavascript(GetJavascriptCall(function_name, args));
 }
 
-void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
-                                        DeprecatedMessageCallback2 callback) {
-  deprecated_message_callbacks_2_.emplace(std::string(message),
-                                          std::move(callback));
+void WebUIImpl::RegisterDeprecatedMessageCallback2(
+    base::StringPiece message,
+    DeprecatedMessageCallback2 callback) {
+  deprecated_message_callbacks_2_.emplace(message, std::move(callback));
 }
 
 void WebUIImpl::RegisterDeprecatedMessageCallback(
     base::StringPiece message,
     const DeprecatedMessageCallback& callback) {
-  deprecated_message_callbacks_.emplace(std::string(message), callback);
+  deprecated_message_callbacks_.emplace(message, callback);
 }
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,

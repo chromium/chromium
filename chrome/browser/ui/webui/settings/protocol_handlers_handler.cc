@@ -69,41 +69,41 @@ void ProtocolHandlersHandler::OnJavascriptDisallowed() {
 }
 
 void ProtocolHandlersHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "observeProtocolHandlers",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveProtocolHandlers,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "observeProtocolHandlersEnabledState",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveProtocolHandlersEnabledState,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeHandler",
       base::BindRepeating(&ProtocolHandlersHandler::HandleRemoveHandler,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setHandlersEnabled",
       base::BindRepeating(&ProtocolHandlersHandler::HandleSetHandlersEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setDefault",
       base::BindRepeating(&ProtocolHandlersHandler::HandleSetDefault,
                           base::Unretained(this)));
 
   // Web App Protocol Handlers register message callbacks:
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "observeAppProtocolHandlers",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveAppProtocolHandlers,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeAppAllowedHandler",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleRemoveAllowedAppHandler,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeAppDisallowedHandler",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler,

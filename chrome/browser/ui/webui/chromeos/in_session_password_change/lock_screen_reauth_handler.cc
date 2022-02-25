@@ -333,21 +333,21 @@ void LockScreenReauthHandler::ShowPasswordChangedScreen() {
 }
 
 void LockScreenReauthHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initialize",
       base::BindRepeating(&LockScreenReauthHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "authenticatorLoaded",
       base::BindRepeating(&LockScreenReauthHandler::HandleAuthenticatorLoaded,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "completeAuthentication",
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateUserPassword",
       base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
                           weak_factory_.GetWeakPtr()));

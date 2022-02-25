@@ -85,22 +85,22 @@ StorageHandler::~StorageHandler() {
 void StorageHandler::RegisterMessages() {
   DCHECK(web_ui());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateAndroidEnabled",
       base::BindRepeating(&StorageHandler::HandleUpdateAndroidEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateStorageInfo",
       base::BindRepeating(&StorageHandler::HandleUpdateStorageInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openMyFiles", base::BindRepeating(&StorageHandler::HandleOpenMyFiles,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openArcStorage",
       base::BindRepeating(&StorageHandler::HandleOpenArcStorage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateExternalStorages",
       base::BindRepeating(&StorageHandler::HandleUpdateExternalStorages,
                           base::Unretained(this)));

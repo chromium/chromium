@@ -29,7 +29,7 @@ void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
 }
 
 void SystemHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showProxySettings",
       base::BindRepeating(&SystemHandler::HandleShowProxySettings,
                           base::Unretained(this)));

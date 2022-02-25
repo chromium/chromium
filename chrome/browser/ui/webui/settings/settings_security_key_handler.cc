@@ -95,15 +95,15 @@ SecurityKeysPINHandler::SecurityKeysPINHandler() = default;
 SecurityKeysPINHandler::~SecurityKeysPINHandler() = default;
 
 void SecurityKeysPINHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyStartSetPIN",
       base::BindRepeating(&SecurityKeysPINHandler::HandleStartSetPIN,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeySetPIN",
       base::BindRepeating(&SecurityKeysPINHandler::HandleSetPIN,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyPINClose",
       base::BindRepeating(&HandleClose,
                           base::BindRepeating(&SecurityKeysPINHandler::Close,
@@ -202,15 +202,15 @@ SecurityKeysResetHandler::SecurityKeysResetHandler() = default;
 SecurityKeysResetHandler::~SecurityKeysResetHandler() = default;
 
 void SecurityKeysResetHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyReset",
       base::BindRepeating(&SecurityKeysResetHandler::HandleReset,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCompleteReset",
       base::BindRepeating(&SecurityKeysResetHandler::HandleCompleteReset,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyResetClose",
       base::BindRepeating(&HandleClose,
                           base::BindRepeating(&SecurityKeysResetHandler::Close,
@@ -344,28 +344,28 @@ void SecurityKeysCredentialHandler::HandleStart(
 }
 
 void SecurityKeysCredentialHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementStart",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleStart,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementPIN",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandlePIN,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementEnumerate",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementDelete",
       base::BindRepeating(&SecurityKeysCredentialHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementUpdate",
       base::BindRepeating(
           &SecurityKeysCredentialHandler::HandleUpdateUserInformation,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyCredentialManagementClose",
       base::BindRepeating(
           &HandleClose,
@@ -682,41 +682,41 @@ void SecurityKeysBioEnrollmentHandler::HandleStart(
 }
 
 void SecurityKeysBioEnrollmentHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollStart",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleStart,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollProvidePIN",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleProvidePIN,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollGetSensorInfo",
       base::BindRepeating(
           &SecurityKeysBioEnrollmentHandler::HandleGetSensorInfo,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollEnumerate",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollStartEnrolling",
       base::BindRepeating(
           &SecurityKeysBioEnrollmentHandler::HandleStartEnrolling,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollDelete",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollRename",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleRename,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollCancel",
       base::BindRepeating(&SecurityKeysBioEnrollmentHandler::HandleCancel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyBioEnrollClose",
       base::BindRepeating(
           &HandleClose,
@@ -1012,15 +1012,15 @@ void SecurityKeysPhonesHandler::OnJavascriptAllowed() {}
 void SecurityKeysPhonesHandler::OnJavascriptDisallowed() {}
 
 void SecurityKeysPhonesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyPhonesEnumerate",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleEnumerate,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyPhonesDelete",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleDelete,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "securityKeyPhonesRename",
       base::BindRepeating(&SecurityKeysPhonesHandler::HandleRename,
                           base::Unretained(this)));

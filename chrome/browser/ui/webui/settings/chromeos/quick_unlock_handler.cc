@@ -22,11 +22,11 @@ QuickUnlockHandler::QuickUnlockHandler(Profile* profile,
 QuickUnlockHandler::~QuickUnlockHandler() = default;
 
 void QuickUnlockHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "RequestPinLoginState",
       base::BindRepeating(&QuickUnlockHandler::HandleRequestPinLoginState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "RequestQuickUnlockDisabledByPolicy",
       base::BindRepeating(
           &QuickUnlockHandler::HandleQuickUnlockDisabledByPolicy,

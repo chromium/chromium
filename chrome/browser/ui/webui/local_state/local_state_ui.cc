@@ -59,7 +59,7 @@ LocalStateUIHandler::~LocalStateUIHandler() {
 }
 
 void LocalStateUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestJson",
       base::BindRepeating(&LocalStateUIHandler::HandleRequestJson,
                           base::Unretained(this)));

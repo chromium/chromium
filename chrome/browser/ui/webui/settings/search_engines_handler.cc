@@ -57,37 +57,37 @@ SearchEnginesHandler::~SearchEnginesHandler() {
 }
 
 void SearchEnginesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setIsActiveSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetIsActiveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleRemoveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "validateSearchEngineInput",
       base::BindRepeating(
           &SearchEnginesHandler::HandleValidateSearchEngineInput,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "searchEngineEditStarted",
       base::BindRepeating(&SearchEnginesHandler::HandleSearchEngineEditStarted,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "searchEngineEditCancelled",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCancelled,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "searchEngineEditCompleted",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,

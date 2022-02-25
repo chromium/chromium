@@ -460,75 +460,75 @@ void DeviceEmulatorMessageHandler::UpdatePowerSourceId(
 }
 
 void DeviceEmulatorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kInitialize, base::BindRepeating(&DeviceEmulatorMessageHandler::Init,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRequestPowerInfo,
       base::BindRepeating(&DeviceEmulatorMessageHandler::RequestPowerInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdateBatteryPercent,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdateBatteryPercent,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdateBatteryState,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdateBatteryState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdateTimeToEmpty,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdateTimeToEmpty,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdateTimeToFull,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdateTimeToFull,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdatePowerSources,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdatePowerSources,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kUpdatePowerSourceId,
       base::BindRepeating(&DeviceEmulatorMessageHandler::UpdatePowerSourceId,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRequestAudioNodes,
       base::BindRepeating(
           &DeviceEmulatorMessageHandler::HandleRequestAudioNodes,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kInsertAudioNode,
       base::BindRepeating(&DeviceEmulatorMessageHandler::HandleInsertAudioNode,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRemoveAudioNode,
       base::BindRepeating(&DeviceEmulatorMessageHandler::HandleRemoveAudioNode,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kBluetoothDiscoverFunction,
       base::BindRepeating(
           &DeviceEmulatorMessageHandler::HandleRequestBluetoothDiscover,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kBluetoothPairFunction,
       base::BindRepeating(
           &DeviceEmulatorMessageHandler::HandleRequestBluetoothPair,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRequestBluetoothInfo,
       base::BindRepeating(
           &DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kRemoveBluetoothDevice,
       base::BindRepeating(
           &DeviceEmulatorMessageHandler::HandleRemoveBluetoothDevice,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kSetHasTouchpad,
       base::BindRepeating(&DeviceEmulatorMessageHandler::HandleSetHasTouchpad,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       kSetHasMouse,
       base::BindRepeating(&DeviceEmulatorMessageHandler::HandleSetHasMouse,
                           base::Unretained(this)));

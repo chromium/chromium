@@ -64,38 +64,38 @@ FingerprintHandler::~FingerprintHandler() {
 
 void FingerprintHandler::RegisterMessages() {
   // Note: getFingerprintsList must be called before observers will be added.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getFingerprintsList",
       base::BindRepeating(&FingerprintHandler::HandleGetFingerprintsList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getNumFingerprints",
       base::BindRepeating(&FingerprintHandler::HandleGetNumFingerprints,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startEnroll", base::BindRepeating(&FingerprintHandler::HandleStartEnroll,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelCurrentEnroll",
       base::BindRepeating(&FingerprintHandler::HandleCancelCurrentEnroll,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getEnrollmentLabel",
       base::BindRepeating(&FingerprintHandler::HandleGetEnrollmentLabel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeEnrollment",
       base::BindRepeating(&FingerprintHandler::HandleRemoveEnrollment,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "changeEnrollmentLabel",
       base::BindRepeating(&FingerprintHandler::HandleChangeEnrollmentLabel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startAuthentication",
       base::BindRepeating(&FingerprintHandler::HandleStartAuthentication,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "endCurrentAuthentication",
       base::BindRepeating(&FingerprintHandler::HandleEndCurrentAuthentication,
                           base::Unretained(this)));

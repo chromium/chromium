@@ -42,21 +42,21 @@ GuestOsHandler::GuestOsHandler(Profile* profile) : profile_(profile) {}
 GuestOsHandler::~GuestOsHandler() = default;
 
 void GuestOsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getGuestOsSharedPathsDisplayText",
       base::BindRepeating(
           &GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeGuestOsSharedPath",
       base::BindRepeating(&GuestOsHandler::HandleRemoveGuestOsSharedPath,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "notifyGuestOsSharedUsbDevicesPageReady",
       base::BindRepeating(
           &GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady,
           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setGuestOsUsbDeviceShared",
       base::BindRepeating(&GuestOsHandler::HandleSetGuestOsUsbDeviceShared,
                           weak_ptr_factory_.GetWeakPtr()));

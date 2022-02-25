@@ -166,52 +166,52 @@ base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
 }
 
 void ProjectorMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAccounts", base::BindRepeating(&ProjectorMessageHandler::GetAccounts,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getNewScreencastPreconditionState",
       base::BindRepeating(
           &ProjectorMessageHandler::GetNewScreencastPrecondition,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startProjectorSession",
       base::BindRepeating(&ProjectorMessageHandler::StartProjectorSession,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getOAuthTokenForAccount",
       base::BindRepeating(&ProjectorMessageHandler::GetOAuthTokenForAccount,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
                                      base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "shouldDownloadSoda",
       base::BindRepeating(&ProjectorMessageHandler::ShouldDownloadSoda,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "installSoda", base::BindRepeating(&ProjectorMessageHandler::InstallSoda,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getPendingScreencasts",
       base::BindRepeating(&ProjectorMessageHandler::GetPendingScreencasts,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getUserPref", base::BindRepeating(&ProjectorMessageHandler::GetUserPref,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setUserPref", base::BindRepeating(&ProjectorMessageHandler::SetUserPref,
                                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
                           base::Unretained(this)));

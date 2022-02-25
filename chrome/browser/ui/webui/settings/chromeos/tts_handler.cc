@@ -155,18 +155,18 @@ void TtsHandler::HandlePreviewTtsVoice(base::Value::ConstListView args) {
 }
 
 void TtsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAllTtsVoiceData",
       base::BindRepeating(&TtsHandler::HandleGetAllTtsVoiceData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "previewTtsVoice", base::BindRepeating(&TtsHandler::HandlePreviewTtsVoice,
                                              base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
 }

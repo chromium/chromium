@@ -98,16 +98,18 @@ void TestWebUI::AddMessageHandler(
   handlers_.push_back(std::move(handler));
 }
 
-void TestWebUI::RegisterMessageCallback(base::StringPiece message,
-                                        DeprecatedMessageCallback2 callback) {
-  deprecated_message_callbacks_2_[std::string(message)].push_back(
+void TestWebUI::RegisterDeprecatedMessageCallback2(
+    base::StringPiece message,
+    DeprecatedMessageCallback2 callback) {
+  deprecated_message_callbacks_2_[static_cast<std::string>(message)].push_back(
       std::move(callback));
 }
 
 void TestWebUI::RegisterDeprecatedMessageCallback(
     base::StringPiece message,
     const DeprecatedMessageCallback& callback) {
-  deprecated_message_callbacks_[std::string(message)].push_back(callback);
+  deprecated_message_callbacks_[static_cast<std::string>(message)].push_back(
+      callback);
 }
 
 bool TestWebUI::CanCallJavascript() {

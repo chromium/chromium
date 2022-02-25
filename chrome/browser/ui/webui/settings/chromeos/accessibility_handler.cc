@@ -54,32 +54,32 @@ AccessibilityHandler::~AccessibilityHandler() {
 }
 
 void AccessibilityHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showChromeVoxSettings",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showSelectToSpeakSettings",
       base::BindRepeating(
           &AccessibilityHandler::HandleShowSelectToSpeakSettings,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setStartupSoundEnabled",
       base::BindRepeating(&AccessibilityHandler::HandleSetStartupSoundEnabled,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "recordSelectedShowShelfNavigationButtonValue",
       base::BindRepeating(
           &AccessibilityHandler::
               HandleRecordSelectedShowShelfNavigationButtonsValue,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "manageA11yPageReady",
       base::BindRepeating(&AccessibilityHandler::HandleManageA11yPageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showChromeVoxTutorial",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxTutorial,
                           base::Unretained(this)));

@@ -263,36 +263,36 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler override.
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "pageLoaded",
         base::BindRepeating(&DriveInternalsWebUIHandler::OnPageLoaded,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "periodicUpdate",
         base::BindRepeating(&DriveInternalsWebUIHandler::OnPeriodicUpdate,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "setVerboseLoggingEnabled",
         base::BindRepeating(
             &DriveInternalsWebUIHandler::SetVerboseLoggingEnabled,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "enableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "disableTracing",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetTracingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), false));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "restartDrive",
         base::BindRepeating(&DriveInternalsWebUIHandler::RestartDrive,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "resetDriveFileSystem",
         base::BindRepeating(&DriveInternalsWebUIHandler::ResetDriveFileSystem,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "zipLogs",
         base::BindRepeating(&DriveInternalsWebUIHandler::ZipDriveFsLogs,
                             weak_ptr_factory_.GetWeakPtr()));
@@ -300,31 +300,31 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
 
   void RegisterDeveloperMessages() {
     CHECK(developer_mode_);
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "setStartupArguments",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetStartupArguments,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "enableNetworking",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetNetworkingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), true));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "disableNetworking",
         base::BindRepeating(&DriveInternalsWebUIHandler::SetNetworkingEnabled,
                             weak_ptr_factory_.GetWeakPtr(), false));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "enableForcePauseSyncing",
         base::BindRepeating(&DriveInternalsWebUIHandler::ForcePauseSyncing,
                             weak_ptr_factory_.GetWeakPtr(), true));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "disableForcePauseSyncing",
         base::BindRepeating(&DriveInternalsWebUIHandler::ForcePauseSyncing,
                             weak_ptr_factory_.GetWeakPtr(), false));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "dumpAccountSettings",
         base::BindRepeating(&DriveInternalsWebUIHandler::DumpAccountSettings,
                             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "loadAccountSettings",
         base::BindRepeating(&DriveInternalsWebUIHandler::LoadAccountSettings,
                             weak_ptr_factory_.GetWeakPtr()));

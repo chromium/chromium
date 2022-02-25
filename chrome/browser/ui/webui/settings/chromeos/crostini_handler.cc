@@ -53,121 +53,121 @@ CrostiniHandler::~CrostiniHandler() {
 }
 
 void CrostiniHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniInstallerView",
       base::BindRepeating(&CrostiniHandler::HandleRequestCrostiniInstallerView,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestRemoveCrostini",
       base::BindRepeating(&CrostiniHandler::HandleRequestRemoveCrostini,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "exportCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleExportCrostiniContainer,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleImportCrostiniContainer,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniInstallerStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniInstallerStatusRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniExportImportOperationStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestArcAdbSideloadStatus",
       base::BindRepeating(&CrostiniHandler::HandleQueryArcAdbRequest,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCanChangeArcAdbSideloading",
       base::BindRepeating(
           &CrostiniHandler::HandleCanChangeArcAdbSideloadingRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "enableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleEnableArcAdbRequest,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "disableArcAdbSideload",
       base::BindRepeating(&CrostiniHandler::HandleDisableArcAdbRequest,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniContainerUpgradeView",
       base::BindRepeating(&CrostiniHandler::HandleRequestContainerUpgradeView,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniUpgraderDialogStatus",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniUpgraderDialogStatusRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestCrostiniContainerUpgradeAvailable",
       base::BindRepeating(
           &CrostiniHandler::HandleCrostiniContainerUpgradeAvailableRequest,
           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleAddCrostiniPortForward,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCrostiniDiskInfo",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniDiskInfo,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resizeCrostiniDisk",
       base::BindRepeating(&CrostiniHandler::HandleResizeCrostiniDisk,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleRemoveCrostiniPortForward,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeAllCrostiniPortForwards",
       base::BindRepeating(&CrostiniHandler::HandleRemoveAllCrostiniPortForwards,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "activateCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleActivateCrostiniPortForward,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "deactivateCrostiniPortForward",
       base::BindRepeating(&CrostiniHandler::HandleDeactivateCrostiniPortForward,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCrostiniActivePorts",
       base::BindRepeating(&CrostiniHandler::HandleGetCrostiniActivePorts,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "checkCrostiniIsRunning",
       base::BindRepeating(&CrostiniHandler::HandleCheckCrostiniIsRunning,
                           handler_weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "createContainer",
         base::BindRepeating(&CrostiniHandler::HandleCreateContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "deleteContainer",
         base::BindRepeating(&CrostiniHandler::HandleDeleteContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "requestContainerInfo",
         base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                             handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "setContainerBadgeColor",
         base::BindRepeating(&CrostiniHandler::HandleSetContainerBadgeColor,
                             handler_weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "stopContainer",
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));

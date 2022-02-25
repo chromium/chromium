@@ -140,39 +140,39 @@ void CookiesViewHandler::OnJavascriptDisallowed() {
 }
 
 void CookiesViewHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.getDisplayList",
       base::BindRepeating(&CookiesViewHandler::HandleGetDisplayList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.removeAll",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveAll,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.removeShownItems",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveShownItems,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.removeItem",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveItem,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.getCookieDetails",
       base::BindRepeating(&CookiesViewHandler::HandleGetCookieDetails,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.getNumCookiesString",
       base::BindRepeating(&CookiesViewHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.removeSite",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveSite,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.removeThirdPartyCookies",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveThirdParty,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "localData.reload",
       base::BindRepeating(&CookiesViewHandler::HandleReloadCookies,
                           base::Unretained(this)));

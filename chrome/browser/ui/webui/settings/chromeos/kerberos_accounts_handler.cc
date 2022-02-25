@@ -200,24 +200,24 @@ KerberosAccountsHandler::KerberosAccountsHandler(
 }
 
 void KerberosAccountsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getKerberosAccounts",
       base::BindRepeating(&KerberosAccountsHandler::HandleGetKerberosAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleAddKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleRemoveKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "validateKerberosConfig",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleValidateKerberosConfig,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setAsActiveKerberosAccount",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleSetAsActiveKerberosAccount,

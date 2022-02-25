@@ -23,12 +23,12 @@ PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
 }
 
 void PrivacySandboxDialogHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "dialogActionOccurred",
       base::BindRepeating(
           &PrivacySandboxDialogHandler::HandleDialogActionOccurred,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resizeDialog",
       base::BindRepeating(&PrivacySandboxDialogHandler::HandleResizeDialog,
                           base::Unretained(this)));

@@ -445,7 +445,7 @@ void ProfilePickerHandler::RegisterMessages() {
       "getAvailableAccounts",
       base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableAccounts,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openAshAccountSettingsPage",
       base::BindRepeating(
           &ProfilePickerHandler::HandleOpenAshAccountSettingsPage,

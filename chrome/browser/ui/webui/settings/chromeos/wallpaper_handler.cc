@@ -19,17 +19,17 @@ void WallpaperHandler::OnJavascriptAllowed() {}
 void WallpaperHandler::OnJavascriptDisallowed() {}
 
 void WallpaperHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openWallpaperManager",
       base::BindRepeating(&WallpaperHandler::HandleOpenWallpaperManager,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isWallpaperSettingVisible",
       base::BindRepeating(&WallpaperHandler::HandleIsWallpaperSettingVisible,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isWallpaperPolicyControlled",
       base::BindRepeating(&WallpaperHandler::HandleIsWallpaperPolicyControlled,
                           base::Unretained(this)));

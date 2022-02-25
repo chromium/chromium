@@ -135,22 +135,22 @@ AmbientModeHandler::AmbientModeHandler(PrefService* pref_service)
 AmbientModeHandler::~AmbientModeHandler() = default;
 
 void AmbientModeHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestSettings",
       base::BindRepeating(&AmbientModeHandler::HandleRequestSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestAlbums",
       base::BindRepeating(&AmbientModeHandler::HandleRequestAlbums,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setSelectedTemperatureUnit",
       base::BindRepeating(&AmbientModeHandler::HandleSetSelectedTemperatureUnit,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setSelectedAlbums",
       base::BindRepeating(&AmbientModeHandler::HandleSetSelectedAlbums,
                           base::Unretained(this)));

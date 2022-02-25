@@ -67,26 +67,26 @@ PrivacySandboxHandler::PrivacySandboxHandler() = default;
 PrivacySandboxHandler::~PrivacySandboxHandler() = default;
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setFledgeJoiningAllowed",
       base::BindRepeating(&PrivacySandboxHandler::HandleSetFledgeJoiningAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getFledgeState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetFledgeState,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setTopicAllowed",
       base::BindRepeating(&PrivacySandboxHandler::HandleSetTopicAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getTopicsState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetTopicsState,
                           base::Unretained(this)));

@@ -207,32 +207,32 @@ void AccountManagerUIHandler::RegisterMessages() {
   if (!profile_)
     profile_ = Profile::FromWebUI(web_ui());
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAccounts",
       base::BindRepeating(&AccountManagerUIHandler::HandleGetAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleAddAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "reauthenticateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleReauthenticateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "migrateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleMigrateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showWelcomeDialogIfRequired",
       base::BindRepeating(
           &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "changeArcAvailability",
       base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
                           weak_factory_.GetWeakPtr()));

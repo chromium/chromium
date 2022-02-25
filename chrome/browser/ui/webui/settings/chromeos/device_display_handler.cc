@@ -24,12 +24,12 @@ DisplayHandler::~DisplayHandler() {
 }
 
 void DisplayHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "highlightDisplay",
       base::BindRepeating(&DisplayHandler::HandleHighlightDisplay,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "dragDisplayDelta",
       base::BindRepeating(&DisplayHandler::HandleDragDisplayDelta,
                           base::Unretained(this)));

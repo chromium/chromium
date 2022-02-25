@@ -73,8 +73,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   const std::vector<std::string>& GetRequestableSchemes() override;
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
-  void RegisterMessageCallback(base::StringPiece message,
-                               DeprecatedMessageCallback2 callback) override;
+  void RegisterDeprecatedMessageCallback2(
+      base::StringPiece message,
+      DeprecatedMessageCallback2 callback) override;
   void RegisterDeprecatedMessageCallback(
       base::StringPiece message,
       const DeprecatedMessageCallback& callback) override;

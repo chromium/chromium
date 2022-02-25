@@ -28,27 +28,27 @@ IncompatibleApplicationsHandler::IncompatibleApplicationsHandler() = default;
 IncompatibleApplicationsHandler::~IncompatibleApplicationsHandler() = default;
 
 void IncompatibleApplicationsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestIncompatibleApplicationsList",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleRequestIncompatibleApplicationsList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startApplicationUninstallation",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleStartApplicationUninstallation,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSubtitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetSubtitlePluralString,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getSubtitleNoAdminRightsPluralString",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleGetSubtitleNoAdminRightsPluralString,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getListTitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetListTitlePluralString,

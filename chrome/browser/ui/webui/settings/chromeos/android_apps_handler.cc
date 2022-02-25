@@ -29,11 +29,11 @@ AndroidAppsHandler::~AndroidAppsHandler() {}
 
 void AndroidAppsHandler::RegisterMessages() {
   // Note: requestAndroidAppsInfo must be called before observers will be added.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestAndroidAppsInfo",
       base::BindRepeating(&AndroidAppsHandler::HandleRequestAndroidAppsInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showAndroidAppsSettings",
       base::BindRepeating(&AndroidAppsHandler::ShowAndroidAppsSettings,
                           weak_ptr_factory_.GetWeakPtr()));

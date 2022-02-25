@@ -38,24 +38,24 @@ void StylusHandler::RegisterMessages() {
 
   // Note: initializeStylusSettings must be called before observers will be
   // added.
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initializeStylusSettings",
       base::BindRepeating(&StylusHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "requestNoteTakingApps",
       base::BindRepeating(&StylusHandler::HandleRequestApps,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setPreferredNoteTakingApp",
       base::BindRepeating(&StylusHandler::HandleSetPreferredNoteTakingApp,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setPreferredNoteTakingAppEnabledOnLockScreen",
       base::BindRepeating(
           &StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "showPlayStoreApps",
       base::BindRepeating(&StylusHandler::HandleShowPlayStoreApps,
                           base::Unretained(this)));

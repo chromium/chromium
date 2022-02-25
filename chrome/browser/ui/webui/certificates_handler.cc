@@ -291,70 +291,70 @@ CertificatesHandler::~CertificatesHandler() {
 }
 
 void CertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "viewCertificate",
       base::BindRepeating(&CertificatesHandler::HandleViewCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleGetCATrust,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "editCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleEditCATrust,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "cancelImportExportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleCancelImportExportProcess,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "exportPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "exportPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleExportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleImportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importCaCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportCA,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importCaCertificateTrustSelected",
       base::BindRepeating(&CertificatesHandler::HandleImportCATrustSelected,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "importServerCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportServer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "exportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "deleteCertificate",
       base::BindRepeating(&CertificatesHandler::HandleDeleteCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "refreshCertificates",
       base::BindRepeating(&CertificatesHandler::HandleRefreshCertificates,
                           base::Unretained(this)));

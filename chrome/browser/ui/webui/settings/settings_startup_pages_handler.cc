@@ -30,23 +30,23 @@ void StartupPagesHandler::RegisterMessages() {
   if (Profile::FromWebUI(web_ui())->IsOffTheRecord())
     return;
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "addStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleAddStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "editStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleEditStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "onStartupPrefsPageLoad",
       base::BindRepeating(&StartupPagesHandler::HandleOnStartupPrefsPageLoad,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleRemoveStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setStartupPagesToCurrentPages",
       base::BindRepeating(
           &StartupPagesHandler::HandleSetStartupPagesToCurrentPages,

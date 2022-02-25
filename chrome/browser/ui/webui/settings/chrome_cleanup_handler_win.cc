@@ -110,37 +110,37 @@ ChromeCleanupHandler::~ChromeCleanupHandler() {
 }
 
 void ChromeCleanupHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "registerChromeCleanerObserver",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleRegisterChromeCleanerObserver,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startScanning",
       base::BindRepeating(&ChromeCleanupHandler::HandleStartScanning,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "restartComputer",
       base::BindRepeating(&ChromeCleanupHandler::HandleRestartComputer,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "startCleanup",
       base::BindRepeating(&ChromeCleanupHandler::HandleStartCleanup,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "notifyShowDetails",
       base::BindRepeating(&ChromeCleanupHandler::HandleNotifyShowDetails,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "notifyChromeCleanupLearnMoreClicked",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleNotifyChromeCleanupLearnMoreClicked,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getMoreItemsPluralString",
       base::BindRepeating(&ChromeCleanupHandler::HandleGetMoreItemsPluralString,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getItemsToRemovePluralString",
       base::BindRepeating(
           &ChromeCleanupHandler::HandleGetItemsToRemovePluralString,

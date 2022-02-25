@@ -33,11 +33,11 @@ LanguagesHandler::LanguagesHandler() = default;
 LanguagesHandler::~LanguagesHandler() = default;
 
 void LanguagesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleGetProspectiveUILanguage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleSetProspectiveUILanguage,
                           base::Unretained(this)));

@@ -42,26 +42,26 @@ DownloadsHandler::~DownloadsHandler() {
 }
 
 void DownloadsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "initializeDownloads",
       base::BindRepeating(&DownloadsHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resetAutoOpenFileTypes",
       base::BindRepeating(&DownloadsHandler::HandleResetAutoOpenFileTypes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
                           base::Unretained(this)));
 #endif
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setDownloadsConnectionAccountLink",
       base::BindRepeating(
           &DownloadsHandler::HandleSetDownloadsConnectionAccountLink,

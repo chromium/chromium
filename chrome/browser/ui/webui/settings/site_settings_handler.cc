@@ -506,114 +506,114 @@ SiteSettingsHandler::~SiteSettingsHandler() {
 }
 
 void SiteSettingsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "fetchUsageTotal",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchUsageTotal,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearUnpartitionedUsage",
       base::BindRepeating(&SiteSettingsHandler::HandleClearUnpartitionedUsage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearPartitionedUsage",
       base::BindRepeating(&SiteSettingsHandler::HandleClearPartitionedUsage,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setDefaultValueForContentType",
       base::BindRepeating(
           &SiteSettingsHandler::HandleSetDefaultValueForContentType,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getDefaultValueForContentType",
       base::BindRepeating(
           &SiteSettingsHandler::HandleGetDefaultValueForContentType,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getAllSites",
       base::BindRepeating(&SiteSettingsHandler::HandleGetAllSites,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCategoryList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetCategoryList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getCookieSettingDescription",
       base::BindRepeating(
           &SiteSettingsHandler::HandleGetCookieSettingDescription,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getRecentSitePermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetRecentSitePermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getFormattedBytes",
       base::BindRepeating(&SiteSettingsHandler::HandleGetFormattedBytes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetExceptionList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "getOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetOriginPermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleSetOriginPermissions,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resetCategoryPermissionForPattern",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetCategoryPermissionForPattern,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setCategoryPermissionForPattern",
       base::BindRepeating(
           &SiteSettingsHandler::HandleSetCategoryPermissionForPattern,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "resetChooserExceptionForSite",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetChooserExceptionForSite,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isOriginValid",
       base::BindRepeating(&SiteSettingsHandler::HandleIsOriginValid,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "isPatternValidForType",
       base::BindRepeating(&SiteSettingsHandler::HandleIsPatternValidForType,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "updateIncognitoStatus",
       base::BindRepeating(&SiteSettingsHandler::HandleUpdateIncognitoStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "fetchZoomLevels",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchZoomLevels,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "removeZoomLevel",
       base::BindRepeating(&SiteSettingsHandler::HandleRemoveZoomLevel,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "setBlockAutoplayEnabled",
       base::BindRepeating(&SiteSettingsHandler::HandleSetBlockAutoplayEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "fetchBlockAutoplayStatus",
       base::BindRepeating(&SiteSettingsHandler::HandleFetchBlockAutoplayStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "clearEtldPlus1DataAndCookies",
       base::BindRepeating(
           &SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "recordAction",
       base::BindRepeating(&SiteSettingsHandler::HandleRecordAction,
                           base::Unretained(this)));

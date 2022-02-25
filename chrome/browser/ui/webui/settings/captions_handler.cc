@@ -41,11 +41,11 @@ CaptionsHandler::~CaptionsHandler() {
 }
 
 void CaptionsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "openSystemCaptionsDialog",
       base::BindRepeating(&CaptionsHandler::HandleOpenSystemCaptionsDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       "liveCaptionSectionReady",
       base::BindRepeating(&CaptionsHandler::HandleLiveCaptionSectionReady,
                           base::Unretained(this)));
