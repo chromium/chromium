@@ -402,6 +402,7 @@ _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('kraken'),
     _GetBenchmarkConfig('octane'),
+    _GetBenchmarkConfig('speedometer2'),
 ])
 _WIN_7_BENCHMARK_CONFIGS = PerfSuite([
     'loading.desktop',
@@ -569,7 +570,7 @@ WIN_10_AMD = PerfPlatform('win-10_amd-perf', 'Windows AMD chipset',
                           _WIN_10_AMD_BENCHMARK_CONFIGS, 1, 'win')
 WIN_10_AMD_LAPTOP = PerfPlatform('win-10_amd_laptop-perf',
                                  'Windows 10 Laptop with AMD chipset.',
-                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 2, 'win')
+                                 _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS, 5, 'win')
 
 # Android
 ANDROID_GO = PerfPlatform(
