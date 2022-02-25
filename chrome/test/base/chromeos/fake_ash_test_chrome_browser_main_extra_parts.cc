@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
@@ -62,6 +63,7 @@ void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
 
   crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
       test_controller_ash_.get());
+  crosapi::BrowserManager::Get()->DisableAutoLaunchForTesting();
 
   // Call this at the end of PostBrowserStart().
   AshIsReadyForTesting();

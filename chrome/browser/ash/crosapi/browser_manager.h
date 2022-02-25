@@ -87,6 +87,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Returns true if Lacros is terminated.
   bool IsTerminated() const { return is_terminated_; }
 
+  // Tests will typically manually launch Lacros. As such it should not be
+  // automatically launched.
+  void DisableAutoLaunchForTesting();
+
   // Opens the browser window in lacros-chrome.
   // If lacros-chrome is not yet launched, it triggers to launch. If this is
   // called again during the setup phase of the launch process, it will be
@@ -485,6 +489,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   std::set<Feature> keep_alive_features_;
 
   base::ObserverList<BrowserManagerObserver> observers_;
+
+  bool disable_autolaunch_for_testing_ = false;
 
   base::WeakPtrFactory<BrowserManager> weak_factory_{this};
 };

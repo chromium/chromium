@@ -380,6 +380,10 @@ bool BrowserManager::IsRunningOrWillRun() const {
          state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
 }
 
+void BrowserManager::DisableAutoLaunchForTesting() {
+  disable_autolaunch_for_testing_ = true;
+}
+
 void BrowserManager::NewWindow(bool incognito,
                                bool should_trigger_session_restore) {
   if (incognito) {
@@ -707,6 +711,9 @@ BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
     browser_util::InitialBrowserAction initial_browser_action) {
   if (!browser_util::IsLacrosEnabled())
+    return MaybeStartResult::kNotStarted;
+
+  if (disable_autolaunch_for_testing_)
     return MaybeStartResult::kNotStarted;
 
   if (!browser_util::IsLacrosAllowedToLaunch()) {
