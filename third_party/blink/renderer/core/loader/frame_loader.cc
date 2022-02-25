@@ -775,8 +775,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
               request.GetTriggeringEventInfo() ==
                       mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                   ? UserNavigationInvolvement::kActivation
-                  : UserNavigationInvolvement::kNone) !=
-          AppHistory::DispatchResult::kContinue) {
+                  : UserNavigationInvolvement::kNone,
+              nullptr, nullptr) != AppHistory::DispatchResult::kContinue) {
         return;
       }
     }

@@ -13415,7 +13415,7 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
       SerializeString("message", ToScriptStateForMainWorld(frame));
   tester.ExpectTotalCount(histogramName, 0);
   document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"),
+      ToKURL("about:blank"), nullptr,
       mojom::blink::SameDocumentNavigationType::kHistoryApi, message,
       mojom::blink::ScrollRestorationType::kAuto,
       WebFrameLoadType::kReplaceCurrentItem,
@@ -13426,7 +13426,7 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeHistoryPushStateOrReplaceState, 1);
   document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"),
+      ToKURL("about:blank"), MakeGarbageCollected<HistoryItem>(),
       mojom::blink::SameDocumentNavigationType::kFragment, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kBackForward, frame->DomWindow()->GetSecurityOrigin(),
@@ -13434,7 +13434,7 @@ TEST_F(WebFrameTest, RecordSameDocumentNavigationToHistogram) {
   tester.ExpectBucketCount(histogramName,
                            kSPANavTypeSameDocumentBackwardOrForward, 1);
   document_loader.UpdateForSameDocumentNavigation(
-      ToKURL("about:blank"),
+      ToKURL("about:blank"), nullptr,
       mojom::blink::SameDocumentNavigationType::kFragment, message,
       mojom::blink::ScrollRestorationType::kManual,
       WebFrameLoadType::kReplaceCurrentItem,

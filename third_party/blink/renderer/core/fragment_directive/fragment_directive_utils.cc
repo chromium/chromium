@@ -21,7 +21,7 @@ void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
   // fragment shown in the URL matches the state of the highlight on the page.
   // This is equivalent to history.replaceState in javascript.
   frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      url, mojom::blink::SameDocumentNavigationType::kFragment,
+      url, nullptr, mojom::blink::SameDocumentNavigationType::kFragment,
       /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
       mojom::blink::ScrollRestorationType::kAuto);
 }

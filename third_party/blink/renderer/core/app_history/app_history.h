@@ -102,8 +102,10 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                                        NavigateEventType,
                                        WebFrameLoadType,
                                        UserNavigationInvolvement,
-                                       SerializedScriptValue* = nullptr,
-                                       HistoryItem* destination_item = nullptr);
+                                       SerializedScriptValue*,
+                                       HistoryItem* destination_item,
+                                       bool is_browser_initiated = false,
+                                       bool is_synchronously_committed = true);
   void InformAboutCanceledNavigation();
 
   int GetIndexFor(AppHistoryEntry*);

@@ -660,7 +660,9 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     WebFrameLoadType type,
     UserNavigationInvolvement involvement,
     SerializedScriptValue* state_object,
-    HistoryItem* destination_item) {
+    HistoryItem* destination_item,
+    bool is_browser_initiated,
+    bool is_synchronously_committed) {
   // TODO(japhet): The draft spec says to cancel any ongoing navigate event
   // before invoking DispatchNavigateEvent(), because not all navigations will
   // fire a navigate event, but all should abort an ongoing navigate event.
@@ -756,16 +758,11 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   if (!promise_list.IsEmpty()) {
     transition_ = MakeGarbageCollected<AppHistoryTransition>(
         script_state, navigation_type, current());
-    // In order to handle fragment cases (especially browser-initiated ones)
-    // correctly, we need state that only DocumentLoader holds. Defer to
-    // DocumentLoader to run the url and history update steps for the fragment
-    // case, but run it here for other cases.
-    if (event_type != NavigateEventType::kFragment) {
-      GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-          url,
-          mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
-          state_object, type);
-    }
+    GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+        url, destination_item,
+        mojom::blink::SameDocumentNavigationType::kAppHistoryTransitionWhile,
+        state_object, type, mojom::blink::ScrollRestorationType::kAuto,
+        is_browser_initiated, is_synchronously_committed);
   }
 
   if (!promise_list.IsEmpty() ||

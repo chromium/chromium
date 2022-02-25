@@ -319,14 +319,14 @@ void History::StateObjectAdded(
   if (auto* app_history = AppHistory::appHistory(*DomWindow())) {
     if (app_history->DispatchNavigateEvent(
             full_url, nullptr, NavigateEventType::kHistoryApi, type,
-            UserNavigationInvolvement::kNone,
-            data.get()) != AppHistory::DispatchResult::kContinue) {
+            UserNavigationInvolvement::kNone, data.get(),
+            nullptr) != AppHistory::DispatchResult::kContinue) {
       return;
     }
   }
 
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
-      full_url, mojom::blink::SameDocumentNavigationType::kHistoryApi,
+      full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
       std::move(data), type, restoration_type);
 }
 

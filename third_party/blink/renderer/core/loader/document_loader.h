@@ -167,17 +167,19 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void DidObserveLoadingBehavior(LoadingBehaviorFlag);
 
   // https://html.spec.whatwg.org/multipage/history.html#url-and-history-update-steps
-  void RunURLAndHistoryUpdateSteps(
-      const KURL&,
-      mojom::blink::SameDocumentNavigationType,
-      scoped_refptr<SerializedScriptValue>,
-      WebFrameLoadType = WebFrameLoadType::kReplaceCurrentItem,
-      mojom::blink::ScrollRestorationType =
-          mojom::blink::ScrollRestorationType::kAuto);
+  void RunURLAndHistoryUpdateSteps(const KURL&,
+                                   HistoryItem*,
+                                   mojom::blink::SameDocumentNavigationType,
+                                   scoped_refptr<SerializedScriptValue>,
+                                   WebFrameLoadType,
+                                   mojom::blink::ScrollRestorationType,
+                                   bool is_browser_initiated = false,
+                                   bool is_synchronously_committed = true);
 
   // |is_synchronously_committed| is described in comment for
   // CommitSameDocumentNavigation.
   void UpdateForSameDocumentNavigation(const KURL&,
+                                       HistoryItem*,
                                        mojom::blink::SameDocumentNavigationType,
                                        scoped_refptr<SerializedScriptValue>,
                                        mojom::blink::ScrollRestorationType,
