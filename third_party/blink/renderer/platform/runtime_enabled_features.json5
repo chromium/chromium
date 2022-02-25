@@ -1520,7 +1520,6 @@
     },
     {
       name: "MediaStreamTrackInWorker",
-      status: "test",
     },
     {
       name: "MediaStreamTrackTransfer",

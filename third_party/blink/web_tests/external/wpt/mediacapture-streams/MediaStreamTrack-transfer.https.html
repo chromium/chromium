@@ -7,12 +7,20 @@
 <script src=permission-helper.js></script>
 <script id="workerCode" type="javascript/worker">
 self.onmessage = (e) => {
-  if(e.data instanceof MediaStreamTrack) {
-    self.postMessage({result: 'Success'});
-  } else {
+  try {
+    if(e.data instanceof MediaStreamTrack) {
+      self.postMessage({result: 'Success'});
+      return;
+    } else {
+      self.postMessage({
+        result: 'Failure',
+        error: `${e.data} is not a MediaStreamTrack`
+      });
+    }
+  } catch (error) {
     self.postMessage({
       result: 'Failure',
-      error: `${e.data} is not a MediaStreamTrack`
+      error
     });
   }
 }

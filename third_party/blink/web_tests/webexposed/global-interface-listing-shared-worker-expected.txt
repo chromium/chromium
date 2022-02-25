@@ -721,37 +721,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method decodingInfo
 [Worker]     method encodingInfo
-[Worker] interface MediaStreamTrack : EventTarget
-[Worker]     attribute @@toStringTag
-[Worker]     getter contentHint
-[Worker]     getter enabled
-[Worker]     getter id
-[Worker]     getter kind
-[Worker]     getter label
-[Worker]     getter muted
-[Worker]     getter oncapturehandlechange
-[Worker]     getter onended
-[Worker]     getter onmute
-[Worker]     getter onunmute
-[Worker]     getter readyState
-[Worker]     method applyConstraints
-[Worker]     method clone
-[Worker]     method constructor
-[Worker]     method getCapabilities
-[Worker]     method getCaptureHandle
-[Worker]     method getConstraints
-[Worker]     method getSettings
-[Worker]     method stop
-[Worker]     setter contentHint
-[Worker]     setter enabled
-[Worker]     setter oncapturehandlechange
-[Worker]     setter onended
-[Worker]     setter onmute
-[Worker]     setter onunmute
-[Worker] interface MediaStreamTrackGenerator : MediaStreamTrack
-[Worker]     attribute @@toStringTag
-[Worker]     getter writable
-[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
