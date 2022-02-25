@@ -105,11 +105,11 @@ CrashesDOMHandler::~CrashesDOMHandler() {
 void CrashesDOMHandler::RegisterMessages() {
   upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
                                     base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       crash_reporter::kCrashesUIRequestCrashList,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       crash_reporter::kCrashesUIRequestSingleCrashUpload,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestSingleCrashUpload,
                           base::Unretained(this)));

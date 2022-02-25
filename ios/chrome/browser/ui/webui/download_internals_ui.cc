@@ -38,17 +38,17 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
  private:
   // WebUIIOSMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "getServiceStatus",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceStatus,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "getServiceDownloads",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleGetServiceDownloads,
             weak_ptr_factory_.GetWeakPtr()));
-    web_ui()->RegisterMessageCallback(
+    web_ui()->RegisterDeprecatedMessageCallback2(
         "startDownload",
         base::BindRepeating(
             &DownloadInternalsUIMessageHandler::HandleStartDownload,

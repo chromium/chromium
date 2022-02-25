@@ -37,8 +37,9 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void SetController(std::unique_ptr<WebUIIOSController> controller) override;
   void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) override;
-  void RegisterMessageCallback(const std::string& message,
-                               DeprecatedMessageCallback2 callback) override;
+  void RegisterDeprecatedMessageCallback2(
+      const std::string& message,
+      DeprecatedMessageCallback2 callback) override;
   void RegisterDeprecatedMessageCallback(
       const std::string& message,
       const DeprecatedMessageCallback& callback) override;

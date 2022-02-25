@@ -143,11 +143,11 @@ void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       gcm_driver::kGetGcmInternalsInfo,
       base::BindRepeating(&GcmInternalsUIMessageHandler::RequestAllInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       gcm_driver::kSetGcmInternalsRecording,
       base::BindRepeating(&GcmInternalsUIMessageHandler::SetRecording,
                           weak_ptr_factory_.GetWeakPtr()));

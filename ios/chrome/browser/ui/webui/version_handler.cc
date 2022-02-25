@@ -16,7 +16,7 @@ VersionHandler::VersionHandler() {}
 VersionHandler::~VersionHandler() {}
 
 void VersionHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback2(
       version_ui::kRequestVariationInfo,
       base::BindRepeating(&VersionHandler::HandleRequestVariationInfo,
                           base::Unretained(this)));

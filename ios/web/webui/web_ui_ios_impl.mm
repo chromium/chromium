@@ -108,7 +108,7 @@ void WebUIIOSImpl::FireWebUIListener(
       GetJavascriptCall("cr.webUIListenerCallback", modified_args));
 }
 
-void WebUIIOSImpl::RegisterMessageCallback(
+void WebUIIOSImpl::RegisterDeprecatedMessageCallback2(
     const std::string& message,
     DeprecatedMessageCallback2 callback) {
   deprecated_message_callbacks_2_.emplace(message, std::move(callback));
