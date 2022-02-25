@@ -39,9 +39,10 @@ class CONTENT_EXPORT AttributionTrigger {
   };
 
   // Should only be created with values that the browser process has already
-  // validated. At creation time, |trigger_data_| should already be stripped
-  // to a lower entropy. |conversion_destination| should be filled by a
-  // navigation origin known by the browser process.
+  // validated. |trigger_data| and |event_source_trigger_data| will be sanitized
+  // to a lower entropy by the `AttributionStorageDelegate` before storage.
+  // |conversion_destination| should be filled by a navigation origin known by
+  // the browser process.
   AttributionTrigger(uint64_t trigger_data,
                      net::SchemefulSite conversion_destination,
                      url::Origin reporting_origin,

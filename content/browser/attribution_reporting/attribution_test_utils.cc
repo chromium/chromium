@@ -160,6 +160,33 @@ int64_t ConfigurableStorageDelegate::GetAggregatableBudgetPerSource() const {
   return aggregatable_budget_per_source_;
 }
 
+uint64_t ConfigurableStorageDelegate::SanitizeTriggerData(
+    uint64_t trigger_data,
+    CommonSourceInfo::SourceType source_type) const {
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      if (!navigation_trigger_data_cardinality_)
+        return trigger_data;
+
+      return trigger_data % *navigation_trigger_data_cardinality_;
+    case CommonSourceInfo::SourceType::kEvent:
+      if (!event_trigger_data_cardinality_)
+        return trigger_data;
+
+      return trigger_data % *event_trigger_data_cardinality_;
+  }
+}
+
+void ConfigurableStorageDelegate::set_trigger_data_cardinality(
+    uint64_t navigation,
+    uint64_t event) {
+  DCHECK_GT(navigation, 0u);
+  DCHECK_GT(event, 0u);
+
+  navigation_trigger_data_cardinality_ = navigation;
+  event_trigger_data_cardinality_ = event;
+}
+
 AttributionManager* TestManagerProvider::GetManager(
     WebContents* web_contents) const {
   return manager_;

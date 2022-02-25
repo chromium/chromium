@@ -11,29 +11,6 @@
 
 namespace content {
 
-TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
-  EXPECT_EQ(0u,
-            SanitizeTriggerData(8, CommonSourceInfo::SourceType::kNavigation));
-  EXPECT_EQ(1u,
-            SanitizeTriggerData(9, CommonSourceInfo::SourceType::kNavigation));
-
-  EXPECT_EQ(0u, SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
-  EXPECT_EQ(1u, SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
-}
-
-TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
-  for (uint64_t trigger_data = 0; trigger_data < 8; trigger_data++) {
-    EXPECT_EQ(trigger_data,
-              SanitizeTriggerData(trigger_data,
-                                  CommonSourceInfo::SourceType::kNavigation));
-  }
-  for (uint64_t trigger_data = 0; trigger_data < 2; trigger_data++) {
-    EXPECT_EQ(trigger_data,
-              SanitizeTriggerData(trigger_data,
-                                  CommonSourceInfo::SourceType::kEvent));
-  }
-}
-
 TEST(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
   const base::Time impression_time = base::Time::Now();
 

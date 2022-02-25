@@ -110,15 +110,6 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.impression_time(), deadline);
 }
 
-uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      return 8;
-    case CommonSourceInfo::SourceType::kEvent:
-      return 2;
-  }
-}
-
 std::string SerializeAttributionJson(const base::Value& body,
                                      bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;

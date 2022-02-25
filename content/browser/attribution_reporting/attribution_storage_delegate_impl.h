@@ -64,6 +64,9 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) override;
   int64_t GetAggregatableBudgetPerSource() const override;
+  uint64_t SanitizeTriggerData(
+      uint64_t trigger_data,
+      CommonSourceInfo::SourceType source_type) const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.

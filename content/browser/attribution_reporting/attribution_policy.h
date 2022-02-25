@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_POLICY_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_POLICY_H_
 
-#include <stdint.h>
-
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,10 +15,6 @@ class TimeDelta;
 }  // namespace base
 
 namespace content {
-
-CONTENT_EXPORT
-uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                             CommonSourceInfo::SourceType source_type);
 
 // Returns the expiry time for an impression that is clamped to a maximum
 // value of 30 days from |impression_time|.

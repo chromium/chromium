@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -362,6 +364,27 @@ TEST(AttributionStorageDelegateImplTest,
                            /*num_bars=*/24,
                            /*num_samples=*/150'000,
                            /*tolerance=*/0.9);
+}
+
+TEST(AttributionStorageDelegateImplTest, SanitizeTriggerData) {
+  const struct {
+    CommonSourceInfo::SourceType source_type;
+    uint64_t trigger_data;
+    uint64_t expected;
+  } kTestCases[] = {
+      {CommonSourceInfo::SourceType::kNavigation, 7, 7},
+      {CommonSourceInfo::SourceType::kNavigation, 8, 0},
+      {CommonSourceInfo::SourceType::kNavigation, 9, 1},
+      {CommonSourceInfo::SourceType::kEvent, 1, 1},
+      {CommonSourceInfo::SourceType::kEvent, 2, 0},
+      {CommonSourceInfo::SourceType::kEvent, 3, 1},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected,
+              AttributionStorageDelegateImpl().SanitizeTriggerData(
+                  test_case.trigger_data, test_case.source_type));
+  }
 }
 
 }  // namespace content

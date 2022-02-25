@@ -20,7 +20,6 @@
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
-#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -37,7 +36,6 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -299,50 +297,20 @@ void AttributionHost::RegisterConversion(
   if (!allowed)
     return;
 
-  const auto sanitize_trigger_data =
-      [&](const uint64_t unsanitized, CommonSourceInfo::SourceType source_type,
-          devtools_instrumentation::AttributionReportingIssueType issue_type) {
-        const uint64_t sanitized =
-            SanitizeTriggerData(unsanitized, source_type);
-
-        if (sanitized != unsanitized) {
-          devtools_instrumentation::ReportAttributionReportingIssue(
-              render_frame_host, issue_type, conversion->devtools_request_id,
-              base::NumberToString(unsanitized));
-        }
-
-        return sanitized;
-      };
-
-  // TODO(apaseltiner): Set this based on field in `conversion`.
-  absl::optional<int64_t> debug_key;
-
   net::SchemefulSite conversion_destination(main_frame_origin);
 
   AttributionTrigger storable_conversion(
-      sanitize_trigger_data(
-          conversion->conversion_data,
-          CommonSourceInfo::SourceType::kNavigation,
-          devtools_instrumentation::AttributionReportingIssueType::
-              kAttributionTriggerDataTooLarge),
-      std::move(conversion_destination), conversion->reporting_origin,
-      sanitize_trigger_data(
-          conversion->event_source_trigger_data,
-          CommonSourceInfo::SourceType::kEvent,
-          devtools_instrumentation::AttributionReportingIssueType::
-              kAttributionEventSourceTriggerDataTooLarge),
+      conversion->conversion_data, std::move(conversion_destination),
+      conversion->reporting_origin, conversion->event_source_trigger_data,
       conversion->priority,
       conversion->dedup_key.is_null()
           ? absl::nullopt
           : absl::make_optional(conversion->dedup_key->value),
-      debug_key);
+      /*debug_key=*/absl::nullopt);
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(conversion->reporting_origin);
 
-  // TODO(apaseltiner): It would be nice to be able to report an issue in
-  // DevTools in the event that a debug key is present but the corresponding
-  // cookie is not.
   attribution_manager->HandleTrigger(std::move(storable_conversion));
 }
 

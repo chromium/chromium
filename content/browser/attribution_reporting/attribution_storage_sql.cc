@@ -598,6 +598,10 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
     const base::Time trigger_time = common_info.impression_time();
 
     for (const auto& fake_report : *randomized_response) {
+      DCHECK_EQ(fake_report.trigger_data,
+                delegate_->SanitizeTriggerData(fake_report.trigger_data,
+                                               common_info.source_type()));
+
       if (!StoreReport(source_id, fake_report.trigger_data, trigger_time,
                        fake_report.report_time,
                        /*priority=*/0, delegate_->NewReportID(),
@@ -787,6 +791,9 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       trigger_data = trigger.event_source_trigger_data();
       break;
   }
+  // TODO(apaseltiner): Consider informing the manager if the trigger
+  // data was out of range for DevTools issue reporting.
+  trigger_data = delegate_->SanitizeTriggerData(trigger_data, source_type);
 
   const base::Time report_time =
       delegate_->GetReportTime(source_to_attribute->source.common_info(),

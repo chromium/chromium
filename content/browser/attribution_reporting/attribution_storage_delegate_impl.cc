@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include <stdint.h>
+
 #include <cstdlib>
 #include <utility>
 
@@ -19,6 +21,19 @@
 #include "content/browser/attribution_reporting/combinatorics.h"
 
 namespace content {
+
+namespace {
+
+uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      return 8;
+    case CommonSourceInfo::SourceType::kEvent:
+      return 2;
+  }
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<AttributionStorageDelegate>
@@ -252,6 +267,13 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
 int64_t AttributionStorageDelegateImpl::GetAggregatableBudgetPerSource() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 65536;
+}
+
+uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
+    uint64_t trigger_data,
+    CommonSourceInfo::SourceType source_type) const {
+  const uint64_t cardinality = TriggerDataCardinality(source_type);
+  return trigger_data % cardinality;
 }
 
 }  // namespace content

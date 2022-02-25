@@ -2082,4 +2082,38 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
   EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_c);
 }
 
+TEST_F(AttributionStorageTest, TriggerDataSanitized) {
+  delegate()->set_trigger_data_cardinality(/*navigation=*/4, /*event=*/3);
+
+  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
+  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(origin1)
+          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+          .Build());
+  MaybeCreateAndStoreReport(
+      TriggerBuilder().SetReportingOrigin(origin1).SetTriggerData(6).Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(origin2)
+          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+          .Build());
+  MaybeCreateAndStoreReport(TriggerBuilder()
+                                .SetReportingOrigin(origin2)
+                                .SetEventSourceTriggerData(4)
+                                .Build());
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(
+                  AllOf(ReportSourceIs(SourceTypeIs(
+                            CommonSourceInfo::SourceType::kNavigation)),
+                        EventLevelDataIs(TriggerDataIs(2))),
+                  AllOf(ReportSourceIs(
+                            SourceTypeIs(CommonSourceInfo::SourceType::kEvent)),
+                        EventLevelDataIs(TriggerDataIs(1)))));
+}
+
 }  // namespace content

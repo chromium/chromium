@@ -137,6 +137,11 @@ class AttributionStorageDelegate {
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.
   virtual int64_t GetAggregatableBudgetPerSource() const = 0;
+
+  // Sanitizes `trigger_data` according to the data limits for `source_type`.
+  virtual uint64_t SanitizeTriggerData(
+      uint64_t trigger_data,
+      CommonSourceInfo::SourceType source_type) const = 0;
 };
 
 }  // namespace content

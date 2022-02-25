@@ -159,6 +159,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) override;
   int64_t GetAggregatableBudgetPerSource() const override;
+  uint64_t SanitizeTriggerData(
+      uint64_t trigger_data,
+      CommonSourceInfo::SourceType source_type) const override;
 
   void set_max_attributions_per_source(int max) {
     max_attributions_per_source_ = max;
@@ -213,6 +216,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
     randomized_response_ = std::move(randomized_response);
   }
 
+  void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
+
  private:
   int max_attributions_per_source_ = INT_MAX;
   int max_sources_per_origin_ = INT_MAX;
@@ -241,6 +246,9 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   AttributionRandomizedResponseRates randomized_response_rates_;
   RandomizedResponse randomized_response_ = absl::nullopt;
+
+  absl::optional<uint64_t> navigation_trigger_data_cardinality_;
+  absl::optional<uint64_t> event_trigger_data_cardinality_;
 };
 
 // Test manager provider which can be used to inject a fake AttributionManager.

@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/attribution_policy.h"
 
 #include <math.h>
-#include <stdint.h>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
@@ -13,12 +12,6 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 
 namespace content {
-
-uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                             CommonSourceInfo::SourceType source_type) {
-  const uint64_t cardinality = TriggerDataCardinality(source_type);
-  return trigger_data % cardinality;
-}
 
 base::Time GetExpiryTimeForImpression(
     const absl::optional<base::TimeDelta>& declared_expiry,

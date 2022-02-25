@@ -189,8 +189,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                               url::Origin::Create(GURL("https://a.r.test")))
                           .SetConversionDestination(net::SchemefulSite(
                               url::Origin::Create(GURL("https://a.d1.test"))))
-                          .SetTriggerData(2)             // sanitized to 3 bits
-                          .SetEventSourceTriggerData(1)  // sanitized to 1 bit
+                          .SetTriggerData(10)
+                          .SetEventSourceTriggerData(3)
                           .SetPriority(-5)
                           .SetDedupKey(123)
                           .SetDebugKey(14)
