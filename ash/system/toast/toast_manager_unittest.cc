@@ -514,16 +514,8 @@ TEST_F(ToastManagerImplTest, ReplaceContentsOfCurrentToast) {
   EXPECT_EQ(3, GetToastSerial());
 }
 
-// TODO(crbug.com/1298361): Flakes on CrOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes \
-  DISABLED_ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes
-#else
-#define MAYBE_ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes \
-  ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes
-#endif
 TEST_F(ToastManagerImplTest,
-       MAYBE_ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes) {
+       ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes) {
   // By default, the animation duration is zero in tests. Set the animation
   // duration to non-zero so that toasts don't immediately close.
   ui::ScopedAnimationDurationScaleMode animation_duration(
@@ -555,7 +547,7 @@ TEST_F(ToastManagerImplTest,
 
   // Cancel the shown toast and wait for the animation to finish.
   CancelToast(id1);
-  task_environment()->FastForwardBy(base::Seconds(1));
+  task_environment()->FastForwardBy(base::Seconds(2));
 
   // Confirm that the toast now showing corresponds with id2.
   EXPECT_EQ(u"TEXT2", GetCurrentText());
