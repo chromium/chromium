@@ -101,14 +101,18 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton() {
   std::move(accept_virtual_card_callback_).Run();
   decline_virtual_card_callback_.Reset();
 
-  should_show_icon_ = false;
+#if !BUILDFLAG(IS_ANDROID)
+  bubble_state_ = BubbleState::kHidden;
+#endif
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {
   std::move(decline_virtual_card_callback_).Run();
   accept_virtual_card_callback_.Reset();
 
-  should_show_icon_ = false;
+#if !BUILDFLAG(IS_ANDROID)
+  bubble_state_ = BubbleState::kHidden;
+#endif
 }
 
 void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(const GURL& url) {
@@ -124,7 +128,26 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
-  return should_show_icon_;
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return bubble_state_ != BubbleState::kHidden;
+#endif
+}
+
+void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+#if BUILDFLAG(IS_ANDROID)
+  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
+#else
+  if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
+      bubble_state_ == BubbleState::kShowingIconAndBubble) {
+    Show();
+  } else if (visibility == content::Visibility::HIDDEN) {
+    HideBubble();
+    bubble_state_ = BubbleState::kShowingIcon;
+  }
+#endif
 }
 
 PageActionIconType
@@ -145,15 +168,37 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
   // If bubble is already showing for another card, close it.
   if (bubble_view())
     HideBubble();
+
+  bubble_state_ = BubbleState::kShowingIconAndBubble;
+  if (!IsWebContentsActive())
+    return;
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
                       ->ShowVirtualCardEnrollBubble(web_contents(), this,
                                                     is_user_gesture_));
   DCHECK(bubble_view());
-  should_show_icon_ = true;
+  // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
+  // we display the bubble if the the state is kShowingIconAndBubble. Once we
+  // open the bubble here once, we set |bubble_state_| to kShowingIcon to make
+  // sure further OnVisibilityChanged() don't trigger opening the bubble because
+  // we don't want to re-show it every time the web contents become visible.
+  bubble_state_ = BubbleState::kShowingIcon;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool VirtualCardEnrollBubbleControllerImpl::IsWebContentsActive() {
+  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
+  if (!active_browser)
+    return false;
+
+  return active_browser->tab_strip_model()->GetActiveWebContents() ==
+         web_contents();
+}
+#endif
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardEnrollBubbleControllerImpl);
 
