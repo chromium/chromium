@@ -101,6 +101,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -2512,7 +2513,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Unsupported) {
   std::vector<base::FilePath::StringType> alternate_extensions{
       FILE_PATH_LITERAL(".jpeg")};
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
                      base::Unretained(this)));
@@ -2546,7 +2548,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedDefault) {
     SetExtendedReportingPreference(true);
     RunLoop run_loop;
     download_service_->CheckPPAPIDownloadRequest(
-        GURL("http://example.com/foo"), GURL(), /*web_contents=*/nullptr,
+        GURL("http://example.com/foo"), GURL(),
+        content::GlobalRenderFrameHostId(), /*web_contents=*/nullptr,
         default_file_path, alternate_extensions, profile(),
         base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -2568,7 +2571,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedAlternate) {
   SetExtendedReportingPreference(false);
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
@@ -2588,7 +2592,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_AllowlistedURL) {
 
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
@@ -2607,7 +2612,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
       .WillRepeatedly(Return(false));
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
@@ -2626,7 +2632,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_InvalidResponse) {
       .WillRepeatedly(Return(false));
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
@@ -2645,7 +2652,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
   download_service_->download_request_timeout_ms_ = 0;
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), nullptr, default_file_path,
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), nullptr, default_file_path,
       alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
@@ -2674,8 +2682,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
   const GURL kRequestorUrl("http://example.com/foo");
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
-      kRequestorUrl, GURL(), nullptr, default_file_path, alternate_extensions,
-      profile(),
+      kRequestorUrl, GURL(), content::GlobalRenderFrameHostId(), nullptr,
+      default_file_path, alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
@@ -2704,8 +2712,9 @@ TEST_F(DownloadProtectionServiceTest,
   std::vector<base::FilePath::StringType> alternate_extensions{
       FILE_PATH_LITERAL(".tmp"), FILE_PATH_LITERAL(".asdfasdf")};
   download_service_->CheckPPAPIDownloadRequest(
-      GURL("http://example.com/foo"), GURL(), web_contents.get(),
-      default_file_path, alternate_extensions, profile(),
+      GURL("http://example.com/foo"), GURL(),
+      content::GlobalRenderFrameHostId(), web_contents.get(), default_file_path,
+      alternate_extensions, profile(),
       base::BindOnce(&DownloadProtectionServiceTest::SyncCheckDoneCallback,
                      base::Unretained(this)));
   ASSERT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));

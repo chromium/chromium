@@ -52,6 +52,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
@@ -327,6 +328,7 @@ bool DownloadProtectionService::IsSupportedDownload(
 void DownloadProtectionService::CheckPPAPIDownloadRequest(
     const GURL& requestor_url,
     const GURL& initiating_frame_url,
+    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
     content::WebContents* web_contents,
     const base::FilePath& default_file_path,
     const std::vector<base::FilePath::StringType>& alternate_extensions,
@@ -341,9 +343,9 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
     return;
   }
   std::unique_ptr<PPAPIDownloadRequest> request(new PPAPIDownloadRequest(
-      requestor_url, initiating_frame_url, web_contents, default_file_path,
-      alternate_extensions, profile, std::move(callback), this,
-      database_manager_));
+      requestor_url, initiating_frame_url, initiating_outermost_main_frame_id,
+      web_contents, default_file_path, alternate_extensions, profile,
+      std::move(callback), this, database_manager_));
   PPAPIDownloadRequest* request_copy = request.get();
   auto insertion_result = ppapi_download_requests_.insert(
       std::make_pair(request_copy, std::move(request)));
@@ -535,23 +537,27 @@ DownloadProtectionService::IdentifyReferrerChain(
     return nullptr;
   }
 
+  content::RenderFrameHost* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(&item);
+  content::RenderFrameHost* outermost_render_frame_host =
+      render_frame_host ? render_frame_host->GetOutermostMainFrame() : nullptr;
+  content::GlobalRenderFrameHostId frame_id =
+      outermost_render_frame_host ? outermost_render_frame_host->GetGlobalId()
+                                  : content::GlobalRenderFrameHostId();
+
   SessionID download_tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents);
   // We look for the referrer chain that leads to the download url first.
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(web_contents)
           ->IdentifyReferrerChainByEventURL(
-              item.GetURL(), download_tab_id,
+              item.GetURL(), download_tab_id, frame_id,
               GetDownloadAttributionUserGestureLimit(item),
               referrer_chain.get());
 
   // If no navigation event is found, this download is not triggered by regular
   // navigation (e.g. html5 file apis, etc). We look for the referrer chain
   // based on relevant RenderFrameHost instead.
-  content::RenderFrameHost* render_frame_host =
-      content::DownloadItemUtils::GetRenderFrameHost(&item);
-  content::RenderFrameHost* outermost_render_frame_host =
-      render_frame_host ? render_frame_host->GetOutermostMainFrame() : nullptr;
   if (result ==
           SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND &&
       web_contents && outermost_render_frame_host &&
@@ -559,8 +565,9 @@ DownloadProtectionService::IdentifyReferrerChain(
     AddEventUrlToReferrerChain(item, outermost_render_frame_host,
                                referrer_chain.get());
     result = GetNavigationObserverManager(web_contents)
-                 ->IdentifyReferrerChainByWebContents(
-                     web_contents, GetDownloadAttributionUserGestureLimit(item),
+                 ->IdentifyReferrerChainByRenderFrameHost(
+                     outermost_render_frame_host,
+                     GetDownloadAttributionUserGestureLimit(item),
                      referrer_chain.get());
   }
 
@@ -607,8 +614,9 @@ DownloadProtectionService::IdentifyReferrerChain(
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(item.web_contents)
           ->IdentifyReferrerChainByHostingPage(
-              item.frame_url, tab_url, tab_id, item.has_user_gesture,
-              kDownloadAttributionUserGestureLimit, referrer_chain.get());
+              item.frame_url, tab_url, item.outermost_main_frame_id, tab_id,
+              item.has_user_gesture, kDownloadAttributionUserGestureLimit,
+              referrer_chain.get());
 
   UMA_HISTOGRAM_ENUMERATION(
       "SafeBrowsing.ReferrerAttributionResult.NativeFileSystemWriteAttribution",
@@ -637,6 +645,7 @@ DownloadProtectionService::IdentifyReferrerChain(
 void DownloadProtectionService::AddReferrerChainToPPAPIClientDownloadRequest(
     content::WebContents* web_contents,
     const GURL& initiating_frame_url,
+    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
     const GURL& initiating_main_frame_url,
     SessionID tab_id,
     bool has_user_gesture,
@@ -649,8 +658,9 @@ void DownloadProtectionService::AddReferrerChainToPPAPIClientDownloadRequest(
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       GetNavigationObserverManager(web_contents)
           ->IdentifyReferrerChainByHostingPage(
-              initiating_frame_url, initiating_main_frame_url, tab_id,
-              has_user_gesture, kDownloadAttributionUserGestureLimit,
+              initiating_frame_url, initiating_main_frame_url,
+              initiating_outermost_main_frame_id, tab_id, has_user_gesture,
+              kDownloadAttributionUserGestureLimit,
               out_request->mutable_referrer_chain());
   UMA_HISTOGRAM_COUNTS_100(
       "SafeBrowsing.ReferrerURLChainSize.PPAPIDownloadAttribution",

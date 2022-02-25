@@ -33,6 +33,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/global_routing_id.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -2442,7 +2443,8 @@ void SafeBrowsingUIHandler::GetReferrerChain(
 
   ReferrerChain referrer_chain;
   provider->IdentifyReferrerChainByEventURL(
-      GURL(url_string), SessionID::InvalidValue(), 2, &referrer_chain);
+      GURL(url_string), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 2, &referrer_chain);
 
   base::ListValue referrer_list;
   for (const ReferrerChainEntry& entry : referrer_chain) {

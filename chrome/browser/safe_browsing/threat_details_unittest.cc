@@ -213,14 +213,16 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
 
 class MockReferrerChainProvider : public ReferrerChainProvider {
  public:
-  virtual ~MockReferrerChainProvider() {}
-  MOCK_METHOD3(IdentifyReferrerChainByWebContents,
-               AttributionResult(content::WebContents* web_contents,
+  virtual ~MockReferrerChainProvider() = default;
+  MOCK_METHOD3(IdentifyReferrerChainByRenderFrameHost,
+               AttributionResult(content::RenderFrameHost* rfh,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
-  MOCK_METHOD4(IdentifyReferrerChainByEventURL,
+  MOCK_METHOD5(IdentifyReferrerChainByEventURL,
                AttributionResult(const GURL& event_url,
                                  SessionID event_tab_id,
+                                 const content::GlobalRenderFrameHostId&
+                                     outermost_event_main_frame_id,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
   MOCK_METHOD3(IdentifyReferrerChainByPendingEventURL,
@@ -563,7 +565,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
   returned_referrer_chain.Add()->set_url(kReferrerURL);
   returned_referrer_chain.Add()->set_url(kSecondRedirectURL);
   EXPECT_CALL(*referrer_chain_provider_,
-              IdentifyReferrerChainByWebContents(web_contents(), _, _))
+              IdentifyReferrerChainByRenderFrameHost(
+                  web_contents()->GetMainFrame(), _, _))
       .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
                       Return(ReferrerChainProvider::SUCCESS)));
 

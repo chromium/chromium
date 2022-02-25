@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -40,6 +41,10 @@ struct CONTENT_EXPORT FileSystemAccessWriteItem {
 
   // URL of the frame in which the write operation took place.
   GURL frame_url;
+
+  // id of the outermost main frame in which the write operation took place.
+  GlobalRenderFrameHostId outermost_main_frame_id;
+
   // True iff the frame had a transient user activation when the writer was
   // created.
   bool has_user_gesture = false;

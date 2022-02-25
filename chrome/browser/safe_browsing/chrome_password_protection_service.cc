@@ -1349,7 +1349,8 @@ void ChromePasswordProtectionService::FillReferrerChain(
           profile_);
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       navigation_observer_manager->IdentifyReferrerChainByEventURL(
-          event_url, event_tab_id, kPasswordEventAttributionUserGestureLimit,
+          event_url, event_tab_id, content::GlobalRenderFrameHostId(),
+          kPasswordEventAttributionUserGestureLimit,
           frame->mutable_referrer_chain());
   size_t referrer_chain_length = frame->referrer_chain().size();
   UMA_HISTOGRAM_COUNTS_100(

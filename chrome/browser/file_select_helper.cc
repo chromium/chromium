@@ -32,6 +32,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -634,6 +635,9 @@ void FileSelectHelper::CheckDownloadRequestWithSafeBrowsing(
   sb_service->download_protection_service()->CheckPPAPIDownloadRequest(
       requestor_url,
       render_frame_host_ ? render_frame_host_->GetLastCommittedURL() : GURL(),
+      render_frame_host_
+          ? render_frame_host_->GetOutermostMainFrame()->GetGlobalId()
+          : content::GlobalRenderFrameHostId(),
       WebContents::FromRenderFrameHost(render_frame_host_), default_file_path,
       alternate_extensions, profile_,
       base::BindOnce(

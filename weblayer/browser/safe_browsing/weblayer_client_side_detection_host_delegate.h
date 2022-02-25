@@ -10,6 +10,10 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
 
+namespace content {
+struct GlobalRenderFrameHostId;
+}  // namespace content
+
 namespace weblayer {
 
 class WebLayerClientSideDetectionHostDelegate
@@ -35,7 +39,9 @@ class WebLayerClientSideDetectionHostDelegate
   safe_browsing::ClientSideDetectionService* GetClientSideDetectionService()
       override;
   void AddReferrerChain(safe_browsing::ClientPhishingRequest* verdict,
-                        GURL current_url) override;
+                        GURL current_url,
+                        const content::GlobalRenderFrameHostId&
+                            current_outermost_main_frame_id) override;
 
  private:
   raw_ptr<content::WebContents> web_contents_;

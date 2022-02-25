@@ -1259,14 +1259,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SafeBrowsing.NavigationObserver.IdentifyReferrerChainByWebContentsTime"
+    name="SafeBrowsing.NavigationObserver.IdentifyReferrerChainByRenderFrameHostTime"
     units="ms" expires_after="2022-07-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Logs the time it takes to identify referrer chain by web contents. Logged
-    each time the function is called.
+    Logs the time it takes to identify referrer chain by render frame host.
+    Logged each time the function is called.
   </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.NavigationObserver.MissingInitiatorRenderFrameHostPortal"
+    units="BooleanExists" expires_after="2022-07-23">
+  <owner>vollick@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>Logs the number of times we have a missing initiator RFH.</summary>
 </histogram>
 
 <histogram

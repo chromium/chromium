@@ -117,6 +117,8 @@ class DownloadProtectionService {
   virtual void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
       const GURL& initiating_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       content::WebContents* web_contents,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
@@ -304,6 +306,8 @@ class DownloadProtectionService {
   void AddReferrerChainToPPAPIClientDownloadRequest(
       content::WebContents* web_contents,
       const GURL& initiating_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       const GURL& initiating_main_frame_url,
       SessionID tab_id,
       bool has_user_gesture,

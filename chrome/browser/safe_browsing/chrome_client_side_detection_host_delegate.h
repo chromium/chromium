@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace safe_browsing {
 
@@ -37,7 +38,9 @@ class ChromeClientSideDetectionHostDelegate
   scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() override;
   ClientSideDetectionService* GetClientSideDetectionService() override;
   void AddReferrerChain(ClientPhishingRequest* verdict,
-                        GURL current_url) override;
+                        GURL current_url,
+                        const content::GlobalRenderFrameHostId&
+                            current_outermost_main_frame_id) override;
 
   void SetNavigationObserverManagerForTesting(
       SafeBrowsingNavigationObserverManager* navigation_observer_manager) {

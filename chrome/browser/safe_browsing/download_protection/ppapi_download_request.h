@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -64,6 +65,8 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
   PPAPIDownloadRequest(
       const GURL& requestor_url,
       const GURL& initiating_frame_url,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       content::WebContents* web_contents,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
@@ -137,6 +140,9 @@ class PPAPIDownloadRequest : public content::WebContentsObserver {
 
   // URL of the frame that hosts the PPAPI plugin.
   const GURL initiating_frame_url_;
+
+  // The id of the initiating outermost main frame.
+  const content::GlobalRenderFrameHostId initiating_outermost_main_frame_id_;
 
   // URL of the tab that contains the initialting_frame.
   const GURL initiating_main_frame_url_;

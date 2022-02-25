@@ -1198,8 +1198,11 @@ WebstorePrivateGetReferrerChainFunction::Run() {
     return RespondNow(ArgumentList(
         api::webstore_private::GetReferrerChain::Results::Create("")));
 
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents) {
+  content::RenderFrameHost* rfh = render_frame_host();
+  content::RenderFrameHost* outermost_rfh =
+      rfh ? rfh->GetOutermostMainFrame() : nullptr;
+
+  if (!outermost_rfh) {
     return RespondNow(ErrorWithArguments(
         api::webstore_private::GetReferrerChain::Results::Create(""),
         kWebstoreUserCancelledError));
@@ -1211,8 +1214,8 @@ WebstorePrivateGetReferrerChainFunction::Run() {
 
   safe_browsing::ReferrerChain referrer_chain;
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      navigation_observer_manager->IdentifyReferrerChainByWebContents(
-          web_contents, kExtensionReferrerUserGestureLimit, &referrer_chain);
+      navigation_observer_manager->IdentifyReferrerChainByRenderFrameHost(
+          outermost_rfh, kExtensionReferrerUserGestureLimit, &referrer_chain);
 
   // If the referrer chain is incomplete we'll append the most recent
   // navigations to referrer chain for diagnostic purposes. This only happens if

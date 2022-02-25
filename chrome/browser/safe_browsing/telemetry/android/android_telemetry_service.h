@@ -20,6 +20,7 @@ class Profile;
 class PrefService;
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -88,8 +89,9 @@ class AndroidTelemetryService
   bool CanSendPing(download::DownloadItem* item);
 
   // Fill the referrer chain in |report| with the actual referrer chain for the
-  // given |web_contents|, as well as recent navigations.
+  // given |rfh|, as well as recent navigations.
   void FillReferrerChain(content::WebContents* web_contents,
+                         content::RenderFrameHost* rfh,
                          ClientSafeBrowsingReportRequest* report);
 
   // Sets the relevant fields in an instance of

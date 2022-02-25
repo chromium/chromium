@@ -20,6 +20,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
@@ -40,6 +41,7 @@ const char PPAPIDownloadRequest::kDownloadRequestUrl[] =
 PPAPIDownloadRequest::PPAPIDownloadRequest(
     const GURL& requestor_url,
     const GURL& initiating_frame_url,
+    const content::GlobalRenderFrameHostId& initiating_outermost_main_frame_id,
     content::WebContents* web_contents,
     const base::FilePath& default_file_path,
     const std::vector<base::FilePath::StringType>& alternate_extensions,
@@ -49,6 +51,7 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
     : requestor_url_(requestor_url),
       initiating_frame_url_(initiating_frame_url),
+      initiating_outermost_main_frame_id_(initiating_outermost_main_frame_id),
       initiating_main_frame_url_(
           web_contents ? web_contents->GetLastCommittedURL() : GURL()),
       tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
@@ -208,8 +211,8 @@ void PPAPIDownloadRequest::SendRequest() {
   }
 
   service_->AddReferrerChainToPPAPIClientDownloadRequest(
-      web_contents_, initiating_frame_url_, initiating_main_frame_url_, tab_id_,
-      has_user_gesture_, &request);
+      web_contents_, initiating_frame_url_, initiating_outermost_main_frame_id_,
+      initiating_main_frame_url_, tab_id_, has_user_gesture_, &request);
 
   if (!request.SerializeToString(&client_download_request_data_)) {
     // More of an internal error than anything else. Note that the UNKNOWN

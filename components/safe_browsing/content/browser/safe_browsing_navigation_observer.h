@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -57,6 +58,21 @@ struct NavigationEvent {
 
   // Which tab this request url is targeting to.
   SessionID target_tab_id;
+
+  // RFH ID of the outermost main frame of the frame which initiated this
+  // navigation. This can only differ from outermost_main_frame_id if
+  // |is_outermost_main_frame| is true, however differing values does not imply
+  // that we're in the outermost main frame (we could be navigating within the
+  // current RFH).
+  content::GlobalRenderFrameHostId initiator_outermost_main_frame_id;
+
+  // RFH ID of the outermost main frame of the frame where this navigation takes
+  // place. If this navigation is occurring in the outermost main frame, then
+  // this is not known until commit.
+  content::GlobalRenderFrameHostId outermost_main_frame_id;
+
+  // Whether this navigation is happening in the outermost main frame.
+  bool is_outermost_main_frame = false;
 
   // When this NavigationEvent was last updated.
   base::Time last_updated;
@@ -172,6 +188,9 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   void SetNavigationSourceUrl(content::NavigationHandle* navigation_handle,
                               NavigationEvent* nav_event);
   void SetNavigationSourceMainFrameUrl(
+      content::NavigationHandle* navigation_handle,
+      NavigationEvent* nav_event);
+  void SetNavigationOutermostMainFrameIds(
       content::NavigationHandle* navigation_handle,
       NavigationEvent* nav_event);
 

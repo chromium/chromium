@@ -10,7 +10,8 @@
 #include "url/gurl.h"
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
+struct GlobalRenderFrameHostId;
 }
 
 namespace safe_browsing {
@@ -33,14 +34,15 @@ class ReferrerChainProvider {
     ATTRIBUTION_FAILURE_TYPE_MAX
   };
 
-  virtual AttributionResult IdentifyReferrerChainByWebContents(
-      content::WebContents* web_contents,
+  virtual AttributionResult IdentifyReferrerChainByRenderFrameHost(
+      content::RenderFrameHost* render_frame_host,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) = 0;
 
   virtual AttributionResult IdentifyReferrerChainByEventURL(
       const GURL& event_url,
       SessionID event_tab_id,
+      const content::GlobalRenderFrameHostId& event_outermost_main_frame_id,
       int user_gesture_count_limit,
       ReferrerChain* out_referrer_chain) = 0;
 

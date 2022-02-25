@@ -16,6 +16,7 @@
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
 #include "crypto/secure_hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -197,12 +198,18 @@ void SafeMoveHelper::DoAfterWriteCheck(base::File::Error hash_result,
     return;
   }
 
+  content::GlobalRenderFrameHostId outermost_main_frame_id;
+  auto* rfh = content::RenderFrameHost::FromID(context_.frame_id);
+  if (rfh)
+    outermost_main_frame_id = rfh->GetOutermostMainFrame()->GetGlobalId();
+
   auto item = std::make_unique<FileSystemAccessWriteItem>();
   item->target_file_path = dest_url().path();
   item->full_path = source_url().path();
   item->sha256_hash = hash;
   item->size = size;
   item->frame_url = context_.url;
+  item->outermost_main_frame_id = outermost_main_frame_id;
   item->has_user_gesture = has_transient_user_activation_;
   manager_->permission_context()->PerformAfterWriteChecks(
       std::move(item), context_.frame_id,

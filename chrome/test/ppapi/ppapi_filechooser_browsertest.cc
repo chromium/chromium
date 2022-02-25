@@ -19,6 +19,7 @@
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/quarantine/test_support.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test.h"
 #include "ppapi/shared_impl/test_utils.h"
 
@@ -54,6 +55,8 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
   void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
       const GURL& initiating_frame_url_unused,
+      const content::GlobalRenderFrameHostId&
+          initiating_outermost_main_frame_id,
       content::WebContents* web_contents_unused,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,

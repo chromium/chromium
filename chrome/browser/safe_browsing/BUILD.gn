@@ -474,12 +474,23 @@ source_set("test_support") {
       "test_safe_browsing_service.h",
     ]
 
+    if (!is_android) {
+      sources += [
+        "test_safe_browsing_navigation_observer_manager.cc",
+        "test_safe_browsing_navigation_observer_manager.h",
+      ]
+    }
+
     deps = [
       ":safe_browsing",
+      "//chrome/browser:browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:ui",
       "//chrome/common",
       "//chrome/common/safe_browsing:proto",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/content/browser:browser",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
       "//components/safe_browsing/content/browser:safe_browsing_service",
       "//components/safe_browsing/core/browser/db:database_manager",
@@ -487,6 +498,7 @@ source_set("test_support") {
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//content/public/browser",
       "//services/network:test_support",
+      "//testing/gtest",
     ]
   }
 

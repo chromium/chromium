@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_navigation_observer_manager.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -30,8 +31,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -51,8 +54,15 @@ const char kSingleFrameTestURL[] =
 const char kMultiFrameTestURL[] =
     "/safe_browsing/download_protection/navigation_observer/"
     "navigation_observer_multi_frame_tests.html";
+const char kSubFrameTestURL[] =
+    "/safe_browsing/download_protection/navigation_observer/"
+    "iframe.html";
 const char kRedirectURL[] =
     "/safe_browsing/download_protection/navigation_observer/redirect.html";
+const char kEmptyURL[] = "/empty.html";
+const char kBasicIframeURL[] = "/iframe.html";
+// This is the src of the iframe in iframe.html above.
+const char kInitialSubframeUrl[] = "/title1.html";
 // Please update |kShortDataURL| too if you're changing |kDownloadDataURL|.
 const char kDownloadDataURL[] =
     "data:application/octet-stream;base64,a2poYWxrc2hkbGtoYXNka2xoYXNsa2RoYWxra"
@@ -153,87 +163,19 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   std::vector<DownloadItem*> items_seen_;
 };
 
-class InnerContentsCreationObserver : public content::WebContentsObserver {
- public:
-  InnerContentsCreationObserver(
-      content::WebContents* web_contents,
-      base::RepeatingCallback<void(content::WebContents*)>
-          on_inner_contents_created)
-      : content::WebContentsObserver(web_contents),
-        on_inner_contents_created_(on_inner_contents_created) {}
-
-  // WebContentsObserver:
-  void InnerWebContentsCreated(
-      content::WebContents* inner_web_contents) override {
-    on_inner_contents_created_.Run(inner_web_contents);
-  }
-
- private:
-  base::RepeatingCallback<void(content::WebContents*)>
-      on_inner_contents_created_;
-};
-
-// Test class to help create SafeBrowsingNavigationObservers for each
-// WebContents before they are actually installed through AttachTabHelper.
-class TestNavigationObserverManager
-    : public SafeBrowsingNavigationObserverManager,
-      public TabStripModelObserver {
- public:
-  explicit TestNavigationObserverManager(Browser* browser)
-      : SafeBrowsingNavigationObserverManager(browser->profile()->GetPrefs()) {
-    browser->tab_strip_model()->AddObserver(this);
-  }
-
-  void ObserveContents(content::WebContents* contents) {
-    ASSERT_TRUE(contents);
-    Profile* profile =
-        Profile::FromBrowserContext(contents->GetBrowserContext());
-    auto observer = std::make_unique<SafeBrowsingNavigationObserver>(
-        contents, HostContentSettingsMapFactory::GetForProfile(profile),
-        safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
-            GetForBrowserContext(profile));
-    observer->SetObserverManagerForTesting(this);
-    observer_list_.push_back(std::move(observer));
-    inner_contents_creation_observers_.push_back(
-        std::make_unique<InnerContentsCreationObserver>(
-            contents,
-            base::BindRepeating(&TestNavigationObserverManager::ObserveContents,
-                                // Unretained is safe because this object owns
-                                // inner_contents_creation_observers_
-                                base::Unretained(this))));
-  }
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
-      return;
-
-    for (const TabStripModelChange::ContentsWithIndex& tab :
-         change.GetInsert()->contents) {
-      ObserveContents(tab.contents);
-    }
-  }
-
-  TestNavigationObserverManager(const TestNavigationObserverManager&) = delete;
-  TestNavigationObserverManager& operator=(
-      const TestNavigationObserverManager&) = delete;
-
-  ~TestNavigationObserverManager() override = default;
-
- private:
-  std::vector<std::unique_ptr<SafeBrowsingNavigationObserver>> observer_list_;
-  std::vector<std::unique_ptr<InnerContentsCreationObserver>>
-      inner_contents_creation_observers_;
-};
-
 class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
  public:
-  SBNavigationObserverBrowserTest() {
+  SBNavigationObserverBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&SBNavigationObserverBrowserTest::web_contents,
+                                base::Unretained(this))) {
     scoped_feature_list_.InitAndDisableFeature(
         kOmitNonUserGesturesFromReferrerChain);
+  }
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -245,10 +187,14 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     observer_manager_ =
-        std::make_unique<TestNavigationObserverManager>(browser());
+        std::make_unique<TestSafeBrowsingNavigationObserverManager>(browser());
     observer_manager_->ObserveContents(
         browser()->tab_strip_model()->GetActiveWebContents());
     ASSERT_TRUE(InitialSetup());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   bool InitialSetup() {
@@ -470,15 +416,21 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
       ReferrerChain* referrer_chain) {
     SessionID download_tab_id = sessions::SessionTabHelper::IdForTab(
         content::DownloadItemUtils::GetWebContents(download));
+    content::RenderFrameHost* rfh =
+        content::DownloadItemUtils::GetRenderFrameHost(download);
+    content::GlobalRenderFrameHostId outermost_main_frame_id;
+    if (rfh)
+      outermost_main_frame_id = rfh->GetOutermostMainFrame()->GetGlobalId();
+
     auto result = observer_manager_->IdentifyReferrerChainByEventURL(
-        download->GetURL(), download_tab_id,
+        download->GetURL(), download_tab_id, outermost_main_frame_id,
         2,  // kDownloadAttributionUserGestureLimit
         referrer_chain);
     if (result ==
         SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND) {
       DCHECK_EQ(0, referrer_chain->size());
-      observer_manager_->IdentifyReferrerChainByWebContents(
-          content::DownloadItemUtils::GetWebContents(download),
+      observer_manager_->IdentifyReferrerChainByRenderFrameHost(
+          rfh,
           2,  // kDownloadAttributionUserGestureLimit
           referrer_chain);
     }
@@ -486,10 +438,23 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
 
   void IdentifyReferrerChainForWebContents(content::WebContents* web_contents,
                                            ReferrerChain* referrer_chain) {
-    observer_manager_->IdentifyReferrerChainByWebContents(
-        web_contents,
+    observer_manager_->IdentifyReferrerChainByRenderFrameHost(
+        // We will assume the primary main frame here.
+        web_contents->GetMainFrame(),
         2,  // kDownloadAttributionUserGestureLimit
         referrer_chain);
+  }
+
+  void IdentifyReferrerChainByEventURL(
+      const GURL& event_url,
+      SessionID event_tab_id,  // Invalid if tab id is unknown or not available.
+      const content::GlobalRenderFrameHostId&
+          event_outermost_main_frame_id,  // Can also be Invalid.
+      ReferrerChain* out_referrer_chain) {
+    observer_manager_->IdentifyReferrerChainByEventURL(
+        event_url, event_tab_id, event_outermost_main_frame_id,
+        2,  // user_gesture_count_limit
+        out_referrer_chain);
   }
 
   // Identify referrer chain of a PPAPI download and populate |referrer_chain|.
@@ -502,7 +467,8 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_->OnUserGestureConsumed(web_contents);
     EXPECT_LE(observer_manager_->IdentifyReferrerChainByHostingPage(
                   initiating_frame_url, web_contents->GetLastCommittedURL(),
-                  tab_id, has_user_gesture,
+                  web_contents->GetMainFrame()->GetGlobalId(), tab_id,
+                  has_user_gesture,
                   2,  // kDownloadAttributionUserGestureLimit
                   referrer_chain),
               SafeBrowsingNavigationObserverManager::SUCCESS_LANDING_REFERRER);
@@ -557,27 +523,44 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
                                                out_referrer_chain);
   }
 
+  NavigationEvent* GetNavigationEvent(size_t index) {
+    return observer_manager_->navigation_event_list()
+        ->navigation_events()[index]
+        .get();
+  }
+
+  absl::optional<size_t> FindNavigationEventIndex(
+      const GURL& target_url,
+      content::GlobalRenderFrameHostId outermost_main_frame_id) {
+    return observer_manager_->navigation_event_list()->FindNavigationEvent(
+        base::Time::Now(), target_url, GURL(), SessionID::InvalidValue(),
+        outermost_main_frame_id,
+        (observer_manager_->navigation_event_list()->NavigationEventsSize() -
+         1));
+  }
+
   void FindAndAddNavigationToReferrerChain(ReferrerChain* referrer_chain,
                                            const GURL& target_url) {
-    size_t nav_event_index =
-        observer_manager_->navigation_event_list()->FindNavigationEvent(
-            base::Time::Now(), target_url, GURL(), SessionID::InvalidValue(),
-            (observer_manager_->navigation_event_list()
-                 ->NavigationEventsSize() -
-             1));
-    if (static_cast<int>(nav_event_index) != -1) {
+    auto nav_event_index = FindNavigationEventIndex(
+        target_url, content::GlobalRenderFrameHostId());
+    if (nav_event_index) {
       auto* nav_event =
           observer_manager_->navigation_event_list()->GetNavigationEvent(
-              nav_event_index);
+              *nav_event_index);
       observer_manager_->AddToReferrerChain(referrer_chain, nav_event, GURL(),
                                             ReferrerChainEntry::EVENT_URL);
     }
   }
 
  protected:
-  std::unique_ptr<TestNavigationObserverManager> observer_manager_;
+  std::unique_ptr<TestSafeBrowsingNavigationObserverManager> observer_manager_;
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
 
  private:
+  content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2567,6 +2550,279 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::BROWSER_INITIATED,
                            referrer_chain.Get(3));
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       NewWindowAndNavigateSubframe) {
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+  auto main_frame_url = embedded_test_server()->GetURL(kMultiFrameTestURL);
+  auto new_window_url = embedded_test_server()->GetURL(kBasicIframeURL);
+  auto new_window_subframe_url = embedded_test_server()->GetURL(kEmptyURL);
+  auto initial_subframe_url =
+      embedded_test_server()->GetURL(kInitialSubframeUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  auto initiator_outermost_main_frame_id =
+      web_contents()->GetMainFrame()->GetGlobalId();
+
+  auto* initial_web_contents = web_contents();
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      new_window_url, content::NotificationService::AllSources());
+  ASSERT_TRUE(
+      ExecJs(web_contents()->GetMainFrame(),
+             content::JsReplace("var w = window.open($1, 'New Window');",
+                                new_window_url)));
+  url_observer.Wait();
+  const int kExpectedNumberOfNavigations = 1;
+
+  content::TestNavigationObserver navigation_observer(
+      web_contents(), kExpectedNumberOfNavigations);
+  ASSERT_TRUE(
+      ExecJs(initial_web_contents->GetMainFrame(),
+             content::JsReplace("w.document.querySelector('IFRAME').src = $1;",
+                                new_window_subframe_url)));
+  navigation_observer.Wait();
+  EXPECT_EQ(new_window_subframe_url, navigation_observer.last_navigation_url());
+
+  auto target_main_frame_id = web_contents()->GetMainFrame()->GetGlobalId();
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainByEventURL(
+      new_window_url, sessions::SessionTabHelper::IdForTab(web_contents()),
+      content::GlobalRenderFrameHostId(), &referrer_chain);
+
+  auto index = FindNavigationEventIndex(new_window_url,
+                                        content::GlobalRenderFrameHostId());
+  ASSERT_TRUE(index);
+  auto* nav_event = GetNavigationEvent(*index);
+  EXPECT_EQ(initiator_outermost_main_frame_id,
+            nav_event->initiator_outermost_main_frame_id);
+  EXPECT_EQ(target_main_frame_id, nav_event->outermost_main_frame_id);
+
+  EXPECT_EQ(2, referrer_chain.size());
+
+  referrer_chain.Clear();
+  IdentifyReferrerChainByEventURL(
+      new_window_subframe_url,
+      sessions::SessionTabHelper::IdForTab(web_contents()),
+      content::GlobalRenderFrameHostId(), &referrer_chain);
+  EXPECT_EQ(4, referrer_chain.size());
+  VerifyReferrerChainEntry(
+      new_window_subframe_url,  // url
+      // TODO(crbug.com/1300014): this should be |new_window_url|.
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      initial_subframe_url,           // referrer_url
+      new_window_url,                 // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(0));
+
+  VerifyReferrerChainEntry(
+      initial_subframe_url,                 // url
+      new_window_url,                       // main_frame_url
+      ReferrerChainEntry::CLIENT_REDIRECT,  // type
+      test_server_ip,                       // ip_address
+      GURL(),                               // referrer_url
+      new_window_url,                       // referrer_main_frame_url
+      false,                                // is_retargeting
+      std::vector<GURL>(),                  // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(1));
+
+  VerifyReferrerChainEntry(
+      new_window_url,                       // url
+      GURL(),                               // main_frame_url
+      ReferrerChainEntry::CLIENT_REDIRECT,  // type
+      test_server_ip,                       // ip_address
+      main_frame_url,                       // referrer_url
+      GURL(),                               // referrer_main_frame_url
+      true,                                 // is_retargeting
+      std::vector<GURL>(),                  // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(2));
+
+  VerifyReferrerChainEntry(main_frame_url,  // url
+                           GURL(),          // main_frame_url
+                           ReferrerChainEntry::CLIENT_REDIRECT,  // type
+                           test_server_ip,                       // ip_address
+                           GURL(),                               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(3));
+
+  index = FindNavigationEventIndex(new_window_subframe_url,
+                                   content::GlobalRenderFrameHostId());
+  ASSERT_TRUE(index);
+  nav_event = GetNavigationEvent(*index);
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(),
+            nav_event->outermost_main_frame_id);
+
+  // If the initial main frame runs JS to initiate this subframe navigation, the
+  // the navigation request's initiator frame is in the current frame tree,
+  // not the frame in which the JS ran.
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetGlobalId(),
+            nav_event->initiator_outermost_main_frame_id);
+}
+
+// This is similar to PrerenderReferrerChains, but navigates rather than
+// initiating the prerender to ensure that the referrer chains match.
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       ReferrerChainsMatchPrerender) {
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+  auto main_frame_url = embedded_test_server()->GetURL(kMultiFrameTestURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  auto next_url = embedded_test_server()->GetURL(kSubFrameTestURL);
+  content::TestNavigationObserver observer(web_contents(), 1);
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     content::JsReplace("window.location = $1;", next_url)));
+  observer.Wait();
+
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainByEventURL(
+      next_url, sessions::SessionTabHelper::IdForTab(web_contents()),
+      web_contents()->GetMainFrame()->GetGlobalId(), &referrer_chain);
+
+  EXPECT_EQ(2, referrer_chain.size());
+
+  VerifyReferrerChainEntry(
+      next_url,                       // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      main_frame_url,                 // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(0));
+
+  VerifyReferrerChainEntry(main_frame_url,  // url
+                           GURL(),          // main_frame_url
+                           ReferrerChainEntry::CLIENT_REDIRECT,  // type
+                           test_server_ip,                       // ip_address
+                           GURL(),                               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
+}
+
+IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
+                       PrerenderReferrerChains) {
+  std::string test_server_ip(embedded_test_server()->host_port_pair().host());
+  auto main_frame_url = embedded_test_server()->GetURL(kMultiFrameTestURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  auto prerendered_url = embedded_test_server()->GetURL(kSubFrameTestURL);
+  auto host_id = prerender_helper().AddPrerender(prerendered_url);
+  prerender_helper().WaitForPrerenderLoadCompletion(prerendered_url);
+
+  // The prerendered URL (iframe.html) will now be loaded twice within the
+  // WebContents. Once as the main frame of the prerendered page and once as a
+  // subframe of the primary page. Since the prerender was initiated after
+  // loading the primary page, it will be the most recent navigation event.
+
+  // Should find the event corresponding to the prerendered page. By passing an
+  // invalid RFH id, FindNavigationEvent does not attempt to match within a
+  // given outermost main frame but will instead match the most recent matching
+  // navigation event.
+  auto index_a = FindNavigationEventIndex(prerendered_url,
+                                          content::GlobalRenderFrameHostId());
+
+  // Since we're supplying the id for the primary page's outermost main frame,
+  // we should find the event for the primary page.
+  auto index_b = FindNavigationEventIndex(
+      prerendered_url, web_contents()->GetMainFrame()->GetGlobalId());
+
+  // Ensure that these indices are valid and not equal.
+  EXPECT_TRUE(index_a && index_b);
+  EXPECT_NE(*index_a, *index_b);
+
+  auto* prerendered_main_frame_host =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  auto index_c = FindNavigationEventIndex(
+      prerendered_url,
+      prerendered_main_frame_host->GetOutermostMainFrame()->GetGlobalId());
+
+  // By explicitly supplying the outermost frame id for the prerendered page, we
+  // should also get the event corresponding to the prerendered page.
+  EXPECT_TRUE(index_c);
+  EXPECT_EQ(*index_a, *index_c);
+
+  // Build a full referrer chain for the prerendered page.
+  ReferrerChain referrer_chain;
+  IdentifyReferrerChainByEventURL(
+      prerendered_url, sessions::SessionTabHelper::IdForTab(web_contents()),
+      prerendered_main_frame_host->GetOutermostMainFrame()->GetGlobalId(),
+      &referrer_chain);
+
+  EXPECT_EQ(2, referrer_chain.size());
+
+  VerifyReferrerChainEntry(
+      prerendered_url,                // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      main_frame_url,                 // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(0));
+
+  VerifyReferrerChainEntry(main_frame_url,  // url
+                           GURL(),          // main_frame_url
+                           ReferrerChainEntry::CLIENT_REDIRECT,  // type
+                           test_server_ip,                       // ip_address
+                           GURL(),                               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  prerender_helper().NavigatePrimaryPage(prerendered_url);
+  host_observer.WaitForActivation();
+
+  // Build a full referrer chain for the prerendered page following activation.
+  referrer_chain.Clear();
+  IdentifyReferrerChainByEventURL(
+      prerendered_url, sessions::SessionTabHelper::IdForTab(web_contents()),
+      web_contents()->GetMainFrame()->GetGlobalId(), &referrer_chain);
+
+  EXPECT_EQ(2, referrer_chain.size());
+
+  VerifyReferrerChainEntry(
+      prerendered_url,                // url
+      GURL(),                         // main_frame_url
+      ReferrerChainEntry::EVENT_URL,  // type
+      test_server_ip,                 // ip_address
+      main_frame_url,                 // referrer_url
+      GURL(),                         // referrer_main_frame_url
+      false,                          // is_retargeting
+      std::vector<GURL>(),            // server redirects
+      ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
+      referrer_chain.Get(0));
+
+  VerifyReferrerChainEntry(main_frame_url,  // url
+                           GURL(),          // main_frame_url
+                           ReferrerChainEntry::CLIENT_REDIRECT,  // type
+                           test_server_ip,                       // ip_address
+                           GURL(),                               // referrer_url
+                           GURL(),               // referrer_main_frame_url
+                           false,                // is_retargeting
+                           std::vector<GURL>(),  // server redirects
+                           ReferrerChainEntry::BROWSER_INITIATED,
+                           referrer_chain.Get(1));
 }
 
 IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,

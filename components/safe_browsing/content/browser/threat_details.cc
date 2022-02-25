@@ -897,8 +897,10 @@ void ThreatDetails::MaybeFillReferrerChain() {
     return;
   }
 
-  referrer_chain_provider_->IdentifyReferrerChainByWebContents(
-      web_contents(), kThreatDetailsUserGestureLimit,
+  // We would have cancelled a prerender if it was blocked, so we can use the
+  // primary main frame here.
+  referrer_chain_provider_->IdentifyReferrerChainByRenderFrameHost(
+      web_contents()->GetMainFrame(), kThreatDetailsUserGestureLimit,
       report_->mutable_referrer_chain());
 }
 

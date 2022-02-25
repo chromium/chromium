@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace safe_browsing {
 
@@ -88,7 +89,8 @@ ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
 
 void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
     ClientPhishingRequest* verdict,
-    GURL current_url) {
+    GURL current_url,
+    const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {
   SafeBrowsingNavigationObserverManager* navigation_observer_manager =
       GetSafeBrowsingNavigationObserverManager();
   if (!navigation_observer_manager) {
@@ -97,6 +99,7 @@ void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       navigation_observer_manager->IdentifyReferrerChainByEventURL(
           current_url, SessionID::InvalidValue(),
+          current_outermost_main_frame_id,
           kCSDAttributionUserGestureLimitForExtendedReporting,
           verdict->mutable_referrer_chain());
 

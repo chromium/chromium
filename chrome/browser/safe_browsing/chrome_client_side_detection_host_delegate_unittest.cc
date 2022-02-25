@@ -14,6 +14,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +90,8 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, GetReferrerChain) {
   csd_host_delegate->SetNavigationObserverManagerForTesting(
       navigation_observer_manager_);
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
-  csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"));
+  csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"),
+                                      content::GlobalRenderFrameHostId());
   ReferrerChain referrer_chain = verdict->referrer_chain();
 
   EXPECT_EQ(2, referrer_chain.size());
@@ -115,7 +117,8 @@ TEST_F(ChromeClientSideDetectionHostDelegateTest, NoNavigationObserverManager) {
       std::make_unique<ChromeClientSideDetectionHostDelegate>(
           browser()->tab_strip_model()->GetWebContentsAt(0));
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
-  csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"));
+  csd_host_delegate->AddReferrerChain(verdict.get(), GURL("http://b.com/"),
+                                      content::GlobalRenderFrameHostId());
   ReferrerChain referrer_chain = verdict->referrer_chain();
 
   EXPECT_EQ(0, referrer_chain.size());

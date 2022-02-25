@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -30,47 +31,19 @@ namespace safe_browsing {
 
 // SafeBrowsingNavigationObserver::NavigationEvent-----------------------------
 NavigationEvent::NavigationEvent()
-    : source_url(),
-      source_main_frame_url(),
-      original_request_url(),
-      source_tab_id(SessionID::InvalidValue()),
+    : source_tab_id(SessionID::InvalidValue()),
       target_tab_id(SessionID::InvalidValue()),
       last_updated(base::Time::Now()),
       navigation_initiation(ReferrerChainEntry::UNDEFINED),
       has_committed(false),
       maybe_launched_by_external_application() {}
 
-NavigationEvent::NavigationEvent(NavigationEvent&& nav_event)
-    : source_url(std::move(nav_event.source_url)),
-      source_main_frame_url(std::move(nav_event.source_main_frame_url)),
-      original_request_url(std::move(nav_event.original_request_url)),
-      server_redirect_urls(std::move(nav_event.server_redirect_urls)),
-      source_tab_id(std::move(nav_event.source_tab_id)),
-      target_tab_id(std::move(nav_event.target_tab_id)),
-      last_updated(nav_event.last_updated),
-      navigation_initiation(nav_event.navigation_initiation),
-      has_committed(nav_event.has_committed),
-      maybe_launched_by_external_application(
-          nav_event.maybe_launched_by_external_application) {}
-
+NavigationEvent::NavigationEvent(NavigationEvent&& nav_event) = default;
 NavigationEvent::NavigationEvent(const NavigationEvent& nav_event) = default;
+NavigationEvent& NavigationEvent::operator=(NavigationEvent&& nav_event) =
+    default;
 
-NavigationEvent& NavigationEvent::operator=(NavigationEvent&& nav_event) {
-  source_url = std::move(nav_event.source_url);
-  source_main_frame_url = std::move(nav_event.source_main_frame_url);
-  original_request_url = std::move(nav_event.original_request_url);
-  source_tab_id = nav_event.source_tab_id;
-  target_tab_id = nav_event.target_tab_id;
-  last_updated = nav_event.last_updated;
-  navigation_initiation = nav_event.navigation_initiation;
-  has_committed = nav_event.has_committed;
-  maybe_launched_by_external_application =
-      nav_event.maybe_launched_by_external_application;
-  server_redirect_urls = std::move(nav_event.server_redirect_urls);
-  return *this;
-}
-
-NavigationEvent::~NavigationEvent() {}
+NavigationEvent::~NavigationEvent() = default;
 
 // SafeBrowsingNavigationObserver --------------------------------------------
 
@@ -109,7 +82,7 @@ SafeBrowsingNavigationObserver::SafeBrowsingNavigationObserver(
   content_settings_observation_.Observe(host_content_settings_map);
 }
 
-SafeBrowsingNavigationObserver::~SafeBrowsingNavigationObserver() {}
+SafeBrowsingNavigationObserver::~SafeBrowsingNavigationObserver() = default;
 
 void SafeBrowsingNavigationObserver::OnUserInteraction() {
   GetObserverManager()->RecordUserGestureForWebContents(web_contents());
@@ -151,6 +124,7 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(navigation_handle->GetWebContents());
   SetNavigationSourceMainFrameUrl(navigation_handle, nav_event.get());
+  SetNavigationOutermostMainFrameIds(navigation_handle, nav_event.get());
 
   std::unique_ptr<NavigationEvent> pending_nav_event =
       std::make_unique<NavigationEvent>(*nav_event);
@@ -203,6 +177,25 @@ void SafeBrowsingNavigationObserver::DidFinishNavigation(
   nav_event->has_committed = navigation_handle->HasCommitted();
   nav_event->target_tab_id =
       sessions::SessionTabHelper::IdForTab(navigation_handle->GetWebContents());
+
+  // TODO(crbug.com/1254770) Non-MPArch portals cause issues for the outermost
+  // main frame logic. Since they do not create navigation events for
+  // activation, there is a an unaccounted-for shift in outermost main frame at
+  // that point. For now, we will not set outermost main frame ids for portals
+  // so they will continue to match. In future, once portals have been converted
+  // to MPArch, this will not be necessary.
+  if (!web_contents()->IsPortal() && nav_event->is_outermost_main_frame &&
+      nav_event->has_committed) {
+    auto* rfh = navigation_handle->GetRenderFrameHost();
+    // We set the outermost main frame id here rather than in DidStartNavigation
+    // because in that function, we don't yet have a RenderFrameHost, so if
+    // we're the outermost main frame, we won't yet have an id.
+    nav_event->outermost_main_frame_id =
+        rfh->GetOutermostMainFrame()->GetGlobalId();
+  }
+  DCHECK(web_contents()->IsPortal() || !nav_event->has_committed ||
+         nav_event->outermost_main_frame_id);
+
   nav_event->last_updated = base::Time::Now();
 
   GetObserverManager()->RecordNavigationEvent(
@@ -264,6 +257,11 @@ void SafeBrowsingNavigationObserver::MaybeRecordNewWebContentsForPortalContents(
                   navigation_handle->GetInitiatorProcessID(),
                   navigation_handle->GetInitiatorFrameToken().value())
             : nullptr;
+
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.NavigationObserver.MissingInitiatorRenderFrameHostPortal",
+        !initiator_frame_host);
+
     // TODO(https://crbug.com/1074422): Handle the case where the initiator
     // RenderFrameHost is gone.
     if (initiator_frame_host) {
@@ -307,19 +305,38 @@ void SafeBrowsingNavigationObserver::
 void SafeBrowsingNavigationObserver::SetNavigationSourceUrl(
     content::NavigationHandle* navigation_handle,
     NavigationEvent* nav_event) {
-  // If there was a URL previously committed in the current RenderFrameHost,
-  // set it as the source url of this navigation. Otherwise, this is the
-  // first url going to commit in this frame.
-  content::RenderFrameHost* current_frame_host =
-      content::RenderFrameHost::FromID(
-          navigation_handle->GetPreviousRenderFrameHostId());
   // For browser initiated navigation (e.g. from address bar or bookmark), we
   // don't fill the source_url to prevent attributing navigation to the last
   // committed navigation.
-  if (navigation_handle->IsRendererInitiated() && current_frame_host &&
-      current_frame_host->GetLastCommittedURL().is_valid()) {
+  if (!navigation_handle->IsRendererInitiated())
+    return;
+
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    // A prerendered page can only be initiated by the primary page, so we will
+    // grab the last committed URL from the primary main frame directly. Note
+    // that this cannot be obtained from the previous RFH since this is empty
+    // for prerenders. While this differs from the semantics for source_url
+    // (which is indeed related to the last committed URL in the frame into
+    // which we are navigating), it matches what source_url would have been had
+    // we been navigating normally since we will activate in the primary main
+    // frame.
     nav_event->source_url = SafeBrowsingNavigationObserverManager::ClearURLRef(
-        current_frame_host->GetLastCommittedURL());
+        navigation_handle->GetWebContents()
+            ->GetMainFrame()
+            ->GetLastCommittedURL());
+  } else {
+    // If there was a URL previously committed in the current RenderFrameHost,
+    // set it as the source url of this navigation. Otherwise, this is the
+    // first url going to commit in this frame.
+    content::RenderFrameHost* current_frame_host =
+        content::RenderFrameHost::FromID(
+            navigation_handle->GetPreviousRenderFrameHostId());
+    if (current_frame_host &&
+        current_frame_host->GetLastCommittedURL().is_valid()) {
+      nav_event->source_url =
+          SafeBrowsingNavigationObserverManager::ClearURLRef(
+              current_frame_host->GetLastCommittedURL());
+    }
   }
 }
 
@@ -334,6 +351,40 @@ void SafeBrowsingNavigationObserver::SetNavigationSourceMainFrameUrl(
             navigation_handle->GetParentFrameOrOuterDocument()
                 ->GetOutermostMainFrame()
                 ->GetLastCommittedURL());
+  }
+}
+
+void SafeBrowsingNavigationObserver::SetNavigationOutermostMainFrameIds(
+    content::NavigationHandle* navigation_handle,
+    NavigationEvent* nav_event) {
+  // TODO(crbug.com/1254770) Non-MPArch portals cause issues for the outermost
+  // main frame logic. Since they do not create navigation events for
+  // activation, there is a an unaccounted-for shift in outermost main frame at
+  // that point. For now, we will not set outermost main frame ids for portals
+  // so they will continue to match. In future, once portals have been converted
+  // to MPArch, this will not be necessary.
+  if (web_contents()->IsPortal())
+    return;
+
+  auto* outer_rfh = navigation_handle->GetParentFrameOrOuterDocument();
+  nav_event->is_outermost_main_frame = !outer_rfh;
+
+  if (outer_rfh) {
+    nav_event->outermost_main_frame_id =
+        outer_rfh->GetOutermostMainFrame()->GetGlobalId();
+  }
+
+  if (navigation_handle->IsRendererInitiated()) {
+    auto* initiator_frame_host =
+        navigation_handle->GetInitiatorFrameToken().has_value()
+            ? content::RenderFrameHost::FromFrameToken(
+                  navigation_handle->GetInitiatorProcessID(),
+                  navigation_handle->GetInitiatorFrameToken().value())
+            : nullptr;
+    if (initiator_frame_host) {
+      nav_event->initiator_outermost_main_frame_id =
+          initiator_frame_host->GetOutermostMainFrame()->GetGlobalId();
+    }
   }
 }
 

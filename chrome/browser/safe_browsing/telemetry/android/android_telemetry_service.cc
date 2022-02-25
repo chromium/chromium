@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 using content::BrowserContext;
@@ -169,6 +170,7 @@ const PrefService* AndroidTelemetryService::GetPrefs() {
 
 void AndroidTelemetryService::FillReferrerChain(
     content::WebContents* web_contents,
+    content::RenderFrameHost* rfh,
     ClientSafeBrowsingReportRequest* report) {
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
           profile_->GetPrefs(), g_browser_process->safe_browsing_service())) {
@@ -188,8 +190,8 @@ void AndroidTelemetryService::FillReferrerChain(
           : nullptr;
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       observer_manager
-          ? observer_manager->IdentifyReferrerChainByWebContents(
-                web_contents, kAndroidTelemetryUserGestureLimit,
+          ? observer_manager->IdentifyReferrerChainByRenderFrameHost(
+                rfh, kAndroidTelemetryUserGestureLimit,
                 report->mutable_referrer_chain())
           : SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND;
 
@@ -229,7 +231,12 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   // Fill referrer chain.
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
-  FillReferrerChain(web_contents, report.get());
+  content::RenderFrameHost* rfh =
+      content::DownloadItemUtils::GetRenderFrameHost(item);
+  if (!rfh && web_contents)
+    rfh = web_contents->GetMainFrame();
+
+  FillReferrerChain(web_contents, rfh, report.get());
 
   // Fill DownloadItemInfo
   ClientSafeBrowsingReportRequest::DownloadItemInfo*

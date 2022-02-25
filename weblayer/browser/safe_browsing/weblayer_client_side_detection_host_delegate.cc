@@ -7,6 +7,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
@@ -55,6 +56,7 @@ WebLayerClientSideDetectionHostDelegate::GetClientSideDetectionService() {
 
 void WebLayerClientSideDetectionHostDelegate::AddReferrerChain(
     safe_browsing::ClientPhishingRequest* verdict,
-    GURL current_url) {}
+    GURL current_url,
+    const content::GlobalRenderFrameHostId& current_outermost_main_frame_id) {}
 
 }  // namespace weblayer

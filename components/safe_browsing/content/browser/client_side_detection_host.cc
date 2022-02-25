@@ -422,6 +422,9 @@ void ClientSideDetectionHost::DidFinishNavigation(
   }
 
   current_url_ = navigation_handle->GetURL();
+  current_outermost_main_frame_id_ = navigation_handle->GetRenderFrameHost()
+                                         ->GetOutermostMainFrame()
+                                         ->GetGlobalId();
 
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
@@ -554,7 +557,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
 
     if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
         base::FeatureList::IsEnabled(kClientSideDetectionReferrerChain)) {
-      delegate_->AddReferrerChain(verdict.get(), current_url_);
+      delegate_->AddReferrerChain(verdict.get(), current_url_,
+                                  current_outermost_main_frame_id_);
     }
 
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
