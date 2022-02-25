@@ -161,9 +161,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   if (entity == nullptr) {
     // Remote creation.
     DCHECK(!data.is_deleted());
-    entity = CreateEntity(data, update.response_version);
-    // TODO(crbug.com/1296159): Remove this call once create flow is updated.
-    entity->RecordAcceptedRemoteUpdate(update);
+    entity = CreateEntity(update);
     entity_changes->push_back(EntityChange::CreateAdd(
         entity->storage_key(), std::move(update.entity)));
   } else if (entity->IsUnsynced()) {
@@ -277,19 +275,19 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
 }
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
-    const EntityData& data,
-    int64_t server_version) {
-  DCHECK(!data.client_tag_hash.value().empty());
+    const UpdateResponseData& update) {
+  DCHECK(!update.entity.client_tag_hash.value().empty());
   if (bridge_->SupportsGetClientTag()) {
-    DCHECK_EQ(data.client_tag_hash,
-              ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data)));
+    DCHECK_EQ(update.entity.client_tag_hash,
+              ClientTagHash::FromUnhashed(
+                  type_, bridge_->GetClientTag(update.entity)));
   }
   std::string storage_key;
   if (bridge_->SupportsGetStorageKey()) {
-    storage_key = bridge_->GetStorageKey(data);
+    storage_key = bridge_->GetStorageKey(update.entity);
     DCHECK(!storage_key.empty());
   }
-  return entity_tracker_->AddRemote(storage_key, data, server_version);
+  return entity_tracker_->AddRemote(storage_key, update);
 }
 
 }  // namespace syncer

@@ -896,10 +896,7 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
                   << " for " << ModelTypeToDebugString(type_);
     }
 #endif  // DCHECK_IS_ON()
-    ProcessorEntity* entity = entity_tracker_->AddRemote(
-        storage_key, update.entity, update.response_version);
-    // TODO(crbug.com/1296159): Remove once create flow is refactored.
-    entity->RecordAcceptedRemoteUpdate(update);
+    ProcessorEntity* entity = entity_tracker_->AddRemote(storage_key, update);
     entity_data.push_back(
         EntityChange::CreateAdd(storage_key, std::move(update.entity)));
     if (!storage_key.empty())

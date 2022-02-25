@@ -79,16 +79,19 @@ ProcessorEntity* ProcessorEntityTracker::AddUnsyncedLocal(
 
 ProcessorEntity* ProcessorEntityTracker::AddRemote(
     const std::string& storage_key,
-    const EntityData& data,
-    int64_t server_version) {
+    const UpdateResponseData& update_data) {
+  const EntityData& data = update_data.entity;
   DCHECK(!data.client_tag_hash.value().empty());
   DCHECK(!GetEntityForTagHash(data.client_tag_hash));
   DCHECK(!data.is_deleted());
   DCHECK(storage_key_to_tag_hash_.find(storage_key) ==
          storage_key_to_tag_hash_.end());
-  DCHECK(server_version != kUncommittedVersion);
+  DCHECK(update_data.response_version != kUncommittedVersion);
 
-  return AddInternal(storage_key, data, server_version);
+  ProcessorEntity* entity =
+      AddInternal(storage_key, data, update_data.response_version);
+  entity->RecordAcceptedRemoteUpdate(update_data);
+  return entity;
 }
 
 void ProcessorEntityTracker::RemoveEntityForClientTagHash(

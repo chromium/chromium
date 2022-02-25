@@ -66,9 +66,9 @@ class ClientTagBasedRemoteUpdateHandler {
   ProcessorEntity* GetEntityForTagHash(const ClientTagHash& tag_hash);
 
   // Creates an entity in the entity tracker for |storage_key| queried from the
-  // bridge for the given |data|. Provided |storage_key| (if any, i.e. if
+  // bridge for the given |update|. Provided |storage_key| (if any, i.e. if
   // non-empty) must not exist in the entity tracker.
-  ProcessorEntity* CreateEntity(const EntityData& data, int64_t server_version);
+  ProcessorEntity* CreateEntity(const UpdateResponseData& update);
 
   // The model type this object syncs.
   const ModelType type_;

@@ -57,8 +57,7 @@ class ProcessorEntityTracker {
   // Starts tracking new remotely-created entity (must not be deleted outside
   // current object).
   ProcessorEntity* AddRemote(const std::string& storage_key,
-                             const EntityData& data,
-                             int64_t server_version);
+                             const UpdateResponseData& update_data);
 
   // Removes item from |entities_| and |storage_key_to_tag_hash|. If entity does
   // not exist, does nothing.
