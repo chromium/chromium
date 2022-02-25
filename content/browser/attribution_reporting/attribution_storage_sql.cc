@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <iterator>
 #include <limits>
 #include <string>
 #include <tuple>
@@ -21,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -37,6 +39,7 @@
 #include "sql/database.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -206,6 +209,32 @@ const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
 
+#define ATTRIBUTION_CONVERSIONS_TABLE "conversions"
+#define ATTRIBUTION_AGGREGATABLE_CONTRIBUTIONS_TABLE \
+  "aggregatable_contributions"
+
+#define ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(table, column) \
+  "UPDATE " table                                           \
+  " SET report_time=?,"                                     \
+  "failed_send_attempts=failed_send_attempts+1 "            \
+  "WHERE " column "=?"
+
+#define ATTRIBUTION_NEXT_REPORT_TIME_SQL(table) \
+  "SELECT MIN(report_time) FROM " table " WHERE report_time>?"
+
+// Set the report time for all reports that should have been sent before now
+// to now + a random number of microseconds between `min_delay` and
+// `max_delay`, both inclusive. We use RANDOM, instead of a method on the
+// delegate, to avoid having to pull all reports into memory and update them
+// one by one. We use ABS because RANDOM may return a negative integer. We add
+// 1 to the difference between `max_delay` and `min_delay` to ensure that the
+// range of generated values is inclusive. If `max_delay == min_delay`, we
+// take the remainder modulo 1, which is always 0.
+#define ATTRIBUTION_SET_REPORT_TIME_SQL(table) \
+  "UPDATE " table                              \
+  " SET report_time=?+ABS(RANDOM()%?) "        \
+  "WHERE report_time<?"
+
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {
   base::UmaHistogramEnumeration("Conversions.Storage.Sql.InitStatus2", status);
@@ -332,6 +361,17 @@ absl::optional<StoredSourceData> ReadSourceToAttribute(
     return absl::nullopt;
 
   return ReadSourceFromStatement(statement);
+}
+
+absl::optional<base::Time> GetMinTime(absl::optional<base::Time> a,
+                                      absl::optional<base::Time> b) {
+  if (!a.has_value())
+    return b;
+
+  if (!b.has_value())
+    return a;
+
+  return std::min(*a, *b);
 }
 
 }  // namespace
@@ -1042,15 +1082,45 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   return report;
 }
 
-// TODO(linnan): Move `GetAggregatableContributionReportsForTesting()` into this
-// function.
-std::vector<AttributionReport> AttributionStorageSql::GetAttributionsToReport(
+std::vector<AttributionReport> AttributionStorageSql::GetEventLevelReports(
     base::Time max_report_time,
     int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
+  return GetEventLevelReportsInternal(max_report_time, limit);
+}
+
+std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
+    base::Time max_report_time,
+    int limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return {};
+
+  std::vector<AttributionReport> reports =
+      GetEventLevelReportsInternal(max_report_time, limit);
+  std::vector<AttributionReport> aggregate_reports =
+      GetAggregatableContributionReportsInternal(max_report_time, limit);
+
+  reports.insert(reports.end(),
+                 std::make_move_iterator(aggregate_reports.begin()),
+                 std::make_move_iterator(aggregate_reports.end()));
+
+  if (limit < 0 || reports.size() <= static_cast<size_t>(limit))
+    return reports;
+
+  base::ranges::sort(reports, /*comp=*/{}, &AttributionReport::report_time);
+
+  return std::vector<AttributionReport>(
+      std::make_move_iterator(reports.begin()),
+      std::make_move_iterator(reports.begin() + limit));
+}
+
+std::vector<AttributionReport>
+AttributionStorageSql::GetEventLevelReportsInternal(base::Time max_report_time,
+                                                    int limit) {
   // Get at most |limit| entries in the conversions table with a |report_time|
   // no greater than |max_report_time| and their matching information from the
   // impression table. Negatives are treated as no limit
@@ -1091,11 +1161,19 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return absl::nullopt;
 
-  static constexpr char kNextReportTimeSql[] =
-      "SELECT MIN(report_time) FROM conversions "
-      "WHERE report_time > ?";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kNextReportTimeSql));
+  absl::optional<base::Time> next_event_report_time =
+      GetNextEventLevelReportTime(time);
+  absl::optional<base::Time> next_aggregate_report_time =
+      GetNextAggregatableContributionReportTime(time);
+
+  return GetMinTime(next_event_report_time, next_aggregate_report_time);
+}
+
+absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
+    sql::StatementID id,
+    const char* sql,
+    base::Time time) {
+  sql::Statement statement(db_->GetCachedStatement(id, sql));
   statement.BindTime(0, time);
 
   if (statement.Step() &&
@@ -1104,6 +1182,13 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   }
 
   return absl::nullopt;
+}
+
+absl::optional<base::Time> AttributionStorageSql::GetNextEventLevelReportTime(
+    base::Time time) {
+  static constexpr char kNextReportTimeSql[] =
+      ATTRIBUTION_NEXT_REPORT_TIME_SQL(ATTRIBUTION_CONVERSIONS_TABLE);
+  return GetNextReportTime(SQL_FROM_HERE, kNextReportTimeSql, time);
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetReports(
@@ -1242,20 +1327,47 @@ bool AttributionStorageSql::DeleteEventLevelReport(
 }
 
 bool AttributionStorageSql::UpdateReportForSendFailure(
-    AttributionReport::EventLevelData::Id conversion_id,
+    AttributionReport::Id report_id,
     base::Time new_report_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return false;
 
-  static constexpr char kUpdateFailedReportSql[] =
-      "UPDATE conversions SET report_time = ?,"
-      "failed_send_attempts = failed_send_attempts + 1 "
-      "WHERE conversion_id = ?";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kUpdateFailedReportSql));
+  struct Visitor {
+    raw_ptr<AttributionStorageSql> storage;
+    base::Time new_report_time;
+
+    bool operator()(AttributionReport::EventLevelData::Id id) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
+      static constexpr char kUpdateFailedReportSql[] =
+          ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(ATTRIBUTION_CONVERSIONS_TABLE,
+                                               "conversion_id");
+      return storage->UpdateReportForSendFailure(
+          SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+    }
+
+    bool operator()(AttributionReport::AggregatableContributionData::Id id) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(storage->sequence_checker_);
+      static constexpr char kUpdateFailedReportSql[] =
+          ATTRIBUTION_UPDATE_FAILED_REPORT_SQL(
+              ATTRIBUTION_AGGREGATABLE_CONTRIBUTIONS_TABLE, "contribution_id");
+      return storage->UpdateReportForSendFailure(
+          SQL_FROM_HERE, kUpdateFailedReportSql, *id, new_report_time);
+    }
+  };
+
+  return absl::visit(
+      Visitor{.storage = this, .new_report_time = new_report_time}, report_id);
+}
+
+bool AttributionStorageSql::UpdateReportForSendFailure(
+    sql::StatementID id,
+    const char* sql,
+    int64_t report_id,
+    base::Time new_report_time) {
+  sql::Statement statement(db_->GetCachedStatement(id, sql));
   statement.BindTime(0, new_report_time);
-  statement.BindInt64(1, *conversion_id);
+  statement.BindInt64(1, report_id);
   return statement.Run() && db_->GetLastChangeCount() == 1;
 }
 
@@ -1275,27 +1387,39 @@ absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes() {
 
   base::Time now = base::Time::Now();
 
-  // Set the report time for all reports that should have been sent before now
-  // to now + a random number of microseconds between `min` and `max`, both
-  // inclusive. We use RANDOM, instead of a method on the delegate, to avoid
-  // having to pull all reports into memory and update them one by one. We use
-  // ABS because RANDOM may return a negative integer. We add 1 to the
-  // difference between `max` and `min` to ensure that the range of generated
-  // values is inclusive. If `max == min`, we take the remainder modulo 1, which
-  // is always 0.
-  static constexpr char kSetReportTimeSql[] =
-      "UPDATE conversions "
-      "SET report_time=?+ABS(RANDOM()%?)"
-      "WHERE report_time<?";
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kSetReportTimeSql));
-  statement.BindTime(0, now + delay->min);
-  statement.BindInt64(1, 1 + (delay->max - delay->min).InMicroseconds());
-  statement.BindTime(2, now);
-  if (!statement.Run())
-    return absl::nullopt;
+  absl::optional<base::Time> next_event_report_time =
+      AdjustOfflineEventLevelReportTimes(delay->min, delay->max, now);
+  absl::optional<base::Time> next_aggregate_report_time =
+      AdjustOfflineAggregatableContributionReportTimes(delay->min, delay->max,
+                                                       now);
+  return GetMinTime(next_event_report_time, next_aggregate_report_time);
+}
 
-  return GetNextReportTime(base::Time::Min());
+bool AttributionStorageSql::AdjustOfflineReportTimes(sql::StatementID id,
+                                                     const char* sql,
+                                                     base::TimeDelta min_delay,
+                                                     base::TimeDelta max_delay,
+                                                     base::Time now) {
+  sql::Statement statement(db_->GetCachedStatement(id, sql));
+  statement.BindTime(0, now + min_delay);
+  statement.BindInt64(1, 1 + (max_delay - min_delay).InMicroseconds());
+  statement.BindTime(2, now);
+  return statement.Run();
+}
+
+absl::optional<base::Time>
+AttributionStorageSql::AdjustOfflineEventLevelReportTimes(
+    base::TimeDelta min_delay,
+    base::TimeDelta max_delay,
+    base::Time now) {
+  static constexpr char kSetReportTimeSql[] =
+      ATTRIBUTION_SET_REPORT_TIME_SQL(ATTRIBUTION_CONVERSIONS_TABLE);
+  if (!AdjustOfflineReportTimes(SQL_FROM_HERE, kSetReportTimeSql, min_delay,
+                                max_delay, now)) {
+    return absl::nullopt;
+  }
+
+  return GetNextEventLevelReportTime(base::Time::Min());
 }
 
 void AttributionStorageSql::ClearData(
@@ -1824,7 +1948,7 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
 
   // Optimize sorting reports by report time for calls to
-  // GetAttributionsToReport(). The reports with the earliest report times are
+  // `GetAttributionReports()`. The reports with the earliest report times are
   // periodically fetched from storage to be sent.
   static constexpr char kConversionReportTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS conversion_report_idx "
@@ -1877,7 +2001,7 @@ bool AttributionStorageSql::CreateSchema() {
 
   // Optimizes aggregatable report look up by source id during calls to
   // `DeleteExpiredSources()`, `ClearAggregatableAttributionForSourceIds()`,
-  // `GetAggregatableContributionReportsForTesting()`.
+  // `GetAggregatableContributionReportsInternal()`.
   static constexpr char kAggregateSourceIdIndexSql[] =
       "CREATE INDEX IF NOT EXISTS aggregate_source_id_idx "
       "ON aggregatable_report_metadata(source_id)";
@@ -1927,7 +2051,7 @@ bool AttributionStorageSql::CreateSchema() {
 
   // Optimizes contribution report look up by report time to get reports in a
   // time range during calls to
-  // `GetAggregatableContributionReportsForTesting()`.
+  // `GetAggregatableContributionReportsInternal()`.
   static constexpr char kContributionReportTimeIndexSql[] =
       "CREATE INDEX IF NOT EXISTS contribution_report_time_idx "
       "ON aggregatable_contributions(report_time)";
@@ -2250,13 +2374,9 @@ bool AttributionStorageSql::ClearAggregatableAttributionForSourceIds(
 }
 
 std::vector<AttributionReport>
-AttributionStorageSql::GetAggregatableContributionReportsForTesting(
+AttributionStorageSql::GetAggregatableContributionReportsInternal(
     base::Time max_report_time,
     int limit) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
-    return {};
-
   // TODO(linnan): Consider breaking the SQL query down for simplicity.
   // See the comment in crrev.com/c/3379484 for more information.
   static constexpr char kGetContributionsSql[] =
@@ -2439,6 +2559,29 @@ bool AttributionStorageSql::AdjustBudgetConsumedForSource(
   statement.BindInt64(0, additional_budget_consumed);
   statement.BindInt64(1, *source_id);
   return statement.Run() && db_->GetLastChangeCount() == 1;
+}
+
+absl::optional<base::Time>
+AttributionStorageSql::GetNextAggregatableContributionReportTime(
+    base::Time time) {
+  static constexpr char kNextReportTimeSql[] = ATTRIBUTION_NEXT_REPORT_TIME_SQL(
+      ATTRIBUTION_AGGREGATABLE_CONTRIBUTIONS_TABLE);
+  return GetNextReportTime(SQL_FROM_HERE, kNextReportTimeSql, time);
+}
+
+absl::optional<base::Time>
+AttributionStorageSql::AdjustOfflineAggregatableContributionReportTimes(
+    base::TimeDelta min_delay,
+    base::TimeDelta max_delay,
+    base::Time now) {
+  static constexpr char kSetReportTimeSql[] = ATTRIBUTION_SET_REPORT_TIME_SQL(
+      ATTRIBUTION_AGGREGATABLE_CONTRIBUTIONS_TABLE);
+  if (!AdjustOfflineReportTimes(SQL_FROM_HERE, kSetReportTimeSql, min_delay,
+                                max_delay, now)) {
+    return absl::nullopt;
+  }
+
+  return GetNextAggregatableContributionReportTime(base::Time::Min());
 }
 
 }  // namespace content

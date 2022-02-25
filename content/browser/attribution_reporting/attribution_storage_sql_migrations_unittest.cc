@@ -45,7 +45,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
 
     // We need to run an operation on storage to force the lazy initialization.
     std::ignore =
-        static_cast<AttributionStorage*>(&storage)->GetAttributionsToReport(
+        static_cast<AttributionStorage*>(&storage)->GetAttributionReports(
             base::Time::Min());
   }
 

@@ -1985,7 +1985,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   run_loop.Run();
 
   EXPECT_TRUE(
-      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -2002,7 +2002,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   attribution_manager->HandleTrigger(DefaultTrigger());
 
   EXPECT_FALSE(
-      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
           .empty());
 
   // Arbitrary non-conversions mask.
@@ -2012,7 +2012,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
                        now, run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_FALSE(
-      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -2041,7 +2041,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   run_loop.Run();
 
   EXPECT_TRUE(
-      GetAttributionsToReportForTesting(attribution_manager, base::Time::Max())
+      GetAttributionReportsForTesting(attribution_manager, base::Time::Max())
           .empty());
 }
 
@@ -2073,8 +2073,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
             .Build());
   }
 
-  EXPECT_EQ(5u, GetAttributionsToReportForTesting(attribution_manager,
-                                                  base::Time::Max())
+  EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager,
+                                                base::Time::Max())
                     .size());
 
   // Match against enough Origins to delete three of the imp/conv pairs.
@@ -2089,8 +2089,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   partition->ClearData(StoragePartition::REMOVE_DATA_MASK_CONVERSIONS, 0, func,
                        nullptr, false, now, now, run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_EQ(2u, GetAttributionsToReportForTesting(attribution_manager,
-                                                  base::Time::Max())
+  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager,
+                                                base::Time::Max())
                     .size());
 }
 

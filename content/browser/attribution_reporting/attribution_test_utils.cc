@@ -528,6 +528,8 @@ bool operator==(const AttributionReport::EventLevelData& a,
 
 // Does not compare ID as it is set by the underlying sqlite db and
 // should not be tested.
+// Also does not compare the assembled report as it is returned by the
+// aggregation service from all the other data.
 bool operator==(const AttributionReport::AggregatableContributionData& a,
                 const AttributionReport::AggregatableContributionData& b) {
   return a.contribution == b.contribution;
@@ -838,13 +840,13 @@ AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
   return map;
 }
 
-std::vector<AttributionReport> GetAttributionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time) {
   base::RunLoop run_loop;
   std::vector<AttributionReport> attribution_reports;
   manager->attribution_storage_
-      .AsyncCall(&AttributionStorage::GetAttributionsToReport)
+      .AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(
           [&](std::vector<AttributionReport> reports) {

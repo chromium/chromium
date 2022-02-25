@@ -76,11 +76,21 @@ class AttributionStorage {
   virtual CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) = 0;
 
+  // Returns all of the event-level reports that should be sent before
+  // |max_report_time|. This call is logically const, and does not modify the
+  // underlying storage. |limit| limits the number of reports to return; use
+  // a negative number for no limit.
+  // TODO(crbug.com/1285317): Consider removing this interface or changing to
+  // for testing.
+  virtual std::vector<AttributionReport> GetEventLevelReports(
+      base::Time max_report_time,
+      int limit = -1) = 0;
+
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use
   // a negative number for no limit. Reports are shuffled before being returned.
-  virtual std::vector<AttributionReport> GetAttributionsToReport(
+  virtual std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1) = 0;
 
@@ -108,7 +118,7 @@ class AttributionStorage {
   // its report time to the given value. Should be called after a transient
   // failure to send the report so that it is retried later.
   [[nodiscard]] virtual bool UpdateReportForSendFailure(
-      AttributionReport::EventLevelData::Id report_id,
+      AttributionReport::Id report_id,
       base::Time new_report_time) = 0;
 
   // Adjusts the report time of all reports that should have been sent while the
@@ -135,14 +145,6 @@ class AttributionStorage {
   // Aggregate Attribution:
   [[nodiscard]] virtual bool AddAggregatableAttributionForTesting(
       const AggregatableAttribution& aggregatable_attribution) = 0;
-
-  // Returns all of the aggregatable reports that should be sent before
-  // `max_report_time`. This call is logically const, and does not modify the
-  // underlying storage. `limit` limits the number of reports to return; use a
-  // negative number for no limit.
-  virtual std::vector<AttributionReport>
-  GetAggregatableContributionReportsForTesting(base::Time max_report_time,
-                                               int limit = -1) = 0;
 };
 
 }  // namespace content

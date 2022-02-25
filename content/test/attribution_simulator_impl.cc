@@ -100,6 +100,12 @@ class SentReportAccumulator : public AttributionReportSender {
   // AttributionManagerImpl::NetworkSender:
   void SendReport(AttributionReport report,
                   ReportSentCallback sent_callback) override {
+    // TODO(linnan): Support aggregatable reports in the simulator.
+    if (!absl::holds_alternative<AttributionReport::EventLevelData>(
+            report.data())) {
+      return;
+    }
+
     base::Value report_body = report.ReportBody();
     if (remove_report_ids_)
       report_body.RemoveKey("report_id");

@@ -236,7 +236,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> offline_report_delay_config_;
 
   // If true, `ShuffleReports()` reverses the reports to allow testing the
-  // proper call from `AttributionStorage::GetAttributionsToReport()`.
+  // proper call from `AttributionStorage::GetAttributionReports()`.
   bool reverse_reports_on_shuffle_ = false;
 
   AttributionRandomizedResponseRates randomized_response_rates_;
@@ -547,7 +547,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 
-std::vector<AttributionReport> GetAttributionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time);
 

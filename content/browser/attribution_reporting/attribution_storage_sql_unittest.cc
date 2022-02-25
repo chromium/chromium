@@ -129,7 +129,7 @@ TEST_F(AttributionStorageSqlTest,
   // Operations which don't need to run on an empty database should not create
   // the database.
   OpenDatabase();
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
   CloseDatabase();
 
   EXPECT_FALSE(base::PathExists(db_path()));
@@ -171,16 +171,16 @@ TEST_F(AttributionStorageSqlTest,
 TEST_F(AttributionStorageSqlTest, DatabaseReopened_DataPersisted) {
   OpenDatabase();
   AddReportToStorage();
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), SizeIs(1));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
   CloseDatabase();
   OpenDatabase();
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), SizeIs(1));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
 }
 
 TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   OpenDatabase();
   AddReportToStorage();
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), SizeIs(1));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
   CloseDatabase();
 
   // Corrupt the database.
@@ -193,7 +193,7 @@ TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   EXPECT_NO_FATAL_FAILURE(OpenDatabase());
 
   // Data should be recovered.
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), SizeIs(1));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
 
   EXPECT_TRUE(expecter.SawExpectedErrors());
 }
@@ -201,7 +201,7 @@ TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
 TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   OpenDatabase();
   AddReportToStorage();
-  ASSERT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), SizeIs(1));
+  ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), SizeIs(1));
   CloseDatabase();
 
   {
@@ -218,7 +218,7 @@ TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
 
   // The DB should be razed because the version is too new.
   ASSERT_NO_FATAL_FAILURE(OpenDatabase());
-  ASSERT_THAT(storage()->GetAttributionsToReport(base::Time::Now()), IsEmpty());
+  ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
 // Create an impression with three conversions and craft a query that will
@@ -249,7 +249,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(),
                           impression.common_info().impression_origin()));
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -287,7 +287,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
       base::Time::Now(), base::Time::Now(),
       base::BindRepeating(std::equal_to<url::Origin>(),
                           impression.common_info().impression_origin()));
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -321,7 +321,7 @@ TEST_F(AttributionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   // Use a time range that only intersects the last conversion.
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(base::Time::Now(), base::Time::Now(), null_filter);
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -355,7 +355,7 @@ TEST_F(AttributionStorageSqlTest, DeleteEverything) {
 
   auto null_filter = base::RepeatingCallback<bool(const url::Origin&)>();
   storage()->ClearData(base::Time::Min(), base::Time::Max(), null_filter);
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()), IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -414,9 +414,7 @@ TEST_F(AttributionStorageSqlTest,
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(),
                           stored_source.common_info().impression_origin()));
-  EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
-                  base::Time::Max()),
-              IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -463,9 +461,7 @@ TEST_F(AttributionStorageSqlTest,
       base::Time::Now(), base::Time::Now(),
       base::BindRepeating(std::equal_to<url::Origin>(),
                           stored_source.common_info().impression_origin()));
-  EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
-                  base::Time::Max()),
-              IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -506,9 +502,7 @@ TEST_F(AttributionStorageSqlTest,
   // Use a time range that only intersects the last aggregatable attribution.
   storage()->ClearData(base::Time::Now(), base::Time::Now(),
                        base::NullCallback());
-  EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
-                  base::Time::Max()),
-              IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -553,9 +547,7 @@ TEST_F(AttributionStorageSqlTest, DeleteEverythingWithAggregatableAttribution) {
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
-  EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
-                  base::Time::Max()),
-              IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 
@@ -786,7 +778,7 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
               .SetReportingOrigin(impression.common_info().reporting_origin())
               .Build()));
 
-  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
               ElementsAre(EventLevelDataIs(TriggerDataIs(kMaxUint64))));
 }
 
@@ -884,7 +876,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   task_environment_.FastForwardBy(kReportDelay);
 
   std::vector<AttributionReport> reports =
-      storage()->GetAttributionsToReport(base::Time::Now());
+      storage()->GetAttributionReports(base::Time::Now());
   EXPECT_THAT(reports, SizeIs(1));
   EXPECT_TRUE(storage()->DeleteReport(
       *(absl::get<AttributionReport::EventLevelData>(reports[0].data()).id)));
@@ -919,8 +911,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
       AttributionReport::AggregatableContributionData::Id(1)));
 
   EXPECT_THAT(
-      storage()->GetAggregatableContributionReportsForTesting(
-          base::Time::Max()),
+      storage()->GetAttributionReports(base::Time::Max()),
       ElementsAre(AttributionReport(
           attribution_info, aggregatable_attribution.report_time,
           DefaultExternalReportID(),
@@ -930,9 +921,7 @@ TEST_F(AttributionStorageSqlTest, DeleteAggregatableContributionReport) {
 
   EXPECT_TRUE(storage()->DeleteReport(
       AttributionReport::AggregatableContributionData::Id(2)));
-  EXPECT_THAT(storage()->GetAggregatableContributionReportsForTesting(
-                  base::Time::Max()),
-              IsEmpty());
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
 

@@ -10,6 +10,7 @@
 #include "base/guid.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/common/content_export.h"
@@ -83,6 +84,10 @@ class CONTENT_EXPORT AttributionReport {
     // If null, an ID has not been assigned yet.
     absl::optional<Id> id;
 
+    // The report assembled by the aggregation service. If null, the report has
+    // not been assembled yet.
+    absl::optional<AggregatableReport> assembled_report;
+
     // When adding new members, the corresponding `operator==()` definition in
     // `attribution_test_utils.h` should also be updated.
   };
@@ -107,6 +112,11 @@ class CONTENT_EXPORT AttributionReport {
   base::Value ReportBody() const;
 
   absl::optional<Id> ReportId() const;
+
+  // This will be included in aggregatable report to allow aggregation service
+  // to do privacy budgeting. Note that this will DCHECK that the underlying
+  // data is `AggregatableContributionData`.
+  std::string PrivacyBudgetKey() const;
 
   const AttributionInfo& attribution_info() const { return attribution_info_; }
 

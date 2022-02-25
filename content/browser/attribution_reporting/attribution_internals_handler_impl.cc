@@ -257,6 +257,12 @@ void AttributionInternalsHandlerImpl::OnSourceHandled(
 void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
     const SendResult& info) {
+  // TODO(crbug.com/1285317): Show aggregatable reports in internal page.
+  if (!absl::holds_alternative<AttributionReport::EventLevelData>(
+          report.data())) {
+    return;
+  }
+
   mojom::WebUIAttributionReport::Status status;
   switch (info.status) {
     case SendResult::Status::kSent:

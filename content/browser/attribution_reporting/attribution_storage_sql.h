@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -27,6 +29,7 @@ class GUID;
 namespace sql {
 class Database;
 class Statement;
+class StatementID;
 }  // namespace sql
 
 namespace content {
@@ -96,7 +99,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int deactivated_source_return_limit = -1) override;
   CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) override;
-  std::vector<AttributionReport> GetAttributionsToReport(
+  std::vector<AttributionReport> GetEventLevelReports(
+      base::Time max_report_time,
+      int limit = -1) override;
+  std::vector<AttributionReport> GetAttributionReports(
       base::Time max_report_time,
       int limit = -1) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
@@ -104,9 +110,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const std::vector<AttributionReport::EventLevelData::Id>& ids) override;
   std::vector<StoredSource> GetActiveSources(int limit = -1) override;
   bool DeleteReport(AttributionReport::Id report_id) override;
-  bool UpdateReportForSendFailure(
-      AttributionReport::EventLevelData::Id report_id,
-      base::Time new_report_time) override;
+  bool UpdateReportForSendFailure(AttributionReport::Id report_id,
+                                  base::Time new_report_time) override;
   absl::optional<base::Time> AdjustOfflineReportTimes() override;
   void ClearData(
       base::Time delete_begin,
@@ -114,9 +119,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::RepeatingCallback<bool(const url::Origin&)> filter) override;
   bool AddAggregatableAttributionForTesting(
       const AggregatableAttribution& aggregatable_attribution) override;
-  std::vector<AttributionReport> GetAggregatableContributionReportsForTesting(
-      base::Time max_report_time,
-      int limit = -1) override;
 
   void ClearAllDataAllTime() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -205,6 +207,36 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  std::vector<AttributionReport> GetEventLevelReportsInternal(
+      base::Time max_report_time,
+      int limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool UpdateReportForSendFailure(sql::StatementID id,
+                                                const char* sql,
+                                                int64_t report_id,
+                                                base::Time new_report_time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> GetNextReportTime(sql::StatementID id,
+                                               const char* sql,
+                                               base::Time time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool AdjustOfflineReportTimes(sql::StatementID id,
+                                              const char* sql,
+                                              base::TimeDelta min_delay,
+                                              base::TimeDelta max_delay,
+                                              base::Time now)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> GetNextEventLevelReportTime(base::Time time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> AdjustOfflineEventLevelReportTimes(
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay,
+      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.
@@ -252,6 +284,10 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       const std::vector<StoredSource::Id>& source_ids)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  std::vector<AttributionReport> GetAggregatableContributionReportsInternal(
+      base::Time max_report_time,
+      int limit) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
@@ -274,6 +310,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       StoredSource::Id source_id,
       int64_t additional_budget_consumed)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> GetNextAggregatableContributionReportTime(
+      base::Time time) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> AdjustOfflineAggregatableContributionReportTimes(
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay,
+      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   static bool g_run_in_memory_;
 
