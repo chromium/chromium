@@ -828,11 +828,6 @@ void AppPlatformMetrics::SetWindowInActivated(
     const base::UnguessableToken& instance_id,
     apps::InstanceState state) {
   bool is_close = state & apps::InstanceState::kDestroyed;
-  auto usage_time_it = usage_time_per_five_minutes_.find(instance_id);
-  if (is_close && usage_time_it != usage_time_per_five_minutes_.end()) {
-    usage_time_it->second.window_is_closed = true;
-  }
-
   auto two_hours_it = usage_time_per_two_hours_.find(instance_id);
   if (is_close && two_hours_it != usage_time_per_two_hours_.end()) {
     two_hours_it->second.window_is_closed = true;
@@ -854,20 +849,6 @@ void AppPlatformMetrics::SetWindowInActivated(
       start_time_per_five_minutes_[instance_id].start_time;
   app_type_running_time_per_five_minutes_[app_type_name] += running_time;
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
-
-  // TODO(crbug.com/1299978): Remove `usage_time_per_five_minutes_` related
-  // code.
-  if (usage_time_it == usage_time_per_five_minutes_.end()) {
-    auto source_id = GetSourceId(profile_, app_id);
-    if (source_id != ukm::kInvalidSourceId) {
-      usage_time_per_five_minutes_[it->first].source_id = source_id;
-      usage_time_it = usage_time_per_five_minutes_.find(it->first);
-    }
-  }
-  if (usage_time_it != usage_time_per_five_minutes_.end()) {
-    usage_time_it->second.app_type_name = app_type_name;
-    usage_time_it->second.running_time += running_time;
-  }
 
   UpdateUsageTime(instance_id, app_id, app_type_name, running_time);
 
@@ -1001,20 +982,6 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
         running_time;
     app_type_v2_running_time_per_five_minutes_[it.second.app_type_name_v2] +=
         running_time;
-
-    auto usage_time_it = usage_time_per_five_minutes_.find(it.first);
-    if (usage_time_it == usage_time_per_five_minutes_.end()) {
-      auto source_id = GetSourceId(profile_, it.second.app_id);
-      if (source_id != ukm::kInvalidSourceId) {
-        usage_time_per_five_minutes_[it.first].source_id = source_id;
-        usage_time_it = usage_time_per_five_minutes_.find(it.first);
-      }
-    }
-    if (usage_time_it != usage_time_per_five_minutes_.end()) {
-      usage_time_it->second.app_type_name = it.second.app_type_name;
-      usage_time_it->second.running_time += running_time;
-    }
-
     UpdateUsageTime(it.first, it.second.app_id, it.second.app_type_name,
                     running_time);
     it.second.start_time = base::TimeTicks::Now();

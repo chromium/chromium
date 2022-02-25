@@ -252,8 +252,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   std::map<AppTypeName, int> activated_count_;
 
   // |start_time_per_five_minutes_|, |app_type_running_time_per_five_minutes_|,
-  // |app_type_v2_running_time_per_five_minutes_|, and
-  // |usage_time_per_five_minutes_| are used for accumulating app
+  // |app_type_v2_running_time_per_five_minutes_| are used for accumulating app
   // running duration per 5 minutes interval.
   std::map<const base::UnguessableToken, RunningStartTime>
       start_time_per_five_minutes_;
@@ -261,10 +260,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
       app_type_running_time_per_five_minutes_;
   std::map<AppTypeNameV2, base::TimeDelta>
       app_type_v2_running_time_per_five_minutes_;
-
-  // TODO(crbug.com/1299978): Remove `usage_time_per_five_minutes_`.
-  std::map<const base::UnguessableToken, UsageTime>
-      usage_time_per_five_minutes_;
 
   // Records the app window running duration for the app usage AppKM.
   std::map<const base::UnguessableToken, UsageTime> usage_time_per_two_hours_;
