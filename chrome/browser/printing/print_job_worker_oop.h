@@ -31,7 +31,7 @@ class PrintedDocument;
 // thread.  PrintJob always outlives its worker instance.
 class PrintJobWorkerOop : public PrintJobWorker {
  public:
-  PrintJobWorkerOop(int render_process_id, int render_frame_id);
+  explicit PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id);
   PrintJobWorkerOop(const PrintJobWorkerOop&) = delete;
   PrintJobWorkerOop& operator=(const PrintJobWorkerOop&) = delete;
   ~PrintJobWorkerOop() override;

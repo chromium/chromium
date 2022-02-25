@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/printing/common/print.mojom.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -53,8 +54,7 @@ class TestPrintQueriesQueue : public PrintQueriesQueue {
   // settings indicated by `printable_offset_x_`, `printable_offset_y_`, and
   // `print_driver_type_`.
   std::unique_ptr<PrinterQuery> CreatePrinterQuery(
-      int render_process_id,
-      int render_frame_id) override;
+      content::GlobalRenderFrameHostId rfh_id) override;
 
   // Sets the printer's printable area offsets to `offset_x` and `offset_y`,
   // which should be in pixels. Used to fill in printer settings that would
@@ -81,7 +81,7 @@ class TestPrinterQuery : public PrinterQuery {
  public:
   // Can only be called on the IO thread, since this inherits from
   // `PrinterQuery`.
-  TestPrinterQuery(int render_process_id, int render_frame_id);
+  explicit TestPrinterQuery(content::GlobalRenderFrameHostId rfh_id);
   TestPrinterQuery(const TestPrinterQuery&) = delete;
   TestPrinterQuery& operator=(const TestPrinterQuery&) = delete;
   ~TestPrinterQuery() override;
@@ -113,10 +113,8 @@ class TestPrinterQuery : public PrinterQuery {
 };
 
 std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
-    int render_process_id,
-    int render_frame_id) {
-  auto test_query =
-      std::make_unique<TestPrinterQuery>(render_process_id, render_frame_id);
+    content::GlobalRenderFrameHostId rfh_id) {
+  auto test_query = std::make_unique<TestPrinterQuery>(rfh_id);
 #if BUILDFLAG(IS_WIN)
   test_query->SetPrinterLanguageType(printer_language_type_);
 #endif
@@ -137,8 +135,8 @@ void TestPrintQueriesQueue::SetupPrinterLanguageType(
 }
 #endif
 
-TestPrinterQuery::TestPrinterQuery(int render_process_id, int render_frame_id)
-    : PrinterQuery(render_process_id, render_frame_id) {}
+TestPrinterQuery::TestPrinterQuery(content::GlobalRenderFrameHostId rfh_id)
+    : PrinterQuery(rfh_id) {}
 
 TestPrinterQuery::~TestPrinterQuery() = default;
 

@@ -18,12 +18,17 @@ namespace base {
 class Location;
 }
 
+namespace content {
+struct GlobalRenderFrameHostId;
+}
+
 namespace printing {
 
 class PrintJobWorker;
 
-using CreatePrintJobWorkerCallback = base::RepeatingCallback<std::unique_ptr<
-    PrintJobWorker>(int render_process_id, int render_frame_id)>;
+using CreatePrintJobWorkerCallback =
+    base::RepeatingCallback<std::unique_ptr<PrintJobWorker>(
+        content::GlobalRenderFrameHostId rfh_id)>;
 
 // Query the printer for settings.
 class PrinterQuery {
@@ -35,7 +40,7 @@ class PrinterQuery {
   };
 
   // Can only be called on the IO thread.
-  PrinterQuery(int render_process_id, int render_frame_id);
+  explicit PrinterQuery(content::GlobalRenderFrameHostId rfh_id);
 
   PrinterQuery(const PrinterQuery&) = delete;
   PrinterQuery& operator=(const PrinterQuery&) = delete;

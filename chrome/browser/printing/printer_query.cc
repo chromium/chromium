@@ -17,6 +17,7 @@
 #include "chrome/browser/printing/print_job_worker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
 
@@ -31,27 +32,22 @@ namespace {
 
 CreatePrintJobWorkerCallback* g_create_print_job_worker_for_testing = nullptr;
 
-std::unique_ptr<PrintJobWorker> CreateWorker(int render_process_id,
-                                             int render_frame_id) {
-  if (g_create_print_job_worker_for_testing) {
-    return g_create_print_job_worker_for_testing->Run(render_process_id,
-                                                      render_frame_id);
-  }
+std::unique_ptr<PrintJobWorker> CreateWorker(
+    content::GlobalRenderFrameHostId rfh_id) {
+  if (g_create_print_job_worker_for_testing)
+    return g_create_print_job_worker_for_testing->Run(rfh_id);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (features::kEnableOopPrintDriversJobPrint.Get()) {
-    return std::make_unique<PrintJobWorkerOop>(render_process_id,
-                                               render_frame_id);
-  }
+  if (features::kEnableOopPrintDriversJobPrint.Get())
+    return std::make_unique<PrintJobWorkerOop>(rfh_id);
 #endif
-  return std::make_unique<PrintJobWorker>(render_process_id, render_frame_id);
+  return std::make_unique<PrintJobWorker>(rfh_id);
 }
 
 }  // namespace
 
-PrinterQuery::PrinterQuery(int render_process_id, int render_frame_id)
-    : cookie_(PrintSettings::NewCookie()),
-      worker_(CreateWorker(render_process_id, render_frame_id)) {
+PrinterQuery::PrinterQuery(content::GlobalRenderFrameHostId rfh_id)
+    : cookie_(PrintSettings::NewCookie()), worker_(CreateWorker(rfh_id)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 

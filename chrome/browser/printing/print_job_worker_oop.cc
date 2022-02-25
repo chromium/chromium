@@ -15,6 +15,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "printing/metafile.h"
 #include "printing/printed_document.h"
 #include "printing/printing_features.h"
@@ -43,8 +44,8 @@ mojom::PrintTargetType DeterminePrintTargetType(
 
 }  // namespace
 
-PrintJobWorkerOop::PrintJobWorkerOop(int render_process_id, int render_frame_id)
-    : PrintJobWorker(render_process_id, render_frame_id) {}
+PrintJobWorkerOop::PrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id)
+    : PrintJobWorker(rfh_id) {}
 
 PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());

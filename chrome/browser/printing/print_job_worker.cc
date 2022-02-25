@@ -25,6 +25,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/backend/print_backend.h"
@@ -62,7 +63,7 @@ namespace {
 
 class PrintingContextDelegate : public PrintingContext::Delegate {
  public:
-  PrintingContextDelegate(int render_process_id, int render_frame_id);
+  explicit PrintingContextDelegate(content::GlobalRenderFrameHostId rfh_id);
 
   PrintingContextDelegate(const PrintingContextDelegate&) = delete;
   PrintingContextDelegate& operator=(const PrintingContextDelegate&) = delete;
@@ -75,21 +76,17 @@ class PrintingContextDelegate : public PrintingContext::Delegate {
   // Not exposed to PrintingContext::Delegate because of dependency issues.
   content::WebContents* GetWebContents();
 
-  int render_process_id() const { return render_process_id_; }
-  int render_frame_id() const { return render_frame_id_; }
+  content::GlobalRenderFrameHostId rfh_id() const { return rfh_id_; }
 
  private:
-  const int render_process_id_;
-  const int render_frame_id_;
+  const content::GlobalRenderFrameHostId rfh_id_;
 };
 
-PrintingContextDelegate::PrintingContextDelegate(int render_process_id,
-                                                 int render_frame_id)
-    : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id) {}
+PrintingContextDelegate::PrintingContextDelegate(
+    content::GlobalRenderFrameHostId rfh_id)
+    : rfh_id_(rfh_id) {}
 
-PrintingContextDelegate::~PrintingContextDelegate() {
-}
+PrintingContextDelegate::~PrintingContextDelegate() = default;
 
 gfx::NativeView PrintingContextDelegate::GetParentView() {
   content::WebContents* wc = GetWebContents();
@@ -98,8 +95,7 @@ gfx::NativeView PrintingContextDelegate::GetParentView() {
 
 content::WebContents* PrintingContextDelegate::GetWebContents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id_);
   return rfh ? content::WebContents::FromRenderFrameHost(rfh) : nullptr;
 }
 
@@ -127,10 +123,9 @@ void FailedNotificationCallback(PrintJob* print_job) {
 
 }  // namespace
 
-PrintJobWorker::PrintJobWorker(int render_process_id, int render_frame_id)
+PrintJobWorker::PrintJobWorker(content::GlobalRenderFrameHostId rfh_id)
     : printing_context_delegate_(
-          std::make_unique<PrintingContextDelegate>(render_process_id,
-                                                    render_frame_id)),
+          std::make_unique<PrintingContextDelegate>(rfh_id)),
       printing_context_(
           PrintingContext::Create(printing_context_delegate_.get(),
                                   ShouldPrintingContextSkipSystemCalls())),
@@ -294,8 +289,8 @@ void PrintJobWorker::GetSettingsWithUI(uint32_t document_page_count,
       PrintingContextAndroid::SetPendingPrint(
           web_contents->GetTopLevelNativeWindow(),
           GetPrintableForTab(tab->GetJavaObject()),
-          printing_context_delegate->render_process_id(),
-          printing_context_delegate->render_frame_id());
+          printing_context_delegate->rfh_id().child_id,
+          printing_context_delegate->rfh_id().frame_routing_id);
     }
   }
 #endif

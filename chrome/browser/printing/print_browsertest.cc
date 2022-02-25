@@ -46,6 +46,7 @@
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -208,8 +209,8 @@ void UpdatePrintSettingsOnIO(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<PrinterQuery> printer_query = queue->PopPrinterQuery(cookie);
   if (!printer_query) {
-    printer_query = queue->CreatePrinterQuery(
-        content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
+    printer_query =
+        queue->CreatePrinterQuery(content::GlobalRenderFrameHostId());
   }
   auto* printer_query_ptr = printer_query.get();
   printer_query_ptr->SetSettings(
@@ -1243,9 +1244,7 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest,
   PrintCompositeClient::RequestedSubFrame* subframe_in_queue =
       client->requested_subframes_.begin()->get();
   ASSERT_EQ(kDefaultDocumentCookie, subframe_in_queue->document_cookie_);
-  ASSERT_EQ(test_frame->GetProcess()->GetID(),
-            subframe_in_queue->render_process_id_);
-  ASSERT_EQ(test_frame->GetRoutingID(), subframe_in_queue->render_frame_id_);
+  ASSERT_EQ(test_frame->GetGlobalId(), subframe_in_queue->rfh_id_);
 
   // Creates mojom::PrintCompositor.
   client->DoCompositeDocumentToPdf(
@@ -1903,11 +1902,9 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 class TestPrintJobWorker : public PrintJobWorkerOop {
  public:
-  TestPrintJobWorker(int render_process_id,
-                     int render_frame_id,
+  TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
                      TestPrintCallbacks* callbacks)
-      : PrintJobWorkerOop(render_process_id, render_frame_id),
-        callbacks_(callbacks) {}
+      : PrintJobWorkerOop(rfh_id), callbacks_(callbacks) {}
   TestPrintJobWorker(const TestPrintJobWorker&) = delete;
   TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
   ~TestPrintJobWorker() override = default;
@@ -2175,10 +2172,9 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   };
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(int render_process_id,
-                                                       int render_frame_id) {
-    return std::make_unique<TestPrintJobWorker>(
-        render_process_id, render_frame_id, &test_print_callbacks_);
+  std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
+      content::GlobalRenderFrameHostId rfh_id) {
+    return std::make_unique<TestPrintJobWorker>(rfh_id, &test_print_callbacks_);
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 

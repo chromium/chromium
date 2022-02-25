@@ -17,6 +17,7 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -222,13 +223,11 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
 #endif
 }
 
-void PrintViewManager::OnPrintPreviewRequestRejected(int render_process_id,
-                                                     int render_frame_id) {
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!rfh) {
+void PrintViewManager::OnPrintPreviewRequestRejected(
+    content::GlobalRenderFrameHostId rfh_id) {
+  if (!content::RenderFrameHost::FromID(rfh_id))
     return;
-  }
+
   PrintPreviewDone();
   PrintPreviewRejectedForTesting();
 }
@@ -343,21 +342,18 @@ void PrintViewManager::ShowScriptedPrintPreview(bool source_is_modifiable) {
   if (GetCurrentTargetFrame() != print_preview_rfh_)
     return;
 
-  int render_process_id = print_preview_rfh_->GetProcess()->GetID();
-  int render_frame_id = print_preview_rfh_->GetRoutingID();
-
   RejectPrintPreviewRequestIfRestricted(
       base::BindOnce(&PrintViewManager::OnScriptedPrintPreviewCallback,
                      weak_factory_.GetWeakPtr(), source_is_modifiable,
-                     render_process_id, render_frame_id));
+                     print_preview_rfh_->GetGlobalId()));
 }
 
-void PrintViewManager::OnScriptedPrintPreviewCallback(bool source_is_modifiable,
-                                                      int render_process_id,
-                                                      int render_frame_id,
-                                                      bool should_proceed) {
+void PrintViewManager::OnScriptedPrintPreviewCallback(
+    bool source_is_modifiable,
+    content::GlobalRenderFrameHostId rfh_id,
+    bool should_proceed) {
   if (!should_proceed) {
-    OnPrintPreviewRequestRejected(render_process_id, render_frame_id);
+    OnPrintPreviewRequestRejected(rfh_id);
     return;
   }
 
@@ -366,11 +362,9 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(bool source_is_modifiable,
 
   DCHECK(print_preview_rfh_);
 
-  auto* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!rfh || rfh != print_preview_rfh_) {
+  auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+  if (!rfh || rfh != print_preview_rfh_)
     return;
-  }
 
   PrintPreviewDialogController* dialog_controller =
       PrintPreviewDialogController::GetInstance();
@@ -394,35 +388,30 @@ void PrintViewManager::OnScriptedPrintPreviewCallback(bool source_is_modifiable,
 
 void PrintViewManager::RequestPrintPreview(
     mojom::RequestPrintPreviewParamsPtr params) {
-  content::RenderFrameHost* render_frame_host = GetCurrentTargetFrame();
-  content::RenderProcessHost* render_process_host =
-      render_frame_host->GetProcess();
-
-  RejectPrintPreviewRequestIfRestricted(base::BindOnce(
-      &PrintViewManager::OnRequestPrintPreviewCallback,
-      weak_factory_.GetWeakPtr(), std::move(params),
-      render_process_host->GetID(), render_frame_host->GetRoutingID()));
+  RejectPrintPreviewRequestIfRestricted(
+      base::BindOnce(&PrintViewManager::OnRequestPrintPreviewCallback,
+                     weak_factory_.GetWeakPtr(), std::move(params),
+                     GetCurrentTargetFrame()->GetGlobalId()));
 }
 
 void PrintViewManager::OnRequestPrintPreviewCallback(
     mojom::RequestPrintPreviewParamsPtr params,
-    int render_process_id,
-    int render_frame_id,
+    content::GlobalRenderFrameHostId rfh_id,
     bool should_proceed) {
   if (!should_proceed) {
-    OnPrintPreviewRequestRejected(render_process_id, render_frame_id);
+    OnPrintPreviewRequestRejected(rfh_id);
     return;
   }
+
   // Double-check that the RenderFrameHost is still alive and has a live
   // RenderFrame, since the DLP check is potentially asynchronous.
-  auto* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host || !render_frame_host->IsRenderFrameLive()) {
+  auto* render_frame_host = content::RenderFrameHost::FromID(rfh_id);
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive())
     return;
-  }
-  if (params->webnode_only) {
+
+  if (params->webnode_only)
     PrintPreviewForWebNode(render_frame_host);
-  }
+
   PrintPreviewDialogController::PrintPreview(web_contents());
   PrintPreviewUI::SetInitialParams(GetPrintPreviewDialog(web_contents()),
                                    *params);

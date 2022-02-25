@@ -14,6 +14,10 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
+namespace content {
+struct GlobalRenderFrameHostId;
+}
+
 namespace printing {
 
 class JobEventDetails;
@@ -38,8 +42,7 @@ class PrintQueriesQueue : public base::RefCountedThreadSafe<PrintQueriesQueue> {
 
   // Creates new query. Virtual so that tests can override it.
   virtual std::unique_ptr<PrinterQuery> CreatePrinterQuery(
-      int render_process_id,
-      int render_frame_id);
+      content::GlobalRenderFrameHostId rfh_id);
 
   void Shutdown();
 

@@ -53,8 +53,7 @@ TEST_F(PrintViewManagerBasicTest, CancelJobDuringDestruction) {
 
   // Setup enough of a PrinterQuery to make GetPrintedPagesCount work
   auto queue = g_browser_process->print_job_manager()->queue();
-  auto query = queue->CreatePrinterQuery(main_rfh()->GetProcess()->GetID(),
-                                         main_rfh()->GetRoutingID());
+  auto query = queue->CreatePrinterQuery(main_rfh()->GetGlobalId());
   base::RunLoop runloop;
   query->SetSettings(GetPrintTicket(mojom::PrinterType::kLocal),
                      runloop.QuitClosure());

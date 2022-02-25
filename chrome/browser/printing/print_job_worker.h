@@ -20,6 +20,7 @@
 
 namespace content {
 class WebContents;
+struct GlobalRenderFrameHostId;
 }
 
 namespace printing {
@@ -38,7 +39,7 @@ class PrintJobWorker {
       base::OnceCallback<void(std::unique_ptr<PrintSettings>,
                               mojom::ResultCode)>;
 
-  PrintJobWorker(int render_process_id, int render_frame_id);
+  explicit PrintJobWorker(content::GlobalRenderFrameHostId rfh_id);
 
   PrintJobWorker(const PrintJobWorker&) = delete;
   PrintJobWorker& operator=(const PrintJobWorker&) = delete;

@@ -15,6 +15,7 @@
 namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
+struct GlobalRenderFrameHostId;
 }
 
 namespace printing {
@@ -111,16 +112,14 @@ class PrintViewManager : public PrintViewManagerBase,
   // RejectPrintPreviewRequestIfRestricted(). Based on value of
   // `should_proceed`, continues to show the print preview or cancels it.
   void OnScriptedPrintPreviewCallback(bool source_is_modifiable,
-                                      int render_process_id,
-                                      int render_frame_id,
+                                      content::GlobalRenderFrameHostId rfh_id,
                                       bool should_proceed);
 
   // Helper method for RequestPrintPreview(), called from
   // RejectPrintPreviewRequestIfRestricted(). Based on value of
   // `should_proceed`, continues to show the print preview or cancels it.
   void OnRequestPrintPreviewCallback(mojom::RequestPrintPreviewParamsPtr params,
-                                     int render_process_id,
-                                     int render_frame_id,
+                                     content::GlobalRenderFrameHostId rfh_id,
                                      bool should_proceed);
 
   void MaybeUnblockScriptedPreviewRPH();
@@ -135,8 +134,7 @@ class PrintViewManager : public PrintViewManagerBase,
   // Helper method for RejectPrintPreviewRequestIfRestricted(). Handles any
   // tasks that need to be done when the request is rejected due to
   // restrictions.
-  void OnPrintPreviewRequestRejected(int render_process_id,
-                                     int render_frame_id);
+  void OnPrintPreviewRequestRejected(content::GlobalRenderFrameHostId rfh_id);
 
   // Virtual method to be overridden in tests, in order to be notified whether
   // the print preview is shown or not due to policies or user actions.

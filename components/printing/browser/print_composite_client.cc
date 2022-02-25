@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
@@ -103,21 +104,19 @@ void PrintCompositeClient::RenderFrameDeleted(
 }
 
 PrintCompositeClient::RequestedSubFrame::RequestedSubFrame(
-    int render_process_id,
-    int render_frame_id,
+    content::GlobalRenderFrameHostId rfh_id,
     int document_cookie,
     mojom::DidPrintContentParamsPtr params,
     bool is_live)
-    : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
+    : rfh_id_(rfh_id),
       document_cookie_(document_cookie),
       params_(std::move(params)),
       is_live_(is_live) {}
+
 PrintCompositeClient::RequestedSubFrame::~RequestedSubFrame() = default;
 
 void PrintCompositeClient::OnDidPrintFrameContent(
-    int render_process_id,
-    int render_frame_id,
+    content::GlobalRenderFrameHostId rfh_id,
     int document_cookie,
     mojom::DidPrintContentParamsPtr params) {
   auto* outer_contents = web_contents()->GetOuterWebContents();
@@ -130,8 +129,8 @@ void PrintCompositeClient::OnDidPrintFrameContent(
     // contents nested in multiple layers.
     auto* outer_client = PrintCompositeClient::FromWebContents(outer_contents);
     DCHECK(outer_client);
-    outer_client->OnDidPrintFrameContent(render_process_id, render_frame_id,
-                                         document_cookie, std::move(params));
+    outer_client->OnDidPrintFrameContent(rfh_id, document_cookie,
+                                         std::move(params));
     return;
   }
 
@@ -140,14 +139,12 @@ void PrintCompositeClient::OnDidPrintFrameContent(
       // Queues the subframe information to |requested_subframes_| to handle it
       // after |compositor_| is created by the main frame.
       requested_subframes_.insert(std::make_unique<RequestedSubFrame>(
-          render_process_id, render_frame_id, document_cookie,
-          std::move(params), true));
+          rfh_id, document_cookie, std::move(params), /*is_live=*/true));
     }
     return;
   }
 
-  auto* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  auto* render_frame_host = content::RenderFrameHost::FromID(rfh_id);
   if (!render_frame_host)
     return;
 
@@ -188,8 +185,8 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
         // Queues the subframe information to |requested_subframes_| to handle
         // it after |compositor_| is created by the main frame.
         requested_subframes_.insert(std::make_unique<RequestedSubFrame>(
-            subframe_host->GetProcess()->GetID(), subframe_host->GetRoutingID(),
-            document_cookie, nullptr, false));
+            subframe_host->GetGlobalId(), document_cookie, /*params=*/nullptr,
+            /*is_live=*/false));
       }
       return;
     }
@@ -213,8 +210,7 @@ void PrintCompositeClient::PrintCrossProcessSubframe(
           std::move(params),
           base::BindOnce(&PrintCompositeClient::OnDidPrintFrameContent,
                          weak_ptr_factory_.GetWeakPtr(),
-                         subframe_host->GetProcess()->GetID(),
-                         subframe_host->GetRoutingID()));
+                         subframe_host->GetGlobalId()));
   pending_subframes_.insert(subframe_host);
 }
 
@@ -287,13 +283,11 @@ void PrintCompositeClient::DoCompositeDocumentToPdf(
     if (!IsDocumentCookieValid(requested->document_cookie_))
       continue;
     if (requested->is_live_) {
-      OnDidPrintFrameContent(
-          requested->render_process_id_, requested->render_frame_id_,
-          requested->document_cookie_, std::move(requested->params_));
+      OnDidPrintFrameContent(requested->rfh_id_, requested->document_cookie_,
+                             std::move(requested->params_));
     } else {
-      compositor->NotifyUnavailableSubframe(
-          GenerateFrameGuid(content::RenderFrameHost::FromID(
-              requested->render_process_id_, requested->render_frame_id_)));
+      compositor->NotifyUnavailableSubframe(GenerateFrameGuid(
+          content::RenderFrameHost::FromID(requested->rfh_id_)));
     }
   }
   requested_subframes_.clear();
