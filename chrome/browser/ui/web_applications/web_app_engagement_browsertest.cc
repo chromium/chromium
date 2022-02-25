@@ -216,10 +216,8 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
   }
 
   void InstallDefaultAppAndCountApps(ExternalInstallOptions install_options) {
-    ExternallyManagedAppManager::InstallResult result =
-        ExternallyManagedAppManagerInstall(browser()->profile(),
-                                           std::move(install_options));
-    result_code_ = result.code;
+    result_code_ = ExternallyManagedAppManagerInstall(
+        browser()->profile(), std::move(install_options));
     CountUserInstalledApps();
   }
 
@@ -488,9 +486,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   const GURL example_url(
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
-  auto result = ExternallyManagedAppManagerInstall(
+  auto result_code = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result_code);
   absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::WindowedNotificationObserver app_loaded_observer(
@@ -539,9 +537,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByAppId) {
   const GURL example_url(
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
 
-  auto result = ExternallyManagedAppManagerInstall(
+  auto result_code = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result_code);
   absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::WindowedNotificationObserver app_loaded_observer(
@@ -594,9 +592,9 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
 
   ExternalInstallOptions install_options = CreateInstallOptions(example_url);
   install_options.user_display_mode = DisplayMode::kBrowser;
-  auto result =
+  auto result_code =
       ExternallyManagedAppManagerInstall(browser()->profile(), install_options);
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result_code);
   absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::WindowedNotificationObserver app_loaded_observer(

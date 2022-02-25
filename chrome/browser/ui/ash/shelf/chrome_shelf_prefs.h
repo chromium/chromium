@@ -8,16 +8,20 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/shelf_types.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 
 class ShelfControllerHelper;
 class PrefService;
 class Profile;
 
-namespace ash {
-struct ShelfID;
-}  // namespace ash
+namespace app_list {
+class AppListSyncableService;
+}  // namespace app_list
 
 namespace user_prefs {
 class PrefRegistrySyncable;

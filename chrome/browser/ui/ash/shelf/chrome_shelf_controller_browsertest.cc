@@ -6,9 +6,6 @@
 
 #include <stddef.h>
 #include <memory>
-#include <string>
-#include <utility>
-#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -82,10 +79,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -97,8 +93,8 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -108,8 +104,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
-#include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -141,7 +135,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/widget_animation_waiter.h"
-#include "url/gurl.h"
 
 namespace {
 
@@ -2587,15 +2580,14 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
-  // Install web app from policy.
+  // Install web app.
   GURL app_url = https_server()->GetURL("/web_apps/basic.html");
-  web_app::ExternalInstallOptions options =
-      web_app::CreateInstallOptions(app_url);
-  options.install_source = web_app::ExternalInstallSource::kExternalPolicy;
-  web_app::ExternallyManagedAppManager::InstallResult result =
-      web_app::ExternallyManagedAppManagerInstall(browser()->profile(),
-                                                  options);
+  web_app::AppId app_id = web_app::InstallWebAppFromPage(browser(), app_url);
 
+  web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
+      browser()->profile()->GetPrefs());
+  web_app_prefs.Insert(app_url, app_id,
+                       web_app::ExternalInstallSource::kExternalPolicy);
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->FlushMojoCallsForTesting();
 
@@ -2608,14 +2600,13 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {
   profile()->GetPrefs()->Set(prefs::kPolicyPinnedLauncherApps, policy_value);
 
   // Check web app is pinned and fixed.
-  ASSERT_EQ(shelf_model()->item_count(), 2);
+  EXPECT_EQ(shelf_model()->item_count(), 2);
   EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
-  ASSERT_TRUE(result.app_id.has_value());
-  EXPECT_EQ(shelf_model()->items()[1].id.app_id, result.app_id.value());
+  EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);
   EXPECT_EQ(shelf_model()->items()[1].title, u"Basic web app");
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
-            GetPinnableForAppID(result.app_id.value(), profile()));
+            GetPinnableForAppID(app_id, profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
@@ -2717,7 +2708,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
       ->FlushMojoCallsForTesting();
 
   // Check web app is pinned and fixed.
-  ASSERT_EQ(shelf_model()->item_count(), 2);
+  EXPECT_EQ(shelf_model()->item_count(), 2);
   EXPECT_EQ(shelf_model()->items()[0].type, ash::TYPE_BROWSER_SHORTCUT);
   EXPECT_EQ(shelf_model()->items()[1].type, ash::TYPE_PINNED_APP);
   EXPECT_EQ(shelf_model()->items()[1].id.app_id, app_id);

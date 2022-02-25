@@ -7,12 +7,10 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <initializer_list>
 #include <map>
 #include <memory>
 #include <set>
 #include <string>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -35,8 +33,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_application_menu_model.h"
 #include "base/callback_helpers.h"
-#include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -68,7 +64,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
@@ -104,15 +99,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -128,13 +120,7 @@
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/instance.h"
-#include "components/services/app_service/public/cpp/instance_registry.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
-#include "components/services/app_service/public/mojom/types.mojom-shared.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/prefs/pref_notifier_impl.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -175,15 +161,6 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/widget/widget.h"
-#include "url/gurl.h"
-
-namespace content {
-class BrowserContext;
-}  // namespace content
-
-namespace extensions {
-class Manifest;
-}  // namespace extensions
 
 using base::ASCIIToUTF16;
 using extensions::Extension;
@@ -4908,19 +4885,12 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   web_app::AppId InstallExternalWebApp(std::string start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
-    const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
-        /*manifest_id=*/absl::nullopt, web_app_info->start_url);
-    PrefService* prefs = browser()->profile()->GetPrefs();
-    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(prefs);
-    web_app_prefs.Insert(GURL(start_url), expected_web_app_id,
-                         web_app::ExternalInstallSource::kExternalPolicy);
-    // Ensure prefs are written before the web app install process reads them.
-    base::RunLoop run_loop;
-    prefs->CommitPendingWrite(run_loop.QuitClosure());
-    run_loop.Run();
     web_app::AppId web_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-    DCHECK_EQ(expected_web_app_id, web_app_id);
+    web_app::ExternallyInstalledWebAppPrefs web_app_prefs(
+        browser()->profile()->GetPrefs());
+    web_app_prefs.Insert(GURL(start_url), web_app_id,
+                         web_app::ExternalInstallSource::kExternalPolicy);
     return web_app_id;
   }
 

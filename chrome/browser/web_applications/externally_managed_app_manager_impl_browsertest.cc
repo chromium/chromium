@@ -62,9 +62,8 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp(ExternalInstallOptions install_options) {
-    auto result =
+    result_code_ =
         ExternallyManagedAppManagerInstall(profile(), install_options);
-    result_code_ = result.code;
   }
 
   void CheckServiceWorkerStatus(const GURL& url,
