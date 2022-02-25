@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/mac/foundation_util.h"
+#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -62,6 +64,8 @@
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 namespace sessions {
 class TabRestoreServiceObserver;
 class LiveTabContext;
@@ -73,6 +77,8 @@ const char kPriceTrackingWithOptimizationGuideParam[] =
     "price_tracking_with_optimization_guide";
 const char kHasPriceDropUserAction[] = "Commerce.TabGridSwitched.HasPriceDrop";
 const char kHasNoPriceDropUserAction[] = "Commerce.TabGridSwitched.NoPriceDrop";
+// Timeout for waiting for the GridConsumer updates.
+const NSTimeInterval kWaitForGridConsumerUpdateTimeout = 1.0;
 
 // A Fake restore service that just store and returns tabs.
 class FakeTabRestoreService : public sessions::TabRestoreService {
@@ -379,6 +385,13 @@ class TabGridMediatorTest : public PlatformTest {
         {{commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
         {});
+  }
+
+  bool WaitForConsumerUpdates(size_t expected_count) {
+    return WaitUntilConditionOrTimeout(kWaitForGridConsumerUpdateTimeout, ^{
+      base::RunLoop().RunUntilIdle();
+      return expected_count == consumer_.items.count;
+    });
   }
 
  protected:
@@ -696,6 +709,10 @@ TEST_F(TabGridMediatorTest, SearchItemsWithTextCommand) {
 
   [mediator_ searchItemsWithText:@"hello"];
 
+  // Only one result should be found.
+  EXPECT_TRUE(WaitForConsumerUpdates(1UL));
+  EXPECT_NSEQ(expected_result_identifier, consumer_.items[0]);
+
   // Web states count should not change.
   EXPECT_EQ(3, browser_->GetWebStateList()->count());
   // Active index should not change.
@@ -707,9 +724,6 @@ TEST_F(TabGridMediatorTest, SearchItemsWithTextCommand) {
     NSString* identifier = web_state->GetStableIdentifier();
     EXPECT_NSEQ(identifier, pre_search_ids[i]);
   }
-  // Only one result should be found.
-  EXPECT_EQ(1UL, consumer_.items.count);
-  EXPECT_NSEQ(expected_result_identifier, consumer_.items[0]);
 }
 
 // Tests that when |-resetToAllItems:| is called, the consumer gets all the
@@ -720,11 +734,11 @@ TEST_F(TabGridMediatorTest, resetToAllItems) {
 
   [mediator_ searchItemsWithText:@"hello"];
   // Only 1 result is in the consumer after the search is done.
-  ASSERT_EQ(1UL, consumer_.items.count);
+  ASSERT_TRUE(WaitForConsumerUpdates(1UL));
 
   [mediator_ resetToAllItems];
   // consumer should revert back to have the items from the webstate list.
-  EXPECT_EQ(3UL, consumer_.items.count);
+  ASSERT_TRUE(WaitForConsumerUpdates(3UL));
   // Active index should not change.
   EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
 

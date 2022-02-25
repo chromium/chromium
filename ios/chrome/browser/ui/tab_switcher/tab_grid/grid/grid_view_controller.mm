@@ -943,6 +943,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - GridConsumer
 
+// TODO(crbug.com/1300733): Investigate this method not working correctly in the
+// main thread if the collectionview had already some items on it.
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
 #ifndef NDEBUG
