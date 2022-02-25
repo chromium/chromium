@@ -70,7 +70,11 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
     data_pipe_loader_->Start(consumer_, this);
   }
 
-  void Cancel() override { consumer_->Cancel(); }
+  void Cancel() override {
+    load_canceled_ = true;
+    blob_handle_.reset();
+    consumer_->Cancel();
+  }
 
   void DidFetchDataStartedDataPipe(
       mojo::ScopedDataPipeConsumerHandle handle) override {
@@ -105,6 +109,8 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
  private:
   void FinishedCreatingFromDataPipe(
       const scoped_refptr<BlobDataHandle>& blob_handle) {
+    if (load_canceled_)
+      return;
     if (!blob_handle) {
       DidFetchDataLoadFailed();
       return;
@@ -124,6 +130,7 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<BlobDataHandle> blob_handle_;
   bool load_complete_ = false;
+  bool load_canceled_ = false;
 };
 
 class FetchDataLoaderAsArrayBuffer final : public FetchDataLoader,

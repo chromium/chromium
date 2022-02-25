@@ -279,6 +279,70 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobCancel) {
   checkpoint.Call(4);
 }
 
+TEST_F(FetchDataLoaderBlobTest, LoadAsBlobNoClientCallbacksAfterCancel) {
+  Checkpoint checkpoint;
+  BytesConsumer::Client* client = nullptr;
+  auto* consumer = MakeGarbageCollected<MockBytesConsumer>();
+
+  FetchDataLoader* fetch_data_loader =
+      FetchDataLoader::CreateLoaderAsBlobHandle("text/test", fake_task_runner_);
+  auto* fetch_data_loader_client =
+      MakeGarbageCollected<MockFetchDataLoaderClient>();
+  scoped_refptr<BlobDataHandle> blob_data_handle;
+
+  base::RunLoop run_loop;
+
+  InSequence s;
+  EXPECT_CALL(checkpoint, Call(1));
+  EXPECT_CALL(*consumer,
+              DrainAsBlobDataHandle(
+                  BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize))
+      .WillOnce(Return(ByMove(nullptr)));
+  EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
+  EXPECT_CALL(*consumer, DrainAsDataPipe());
+  EXPECT_CALL(*consumer, GetPublicState())
+      .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
+  EXPECT_CALL(checkpoint, Call(2));
+  EXPECT_CALL(*consumer, BeginRead(_, _))
+      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+                      Return(Result::kShouldWait)));
+  EXPECT_CALL(checkpoint, Call(3));
+  EXPECT_CALL(*consumer, BeginRead(_, _))
+      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
+                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
+                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
+      .WillOnce(Return(Result::kOk));
+  EXPECT_CALL(*consumer, BeginRead(_, _))
+      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+                      Return(Result::kShouldWait)));
+  EXPECT_CALL(checkpoint, Call(4));
+  EXPECT_CALL(*consumer, Cancel());
+  EXPECT_CALL(checkpoint, Call(5));
+  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, Cancel());
+  // This should never happen due to explicit FetchDataLoader::Cancel call.
+  EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadedBlobHandleMock(_))
+      .Times(0);
+  EXPECT_CALL(checkpoint, Call(6));
+
+  checkpoint.Call(1);
+  fetch_data_loader->Start(consumer, fetch_data_loader_client);
+  checkpoint.Call(2);
+  fake_task_runner_->RunUntilIdle();
+  checkpoint.Call(3);
+  client->OnStateChange();
+  run_loop.RunUntilIdle();
+  checkpoint.Call(4);
+  // Cancel the load to verify no FetchDataLoader::Client calls happen
+  // afterwards.
+  fetch_data_loader->Cancel();
+  checkpoint.Call(5);
+  client->OnStateChange();
+  run_loop.RunUntilIdle();
+  checkpoint.Call(6);
+}
+
 TEST_F(FetchDataLoaderBlobTest,
        LoadAsBlobViaDrainAsBlobDataHandleWithSameContentType) {
   auto blob_data = std::make_unique<BlobData>();
