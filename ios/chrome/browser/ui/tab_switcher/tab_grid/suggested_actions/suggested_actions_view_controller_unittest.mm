@@ -57,7 +57,6 @@ TEST_F(SuggestedActionsViewControllerTest, Initialization) {
       l10n_util::GetNSString(
           IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT),
       item.title);
-  CheckSectionHeaderWithId(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS, 0);
 }
 
 // Tests that selecting the search web item should call the relevant delegate.

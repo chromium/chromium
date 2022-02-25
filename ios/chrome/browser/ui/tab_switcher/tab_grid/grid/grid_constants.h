@@ -62,6 +62,16 @@ extern const CGFloat kReorderingInactiveCellOpacity;
 // Scale for the cell that is being moved.
 extern const CGFloat kReorderingActiveCellScale;
 
+// GridHeader styling.
+// The GridHeader height.
+extern const CGFloat kGridHeaderHeight;
+// The GridHeader title label Color.
+extern const int kGridHeaderTitleColor;
+// The GridHeader value label Color.
+extern const int kGridHeaderValueColor;
+// The space between different labels inside the GridHeader.
+extern const CGFloat kGridHeaderContentSpacing;
+
 // GridCell styling.
 // All kxxxColor constants after this are RGB values stored in a Hex integer.
 // These will be converted into UIColors using the UIColorFromRGB() function,
