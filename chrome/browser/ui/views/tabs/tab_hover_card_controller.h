@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -68,6 +69,8 @@ class TabHoverCardController : public views::ViewObserver,
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
 
   // TabHoverCardMetrics::Delegate:
   size_t GetTabCount() const override;
@@ -145,6 +148,7 @@ class TabHoverCardController : public views::ViewObserver,
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
+  base::WeakPtrFactory<TabHoverCardController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_CONTROLLER_H_

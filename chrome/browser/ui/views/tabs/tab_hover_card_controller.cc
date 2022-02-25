@@ -318,7 +318,7 @@ void TabHoverCardController::UpdateOrShowCard(
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
-                       base::Unretained(this), true, tab));
+                       weak_ptr_factory_.GetWeakPtr(), true, tab));
   } else {
     // Just in case, cancel the timer. This shouldn't cancel a delayed capture
     // since delayed capture only happens when the hover card already exists,
@@ -395,6 +395,24 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   }
 }
 
+void TabHoverCardController::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // Only care about target tab becoming invisible.
+  if (observed_view != target_tab_)
+    return;
+  // Visibility comes from `starting_view` or the widget, if no starting view;
+  // see documentation for ViewObserver::OnViewVisibilityChanged().
+  const bool visible = starting_view
+                           ? starting_view->GetVisible()
+                           : (observed_view->GetWidget() &&
+                              observed_view->GetWidget()->IsVisible());
+  // If visibility changed to false, treat it as if the target tab had gone
+  // away.
+  if (!visible)
+    OnViewIsDeleting(observed_view);
+}
+
 size_t TabHoverCardController::GetTabCount() const {
   return tab_count_metrics::TabCount();
 }
@@ -416,21 +434,21 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
       TabHoverCardBubbleView::kHoverCardSlideDuration);
   slide_progressed_subscription_ = slide_animator_->AddSlideProgressedCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationProgressed,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   slide_complete_subscription_ = slide_animator_->AddSlideCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationComplete,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
   fade_animator_ =
       std::make_unique<views::WidgetFadeAnimator>(hover_card_->GetWidget());
   fade_complete_subscription_ = fade_animator_->AddFadeCompleteCallback(
       base::BindRepeating(&TabHoverCardController::OnFadeAnimationEnded,
-                          base::Unretained(this)));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   if (!thumbnail_observer_ && AreHoverCardImagesEnabled()) {
     thumbnail_observer_ = std::make_unique<TabHoverCardThumbnailObserver>();
     thumbnail_subscription_ = thumbnail_observer_->AddCallback(
         base::BindRepeating(&TabHoverCardController::OnPreviewImageAvaialble,
-                            base::Unretained(this)));
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
