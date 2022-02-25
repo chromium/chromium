@@ -24411,6 +24411,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24437,6 +24438,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24459,6 +24461,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24494,6 +24497,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24527,6 +24531,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24560,6 +24565,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24578,9 +24584,9 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
-          "0",
+          "1ae0",
           "--expected-device-id",
-          "0"
+          "c0de"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
@@ -24597,6 +24603,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24639,6 +24646,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24672,6 +24680,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24714,6 +24723,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24747,6 +24757,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24781,6 +24792,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24814,6 +24826,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24847,6 +24860,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24876,6 +24890,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24903,6 +24918,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24926,6 +24942,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24962,6 +24979,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -24996,6 +25014,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25030,6 +25049,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25048,9 +25068,9 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
-          "0",
+          "1ae0",
           "--expected-device-id",
-          "0",
+          "c0de",
           "--custom-image=workstation.qemu-x64-release"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -25068,6 +25088,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25111,6 +25132,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25145,6 +25167,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25188,6 +25211,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25222,6 +25246,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25257,6 +25282,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25291,6 +25317,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
@@ -25325,6 +25352,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "gpu": "1ae0:c0de",
               "kvm": "1",
               "os": "Ubuntu-18.04"
             }
