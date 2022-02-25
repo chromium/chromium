@@ -162,13 +162,9 @@ V4L2VideoEncodeAccelerator::InputFrameInfo::InputFrameInfo(
 
 V4L2VideoEncodeAccelerator::InputFrameInfo::~InputFrameInfo() = default;
 
-// static
-base::AtomicRefCount V4L2VideoEncodeAccelerator::num_instances_(0);
-
 V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
     scoped_refptr<V4L2Device> device)
-    : can_use_encoder_(num_instances_.Increment() < kMaxNumOfInstances),
-      child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       native_input_mode_(false),
       output_buffer_byte_size_(0),
       output_format_fourcc_(0),
@@ -196,8 +192,6 @@ V4L2VideoEncodeAccelerator::~V4L2VideoEncodeAccelerator() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(!device_poll_thread_.IsRunning());
   VLOGF(2);
-
-  num_instances_.Decrement();
 }
 
 bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
@@ -207,11 +201,6 @@ bool V4L2VideoEncodeAccelerator::Initialize(const Config& config,
 
   TRACE_EVENT0("media,gpu", "V4L2VEA::Initialize");
   VLOGF(2) << ": " << config.AsHumanReadableString();
-
-  if (!can_use_encoder_) {
-    VLOGF(1) << "Too many encoders are allocated";
-    return false;
-  }
 
   // V4L2VEA doesn't support temporal layers but we let it pass here to support
   // simulcast.
