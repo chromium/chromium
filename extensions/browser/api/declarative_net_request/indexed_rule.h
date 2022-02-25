@@ -63,6 +63,8 @@ struct IndexedRule {
   // Lower-cased and sorted as required by the url_pattern_index component.
   std::vector<std::string> initiator_domains;
   std::vector<std::string> excluded_initiator_domains;
+  std::vector<std::string> request_domains;
+  std::vector<std::string> excluded_request_domains;
 
   // Note: For redirect rules, exactly one of |redirect_url|,
   // |regex_substitution| or |url_transform|  will be set.

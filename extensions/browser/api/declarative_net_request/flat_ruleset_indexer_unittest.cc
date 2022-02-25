@@ -226,7 +226,11 @@ bool AreRulesEqual(const IndexedRule* indexed_rule,
          indexed_rule->initiator_domains ==
              ToVector(rule->initiator_domains_included()) &&
          indexed_rule->excluded_initiator_domains ==
-             ToVector(rule->initiator_domains_excluded());
+             ToVector(rule->initiator_domains_excluded()) &&
+         indexed_rule->request_domains ==
+             ToVector(rule->request_domains_included()) &&
+         indexed_rule->excluded_request_domains ==
+             ToVector(rule->request_domains_excluded());
 }
 
 // Returns all UrlRule(s) in the given |index|.

@@ -1124,6 +1124,62 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   }
 }
 
+// Tests the "requestDomains" and "excludedRequestDomains" properties of
+// declarativeNetRequest rule conditions.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       BlockRequests_RequestDomains) {
+  struct {
+    size_t id;
+    std::vector<std::string> request_domains;
+    std::vector<std::string> excluded_request_domains;
+  } rules_data[] = {
+      {1, {"x.com", "y.com"}, {"a.x.com"}},
+      {2, {/* all domains */}, {"z.com", "a.x.com", "y.com"}},
+  };
+
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule();
+    rule.condition->url_filter = "child_frame.html";
+    rule.id = rule_data.id;
+
+    // An empty list is not allowed for the "request_domains" property.
+    if (!rule_data.request_domains.empty())
+      rule.condition->request_domains = rule_data.request_domains;
+
+    rule.condition->excluded_request_domains =
+        rule_data.excluded_request_domains;
+    rule.condition->resource_types = std::vector<std::string>({"sub_frame"});
+    rules.push_back(rule);
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  GURL url = embedded_test_server()->GetURL(
+      "example.com",
+      "/request_domain_test.html?w.com,x.com,y.com,a.x.com,z.com");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(WasFrameWithScriptLoaded(GetMainFrame()));
+  ASSERT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
+
+  struct {
+    std::string domain;
+    bool expect_frame_loaded;
+  } cases[] = {
+      {"x.com", false /* Rule 1 */}, {"a.x.com", true},
+      {"y.com", false /* Rule 1 */}, {"z.com", true},
+      {"w.com", false /* Rule 2 */},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(
+        base::StringPrintf("Testing domain %s", test_case.domain.c_str()));
+
+    content::RenderFrameHost* child = GetFrameByName(test_case.domain);
+    EXPECT_TRUE(child);
+    EXPECT_EQ(test_case.expect_frame_loaded, WasFrameWithScriptLoaded(child));
+  }
+}
+
 // Tests the "domainType" property of a declarative rule condition.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
                        BlockRequests_DomainType) {

@@ -311,6 +311,12 @@ base::StringPiece UrlPattern::UrlInfo::GetLowerCaseSpec() const {
   return *lower_case_spec_cached_;
 }
 
+base::StringPiece UrlPattern::UrlInfo::GetStringHost() const {
+  if (host().len <= 0)
+    return base::StringPiece();
+  return base::StringPiece(&spec_[host().begin], host().len);
+}
+
 UrlPattern::UrlInfo::~UrlInfo() = default;
 
 UrlPattern::UrlPattern() = default;

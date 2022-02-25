@@ -104,13 +104,15 @@ table UrlRule {
   anchor_left : AnchorType = NONE;
   anchor_right : AnchorType = NONE;
 
-  // The list of initiator domains to be included/excluded from the filter's
-  // affected set. Each should either be null or have at least a single
+  // The list of initiator and request domains to be included/excluded from the
+  // filter's affected set. Each should either be null or have at least a single
   // element. The domains should be in lower-case and kept sorted as defined by
   // url_pattern_index::CompareDomains. The entries must consist of only ascii
   // characters. Use punycode encoding for internationalized domains.
   initiator_domains_included : [string];
   initiator_domains_excluded : [string];
+  request_domains_included : [string];
+  request_domains_excluded : [string];
 
   // A URL pattern in the format defined by |url_pattern_type|.  This should
   // only consist of ascii characters, since it's matched against a url where

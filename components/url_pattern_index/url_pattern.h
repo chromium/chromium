@@ -43,6 +43,7 @@ class UrlPattern {
     base::StringPiece spec() const { return spec_; }
     base::StringPiece GetLowerCaseSpec() const;
     url::Component host() const { return host_; }
+    base::StringPiece GetStringHost() const;
 
    private:
     // The url spec.

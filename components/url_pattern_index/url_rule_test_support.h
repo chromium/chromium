@@ -63,6 +63,11 @@ proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern = UrlPattern());
 void AddInitiatorDomains(const std::vector<std::string>& initiator_domains,
                          proto::UrlRule* rule);
 
+// Parses `request_domains` and adds them to the request domain list of the
+// `rule`. See `AddInitiatorDomains`.
+void AddRequestDomains(const std::vector<std::string>& request_domains,
+                       proto::UrlRule* rule);
+
 // Returns the url::Origin parsed from |origin_string|, or the unique origin if
 // the string is empty.
 url::Origin GetOrigin(base::StringPiece origin_string);

@@ -186,6 +186,9 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_EMPTY_DOMAINS_LIST:
       output << "ERROR_EMPTY_DOMAINS_LIST";
       break;
+    case ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST:
+      output << "ERROR_EMPTY_REQUEST_DOMAINS_LIST";
+      break;
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       output << "ERROR_EMPTY_RESOURCE_TYPES_LIST";
       break;
@@ -209,6 +212,12 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
       output << "ERROR_NON_ASCII_EXCLUDED_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_REQUEST_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN";
       break;
     case ParseResult::ERROR_INVALID_URL_FILTER:
       output << "ERROR_INVALID_URL_FILTER";

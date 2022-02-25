@@ -630,21 +630,30 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
   xyz_rule.condition->is_url_filter_case_sensitive = false;
   rules.push_back(xyz_rule);
 
-  // Test |domains|, |excludedDomains|.
-  TestRule google_rule = create_regex_rule(3, "google");
-  google_rule.condition->domains = std::vector<std::string>({"example.com"});
-  google_rule.condition->excluded_domains =
+  // Test `domains`, `excludedDomains`.
+  TestRule initiator_domains_rule = create_regex_rule(3, "initiator_domains");
+  initiator_domains_rule.condition->domains =
+      std::vector<std::string>({"example.com"});
+  initiator_domains_rule.condition->excluded_domains =
       std::vector<std::string>({"b.example.com"});
-  rules.push_back(google_rule);
+  rules.push_back(initiator_domains_rule);
+
+  // Test `requestDomains`, `excludedRequestDomains`.
+  TestRule request_domains_rule = create_regex_rule(4, "request_domains");
+  request_domains_rule.condition->request_domains =
+      std::vector<std::string>({"example.com"});
+  request_domains_rule.condition->excluded_request_domains =
+      std::vector<std::string>({"b.example.com"});
+  rules.push_back(request_domains_rule);
 
   // Test |resourceTypes|.
-  TestRule sub_frame_rule = create_regex_rule(4, R"((abc|def)\.com)");
+  TestRule sub_frame_rule = create_regex_rule(5, R"((abc|def)\.com)");
   sub_frame_rule.condition->resource_types =
       std::vector<std::string>({"sub_frame"});
   rules.push_back(sub_frame_rule);
 
   // Test |domainType|.
-  TestRule third_party_rule = create_regex_rule(5, R"(http://(\d+)\.com)");
+  TestRule third_party_rule = create_regex_rule(6, R"(http://(\d+)\.com)");
   third_party_rule.condition->domain_type = "thirdParty";
   rules.push_back(third_party_rule);
 
@@ -688,20 +697,47 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
   }
 
   {
-    TestCase test_case = {"http://example.com/google"};
+    TestCase test_case = {"http://example.com/initiator_domains"};
     test_case.first_party_origin =
         url::Origin::Create(GURL("http://a.example.com"));
     test_case.is_third_party = true;
     test_case.expected_action = CreateRequestActionForTesting(
-        RequestAction::Type::BLOCK, *google_rule.id);
+        RequestAction::Type::BLOCK, *initiator_domains_rule.id);
     test_cases.push_back(std::move(test_case));
   }
 
   {
-    TestCase test_case = {"http://example.com/google"};
+    TestCase test_case = {"http://example.com/initiator_domains"};
     test_case.first_party_origin =
         url::Origin::Create(GURL("http://b.example.com"));
     test_case.is_third_party = true;
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://example.com/request_domains"};
+    test_case.first_party_origin =
+        url::Origin::Create(GURL("http://foobar.com"));
+    test_case.is_third_party = true;
+    test_case.expected_action = CreateRequestActionForTesting(
+        RequestAction::Type::BLOCK, *request_domains_rule.id);
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://example.com/request_domains"};
+    test_case.expected_action = CreateRequestActionForTesting(
+        RequestAction::Type::BLOCK, *request_domains_rule.id);
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://b.example.com/request_domains"};
+    test_cases.push_back(std::move(test_case));
+  }
+
+  {
+    TestCase test_case = {"http://foobar.com/request_domains"};
     test_cases.push_back(std::move(test_case));
   }
 

@@ -53,6 +53,10 @@ bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
     return false;
   }
 
+  // Compares included and excluded request domains.
+  if (!url_pattern_index::DoesURLMatchRequestDomainList(*params.url, rule))
+    return false;
+
   // Compares included and excluded initiator domains.
   return url_pattern_index::DoesOriginMatchInitiatorDomainList(
       params.first_party_origin, rule);
