@@ -146,6 +146,10 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  int num_frames_with_empty_region() const {
+    return num_frames_with_empty_region_;
+  }
+
  private:
   void OnFrameCaptured(
       media::mojom::VideoBufferHandlePtr data,
@@ -201,7 +205,11 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
                        std::move(callbacks_remote)));
   }
 
-  void OnFrameWithEmptyRegionCapture() final {}
+  void OnFrameWithEmptyRegionCapture() final {
+    ++num_frames_with_empty_region_;
+  }
+
+  int num_frames_with_empty_region_ = 0;
 
   mojo::Receiver<mojom::FrameSinkVideoConsumer> receiver_{this};
   std::vector<scoped_refptr<VideoFrame>> frames_;
@@ -1529,6 +1537,123 @@ TEST_F(FrameSinkVideoCapturerTest,
 
   EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
   EXPECT_EQ(kCropId, frame_sink_.current_crop_id());
+}
+
+// Tests that frames can be successfully delivered after one is dropped due to
+// having a zero-sized capture region.
+TEST_F(FrameSinkVideoCapturerTest, HandlesFrameWithEmptyRegion) {
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kValidCropBounds{1, 2, 640, 478};
+
+  SwitchToSizeSet(kSizeSets[4]);
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
+  frame_sink_.set_crop_bounds(gfx::Rect{});
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  NiceMock<MockConsumer> consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(0);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+
+  // Start capturing. frame_sink_ should now have one client capturing.
+  StartCapture(&consumer);
+  capturer_->ChangeTarget(target, /*crop_version=*/0);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+
+  // No copy requests should have been issued/executed.
+  EXPECT_EQ(0, frame_sink_.num_copy_results());
+
+  // The refresh timer should be running--our initial attempt to get a frame
+  // failed due to being cropped to zero.
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+
+  // Simulate several refresh timer intervals elapsing and the timer firing.
+  // Nothing should happen because the frames should be cropped to zero.
+  for (int i = 0; i < 5; ++i) {
+    AdvanceClockForRefreshTimer();
+    ASSERT_EQ(0, frame_sink_.num_copy_results());
+    ASSERT_TRUE(IsRefreshRetryTimerRunning());
+  }
+  // We should only get one notification--the first empty frame.
+  EXPECT_EQ(1, consumer.num_frames_with_empty_region());
+
+  // Now, set the crop bounds to be valid--meaning completely contained inside
+  // of the source rect. As it resolves, the next refresh capture should trigger
+  // a copy request.
+  frame_sink_.set_crop_bounds(kValidCropBounds);
+  AdvanceClockForRefreshTimer();
+  EXPECT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  EXPECT_EQ(1, consumer.num_frames_with_empty_region());
+
+  // The empty frame notification for the consumer is reset when the frame
+  // is delivered to the consumer, so we need to have a result before it gets
+  // reset.
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(1);
+  frame_sink_.SendCopyOutputResult(0);
+
+  // Now, set back to an entirely empty crop bounds--we should get a
+  // notification that we have an empty region.
+  frame_sink_.set_crop_bounds(gfx::Rect{});
+  capturer_->RequestRefreshFrame();
+  AdvanceClockForRefreshTimer();
+  EXPECT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+  EXPECT_EQ(2, consumer.num_frames_with_empty_region());
+
+  StopCapture();
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+}
+
+// Tests that frames can be successfully delivered after one is dropped due to
+// having a capture region that does not intersect with the compositor frame. In
+// the past, it was possible for a dropped frame to cause the delivery queue to
+// no longer be emptied. See https://crbug.com/1300742.
+TEST_F(FrameSinkVideoCapturerTest, HandlesFrameWithRegionCroppedToZero) {
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kInvalidCropBounds{800, 600, 100, 100};
+  constexpr gfx::Rect kValidCropBounds{1, 2, 640, 478};
+
+  SwitchToSizeSet(kSizeSets[4]);
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
+  frame_sink_.set_crop_bounds(kInvalidCropBounds);
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  NiceMock<MockConsumer> consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(0);
+  EXPECT_CALL(consumer, OnStopped()).Times(1);
+
+  // Start capturing. frame_sink_ should now have one client capturing.
+  StartCapture(&consumer);
+  capturer_->ChangeTarget(target, /*crop_version=*/0);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+
+  // No copy requests should have been issued/executed.
+  EXPECT_EQ(0, frame_sink_.num_copy_results());
+
+  // The refresh timer should be running--our initial attempt to get a frame
+  // failed due to being cropped to zero.
+  EXPECT_TRUE(IsRefreshRetryTimerRunning());
+
+  // Simulate several refresh timer intervals elapsing and the timer firing.
+  // Nothing should happen because the frames should be cropped to zero.
+  for (int i = 0; i < 5; ++i) {
+    AdvanceClockForRefreshTimer();
+    ASSERT_EQ(0, frame_sink_.num_copy_results());
+    ASSERT_TRUE(IsRefreshRetryTimerRunning());
+  }
+
+  // Now, set the crop bounds to be valid--meaning completely contained inside
+  // of the source rect. As it resolves, the next refresh capture should trigger
+  // a copy request.
+  frame_sink_.set_crop_bounds(kValidCropBounds);
+  AdvanceClockForRefreshTimer();
+  EXPECT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
+  StopCapture();
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
 }
 
 TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
