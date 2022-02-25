@@ -51,13 +51,16 @@ class CONTENT_EXPORT BackForwardCache {
   typedef uint16_t DisabledReasonType;
   static const uint16_t kDisabledReasonTypeBits = 16;
 
-  // Represents a reason to disable back-forward cache, given by a source. It
-  // preserves the string that accompanied it, however the string is ignored for
-  // <, == and !=.
+  // Represents a reason to disable back-forward cache, given by a |source|.
+  // |context| is arbitrary context that will be preserved and passed through,
+  // e.g. an extension ID responsible for disabling BFCache that can be shown in
+  // passed devtools. It preserves the |description| and |context| that
+  // accompany it, however they are ignored for <, == and !=.
   struct CONTENT_EXPORT DisabledReason {
     const BackForwardCache::DisabledSource source;
     const BackForwardCache::DisabledReasonType id;
     const std::string description;
+    const std::string context;
 
     bool operator<(const DisabledReason&) const;
     bool operator==(const DisabledReason&) const;

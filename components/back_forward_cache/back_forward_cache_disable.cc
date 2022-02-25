@@ -45,10 +45,11 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
 }
 
 content::BackForwardCache::DisabledReason DisabledReason(
-    DisabledReasonId reason_id) {
+    DisabledReasonId reason_id,
+    const std::string& context) {
   return content::BackForwardCache::DisabledReason(
       {content::BackForwardCache::DisabledSource::kEmbedder,
        static_cast<content::BackForwardCache::DisabledReasonType>(reason_id),
-       ReasonIdToString(reason_id)});
+       ReasonIdToString(reason_id), context});
 }
 }  // namespace back_forward_cache

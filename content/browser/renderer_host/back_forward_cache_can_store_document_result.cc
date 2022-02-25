@@ -238,8 +238,9 @@ std::string DisabledReasonsToString(
     const std::set<BackForwardCache::DisabledReason>& reasons) {
   std::vector<std::string> descriptions;
   for (const auto& reason : reasons) {
-    descriptions.push_back(base::StringPrintf(
-        "%d:%d:%s", reason.source, reason.id, reason.description.c_str()));
+    descriptions.push_back(
+        base::StringPrintf("%d:%d:%s:%s", reason.source, reason.id,
+                           reason.description.c_str(), reason.context.c_str()));
   }
   return base::JoinString(descriptions, ", ");
 }

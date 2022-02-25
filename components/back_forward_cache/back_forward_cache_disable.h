@@ -12,7 +12,8 @@
 namespace back_forward_cache {
 // Constructs a chrome-specific DisabledReason
 content::BackForwardCache::DisabledReason DisabledReason(
-    DisabledReasonId reason_id);
+    DisabledReasonId reason_id,
+    const std::string& context = "");
 }  // namespace back_forward_cache
 
 #endif  // COMPONENTS_BACK_FORWARD_CACHE_BACK_FORWARD_CACHE_DISABLE_H_

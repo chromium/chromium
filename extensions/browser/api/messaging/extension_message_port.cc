@@ -449,19 +449,27 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
 
   for (const IPCTarget& target : targets) {
     // Frames in the BackForwardCache are not allowed to receive messages (or
-    // even have them queued). In such a case, we evict the frame from the cache
+    // even have them queued). In such a case, we evict the page from the cache
     // and "drop" the message (See comment in `DidFinishNavigation()`).
     // Note: Since this will cause the frame to be deleted, we do this here
     // instead of in the loop above to avoid modifying `frames_` while it is
     // being iterated.
+    //
+    // This could cause the same page to be evicted multiple times if it has
+    // multiple frames receiving this message. This is harmless as the reason is
+    // the same in every case. Also multiple extensions may send messages before
+    // the page is actually evicted. The last one will be the one the user
+    // sees. It is not worth the effort to present all of them to the user. It's
+    // unlikely they will see the same one every time and if they do, when they
+    // fix that one, they will see the others.
     if (target.render_frame_host &&
         target.render_frame_host->GetLifecycleState() ==
             content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
       content::BackForwardCache::DisableForRenderFrameHost(
-          target.render_frame_host,
-          back_forward_cache::DisabledReason(
-              back_forward_cache::DisabledReasonId::
-                  kExtensionSentMessageToCachedFrame));
+          target.render_frame_host, back_forward_cache::DisabledReason(
+                                        back_forward_cache::DisabledReasonId::
+                                            kExtensionSentMessageToCachedFrame,
+                                        /*context=*/extension_id_));
       continue;
     }
 

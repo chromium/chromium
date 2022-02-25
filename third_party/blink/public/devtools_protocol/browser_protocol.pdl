@@ -8207,6 +8207,11 @@ domain Page
       BackForwardCacheNotRestoredReasonType type
       # Not restored reason
       BackForwardCacheNotRestoredReason reason
+      # Context associated with the reason. The meaning of this context is
+      # dependent on the reason:
+      # - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
+      #
+      optional string context
 
   experimental type BackForwardCacheNotRestoredExplanationTree extends object
     properties

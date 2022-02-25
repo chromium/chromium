@@ -1792,13 +1792,16 @@ CreateNotRestoredExplanation(
     } else if (reason == BackForwardCacheMetrics::NotRestoredReason::
                              kDisableForRenderFrameHostCalled) {
       for (auto disabled_reason : disabled_reasons) {
-        reasons->emplace_back(
+        auto reason =
             Page::BackForwardCacheNotRestoredExplanation::Create()
                 .SetType(
                     MapDisableForRenderFrameHostReasonToType(disabled_reason))
                 .SetReason(
                     DisableForRenderFrameHostReasonToProtocol(disabled_reason))
-                .Build());
+                .Build();
+        if (!disabled_reason.context.empty())
+          reason->SetContext(disabled_reason.context);
+        reasons->emplace_back(std::move(reason));
       }
     } else {
       reasons->emplace_back(
