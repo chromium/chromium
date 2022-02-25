@@ -36,8 +36,6 @@ class RenderThreadManager : public CompositorFrameConsumer {
 
   ~RenderThreadManager() override;
 
-  void SetRootFrameSinkGetterForTesting(
-      RootFrameSinkGetter root_frame_sink_getter);
   // CompositorFrameConsumer methods.
   void SetCompositorFrameProducer(
       CompositorFrameProducer* compositor_frame_producer,
