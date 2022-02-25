@@ -84,17 +84,87 @@ namespace {
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
 constexpr char kSignedOutNtpModulesSwitch[] = "signed-out-ntp-modules";
 
+void AddRawStringOrDefault(content::WebUIDataSource* source,
+                           const char key[],
+                           const std::string str,
+                           int default_string_id) {
+  if (str.empty()) {
+    source->AddLocalizedString(key, default_string_id);
+  } else {
+    source->AddString(key, str);
+  }
+}
+
+// The Discount Consent V2 is gated by Chrome Cart, and that is enabled for
+// en-us local only. So using plain en strings here are fine.
 void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
-  int discount_consent_variation = commerce::kDiscountConsentNtpVariation.Get();
+  int discount_consent_variation =
+      ntp_features::kNtpChromeCartModuleDiscountConsentNtpVariation.Get();
+  source->AddInteger("modulesCartDiscountConsentVariation",
+                     discount_consent_variation);
 
   if (discount_consent_variation ==
-      static_cast<int>(commerce::DiscountConsentNtpVariation::kStringChange)) {
-    source->AddLocalizedString(
-        "modulesCartDiscountConsentContent",
+      static_cast<int>(
+          ntp_features::DiscountConsentNtpVariation::kStringChange)) {
+    AddRawStringOrDefault(
+        source, "modulesCartDiscountConsentContent",
+        ntp_features::kNtpChromeCartModuleDiscountConsentStringChangeContent
+            .Get(),
         IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V2);
+  } else {
+    if (discount_consent_variation ==
+        static_cast<int>(ntp_features::DiscountConsentNtpVariation::kInline)) {
+      source->AddBoolean(
+          "modulesCartConsentStepTwoDifferentColor",
+          ntp_features::
+              kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor
+                  .Get());
+    } else if (discount_consent_variation ==
+               static_cast<int>(
+                   ntp_features::DiscountConsentNtpVariation::kDialog)) {
+      AddRawStringOrDefault(
+          source, "modulesCartDiscountConentTitle",
+          ntp_features::kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle
+              .Get(),
+          IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE);
+    }
+    source->AddBoolean(
+        "modulesCartStepOneUseStaticContent",
+        ntp_features::
+            kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent
+                .Get());
+    // This does not have a raw string resource.
+    source->AddString(
+        "modulesCartStepOneStaticContent",
+        ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent
+            .Get());
+
+    AddRawStringOrDefault(
+        source, "modulesCartConsentStepOneOneMerchantContent",
+        ntp_features::
+            kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart.Get(),
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_MERCHANT_NAME);
+    AddRawStringOrDefault(
+        source, "modulesCartConsentStepOneTwoMerchantsContent",
+        ntp_features::
+            kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts.Get(),
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_TWO_MERCHANT_NAMES);
+    AddRawStringOrDefault(
+        source, "modulesCartConsentStepOneThreeMerchantsContent",
+        ntp_features::
+            kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts
+                .Get(),
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_WITH_THREE_MERCHANT_NAMES);
+    AddRawStringOrDefault(
+        source, "modulesCartConsentStepTwoContent",
+        ntp_features::kNtpChromeCartModuleDiscountConsentNtpStepTwoContent
+            .Get(),
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3);
+
+    source->AddLocalizedString(
+        "modulesCartConsentStepOneButton",
+        IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_STEP_1_CONTINUE);
   }
-  // TODO(crbug/1298116): Add resource for the inline and dialog variation,
-  // including finch params.
 }
 
 content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
