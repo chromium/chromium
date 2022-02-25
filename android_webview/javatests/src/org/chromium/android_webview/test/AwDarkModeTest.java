@@ -93,10 +93,8 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewForceDarkModeMatchTheme",
-            "enable-features=WebViewDarkModeMatchTheme"})
-    public void
-    testLightThemeFalseWithMatchThemeDisabled() throws Throwable {
+    @CommandLineFlags.Add({"disable-features=WebViewForceDarkModeMatchTheme"})
+    public void testLightThemeFalseWithMatchThemeDisabled() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
         loadUrlSync(url);
@@ -107,8 +105,7 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.
-    Add({"enable-features=WebViewForceDarkModeMatchTheme,WebViewDarkModeMatchTheme"})
+    @CommandLineFlags.Add({"enable-features=WebViewForceDarkModeMatchTheme"})
     public void testLightThemeFalse() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         final String url = mWebServer.setResponse(FILE, DATA, null);
@@ -120,7 +117,6 @@ public class AwDarkModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewDarkModeMatchTheme"})
     public void testConfigurationChanged() throws Throwable {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_TRUE);
         final String url = mWebServer.setResponse(FILE, DATA, null);

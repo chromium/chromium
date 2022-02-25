@@ -18,7 +18,6 @@ namespace features {
 extern const base::Feature kWebViewAppsPackageNamesAllowlist;
 extern const base::Feature kWebViewBrotliSupport;
 extern const base::Feature kWebViewConnectionlessSafeBrowsing;
-extern const base::Feature kWebViewDarkModeMatchTheme;
 extern const base::Feature kWebViewDisplayCutout;
 extern const base::Feature kWebViewEmptyComponentLoaderPolicy;
 extern const base::Feature kWebViewExtraHeadersSameOriginOnly;

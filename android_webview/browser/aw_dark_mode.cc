@@ -138,9 +138,7 @@ void AwDarkMode::PopulateWebPreferencesForPreT(
         break;
       }
     }
-  } else if (prefers_dark_from_theme_ &&
-             base::FeatureList::IsEnabled(
-                 android_webview::features::kWebViewDarkModeMatchTheme)) {
+  } else if (prefers_dark_from_theme_) {
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kDark;
     if (base::FeatureList::IsEnabled(

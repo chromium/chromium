@@ -197,9 +197,6 @@ public final class ProductionSupportedFlagList {
                     "Enables use selective image inversion to automatically darken page, it will be"
                             + " used when WebView is in dark mode, but website doesn't provide dark"
                             + " style."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_DARK_MODE_MATCH_THEME,
-                    "Set prefers-color-theme according to the app's theme unless the app specifies"
-                            + " FORCE_DARK_OFF or DARK_STRATEGY_USER_AGENT_DARKENING_ONLY."),
             Flag.baseFeature(AwFeatures.WEBVIEW_FORCE_DARK_MODE_MATCH_THEME,
                     "Automatically darken page if"
                             + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
