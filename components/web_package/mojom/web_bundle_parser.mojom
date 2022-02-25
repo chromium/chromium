@@ -37,6 +37,13 @@ interface BundleDataSource {
   // Reads up to |length| bytes starting with |offset|. Returns a non-null
   // buffer shorter than |length| iff the end of the stream is reached.
   Read(uint64 offset, uint64 length) => (array<uint8>? buffer);
+
+  // Returns the length of the stream if it is known, or a negative value on
+  // error.
+  Length() => (int64 length);
+
+  // Checks whether the stream is backed by a random-access context.
+  IsRandomAccessContext() => (bool is_random_access);
 };
 
 enum BundleParseErrorType {

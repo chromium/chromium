@@ -21,16 +21,25 @@ namespace {
 
 class DataSource : public web_package::mojom::BundleDataSource {
  public:
-  DataSource(const uint8_t* data, size_t size) : data_(data), size_(size) {}
+  DataSource(const bool is_random_access_context, const std::string& data)
+      : is_random_access_context_(is_random_access_context), data_(data) {}
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
-    if (offset >= size_) {
+    if (offset >= data_.size()) {
       std::move(callback).Run(absl::nullopt);
       return;
     }
-    const uint8_t* start = data_ + offset;
-    length = std::min(length, size_ - offset);
+    const auto start = data_.begin() + offset;
+    length = std::min(length, data_.size() - offset);
     std::move(callback).Run(std::vector<uint8_t>(start, start + length));
+  }
+
+  void Length(LengthCallback callback) override {
+    std::move(callback).Run(data_.size());
+  }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(is_random_access_context_);
   }
 
   void AddReceiver(
@@ -39,15 +48,16 @@ class DataSource : public web_package::mojom::BundleDataSource {
   }
 
  private:
-  const uint8_t* data_;
-  size_t size_;
+  bool is_random_access_context_;
+  const std::string data_;
   mojo::ReceiverSet<web_package::mojom::BundleDataSource> receivers_;
 };
 
 class WebBundleParserFuzzer {
  public:
-  WebBundleParserFuzzer(const uint8_t* data, size_t size)
-      : data_source_(data, size) {}
+  WebBundleParserFuzzer(const bool is_random_access_context,
+                        const std::string& data)
+      : data_source_(is_random_access_context, data) {}
 
   void FuzzBundle(base::RunLoop* run_loop) {
     mojo::PendingRemote<web_package::mojom::BundleDataSource>
@@ -120,7 +130,10 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment* env = new Environment();
 
-  WebBundleParserFuzzer fuzzer(data, size);
+  std::string web_bundle(reinterpret_cast<const char*>(data), size);
+  bool is_random_access_context = std::hash<std::string>()(web_bundle) & 1;
+
+  WebBundleParserFuzzer fuzzer(is_random_access_context, web_bundle);
   base::RunLoop run_loop;
   env->task_executor.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebBundleParserFuzzer::FuzzBundle,

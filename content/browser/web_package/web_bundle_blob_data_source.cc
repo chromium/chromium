@@ -308,6 +308,16 @@ void WebBundleBlobDataSource::BlobDataSourceCore::Read(uint64_t offset,
       base::Unretained(this), offset, length, std::move(callback)));
 }
 
+void WebBundleBlobDataSource::BlobDataSourceCore::Length(
+    LengthCallback callback) {
+  std::move(callback).Run(-1);
+}
+
+void WebBundleBlobDataSource::BlobDataSourceCore::IsRandomAccessContext(
+    IsRandomAccessContextCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void WebBundleBlobDataSource::BlobDataSourceCore::StreamingBlobDone(
     storage::BlobBuilderFromStream* builder,
     std::unique_ptr<storage::BlobDataHandle> result) {

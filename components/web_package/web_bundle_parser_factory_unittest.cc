@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -133,6 +134,18 @@ TEST_F(WebBundleParserFactoryTest, FileDataSource) {
     run_loop.Run();
   }
   ASSERT_FALSE(result_data);
+
+  {
+    base::test::TestFuture<int64_t> future;
+    data_source->Length(future.GetCallback());
+    EXPECT_EQ(file_length, future.Get());
+  }
+
+  {
+    base::test::TestFuture<bool> future;
+    data_source->IsRandomAccessContext(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
 }
 
 TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
@@ -146,14 +159,11 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
 
   mojom::BundleMetadataPtr metadata;
   {
-    base::RunLoop run_loop;
-    parser->ParseMetadata(base::BindLambdaForTesting(
-        [&metadata, &run_loop](mojom::BundleMetadataPtr parsed_metadata,
-                               mojom::BundleMetadataParseErrorPtr error) {
-          metadata = std::move(parsed_metadata);
-          run_loop.QuitClosure().Run();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<mojom::BundleMetadataPtr,
+                           mojom::BundleMetadataParseErrorPtr>
+        future;
+    parser->ParseMetadata(future.GetCallback());
+    metadata = std::get<0>(future.Take());
   }
   ASSERT_TRUE(metadata);
   ASSERT_EQ(metadata->requests.size(), 4u);
@@ -162,20 +172,16 @@ TEST_F(WebBundleParserFactoryTest, GetParserForFile) {
   for (const auto& item : metadata->requests) {
     ASSERT_TRUE(item.second->variants_value.empty());
     ASSERT_EQ(item.second->response_locations.size(), 1u);
-    base::RunLoop run_loop;
+    base::test::TestFuture<mojom::BundleResponsePtr,
+                           mojom::BundleResponseParseErrorPtr>
+        future;
     parser->ParseResponse(item.second->response_locations[0]->offset,
                           item.second->response_locations[0]->length,
-                          base::BindLambdaForTesting(
-                              [&item, &responses, &run_loop](
-                                  mojom::BundleResponsePtr response,
-                                  mojom::BundleResponseParseErrorPtr error) {
-                                ASSERT_TRUE(response);
-                                ASSERT_FALSE(error);
-                                responses[item.first.spec()] =
-                                    std::move(response);
-                                run_loop.QuitClosure().Run();
-                              }));
-    run_loop.Run();
+                          future.GetCallback());
+    auto [response, error] = future.Take();
+    ASSERT_TRUE(response);
+    ASSERT_FALSE(error);
+    responses[item.first.spec()] = std::move(response);
   }
   ASSERT_TRUE(responses["https://test.example.org/"]);
   EXPECT_EQ(responses["https://test.example.org/"]->response_code, 200);

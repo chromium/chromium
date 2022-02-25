@@ -47,6 +47,11 @@ class WebBundleParser : public mojom::WebBundleParser {
               uint64_t length,
               mojom::BundleDataSource::ReadCallback callback);
 
+    void Length(mojom::BundleDataSource::LengthCallback callback);
+
+    void IsRandomAccessContext(
+        mojom::BundleDataSource::IsRandomAccessContextCallback callback);
+
    private:
     friend class base::RefCounted<SharedBundleDataSource>;
 

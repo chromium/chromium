@@ -38,6 +38,15 @@ class FileDataSource final : public mojom::BundleDataSource {
     }
   }
 
+  void Length(LengthCallback callback) override {
+    const int64_t length = file_.GetLength();
+    std::move(callback).Run(length);
+  }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(true);
+  }
+
   mojo::Receiver<mojom::BundleDataSource> receiver_;
   base::File file_;
 };

@@ -113,6 +113,10 @@ class MockDataSource final : public web_package::mojom::BundleDataSource {
   // Implements web_package::mojom::BundledDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
 
+  void Length(LengthCallback) override {}
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback) override {}
+
   mojo::Receiver<web_package::mojom::BundleDataSource> receiver_;
 };
 

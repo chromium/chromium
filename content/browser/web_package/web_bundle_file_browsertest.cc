@@ -204,8 +204,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidWebBundleFile) {
                                                      test_data_url);
 
   EXPECT_EQ(
-      "Failed to read metadata of Web Bundle file: Wrong CBOR array size of "
-      "the top-level structure",
+      "Failed to read metadata of Web Bundle file: Invalid bundle length.",
       console_message);
 }
 

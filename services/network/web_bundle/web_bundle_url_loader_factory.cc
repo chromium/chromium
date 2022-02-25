@@ -412,7 +412,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
                                      std::move(writer), std::move(callback)));
   }
 
-  // mojom::BundleDataSource
+  // Implements mojom::BundleDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     TRACE_EVENT0("loading", "BundleDataSource::Read");
     if (!finished_loading_ && !buffer_.ContainsAll(offset, length)) {
@@ -429,7 +429,13 @@ class WebBundleURLLoaderFactory::BundleDataSource
     std::move(callback).Run(std::move(output));
   }
 
-  // mojo::DataPipeDrainer::Client
+  void Length(LengthCallback callback) override { std::move(callback).Run(-1); }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(false);
+  }
+
+  // Implements mojo::DataPipeDrainer::Client.
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(!finished_loading_);
     if (!web_bundle_memory_quota_consumer_->AllocateMemory(num_bytes)) {

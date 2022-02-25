@@ -39,10 +39,14 @@ std::string GetTestFileContents(const base::FilePath& path) {
 
 class TestDataSource : public mojom::BundleDataSource {
  public:
-  explicit TestDataSource(const base::FilePath& path)
-      : data_(GetTestFileContents(path)) {}
-  explicit TestDataSource(const std::vector<uint8_t>& data)
-      : data_(reinterpret_cast<const char*>(data.data()), data.size()) {}
+  explicit TestDataSource(const base::FilePath& path,
+                          const bool is_random_access_context = false)
+      : data_(GetTestFileContents(path)),
+        is_random_access_context_(is_random_access_context) {}
+  explicit TestDataSource(const std::vector<uint8_t>& data,
+                          const bool is_random_access_context = false)
+      : data_(reinterpret_cast<const char*>(data.data()), data.size()),
+        is_random_access_context_(is_random_access_context) {}
 
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     if (offset >= data_.size()) {
@@ -56,6 +60,15 @@ class TestDataSource : public mojom::BundleDataSource {
         std::vector<uint8_t>(start, start + available_length));
   }
 
+  void Length(LengthCallback callback) override {
+    EXPECT_TRUE(is_random_access_context_);
+    std::move(callback).Run(data_.size());
+  }
+
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {
+    std::move(callback).Run(is_random_access_context_);
+  }
+
   base::StringPiece GetPayload(const mojom::BundleResponsePtr& response) {
     return base::StringPiece(data_).substr(response->payload_offset,
                                            response->payload_length);
@@ -67,6 +80,7 @@ class TestDataSource : public mojom::BundleDataSource {
 
  private:
   std::string data_;
+  bool is_random_access_context_;
   mojo::ReceiverSet<mojom::BundleDataSource> receivers_;
 };
 
@@ -155,6 +169,14 @@ cbor::Value CreateByteString(base::StringPiece s) {
 
 std::string AsString(const std::vector<uint8_t>& data) {
   return std::string(reinterpret_cast<const char*>(data.data()), data.size());
+}
+
+std::vector<uint8_t> CreateSmallBundle() {
+  web_package::WebBundleBuilder builder(kFallbackUrl, "" /* manifest_url */);
+  builder.AddExchange(kFallbackUrl,
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "payload");
+  return builder.CreateBundle();
 }
 
 }  // namespace
@@ -833,6 +855,68 @@ TEST_F(WebBundleParserTest, RelativeURL) {
     EXPECT_EQ(data_source.GetPayload(response), "payload");
   }
 }
+
+TEST_F(WebBundleParserTest, RandomAccessContext) {
+  std::vector<uint8_t> bundle = CreateSmallBundle();
+  TestDataSource data_source(bundle, /*is_random_access_context=*/true);
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->response_headers.size(), 1u);
+  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+  EXPECT_EQ(data_source.GetPayload(response), "payload");
+}
+
+TEST_F(WebBundleParserTest, RandomAccessContextPrependedData) {
+  std::vector<uint8_t> bundle = CreateSmallBundle();
+  bundle.insert(bundle.begin(),
+                {'o', 't', 'h', 'e', 'r', ' ', 'd', 'a', 't', 'a'});
+  TestDataSource data_source(bundle, /*is_random_access_context=*/true);
+
+  mojom::BundleMetadataPtr metadata = ParseBundle(&data_source).first;
+  ASSERT_TRUE(metadata);
+
+  auto location = FindResponse(metadata, GURL("https://test.example.com/"));
+  ASSERT_TRUE(location);
+  auto response = ParseResponse(&data_source, location);
+  ASSERT_TRUE(response);
+  EXPECT_EQ(response->response_code, 200);
+  EXPECT_EQ(response->response_headers.size(), 1u);
+  EXPECT_EQ(response->response_headers["content-type"], "text/plain");
+  EXPECT_EQ(data_source.GetPayload(response), "payload");
+}
+
+TEST_F(WebBundleParserTest, RandomAccessContextLengthSmallerThanWebBundle) {
+  std::vector<uint8_t> bundle = CreateSmallBundle();
+  std::vector<uint8_t> invalid_length = {0, 0, 0, 0, 0, 0, 0, 10};
+  std::copy(invalid_length.begin(), invalid_length.end(), bundle.end() - 8);
+  TestDataSource data_source(bundle, /*is_random_access_context=*/true);
+
+  ExpectFormatError(ParseBundle(&data_source));
+}
+
+TEST_F(WebBundleParserTest, RandomAccessContextFileSmallerThanLengthField) {
+  std::vector<uint8_t> bundle = {1, 2, 3, 4};
+  TestDataSource data_source(bundle, /*is_random_access_context=*/true);
+
+  ExpectFormatError(ParseBundle(&data_source));
+}
+
+TEST_F(WebBundleParserTest, RandomAccessContextLengthBiggerThanFile) {
+  std::vector<uint8_t> bundle = CreateSmallBundle();
+  std::vector<uint8_t> invalid_length = {0xff, 0, 0, 0, 0, 0, 0, 0};
+  std::copy(invalid_length.begin(), invalid_length.end(), bundle.end() - 8);
+  TestDataSource data_source(bundle, /*is_random_access_context=*/true);
+
+  ExpectFormatError(ParseBundle(&data_source));
+}
+
 // TODO(crbug.com/969596): Add a test case that loads a wbn file with variants,
 // once gen-bundle supports variants.
 

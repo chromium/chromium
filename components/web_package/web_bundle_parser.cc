@@ -31,6 +31,10 @@ namespace {
 // 27, the argument's value is held in the following 8 bytes.
 constexpr uint64_t kMaxCBORItemHeaderSize = 9;
 
+// The number of bytes used to specify the length of the web bundle.
+// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
+constexpr uint64_t kTrailingLengthNumBytes = 8;
+
 // The maximum size of the section-lengths CBOR item.
 constexpr uint64_t kMaxSectionLengthsCBORSize = 8192;
 
@@ -338,19 +342,88 @@ class WebBundleParser::MetadataParser
   ~MetadataParser() override { data_source_->RemoveObserver(this); }
 
   void Start() {
+    // First, check if the data source is backed by a random-access context to
+    // determine whether it is performant to read the trailing length field at
+    // the end of the web bundle file.
+    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
+    data_source_->IsRandomAccessContext(base::BindOnce(
+        &MetadataParser::OnIsRandomAccessContext, weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void OnIsRandomAccessContext(const bool is_random_access_context) {
+    if (!is_random_access_context) {
+      // If the data source is not backed by a random-access context, assume
+      // that the web bundle starts at the very first byte of the file and
+      // ignore the trailing length field of the bundle.
+      ReadMagicBytes(0);
+    } else {
+      // Otherwise read the length of the file (not the web bundle).
+      data_source_->Length(base::BindOnce(&MetadataParser::OnFileLengthRead,
+                                          weak_factory_.GetWeakPtr()));
+    }
+  }
+  void OnFileLengthRead(const int64_t file_length) {
+    if (file_length < 0) {
+      RunErrorCallbackAndDestroy("Error reading bundle length.");
+      return;
+    }
+    if (static_cast<uint64_t>(file_length) < kTrailingLengthNumBytes) {
+      RunErrorCallbackAndDestroy("Error reading bundle length.");
+      return;
+    }
+
+    // Read the last 8 bytes of the file that correspond to the trailing length
+    // field of the web bundle.
+    data_source_->Read(file_length - kTrailingLengthNumBytes,
+                       kTrailingLengthNumBytes,
+                       base::BindOnce(&MetadataParser::ParseWebBundleLength,
+                                      weak_factory_.GetWeakPtr(), file_length));
+  }
+
+  void ParseWebBundleLength(const uint64_t file_length,
+                            const absl::optional<std::vector<uint8_t>>& data) {
+    if (!data.has_value()) {
+      RunErrorCallbackAndDestroy("Error reading bundle length.");
+      return;
+    }
+
+    // "Recipients loading the bundle in a random-access context SHOULD start by
+    // reading the last 8 bytes and seeking backwards by that many bytes to find
+    // the start of the bundle, instead of assuming that the start of the file
+    // is also the start of the bundle. This allows the bundle to be appended to
+    // another format such as a generic self-extracting executable."
+    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#section-4.1.1-3
+    InputReader input(*data);
+    uint64_t web_bundle_length;
+    if (!input.ReadBigEndian(&web_bundle_length)) {
+      RunErrorCallbackAndDestroy("Error reading bundle length.");
+      return;
+    }
+
+    if (web_bundle_length > file_length) {
+      RunErrorCallbackAndDestroy("Invalid bundle length.");
+      return;
+    }
+    const uint64_t web_bundle_offset = file_length - web_bundle_length;
+    ReadMagicBytes(web_bundle_offset);
+  }
+
+  void ReadMagicBytes(const uint64_t offset_in_stream) {
     // First, we will parse one byte at the very beginning to determine the size
     // of the CBOR top level array (hence the "1+"), then `magic` and `version`
     // bytes.
     const uint64_t length =
         1 + sizeof(kBundleMagicBytes) + sizeof(kVersionB1MagicBytes);
-    data_source_->Read(0, length,
-                       base::BindOnce(&MetadataParser::ParseMagicBytes,
-                                      weak_factory_.GetWeakPtr()));
+    data_source_->Read(
+        offset_in_stream, length,
+        base::BindOnce(&MetadataParser::ParseMagicBytes,
+                       weak_factory_.GetWeakPtr(), offset_in_stream));
   }
 
- private:
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
-  void ParseMagicBytes(const absl::optional<std::vector<uint8_t>>& data) {
+  void ParseMagicBytes(uint64_t offset_in_stream,
+                       const absl::optional<std::vector<uint8_t>>& data) {
     if (!data) {
       RunErrorCallbackAndDestroy("Error reading bundle magic bytes.");
       return;
@@ -393,6 +466,7 @@ class WebBundleParser::MetadataParser
       RunErrorCallbackAndDestroy("Cannot read version bytes.");
       return;
     }
+    offset_in_stream += input.CurrentOffset();
     if (bundle_version_is_b1_) {
       if (!std::equal(version->begin(), version->end(),
                       std::begin(kVersionB1MagicBytes),
@@ -404,9 +478,9 @@ class WebBundleParser::MetadataParser
         return;
       }
       data_source_->Read(
-          input.CurrentOffset(), kMaxCBORItemHeaderSize,
+          offset_in_stream, kMaxCBORItemHeaderSize,
           base::BindOnce(&MetadataParser::ReadCBORHeaderOfPrimaryURL,
-                         weak_factory_.GetWeakPtr(), input.CurrentOffset()));
+                         weak_factory_.GetWeakPtr(), offset_in_stream));
     } else {
       // The only other version we support is "b2", in case of a mismatch we
       // should return with "version error" later.
@@ -419,7 +493,7 @@ class WebBundleParser::MetadataParser
             mojom::BundleParseErrorType::kVersionError);
         return;
       }
-      ReadBundleHeader(input.CurrentOffset());
+      ReadBundleHeader(offset_in_stream);
     }
   }
 
@@ -1367,6 +1441,16 @@ void WebBundleParser::SharedBundleDataSource::Read(
     uint64_t length,
     mojom::BundleDataSource::ReadCallback callback) {
   data_source_->Read(offset, length, std::move(callback));
+}
+
+void WebBundleParser::SharedBundleDataSource::Length(
+    mojom::BundleDataSource::LengthCallback callback) {
+  data_source_->Length(std::move(callback));
+}
+
+void WebBundleParser::SharedBundleDataSource::IsRandomAccessContext(
+    mojom::BundleDataSource::IsRandomAccessContextCallback callback) {
+  data_source_->IsRandomAccessContext(std::move(callback));
 }
 
 WebBundleParser::WebBundleParser(

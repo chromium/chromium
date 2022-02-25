@@ -78,6 +78,10 @@ class CONTENT_EXPORT WebBundleBlobDataSource {
     // Implements web_package::mojom::BundleDataSource.
     void Read(uint64_t offset, uint64_t length, ReadCallback callback) override;
 
+    void Length(LengthCallback callback) override;
+
+    void IsRandomAccessContext(IsRandomAccessContextCallback callback) override;
+
     void StreamingBlobDone(storage::BlobBuilderFromStream* builder,
                            std::unique_ptr<storage::BlobDataHandle> result);
     void WaitForBlob(base::OnceClosure closure);
