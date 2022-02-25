@@ -65,6 +65,10 @@ RetroactivePairingDetectorImpl::RetroactivePairingDetectorImpl(
     return;
   }
 
+  // If we get to this point in the constructor, it means that the user is
+  // logged in to enable this scenario, so we can being our observations. If we
+  // get any log in events, we know to ignore them, since we already
+  // instantiated our retroactive pairing detector.
   retroactive_pairing_detector_instatiated_ = true;
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
