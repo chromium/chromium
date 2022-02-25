@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/net/cert_manager.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -18,10 +19,12 @@
 #include "base/memory/singleton.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/dbus/patchpanel/patchpanel_service.pb.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -527,6 +530,10 @@ void ArcNetHostImpl::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
 }
 
+void ArcNetHostImpl::SetCertManager(std::unique_ptr<CertManager> cert_manager) {
+  cert_manager_ = std::move(cert_manager);
+}
+
 void ArcNetHostImpl::OnConnectionReady() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -958,86 +965,170 @@ void ArcNetHostImpl::AndroidVpnStateChanged(mojom::ConnectionStateType state) {
       base::BindOnce(&ArcVpnErrorCallback, "disconnecting ARC VPN"));
 }
 
-base::Value ArcNetHostImpl::TranslateEapCredentialsToDict(
-    const mojom::EapCredentials& cred) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+void ArcNetHostImpl::TranslateEapCredentialsToDict(
+    mojom::EapCredentialsPtr cred,
+    base::OnceCallback<void(base::Value)> callback) {
+  if (!cred) {
+    NET_LOG(ERROR) << "Empty EAP credentials";
+    return;
+  }
+  if (!cert_manager_) {
+    NET_LOG(ERROR) << "CertManager is not initialized";
+    return;
+  }
 
-  dict.SetStringKey(shill::kEapMethodProperty, TranslateEapMethod(cred.method));
-  dict.SetStringKey(shill::kEapPhase2AuthProperty,
-                    TranslateEapPhase2Method(cred.phase2_method));
-  if (cred.anonymous_identity.has_value()) {
-    dict.SetStringKey(shill::kEapAnonymousIdentityProperty,
-                      cred.anonymous_identity.value());
+  if (cred->client_certificate_key.has_value() &&
+      cred->client_certificate_pem.has_value() &&
+      cred->client_certificate_pem.value().size() > 0) {
+    // |client_certificate_pem| contains all client certificates inside ARC's
+    // PasspointConfiguration. ARC uses only one of the certificate that match
+    // the certificate SHA-256 fingerprint. Currently, it is assumed that the
+    // first certificate is the used certificate.
+    // TODO(b/195262431): Remove the assumption by passing only the used
+    // certificate to Chrome.
+    // TODO(b/220803680): Remove imported certificates and keys when the
+    // associated passpoint profile is removed.
+    cert_manager_->ImportPrivateKeyAndCert(
+        cred->client_certificate_key.value(),
+        cred->client_certificate_pem.value()[0],
+        base::BindOnce(&ArcNetHostImpl::TranslateEapCredentialsToDictWithCertID,
+                       weak_factory_.GetWeakPtr(), std::move(cred),
+                       std::move(callback)));
+    return;
   }
-  if (cred.identity.has_value())
-    dict.SetStringKey(shill::kEapIdentityProperty, cred.identity.value());
-
-  if (cred.password.has_value())
-    dict.SetStringKey(shill::kEapPasswordProperty, cred.password.value());
-
-  dict.SetStringKey(shill::kEapKeyMgmtProperty,
-                    TranslateKeyManagement(cred.key_management));
-  // TODO(195262431): Provision and fill in certificates.
-  if (cred.subject_match.has_value()) {
-    dict.SetStringKey(shill::kEapSubjectMatchProperty,
-                      cred.subject_match.value());
-  }
-  if (cred.subject_alternative_name_match_list.has_value()) {
-    dict.SetKey(shill::kEapSubjectAlternativeNameMatchProperty,
-                TranslateStringListToValue(
-                    cred.subject_alternative_name_match_list.value()));
-  }
-  if (cred.domain_suffix_match_list.has_value()) {
-    dict.SetKey(
-        shill::kEapDomainSuffixMatchProperty,
-        TranslateStringListToValue(cred.domain_suffix_match_list.value()));
-  }
-  if (cred.tls_version_max.has_value()) {
-    dict.SetStringKey(shill::kEapTLSVersionMaxProperty,
-                      cred.tls_version_max.value());
-  }
-  dict.SetBoolKey(shill::kEapUseSystemCasProperty, cred.use_system_cas);
-  dict.SetBoolKey(shill::kEapUseProactiveKeyCachingProperty,
-                  cred.use_proactive_key_caching);
-  dict.SetBoolKey(shill::kEapUseLoginPasswordProperty, cred.use_login_password);
-
-  return dict;
+  TranslateEapCredentialsToDictWithCertID(std::move(cred), std::move(callback),
+                                          /*cert_id=*/absl::nullopt,
+                                          /*slot_id=*/absl::nullopt);
 }
 
-base::Value ArcNetHostImpl::TranslatePasspointCredentialsToDict(
-    const mojom::PasspointCredentials& cred) {
-  // Fill in EAP credentials fields.
-  if (!cred.eap) {
-    NET_LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
-    return base::Value();
+void ArcNetHostImpl::TranslateEapCredentialsToDictWithCertID(
+    mojom::EapCredentialsPtr cred,
+    base::OnceCallback<void(base::Value)> callback,
+    const absl::optional<std::string>& cert_id,
+    const absl::optional<int>& slot_id) {
+  if (!cred) {
+    NET_LOG(ERROR) << "Empty EAP credentials";
+    return;
   }
-  auto dict = TranslateEapCredentialsToDict(*cred.eap);
 
-  // Fill in Passpoint credentials fields.
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey(shill::kEapMethodProperty,
+                    TranslateEapMethod(cred->method));
+  dict.SetStringKey(shill::kEapPhase2AuthProperty,
+                    TranslateEapPhase2Method(cred->phase2_method));
+  if (cred->anonymous_identity.has_value()) {
+    dict.SetStringKey(shill::kEapAnonymousIdentityProperty,
+                      cred->anonymous_identity.value());
+  }
+  if (cred->identity.has_value())
+    dict.SetStringKey(shill::kEapIdentityProperty, cred->identity.value());
+
+  if (cred->password.has_value())
+    dict.SetStringKey(shill::kEapPasswordProperty, cred->password.value());
+
+  dict.SetStringKey(shill::kEapKeyMgmtProperty,
+                    TranslateKeyManagement(cred->key_management));
+
+  if (cert_id.has_value() && slot_id.has_value()) {
+    // The ID of imported user certificate and private key is the same, use one
+    // of them.
+    dict.SetStringKey(
+        shill::kEapKeyIdProperty,
+        base::StringPrintf("%i:%s", slot_id.value(), cert_id.value().c_str()));
+    dict.SetStringKey(
+        shill::kEapCertIdProperty,
+        base::StringPrintf("%i:%s", slot_id.value(), cert_id.value().c_str()));
+    dict.SetStringKey(shill::kEapPinProperty,
+                      chromeos::client_cert::kDefaultTPMPin);
+  }
+
+  if (cred->subject_match.has_value()) {
+    dict.SetStringKey(shill::kEapSubjectMatchProperty,
+                      cred->subject_match.value());
+  }
+  if (cred->subject_alternative_name_match_list.has_value()) {
+    dict.SetKey(shill::kEapSubjectAlternativeNameMatchProperty,
+                TranslateStringListToValue(
+                    cred->subject_alternative_name_match_list.value()));
+  }
+  if (cred->domain_suffix_match_list.has_value()) {
+    dict.SetKey(
+        shill::kEapDomainSuffixMatchProperty,
+        TranslateStringListToValue(cred->domain_suffix_match_list.value()));
+  }
+  if (cred->tls_version_max.has_value()) {
+    dict.SetStringKey(shill::kEapTLSVersionMaxProperty,
+                      cred->tls_version_max.value());
+  }
+  dict.SetBoolKey(shill::kEapUseSystemCasProperty, cred->use_system_cas);
+  dict.SetBoolKey(shill::kEapUseProactiveKeyCachingProperty,
+                  cred->use_proactive_key_caching);
+  dict.SetBoolKey(shill::kEapUseLoginPasswordProperty,
+                  cred->use_login_password);
+
+  std::move(callback).Run(std::move(dict));
+}
+
+void ArcNetHostImpl::TranslatePasspointCredentialsToDict(
+    mojom::PasspointCredentialsPtr cred,
+    base::OnceCallback<void(base::Value)> callback) {
+  if (!cred) {
+    NET_LOG(ERROR) << "Empty passpoint credentials";
+    return;
+  }
+  if (!cred->eap) {
+    NET_LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
+    return;
+  }
+
+  mojom::EapCredentialsPtr eap = cred->eap.Clone();
+  TranslateEapCredentialsToDict(
+      std::move(eap),
+      base::BindOnce(
+          &ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated,
+          weak_factory_.GetWeakPtr(), std::move(cred), std::move(callback)));
+}
+
+void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
+    mojom::PasspointCredentialsPtr cred,
+    base::OnceCallback<void(base::Value)> callback,
+    base::Value dict) {
+  if (!cred) {
+    NET_LOG(ERROR) << "Empty passpoint credentials";
+    return;
+  }
+  if (dict.is_none()) {
+    NET_LOG(ERROR) << "Failed to translate EapCredentials properties";
+    return;
+  }
+
   dict.SetKey(shill::kPasspointCredentialsDomainsProperty,
-              TranslateStringListToValue(cred.domains));
-  dict.SetStringKey(shill::kPasspointCredentialsRealmProperty, cred.realm);
+              TranslateStringListToValue(cred->domains));
+  dict.SetStringKey(shill::kPasspointCredentialsRealmProperty, cred->realm);
   dict.SetKey(shill::kPasspointCredentialsHomeOIsProperty,
-              TranslateLongListToStringValue(cred.home_ois));
+              TranslateLongListToStringValue(cred->home_ois));
   dict.SetKey(shill::kPasspointCredentialsRequiredHomeOIsProperty,
-              TranslateLongListToStringValue(cred.required_home_ois));
+              TranslateLongListToStringValue(cred->required_home_ois));
   dict.SetKey(shill::kPasspointCredentialsRoamingConsortiaProperty,
-              TranslateLongListToStringValue(cred.roaming_consortium_ois));
+              TranslateLongListToStringValue(cred->roaming_consortium_ois));
   dict.SetBoolKey(shill::kPasspointCredentialsMeteredOverrideProperty,
-                  cred.metered);
+                  cred->metered);
   dict.SetStringKey(shill::kPasspointCredentialsAndroidPackageNameProperty,
-                    cred.package_name);
+                    cred->package_name);
 
-  return dict;
+  std::move(callback).Run(std::move(dict));
 }
 
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
-  // TODO(195262431): Support EAP-TLS.
-  if (credentials->eap->method != mojom::EapMethod::kTtls)
-    return;
+  TranslatePasspointCredentialsToDict(
+      std::move(credentials),
+      base::BindOnce(&ArcNetHostImpl::AddPasspointCredentialsWithProperties,
+                     weak_factory_.GetWeakPtr()));
+}
 
-  const auto properties = TranslatePasspointCredentialsToDict(*credentials);
+void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
+    base::Value properties) {
   if (properties.is_none()) {
     NET_LOG(ERROR) << "Failed to translate PasspointCredentials properties";
     return;

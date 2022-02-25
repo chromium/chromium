@@ -1,0 +1,182 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/arc/net/cert_manager_impl.h"
+
+#include <pk11priv.h>
+#include <pk11pub.h>
+
+#include <utility>
+
+#include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/device_event_log/device_event_log.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "crypto/nss_key_util.h"
+#include "net/cert/nss_cert_database.h"
+#include "net/cert/pem.h"
+#include "net/cert/scoped_nss_types.h"
+#include "net/cert/x509_util_nss.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+void GetCertDBOnIOThread(
+    NssCertDatabaseGetter database_getter,
+    base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  net::NSSCertDatabase* cert_db =
+      std::move(database_getter).Run(std::move(split_callback.first));
+  // If the NSS database was already available, |cert_db| is non-null and
+  // the callback has not been called. Explicitly call the callback.
+  if (cert_db) {
+    std::move(split_callback.second).Run(cert_db);
+  }
+}
+
+}  // namespace
+
+namespace arc {
+
+CertManagerImpl::CertManagerImpl(Profile* profile) : profile_(profile) {}
+
+CertManagerImpl::~CertManagerImpl() = default;
+
+std::string CertManagerImpl::ImportPrivateKey(const std::string& key_pem,
+                                              net::NSSCertDatabase* database) {
+  if (!database) {
+    NET_LOG(ERROR) << "Certificate database is not initialized";
+    return std::string();
+  }
+
+  net::PEMTokenizer tokenizer(key_pem, {kPrivateKeyPEMHeader});
+  if (!tokenizer.GetNext()) {
+    NET_LOG(ERROR) << "Failed to get private key data";
+    return std::string();
+  }
+  std::vector<uint8_t> key_der(tokenizer.data().begin(),
+                               tokenizer.data().end());
+
+  crypto::ScopedPK11Slot private_slot = database->GetPrivateSlot();
+  if (!private_slot) {
+    NET_LOG(ERROR) << "Failed to get PK11 slot";
+    return std::string();
+  }
+
+  crypto::ScopedSECKEYPrivateKey key(crypto::ImportNSSKeyFromPrivateKeyInfo(
+      private_slot.get(), key_der, true /* permanent */));
+  if (!key) {
+    NET_LOG(ERROR) << "Failed to import private key";
+    return std::string();
+  }
+
+  crypto::ScopedSECItem sec_item(PK11_GetLowLevelKeyIDForPrivateKey(key.get()));
+  if (!sec_item) {
+    NET_LOG(ERROR) << "Failed to get private key ID";
+    return std::string();
+  }
+  return base::HexEncode(sec_item->data, sec_item->len);
+}
+
+std::string CertManagerImpl::ImportUserCert(const std::string& cert_pem,
+                                            net::NSSCertDatabase* database) {
+  if (!database) {
+    NET_LOG(ERROR) << "Certificate database is not initialized";
+    return std::string();
+  }
+
+  net::PEMTokenizer tokenizer(cert_pem, {kCertificatePEMHeader});
+  if (!tokenizer.GetNext()) {
+    NET_LOG(ERROR) << "Failed to get certificate data";
+    return std::string();
+  }
+
+  int status = database->ImportUserCert(tokenizer.data());
+  if (status != net::OK) {
+    NET_LOG(ERROR) << "Failed to import user certificate with status code "
+                   << status;
+    return std::string();
+  }
+
+  std::vector<uint8_t> cert_der(tokenizer.data().begin(),
+                                tokenizer.data().end());
+  net::ScopedCERTCertificate cert(
+      net::x509_util::CreateCERTCertificateFromBytes(cert_der.data(),
+                                                     cert_der.size()));
+  crypto::ScopedSECItem sec_item(
+      PK11_GetLowLevelKeyIDForCert(nullptr, cert.get(), nullptr));
+  if (!sec_item) {
+    NET_LOG(ERROR) << "Failed to get certificate ID";
+    return std::string();
+  }
+
+  return base::HexEncode(sec_item->data, sec_item->len);
+}
+
+int CertManagerImpl::GetSlotID(net::NSSCertDatabase* database) {
+  if (!database) {
+    NET_LOG(ERROR) << "Certificate database is not initialized";
+    return -1;
+  }
+
+  crypto::ScopedPK11Slot private_slot = database->GetPrivateSlot();
+  if (!private_slot) {
+    NET_LOG(ERROR) << "Failed to get PK11 slot";
+    return -1;
+  }
+
+  return PK11_GetSlotID(private_slot.get());
+}
+
+void CertManagerImpl::ImportPrivateKeyAndCertWithDB(
+    const std::string& key_pem,
+    const std::string& cert_pem,
+    ImportPrivateKeyAndCertCallback callback,
+    net::NSSCertDatabase* database) {
+  std::string key_id = ImportPrivateKey(key_pem, database);
+  if (key_id.empty()) {
+    NET_LOG(ERROR) << "Failed to import private key";
+    std::move(callback).Run(/*cert_id=*/absl::nullopt,
+                            /*slot_id=*/absl::nullopt);
+    return;
+  }
+  std::string cert_id = ImportUserCert(cert_pem, database);
+  if (cert_id.empty()) {
+    NET_LOG(ERROR) << "Failed to import client certificate";
+    std::move(callback).Run(/*cert_id=*/absl::nullopt,
+                            /*slot_id=*/absl::nullopt);
+    return;
+  }
+  int slot_id = GetSlotID(database);
+
+  // The ID of imported user certificate and private key is the same, use one
+  // of them.
+  DCHECK(key_id == cert_id);
+  std::move(callback).Run(cert_id, slot_id);
+}
+
+void CertManagerImpl::ImportPrivateKeyAndCert(
+    const std::string& key_pem,
+    const std::string& cert_pem,
+    ImportPrivateKeyAndCertCallback callback) {
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GetCertDBOnIOThread,
+          NssServiceFactory::GetForContext(profile_)
+              ->CreateNSSCertDatabaseGetterForIOThread(),
+          base::BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(&CertManagerImpl::ImportPrivateKeyAndCertWithDB,
+                             weak_factory_.GetWeakPtr(), key_pem, cert_pem,
+                             std::move(callback)))));
+}
+
+}  // namespace arc

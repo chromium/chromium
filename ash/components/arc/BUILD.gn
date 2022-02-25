@@ -74,6 +74,7 @@ static_library("arc") {
     "net/always_on_vpn_manager.h",
     "net/arc_net_host_impl.cc",
     "net/arc_net_host_impl.h",
+    "net/cert_manager.h",
     "obb_mounter/arc_obb_mounter_bridge.cc",
     "obb_mounter/arc_obb_mounter_bridge.h",
     "pay/arc_digital_goods_bridge.cc",
