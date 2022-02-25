@@ -553,6 +553,9 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
+  // This gets reset to the platform default when we call CreateBubble(), so we
+  // have to change it afterwards:
+  set_adjust_if_offscreen(true);
   auto* const frame_view = GetBubbleFrameView();
   frame_view->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
