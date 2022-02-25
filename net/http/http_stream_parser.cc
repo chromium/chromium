@@ -52,24 +52,6 @@ std::string GetResponseHeaderLines(const HttpResponseHeaders& headers) {
   return cr_separated_headers;
 }
 
-// Return true if |headers| contain multiple |field_name| fields with different
-// values.
-bool HeadersContainMultipleCopiesOfField(const HttpResponseHeaders& headers,
-                                         const std::string& field_name) {
-  size_t it = 0;
-  std::string field_value;
-  if (!headers.EnumerateHeader(&it, field_name, &field_value))
-    return false;
-  // There's at least one |field_name| header.  Check if there are any more
-  // such headers, and if so, return true if they have different values.
-  std::string field_value2;
-  while (headers.EnumerateHeader(&it, field_name, &field_value2)) {
-    if (field_value != field_value2)
-      return true;
-  }
-  return false;
-}
-
 base::Value NetLogSendRequestBodyParams(uint64_t length,
                                         bool is_chunked,
                                         bool did_merge) {
@@ -1049,15 +1031,17 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
   // chunked-encoded.  If they exist, and have distinct values, it's a potential
   // response smuggling attack.
   if (!headers->IsChunkEncoded()) {
-    if (HeadersContainMultipleCopiesOfField(*headers, "Content-Length"))
+    if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+                                                      "Content-Length"))
       return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH;
   }
 
   // Check for multiple Content-Disposition or Location headers.  If they exist,
   // it's also a potential response smuggling attack.
-  if (HeadersContainMultipleCopiesOfField(*headers, "Content-Disposition"))
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers,
+                                                    "Content-Disposition"))
     return ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION;
-  if (HeadersContainMultipleCopiesOfField(*headers, "Location"))
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*headers, "Location"))
     return ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION;
 
   response_->headers = headers;

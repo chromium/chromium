@@ -23,6 +23,7 @@
 #include "net/base/mime_util.h"
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 
 namespace net {
 
@@ -1120,6 +1121,23 @@ bool HttpUtil::ParseContentEncoding(const std::string& content_encoding,
     used_encodings->insert(base::ToLowerASCII(encoding));
   }
   return true;
+}
+
+bool HttpUtil::HeadersContainMultipleCopiesOfField(
+    const HttpResponseHeaders& headers,
+    const std::string& field_name) {
+  size_t it = 0;
+  std::string field_value;
+  if (!headers.EnumerateHeader(&it, field_name, &field_value))
+    return false;
+  // There's at least one `field_name` header.  Check if there are any more
+  // such headers, and if so, return true if they have different values.
+  std::string field_value2;
+  while (headers.EnumerateHeader(&it, field_name, &field_value2)) {
+    if (field_value != field_value2)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace net

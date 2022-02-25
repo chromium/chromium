@@ -29,6 +29,8 @@
 
 namespace net {
 
+class HttpResponseHeaders;
+
 class NET_EXPORT HttpUtil {
  public:
   // Returns the absolute URL, to be used for the http request. This url is
@@ -259,6 +261,12 @@ class NET_EXPORT HttpUtil {
   // 3.5 of RFC 2616.
   static bool ParseContentEncoding(const std::string& content_encoding,
                                    std::set<std::string>* used_encodings);
+
+  // Return true if `headers` contain multiple `field_name` fields with
+  // different values.
+  static bool HeadersContainMultipleCopiesOfField(
+      const HttpResponseHeaders& headers,
+      const std::string& field_name);
 
   // Used to iterate over the name/value pairs of HTTP headers.  To iterate
   // over the values in a multi-value header, use ValuesIterator.
