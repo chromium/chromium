@@ -142,7 +142,7 @@ public class InstantStartTest {
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
         UiRestriction.RESTRICTION_TYPE_PHONE, UiRestriction.RESTRICTION_TYPE_TABLET})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            "force-fieldtrial-params=Study.Group:allow_to_refetch/true/thumbnail_aspect_ratio/2.0"})
+            "force-fieldtrial-params=Study.Group:allow_to_refetch/true"})
     public void fetchThumbnailsPreNativeTest() {
         // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
