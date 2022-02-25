@@ -594,7 +594,7 @@ suite('InternetSubpage', function() {
                   internetSubpage.$$('#alwaysOnVpnSelector');
               assert(networkAlwaysOnVpn);
               // The list should contain 2 compatible networks.
-              assertEquals(5, networkAlwaysOnVpn.networks.length);
+              assertEquals(2, networkAlwaysOnVpn.networks.length);
             });
       });
     });

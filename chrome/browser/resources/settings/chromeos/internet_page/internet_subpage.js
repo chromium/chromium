@@ -1033,8 +1033,12 @@ Polymer({
     const alwaysOnVpnList = this.networkStateList_.slice();
     for (const vpnList of Object.values(this.thirdPartyVpns_)) {
       assert(vpnList.length > 0);
-      // ARC VPNs are excluded from always-on VPN for now.
-      if (vpnList[0].typeState.vpn.type === mojom.VpnType.kArc) {
+      // Exclude incompatible VPN technologies:
+      // - TODO(b/188864779): ARC VPNs are not supported yet,
+      // - Chrome VPN apps are deprecated and incompatible with lockdown mode
+      //   (see b/206910855).
+      if (vpnList[0].typeState.vpn.type === mojom.VpnType.kArc ||
+          vpnList[0].typeState.vpn.type === mojom.VpnType.kExtension) {
         continue;
       }
       alwaysOnVpnList.push(...vpnList);
