@@ -109,7 +109,6 @@ export class FakePageHandler {
       hideResizeLocked: true,
       supportedLinks: [],
       runOnOsLogin: null,
-      installSource: apps.mojom.InstallSource.kUnknown,
     };
 
     if (optConfig) {

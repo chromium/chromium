@@ -22,7 +22,6 @@ struct App {
   string? size;
   map<apps.mojom.PermissionType, apps.mojom.Permission> permissions;
   apps.mojom.InstallReason install_reason;
-  apps.mojom.InstallSource install_source;
   bool hide_more_settings;
   bool hide_pin_to_shelf;
   bool is_preferred_app;
