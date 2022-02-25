@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_aspect_ratio.h"
 
 namespace blink {

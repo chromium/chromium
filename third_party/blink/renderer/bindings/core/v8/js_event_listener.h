@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 

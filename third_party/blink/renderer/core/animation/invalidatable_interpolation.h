@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/primitive_interpolation.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 

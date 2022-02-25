@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_LIGHT_DARK_VALUE_PAIR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_LIGHT_DARK_VALUE_PAIR_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 
 namespace blink {
