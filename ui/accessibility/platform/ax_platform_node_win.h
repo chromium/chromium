@@ -1134,22 +1134,19 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
   void GetRuntimeIdArray(RuntimeIdArray& runtime_id);
 
   // Updates the active composition range and fires UIA text edit event about
-  // composition (active or committed)
+  // composition (active or committed).
   void OnActiveComposition(const gfx::Range& range,
                            const std::u16string& active_composition_text,
                            bool is_composition_committed);
-  // Returns true if there is an active composition
+  // Returns true if there is an active composition.
   bool HasActiveComposition() const;
-  // Returns the start/end offsets of the active composition
+  // Returns the start/end offsets of the active composition.
   gfx::Range GetActiveCompositionOffsets() const;
-
-  // Helper to recursively find live-regions and fire a change event on them
-  void FireLiveRegionChangeRecursive();
 
   // Returns the first ancestor node that is accessible for UIA.
   AXPlatformNodeWin* GetLowestAccessibleElementForUIA();
 
-  // Returns the first |IsTextOnlyObject| descendant using
+  // Returns the first |IsTextOnlyObject| descendant using.
   // depth-first pre-order traversal.
   AXPlatformNodeWin* GetFirstTextOnlyDescendant();
 

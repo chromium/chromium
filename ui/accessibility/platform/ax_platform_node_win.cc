@@ -7977,27 +7977,6 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
   return nullptr;
 }
 
-void AXPlatformNodeWin::FireLiveRegionChangeRecursive() {
-  const auto live_status_attr = ax::mojom::StringAttribute::kLiveStatus;
-  if (HasStringAttribute(live_status_attr) &&
-      GetStringAttribute(live_status_attr) != "off") {
-    DCHECK(GetDelegate()->IsWebContent());
-    ::UiaRaiseAutomationEvent(this, UIA_LiveRegionChangedEventId);
-    return;
-  }
-
-  for (int index = 0; index < GetChildCount(); ++index) {
-    auto* child = static_cast<AXPlatformNodeWin*>(
-        FromNativeViewAccessible(ChildAtIndex(index)));
-
-    // We assume that only web-content will have live regions; also because
-    // this will be called on each fragment-root, there is no need to walk
-    // through non-content nodes.
-    if (child->GetDelegate()->IsWebContent())
-      child->FireLiveRegionChangeRecursive();
-  }
-}
-
 AXPlatformNodeWin* AXPlatformNodeWin::GetLowestAccessibleElementForUIA() {
   AXPlatformNodeWin* node = this;
   while (node) {
