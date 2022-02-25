@@ -2840,6 +2840,7 @@ crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html
 crbug.com/1299212 [ Linux ] fast/forms/week/week-picker-ax.html [ Failure Pass ]
 crbug.com/1299212 [ Linux ] fast/forms/month/month-picker-ax.html [ Failure Pass ]
 crbug.com/1299212 [ Linux ] fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
+crbug.com/1299212 [ Linux ] fast/forms/select-popup/popup-menu-ax.html [ Failure Pass ]
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
