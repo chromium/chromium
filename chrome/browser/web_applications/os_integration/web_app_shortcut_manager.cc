@@ -29,7 +29,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace web_app {
 
