@@ -47,7 +47,7 @@ struct StructTraits<PermissionDataView, apps::PermissionPtr> {
 };
 
 template <>
-struct CloneTraits<apps::PermissionPtr, false> {
+struct CloneTraits<apps::PermissionPtr> {
   static apps::PermissionPtr Clone(const apps::PermissionPtr& input) {
     return input->Clone();
   }

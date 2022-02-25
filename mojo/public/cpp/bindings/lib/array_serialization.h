@@ -37,28 +37,22 @@ class ArrayIterator {};
 template <typename Traits, typename MaybeConstUserType>
 class ArrayIterator<Traits, MaybeConstUserType, true> {
  public:
-  using IteratorType = decltype(
-      CallGetBeginIfExists<Traits>(std::declval<MaybeConstUserType&>()));
+  using IteratorType =
+      decltype(Traits::GetBegin(std::declval<MaybeConstUserType&>()));
 
   explicit ArrayIterator(MaybeConstUserType& input)
-      : input_(input), iter_(CallGetBeginIfExists<Traits>(input)) {}
+      : input_(input), iter_(Traits::GetBegin(input)) {}
   ~ArrayIterator() {}
 
   size_t GetSize() const { return Traits::GetSize(input_); }
 
-  using GetNextResult =
-      decltype(Traits::GetValue(std::declval<IteratorType&>()));
-  GetNextResult GetNext() {
-    GetNextResult value = Traits::GetValue(iter_);
+  decltype(auto) GetNext() {
+    decltype(auto) value = Traits::GetValue(iter_);
     Traits::AdvanceIterator(iter_);
     return value;
   }
 
-  using GetDataIfExistsResult = decltype(
-      CallGetDataIfExists<Traits>(std::declval<MaybeConstUserType&>()));
-  GetDataIfExistsResult GetDataIfExists() {
-    return CallGetDataIfExists<Traits>(input_);
-  }
+  const MaybeConstUserType& input() const { return input_; }
 
  private:
   MaybeConstUserType& input_;
@@ -74,18 +68,12 @@ class ArrayIterator<Traits, MaybeConstUserType, false> {
 
   size_t GetSize() const { return Traits::GetSize(input_); }
 
-  using GetNextResult =
-      decltype(Traits::GetAt(std::declval<MaybeConstUserType&>(), 0));
-  GetNextResult GetNext() {
+  decltype(auto) GetNext() {
     DCHECK_LT(iter_, Traits::GetSize(input_));
     return Traits::GetAt(input_, iter_++);
   }
 
-  using GetDataIfExistsResult = decltype(
-      CallGetDataIfExists<Traits>(std::declval<MaybeConstUserType&>()));
-  GetDataIfExistsResult GetDataIfExists() {
-    return CallGetDataIfExists<Traits>(input_);
-  }
+  const MaybeConstUserType& input() const { return input_; }
 
  private:
   MaybeConstUserType& input_;
@@ -138,9 +126,9 @@ struct ArraySerializer<
     if (size == 0)
       return;
 
-    auto data = input->GetDataIfExists();
     Data* output = fragment.data();
-    if (data) {
+    if constexpr (HasGetDataMethod<Traits, MaybeConstUserType>::value) {
+      auto data = Traits::GetData(input->input());
       memcpy(output->storage(), data, size * sizeof(DataElement));
     } else {
       for (size_t i = 0; i < size; ++i)
@@ -153,12 +141,12 @@ struct ArraySerializer<
                                   Message* message) {
     if (!Traits::Resize(*output, input->size()))
       return false;
-    ArrayIterator<Traits, UserType> iterator(*output);
     if (input->size()) {
-      auto data = iterator.GetDataIfExists();
-      if (data) {
+      if constexpr (HasGetDataMethod<Traits, UserType>::value) {
+        auto data = Traits::GetData(*output);
         memcpy(data, input->storage(), input->size() * sizeof(DataElement));
       } else {
+        ArrayIterator<Traits, UserType> iterator(*output);
         for (size_t i = 0; i < input->size(); ++i)
           iterator.GetNext() = input->at(i);
       }
@@ -287,7 +275,7 @@ struct ArraySerializer<
     Data* output = fragment.data();
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
-      typename UserTypeIterator::GetNextResult next = input->GetNext();
+      decltype(auto) next = input->GetNext();
       Serialize<Element>(next, &output->at(i), &fragment.message());
 
       static const ValidationError kError =
@@ -346,7 +334,7 @@ struct ArraySerializer<MojomType,
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<ElementData> data_fragment(fragment.message());
-      typename UserTypeIterator::GetNextResult next = input->GetNext();
+      decltype(auto) next = input->GetNext();
       SerializeCaller<Element>::Run(next, data_fragment,
                                     validate_params->element_validate_params);
       fragment->at(i).Set(data_fragment.is_null() ? nullptr
@@ -422,7 +410,7 @@ struct ArraySerializer<MojomType,
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
       inlined_union_element.Claim(fragment->storage() + i);
-      typename UserTypeIterator::GetNextResult next = input->GetNext();
+      decltype(auto) next = input->GetNext();
       Serialize<Element>(next, inlined_union_element, true);
       MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
           !validate_params->element_is_nullable &&

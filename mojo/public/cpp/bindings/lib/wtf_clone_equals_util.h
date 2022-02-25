@@ -16,7 +16,7 @@
 namespace mojo {
 
 template <typename T>
-struct CloneTraits<WTF::Vector<T>, false> {
+struct CloneTraits<WTF::Vector<T>> {
   static WTF::Vector<T> Clone(const WTF::Vector<T>& input) {
     WTF::Vector<T> result;
     result.ReserveCapacity(input.size());
@@ -28,7 +28,7 @@ struct CloneTraits<WTF::Vector<T>, false> {
 };
 
 template <typename K, typename V>
-struct CloneTraits<WTF::HashMap<K, V>, false> {
+struct CloneTraits<WTF::HashMap<K, V>> {
   static WTF::HashMap<K, V> Clone(const WTF::HashMap<K, V>& input) {
     WTF::HashMap<K, V> result;
     for (const auto& element : input)
@@ -39,7 +39,7 @@ struct CloneTraits<WTF::HashMap<K, V>, false> {
 };
 
 template <typename T>
-struct EqualsTraits<WTF::Vector<T>, false> {
+struct EqualsTraits<WTF::Vector<T>> {
   static bool Equals(const WTF::Vector<T>& a, const WTF::Vector<T>& b) {
     if (a.size() != b.size())
       return false;
@@ -52,7 +52,7 @@ struct EqualsTraits<WTF::Vector<T>, false> {
 };
 
 template <typename K, typename V>
-struct EqualsTraits<WTF::HashMap<K, V>, false> {
+struct EqualsTraits<WTF::HashMap<K, V>> {
   static bool Equals(const WTF::HashMap<K, V>& a, const WTF::HashMap<K, V>& b) {
     if (a.size() != b.size())
       return false;

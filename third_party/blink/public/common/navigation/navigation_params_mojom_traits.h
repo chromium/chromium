@@ -13,7 +13,7 @@
 namespace mojo {
 
 template <>
-struct CloneTraits<blink::mojom::PrefetchedSignedExchangeInfoPtr, true> {
+struct CloneTraits<blink::mojom::PrefetchedSignedExchangeInfoPtr> {
   static blink::mojom::PrefetchedSignedExchangeInfoPtr Clone(
       const blink::mojom::PrefetchedSignedExchangeInfoPtr& input) {
     return blink::mojom::PrefetchedSignedExchangeInfo::New(

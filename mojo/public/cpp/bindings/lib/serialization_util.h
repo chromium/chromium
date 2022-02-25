@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <type_traits>
+#include <utility>
 
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -16,59 +17,45 @@
 namespace mojo {
 namespace internal {
 
-template <typename T>
-struct HasIsNullMethod {
-  template <typename U>
-  static char Test(decltype(U::IsNull) *);
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename U, typename SFINAE = void>
+struct HasIsNullMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <
-    typename Traits,
-    typename UserType,
-    typename std::enable_if<HasIsNullMethod<Traits>::value>::type* = nullptr>
+template <typename T, typename U>
+struct HasIsNullMethod<
+    T,
+    U,
+    std::void_t<decltype(T::IsNull(std::declval<const U&>()))>>
+    : std::true_type {};
+
+template <typename Traits, typename UserType>
 bool CallIsNullIfExists(const UserType& input) {
-  return Traits::IsNull(input);
+  if constexpr (HasIsNullMethod<Traits, UserType>::value) {
+    return Traits::IsNull(input);
+  } else {
+    return false;
+  }
 }
 
-template <
-    typename Traits,
-    typename UserType,
-    typename std::enable_if<!HasIsNullMethod<Traits>::value>::type* = nullptr>
-bool CallIsNullIfExists(const UserType& input) {
-  return false;
-}
-template <typename T>
-struct HasSetToNullMethod {
-  template <typename U>
-  static char Test(decltype(U::SetToNull) *);
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename U, typename SFINAE = void>
+struct HasSetToNullMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <
-    typename Traits,
-    typename UserType,
-    typename std::enable_if<HasSetToNullMethod<Traits>::value>::type* = nullptr>
-bool CallSetToNullIfExists(UserType* output) {
-  Traits::SetToNull(output);
-  return true;
-}
+template <typename T, typename U>
+struct HasSetToNullMethod<
+    T,
+    U,
+    std::void_t<decltype(T::SetToNull(std::declval<U*>()))>> : std::true_type {
+};
 
-template <typename Traits,
-          typename UserType,
-          typename std::enable_if<!HasSetToNullMethod<Traits>::value>::type* =
-              nullptr>
+template <typename Traits, typename UserType>
 bool CallSetToNullIfExists(UserType* output) {
+  if constexpr (HasSetToNullMethod<Traits, UserType>::value) {
+    Traits::SetToNull(output);
+  }
+
   // Note that it is not considered an error to attempt to read a null value
   // into a non-nullable `output` object. In such cases, the caller must have
   // used a DataView's corresponding MaybeRead[FieldName] method, thus
@@ -109,85 +96,39 @@ struct TraitsFinder<MapDataView<KeyType, ValueType>, UserType> {
   using Traits = MapTraits<UserType>;
 };
 
-template <typename MojomType,
-          typename UserType,
-          typename std::enable_if<IsOptionalWrapper<UserType>::value>::type* =
-              nullptr>
+template <typename MojomType, typename UserType>
 constexpr bool IsValidUserTypeForOptionalValue() {
-  return true;
+  if constexpr (IsOptionalWrapper<UserType>::value) {
+    return true;
+  } else {
+    using Traits = typename TraitsFinder<MojomType, UserType>::Traits;
+    return HasSetToNullMethod<Traits, UserType>::value;
+  }
 }
 
-template <typename MojomType,
-          typename UserType,
-          typename std::enable_if<!IsOptionalWrapper<UserType>::value>::type* =
-              nullptr>
-constexpr bool IsValidUserTypeForOptionalValue() {
-  using Traits = typename TraitsFinder<MojomType, UserType>::Traits;
-  return HasSetToNullMethod<Traits>::value;
-}
-
-template <typename T, typename MaybeConstUserType>
-struct HasGetBeginMethod {
-  template <typename U>
-  static char Test(
-      decltype(U::GetBegin(std::declval<MaybeConstUserType&>())) *);
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename U, typename SFINAE = void>
+struct HasGetBeginMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <
-    typename Traits,
-    typename MaybeConstUserType,
-    typename std::enable_if<
-        HasGetBeginMethod<Traits, MaybeConstUserType>::value>::type* = nullptr>
-decltype(Traits::GetBegin(std::declval<MaybeConstUserType&>()))
-CallGetBeginIfExists(MaybeConstUserType& input) {
-  return Traits::GetBegin(input);
-}
+template <typename T, typename U>
+struct HasGetBeginMethod<T,
+                         U,
+                         std::void_t<decltype(T::GetBegin(std::declval<U&>()))>>
+    : std::true_type {};
 
-template <
-    typename Traits,
-    typename MaybeConstUserType,
-    typename std::enable_if<
-        !HasGetBeginMethod<Traits, MaybeConstUserType>::value>::type* = nullptr>
-size_t CallGetBeginIfExists(MaybeConstUserType& input) {
-  return 0;
-}
-
-template <typename T, typename MaybeConstUserType>
-struct HasGetDataMethod {
-  template <typename U>
-  static char Test(decltype(U::GetData(std::declval<MaybeConstUserType&>())) *);
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename U, typename SFINAE = void>
+struct HasGetDataMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <
-    typename Traits,
-    typename MaybeConstUserType,
-    typename std::enable_if<
-        HasGetDataMethod<Traits, MaybeConstUserType>::value>::type* = nullptr>
-decltype(Traits::GetData(std::declval<MaybeConstUserType&>()))
-CallGetDataIfExists(MaybeConstUserType& input) {
-  return Traits::GetData(input);
-}
-
-template <
-    typename Traits,
-    typename MaybeConstUserType,
-    typename std::enable_if<
-        !HasGetDataMethod<Traits, MaybeConstUserType>::value>::type* = nullptr>
-void* CallGetDataIfExists(MaybeConstUserType& input) {
-  return nullptr;
-}
+// TODO(dcheng): Figure out why the `&` below is load-bearing and document it or
+// improve this and remove the hack.
+template <typename T, typename U>
+struct HasGetDataMethod<T,
+                        U,
+                        std::void_t<decltype(&T::GetData(std::declval<U&>()))>>
+    : std::true_type {};
 
 }  // namespace internal
 }  // namespace mojo

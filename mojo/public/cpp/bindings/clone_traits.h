@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_CLONE_TRAITS_H_
 
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -14,36 +15,32 @@
 
 namespace mojo {
 
-template <typename T>
-struct HasCloneMethod {
-  template <typename U>
-  static char Test(decltype(&U::Clone));
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  internal::EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename SFINAE = void>
+struct HasCloneMethod : std ::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <typename T, bool has_clone_method = HasCloneMethod<T>::value>
-struct CloneTraits;
+template <typename T>
+struct HasCloneMethod<T,
+                      std::void_t<decltype(std::declval<const T&>().Clone())>>
+    : std::true_type {};
 
 template <typename T>
 T Clone(const T& input);
 
 template <typename T>
-struct CloneTraits<T, true> {
-  static T Clone(const T& input) { return input.Clone(); }
+struct CloneTraits {
+  static T Clone(const T& input) {
+    if constexpr (HasCloneMethod<T>::value) {
+      return input.Clone();
+    } else {
+      return input;
+    }
+  }
 };
 
 template <typename T>
-struct CloneTraits<T, false> {
-  static T Clone(const T& input) { return input; }
-};
-
-template <typename T>
-struct CloneTraits<absl::optional<T>, false> {
+struct CloneTraits<absl::optional<T>> {
   static absl::optional<T> Clone(const absl::optional<T>& input) {
     if (!input)
       return absl::nullopt;
@@ -53,7 +50,7 @@ struct CloneTraits<absl::optional<T>, false> {
 };
 
 template <typename T>
-struct CloneTraits<std::vector<T>, false> {
+struct CloneTraits<std::vector<T>> {
   static std::vector<T> Clone(const std::vector<T>& input) {
     std::vector<T> result;
     result.reserve(input.size());
@@ -65,7 +62,7 @@ struct CloneTraits<std::vector<T>, false> {
 };
 
 template <typename K, typename V>
-struct CloneTraits<base::flat_map<K, V>, false> {
+struct CloneTraits<base::flat_map<K, V>> {
   static base::flat_map<K, V> Clone(const base::flat_map<K, V>& input) {
     base::flat_map<K, V> result;
     for (const auto& element : input) {
