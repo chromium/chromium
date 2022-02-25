@@ -209,16 +209,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.translate_dont_offer_site` appears to be unused"/>
     <ignore regexp="The resource `R.string.translate_dont_offer_lang` appears to be unused"/>
 
-    <!-- crbug.com/1231370 remove this line and the following 8 lines after the bug is resolved -->
-    <ignore regexp="The resource `R.string.download_message_download_in_progress_description` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_message_download_complete_description` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.download_message_multiple_download_in_progress` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.download_message_multiple_download_complete` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.download_message_multiple_download_failed` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.download_message_multiple_download_pending` appears to be unused"/>
-    <ignore regexp="The resource `R.plurals.download_message_multiple_download_scheduled` appears to be unused"/>
-    <ignore regexp="The resource `R.string.download_message_download_scheduled_description` appears to be unused"/>
-
     <!-- Old-style and new-style WebAPKs use same resources for simplicity. Old-style WebAPKs do
          not use R.style.SplashTheme but new-style WebAPKs do.
          TODO(crbug.com/971254): Remove suppression once old-style WebAPKs are deprecated. -->
