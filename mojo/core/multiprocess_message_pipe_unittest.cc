@@ -1375,6 +1375,7 @@ INSTANTIATE_TEST_SUITE_P(
                     test::MojoTestBase::LaunchType::PEER,
                     test::MojoTestBase::LaunchType::ASYNC
 #if !BUILDFLAG(IS_FUCHSIA)
+                    // Fuchsia has no named pipe support.
                     ,
                     test::MojoTestBase::LaunchType::NAMED_CHILD,
                     test::MojoTestBase::LaunchType::NAMED_PEER

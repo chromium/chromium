@@ -544,6 +544,7 @@ DEFINE_TEST_CLIENT(SendInvitationMultiplePipesClient) {
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
+// Fuchsia has no named pipe support.
 TEST_F(InvitationTest, SendInvitationWithServer) {
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(

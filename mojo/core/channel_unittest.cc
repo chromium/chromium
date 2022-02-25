@@ -379,6 +379,7 @@ TEST(ChannelTest, DeserializeMessage_BadExtraHeaderSize) {
                                           base::kNullProcessHandle));
 }
 
+// This test is only enabled for Linux-based platforms.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
 TEST(ChannelTest, DeserializeMessage_NonZeroExtraHeaderSize) {
   // Verifies that a message payload is rejected when the extra header chunk

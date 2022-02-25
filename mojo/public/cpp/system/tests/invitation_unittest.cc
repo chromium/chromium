@@ -42,6 +42,7 @@ enum class InvitationType {
 enum class TransportType {
   kChannel,
 #if !BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia has no named pipe support.
   kChannelServer,
 #endif
 };
