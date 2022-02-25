@@ -128,6 +128,8 @@ bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
   LengthUnitType length_type;
   bool conversion_success = UnitTypeToLengthUnitType(GetType(), length_type);
   DCHECK(conversion_success);
+  if (length_type >= CSSLengthArray::kSize)
+    return false;
   length_array.values[length_type] +=
       num_ * ConversionToCanonicalUnitsScaleFactor(GetType()) * multiplier;
   length_array.type_flags.set(length_type);

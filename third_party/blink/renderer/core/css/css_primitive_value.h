@@ -22,6 +22,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_
 
+#include <array>
 #include <bitset>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -155,6 +156,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeFontXSize,
     kUnitTypeRootFontSize,
     kUnitTypeZeroCharacterWidth,
+    // Units above this line are supported by CSSLengthArray.
+    // See CSSLengthArray::kSize.
     kUnitTypeViewportWidth,
     kUnitTypeViewportHeight,
     kUnitTypeViewportInlineSize,
@@ -191,20 +194,38 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kLengthUnitTypeCount,
   };
 
-  using LengthTypeFlags = std::bitset<kLengthUnitTypeCount>;
+  // For performance reasons, InterpolableLength represents "sufficiently
+  // simple" <length> values as the terms in a sum, e.g.(10px + 1em + ...),
+  // stored in this class.
+  //
+  // For cases which can't be covered by CSSLengthArray [1], we instead
+  // interpolate using CSSMathExpressionNodes.
+  //
+  // To avoid an excessively large array of size kLengthUnitTypeCount, only a
+  // small subset of the units are supported in this optimization.
+  //
+  // [1] See AccumulateLengthArray.
   struct CSSLengthArray {
-    CSSLengthArray() : values(kLengthUnitTypeCount) {
-    }
+    static const wtf_size_t kSize = kUnitTypeZeroCharacterWidth + 1u;
+    static_assert(kUnitTypePixels < kSize, "px unit supported");
+    static_assert(kUnitTypePercentage < kSize, "percentage supported");
+    static_assert(kUnitTypeFontSize < kSize, "em unit supported");
+    static_assert(kUnitTypeFontXSize < kSize, "ex unit supported");
+    static_assert(kUnitTypeRootFontSize < kSize, "rem unit supported");
+    static_assert(kUnitTypeZeroCharacterWidth < kSize, "ch unit supported");
 
-    Vector<double, CSSPrimitiveValue::kLengthUnitTypeCount> values;
-    LengthTypeFlags type_flags;
+    std::array<double, kSize> values{{0}};
+    // Indicates whether or not a given value is explicitly set in |values|.
+    std::bitset<kSize> type_flags;
   };
 
-  // Returns false if the value cannot be represented as a length array, which
-  // happens when comparisons are involved (e.g., max(10px, 10%)).
+  // Returns false if the value cannot be represented as a CSSLengthArray,
+  // which happens when comparisons are involved (e.g., max(10px, 10%)),
+  // or when we encounter a unit which is not supported by CSSLengthArray.
   bool AccumulateLengthArray(CSSLengthArray&, double multiplier = 1) const;
 
   // Returns all types of length units involved in this value.
+  using LengthTypeFlags = std::bitset<kLengthUnitTypeCount>;
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const;
 
   enum UnitCategory {

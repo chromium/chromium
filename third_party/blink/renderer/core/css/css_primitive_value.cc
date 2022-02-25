@@ -333,8 +333,7 @@ double CSSPrimitiveValue::ComputeLengthDouble(
 
 bool CSSPrimitiveValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                               double multiplier) const {
-  DCHECK_EQ(length_array.values.size(),
-            static_cast<unsigned>(kLengthUnitTypeCount));
+  DCHECK_EQ(length_array.values.size(), CSSLengthArray::kSize);
   if (IsCalculated()) {
     return To<CSSMathFunctionValue>(this)->AccumulateLengthArray(length_array,
                                                                  multiplier);

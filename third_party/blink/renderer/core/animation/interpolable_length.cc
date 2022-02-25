@@ -69,9 +69,18 @@ std::unique_ptr<InterpolableLength> InterpolableLength::MaybeConvertCSSValue(
   if (primitive_value->AccumulateLengthArray(length_array))
     return std::make_unique<InterpolableLength>(std::move(length_array));
 
-  DCHECK(primitive_value->IsMathFunctionValue());
-  return std::make_unique<InterpolableLength>(
-      *To<CSSMathFunctionValue>(primitive_value)->ExpressionNode());
+  const CSSMathExpressionNode* expression_node = nullptr;
+
+  if (const auto* numeric_literal =
+          DynamicTo<CSSNumericLiteralValue>(primitive_value)) {
+    expression_node = CSSMathExpressionNumericLiteral::Create(numeric_literal);
+  } else {
+    DCHECK(primitive_value->IsMathFunctionValue());
+    expression_node =
+        To<CSSMathFunctionValue>(primitive_value)->ExpressionNode();
+  }
+
+  return std::make_unique<InterpolableLength>(*expression_node);
 }
 
 // static
