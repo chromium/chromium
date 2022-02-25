@@ -7204,7 +7204,7 @@ interface Scheduling
     attribute @@toStringTag
     method constructor
     method isInputPending
-interface Screen
+interface Screen : EventTarget
     attribute @@toStringTag
     getter availHeight
     getter availLeft
@@ -7217,10 +7217,7 @@ interface Screen
     getter orientation
     getter pixelDepth
     getter width
-    method addEventListener
     method constructor
-    method dispatchEvent
-    method removeEventListener
     setter onchange
 interface ScreenDetailed : Screen
     attribute @@toStringTag

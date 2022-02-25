@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 371 tests; 298 PASS, 73 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 371 tests; 296 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -85,10 +85,10 @@ PASS MediaQueryListEvent must be primary interface of new MediaQueryListEvent("c
 PASS Stringification of new MediaQueryListEvent("change")
 PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "media" with the proper type
 PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "matches" with the proper type
-PASS Screen interface: existence and properties of interface object
+FAIL Screen interface: existence and properties of interface object assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 PASS Screen interface object length
 PASS Screen interface object name
-PASS Screen interface: existence and properties of interface prototype object
+FAIL Screen interface: existence and properties of interface prototype object assert_equals: prototype of Screen.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
 PASS Screen interface: existence and properties of interface prototype object's "constructor" property
 PASS Screen interface: existence and properties of interface prototype object's @@unscopables property
 PASS Screen interface: attribute availWidth
