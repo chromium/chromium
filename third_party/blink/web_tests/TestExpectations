@@ -7297,6 +7297,8 @@ crbug.com/1272380 http/tests/devtools/bindings/bindings-multiple-frames.js [ Fai
 
 # Flaky on mac
 crbug.com/1263709 [ Mac ] http/tests/devtools/elements/node-xpath.js [ Failure ]
+crbug.com/1300772 [ Mac ] http/tests/devtools/oopif/oopif-elements-nesting-error-page.js [ Failure Pass ]
+crbug.com/1300772 [ Mac ] http/tests/devtools/coverage/coverage-view-unused.js [ Failure Pass ]
 
 # Flaky on Mac and Windows
 crbug.com/1272199 external/wpt/websockets/stream/tentative/backpressure-receive.any.serviceworker.html?wpt_flags=h2 [ Failure Pass ]
