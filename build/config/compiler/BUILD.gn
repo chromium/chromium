@@ -1546,6 +1546,13 @@ config("default_warnings") {
       if (enable_wmax_tokens) {
         cflags += [ "-Wmax-tokens" ]
       }
+
+      if (llvm_force_head_revision) {
+        cflags += [
+          # TODO(https://crbug.com/1300731) Clean up and enable.
+          "-Wno-unqualified-std-cast-call",
+        ]
+      }
     }
   }
 }
