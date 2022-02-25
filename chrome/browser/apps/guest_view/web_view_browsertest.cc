@@ -3524,9 +3524,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
   for (auto* download : saved_downloads) {
     const std::string port_string =
         base::NumberToString(embedded_test_server()->port());
-    url::Replacements<char> replacements;
-    replacements.SetPort(port_string.c_str(),
-                         url::Component(0, port_string.size()));
+    GURL::Replacements replacements;
+    replacements.SetPortStr(port_string);
     std::vector<GURL> url_chain;
     url_chain.push_back(download->GetURL().ReplaceComponents(replacements));
 
