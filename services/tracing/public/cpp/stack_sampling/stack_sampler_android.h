@@ -31,7 +31,8 @@ class StackSamplerAndroid : public base::StackSampler {
   // StackSampler:
   void AddAuxUnwinder(std::unique_ptr<base::Unwinder> unwinder) override;
   void RecordStackFrames(base::StackBuffer* stack_buffer,
-                         base::ProfileBuilder* profile_builder) override;
+                         base::ProfileBuilder* profile_builder,
+                         base::PlatformThreadId thread_id) override;
 
  private:
   base::SamplingProfilerThreadToken thread_token_;

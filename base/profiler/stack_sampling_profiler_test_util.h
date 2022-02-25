@@ -26,12 +26,15 @@ class ModuleCache;
 // A thread to target for profiling that will run the supplied closure.
 class TargetThread : public PlatformThread::Delegate {
  public:
-  TargetThread(OnceClosure to_run);
+  explicit TargetThread(OnceClosure to_run);
 
   TargetThread(const TargetThread&) = delete;
   TargetThread& operator=(const TargetThread&) = delete;
 
   ~TargetThread() override;
+
+  void Start();
+  void Join();
 
   // PlatformThread::Delegate:
   void ThreadMain() override;
@@ -41,6 +44,7 @@ class TargetThread : public PlatformThread::Delegate {
  private:
   SamplingProfilerThreadToken thread_token_ = {0};
   OnceClosure to_run_;
+  PlatformThreadHandle target_thread_handle_;
 };
 
 // Addresses near the start and end of a function.
