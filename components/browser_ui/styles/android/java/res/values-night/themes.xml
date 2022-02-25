@@ -7,6 +7,7 @@
     <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI">
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_200</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
         <item name="colorOnPrimary">@color/baseline_primary_800</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
         <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
