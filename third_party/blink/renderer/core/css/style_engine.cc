@@ -141,6 +141,7 @@ StyleEngine::StyleEngine(Document& document)
   if (Platform::Current() && Platform::Current()->ThemeEngine())
     forced_colors_ = Platform::Current()->ThemeEngine()->GetForcedColors();
   UpdateForcedBackgroundColor();
+  UpdateColorScheme();
 }
 
 StyleEngine::~StyleEngine() = default;
