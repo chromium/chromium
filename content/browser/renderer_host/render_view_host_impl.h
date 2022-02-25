@@ -39,7 +39,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
-#include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
