@@ -853,7 +853,7 @@ class WaylandDesktop(Desktop):
     socket_num = 1
     full_sock_path = os.path.join(self.runtime_dir, "wayland-%s" % socket_num)
     while ((os.path.exists(full_sock_path)) and
-            socket_num <= self.MAX_WAYLAND_SOCKET_NUM)):
+            socket_num <= self.MAX_WAYLAND_SOCKET_NUM):
       socket_num += 1
       full_sock_path = os.path.join(self.runtime_dir, "wayland-%s" % socket_num)
     if socket_num > self.MAX_WAYLAND_SOCKET_NUM:
