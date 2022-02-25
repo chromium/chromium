@@ -149,7 +149,8 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
 }
 
 // Ensures codecs do not apply reclamation pressure by default.
-TYPED_TEST(DecoderTemplateTest, NoPressureByDefault) {
+// Sheriff 2022/02/25; flaky test crbug/1300845
+TYPED_TEST(DecoderTemplateTest, DISABLED_NoPressureByDefault) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
