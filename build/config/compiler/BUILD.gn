@@ -1547,7 +1547,7 @@ config("default_warnings") {
         cflags += [ "-Wmax-tokens" ]
       }
 
-      if (llvm_force_head_revision) {
+      if (llvm_force_head_revision && !is_nacl) {
         cflags += [
           # TODO(https://crbug.com/1300731) Clean up and enable.
           "-Wno-unqualified-std-cast-call",
