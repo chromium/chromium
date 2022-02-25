@@ -97,7 +97,8 @@ bool SelectFileDialogLacros::HasMultipleFileTypeChoicesImpl() {
 }
 
 bool SelectFileDialogLacros::IsRunning(gfx::NativeWindow owning_window) const {
-  return true;
+  return !owning_shell_window_id_.empty() &&
+         GetShellWindowUniqueId(owning_window) == owning_shell_window_id_;
 }
 
 void SelectFileDialogLacros::SelectFileImpl(
@@ -128,8 +129,10 @@ void SelectFileDialogLacros::SelectFileImpl(
         GetMojoAllowedPaths(file_types->allowed_paths);
   }
   // Modeless file dialogs have no owning window.
-  if (owning_window)
-    options->owning_shell_window_id = GetShellWindowUniqueId(owning_window);
+  if (owning_window) {
+    owning_shell_window_id_ = GetShellWindowUniqueId(owning_window);
+    options->owning_shell_window_id = owning_shell_window_id_;
+  }
 
   // Send request to ash-chrome.
   chromeos::LacrosService::Get()
@@ -142,6 +145,7 @@ void SelectFileDialogLacros::OnSelected(
     crosapi::mojom::SelectFileResult result,
     std::vector<crosapi::mojom::SelectedFileInfoPtr> mojo_files,
     int file_type_index) {
+  owning_shell_window_id_.clear();
   if (!listener_)
     return;
   if (mojo_files.empty()) {

@@ -61,6 +61,9 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLacros : public SelectFileDialog {
 
   // Cached parameters from the call to SelectFileImpl.
   void* params_ = nullptr;
+
+  // The unique ID of the wayland shell surface that owns this dialog.
+  std::string owning_shell_window_id_;
 };
 
 }  // namespace ui
