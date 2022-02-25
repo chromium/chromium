@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/external_metrics.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 #include <memory>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,7 +54,15 @@ void AssertEqualsTestingProto(const EventsProto& proto,
 
 class ExternalMetricsTest : public testing::Test {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    // TODO(b/181724341): Remove this when the bluetooth metrics feature is
+    // enabled by default.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kBluetoothSessionizedMetrics});
+  }
 
   void Init() {
     // We don't use the scheduling feature when testing ExternalMetrics, instead
@@ -86,6 +96,7 @@ class ExternalMetricsTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ExternalMetrics> external_metrics_;
   absl::optional<EventsProto> proto_;
