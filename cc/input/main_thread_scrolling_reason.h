@@ -17,10 +17,10 @@ class TracedValue;
 
 namespace cc {
 
-// Ensure this stays in sync with MainThreadScrollingReason in
-// tools/metrics/enums.xml. When adding a new MainThreadScrollingReason, make
-// sure the corresponding [MainThread/Compositor]CanSetScrollReasons function
-// is also updated.
+// Ensure this stays in sync with the "MainThreadScrollingReason" enum in:
+//   tools/metrics/histograms/enums.xml
+// When adding a new MainThreadScrollingReason, make sure the corresponding
+// [MainThread/Compositor]CanSetScrollReasons function is also updated.
 struct CC_EXPORT MainThreadScrollingReason {
   enum : uint32_t {
     kNotScrollingOnMain = 0,
@@ -70,7 +70,8 @@ struct CC_EXPORT MainThreadScrollingReason {
   // thread.
   static bool MainThreadCanSetScrollReasons(uint32_t reasons) {
     constexpr uint32_t reasons_set_by_main_thread =
-        kHasBackgroundAttachmentFixedObjects | kThreadedScrollingDisabled;
+        kHasBackgroundAttachmentFixedObjects | kThreadedScrollingDisabled |
+        kPopupNoThreadedInput;
     return (reasons & reasons_set_by_main_thread) == reasons;
   }
 

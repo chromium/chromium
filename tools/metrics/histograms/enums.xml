@@ -58280,6 +58280,7 @@ from previous Chrome versions.
   <int value="23" label="Is not stacking context (obsolete)"/>
   <int value="24" label="Blocking wheel event handler region"/>
   <int value="25" label="Blocking touch event handler region"/>
+  <int value="26" label="Popup scrolling (no threaded input handler)"/>
 </enum>
 
 <enum name="MakeChromeDefaultResult">
