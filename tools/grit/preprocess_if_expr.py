@@ -81,7 +81,10 @@ def main(argv):
     with io.open(in_path, encoding='utf-8', mode='r') as f:
       content = f.read()
 
-    preprocessed = node.PreprocessIfExpr(content)
+    try:
+      preprocessed = node.PreprocessIfExpr(content)
+    except:
+      raise Exception('Error processing %s' % in_path)
     out_path = os.path.join(out_folder, input_file)
     out_dir = os.path.dirname(out_path)
     assert out_dir.startswith(out_folder), \
