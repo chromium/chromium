@@ -1608,14 +1608,6 @@ bool Database::OpenInternal(const std::string& file_name,
                           options_.enable_views_discouraged ? 1 : 0, nullptr);
   DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
 
-  // Enable extended result codes to provide more color on I/O errors.
-  // Not having extended result codes is not a fatal problem, as
-  // Chromium code does not attempt to handle I/O errors anyhow.  The
-  // current implementation always returns SQLITE_OK, the DCHECK is to
-  // quickly notify someone if SQLite changes.
-  err = sqlite3_extended_result_codes(db_, 1);
-  DCHECK_EQ(err, SQLITE_OK) << "Could not enable extended result codes";
-
   // sqlite3_open() does not actually read the database file (unless a hot
   // journal is found).  Successfully executing this pragma on an existing
   // database requires a valid header on page 1.  ExecuteAndReturnErrorCode() to
