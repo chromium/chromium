@@ -449,6 +449,9 @@
   <message name="IDS_FILE_BROWSER_CUT_BUTTON_LABEL" desc="Context menu item that cuts the currently-selected file(s) to the clipboard.">
     Cut
   </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_ALL_BUTTON_LABEL" desc="Menu item label, showing dialog to extract content from a zip file.">
+    Extract all
+  </message>
   <message name="IDS_FILE_BROWSER_OPEN_WITH_BUTTON_LABEL" desc="Menu item label, showing dialog to choose extension to open selected files or directories.">
     Open with...
   </message>

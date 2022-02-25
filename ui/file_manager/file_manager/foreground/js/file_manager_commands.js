@@ -2078,6 +2078,36 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends FilesCommand {
 };
 
 /**
+ * Extracts content of ZIP files in the current selection.
+ */
+CommandHandler.COMMANDS_['extract-all'] = new class extends FilesCommand {
+  execute(event, fileManager) {
+    // TODO(crbug.com/953256) wire up IOTask for extraction.
+  }
+  /** @override */
+  canExecute(event, fileManager) {
+    if (!util.isExtractArchiveEnabled()) {
+      event.command.setHidden(true);
+      event.canExecute = false;
+      return;
+    }
+    const dirEntry = fileManager.getCurrentDirectoryEntry();
+    const selection = fileManager.getSelection();
+
+    // Enable this only for a single selected file which is an archive.
+    // TODO(crbug.com/953256) allow more selections and check for ZIP only.
+    if (selection.entries.length === 1 && selection.iconType === 'archive') {
+      event.command.setHidden(false);
+      event.canExecute = dirEntry && !fileManager.directoryModel.isReadOnly() &&
+          selection && selection.totalCount > 0;
+    } else {
+      event.command.setHidden(true);
+      event.canExecute = false;
+    }
+  }
+};
+
+/**
  * Creates ZIP file for current selection.
  */
 CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
