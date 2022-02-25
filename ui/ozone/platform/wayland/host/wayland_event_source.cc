@@ -351,7 +351,8 @@ void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
   }
 
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_PRESSED, loc, loc, timestamp, details);
+  TouchEvent event(ET_TOUCH_PRESSED, loc, loc, timestamp, details,
+                   keyboard_modifiers_);
   DispatchEvent(&event);
 }
 
@@ -368,7 +369,8 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
   gfx::PointF location = touch_point->last_known_location;
   PointerDetails details(EventPointerType::kTouch, id);
 
-  TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details);
+  TouchEvent event(ET_TOUCH_RELEASED, location, location, timestamp, details,
+                   keyboard_modifiers_);
   DispatchEvent(&event);
 
   HandleTouchFocusChange(touch_point->window, false, id);
@@ -391,7 +393,8 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
           : location;
   it->second->last_known_location = loc;
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_MOVED, loc, loc, timestamp, details);
+  TouchEvent event(ET_TOUCH_MOVED, loc, loc, timestamp, details,
+                   keyboard_modifiers_);
   DispatchEvent(&event);
 }
 
