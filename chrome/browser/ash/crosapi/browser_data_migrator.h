@@ -47,6 +47,14 @@ constexpr int kMaxMigrationAttemptCount = 3;
 const base::Feature kLacrosMoveProfileMigration{
     "LacrosMoveProfileMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Injects the restart function called from
+// `BrowserDataMigratorImpl::AttemptRestart()` in RAII manner.
+class ScopedRestartAttemptForTesting {
+ public:
+  explicit ScopedRestartAttemptForTesting(base::RepeatingClosure callback);
+  ~ScopedRestartAttemptForTesting();
+};
+
 // The interface is exposed to be inherited by fakes in tests.
 class BrowserDataMigrator {
  public:
@@ -146,6 +154,19 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   BrowserDataMigratorImpl(const BrowserDataMigratorImpl&) = delete;
   BrowserDataMigratorImpl& operator=(const BrowserDataMigratorImpl&) = delete;
   ~BrowserDataMigratorImpl() override;
+
+  // Calls `chrome::AttemptRestart()` unless `ScopedRestartAttemptForTesting` is
+  // in scope.
+  static void AttemptRestart();
+
+  // Check if move migration has to be resumed. This has to be checked before a
+  // Profile object is created using the user's profile data directory. Like
+  // `MaybeRestartToMigrate()` it returns true if the D-Bus call to the
+  // session_manager is made and successful. The return value of true means that
+  // `chrome::AttemptRestart()` has been called.
+  static bool MaybeForceResumeMoveMigration(PrefService* local_state,
+                                            const AccountId& account_id,
+                                            const std::string& user_id_hash);
 
   // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a D-Bus method to session_manager and

@@ -408,6 +408,8 @@ void FakeSessionManagerClient::NotifyLockScreenDismissed() {
 
 bool FakeSessionManagerClient::RequestBrowserDataMigration(
     const cryptohome::AccountIdentifier& cryptohome_id) {
+  request_browser_data_migration_called_ = true;
+
   return true;
 }
 

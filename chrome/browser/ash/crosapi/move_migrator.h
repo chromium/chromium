@@ -81,9 +81,16 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   // BrowserDataMigratorImpl::MigratorDelegate override.
   void Migrate() override;
 
+  // Returns true if the `ResumeStep` stored in `local_state` for the user
+  // indicates that the migration had been left unfinished in the previous
+  // attempt and that it must be resumed before user profile is created.
+  static bool ResumeRequired(PrefService* local_state,
+                             const std::string& user_id_hash);
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, ResumeRequired);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, PreMigrationCleanUp);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest, SetupLacrosDir);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorTest,
@@ -92,8 +99,10 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest,
                            MigrateResumeFromRemoveHardLinks);
   FRIEND_TEST_ALL_PREFIXES(MoveMigratorMigrateTest, MigrateResumeFromMove);
+  friend class BrowserDataMigratorResumeOnSignInTest;
+  friend class BrowserDataMigratorResumeRestartInSession;
 
-  // Called in `Migrate()` to determine where to start the migration. Returns
+  // Called to determine where to start the migration. Returns
   // `ResumeStep::kStart` unless there is a step recorded in `Local State` from
   // the previous migration i.e. the previous migration did not complete and
   // crashed halfway.

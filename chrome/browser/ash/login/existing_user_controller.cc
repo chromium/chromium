@@ -991,6 +991,14 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
                        user_context.GetAccountId(), true));
   }
 
+  if (BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
+          g_browser_process->local_state(), user_context.GetAccountId(),
+          user_context.GetUserIDHash())) {
+    // TODO(crbug.com/1261730): Add an UMA.
+    LOG(WARNING) << "Restarting Chrome to resume move migration.";
+    return;
+  }
+
   UserSessionManager::StartSessionType start_session_type =
       UserAddingScreen::Get()->IsRunning()
           ? UserSessionManager::StartSessionType::kSecondary

@@ -97,6 +97,23 @@ void MoveMigrator::Migrate() {
 }
 
 // static
+bool MoveMigrator::ResumeRequired(PrefService* local_state,
+                                  const std::string& user_id_hash) {
+  ResumeStep resume_step = GetResumeStep(local_state, user_id_hash);
+
+  switch (resume_step) {
+    case ResumeStep::kStart:
+      return false;
+    case ResumeStep::kRemoveHardLinks:
+      return true;
+    case ResumeStep::kMoveTmpDir:
+      return true;
+    case ResumeStep::kCompleted:
+      return false;
+  }
+}
+
+// static
 void MoveMigrator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kMoveMigrationResumeStepPref,
                                    base::DictionaryValue());
@@ -108,7 +125,7 @@ MoveMigrator::ResumeStep MoveMigrator::GetResumeStep(
     const std::string& user_id_hash) {
   return static_cast<ResumeStep>(
       local_state->GetDictionary(kMoveMigrationResumeStepPref)
-          ->FindIntPath(user_id_hash)
+          ->FindIntKey(user_id_hash)
           .value_or(0));
 }
 

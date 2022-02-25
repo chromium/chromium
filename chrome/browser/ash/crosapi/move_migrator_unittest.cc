@@ -197,6 +197,26 @@ TEST(MoveMigratorTest, RemoveHardLinksFromOriginalDir) {
       base::PathExists(original_profile_dir.Append(kBookmarksFilePath)));
 }
 
+TEST(MoveMigratorTest, ResumeRequired) {
+  const std::string user_id_hash = "abcd";
+  TestingPrefServiceSimple pref_service;
+  MoveMigrator::RegisterLocalStatePrefs(pref_service.registry());
+
+  EXPECT_FALSE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+
+  MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
+                              MoveMigrator::ResumeStep::kRemoveHardLinks);
+  EXPECT_TRUE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+
+  MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
+                              MoveMigrator::ResumeStep::kMoveTmpDir);
+  EXPECT_TRUE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+
+  MoveMigrator::SetResumeStep(&pref_service, user_id_hash,
+                              MoveMigrator::ResumeStep::kCompleted);
+  EXPECT_FALSE(MoveMigrator::ResumeRequired(&pref_service, user_id_hash));
+}
+
 class MoveMigratorMigrateTest : public ::testing::Test {
  public:
   MoveMigratorMigrateTest()

@@ -32,7 +32,45 @@ namespace {
 // Flag values for `switches::kForceBrowserDataMigrationForTesting`.
 const char kBrowserDataMigrationForceSkip[] = "force-skip";
 const char kBrowserDataMigrationForceMigration[] = "force-migration";
+
+base::RepeatingClosure* g_attempt_restart = nullptr;
 }  // namespace
+
+ScopedRestartAttemptForTesting::ScopedRestartAttemptForTesting(
+    base::RepeatingClosure callback) {
+  DCHECK(!g_attempt_restart);
+  g_attempt_restart = new base::RepeatingClosure(callback);
+}
+
+ScopedRestartAttemptForTesting::~ScopedRestartAttemptForTesting() {
+  DCHECK(g_attempt_restart);
+  delete g_attempt_restart;
+  g_attempt_restart = nullptr;
+}
+
+bool BrowserDataMigratorImpl::MaybeForceResumeMoveMigration(
+    PrefService* local_state,
+    const AccountId& account_id,
+    const std::string& user_id_hash) {
+  LOG(WARNING) << "MaybeForceResumeMoveMigration() is called.";
+  // TODO(crbug.com/1261730): Set a max number of force resume and if that
+  // number is reached, do not attempt a resume and simply mark move migration
+  // && migration as completed.
+  if (!MoveMigrator::ResumeRequired(local_state, user_id_hash))
+    return false;
+
+  return RestartToMigrate(account_id, user_id_hash);
+}
+
+// static
+void BrowserDataMigratorImpl::AttemptRestart() {
+  if (g_attempt_restart) {
+    g_attempt_restart->Run();
+    return;
+  }
+
+  chrome::AttemptRestart();
+}
 
 // static
 bool BrowserDataMigratorImpl::MaybeRestartToMigrate(
@@ -193,10 +231,11 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
   bool success = SessionManagerClient::Get()->RequestBrowserDataMigration(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 
+  // TODO(crbug.com/1261730): Add an UMA.
   if (!success)
     return false;
 
-  chrome::AttemptRestart();
+  AttemptRestart();
   return true;
 }
 
@@ -231,7 +270,8 @@ void BrowserDataMigratorImpl::Migrate(MigrateCallback callback) {
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  if (base::FeatureList::IsEnabled(kLacrosMoveProfileMigration)) {
+  if (base::FeatureList::IsEnabled(kLacrosMoveProfileMigration) ||
+      MoveMigrator::ResumeRequired(local_state_, user_id_hash_)) {
     LOG(WARNING) << "Initializing MoveMigrator.";
     migrator_delegate_ = std::make_unique<MoveMigrator>(
         original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
