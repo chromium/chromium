@@ -539,8 +539,6 @@ crbug.com/1130759 [ mac passthrough angle-metal apple-angle-metal-renderer:-appl
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 crbug.com/angleproject/5505 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/rendering/multisample-corruption.html [ Failure ]
-# After converting to Python 3: crbug.com/1266604
-crbug.com/1271941 [ mac passthrough angle-metal apple-angle-metal-renderer:-apple-m1 ] conformance/ogles/GL/* [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
