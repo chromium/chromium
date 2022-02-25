@@ -72,6 +72,9 @@ suite('cr_lottie_test', function() {
   /** @type {Promise} */
   let waitForPlayingEvent;
 
+  const defaultWidth = 300;
+  const defaultHeight = 200;
+
   setup(function(done) {
     mockController = new MockController();
 
@@ -92,20 +95,20 @@ suite('cr_lottie_test', function() {
     mockController.reset();
   });
 
-  function createLottieElement() {
+  function createLottieElement(autoplay = true) {
     document.body.innerHTML = '';
     crLottieElement =
         /** @type {!CrLottieElement} */ (document.createElement('cr-lottie'));
     crLottieElement.animationUrl = SAMPLE_LOTTIE_GREEN;
-    crLottieElement.autoplay = true;
+    crLottieElement.autoplay = autoplay;
 
     waitForInitializeEvent =
         eventToPromise('cr-lottie-initialized', crLottieElement);
     waitForPlayingEvent = eventToPromise('cr-lottie-playing', crLottieElement);
 
     container = /** @type {!HTMLDivElement} */ (document.createElement('div'));
-    container.style.width = '300px';
-    container.style.height = '200px';
+    container.style.width = defaultWidth + 'px';
+    container.style.height = defaultHeight + 'px';
     document.body.appendChild(container);
     container.appendChild(crLottieElement);
 
@@ -143,27 +146,55 @@ suite('cr_lottie_test', function() {
   }
 
   test('TestResize', async () => {
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
-    const newHeight = 300;
-    const newWidth = 400;
-    const waitForResizeEvent =
-        /** @type {!Promise<!CustomEvent<{width: number, height: number}>>} */ (
-            eventToPromise('cr-lottie-resized', crLottieElement));
+    // First resize event after loading the animation.
+    const firstResizeEventAfterLoad =
+        eventToPromise('cr-lottie-resized', crLottieElement);
+    const firstResizeEvent = await firstResizeEventAfterLoad;
+    assertEquals(firstResizeEvent.detail.height, defaultHeight);
+    assertEquals(firstResizeEvent.detail.width, defaultWidth);
 
     // Update size of parent div container to see if the canvas is resized.
+    const newHeight = 300;
+    const newWidth = 400;
     container.style.width = newWidth + 'px';
     container.style.height = newHeight + 'px';
-    const resizeEvent = await waitForResizeEvent;
+    const resizeEventAfterExplicitResize =
+        eventToPromise('cr-lottie-resized', crLottieElement);
+    const resizeEvent = await resizeEventAfterExplicitResize;
 
     assertEquals(resizeEvent.detail.height, newHeight);
     assertEquals(resizeEvent.detail.width, newWidth);
   });
 
+
+  test('TestResizeBeforeInit', async () => {
+    // Tests that resize events are properly handled, even if they happen
+    // before the initialization is done.
+    createLottieElement(/*autoplay=*/ true);
+
+    // Resize while initialization is going on.
+    const newHeight = 300;
+    const newWidth = 400;
+    const waitForResizeEvent =
+        eventToPromise('cr-lottie-resized', crLottieElement);
+    // Update size of parent div container to see if the canvas is resized.
+    container.style.width = newWidth + 'px';
+    container.style.height = newHeight + 'px';
+
+    await waitForInitializeEvent;
+    await waitForPlayingEvent;
+
+    const resizeEvent = await waitForResizeEvent;
+    assertEquals(resizeEvent.detail.height, newHeight);
+    assertEquals(resizeEvent.detail.width, newWidth);
+  });
+
   test('TestPlayPause', async () => {
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
@@ -177,18 +208,50 @@ suite('cr_lottie_test', function() {
     await waitForPlayingEvent;
   });
 
-  test('TestPlayBeforeInit', async () => {
-    createLottieElement();
+  test('TestAutoplayWorksWhenTrue', async () => {
+    createLottieElement(/*autoplay=*/ true);
     assertTrue(crLottieElement.autoplay);
+    await waitForInitializeEvent;
+    await waitForPlayingEvent;
+  });
 
-    crLottieElement.setPlay(false);
+  test('TestAutoplayWorksWhenFalse', async () => {
+    createLottieElement(/*autoplay=*/ false);
     assertFalse(crLottieElement.autoplay);
 
+    // Since setting 'autoplay' to false will cause the play event to never be
+    // fired, we use Promise.race to check if it resolves in 2 seconds.
+    const playTimeoutNotice = 'PLAY_TIMEOUT';
+    const playEventTimeout = new Promise((resolve) => {
+      setTimeout(() => resolve(playTimeoutNotice), 2000);
+    });
+
+    await waitForInitializeEvent;
+    const playEventResult =
+        await Promise.race([playEventTimeout, waitForPlayingEvent]);
+    assertEquals(playEventResult, playTimeoutNotice);
+  });
+
+  test('TestPlayBeforeInit', async () => {
+    // Tests that a play request sent during initialization will be fulfilled.
+    createLottieElement(/*autoplay=*/ false);
+    assertFalse(crLottieElement.autoplay);
     crLottieElement.setPlay(true);
-    assertTrue(crLottieElement.autoplay);
 
     await waitForInitializeEvent;
     await waitForPlayingEvent;
+  });
+
+  test('TestPauseBeforeInit', async () => {
+    // Tests that a pause request sent during initialization will be fulfilled.
+    createLottieElement(/*autoplay=*/ true);
+    assertTrue(crLottieElement.autoplay);
+
+    crLottieElement.setPlay(false);
+    const waitForPauseEvent =
+        eventToPromise('cr-lottie-paused', crLottieElement);
+    await waitForInitializeEvent;
+    await waitForPauseEvent;
   });
 
   test('TestRenderFrame', async () => {
@@ -198,7 +261,7 @@ suite('cr_lottie_test', function() {
     // Note: This issue is only observed in tests.
     const kRaceTimeout = 2000;
 
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
@@ -218,7 +281,7 @@ suite('cr_lottie_test', function() {
     // Note: This issue is only observed in tests.
     const kRaceTimeout = 2000;
 
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
@@ -281,7 +344,7 @@ suite('cr_lottie_test', function() {
 
     mockXhrConstructor.returnValue = mockXhr;
 
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
 
     // Return the lottie worker.
     mockXhr.response = lottieWorkerJs;
@@ -325,7 +388,7 @@ suite('cr_lottie_test', function() {
 
     mockXhrConstructor.returnValue = mockXhr;
 
-    createLottieElement();
+    createLottieElement(/*autoplay=*/ true);
 
     // Return the lottie worker.
     mockXhr.response = lottieWorkerJs;
