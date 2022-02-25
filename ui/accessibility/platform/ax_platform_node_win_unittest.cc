@@ -4073,6 +4073,57 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
       L"required=false");
 }
 
+TEST_F(AXPlatformNodeWinTest, UIAControlContentProperty) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kTable;
+
+  AXNodeData row1;
+  row1.id = 2;
+  row1.role = ax::mojom::Role::kRow;
+  root.child_ids.push_back(row1.id);
+
+  AXNodeData cell1;
+  cell1.id = 3;
+  cell1.role = ax::mojom::Role::kCell;
+  row1.child_ids.push_back(cell1.id);
+
+  AXNodeData generic_container;
+  generic_container.id = 4;
+  generic_container.role = ax::mojom::Role::kGenericContainer;
+  cell1.child_ids.push_back(generic_container.id);
+
+  Init(root, row1, cell1, generic_container);
+
+  // Turn on web content mode for the AXTree.
+  TestAXNodeWrapper::SetGlobalIsWebContent(true);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+  EXPECT_UIA_BOOL_EQ(root_node, UIA_IsControlElementPropertyId, true);
+  EXPECT_UIA_BOOL_EQ(root_node, UIA_IsContentElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> row =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[0]);
+  EXPECT_UIA_BOOL_EQ(row, UIA_IsControlElementPropertyId, true);
+  EXPECT_UIA_BOOL_EQ(row, UIA_IsContentElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> cell =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[0]->children()[0]);
+  EXPECT_UIA_BOOL_EQ(cell, UIA_IsControlElementPropertyId, true);
+  EXPECT_UIA_BOOL_EQ(cell, UIA_IsContentElementPropertyId, true);
+
+  ComPtr<IRawElementProviderSimple> generic_container_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          GetRootAsAXNode()->children()[0]->children()[0]->children()[0]);
+  EXPECT_UIA_BOOL_EQ(generic_container_provider, UIA_IsControlElementPropertyId,
+                     false);
+  EXPECT_UIA_BOOL_EQ(generic_container_provider, UIA_IsContentElementPropertyId,
+                     false);
+}
+
 TEST_F(AXPlatformNodeWinTest, UIAGetPropertyValueClickablePoint) {
   AXNodeData root;
   root.id = 1;

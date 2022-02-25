@@ -10,7 +10,7 @@ Document
 ++++++Button Name='Button'
 ++++++Text Name='.'
 ++++Table Grid.ColumnCount=1 Grid.RowCount=1 Table.RowOrColumnMajor='RowMajor'
-++++++DataItem IsControlElement=false
+++++++DataItem
 ++++++++DataItem Name='Always expose editable tables as tables.' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
 ++++++++++Text Name='Always expose editable tables as tables.' IsControlElement=false
 ++++List

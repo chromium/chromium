@@ -7158,6 +7158,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
     switch (GetRole()) {
       case ax::mojom::Role::kArticle:
       case ax::mojom::Role::kBlockquote:
+      case ax::mojom::Role::kCell:
+      case ax::mojom::Role::kColumn:
       case ax::mojom::Role::kDetails:
       case ax::mojom::Role::kFigure:
       case ax::mojom::Role::kFooter:
@@ -7169,6 +7171,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
       case ax::mojom::Role::kListItem:
       case ax::mojom::Role::kMeter:
       case ax::mojom::Role::kProgressIndicator:
+      case ax::mojom::Role::kRow:
       case ax::mojom::Role::kSection:
       case ax::mojom::Role::kSplitter:
       case ax::mojom::Role::kTime:
