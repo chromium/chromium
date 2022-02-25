@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
  */
 public abstract class BackgroundTaskSchedulerExternalUma {
     // BackgroundTaskId defined in tools/metrics/histograms/enums.xml
+    public static final int BACKGROUND_TASK_NOT_FOUND = -1;
     public static final int BACKGROUND_TASK_TEST = 0;
     public static final int BACKGROUND_TASK_OMAHA = 1;
     public static final int BACKGROUND_TASK_GCM = 2;
@@ -140,10 +141,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
             case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
                 return BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH;
-            default:
-                assert false;
         }
         // Returning a value that is not expected to ever be reported.
-        return BACKGROUND_TASK_TEST;
+        return BACKGROUND_TASK_NOT_FOUND;
     }
 }

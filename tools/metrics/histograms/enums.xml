@@ -8173,6 +8173,7 @@ others/histograms.xml -->
 </enum>
 
 <enum name="BackgroundTaskId">
+  <int value="-1" label="Not found"/>
   <int value="0" label="Test task (should not appear)"/>
   <int value="1" label="Omaha"/>
   <int value="2" label="GCM Background Task"/>
