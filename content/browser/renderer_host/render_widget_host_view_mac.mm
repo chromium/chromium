@@ -1022,6 +1022,10 @@ bool RenderWidgetHostViewMac::GetLineBreakIndex(
 gfx::Rect RenderWidgetHostViewMac::GetFirstRectForCompositionRange(
     const gfx::Range& range,
     gfx::Range* actual_range) {
+  TRACE_EVENT1("ime",
+               "RenderWidgetHostViewMac::GetFirstRectForCompositionRange",
+               "range", range.ToString());
+
   const TextInputManager::CompositionRangeInfo* composition_info =
       GetCompositionRangeInfo();
   if (!composition_info)
@@ -1098,8 +1102,9 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
 
   DCHECK(rect);
   // This exists to make IMEs more responsive, see http://crbug.com/115920
-  TRACE_EVENT0("browser",
-               "RenderWidgetHostViewMac::GetFirstRectForCharacterRange");
+  TRACE_EVENT1("ime",
+               "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
+               "requested range", requested_range.ToString());
 
   const TextInputManager::TextSelection* selection = GetTextSelection();
   if (!selection)
@@ -1117,6 +1122,10 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
         GetTextInputManager()->GetTextSelectionBounds();
     if (text_selection_bound) {
       *rect = text_selection_bound.value();
+      TRACE_EVENT1(
+          "ime",
+          "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
+          "GetTextSelectionBounds", rect->ToString());
       return true;
     }
 
@@ -1124,6 +1133,9 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     *rect = GetTextInputManager()
                 ->GetSelectionRegion(GetFocusedWidget()->GetView())
                 ->caret_rect;
+    TRACE_EVENT1(
+        "ime", "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
+        "caret_rect", rect->ToString());
     return true;
   }
 
@@ -1138,6 +1150,9 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
     *rect = GetTextInputManager()
                 ->GetSelectionRegion(GetFocusedWidget()->GetView())
                 ->first_selection_rect;
+    TRACE_EVENT1(
+        "ime", "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
+        "first_selection_rect", rect->ToString());
     return true;
   }
 
@@ -1157,6 +1172,11 @@ bool RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange(
   gfx::Range ui_actual_range;
   *rect = GetFirstRectForCompositionRange(request_range_in_composition,
                                           &ui_actual_range);
+
+  TRACE_EVENT1("ime",
+               "RenderWidgetHostViewMac::GetCachedFirstRectForCharacterRange",
+               "GetFirstRectForCompositionRange", rect->ToString());
+
   if (actual_range) {
     *actual_range =
         gfx::Range(composition_info->range.start() + ui_actual_range.start(),
@@ -1922,6 +1942,9 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     gfx::Rect* rect,
     gfx::Range* actual_range,
     bool* success) {
+  TRACE_EVENT1("ime", "RenderWidgetHostViewMac::SyncGetFirstRectForRange",
+               "requested range", requested_range.ToString());
+
   *actual_range = requested_range;
   if (!GetFocusedWidget()) {
     *success = false;

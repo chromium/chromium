@@ -324,6 +324,9 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
     return TS_E_INVALIDPOS;
   }
 
+  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "start, end",
+               std::to_string(acp_start) + ", " + std::to_string(acp_end));
+
   // According to a behavior of notepad.exe and wordpad.exe, top left corner of
   // rect indicates a first character's one, and bottom right corner of rect
   // indicates a last character's one.
@@ -395,11 +398,14 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
       result_rect = gfx::Rect(text_input_client_->GetCaretBounds());
     }
   }
+  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "DIP rect",
+               result_rect->ToString());
+
   *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
                                                    result_rect.value())
               .ToRECT();
   *clipped = FALSE;
-  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "selection_bounding_rect",
+  TRACE_EVENT1("ime", "TSFTextStore::GetTextExt", "screen rect",
                gfx::Rect(*rect).ToString());
   return S_OK;
 }
