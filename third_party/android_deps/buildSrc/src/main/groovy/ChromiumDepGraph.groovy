@@ -181,6 +181,9 @@ class ChromiumDepGraph {
         org_robolectric_junit: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
+        org_robolectric_nativeruntime: new PropertyOverride(
+            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseName: 'MIT'),
         org_robolectric_pluginapi: new PropertyOverride(
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
