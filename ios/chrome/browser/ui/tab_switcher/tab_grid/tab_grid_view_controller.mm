@@ -1977,19 +1977,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   gridViewController.showsSelectionUpdates = NO;
   // Check if the tab being selected is already selected.
   BOOL alreadySelected = NO;
+  id<GridCommands> tabsDelegate;
   if (gridViewController == self.regularTabsViewController) {
-    alreadySelected = [self.regularTabsDelegate isItemWithIDSelected:itemID];
-    [self.regularTabsDelegate selectItemWithID:itemID];
-    // Record when a regular tab is opened.
+    tabsDelegate = self.regularTabsDelegate;
     base::RecordAction(base::UserMetricsAction("MobileTabGridOpenRegularTab"));
     if (self.tabGridMode == TabGridModeSearch) {
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridOpenRegularTabSearchResult"));
     }
   } else if (gridViewController == self.incognitoTabsViewController) {
-    alreadySelected = [self.incognitoTabsDelegate isItemWithIDSelected:itemID];
-    [self.incognitoTabsDelegate selectItemWithID:itemID];
-    // Record when an incognito tab is opened.
+    tabsDelegate = self.incognitoTabsDelegate;
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
     if (self.tabGridMode == TabGridModeSearch) {
@@ -1998,8 +1995,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     }
   }
 
+  alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
+  [tabsDelegate selectItemWithID:itemID];
+
   if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch &&
-      ![self.regularTabsDelegate isItemWithIDSelected:itemID]) {
+      ![tabsDelegate isItemWithIDSelected:itemID]) {
     // That can happen when the search result that was selected is from
     // another window. In that case don't change the active page for this
     // window and don't close the tab grid.
