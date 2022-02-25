@@ -109,7 +109,7 @@ MediaStreamDevice::MediaStreamDevice(const MediaStreamDevice& other)
       input(other.input),
       session_id_(other.session_id_) {
   DCHECK(!session_id_.has_value() || !session_id_->is_empty());
-  if (other.display_media_info.has_value())
+  if (other.display_media_info)
     display_media_info = other.display_media_info->Clone();
 }
 
@@ -129,7 +129,7 @@ MediaStreamDevice& MediaStreamDevice::operator=(
   input = other.input;
   session_id_ = other.session_id_;
   DCHECK(!session_id_.has_value() || !session_id_->is_empty());
-  if (other.display_media_info.has_value())
+  if (other.display_media_info)
     display_media_info = other.display_media_info->Clone();
   return *this;
 }

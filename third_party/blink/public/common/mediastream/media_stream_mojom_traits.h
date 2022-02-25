@@ -54,8 +54,8 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.serializable_session_id();
   }
 
-  static const absl::optional<media::mojom::DisplayMediaInformationPtr>&
-  display_media_info(const blink::MediaStreamDevice& device) {
+  static const media::mojom::DisplayMediaInformationPtr& display_media_info(
+      const blink::MediaStreamDevice& device) {
     return device.display_media_info;
   }
 

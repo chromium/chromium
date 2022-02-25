@@ -305,8 +305,8 @@ void MediaStreamSource::OnDeviceCaptureHandleChange(
   }
 
   auto capture_handle = media::mojom::CaptureHandle::New();
-  if (device.display_media_info.has_value()) {
-    capture_handle = device.display_media_info.value()->capture_handle.Clone();
+  if (device.display_media_info) {
+    capture_handle = device.display_media_info->capture_handle.Clone();
   }
 
   platform_source_->SetCaptureHandle(capture_handle.Clone());

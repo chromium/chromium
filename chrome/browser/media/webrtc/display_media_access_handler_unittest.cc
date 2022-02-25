@@ -227,7 +227,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGiven) {
   EXPECT_EQ(1u, devices.size());
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
             devices[0].type);
-  EXPECT_TRUE(devices[0].display_media_info.has_value());
+  EXPECT_TRUE(devices[0].display_media_info);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
@@ -251,7 +251,7 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionGivenToRequestWithAudio) {
   EXPECT_EQ(2u, devices.size());
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
             devices[0].type);
-  EXPECT_TRUE(devices[0].display_media_info.has_value());
+  EXPECT_TRUE(devices[0].display_media_info);
   EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
             devices[1].type);
   EXPECT_TRUE(devices[1].input.IsValid());

@@ -117,7 +117,7 @@ class CaptureHandleManagerTest : public RenderViewHostImplTestHarness {
                                        frame->GetRoutingID());
     device.id = id.ToString();
     device.display_media_info = media::mojom::DisplayMediaInformation::New();
-    (*device.display_media_info)->capture_handle = std::move(capture_handle);
+    device.display_media_info->capture_handle = std::move(capture_handle);
 
     return device;
   }

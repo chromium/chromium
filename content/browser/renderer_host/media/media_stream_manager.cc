@@ -3238,13 +3238,13 @@ void MediaStreamManager::OnCaptureHandleChange(
       continue;
     }
 
-    if (!device.display_media_info.has_value()) {
+    if (!device.display_media_info) {
       DVLOG(1) << "Tab capture without a DisplayMediaInformation (" << label
                << ", " << type << ").";
       continue;
     }
 
-    device.display_media_info.value()->capture_handle = capture_handle.Clone();
+    device.display_media_info->capture_handle = capture_handle.Clone();
 
     if (request->device_capture_handle_change_cb) {
       request->device_capture_handle_change_cb.Run(label, device);

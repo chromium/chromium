@@ -271,7 +271,7 @@ void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
     const std::string& label,
     const blink::MediaStreamDevice& device) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(device.display_media_info.has_value());
+  DCHECK(device.display_media_info);
 
   GetMediaStreamDeviceObserver()->OnDeviceCaptureHandleChange(label, device);
 }

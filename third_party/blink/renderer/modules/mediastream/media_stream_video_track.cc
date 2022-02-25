@@ -705,8 +705,8 @@ void MediaStreamVideoTrack::GetSettings(
   settings.resize_mode = WebString::FromASCII(std::string(
       adapter_settings().target_size() ? WebMediaStreamTrack::kResizeModeRescale
                                        : WebMediaStreamTrack::kResizeModeNone));
-  if (source_->device().display_media_info.has_value()) {
-    const auto& info = source_->device().display_media_info.value();
+  if (source_->device().display_media_info) {
+    const auto& info = source_->device().display_media_info;
     settings.display_surface = info->display_surface;
     settings.logical_surface = info->logical_surface;
     settings.cursor = info->cursor;
@@ -724,11 +724,11 @@ MediaStreamVideoTrack::GetCaptureHandle() {
   }
 
   const MediaStreamDevice& device = source_->device();
-  if (!device.display_media_info.has_value()) {
+  if (!device.display_media_info) {
     return capture_handle;
   }
   const media::mojom::DisplayMediaInformationPtr& info =
-      device.display_media_info.value();
+      device.display_media_info;
 
   if (!info->capture_handle) {
     return capture_handle;

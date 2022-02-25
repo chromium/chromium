@@ -90,7 +90,7 @@ std::u16string GetTitle(WebContents* web_contents) {
 // different from capturing a tab or a single window on a desktop.
 bool IsDeviceCapturingDisplay(const blink::MediaStreamDevice& device) {
   return device.display_media_info &&
-         device.display_media_info.value()->display_surface ==
+         device.display_media_info->display_surface ==
              media::mojom::DisplayCaptureSurfaceType::MONITOR;
 }
 

@@ -225,12 +225,10 @@ void CaptureHandleManager::OnTabCaptureStarted(
   auto iter = captures_.find(capture_key);
   if (iter == captures_.end()) {
     // Creating a new tracking session.
-    const absl::optional<media::mojom::DisplayMediaInformationPtr>& info =
+    const media::mojom::DisplayMediaInformationPtr& info =
         captured_device.display_media_info;
     media::mojom::CaptureHandlePtr capture_handle =
-        (info.has_value() && info.value())
-            ? info.value()->capture_handle.Clone()
-            : nullptr;
+        info ? info->capture_handle.Clone() : nullptr;
     captures_[capture_key] = std::make_unique<CaptureInfo>(
         std::move(observer), std::move(capture_handle),
         std::move(handle_change_callback));
