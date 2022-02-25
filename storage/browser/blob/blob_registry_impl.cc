@@ -632,6 +632,7 @@ void BlobRegistryImpl::GetBlobFromUUID(
     return;
   }
   if (!context_->registry().HasEntry(uuid)) {
+    LOG(ERROR) << "Invalid UUID: " << uuid;
     // TODO(mek): Log histogram, old code logs Storage.Blob.InvalidReference
     std::move(callback).Run();
     return;
