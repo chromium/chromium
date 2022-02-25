@@ -15,13 +15,11 @@ interface CrFingerprintProgressArcElement extends LegacyElementMixin,
   canvasCircleBackgroundColor: string;
   canvasCircleProgressColor: string;
 
-  drawArc(startAngle: number, endAngle: number, color: string): void;
-  drawBackgroundCircle(): void;
-
+  reset(): void;
   setProgress(
       prevPercentComplete: number, currPercentComplete: number,
       isComplete: boolean): void;
-  reset(): void;
+  setPlay(shouldPlay: boolean): void;
   isComplete(): boolean;
   $: {
     canvas: HTMLCanvasElement,

@@ -155,10 +155,109 @@ Polymer({
    */
   updateTimerId_: undefined,
 
+  /**
+   * Updates the current state to account for whether dark mode is enabled.
+   * @private
+   */
+  onDarkModeChanged_() {
+    this.updateAnimationAsset_();
+  },
+
   /** @override */
   attached() {
     this.scale_ = this.circleRadius / DEFAULT_CANVAS_CIRCLE_RADIUS;
     this.updateImages_();
+  },
+
+  /**
+   * Reset the element to initial state, when the enrollment just starts.
+   * @public
+   */
+  reset() {
+    this.cancelAnimations_();
+    this.clearCanvas_();
+    this.isComplete_ = false;
+    // Draw an empty background for the progress circle.
+    this.drawProgressCircle_(/** currentPercent = */ 0);
+    this.$.enrollmentDone.hidden = true;
+
+    const scanningAnimation =
+        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
+    scanningAnimation.singleLoop = false;
+    scanningAnimation.classList.add('translucent');
+    this.updateAnimationAsset_();
+    this.resizeAndCenterIcon_(scanningAnimation);
+    scanningAnimation.hidden = false;
+  },
+
+  /**
+   * Animates the progress circle. Animates an arc that starts at the top of
+   * the circle to prevPercentComplete, to an arc that starts at the top of the
+   * circle to currPercentComplete.
+   * @param {number} prevPercentComplete The previous progress indicates the
+   *                 start angle of the arc we want to draw.
+   * @param {number} currPercentComplete The current progress indicates the end
+   *                 angle of the arc we want to draw.
+   * @param {boolean} isComplete Indicate whether enrollment is complete.
+   * @public
+   */
+  setProgress(prevPercentComplete, currPercentComplete, isComplete) {
+    if (this.isComplete_) {
+      return;
+    }
+    this.isComplete_ = isComplete;
+    this.cancelAnimations_();
+
+    let nextPercentToDraw = prevPercentComplete;
+    const endPercent = isComplete ? 100 : Math.min(100, currPercentComplete);
+    // The value by which to update the progress percent each tick.
+    const step = (endPercent - prevPercentComplete) /
+        (ANIMATE_DURATION_MS / ANIMATE_TICKS_MS);
+
+    // Function that is called every tick of the interval, draws the arc a bit
+    // closer to the final destination each tick, until it reaches the final
+    // destination.
+    const doAnimate = () => {
+      if (nextPercentToDraw >= endPercent) {
+        if (this.progressAnimationIntervalId_) {
+          clearInterval(this.progressAnimationIntervalId_);
+          this.progressAnimationIntervalId_ = undefined;
+        }
+        nextPercentToDraw = endPercent;
+      }
+
+      this.clearCanvas_();
+      this.drawProgressCircle_(nextPercentToDraw);
+      if (!this.progressAnimationIntervalId_) {
+        this.fire('cr-fingerprint-progress-arc-drawn');
+      }
+      nextPercentToDraw += step;
+    };
+
+    this.progressAnimationIntervalId_ =
+        setInterval(doAnimate, ANIMATE_TICKS_MS);
+
+    if (isComplete) {
+      this.animateScanComplete_();
+    } else {
+      this.animateScanProgress_();
+    }
+  },
+
+  /**
+   * Controls the animation based on the value of |shouldPlay|.
+   * @param {boolean} shouldPlay Will play the animation if true else pauses it.
+   * @public
+   */
+  setPlay(shouldPlay) {
+    const scanningAnimation =
+        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
+    scanningAnimation.setPlay(shouldPlay);
+  },
+
+  /** @public */
+  isComplete() {
+    return this.isComplete_;
   },
 
   /**
@@ -169,8 +268,9 @@ Polymer({
    * @param {string} color The color of the arc we want to draw. The string is
    *     in the format rgba(r',g',b',a'). r', g', b' are values from [0-255]
    *     and a' is a value from [0-1].
+   * @private
    */
-  drawArc(startAngle, endAngle, color) {
+  drawArc_(startAngle, endAngle, color) {
     const c = this.$.canvas;
     const ctx = c.getContext('2d');
 
@@ -183,94 +283,29 @@ Polymer({
 
   /**
    * Draws a circle on the canvas element around the center with radius
-   * |circleRadius| and color |CANVAS_CIRCLE_BACKGROUND_COLOR|.
-   */
-  drawBackgroundCircle() {
-    this.drawArc(0, 2 * Math.PI, this.canvasCircleBackgroundColor);
-  },
-
-  /**
-   * Animates the progress circle. Animates an arc that starts at the top of
-   * the circle to prevPercentComplete, to an arc that starts at the top of the
-   * circle to currPercentComplete.
-   * @param {number} prevPercentComplete The previous progress indicates the
-   *                 start angle of the arc we want to draw.
-   * @param {number} currPercentComplete The current progress indicates the end
-   *                 angle of the arc we want to draw.
-   * @param {boolean} isComplete Indicate whether enrollment is complete.
-   */
-  setProgress(prevPercentComplete, currPercentComplete, isComplete) {
-    if (this.isComplete_) {
-      return;
-    }
-    this.isComplete_ = isComplete;
-    this.cancelAnimations_();
-
-    const slice = 2 * Math.PI / 100;
-    const startAngle = prevPercentComplete * slice;
-    const endAngle = isComplete ?
-        2 * Math.PI :
-        Math.min(2 * Math.PI, currPercentComplete * slice);
-    let currentAngle = startAngle;
-    // The value to update the angle by each tick.
-    const step =
-        (endAngle - startAngle) / (ANIMATE_DURATION_MS / ANIMATE_TICKS_MS);
-    // Function that is called every tick of the interval, draws the arc a bit
-    // closer to the final destination each tick, until it reaches the final
-    // destination.
-    const doAnimate = () => {
-      if (currentAngle >= endAngle) {
-        if (this.progressAnimationIntervalId_) {
-          clearInterval(this.progressAnimationIntervalId_);
-          this.progressAnimationIntervalId_ = undefined;
-        }
-        currentAngle = endAngle;
-      }
-
-      // Clears the canvas and draws the new progress circle.
-      this.clearCanvas_();
-      // Drawing two arcs to form a circle gives a nicer look than drawing
-      // an arc on top of a circle. If |currentAngle| is 0, draw from
-      // |start| + |currentAngle| to 7 * Math.PI / 2 (start is 3 * Math.PI /
-      // 2) otherwise the regular draw from |start| to |currentAngle| will
-      // draw nothing which will cause a flicker for one frame.
-      this.drawArc(start, start + currentAngle, this.canvasCircleProgressColor);
-      this.drawArc(
-          start + currentAngle, currentAngle <= 0 ? 7 * Math.PI / 2 : start,
-          this.canvasCircleBackgroundColor);
-      currentAngle += step;
-    };
-
-    this.progressAnimationIntervalId_ =
-        setInterval(doAnimate, ANIMATE_TICKS_MS);
-    // Circles on html canvas have 0 radians on the positive x-axis and go in
-    // clockwise direction. We want to start at the top of the circle which is
-    // 3pi/2.
-    const start = 3 * Math.PI / 2;
-
-    if (isComplete) {
-      this.animateScanComplete_();
-    } else {
-      this.animateScanProgress_();
-    }
-  },
-
-  /**
-   * Controls the animation based on the value of |shouldPlay|.
-   * @param {boolean} shouldPlay Will play the animation if true else pauses it.
-   */
-  setPlay(shouldPlay) {
-    const scanningAnimation =
-        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
-    scanningAnimation.setPlay(shouldPlay);
-  },
-
-  /**
-   * Updates the current state to account for whether dark mode is enabled.
+   * |circleRadius|. The first |currentPercent| of the circle, starting at the
+   * top, is painted with |CANVAS_CIRCLE_PROGRESS_COLOR|; the remainder of the
+   * circle is painted |CANVAS_CIRCLE_BACKGROUND_COLOR|.
+   * @param {number} currentPercent A value from [0-100] indicating the
+   *     percentage of progress to display.
    * @private
    */
-  onDarkModeChanged_() {
-    this.updateAnimationAsset_();
+  drawProgressCircle_(currentPercent) {
+    // Angles on HTML canvases start at 0 radians on the positive x-axis and
+    // increase in the clockwise direction. We want to start at the top of the
+    // circle, which is 3pi/2.
+    const start = 3 * Math.PI / 2;
+    const currentAngle = 2 * Math.PI * currentPercent / 100;
+
+    // Drawing two arcs to form a circle gives a nicer look than drawing an arc
+    // on top of a circle (i.e., compared to drawing a full background circle
+    // first). If |currentAngle| is 0, draw from 3pi/2 to 7pi/2 explicitly;
+    // otherwise, the regular draw from |start| + |currentAngle| to |start|
+    // will do nothing.
+    this.drawArc_(start, start + currentAngle, this.canvasCircleProgressColor);
+    this.drawArc_(
+        start + currentAngle, currentAngle <= 0 ? 7 * Math.PI / 2 : start,
+        this.canvasCircleBackgroundColor);
   },
 
   /**
@@ -343,25 +378,6 @@ Polymer({
   },
 
   /**
-   * Reset the element to initial state, when the enrollment just starts.
-   */
-  reset() {
-    this.cancelAnimations_();
-    this.clearCanvas_();
-    this.isComplete_ = false;
-    this.drawBackgroundCircle();
-    this.$.enrollmentDone.hidden = true;
-
-    const scanningAnimation =
-        /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
-    scanningAnimation.singleLoop = false;
-    scanningAnimation.classList.add('translucent');
-    this.updateAnimationAsset_();
-    this.resizeAndCenterIcon_(scanningAnimation);
-    scanningAnimation.hidden = false;
-  },
-
-  /**
    * Update the size and position of the animation images.
    * @private
    */
@@ -408,11 +424,6 @@ Polymer({
         CHECK_MARK_SIZE * this.scale_;
     target.style.left = left + 'px';
     target.style.top = top + 'px';
-  },
-
-  /** @public */
-  isComplete() {
-    return this.isComplete_;
   },
 });
 /* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

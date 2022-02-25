@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 class FakeMediaQueryList extends EventTarget implements MediaQueryList {
@@ -76,16 +77,19 @@ suite('cr_fingerprint_progress_arc_test', function() {
   let progressArc: CrFingerprintProgressArcElement;
   let canvas: HTMLCanvasElement;
 
-  const black: Color = {r: 0, g: 0, b: 0};
-  const blue: Color = {r: 0, g: 0, b: 255};
-  const white: Color = {r: 255, g: 255, b: 255};
+  const canvasColor: Color = {r: 0, g: 0, b: 255};
+  const canvasColorStr: string = 'rgba(0,0,255,1.0)';
+  const circleBackgroundColor: Color = {r: 0, g: 255, b: 0};
+  const circleBackgroundColorStr: string = 'rgba(0,255,0,1.0)';
+  const circleProgressColor: Color = {r: 255, g: 0, b: 0};
+  const circleProgressColorStr: string = 'rgba(255,0,0,1.0)';
 
   let mockController: MockController;
   let fakeMediaQueryList: FakeMediaQueryList;
 
   function clearCanvas(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = 'rgba(255,255,255,1.0)';
+    ctx.fillStyle = canvasColorStr;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
@@ -93,7 +97,6 @@ suite('cr_fingerprint_progress_arc_test', function() {
     mockController = new MockController();
     const matchMediaMock =
         mockController.createFunctionMock(window, 'matchMedia');
-    matchMediaMock.addExpectation('(prefers-color-scheme: dark)');
     fakeMediaQueryList = new FakeMediaQueryList('(prefers-color-scheme: dark)');
     matchMediaMock.returnValue = fakeMediaQueryList;
 
@@ -108,8 +111,8 @@ suite('cr_fingerprint_progress_arc_test', function() {
     canvas.height = 150;
     progressArc.circleRadius = 50;
     progressArc.canvasCircleStrokeWidth = 3;
-    progressArc.canvasCircleBackgroundColor = 'rgba(0,0,0,1.0)';
-    progressArc.canvasCircleProgressColor = 'rgba(0,0,255,1.0)';
+    progressArc.canvasCircleBackgroundColor = circleBackgroundColorStr;
+    progressArc.canvasCircleProgressColor = circleProgressColorStr;
     clearCanvas(progressArc.$.canvas);
     flush();
   });
@@ -148,64 +151,93 @@ suite('cr_fingerprint_progress_arc_test', function() {
     }
   }
 
-  test('TestDrawArc', function() {
-    // Verify that by drawing an arc from 0 to PI/2 with radius 50 and center at
-    // (150, 75), points along that arc should be blue, and points not on that
-    // arc should remain white.
-    progressArc.drawArc(0, Math.PI / 2, progressArc.canvasCircleProgressColor);
-    let expectedPointsOnArc = [
-      {x: 200, y: 75} /* 0rad */, {x: 185, y: 110} /* PI/4rad */,
-      {x: 150, y: 125} /* PI/2rad */
+  test('TestSetProgress', async () => {
+    // Angles on HTML canvases start at 0 radians on the positive x-axis and
+    // increase in the clockwise direction. Progress is drawn starting from the
+    // top of the circle (3pi/2 rad). We will check the colors drawn at angles
+    // 7pi/4, pi/4, 3pi/4, and 5pi/4 rad (respectively 12.5%, 37.5%, 62.5%, and
+    // 87.5% progress completed).
+    const checkPoints = [
+      {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */,
+      {x: 115, y: 110} /* 3pi/4 rad */, {x: 115, y: 40} /* 5pi/4 rad */
     ];
-    let expectedPointsNotOnArc =
-        [{x: 115, y: 110} /* 3PI/4rad */, {x: 100, y: 75} /* PI */];
-    assertListOfColorsEqual(blue, expectedPointsOnArc);
-    assertListOfColorsEqual(white, expectedPointsNotOnArc);
 
-    // After clearing, the points that were blue should be white.
-    clearCanvas(progressArc.$.canvas);
-    assertListOfColorsEqual(white, expectedPointsOnArc);
+    const testCases = [
+      // Verify that no progress is drawn when no progress has been made.
+      {
+        'setProgressArgs': {
+          'prevPercentComplete': 0,
+          'currPercentComplete': 0,
+          'isComplete': false
+        },
+        'progressArcPoints': [],
+        'backgroundArcPoints': checkPoints
+      },
+      // Verify that progress is drawn starting from the top of the circle
+      // (3pi/2 rad) and moving clockwise.
+      {
+        'setProgressArgs': {
+          'prevPercentComplete': 0,
+          'currPercentComplete': 40,
+          'isComplete': false
+        },
+        'progressArcPoints': [
+          {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */
+        ],
+        'backgroundArcPoints': [
+          {x: 115, y: 110} /* 3pi/4 rad */, {x: 115, y: 40} /* 5pi/4 rad */
+        ]
+      },
+      // Verify that the progress drawn includes progress made previously.
+      {
+        'setProgressArgs': {
+          'prevPercentComplete': 40,
+          'currPercentComplete': 80,
+          'isComplete': false
+        },
+        'progressArcPoints': [
+          {x: 185, y: 40} /* 7pi/4 rad */, {x: 185, y: 110} /* pi/4 rad */,
+          {x: 115, y: 110} /* 3pi/4 rad */
+        ],
+        'backgroundArcPoints': [
+          {x: 115, y: 40} /* 5pi/4 rad */
+        ]
+      },
+      // Verify that progress past 100% gets capped rather than wrapping around.
+      {
+        'setProgressArgs': {
+          'prevPercentComplete': 80,
+          'currPercentComplete': 160,
+          'isComplete': false
+        },
+        'progressArcPoints': checkPoints,
+        'backgroundArcPoints': []
+      },
+      // Verify that if the enrollment is complete, maximum progress is drawn.
+      {
+        'setProgressArgs': {
+          'prevPercentComplete': 80,
+          'currPercentComplete': 80,
+          'isComplete': true
+        },
+        'progressArcPoints': checkPoints,
+        'backgroundArcPoints': []
+      }
+    ];
 
-    // Verify that by drawing an arc from 3PI/2 to 5PI/2 with radius 50 and
-    // center at (150, 75), points along that arc should be blue, and points not
-    // on that arc should remain white.
-    progressArc.drawArc(
-        3 * Math.PI / 2, 5 * Math.PI / 2,
-        progressArc.canvasCircleProgressColor);
-    expectedPointsOnArc = [
-      {x: 150, y: 25} /* 3PI/2 */, {x: 185, y: 40} /* 7PI/4 */,
-      {x: 200, y: 75} /* 2PI */, {x: 185, y: 110} /* 9PI/4 */,
-      {x: 150, y: 125} /* 5PI/2rad */
-    ];
-    expectedPointsNotOnArc = [
-      {x: 115, y: 110} /* 3PI/4rad */, {x: 100, y: 75} /* PI */, {x: 115, y: 40}
-      /* 5PI/4 */
-    ];
-    assertListOfColorsEqual(blue, expectedPointsOnArc);
-    assertListOfColorsEqual(white, expectedPointsNotOnArc);
-  });
+    for (const {setProgressArgs, progressArcPoints, backgroundArcPoints} of
+             testCases) {
+      clearCanvas(canvas);
+      assertListOfColorsEqual(canvasColor, checkPoints);
 
-  test('TestDrawBackgroundCircle', function() {
-    // Verify that by drawing an circle with radius 50 and center at (150, 75),
-    // points along that arc should be black, and points not on that arc should
-    // remain white.
-    progressArc.drawBackgroundCircle();
-    const expectedPointsInCircle = [
-      {x: 200, y: 75} /* 0rad */, {x: 150, y: 125} /* PI/2rad */,
-      {x: 100, y: 75} /* PIrad */, {x: 150, y: 25} /* 3PI/2rad */
-    ];
-    const expectedPointsNotInCircle = [
-      {x: 110, y: 75} /* Too left, outside of stroke */,
-      {x: 90, y: 75} /* Too right, inside of stroke */,
-      {x: 200, y: 100} /* Outside of circle */,
-      {x: 150, y: 75} /* In the center */
-    ];
-    assertListOfColorsEqual(black, expectedPointsInCircle);
-    assertListOfColorsEqual(white, expectedPointsNotInCircle);
+      progressArc.setProgress(
+          setProgressArgs.prevPercentComplete,
+          setProgressArgs.currPercentComplete, setProgressArgs.isComplete);
+      await eventToPromise('cr-fingerprint-progress-arc-drawn', progressArc);
 
-    // After clearing, the points that were black should be white.
-    clearCanvas(progressArc.$.canvas);
-    assertListOfColorsEqual(white, expectedPointsInCircle);
+      assertListOfColorsEqual(circleProgressColor, progressArcPoints);
+      assertListOfColorsEqual(circleBackgroundColor, backgroundArcPoints);
+    }
   });
 
   test('TestSwitchToDarkMode', function() {
