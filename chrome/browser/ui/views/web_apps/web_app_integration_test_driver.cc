@@ -549,14 +549,14 @@ void WebAppIntegrationTestDriver::ClosePwa() {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::DisableRunOnOSLoginMode(
+void WebAppIntegrationTestDriver::DisableRunOnOSLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kNotRun);
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::EnableRunOnOSLoginMode(
+void WebAppIntegrationTestDriver::EnableRunOnOSLogin(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
   SetRunOnOsLoginMode(site_mode, apps::mojom::RunOnOsLoginMode::kWindowed);
@@ -657,58 +657,74 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerTabValue),
-      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
+  InstallPolicyAppInternal(site_mode,
+                           base::Value(kDefaultLaunchContainerTabValue),
+                           /*create_shortcut=*/false);
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppTabbedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerTabValue),
-      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
+  InstallPolicyAppInternal(site_mode,
+                           base::Value(kDefaultLaunchContainerTabValue),
+                           /*create_shortcut=*/true);
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedNoShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
-      /*create_shortcut=*/false, apps::mojom::RunOnOsLoginPtr());
+  InstallPolicyAppInternal(site_mode,
+                           base::Value(kDefaultLaunchContainerWindowValue),
+                           /*create_shortcut=*/false);
   AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppWindowedShortcut(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerWindowValue),
-      /*create_shortcut=*/true, apps::mojom::RunOnOsLoginPtr());
+  InstallPolicyAppInternal(site_mode,
+                           base::Value(kDefaultLaunchContainerWindowValue),
+                           /*create_shortcut=*/true);
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeAllowed(
+void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicyAllowed(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerTabValue),
-      /*create_shortcut=*/true,
-      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
-                                     /*is_managed=*/false));
+  ApplyRunOnOsLoginPolicy(site_mode, kAllowed);
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::InstallPolicyAppOsLoginModeBlocked(
+void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicyBlocked(
     const std::string& site_mode) {
   BeforeStateChangeAction(__FUNCTION__);
-  InstallPolicyAppInternal(
-      site_mode, base::Value(kDefaultLaunchContainerTabValue),
-      /*create_shortcut=*/true,
-      apps::mojom::RunOnOsLogin::New(apps::mojom::RunOnOsLoginMode::kNotRun,
-                                     /*is_managed=*/true));
+  ApplyRunOnOsLoginPolicy(site_mode, kBlocked);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicyRunWindowed(
+    const std::string& site_mode) {
+  BeforeStateChangeAction(__FUNCTION__);
+  ApplyRunOnOsLoginPolicy(site_mode, kRunWindowed);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(
+    const std::string& site_mode) {
+  BeforeStateChangeAction(__FUNCTION__);
+  base::RunLoop run_loop;
+  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
+      run_loop.QuitClosure());
+  GURL url = GetAppStartURL(site_mode);
+  {
+    DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
+                                    prefs::kWebAppSettings);
+    base::Value* dict = updateDict.Get();
+    dict->RemoveKey(std::move(url.spec()));
+  }
+  run_loop.Run();
   AfterStateChangeAction();
 }
 
@@ -1499,7 +1515,7 @@ void WebAppIntegrationTestDriver::CheckCustomToolbar() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeEnabled(
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginEnabled(
     const std::string& site_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -1510,7 +1526,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeEnabled(
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckRunOnOSLoginModeDisabled(
+void WebAppIntegrationTestDriver::CheckRunOnOSLoginDisabled(
     const std::string& site_mode) {
   BeforeStateCheckAction(__FUNCTION__);
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -1826,8 +1842,7 @@ void WebAppIntegrationTestDriver::InstallCreateShortcut(bool open_in_window) {
 void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     const std::string& site_mode,
     base::Value default_launch_container,
-    const bool create_shortcut,
-    const apps::mojom::RunOnOsLoginPtr os_login_mode) {
+    const bool create_shortcut) {
   GURL url = GetAppStartURL(site_mode);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
@@ -1840,20 +1855,26 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kWebAppInstallForceList);
     update->Append(item.Clone());
-
-    if (os_login_mode) {
-      base::Value dictItem(base::Value::Type::DICTIONARY);
-      if (os_login_mode->is_managed)
-        dictItem.SetKey(kRunOnOsLogin, base::Value(kBlocked));
-      else
-        dictItem.SetKey(kRunOnOsLogin, base::Value(kAllowed));
-      DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
-                                      prefs::kWebAppSettings);
-      base::Value* dict = updateDict.Get();
-      dict->SetKey(std::move(url.spec()), std::move(dictItem));
-    }
   }
   active_app_id_ = observer.Wait();
+}
+
+void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(
+    const std::string& site_mode,
+    const char* policy) {
+  base::RunLoop run_loop;
+  web_app::SetRunOnOsLoginOsHooksChangedCallbackForTesting(
+      run_loop.QuitClosure());
+  GURL url = GetAppStartURL(site_mode);
+  {
+    base::Value dictItem(base::Value::Type::DICTIONARY);
+    dictItem.SetKey(kRunOnOsLogin, base::Value(policy));
+    DictionaryPrefUpdate updateDict(profile()->GetPrefs(),
+                                    prefs::kWebAppSettings);
+    base::Value* dict = updateDict.Get();
+    dict->SetKey(std::move(url.spec()), std::move(dictItem));
+  }
+  run_loop.Run();
 }
 
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {

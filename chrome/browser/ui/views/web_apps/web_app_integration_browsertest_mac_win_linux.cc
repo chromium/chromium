@@ -34,10 +34,10 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginModeOnPolicyAppWorks) {
   helper_.InstallPolicyAppTabbedNoShortcut("SiteA");
   helper_.CheckAppInListTabbed("SiteA");
-  helper_.EnableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
-  helper_.DisableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.DisableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginDisabled("SiteA");
   // Clear out installed app
   helper_.UninstallPolicyApp("SiteA");
 }
@@ -46,10 +46,10 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginModeOnNormalAppWorks) {
   helper_.InstallCreateShortcutWindowed("SiteA");
   helper_.CheckPlatformShortcutAndIcon("SiteA");
-  helper_.EnableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
-  helper_.DisableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.DisableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginDisabled("SiteA");
   // Clear out installed app
   helper_.UninstallFromList("SiteA");
   helper_.CheckPlatformShortcutNotExists("SiteA");
@@ -57,21 +57,48 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginWorksOnPolicyAppAllowed) {
-  helper_.InstallPolicyAppOsLoginModeAllowed("SiteA");
-  helper_.EnableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeEnabled("SiteA");
-  helper_.DisableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.ApplyRunOnOsLoginPolicyAllowed("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.DisableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginDisabled("SiteA");
   helper_.UninstallPolicyApp("SiteA");
   helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
                        CheckRunOnOsLoginWorksOnPolicyAppBlocked) {
-  helper_.InstallPolicyAppOsLoginModeBlocked("SiteA");
-  helper_.EnableRunOnOSLoginMode("SiteA");
-  helper_.CheckRunOnOSLoginModeDisabled("SiteA");
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.ApplyRunOnOsLoginPolicyBlocked("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginDisabled("SiteA");
   helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginWorksOnPolicyAppRunWindowed) {
+  helper_.InstallPolicyAppWindowedShortcut("SiteA");
+  helper_.ApplyRunOnOsLoginPolicyRunWindowed("SiteA");
+  helper_.DisableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.UninstallPolicyApp("SiteA");
+  helper_.CheckPlatformShortcutNotExists("SiteA");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckRunOnOsLoginWorksOnBlockedAfterUserTurnOn) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppInListWindowed("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.ApplyRunOnOsLoginPolicyBlocked("SiteA");
+  helper_.EnableRunOnOSLogin("SiteA");
+  helper_.CheckRunOnOSLoginDisabled("SiteA");
+  helper_.RemoveRunOnOsLoginPolicy("SiteA");
+  helper_.CheckRunOnOSLoginEnabled("SiteA");
+  helper_.UninstallFromList("SiteA");
   helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
