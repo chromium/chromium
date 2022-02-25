@@ -52,7 +52,8 @@ class CC_EXPORT ScrollElasticityHelper {
 
   virtual ~ScrollElasticityHelper() {}
 
-  virtual bool IsUserScrollable() const = 0;
+  virtual bool IsUserScrollableHorizontal() const = 0;
+  virtual bool IsUserScrollableVertical() const = 0;
 
   // The bounds of the root scroller.
   virtual gfx::Size ScrollBounds() const = 0;

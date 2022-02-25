@@ -181,14 +181,20 @@ void ElasticOverscrollController::UpdateVelocity(
 
 void ElasticOverscrollController::Overscroll(
     const gfx::Vector2dF& overscroll_delta) {
-  // The effect can be dynamically disabled by setting disallowing user
+  gfx::Vector2dF adjusted_overscroll_delta = overscroll_delta;
+
+  // The effect can be dynamically disabled by setting styles to disallow user
   // scrolling. When disabled, disallow active or momentum overscrolling, but
   // allow any current overscroll to animate back.
-  if (!helper_->IsUserScrollable())
+  if (!helper_->IsUserScrollableHorizontal())
+    adjusted_overscroll_delta.set_x(0);
+  if (!helper_->IsUserScrollableVertical())
+    adjusted_overscroll_delta.set_y(0);
+
+  if (adjusted_overscroll_delta.IsZero())
     return;
 
-  gfx::Vector2dF adjusted_overscroll_delta =
-      pending_overscroll_delta_ + overscroll_delta;
+  adjusted_overscroll_delta += pending_overscroll_delta_;
   pending_overscroll_delta_ = gfx::Vector2dF();
 
   // TODO (arakeri): Make this prefer the writing mode direction instead.

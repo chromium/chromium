@@ -38,14 +38,16 @@ enum InertialPhaseState {
 
 class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
  public:
-  MockScrollElasticityHelper()
-      : is_user_scrollable_(true),
-        set_stretch_amount_count_(0),
-        request_begin_frame_count_(0) {}
-  ~MockScrollElasticityHelper() override {}
+  MockScrollElasticityHelper() = default;
+  ~MockScrollElasticityHelper() override = default;
 
   // cc::ScrollElasticityHelper implementation:
-  bool IsUserScrollable() const override { return is_user_scrollable_; }
+  bool IsUserScrollableHorizontal() const override {
+    return is_user_scrollable_horizontal_;
+  }
+  bool IsUserScrollableVertical() const override {
+    return is_user_scrollable_vertical_;
+  }
   Vector2dF StretchAmount() const override { return stretch_amount_; }
   void SetStretchAmount(const Vector2dF& stretch_amount) override {
     set_stretch_amount_count_ += 1;
@@ -67,15 +69,17 @@ class MockScrollElasticityHelper : public cc::ScrollElasticityHelper {
     scroll_offset_ = scroll_offset;
     max_scroll_offset_ = max_scroll_offset;
   }
-  void SetUserScrollable(bool is_user_scrollable) {
-    is_user_scrollable_ = is_user_scrollable;
+  void SetUserScrollable(bool horizontal, bool vertical) {
+    is_user_scrollable_horizontal_ = horizontal;
+    is_user_scrollable_vertical_ = vertical;
   }
 
  private:
-  bool is_user_scrollable_;
+  bool is_user_scrollable_horizontal_ = true;
+  bool is_user_scrollable_vertical_ = true;
   Vector2dF stretch_amount_;
-  int set_stretch_amount_count_;
-  int request_begin_frame_count_;
+  int set_stretch_amount_count_ = 0;
+  int request_begin_frame_count_ = 0;
 
   gfx::PointF scroll_offset_;
   gfx::PointF max_scroll_offset_;
@@ -362,7 +366,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
   Vector2dF delta(0, -15);
 
   // Do an active scroll, and ensure that the stretch amount doesn't change.
-  helper_.SetUserScrollable(false);
+  helper_.SetUserScrollable(false, false);
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
   SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
@@ -377,7 +381,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
   EXPECT_EQ(0, helper_.set_stretch_amount_count());
 
   // Re-enable user scrolling and ensure that stretching is re-enabled.
-  helper_.SetUserScrollable(true);
+  helper_.SetUserScrollable(true, true);
   SendGestureScrollBegin(NonMomentumPhase);
   SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
   SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
@@ -393,7 +397,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
 
   // Disable user scrolling and tick the timer until the stretch goes back
   // to zero. Ensure that the return to zero doesn't happen immediately.
-  helper_.SetUserScrollable(false);
+  helper_.SetUserScrollable(false, false);
   int ticks_to_zero = 0;
   while (true) {
     TickCurrentTimeAndAnimate();
@@ -402,6 +406,42 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
     ticks_to_zero += 1;
   }
   EXPECT_GT(ticks_to_zero, 3);
+}
+
+TEST_F(ElasticOverscrollControllerExponentialTest, UserScrollableSingleAxis) {
+  helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 0),
+                                            gfx::PointF(10, 10));
+  Vector2dF vertical_delta(0, -15);
+  Vector2dF horizontal_delta(-15, 0);
+
+  // Attempt vertical scroll when only horizontal allowed.
+  helper_.SetUserScrollable(true, false);
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, vertical_delta, vertical_delta);
+  SendGestureScrollEnd();
+  EXPECT_EQ(helper_.StretchAmount(), Vector2dF(0, 0));
+  EXPECT_EQ(0, helper_.set_stretch_amount_count());
+
+  // Attempt horizontal scroll when only vertical allowed.
+  helper_.SetUserScrollable(false, true);
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, horizontal_delta, horizontal_delta);
+  SendGestureScrollEnd();
+  EXPECT_EQ(helper_.StretchAmount(), Vector2dF(0, 0));
+  EXPECT_EQ(0, helper_.set_stretch_amount_count());
+
+  // Vertical scroll, only vertical allowed.
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, vertical_delta, vertical_delta);
+  SendGestureScrollEnd();
+  EXPECT_LT(helper_.StretchAmount().y(), 0);
+
+  // Horizontal scroll, only horizontal allowed.
+  helper_.SetUserScrollable(true, false);
+  SendGestureScrollBegin(NonMomentumPhase);
+  SendGestureScrollUpdate(NonMomentumPhase, horizontal_delta, horizontal_delta);
+  SendGestureScrollEnd();
+  EXPECT_LT(helper_.StretchAmount().x(), 0);
 }
 
 // Verify that OverscrollBehaviorTypeNone disables the stretching on the
