@@ -463,6 +463,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kAllowURNsInIframes;
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
+BLINK_COMMON_EXPORT extern const base::Feature kBrowsingTopics;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch;
+
 // Control switch for minimizing processing in the WebRTC APM when all audio
 // tracks are disabled.
 BLINK_COMMON_EXPORT extern const base::Feature

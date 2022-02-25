@@ -1023,6 +1023,19 @@ BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);
 }
 
+// https://github.com/jkarlin/topics
+// Kill switch for the Topics API.
+const base::Feature kBrowsingTopics{"BrowsingTopics",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+// The max number of entries allowed to be retrieved from the
+// `BrowsingTopicsSiteDataStorage` database for each query for the API usage
+// contexts. The query will occur once per epoch (week) at topics calculation
+// time. The intent is to cap the peak memory usage.
+const base::FeatureParam<int>
+    kBrowsingTopicsMaxNumberOfApiUsageContextEntriesToLoadPerEpoch{
+        &kBrowsingTopics,
+        "max_number_of_api_usage_context_entries_to_load_per_epoch", 100000};
+
 // Enable the ability to minimize processing in the WebRTC APM when all audio
 // tracks are disabled. If disabled, the APM in WebRTC will ignore attempts to
 // set it in a low-processing mode when all audio tracks are disabled.

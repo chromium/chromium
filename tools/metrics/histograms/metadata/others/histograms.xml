@@ -1425,6 +1425,17 @@ chromium-metrics-reviews@google.com.
   <summary>Maximal amount of memory allocated by decoder.</summary>
 </histogram>
 
+<histogram name="BrowsingTopics.SiteDataStorage.InitStatus"
+    enum="BooleanSuccess" expires_after="2023-02-10">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records initialization status of BrowsingTopics SiteDataStorage database.
+    Recored when the database is lazily initialised when the first operation is
+    encountered.
+  </summary>
+</histogram>
+
 <histogram name="Canvas.TextMetrics.SetFont" units="microseconds"
     expires_after="2021-07-14">
   <obsolete>

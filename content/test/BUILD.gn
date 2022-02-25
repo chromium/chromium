@@ -446,6 +446,7 @@ static_library("test_support") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
+    "//components/browsing_topics/common:common",
     "//components/network_session_configurator/common:common",
     "//components/services/storage",
     "//components/startup_metric_utils/browser",
@@ -1995,6 +1996,7 @@ test("content_unittests") {
     "../browser/browsing_data/browsing_data_remover_impl_unittest.cc",
     "../browser/browsing_data/clear_site_data_handler_unittest.cc",
     "../browser/browsing_data/same_site_data_remover_impl_unittest.cc",
+    "../browser/browsing_topics/browsing_topics_site_data_storage_unittest.cc",
     "../browser/buckets/bucket_manager_host_unittest.cc",
     "../browser/byte_stream_unittest.cc",
     "../browser/cache_storage/cache_storage_blob_to_disk_cache_unittest.cc",
@@ -2446,6 +2448,7 @@ test("content_unittests") {
       "data/",
       "//media/test/data/",
       "//content/test/data/attribution_reporting/databases/",
+      "//content/test/data/browsing_topics/",
     ]
   }
 
