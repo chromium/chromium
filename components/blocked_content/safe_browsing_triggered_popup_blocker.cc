@@ -18,6 +18,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -115,8 +116,11 @@ SafeBrowsingTriggeredPopupBlocker::SafeBrowsingTriggeredPopupBlocker(
 
 void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->GetNavigatingFrameType() ==
+          content::FrameType::kFencedFrameRoot) {
     return;
+  }
 
   absl::optional<SubresourceFilterLevel> level;
   NavigationHandleData* data =
@@ -171,6 +175,11 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
     const subresource_filter::SubresourceFilterSafeBrowsingClient::CheckResult&
         result) {
   DCHECK(navigation_handle->IsInMainFrame());
+  // TODO(crbug.com/1263541): Replace it with DCHECK.
+  if (navigation_handle->GetNavigatingFrameType() ==
+      content::FrameType::kFencedFrameRoot) {
+    return;
+  }
   absl::optional<safe_browsing::SubresourceFilterLevel> match_level;
   if (result.threat_type ==
       safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
