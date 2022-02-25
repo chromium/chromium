@@ -21980,6 +21980,8 @@ Called by update_debug_scenarios.py.-->
   <int value="55" label="stylesPaneCSSChanges"/>
   <int value="56" label="headerOverrides"/>
   <int value="57" label="lighthousePanelFR"/>
+  <int value="58" label="evaluateExpressionsWithSourceMaps"/>
+  <int value="59" label="cssLayers"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
