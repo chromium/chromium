@@ -31,81 +31,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
 
+#include <atomic>
+
 #include "base/dcheck_is_on.h"
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
-
-#if BUILDFLAG(IS_WIN)
-
-#include "base/win/windows_types.h"
-
-// Declare Chrome versions of some Windows structures. These are needed for
-// when we need a concrete type but don't want to pull in Windows.h. We can't
-// declare the Windows types so we declare our types and cast to the Windows
-// types in a few places. static_asserts in threading_win.cc are used to verify
-// that the sizes are correct.
-
-struct BLINK_CRITICAL_SECTION {
-  // The Windows CRITICAL_SECTION struct is 40 bytes on 64-bit and 24 bytes on
-  // 32-bit. The align member variable uses sizeof(void*) bytes so the buffer
-  // to fill out the size needs to be 32/20 bytes. This can be expressed as
-  // sizeof(void*) * 3 + 8.
-  char buffer[sizeof(void*) * 3 + 8];
-  ULONG_PTR align;  // Make sure the alignment requirements match.
-};
-
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include <pthread.h>
-#endif
 
 namespace blink {
 class DeferredTaskHandler;
 }
 
 namespace WTF {
-
-#if BUILDFLAG(IS_WIN)
-struct PlatformMutex {
-  BLINK_CRITICAL_SECTION internal_mutex_;
-  size_t recursion_count_;
-};
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-struct PlatformMutex {
-  pthread_mutex_t internal_mutex_;
-#if DCHECK_IS_ON()
-  size_t recursion_count_;
-#endif
-};
-#endif
-
-class WTF_EXPORT MutexBase {
-  USING_FAST_MALLOC(MutexBase);
-
- public:
-  MutexBase(const MutexBase&) = delete;
-  MutexBase& operator=(const MutexBase&) = delete;
-  ~MutexBase();
-
-  void lock();
-  void unlock();
-  void AssertAcquired() const {
-#if DCHECK_IS_ON()
-    DCHECK(mutex_.recursion_count_);
-#endif
-  }
-
- public:
-  PlatformMutex& Impl() { return mutex_; }
-
- protected:
-  MutexBase(bool recursive);
-
-  PlatformMutex mutex_;
-};
 
 class ThreadCondition;
 
@@ -132,17 +74,38 @@ class LOCKABLE WTF_EXPORT Mutex {
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
 // https://crbug.com/856641
-class WTF_EXPORT RecursiveMutex : public MutexBase {
+class LOCKABLE WTF_EXPORT RecursiveMutex {
  public:
-  bool TryLock();
+  // Overridden solely for the purpose of annotating them.
+  // The compiler is expected to optimize the calls away.
+  void lock() EXCLUSIVE_LOCK_FUNCTION();
+  void unlock() UNLOCK_FUNCTION();
+  void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
+    // TS_UNCHECKED_READ: Either we are the owner and then the value can be
+    // read, or we aren't, and we are guaranteed to not see our own thread ID.
+    DCHECK_EQ(TS_UNCHECKED_READ(owner_), base::PlatformThread::CurrentId());
+  }
+  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
  private:
   // Private constructor to ensure that no new users appear. This class will be
   // removed.
-  RecursiveMutex() : MutexBase(true) {}
+  RecursiveMutex() = default;
+  void UpdateStateAfterLockAcquired(base::PlatformThreadId thread_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  base::Lock lock_;
+  // Atomic only used to avoid load shearing.
+  std::atomic<base::PlatformThreadId> owner_ GUARDED_BY(lock_) =
+      base::kInvalidThreadId;
+  uint64_t lock_depth_ GUARDED_BY(lock_) = 0;
 
   // DO NOT ADD any new caller.
   friend class ::blink::DeferredTaskHandler;
+
+  FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlock);
+  FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockRecursive);
+  FRIEND_TEST_ALL_PREFIXES(RecursiveMutexTest, LockUnlockThreads);
 };
 
 class SCOPED_LOCKABLE MutexLocker final {
@@ -199,7 +162,6 @@ class WTF_EXPORT ThreadCondition final {
 }  // namespace WTF
 
 using WTF::Mutex;
-using WTF::MutexBase;
 using WTF::MutexLocker;
 using WTF::MutexTryLocker;
 using WTF::RecursiveMutex;

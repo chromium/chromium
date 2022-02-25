@@ -177,6 +177,7 @@ component("wtf") {
     "thread_specific.h",
     "threading.cc",
     "threading.h",
+    "threading_primitives.cc",
     "threading_primitives.h",
     "type_traits.h",
     "uuid.cc",
@@ -231,8 +232,6 @@ component("wtf") {
   }
 
   if (is_win) {
-    sources += [ "threading_win.cc" ]
-
     cflags = [ "/wd4068" ]  # Unknown pragma.
 
     # Inject Visual Studio debug visualizers for our types into all targets
@@ -244,8 +243,6 @@ component("wtf") {
       # in generated build files.
       "//tools/win/DebugVisualizers/blink.natvis",
     ]
-  } else {
-    sources += [ "threading_pthreads.cc" ]
   }
 
   if (is_android) {
