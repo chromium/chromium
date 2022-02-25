@@ -237,7 +237,6 @@ bool PaintInvalidator::InvalidatePaint(
 
   UpdatePaintingLayer(object, context);
 
-#if DCHECK_IS_ON()
   // Assert that the container state in the invalidation context is consistent
   // with what the LayoutObject tree says. We cannot do this if we're fragment-
   // traversing an "orphaned" object (an object that has a fragment inside a
@@ -245,9 +244,7 @@ bool PaintInvalidator::InvalidatePaint(
   // happen to OOFs, and also to floats, if they are inside a non-atomic
   // inline). In such cases we'll just have to live with the inconsitency, which
   // means that we'll lose any paint effects from such "missing" ancestors.
-  if (!pre_paint_info || !pre_paint_info->is_inside_orphaned_object)
-    DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
-#endif  // DCHECK_IS_ON()
+  DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
 
   if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
     cache->InvalidateBoundingBox(&object);

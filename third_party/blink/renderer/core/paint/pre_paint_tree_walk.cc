@@ -355,7 +355,6 @@ NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
   return NGPrePaintInfo(fragment, child.offset,
                         context.current_fragmentainer.fragmentainer_idx,
                         fragment.IsFirstForNode(), !fragment.BreakToken(),
-                        context.is_inside_orphaned_object,
                         /* is_inside_fragment_child */ false);
 }
 
@@ -440,6 +439,34 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   }
 
   return fragment_data;
+}
+
+void PrePaintTreeWalk::UpdateContextForOOFContainer(
+    const LayoutObject& object,
+    PrePaintTreeWalkContext& context) {
+  DCHECK(object.CanContainAbsolutePositionObjects());
+
+  const LayoutBox* box = DynamicTo<LayoutBox>(&object);
+  if (context.current_fragmentainer.fragment && box &&
+      box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks) {
+    // If we're in a fragmentation context, the parent fragment of OOFs is the
+    // fragmentainer, unless the object is monolithic, in which case nothing
+    // inside the object participates in the current block fragmentation
+    // context. This means that this object (and not the nearest fragmentainer)
+    // acts as a containing block for OOF descendants,
+    context.current_fragmentainer = {};
+  }
+
+  // The OOF containing block structure is special under block fragmentation: A
+  // fragmentable OOF is always a direct child of a fragmentainer.
+  context.absolute_positioned_container = context.current_fragmentainer;
+  if (!context.absolute_positioned_container.fragment) {
+    context.absolute_positioned_container.fragment =
+        context.oof_container_candidate_fragment;
+  }
+  if (object.CanContainFixedPositionObjects()) {
+    context.fixed_positioned_container = context.absolute_positioned_container;
+  }
 }
 
 void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
@@ -553,8 +580,41 @@ bool PrePaintTreeWalk::CollectMissableChildren(
   return has_missable_children;
 }
 
-void PrePaintTreeWalk::WalkMissedChildren(const NGPhysicalBoxFragment& fragment,
-                                          PrePaintTreeWalkContext& context) {
+void PrePaintTreeWalk::RebuildContextForMissedDescendant(
+    const LayoutObject& ancestor,
+    const LayoutObject& object,
+    PrePaintTreeWalkContext& context) {
+  // Walk up to the ancestor and, on the way down again, adjust the context with
+  // info about OOF containing blocks.
+  if (&object == &ancestor)
+    return;
+  RebuildContextForMissedDescendant(ancestor, *object.Parent(), context);
+
+  if (!object.CanContainAbsolutePositionObjects())
+    return;
+
+  UpdateContextForOOFContainer(object, context);
+  if (!context.tree_builder_context)
+    return;
+
+  PaintPropertyTreeBuilderContext& property_context =
+      *context.tree_builder_context;
+  PaintPropertyTreeBuilderFragmentContext& fragment_context =
+      property_context.fragments[0];
+  // Reset the relevant OOF context to this fragmentainer, since this is its
+  // containing block, as far as the NG fragment structure is concerned.
+  property_context.container_for_absolute_position = &object;
+  fragment_context.absolute_position = fragment_context.current;
+  if (object.CanContainFixedPositionObjects()) {
+    property_context.container_for_fixed_position = &object;
+    fragment_context.fixed_position = fragment_context.current;
+  }
+}
+
+void PrePaintTreeWalk::WalkMissedChildren(
+    const LayoutObject& ancestor,
+    const NGPhysicalBoxFragment& fragment,
+    const PrePaintTreeWalkContext& context) {
   if (pending_missables_.IsEmpty())
     return;
 
@@ -566,21 +626,10 @@ void PrePaintTreeWalk::WalkMissedChildren(const NGPhysicalBoxFragment& fragment,
     const LayoutObject& descendant_object = *child->GetLayoutObject();
     PrePaintTreeWalkContext descendant_context(
         context, NeedsTreeBuilderContextUpdate(descendant_object, context));
-    if (child->IsOutOfFlowPositioned() &&
-        descendant_context.tree_builder_context) {
-      PaintPropertyTreeBuilderFragmentContext& fragment_context =
-          descendant_context.tree_builder_context->fragments[0];
-      // Reset the relevant OOF context to this fragmentainer, since this is its
-      // containing block, as far as the NG fragment structure is concerned.
-      // Note that when walking a missed child OOF fragment, we'll also
-      // forcefully miss any OOF descendant nodes, which is why we only set the
-      // context for the OOF type we're dealing with here.
-      if (child->IsFixedPositioned())
-        fragment_context.fixed_position = fragment_context.current;
-      else
-        fragment_context.absolute_position = fragment_context.current;
+    if (child->IsOutOfFlowPositioned()) {
+      RebuildContextForMissedDescendant(ancestor, *descendant_object.Parent(),
+                                        descendant_context);
     }
-    descendant_context.is_inside_orphaned_object = true;
 
     NGPrePaintInfo pre_paint_info =
         CreatePrePaintInfo(child, descendant_context);
@@ -700,22 +749,6 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
            child->IsLayoutMultiColumnSpannerPlaceholder());
     child->GetMutableForPainting().ClearPaintFlags();
   }
-
-  // If we missed any nested fixpos elements during fragment traversal, that
-  // means that their containing block lives outside the fragmentation context
-  // root. Walk these missed fixepos elements now.
-  if (!pending_fixedpos_missables_.IsEmpty()) {
-    // First make a copy, clear the original set, and then walk the copy. There
-    // may be descendants attempting to walk the set as well, which will cause
-    // an infinite recursion.
-    HeapHashSet<Member<const LayoutObject>> copy;
-    copy.swap(pending_fixedpos_missables_);
-    for (const auto& fixedpos : copy) {
-      DCHECK(!walked_fixedpos_.Contains(fixedpos));
-      walked_fixedpos_.insert(fixedpos);
-      Walk(*fixedpos, parent_context, /* pre_paint_info */ nullptr);
-    }
-  }
 }
 
 void PrePaintTreeWalk::WalkLayoutObjectChildren(
@@ -739,14 +772,6 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       }
 
       Walk(*child, context, /* pre_paint_info */ nullptr);
-      continue;
-    }
-
-    // If we're in the middle of walking a missed OOF, don't enter nested OOFs
-    // (but miss those as well, and handle them via fragment traversal).
-    if (context.is_inside_orphaned_object && child->IsOutOfFlowPositioned()) {
-      if (child->IsFixedPositioned() && !walked_fixedpos_.Contains(child))
-        pending_fixedpos_missables_.insert(child);
       continue;
     }
 
@@ -920,10 +945,9 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     }
 
     if (box_fragment) {
-      NGPrePaintInfo pre_paint_info(
-          *box_fragment, paint_offset, fragmentainer_idx, is_first_for_node,
-          is_last_for_node, context.is_inside_orphaned_object,
-          is_inside_fragment_child);
+      NGPrePaintInfo pre_paint_info(*box_fragment, paint_offset,
+                                    fragmentainer_idx, is_first_for_node,
+                                    is_last_for_node, is_inside_fragment_child);
       Walk(*child, context, &pre_paint_info);
     } else {
       Walk(*child, context, /* pre_paint_info */ nullptr);
@@ -985,28 +1009,8 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
 
   // Keep track of fragments that act as containers for OOFs, so that we can
   // search their children when looking for an OOF further down in the tree.
-  if (object.CanContainAbsolutePositionObjects()) {
-    if (context.current_fragmentainer.fragment && box &&
-        box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks) {
-      // If we're in a fragmentation context, the parent fragment of OOFs is the
-      // fragmentainer, unless the object is monolithic, in which case nothing
-      // inside the object participates in the current block fragmentation
-      // context. This means that this object (and not the nearest
-      // fragmentainer) acts as a containing block for OOF descendants,
-      context.current_fragmentainer = {};
-    }
-    // The OOF containing block structure is special under block fragmentation:
-    // A fragmentable OOF is always a direct child of a fragmentainer.
-    context.absolute_positioned_container = context.current_fragmentainer;
-    if (!context.absolute_positioned_container.fragment) {
-      context.absolute_positioned_container.fragment =
-          context.oof_container_candidate_fragment;
-    }
-    if (object.CanContainFixedPositionObjects()) {
-      context.fixed_positioned_container =
-          context.absolute_positioned_container;
-    }
-  }
+  if (object.CanContainAbsolutePositionObjects())
+    UpdateContextForOOFContainer(object, context);
 
   if (fragment) {
     bool has_missable_children = false;
@@ -1025,7 +1029,7 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject& object,
       WalkLayoutObjectChildren(object, fragment, context);
 
     if (has_missable_children)
-      WalkMissedChildren(*fragment, context);
+      WalkMissedChildren(object, *fragment, context);
   } else {
     WalkLayoutObjectChildren(object, fragment, context);
   }
@@ -1039,13 +1043,8 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   if (pre_paint_info) {
     physical_fragment = &pre_paint_info->box_fragment;
     if (physical_fragment && (physical_fragment->IsOutOfFlowPositioned() ||
-                              physical_fragment->IsFloating())) {
+                              physical_fragment->IsFloating()))
       pending_missables_.erase(physical_fragment);
-      if (object.IsFixedPositioned()) {
-        pending_fixedpos_missables_.erase(&object);
-        walked_fixedpos_.insert(&object);
-      }
-    }
     is_inside_fragment_child = pre_paint_info->is_inside_fragment_child;
   }
 

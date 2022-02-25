@@ -274,14 +274,12 @@ struct NGPrePaintInfo {
                  wtf_size_t fragmentainer_idx,
                  bool is_first_for_node,
                  bool is_last_for_node,
-                 bool is_inside_orphaned_object,
                  bool is_inside_fragment_child)
       : box_fragment(box_fragment),
         paint_offset(paint_offset),
         fragmentainer_idx(fragmentainer_idx),
         is_first_for_node(is_first_for_node),
         is_last_for_node(is_last_for_node),
-        is_inside_orphaned_object(is_inside_orphaned_object),
         is_inside_fragment_child(is_inside_fragment_child) {}
 
   // The fragment for the LayoutObject currently being processed, or, in the
@@ -293,12 +291,6 @@ struct NGPrePaintInfo {
   wtf_size_t fragmentainer_idx;
   bool is_first_for_node;
   bool is_last_for_node;
-
-  // True if we're fragment-traversing an object (OOF or float) directly,
-  // instead of walking the layout object tree. In this case, the property /
-  // invalidation context chains will be missing ancestors between the
-  // fragmentainer and the OOF / float.
-  bool is_inside_orphaned_object;
 
   // True if |box_fragment| is the containing block of the LayoutObject
   // currently being processed. Otherwise, |box_fragment| is a fragment for the
