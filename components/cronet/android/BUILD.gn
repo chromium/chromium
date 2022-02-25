@@ -95,10 +95,11 @@ java_cpp_template("integrated_mode_state") {
   }
 }
 
-_generated_api_version_java = "$_templates_dir/org/chromium/net/ApiVersion.java"
-_api_level = read_file("api_version.txt", "value")
+_generated_interface_api_version_java =
+    "$_templates_dir/org/chromium/net/ApiVersion.java"
+_interface_api_level = read_file("interface_api_version.txt", "value")
 
-process_version("api_version") {
+process_version("interface_api_version") {
   process_only = true
   template_file = "api/src/org/chromium/net/ApiVersion.template"
   sources = [
@@ -107,15 +108,16 @@ process_version("api_version") {
   ]
   extra_args = [
     "-e",
-    "API_LEVEL=$_api_level",
+    "API_LEVEL=$_interface_api_level",
   ]
-  output = _generated_api_version_java
+  output = _generated_interface_api_version_java
 }
 
-_generated_impl_version_java =
+_generated_implementation_api_version_java =
     "$_templates_dir/org/chromium/net/impl/ImplVersion.java"
+_implementation_api_level = read_file("implementation_api_version.txt", "value")
 
-process_version("impl_version") {
+process_version("implementation_api_version") {
   process_only = true
   template_file = "java/src/org/chromium/net/impl/ImplVersion.template"
   sources = [
@@ -124,9 +126,9 @@ process_version("impl_version") {
   ]
   extra_args = [
     "-e",
-    "API_LEVEL=$_api_level",
+    "API_LEVEL=$_implementation_api_level",
   ]
-  output = _generated_impl_version_java
+  output = _generated_implementation_api_version_java
 }
 
 _cronet_version_header_include_dir = "$target_gen_dir/cronet_version_header"
@@ -244,11 +246,11 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/UploadDataSink.java",
     "api/src/org/chromium/net/UrlRequest.java",
     "api/src/org/chromium/net/UrlResponseInfo.java",
-    _generated_api_version_java,
+    _generated_interface_api_version_java,
   ]
 
   deps = [
-    ":api_version",
+    ":interface_api_version",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -281,14 +283,14 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/UrlResponseInfoImpl.java",
     "java/src/org/chromium/net/impl/UserAgent.java",
     "java/src/org/chromium/net/impl/VersionSafeCallbacks.java",
-    _generated_impl_version_java,
+    _generated_implementation_api_version_java,
   ]
 
   # Adding deps here won't include those deps in the cronet_impl_common_java.jar.
   # Please add to cronet_impl_common_java_deps_to_package instead.
   deps = [
     ":cronet_api_java",
-    ":impl_version",
+    ":implementation_api_version",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   deps += cronet_impl_common_java_deps_to_package
@@ -1363,10 +1365,11 @@ if (!is_component_build) {
       "$target_gen_dir/cronet_impl_native_proguard.cfg",
       "//AUTHORS",
       "//chrome/VERSION",
-      "api_version.txt",
       "cronet_impl_common_proguard.cfg",
       "cronet_impl_fake_proguard.cfg",
       "cronet_impl_platform_proguard.cfg",
+      "implementation_api_version.txt",
+      "interface_api_version.txt",
     ]
     outputs = [ "$_package_dir/{{source_file_part}}" ]
 
@@ -1522,7 +1525,7 @@ if (!is_component_build) {
     ]
     sources = [
       "//components/cronet/android/api.txt",
-      "//components/cronet/android/api_version.txt",
+      "//components/cronet/android/interface_api_version.txt",
     ]
   }
 

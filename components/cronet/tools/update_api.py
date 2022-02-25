@@ -21,9 +21,9 @@ import tempfile
 # Filename of dump of current API.
 API_FILENAME = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', 'android', 'api.txt'))
-# Filename of file containing API version number.
-API_VERSION_FILENAME = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', 'android', 'api_version.txt'))
+# Filename of file containing the interface API version number.
+INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '..', 'android', 'interface_api_version.txt'))
 
 # Regular expression that catches the beginning of lines that declare classes.
 # The first group returned by a match is the class name.
@@ -155,7 +155,7 @@ def main(args):
   if (generate_api(opts.api_jar, temp_filename) and
       check_api_update(API_FILENAME, temp_filename)):
     # Update API version number to new version number
-    with open(API_VERSION_FILENAME,'r+') as f:
+    with open(INTERFACE_API_VERSION_FILENAME,'r+') as f:
       version = int(f.read())
       f.seek(0)
       f.write(str(version + 1))
