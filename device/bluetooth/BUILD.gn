@@ -207,10 +207,6 @@ component("bluetooth") {
     deps += [ "//chromeos/constants" ]
   }
 
-  if (is_chromeos_ash || is_chromeos_lacros) {
-    deps += [ "//chromeos/constants" ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//ash/constants" ]
   }
