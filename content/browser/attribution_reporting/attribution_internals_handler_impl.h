@@ -11,7 +11,6 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -70,13 +69,12 @@ class AttributionInternalsHandlerImpl
   void OnSourcesChanged() override;
   void OnReportsChanged() override;
   void OnSourceDeactivated(
-      const AttributionStorage::DeactivatedSource& deactivated_source) override;
+      const DeactivatedSource& deactivated_source) override;
   void OnSourceHandled(const StorableSource& source,
                        StorableSource::Result result) override;
   void OnReportSent(const AttributionReport& report,
                     const SendResult& info) override;
-  void OnTriggerHandled(
-      const AttributionStorage::CreateReportResult& result) override;
+  void OnTriggerHandled(const CreateReportResult& result) override;
 
   raw_ptr<WebUI> web_ui_;
   std::unique_ptr<AttributionManager::Provider> manager_provider_;

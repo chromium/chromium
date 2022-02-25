@@ -26,8 +26,6 @@ namespace content {
 
 namespace {
 
-using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
-
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
 const char kDefaultTriggerOrigin[] = "https://sub.conversion.test/";
 const char kDefaultTriggerDestination[] = "https://conversion.test/";
@@ -213,7 +211,7 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 }
 
 void MockAttributionManager::NotifyTriggerHandled(
-    const AttributionStorage::CreateReportResult& result) {
+    const CreateReportResult& result) {
   for (auto& observer : observers_)
     observer.OnTriggerHandled(result);
 }

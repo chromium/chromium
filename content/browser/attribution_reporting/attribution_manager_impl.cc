@@ -20,6 +20,7 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
@@ -46,8 +47,6 @@
 namespace content {
 
 namespace {
-
-using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -410,7 +409,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
     NotifyReportsChanged();
   }
 
-  if (absl::optional<AttributionStorage::DeactivatedSource> source =
+  if (absl::optional<DeactivatedSource> source =
           result.GetDeactivatedSource()) {
     NotifySourceDeactivated(*source);
   }
@@ -650,7 +649,7 @@ void AttributionManagerImpl::NotifyReportsChanged() {
 }
 
 void AttributionManagerImpl::NotifySourceDeactivated(
-    const AttributionStorage::DeactivatedSource& source) {
+    const DeactivatedSource& source) {
   for (auto& observer : observers_)
     observer.OnSourceDeactivated(source);
 }

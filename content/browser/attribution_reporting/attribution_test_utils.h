@@ -23,6 +23,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -296,14 +297,12 @@ class MockAttributionManager : public AttributionManager {
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
-  void NotifySourceDeactivated(
-      const AttributionStorage::DeactivatedSource& source);
+  void NotifySourceDeactivated(const DeactivatedSource& source);
   void NotifySourceHandled(const StorableSource& source,
                            StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
                         const SendResult& info);
-  void NotifyTriggerHandled(
-      const AttributionStorage::CreateReportResult& result);
+  void NotifyTriggerHandled(const CreateReportResult& result);
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager> manager);
 
@@ -494,13 +493,11 @@ bool operator==(const AttributionReport& a, const AttributionReport& b);
 
 bool operator==(const SendResult& a, const SendResult& b);
 
-bool operator==(const AttributionStorage::DeactivatedSource& a,
-                const AttributionStorage::DeactivatedSource& b);
+bool operator==(const DeactivatedSource& a, const DeactivatedSource& b);
 
 std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status);
 
-std::ostream& operator<<(std::ostream& out,
-                         AttributionStorage::DeactivatedSource::Reason reason);
+std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason);
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
@@ -545,9 +542,8 @@ std::ostream& operator<<(std::ostream& out, const SendResult& info);
 std::ostream& operator<<(std::ostream& out,
                          StoredSource::AttributionLogic attribution_logic);
 
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionStorage::DeactivatedSource& deactivated_source);
+std::ostream& operator<<(std::ostream& out,
+                         const DeactivatedSource& deactivated_source);
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 

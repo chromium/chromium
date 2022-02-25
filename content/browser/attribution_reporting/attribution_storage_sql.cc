@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
@@ -199,9 +200,6 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 26;
 const int AttributionStorageSql::kDeprecatedVersionNumber = 25;
 
 namespace {
-
-using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
-using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
 

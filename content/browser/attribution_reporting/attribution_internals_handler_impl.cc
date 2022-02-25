@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -33,8 +34,6 @@
 namespace content {
 
 namespace {
-
-using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using Attributability =
     ::content::mojom::WebUIAttributionSource::Attributability;
@@ -206,7 +205,7 @@ void AttributionInternalsHandlerImpl::OnReportsChanged() {
 }
 
 void AttributionInternalsHandlerImpl::OnSourceDeactivated(
-    const AttributionStorage::DeactivatedSource& deactivated_source) {
+    const DeactivatedSource& deactivated_source) {
   Attributability attributability;
   switch (deactivated_source.reason) {
     case DeactivatedSource::Reason::kReplacedByNewerSource:
@@ -284,7 +283,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 }
 
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
-    const AttributionStorage::CreateReportResult& result) {
+    const CreateReportResult& result) {
   mojom::WebUIAttributionReport::Status status;
   switch (result.status()) {
     case AttributionTrigger::Result::kSuccessDroppedLowerPriority:

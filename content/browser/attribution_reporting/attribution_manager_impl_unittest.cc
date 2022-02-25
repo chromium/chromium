@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -53,8 +54,6 @@
 namespace content {
 
 namespace {
-
-using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -96,7 +95,7 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnTriggerHandled,
-              (const AttributionStorage::CreateReportResult& result),
+              (const CreateReportResult& result),
               (override));
 };
 

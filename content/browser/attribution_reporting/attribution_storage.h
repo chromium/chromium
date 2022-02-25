@@ -10,9 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -22,7 +20,12 @@ class Origin;
 
 namespace content {
 
+class AttributionTrigger;
+class CreateReportResult;
+class StoredSource;
+
 struct AggregatableAttribution;
+struct DeactivatedSource;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
@@ -30,25 +33,6 @@ struct AggregatableAttribution;
 // properly should result in no-ops.
 class AttributionStorage {
  public:
-  struct CONTENT_EXPORT DeactivatedSource {
-    enum class Reason {
-      kReplacedByNewerSource,
-      kReachedAttributionLimit,
-    };
-
-    DeactivatedSource(StoredSource source, Reason reason);
-    ~DeactivatedSource();
-
-    DeactivatedSource(const DeactivatedSource&);
-    DeactivatedSource(DeactivatedSource&&);
-
-    DeactivatedSource& operator=(const DeactivatedSource&);
-    DeactivatedSource& operator=(DeactivatedSource&&);
-
-    StoredSource source;
-    Reason reason;
-  };
-
   struct CONTENT_EXPORT StoreSourceResult {
     explicit StoreSourceResult(
         StorableSource::Result status,
@@ -85,46 +69,6 @@ class AttributionStorage {
   virtual StoreSourceResult StoreSource(
       const StorableSource& source,
       int deactivated_source_return_limit = -1) = 0;
-
-  class CONTENT_EXPORT CreateReportResult {
-   public:
-    explicit CreateReportResult(
-        AttributionTrigger::Result status,
-        absl::optional<AttributionReport> dropped_report = absl::nullopt,
-        absl::optional<DeactivatedSource::Reason>
-            dropped_report_source_deactivation_reason = absl::nullopt,
-        absl::optional<base::Time> report_time = absl::nullopt);
-    ~CreateReportResult();
-
-    CreateReportResult(const CreateReportResult&);
-    CreateReportResult(CreateReportResult&&);
-
-    CreateReportResult& operator=(const CreateReportResult&);
-    CreateReportResult& operator=(CreateReportResult&&);
-
-    AttributionTrigger::Result status() const;
-
-    const absl::optional<AttributionReport>& dropped_report() const;
-
-    absl::optional<base::Time> report_time() const;
-
-    absl::optional<DeactivatedSource> GetDeactivatedSource() const;
-
-   private:
-    AttributionTrigger::Result status_;
-
-    // `AttributionTrigger::Result::kInternalError` is only associated with a
-    // dropped report if the browser succeeded in running the
-    // source-to-attribute logic.
-    absl::optional<AttributionReport> dropped_report_;
-
-    // Null unless `dropped_report_`'s source was deactivated.
-    absl::optional<DeactivatedSource::Reason>
-        dropped_report_source_deactivation_reason_;
-
-    // Null unless `status` is `kSuccess` or `kSuccessDroppedLowerPriority`.
-    absl::optional<base::Time> report_time_;
-  };
 
   // Finds all stored sources matching a given `trigger`, and stores the
   // new associated report. Only active sources will receive new attributions.

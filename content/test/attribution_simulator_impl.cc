@@ -24,10 +24,10 @@
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -202,8 +202,7 @@ class AttributionEventHandler : public AttributionObserver {
     rejected_sources_.push_back(std::move(dict));
   }
 
-  void OnTriggerHandled(
-      const AttributionStorage::CreateReportResult& result) override {
+  void OnTriggerHandled(const CreateReportResult& result) override {
     DCHECK(!input_values_.empty());
     base::Value input_value = std::move(input_values_.front());
     input_values_.pop_front();

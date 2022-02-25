@@ -6,13 +6,14 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 
 #include "base/observer_list_types.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace content {
 
 class AttributionReport;
+class CreateReportResult;
 
+struct DeactivatedSource;
 struct SendResult;
 
 // Observes events in the Attribution Reporting API. Observers are registered on
@@ -32,8 +33,7 @@ class AttributionObserver : public base::CheckedObserver {
                                StorableSource::Result result) {}
 
   // Called when a source is deactivated.
-  virtual void OnSourceDeactivated(
-      const AttributionStorage::DeactivatedSource& source) {}
+  virtual void OnSourceDeactivated(const DeactivatedSource& source) {}
 
   // Called when a report is sent, regardless of success, but not for attempts
   // that will be retried.
@@ -41,8 +41,7 @@ class AttributionObserver : public base::CheckedObserver {
                             const SendResult& info) {}
 
   // Called when a trigger is registered, regardless of success.
-  virtual void OnTriggerHandled(
-      const AttributionStorage::CreateReportResult& result) {}
+  virtual void OnTriggerHandled(const CreateReportResult& result) {}
 };
 
 }  // namespace content

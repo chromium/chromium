@@ -41,8 +41,10 @@ class AttributionCookieChecker;
 class AttributionReportSender;
 class AttributionStorageDelegate;
 class BrowserContext;
+class CreateReportResult;
 class StoragePartitionImpl;
 
+struct DeactivatedSource;
 struct SendResult;
 
 // Provides access to the manager owned by the default StoragePartition.
@@ -161,12 +163,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                     SendResult info);
   void MarkReportCompleted(AttributionReport::EventLevelData::Id report_id);
 
-  void OnReportStored(AttributionStorage::CreateReportResult result);
+  void OnReportStored(CreateReportResult result);
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
-  void NotifySourceDeactivated(
-      const AttributionStorage::DeactivatedSource& source);
+  void NotifySourceDeactivated(const DeactivatedSource& source);
 
   // Friend to expose the AttributionStorage for certain tests.
   friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
