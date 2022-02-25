@@ -20,10 +20,10 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.chrome.browser.management"
@@ -35,6 +35,7 @@ android_resources("java_resources") {
     "java/res/drawable/enterprise_phone.xml",
     "java/res/drawable/enterprise_user_circle.xml",
     "java/res/layout/enterprise_management.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
