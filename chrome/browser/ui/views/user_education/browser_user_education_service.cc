@@ -30,22 +30,8 @@
 #endif
 
 namespace {
-const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 
-// kIPHDesktopTabGroupsNewGroupFeature:
-ui::TrackedElement* GetTabGroupsAnchorView(
-    const ui::ElementTracker::ElementList& elements) {
-  if (elements.empty())
-    return nullptr;
-  TabStrip* const tab_strip = static_cast<TabStrip*>(
-      elements[0]->AsA<views::TrackedElementViews>()->view());
-  constexpr int kPreferredAnchorTab = 2;
-  views::View* const tab =
-      tab_strip->GetTabViewForPromoAnchor(kPreferredAnchorTab);
-  return tab ? views::ElementTrackerViews::GetInstance()->GetElementForView(
-                   tab, true)
-             : nullptr;
-}
+const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 
 }  // namespace
 
@@ -92,12 +78,10 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForTutorialPromo(
                     feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-                    kTabStripElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
+                    kTabStripRegionElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
                     kTabGroupTutorialId)
                     .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
-                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
-                    .SetAnchorElementFilter(
-                        base::BindRepeating(&GetTabGroupsAnchorView))));
+                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
 
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
