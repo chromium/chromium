@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/task/deferred_sequenced_task_runner.h"
+#include "base/task/common/scoped_defer_task_posting.h"
 
 #include <utility>
 
@@ -40,6 +41,10 @@ DeferredSequencedTaskRunner::DeferredSequencedTaskRunner()
 bool DeferredSequencedTaskRunner::PostDelayedTask(const Location& from_here,
                                                   OnceClosure task,
                                                   TimeDelta delay) {
+  // Do not process new PostTasks while we are handling a PostTask (tracing
+  // has to do this) as it can lead to a deadlock and defer it instead.
+  ScopedDeferTaskPosting disallow_task_posting;
+
   AutoLock lock(lock_);
   if (started_) {
     DCHECK(deferred_tasks_queue_.empty());

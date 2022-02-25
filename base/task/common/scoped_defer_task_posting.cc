@@ -11,6 +11,8 @@ namespace base {
 
 namespace {
 
+// Holds a thread-local pointer to the current scope or null when no
+// scope is active.
 ThreadLocalPointer<ScopedDeferTaskPosting>& GetScopedDeferTaskPostingTLS() {
   static NoDestructor<ThreadLocalPointer<ScopedDeferTaskPosting>> tls;
   return *tls;
