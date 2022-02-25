@@ -24,9 +24,7 @@
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/feature_list_query_processor.h"
-#include "components/segmentation_platform/internal/execution/mock_feature_aggregator.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/segmentation_model_handler.h"
@@ -43,6 +41,9 @@ using testing::SaveArg;
 using testing::SetArgReferee;
 
 namespace segmentation_platform {
+
+namespace {
+
 using Sample = SignalDatabase::Sample;
 
 class MockSegmentInfoDatabase : public test::TestSegmentInfoDatabase {
@@ -98,6 +99,23 @@ class MockSegmentationModelHandler : public SegmentationModelHandler {
   MOCK_METHOD(bool, ModelAvailable, (), (const override));
 };
 
+// TODO(ssid): Use mock_feature_list_query_processor.h.
+class MockFeatureListQueryProcessor : public FeatureListQueryProcessor {
+ public:
+  MockFeatureListQueryProcessor()
+      : FeatureListQueryProcessor(nullptr, nullptr) {}
+  ~MockFeatureListQueryProcessor() override = default;
+  MOCK_METHOD(void,
+              ProcessFeatureList,
+              (const proto::SegmentationModelMetadata&,
+               OptimizationTarget,
+               base::Time,
+               FeatureProcessorCallback),
+              (override));
+};
+
+}  // namespace
+
 class ModelExecutionManagerTest : public testing::Test {
  public:
   ModelExecutionManagerTest() = default;
@@ -121,10 +139,8 @@ class ModelExecutionManagerTest : public testing::Test {
   void CreateModelExecutionManager(
       std::vector<OptimizationTarget> segment_ids,
       const ModelExecutionManager::SegmentationModelUpdatedCallback& callback) {
-    auto feature_aggregator = std::make_unique<MockFeatureAggregator>();
-    feature_aggregator_ = feature_aggregator.get();
-    feature_list_query_processor_ = std::make_unique<FeatureListQueryProcessor>(
-        signal_database_.get(), std::move(feature_aggregator));
+    feature_list_query_processor_ =
+        std::make_unique<MockFeatureListQueryProcessor>();
     model_execution_manager_ = std::make_unique<ModelExecutionManagerImpl>(
         segment_ids,
         base::BindRepeating(&ModelExecutionManagerTest::CreateModelHandler,
@@ -186,9 +202,8 @@ class ModelExecutionManagerTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
-  raw_ptr<MockFeatureAggregator> feature_aggregator_;
 
-  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
+  std::unique_ptr<MockFeatureListQueryProcessor> feature_list_query_processor_;
   std::unique_ptr<ModelExecutionManagerImpl> model_execution_manager_;
 };
 
@@ -364,6 +379,61 @@ TEST_F(ModelExecutionManagerTest,
             segment_info_from_db_2->model_metadata().features(0).aggregation());
   // We shuold have kept the prediction result.
   EXPECT_EQ(2, segment_info_from_db_2->prediction_result().result());
+}
+
+TEST_F(ModelExecutionManagerTest, FailedFeatureProcessing) {
+  auto segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  CreateModelExecutionManager({segment_id}, base::DoNothing());
+
+  // Initialize with required metadata.
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+  std::string user_action_name = "some_user_action";
+  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
+                                          proto::Aggregation::BUCKETED_COUNT);
+
+  EXPECT_CALL(*feature_list_query_processor_,
+              ProcessFeatureList(_, segment_id, clock_.Now(), _))
+      .WillOnce(
+          RunOnceCallback<3>(/*error=*/true, std::vector<float>{1, 2, 3}));
+
+  // The input tensor should contain all values flattened to a single vector.
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(FindHandler(segment_id), ExecuteModelWithInput(_, _)).Times(0);
+
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+
+  EXPECT_CALL(*feature_list_query_processor_,
+              ProcessFeatureList(_, segment_id, clock_.Now(), _))
+      .WillOnce(RunOnceCallback<3>(/*error=*/true, std::vector<float>{}));
+  ExecuteModel(std::make_pair(0, ModelExecutionStatus::kInvalidMetadata));
+}
+
+TEST_F(ModelExecutionManagerTest, ExecuteModelWithMultipleFeatures) {
+  auto segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  CreateModelExecutionManager({segment_id}, base::DoNothing());
+
+  // Initialize with required metadata.
+  segment_database_->SetBucketDuration(segment_id, 3, proto::TimeUnit::HOUR);
+  std::string user_action_name = "some_user_action";
+  segment_database_->AddUserActionFeature(segment_id, user_action_name, 3, 3,
+                                          proto::Aggregation::BUCKETED_COUNT);
+
+  EXPECT_CALL(*feature_list_query_processor_,
+              ProcessFeatureList(_, segment_id, clock_.Now(), _))
+      .WillOnce(RunOnceCallback<3>(/*error=*/false,
+                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7}));
+
+  // The input tensor should contain all values flattened to a single vector.
+  EXPECT_CALL(FindHandler(segment_id), ModelAvailable())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(FindHandler(segment_id),
+              ExecuteModelWithInput(_, std::vector<float>{1, 2, 3, 4, 5, 6, 7}))
+      .WillOnce(RunOnceCallback<0>(absl::make_optional(0.8)));
+
+  ExecuteModel(std::make_pair(0.8, ModelExecutionStatus::kSuccess));
 }
 
 }  // namespace segmentation_platform
