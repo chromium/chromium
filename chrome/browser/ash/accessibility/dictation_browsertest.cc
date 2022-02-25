@@ -516,7 +516,8 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
 #define MAYBE_UserEndsDictationWhenChromeVoxEnabled \
   DISABLED_UserEndsDictationWhenChromeVoxEnabled
 #endif
-IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
+IN_PROC_BROWSER_TEST_P(DictationTest,
+                       MAYBE_UserEndsDictationWhenChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
 
   EnableChromeVox();
