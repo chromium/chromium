@@ -11,9 +11,9 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -32,19 +32,10 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/public/browser/network_service_instance.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
-#endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-#include "content/public/browser/network_service_instance.h"
-#include "services/network/test/test_network_connection_tracker.h"
-#endif
 
 namespace content {
 
@@ -136,52 +127,11 @@ struct ExpectedReportWaiter {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class ConnectionWaiter
-    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
- public:
-  static void WaitUntilOnline() {
-    ConnectionWaiter waiter;
-    waiter.run_loop_.Run();
-  }
-
-  ~ConnectionWaiter() override {
-    content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
-        this);
-  }
-
- private:
-  ConnectionWaiter() {
-    content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-  }
-
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override {
-    if (!content::GetNetworkConnectionTracker()->IsOffline())
-      run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-};
-#endif
-
 }  // namespace
 
 class AttributionsBrowserTest : public ContentBrowserTest {
  public:
-  AttributionsBrowserTest() {
-    AttributionManagerImpl::RunInMemoryForTesting();
-
-#if BUILDFLAG(IS_FUCHSIA)
-    // Fuchsia's network connection tracker always seems to indicate offline in
-    // these tests, so override the tracker with a test one, which defaults to
-    // online. See crbug.com/1285057 for details.
-    network_connection_tracker_ =
-        network::TestNetworkConnectionTracker::CreateInstance();
-    content::SetNetworkConnectionTrackerForTesting(
-        network::TestNetworkConnectionTracker::GetInstance());
-#endif
-  }
+  AttributionsBrowserTest() { AttributionManagerImpl::RunInMemoryForTesting(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kConversionsDebugMode);
@@ -195,6 +145,14 @@ class AttributionsBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    // These tests don't cover online/offline behavior; that is covered by
+    // `AttributionManagerImpl`'s unit tests. Here we use a fake tracker that
+    // always indicates online. See crbug.com/1285057 for details.
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    SetNetworkConnectionTrackerForTesting(nullptr);
+    SetNetworkConnectionTrackerForTesting(network_connection_tracker_.get());
+
     host_resolver()->AddRule("*", "127.0.0.1");
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -203,14 +161,10 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
     SetupCrossSiteRedirector(https_server_.get());
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // On ChromeOS the connection type comes from a fake Shill service, which
-    // is configured with a fake ethernet connection asynchronously. Wait for
-    // the connection type to be available to avoid getting notified of the
-    // connection change halfway through the test. See crrev.com/c/1684295.
-    ConnectionWaiter::WaitUntilOnline();
-#endif
+  void TearDownOnMainThread() override {
+    SetNetworkConnectionTrackerForTesting(nullptr);
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
@@ -220,10 +174,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-#if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
-#endif
 };
 
 // Verifies that storage initialization does not hang when initialized in a
