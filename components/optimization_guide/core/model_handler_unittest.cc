@@ -118,14 +118,21 @@ class ModelHandlerTest : public testing::Test {
 };
 
 TEST_F(ModelHandlerTest, ObserverIsAttachedCorrectly) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
   EXPECT_TRUE(model_observer_tracker()->add_observer_called());
 
   ResetModelHandler();
   EXPECT_TRUE(model_observer_tracker()->remove_observer_called());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
 }
 
 TEST_F(ModelHandlerTest, ModelFileUpdatedWrongTarget) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
 
   PushModelFileToModelExecutor(
@@ -133,9 +140,18 @@ TEST_F(ModelHandlerTest, ModelFileUpdatedWrongTarget) {
       /*model_metadata=*/absl::nullopt);
 
   EXPECT_FALSE(model_handler()->ModelAvailable());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      0);
 }
 
 TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
+  base::HistogramTester histogram_tester;
+
   CreateModelHandler();
 
   PushModelFileToModelExecutor(
@@ -147,6 +163,33 @@ TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelNoMetadata) {
   EXPECT_FALSE(model_handler()
                    ->ParsedSupportedFeaturesForLoadedModel<proto::Duration>()
                    .has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      1);
+}
+
+TEST_F(ModelHandlerTest, MultipleModelUpdatesOnlyRecordsMetricOnce) {
+  base::HistogramTester histogram_tester;
+
+  CreateModelHandler();
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelHandler.HandlerCreated.PainfulPageLoad", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable."
+      "PainfulPageLoad",
+      1);
 }
 
 TEST_F(ModelHandlerTest, ParsedSupportedFeaturesForLoadedModelWithMetadata) {
