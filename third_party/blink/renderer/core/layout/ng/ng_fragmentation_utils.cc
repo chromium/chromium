@@ -720,6 +720,28 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
   const auto& physical_fragment = layout_result.PhysicalFragment();
   NGFragment fragment(space.GetWritingDirection(), physical_fragment);
 
+  if (child.IsBlock()) {
+    const auto& box_fragment = To<NGPhysicalBoxFragment>(physical_fragment);
+
+    // If we're at a resumed fragment, don't break before it. Once we've found
+    // room for the first fragment, we cannot skip fragmentainers afterwards. We
+    // might be out of space at a subsequent fragment e.g. if all space is taken
+    // up by a float that got pushed ahead from a previous fragmentainer, but we
+    // still need to allow this fragment here. Inserting a break before on a
+    // node that has already started producing fragments would result in
+    // restarting layout from scratch once we find room for a fragment
+    // again. Preventing breaking here should have no visual effect, since the
+    // block-size of the fragment will typically be 0 anyway.
+    if (!box_fragment.IsFirstForNode())
+      return true;
+
+    // If clearance forces the child to the next fragmentainer, we cannot move
+    // past the breakpoint, but rather retry in the next fragmentainer.
+    if (builder && builder->ExclusionSpace().NeedsClearancePastFragmentainer(
+                       child.Style().Clear(space.Direction())))
+      return false;
+  }
+
   if (!space.HasKnownFragmentainerBlockSize()) {
     if (space.IsInitialColumnBalancingPass() && builder) {
       if (layout_result.PhysicalFragment().IsMonolithic() ||
