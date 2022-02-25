@@ -1198,4 +1198,20 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     grey_sufficientlyVisible(), nil);
 }
 
+#pragma mark - Tab Grid Search Mode
++ (id<GREYMatcher>)tabGridSearchTabsButton {
+  return grey_allOf(grey_accessibilityID(kTabGridSearchButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridSearchBar {
+  return grey_allOf(grey_accessibilityID(kTabGridSearchBarIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridSearchCancelButton {
+  return grey_allOf(grey_accessibilityID(kTabGridCancelButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
 @end

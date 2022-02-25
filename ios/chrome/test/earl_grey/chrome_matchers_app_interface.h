@@ -616,6 +616,17 @@
 // Returns a matcher for the button to share tabs.
 + (id<GREYMatcher>)tabGridEditShareButton;
 
+#pragma mark - Tab Grid Search Mode
+
+// Returns a matcher for the button to enter the tab grid search mode.
++ (id<GREYMatcher>)tabGridSearchTabsButton;
+
+// Returns a matcher for the tab grid search bar.
++ (id<GREYMatcher>)tabGridSearchBar;
+
+// Returns a matcher for the tab grid search cancel button.
++ (id<GREYMatcher>)tabGridSearchCancelButton;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_MATCHERS_APP_INTERFACE_H_

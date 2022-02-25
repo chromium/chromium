@@ -787,4 +787,18 @@ id<GREYMatcher> TabGridEditShareButton() {
   return [ChromeMatchersAppInterface tabGridEditShareButton];
 }
 
+#pragma mark - Tab Grid Search Mode
+
+id<GREYMatcher> TabGridSearchTabsButton() {
+  return [ChromeMatchersAppInterface tabGridSearchTabsButton];
+}
+
+id<GREYMatcher> TabGridSearchBar() {
+  return [ChromeMatchersAppInterface tabGridSearchBar];
+}
+
+id<GREYMatcher> TabGridSearchCancelButton() {
+  return [ChromeMatchersAppInterface tabGridSearchCancelButton];
+}
+
 }  // namespace chrome_test_util
