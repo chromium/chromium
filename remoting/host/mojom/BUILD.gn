@@ -58,8 +58,16 @@ mojom("mojom") {
           cpp = "::webrtc::DesktopCaptureOptions"
         },
         {
+          mojom = "remoting.mojom.DesktopCaptureResult"
+          cpp = "::webrtc::DesktopCapturer::Result"
+        },
+        {
           mojom = "remoting.mojom.DesktopEnvironmentOptions"
           cpp = "::remoting::DesktopEnvironmentOptions"
+        },
+        {
+          mojom = "remoting.mojom.DesktopRect"
+          cpp = "::webrtc::DesktopRect"
         },
         {
           mojom = "remoting.mojom.DesktopSize"

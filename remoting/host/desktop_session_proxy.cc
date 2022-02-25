@@ -232,8 +232,6 @@ bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
 
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(DesktopSessionProxy, message)
-    IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_CaptureResult,
-                        OnCaptureResult)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_DisplayChanged,
                         OnDesktopDisplayChanged)
     IPC_MESSAGE_HANDLER(ChromotingDesktopNetworkMsg_MouseCursor, OnMouseCursor)
@@ -718,9 +716,7 @@ void DesktopSessionProxy::OnDesktopDisplayChanged(
   }
 }
 
-void DesktopSessionProxy::OnCaptureResult(
-    webrtc::DesktopCapturer::Result result,
-    const SerializedDesktopFrame& serialized_frame) {
+void DesktopSessionProxy::OnCaptureResult(mojom::CaptureResultPtr result) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   --pending_capture_frame_requests_;
@@ -729,26 +725,27 @@ void DesktopSessionProxy::OnCaptureResult(
     return;
   }
 
-  if (result != webrtc::DesktopCapturer::Result::SUCCESS) {
-    video_capturer_->OnCaptureResult(result, nullptr);
+  if (result->is_capture_error()) {
+    video_capturer_->OnCaptureResult(result->get_capture_error(), nullptr);
     return;
   }
 
-  // Assume that |serialized_frame| is well-formed because it was received from
-  // a more privileged process.
+  // Assume that |desktop_frame| is well-formed because it was received from a
+  // more privileged process.
+  mojom::DesktopFramePtr& desktop_frame = result->get_desktop_frame();
   scoped_refptr<IpcSharedBufferCore> shared_buffer_core =
-      GetSharedBufferCore(serialized_frame.shared_buffer_id);
+      GetSharedBufferCore(desktop_frame->shared_buffer_id);
   CHECK(shared_buffer_core.get());
 
-  std::unique_ptr<webrtc::DesktopFrame> frame(
-      new webrtc::SharedMemoryDesktopFrame(
-          serialized_frame.dimensions, serialized_frame.bytes_per_row,
-          new IpcSharedBuffer(shared_buffer_core)));
-  frame->set_capture_time_ms(serialized_frame.capture_time_ms);
-  frame->set_dpi(serialized_frame.dpi);
-  frame->set_capturer_id(serialized_frame.capturer_id);
+  std::unique_ptr<webrtc::DesktopFrame> frame =
+      std::make_unique<webrtc::SharedMemoryDesktopFrame>(
+          desktop_frame->size, desktop_frame->stride,
+          new IpcSharedBuffer(shared_buffer_core));
+  frame->set_capture_time_ms(desktop_frame->capture_time_ms);
+  frame->set_dpi(desktop_frame->dpi);
+  frame->set_capturer_id(desktop_frame->capturer_id);
 
-  for (const auto& rect : serialized_frame.dirty_region) {
+  for (const auto& rect : desktop_frame->dirty_region) {
     frame->mutable_updated_region()->AddRect(rect);
   }
 

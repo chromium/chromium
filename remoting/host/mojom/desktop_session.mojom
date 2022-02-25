@@ -337,6 +337,13 @@ interface DesktopSessionControl {
   SetUpUrlForwarder();
 };
 
+// |frame| is set and contains valid frame data when a frame is captured
+// successfully, otherwise |error| will contain the reason the capture failed.
+union CaptureResult {
+  DesktopFrame desktop_frame;
+  DesktopCaptureResult capture_error;
+};
+
 // Allows the desktop process to forward events and data to the network process
 // which may process it (e.g. encode a video frame) or forward it to the client
 // (in the case of updated clipboard contents).
@@ -367,6 +374,11 @@ interface DesktopSessionEventHandler {
   // Notifies the network process that a shared memory region has been released
   // and should no longer be used.
   OnSharedMemoryRegionReleased(int32 id);
+
+  // Notifies the network process that new frame data is available in the shared
+  // memory region along with the details on how to access it (e.g. stride,
+  // size, etc.), otherwise provides the error reason the capture failed.
+  OnCaptureResult(CaptureResult result);
 };
 
 // This enum mirrors the remoting::protocol::ErrorCode enum.

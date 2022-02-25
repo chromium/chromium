@@ -69,37 +69,6 @@ void ParamTraits<webrtc::DesktopSize>::Log(const webrtc::DesktopSize& p,
                                p.width(), p.height()));
 }
 
-// webrtc::DesktopRect
-
-// static
-void ParamTraits<webrtc::DesktopRect>::Write(base::Pickle* m,
-                                             const webrtc::DesktopRect& p) {
-  m->WriteInt(p.left());
-  m->WriteInt(p.top());
-  m->WriteInt(p.right());
-  m->WriteInt(p.bottom());
-}
-
-// static
-bool ParamTraits<webrtc::DesktopRect>::Read(const base::Pickle* m,
-                                            base::PickleIterator* iter,
-                                            webrtc::DesktopRect* r) {
-  int left, right, top, bottom;
-  if (!iter->ReadInt(&left) || !iter->ReadInt(&top) ||
-      !iter->ReadInt(&right) || !iter->ReadInt(&bottom)) {
-    return false;
-  }
-  *r = webrtc::DesktopRect::MakeLTRB(left, top, right, bottom);
-  return true;
-}
-
-// static
-void ParamTraits<webrtc::DesktopRect>::Log(const webrtc::DesktopRect& p,
-                                           std::string* l) {
-  l->append(base::StringPrintf("webrtc::DesktopRect(%d, %d, %d, %d)",
-                               p.left(), p.top(), p.right(), p.bottom()));
-}
-
 // webrtc::MouseCursor
 
 // static
@@ -157,10 +126,10 @@ bool ParamTraits<webrtc::MouseCursor>::Read(const base::Pickle* m,
 void ParamTraits<webrtc::MouseCursor>::Log(
     const webrtc::MouseCursor& p,
     std::string* l) {
-  l->append(base::StringPrintf(
-      "webrtc::DesktopRect{image(%d, %d), hotspot(%d, %d)}",
-      p.image()->size().width(), p.image()->size().height(),
-      p.hotspot().x(), p.hotspot().y()));
+  l->append(
+      base::StringPrintf("webrtc::MouseCursor{image(%d, %d), hotspot(%d, %d)}",
+                         p.image()->size().width(), p.image()->size().height(),
+                         p.hotspot().x(), p.hotspot().y()));
 }
 
 // remoting::protocol::VideoLayout

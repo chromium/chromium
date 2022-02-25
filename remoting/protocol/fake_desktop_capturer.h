@@ -16,7 +16,7 @@
 namespace remoting {
 namespace protocol {
 
-// A FakeDesktopCapturer generates artificial image for testing purpose.
+// A FakeDesktopCapturer which generates an artificial image for testing.
 //
 // FakeDesktopCapturer is double-buffered as required by DesktopCapturer.
 class FakeDesktopCapturer : public webrtc::DesktopCapturer {

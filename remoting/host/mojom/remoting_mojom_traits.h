@@ -163,6 +163,63 @@ class mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
 };
 
 template <>
+struct EnumTraits<remoting::mojom::DesktopCaptureResult,
+                  ::webrtc::DesktopCapturer::Result> {
+  static remoting::mojom::DesktopCaptureResult ToMojom(
+      ::webrtc::DesktopCapturer::Result input) {
+    switch (input) {
+      case ::webrtc::DesktopCapturer::Result::SUCCESS:
+        return remoting::mojom::DesktopCaptureResult::kSuccess;
+      case ::webrtc::DesktopCapturer::Result::ERROR_TEMPORARY:
+        return remoting::mojom::DesktopCaptureResult::kErrorTemporary;
+      case ::webrtc::DesktopCapturer::Result::ERROR_PERMANENT:
+        return remoting::mojom::DesktopCaptureResult::kErrorPermanent;
+    }
+
+    NOTREACHED();
+    return remoting::mojom::DesktopCaptureResult::kSuccess;
+  }
+
+  static bool FromMojom(remoting::mojom::DesktopCaptureResult input,
+                        ::webrtc::DesktopCapturer::Result* out) {
+    switch (input) {
+      case remoting::mojom::DesktopCaptureResult::kSuccess:
+        *out = ::webrtc::DesktopCapturer::Result::SUCCESS;
+        return true;
+      case remoting::mojom::DesktopCaptureResult::kErrorTemporary:
+        *out = ::webrtc::DesktopCapturer::Result::ERROR_TEMPORARY;
+        return true;
+      case remoting::mojom::DesktopCaptureResult::kErrorPermanent:
+        *out = ::webrtc::DesktopCapturer::Result::ERROR_PERMANENT;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+class mojo::StructTraits<remoting::mojom::DesktopRectDataView,
+                         ::webrtc::DesktopRect> {
+ public:
+  static int32_t left(const ::webrtc::DesktopRect& rect) { return rect.left(); }
+
+  static int32_t top(const ::webrtc::DesktopRect& rect) { return rect.top(); }
+
+  static int32_t right(const ::webrtc::DesktopRect& rect) {
+    return rect.right();
+  }
+
+  static int32_t bottom(const ::webrtc::DesktopRect& rect) {
+    return rect.bottom();
+  }
+
+  static bool Read(remoting::mojom::DesktopRectDataView data_view,
+                   ::webrtc::DesktopRect* out_rect);
+};
+
+template <>
 class mojo::StructTraits<remoting::mojom::DesktopSizeDataView,
                          ::webrtc::DesktopSize> {
  public:

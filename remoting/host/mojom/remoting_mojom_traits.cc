@@ -113,6 +113,16 @@ bool mojo::StructTraits<remoting::mojom::DesktopEnvironmentOptionsDataView,
 
 // static
 bool mojo::StructTraits<
+    remoting::mojom::DesktopRectDataView,
+    ::webrtc::DesktopRect>::Read(remoting::mojom::DesktopRectDataView data_view,
+                                 ::webrtc::DesktopRect* out_rect) {
+  *out_rect = webrtc::DesktopRect::MakeLTRB(
+      data_view.left(), data_view.top(), data_view.right(), data_view.bottom());
+  return true;
+}
+
+// static
+bool mojo::StructTraits<
     remoting::mojom::DesktopSizeDataView,
     ::webrtc::DesktopSize>::Read(remoting::mojom::DesktopSizeDataView data_view,
                                  ::webrtc::DesktopSize* out_size) {

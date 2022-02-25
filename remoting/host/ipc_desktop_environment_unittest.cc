@@ -85,9 +85,10 @@ class MockScreenCapturerCallback : public webrtc::DesktopCapturer::Callback {
 
   ~MockScreenCapturerCallback() override = default;
 
-  MOCK_METHOD2(OnCaptureResultPtr,
-               void(webrtc::DesktopCapturer::Result result,
-                    std::unique_ptr<webrtc::DesktopFrame>* frame));
+  MOCK_METHOD(void,
+              OnCaptureResultPtr,
+              (webrtc::DesktopCapturer::Result,
+               std::unique_ptr<webrtc::DesktopFrame>*));
   void OnCaptureResult(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame) override {
     OnCaptureResultPtr(result, &frame);

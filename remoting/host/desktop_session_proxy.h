@@ -186,6 +186,7 @@ class DesktopSessionProxy
                                    base::ReadOnlySharedMemoryRegion region,
                                    uint32_t size) override;
   void OnSharedMemoryRegionReleased(int id) override;
+  void OnCaptureResult(mojom::CaptureResultPtr capture_result) override;
 
   // mojom::DesktopSessionStateHandler implementation.
   void DisconnectSession(protocol::ErrorCode error) override;
