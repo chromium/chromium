@@ -820,19 +820,11 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
 }
 
-// TODO(crbug.com/1290823): Test failed on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened \
-  DISABLED_ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened
-#else
-#define MAYBE_ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened \
-  ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened
-#endif
 // Tests that changing video src to media stream when video is in
 // Picture-in-Picture session keep Picture-in-Picture window opened.
 IN_PROC_BROWSER_TEST_F(
     VideoPictureInPictureWindowControllerBrowserTest,
-    MAYBE_ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened) {
+    ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
