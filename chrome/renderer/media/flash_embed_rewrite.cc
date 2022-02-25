@@ -56,8 +56,8 @@ GURL FlashEmbedRewrite::RewriteYouTubeFlashEmbedURL(const GURL& url) {
   std::string path = corrected_url.path();
   path.replace(path.find("/v/"), 3, "/embed/");
 
-  url::Replacements<char> r;
-  r.SetPath(path.c_str(), url::Component(0, path.length()));
+  GURL::Replacements r;
+  r.SetPathStr(path);
 
   return corrected_url.ReplaceComponents(r);
 }
@@ -73,8 +73,8 @@ GURL FlashEmbedRewrite::RewriteDailymotionFlashEmbedURL(const GURL& url) {
   int replace_length = path.find("/swf/video/") == 0 ? 11 : 5;
   path.replace(0, replace_length, "/embed/video/");
 
-  url::Replacements<char> r;
-  r.SetPath(path.c_str(), url::Component(0, path.length()));
+  GURL::Replacements r;
+  r.SetPathStr(path);
 
   return url.ReplaceComponents(r);
 }
