@@ -209,11 +209,8 @@ void LanguagePackManager::InstallPack(const std::string& pack_id,
     return;
   }
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(dlc_id);
   DlcserviceClient::Get()->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
+      dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
       base::DoNothing());
 }
 

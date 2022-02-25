@@ -95,17 +95,6 @@ class DlcserviceClientTest : public testing::Test {
   }
 
  protected:
-  dlcservice::InstallRequest CreateInstallRequest(
-      const std::string& id = {},
-      const std::string& omaha_url = {},
-      bool reserve = false) {
-    dlcservice::InstallRequest install_request;
-    install_request.set_id(id);
-    install_request.set_omaha_url(omaha_url);
-    install_request.set_reserve(reserve);
-    return install_request;
-  }
-
   base::test::SingleThreadTaskEnvironment task_environment_;
   DlcserviceClient* client_;
   scoped_refptr<dbus::MockBus> mock_bus_;
@@ -343,8 +332,7 @@ TEST_F(DlcserviceClientTest, InstallSuccessTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorNone, install_result.error);
       });
-  client_->Install(CreateInstallRequest("foo-dlc"), std::move(install_callback),
-                   base::DoNothing());
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -363,8 +351,7 @@ TEST_F(DlcserviceClientTest, InstallFailureTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorInternal, install_result.error);
       });
-  client_->Install(CreateInstallRequest("foo-dlc"), std::move(install_callback),
-                   base::DoNothing());
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -379,7 +366,7 @@ TEST_F(DlcserviceClientTest, InstallProgressTest) {
       [](decltype(counter)* counter, double) { ++*counter; }, &counter);
 
   responses_.push_back(dbus::Response::CreateEmpty());
-  client_->Install(CreateInstallRequest(), std::move(install_callback),
+  client_->Install({}, std::move(install_callback),
                    std::move(progress_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, counter.load());
@@ -402,7 +389,7 @@ TEST_F(DlcserviceClientTest, InstallProgressSkipUnheldDlcIdsTest) {
   DlcserviceClient::ProgressCallback progress_callback = base::BindRepeating(
       [](decltype(counter)* counter, double) { ++*counter; }, &counter);
 
-  client_->Install(CreateInstallRequest("foo"), std::move(install_callback),
+  client_->Install({"foo"}, std::move(install_callback),
                    std::move(progress_callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, counter.load());
@@ -434,8 +421,7 @@ TEST_F(DlcserviceClientTest, InstallBusyStatusTest) {
       base::BindOnce([](const DlcserviceClient::InstallResult& install_result) {
         EXPECT_EQ(dlcservice::kErrorNone, install_result.error);
       });
-  client_->Install(CreateInstallRequest("foo-dlc"), std::move(install_callback),
-                   base::DoNothing());
+  client_->Install("foo-dlc", std::move(install_callback), base::DoNothing());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -456,8 +442,7 @@ TEST_F(DlcserviceClientTest, PendingTaskTest) {
         },
         &counter);
     responses_.push_back(dbus::Response::CreateEmpty());
-    client_->Install(CreateInstallRequest(), std::move(install_callback),
-                     base::DoNothing());
+    client_->Install({}, std::move(install_callback), base::DoNothing());
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, counter.load());
