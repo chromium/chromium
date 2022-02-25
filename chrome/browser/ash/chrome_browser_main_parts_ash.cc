@@ -1293,20 +1293,18 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
     firmware_update_manager_->RequestAllUpdates();
   }
 
-  if (features::IsPciguardUiEnabled()) {
-    // The local_state pref may not be available at this stage of Chrome's
-    // lifecycle, default to false for now. The actual state will be set in a
-    // later initializer.
-    PeripheralNotificationManager::Initialize(
-        user_manager::UserManager::Get()->IsLoggedInAsGuest(),
-        /*initial_state=*/false);
-    Shell::Get()
-        ->pcie_peripheral_notification_controller()
-        ->OnPeripheralNotificationManagerInitialized();
-    Shell::Get()
-        ->usb_peripheral_notification_controller()
-        ->OnPeripheralNotificationManagerInitialized();
-  }
+  // The local_state pref may not be available at this stage of Chrome's
+  // lifecycle, default to false for now. The actual state will be set in a
+  // later initializer.
+  PeripheralNotificationManager::Initialize(
+      user_manager::UserManager::Get()->IsLoggedInAsGuest(),
+      /*initial_state=*/false);
+  Shell::Get()
+      ->pcie_peripheral_notification_controller()
+      ->OnPeripheralNotificationManagerInitialized();
+  Shell::Get()
+      ->usb_peripheral_notification_controller()
+      ->OnPeripheralNotificationManagerInitialized();
 
   crostini_unsupported_action_notifier_ =
       std::make_unique<crostini::CrostiniUnsupportedActionNotifier>();

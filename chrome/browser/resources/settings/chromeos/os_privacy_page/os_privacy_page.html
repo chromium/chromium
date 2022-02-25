@@ -81,49 +81,47 @@
         deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
     <template is="dom-if" if="[[isThunderboltSupported_]]">
-      <template is="dom-if" if="[[isPciguardUiEnabled_]]">
-        <div class="hr"></div>
-        <!-- This toggle is always disabled. The underlying pref state is
-             handled by the JS impl. This is to prevent toggling the pref
-             before the user confirms the action. -->
-        <div id="dataAccessProtectionWrapper"
-            tabindex="0"
-            on-focus="onDataAccessToggleFocus_"
-            on-keypress="onDataAccessToggleKeyPress_">
-          <settings-toggle-button
-              id="crosSettingDataAccessToggle"
-              class="peripheral-data-access-protection"
-              pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
-              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-              sub-label=
-                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
-              deep-link-focus-id$=
-                  "[[Setting.kPeripheralDataAccessProtection]]"
-              on-click="onPeripheralProtectionClick_"
-              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
-              hidden$="[[isLocalStateDataAccessPref_(
-                  dataAccessProtectionPrefName_)]]"
-              disabled
-              inverted>
-          </settings-toggle-button>
-          <settings-toggle-button
-              id="localStateDataAccessToggle"
-              class="peripheral-data-access-protection"
-              pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
-              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-              sub-label=
-                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
-              deep-link-focus-id$=
-                  "[[Setting.kPeripheralDataAccessProtection]]"
-              on-click="onPeripheralProtectionClick_"
-              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
-              hidden$="[[isCrosSettingDataAccessPref_(
-                  dataAccessProtectionPrefName_)]]"
-              disabled
-              inverted>
-          </settings-toggle-button>
-        </div>
-      </template>
+      <div class="hr"></div>
+      <!-- This toggle is always disabled. The underlying pref state is
+            handled by the JS impl. This is to prevent toggling the pref
+            before the user confirms the action. -->
+      <div id="dataAccessProtectionWrapper"
+          tabindex="0"
+          on-focus="onDataAccessToggleFocus_"
+          on-keypress="onDataAccessToggleKeyPress_">
+        <settings-toggle-button
+            id="crosSettingDataAccessToggle"
+            class="peripheral-data-access-protection"
+            pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+            label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+            sub-label=
+                "$i18n{peripheralDataAccessProtectionToggleDescription}"
+            deep-link-focus-id$=
+                "[[Setting.kPeripheralDataAccessProtection]]"
+            on-click="onPeripheralProtectionClick_"
+            learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+            hidden$="[[isLocalStateDataAccessPref_(
+                dataAccessProtectionPrefName_)]]"
+            disabled
+            inverted>
+        </settings-toggle-button>
+        <settings-toggle-button
+            id="localStateDataAccessToggle"
+            class="peripheral-data-access-protection"
+            pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
+            label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+            sub-label=
+                "$i18n{peripheralDataAccessProtectionToggleDescription}"
+            deep-link-focus-id$=
+                "[[Setting.kPeripheralDataAccessProtection]]"
+            on-click="onPeripheralProtectionClick_"
+            learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+            hidden$="[[isCrosSettingDataAccessPref_(
+                dataAccessProtectionPrefName_)]]"
+            disabled
+            inverted>
+        </settings-toggle-button>
+      </div>
     </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <div class="hr"></div>

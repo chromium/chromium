@@ -119,18 +119,6 @@ Polymer({
     },
 
     /**
-     * True if Pciguard UI is enabled.
-     * @private
-     */
-    isPciguardUiEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('pciguardUiEnabled');
-      },
-      readOnly: true,
-    },
-
-    /**
      * True if snooping protection or screen lock is enabled.
      * @private
      */
@@ -255,7 +243,7 @@ Polymer({
 
     this.browserProxy_.isThunderboltSupported().then(enabled => {
       this.isThunderboltSupported_ = enabled;
-      if (this.isPciguardUiEnabled_ && this.isThunderboltSupported_) {
+      if (this.isThunderboltSupported_) {
         this.supportedSettingIds.add(
             chromeos.settings.mojom.Setting.kPeripheralDataAccessProtection);
       }
@@ -514,7 +502,7 @@ Polymer({
    * @private
    */
   onDataAccessFlagsSet_() {
-    if (this.isThunderboltSupported_ && this.isPciguardUiEnabled_) {
+    if (this.isThunderboltSupported_) {
       this.browserProxy_.getPolicyState()
           .then(policy => {
             this.dataAccessProtectionPrefName_ = policy.prefName;

@@ -263,9 +263,7 @@ PrivacySection::PrivacySection(Profile* profile,
     UpdateRemoveFingerprintSearchTags();
   }
 
-  if (chromeos::features::IsPciguardUiEnabled()) {
-    updater.AddSearchTags(GetPciguardSearchConcepts());
-  }
+  updater.AddSearchTags(GetPciguardSearchConcepts());
 
   // Conditionally adds search tags concepts based on the subset of smart
   // privacy functionality enabled.
@@ -348,9 +346,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("peripheralDataAccessLearnMoreURL",
                          chrome::kPeripheralDataAccessHelpURL);
-
-  html_source->AddBoolean("pciguardUiEnabled",
-                          chromeos::features::IsPciguardUiEnabled());
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);

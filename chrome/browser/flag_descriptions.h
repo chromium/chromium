@@ -670,9 +670,6 @@ extern const char kEnableManagedConfigurationWebApiDescription[];
 extern const char kEnableNewDownloadBackendName[];
 extern const char kEnableNewDownloadBackendDescription[];
 
-extern const char kEnablePciguardUiName[];
-extern const char kEnablePciguardUiDescription[];
-
 extern const char kEnablePenetratingImageSelectionName[];
 extern const char kEnablePenetratingImageSelectionDescription[];
 

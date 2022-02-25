@@ -547,10 +547,6 @@ const base::Feature kEnableOobePolymer3{"EnableOobePolymer3",
 const base::Feature kEnableOobeNetworkScreenSkip{
     "EnableOobeNetworkScreenSkip", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables toggling Pciguard settings through Settings UI.
-const base::Feature kEnablePciguardUi{"EnablePciguardUi",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables showing notification after the password change for SAML users.
 const base::Feature kEnableSamlNotificationOnPasswordChangeSuccess{
     "EnableSamlNotificationOnPasswordChangeSuccess",
@@ -1859,9 +1855,6 @@ bool IsOobeNewRecommendAppsEnabled() {
 
 bool IsPcieBillboardNotificationEnabled() {
   return base::FeatureList::IsEnabled(kPcieBillboardNotification);
-}
-bool IsPciguardUiEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePciguardUi);
 }
 
 bool IsPerDeskShelfEnabled() {

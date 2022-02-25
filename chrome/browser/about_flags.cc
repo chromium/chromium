@@ -5984,10 +5984,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRevenLogSourceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kRevenLogSource)},
 
-    {"enable-pci-guard-ui", flag_descriptions::kEnablePciguardUiName,
-     flag_descriptions::kEnablePciguardUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kEnablePciguardUi)},
-
     {"enable-heuristic-stylus-palm-rejection",
      flag_descriptions::kEnableHeuristicStylusPalmRejectionName,
      flag_descriptions::kEnableHeuristicStylusPalmRejectionDescription, kOsCrOS,

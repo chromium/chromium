@@ -120,10 +120,6 @@ suite('PrivacyPageTests', function() {
   setup(async () => {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
     settings.PeripheralDataAccessBrowserProxyImpl.instance_ = browserProxy;
-    loadTimeData.overrideValues({
-      pciguardUiEnabled: false,
-    });
-
     PolymerTest.clearBody();
     privacyPage = document.createElement('os-settings-privacy-page');
     document.body.appendChild(privacyPage);
@@ -425,10 +421,6 @@ suite('PrivacePageTest_OfficialBuild', async () => {
     metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
     settings.MetricsConsentBrowserProxyImpl.instance_ =
         metricsConsentBrowserProxy;
-
-    loadTimeData.overrideValues({
-      pciguardUiEnabled: false,
-    });
   });
 
   async function setUpPage(prefName, isConfigurable) {
@@ -549,9 +541,6 @@ suite('PeripheralDataAccessTest', function() {
     browserProxy = new TestPeripheralDataAccessBrowserProxy();
     settings.PeripheralDataAccessBrowserProxyImpl.instance_ = browserProxy;
     PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      pciguardUiEnabled: true,
-    });
   });
 
   teardown(function() {

@@ -1222,12 +1222,6 @@ const char kEnableManagedConfigurationWebApiDescription[] =
     "Allows website to access a managed configuration provided by the device "
     "administrator for the origin.";
 
-const char kEnablePciguardUiName[] =
-    "Enable Pciguard (Thunderbolt + USB4 tunneling) UI for settings";
-const char kEnablePciguardUiDescription[] =
-    "Enable toggling Pciguard settings through the Settings App. By default, "
-    "this flag is enabled.";
-
 const char kEnablePenetratingImageSelectionName[] =
     "Penetrating Image Selection";
 const char kEnablePenetratingImageSelectionDescription[] =
