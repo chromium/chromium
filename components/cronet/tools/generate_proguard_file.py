@@ -10,7 +10,7 @@
 # The final output file is formed by concatenating all of the
 # input proguard files.
 
-import argparse
+import optparse
 import sys
 
 
@@ -20,14 +20,14 @@ def ReadFile(path):
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--output-file',
+  parser = optparse.OptionParser()
+  parser.add_option('--output-file',
           help='Output file for the generated proguard file')
 
-  args, input_files = parser.parse_known_args()
+  options, input_files = parser.parse_args()
 
   # Concatenate all the proguard files.
-  with open(args.output_file, 'wb') as target:
+  with open(options.output_file, 'wb') as target:
     for input_file in input_files:
       target.write(ReadFile(input_file))
 

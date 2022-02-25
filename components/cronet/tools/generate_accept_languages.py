@@ -13,6 +13,7 @@
 #   * assumes that there is only one relevant element with the
 #     IDS_ACCEPT_LANGUAGES attribute
 
+from __future__ import print_function
 
 import os
 import re
@@ -21,13 +22,11 @@ from xml.etree import ElementTree
 
 STRINGS_DIR = sys.argv[2] + 'components/strings/'
 
-# pylint: disable=inconsistent-return-statements
 def extract_accept_langs(filename):
   tree = ElementTree.parse(STRINGS_DIR + filename).getroot()
   for child in tree:
     if child.get('id') == 'IDS_ACCEPT_LANGUAGES':
       return tree.get('lang'), child.text
-# pylint: enable=inconsistent-return-statements
 
 def gen_accept_langs_table():
   accept_langs_list = [extract_accept_langs(filename)

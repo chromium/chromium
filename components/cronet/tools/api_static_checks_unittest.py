@@ -103,7 +103,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
 
   def run_check_api_calls(self, api_java, impl_java):
     test = self
-    class MockOpts():
+    class MockOpts(object):
       def __init__(self):
         self.api_jar = test.make_jar(api_java, 'Api')
         self.impl_jar = [test.make_jar(impl_java, 'Impl')]
@@ -150,7 +150,7 @@ class ApiStaticCheckUnitTest(unittest.TestCase):
     stamp_length = len('Stamp: 78418460c193047980ae9eabb79293f2\n')
     api = api[:-stamp_length]
     api_hash = hashlib.md5()
-    api_hash.update(api.encode())
+    api_hash.update(api)
     self.assertEqual(api_stamp, 'Stamp: %s' % api_hash.hexdigest())
 
     return [return_code == 0, output, api, interface_api_version]

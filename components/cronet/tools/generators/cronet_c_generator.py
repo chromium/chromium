@@ -40,7 +40,7 @@ _kind_to_cpp_literal_suffix = {
 
 ATTRIBUTE_ABSTRACT = "Abstract"
 
-class _NameFormatter():
+class _NameFormatter(object):
   """A formatter for the names of kinds or values."""
 
   def __init__(self, token, variant):
@@ -118,12 +118,9 @@ class _NameFormatter():
   def _ShouldIncludeNamespace(self, omit_namespace_for_module):
     return self._token.module
 
-
-  # pylint: disable=inconsistent-return-statements
   def _GetNamespace(self):
     if self._token.module:
       return NamespaceToArray(self._token.module.namespace)
-  # pylint: enable=inconsistent-return-statements
 
 
 def NamespaceToArray(namespace):
@@ -186,7 +183,7 @@ def IsAbstract(kind):
   return kind.attributes.get(ATTRIBUTE_ABSTRACT, False) \
       if kind.attributes else False
 
-class StructConstructor():
+class StructConstructor(object):
   """Represents a constructor for a generated struct.
 
   Fields:
@@ -209,6 +206,8 @@ class StructConstructor():
 
 
 class Generator(generator.Generator):
+  def __init__(self, *args, **kwargs):
+    super(Generator, self).__init__(*args, **kwargs)
 
   def _GetExtraTraitsHeaders(self):
     extra_headers = set()
@@ -508,29 +507,30 @@ class Generator(generator.Generator):
       checked.add(kind.spec)
       if mojom.IsNullableKind(kind):
         return False
-      if mojom.IsStructKind(kind):
+      elif mojom.IsStructKind(kind):
         if kind.native_only:
           return False
         if (self._IsTypemappedKind(kind) and
             not self.typemap[self._GetFullMojomNameForKind(kind)]["hashable"]):
           return False
         return all(Check(field.kind) for field in kind.fields)
-      if mojom.IsEnumKind(kind):
+      elif mojom.IsEnumKind(kind):
         return not self._IsTypemappedKind(kind) or self.typemap[
             self._GetFullMojomNameForKind(kind)]["hashable"]
-      if mojom.IsUnionKind(kind):
+      elif mojom.IsUnionKind(kind):
         return all(Check(field.kind) for field in kind.fields)
-      if mojom.IsAnyHandleKind(kind):
+      elif mojom.IsAnyHandleKind(kind):
         return False
-      if mojom.IsAnyInterfaceKind(kind):
+      elif mojom.IsAnyInterfaceKind(kind):
         return False
       # TODO(crbug.com/735301): Arrays and maps could be made hashable. We just
       # don't have a use case yet.
-      if mojom.IsArrayKind(kind):
+      elif mojom.IsArrayKind(kind):
         return False
-      if mojom.IsMapKind(kind):
+      elif mojom.IsMapKind(kind):
         return False
-      return True
+      else:
+        return True
     return Check(kind)
 
   def _GetNativeTypeName(self, typemapped_kind):
@@ -809,8 +809,10 @@ class Generator(generator.Generator):
         return "%d, %s, %s" % (expected_num_elements,
                                "true" if element_is_nullable else "false",
                                element_validate_params)
-      return "%s, %s" % (key_validate_params, element_validate_params)
-    return "%d, %s" % (expected_num_elements, enum_validate_func)
+      else:
+        return "%s, %s" % (key_validate_params, element_validate_params)
+    else:
+      return "%d, %s" % (expected_num_elements, enum_validate_func)
 
   def _GetNewContainerValidateParams(self, kind):
     if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind) and

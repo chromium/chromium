@@ -62,11 +62,11 @@ DEFAULT_BENCHMARK_CONFIG = {
 # Add benchmark config to global state for easy access.
 globals().update(DEFAULT_BENCHMARK_CONFIG)
 # Pylint doesn't really interpret the file, so it won't find the definitions
-# added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable and
-# bad string format type warnings.
-#pylint: disable=undefined-variable,bad-string-format-type
+# added from DEFAULT_BENCHMARK_CONFIG, so suppress the undefined variable
+# warning.
+#pylint: disable=undefined-variable
 
-class NativeDevice():
+class NativeDevice(object):
   def GetExternalStoragePath(self):
     return '/tmp'
 
@@ -108,7 +108,7 @@ def GetHttpServerURL(device, resource):
   return 'http://%s:%d/%s' % (GetServersHost(device), HTTP_PORT, resource)
 
 
-class QuicServer():
+class QuicServer(object):
 
   def __init__(self, quic_server_doc_root):
     self._process = None
@@ -122,7 +122,7 @@ class QuicServer():
            '--port=%d' % QUIC_PORT]
     logging.info("Starting Quic Server: %s", cmd)
     self._process = subprocess.Popen(cmd)
-    assert self._process is not None
+    assert self._process != None
     # Wait for quic_server to start serving.
     waited_s = 0
     while subprocess.call(['lsof', '-i', 'udp:%d' % QUIC_PORT, '-p',
