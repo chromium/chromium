@@ -63,7 +63,7 @@ GURL GetValidHostAndSubhostFromGURL(GURL gurl, bool include_path) {
     return GURL(gurl);
   }
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   if (!include_path)
     replacements.ClearPath();
   replacements.ClearRef();
