@@ -929,7 +929,7 @@ TEST_F(ZipTest, NestedZip) {
 // test (crbug.com/1299736, crbug.com/1300448).
 #if defined(THREAD_SANITIZER) || BUILDFLAG(IS_FUCHSIA) ||                \
     BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || !defined(NDEBUG)
+    BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
 TEST_F(ZipTest, DISABLED_BigFile) {
 #else
 TEST_F(ZipTest, BigFile) {
