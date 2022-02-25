@@ -18,6 +18,10 @@
 namespace blink {
 
 class DataTransferTest : public PaintTestConfigurations, public RenderingTest {
+ public:
+  DataTransferTest()
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
  protected:
   Page& GetPage() const { return *GetDocument().GetPage(); }
   LocalFrame& GetFrame() const { return *GetDocument().GetFrame(); }
@@ -427,6 +431,36 @@ TEST_P(DataTransferTest, NodeImageFixedChild) {
     for (int y = 50; y < 100; ++y)
       ASSERT_EQ(blue, bitmap.getColor(x, y));
   }
+}
+
+TEST_P(DataTransferTest, CreateBitmapAttachedFrame) {
+  SetBodyInnerHTML(R"HTML(
+      <iframe id="frame"</iframe>">
+  )HTML");
+  SetChildFrameHTML("");
+
+  LocalFrameView* frame_view = GetDocument().View();
+  frame_view->UpdateAllLifecyclePhasesForTest();
+
+  SkBitmap bitmap;
+  EXPECT_TRUE(DataTransfer::CreateBitmapFromNode(
+      &GetFrame(), GetDocument().getElementById("frame"), gfx::Size(), bitmap));
+  EXPECT_FALSE(bitmap.empty());
+}
+
+TEST_P(DataTransferTest, CreateBitmapDetachedFrame) {
+  SetBodyInnerHTML(R"HTML(
+      <iframe id="frame" style="display:none"</iframe>">
+  )HTML");
+  SetChildFrameHTML("");
+
+  LocalFrameView* frame_view = GetDocument().View();
+  frame_view->UpdateAllLifecyclePhasesForTest();
+
+  SkBitmap bitmap;
+  EXPECT_FALSE(DataTransfer::CreateBitmapFromNode(
+      &GetFrame(), GetDocument().getElementById("frame"), gfx::Size(), bitmap));
+  EXPECT_TRUE(bitmap.empty());
 }
 
 }  // namespace blink

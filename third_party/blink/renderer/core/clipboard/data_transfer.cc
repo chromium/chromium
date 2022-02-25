@@ -77,6 +77,9 @@ bool CreatePaintArtifactsHelper(const LocalFrame* frame,
                                 gfx::Vector2dF& paint_offset,
                                 gfx::RectF& bounding_box,
                                 PropertyTreeState& property_tree_state) {
+  if (!frame->View()->IsAttached() && !frame->IsLocalRoot())
+    return false;
+
   // Construct layout object for |node_| with pseudo class "-webkit-drag"
   if (update_lifecycle) {
     frame->View()->UpdateAllLifecyclePhasesExceptPaint(
