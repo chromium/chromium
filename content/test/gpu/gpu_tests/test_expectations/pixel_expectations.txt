@@ -267,6 +267,9 @@ crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation skia
 # always run on Windows RS3 or above.
 crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 
+# Failure on win10 capturing a VideoFrame from unaccelerated OffscreenCanvas clears the source canvas
+crbug.com/1300550 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+
 # Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
 
@@ -327,6 +330,10 @@ crbug.com/1295076 [ fuchsia fuchsia-chrome ] Pixel_CanvasDisplaySRGBAccelerated2
 
 # Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
 crbug.com/1274796 [ win skia-renderer-gl ] Pixel_WebGPUImportVideoFrame [ Failure ]
+
+# Crashes on gpu-fyi-win10-nvidia-rel-32
+crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+crbug.com/1300670 [ win nvidia-0x2184 passthrough ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
 
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
 crbug.com/1213542 [ skia-renderer-gl linux nvidia-0x1cb3 ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]

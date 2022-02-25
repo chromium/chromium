@@ -136,6 +136,11 @@ crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] TraceTest_WebGPU* [ Skip ]
 
+# Tests that crash on gpu-fyi-win10-nvidia-rel-32
+crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
+crbug.com/1300670 [ win nvidia-0x2184 ] TraceTest_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
