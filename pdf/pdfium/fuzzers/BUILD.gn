@@ -59,9 +59,9 @@ group("pdf_fuzzers") {
         ":pdf_cfx_barcode_fuzzer",
         ":pdf_codec_jpeg_fuzzer",
         ":pdf_css_fuzzer",
-        ":pdf_fm2js_fuzzer",
         ":pdf_formcalc_context_fuzzer",
         ":pdf_formcalc_fuzzer",
+        ":pdf_formcalc_translate_fuzzer",
         ":pdfium_xfa_fuzzer",
         ":pdfium_xfa_lpm_fuzzer",
       ]
@@ -195,15 +195,15 @@ if (pdf_enable_v8) {
       dict = "dicts/pdf_css.dict"
     }
 
-    pdfium_fuzzer_test("pdf_fm2js_fuzzer") {
-      dict = "dicts/pdf_formcalc.dict"
-    }
-
     pdfium_fuzzer_test("pdf_formcalc_context_fuzzer") {
       dict = "dicts/pdf_xfa_js.dict"
     }
 
     pdfium_fuzzer_test("pdf_formcalc_fuzzer") {
+      dict = "dicts/pdf_formcalc.dict"
+    }
+
+    pdfium_fuzzer_test("pdf_formcalc_translate_fuzzer") {
       dict = "dicts/pdf_formcalc.dict"
     }
 
