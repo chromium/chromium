@@ -764,6 +764,34 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   display::Display::ResetForceDeviceScaleFactorForTesting();
 }
 
+// Checks that transform is properly translated to Display orientation. The
+// first one is counter-clockwise, and the second is clockwise.
+TEST_P(WaylandScreenTest, Transform) {
+  constexpr std::array<
+      std::pair<wl_output_transform, display::Display::Rotation>, 8>
+      test_data = {{
+          {WL_OUTPUT_TRANSFORM_NORMAL, display::Display::ROTATE_0},
+          {WL_OUTPUT_TRANSFORM_90, display::Display::ROTATE_270},
+          {WL_OUTPUT_TRANSFORM_180, display::Display::ROTATE_180},
+          {WL_OUTPUT_TRANSFORM_270, display::Display::ROTATE_90},
+          // Flipped transforms are not supported.
+          {WL_OUTPUT_TRANSFORM_FLIPPED, display::Display::ROTATE_0},
+          {WL_OUTPUT_TRANSFORM_FLIPPED_90, display::Display::ROTATE_0},
+          {WL_OUTPUT_TRANSFORM_FLIPPED_180, display::Display::ROTATE_0},
+          {WL_OUTPUT_TRANSFORM_FLIPPED_270, display::Display::ROTATE_0},
+      }};
+
+  for (const auto& i : test_data) {
+    output_->SetTransform(i.first);
+    output_->Flush();
+
+    Sync();
+
+    auto main_display = platform_screen_->GetPrimaryDisplay();
+    EXPECT_EQ(main_display.rotation(), i.second);
+  }
+}
+
 namespace {
 
 class LazilyConfiguredScreenTest
