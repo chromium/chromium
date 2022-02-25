@@ -1855,113 +1855,109 @@ function ListCell() {
   };
 }
 
-/**
- * @constructor
- * @extends View
- */
-function ListView() {
-  View.call(this, createElement('div', ListView.ClassNameListView));
-  this.element.tabIndex = 0;
-  this.element.setAttribute('role', 'grid');
+// ----------------------------------------------------------------
 
-  /**
-   * @type {!number}
-   * @private
-   */
-  this._width = 0;
-  /**
-   * @type {!Object}
-   * @private
-   */
-  this._cells = {};
+class ListView extends View {
+  constructor() {
+    super(createElement('div', ListView.ClassNameListView));
+    this.element.tabIndex = 0;
+    this.element.setAttribute('role', 'grid');
 
-  /**
-   * @type {!number}
-   */
-  this.selectedRow = ListView.NoSelection;
+    /**
+     * @type {!number}
+     * @private
+     */
+    this._width = 0;
+    /**
+     * @type {!Object}
+     * @private
+     */
+    this._cells = {};
 
-  /**
-   * @type {!ScrollView}
-   */
-  this.scrollView = new ScrollView();
-  this.scrollView.delegate = this;
-  this.scrollView.minimumContentOffset = 0;
-  this.scrollView.setWidth(0);
-  this.scrollView.setHeight(0);
-  this.scrollView.attachTo(this);
+    /**
+     * @type {!number}
+     */
+    this.selectedRow = ListView.NoSelection;
 
-  this.element.addEventListener('click', this.onClick.bind(this), false);
+    /**
+     * @type {!ScrollView}
+     */
+    this.scrollView = new ScrollView();
+    this.scrollView.delegate = this;
+    this.scrollView.minimumContentOffset = 0;
+    this.scrollView.setWidth(0);
+    this.scrollView.setHeight(0);
+    this.scrollView.attachTo(this);
 
-  /**
-   * @type {!boolean}
-   * @private
-   */
-  this._needsUpdateCells = false;
-}
+    this.element.addEventListener('click', this.onClick.bind(this), false);
 
-{
-  ListView.prototype = Object.create(View.prototype);
+    /**
+     * @type {!boolean}
+     * @private
+     */
+    this._needsUpdateCells = false;
+  }
 
-  ListView.NoSelection = -1;
-  ListView.ClassNameListView = 'list-view';
+  static NoSelection = -1;
+  static ClassNameListView = 'list-view';
 
-  ListView.prototype.onAnimationFrameWillFinish = function() {
+  onAnimationFrameWillFinish() {
     if (this._needsUpdateCells)
       this.updateCells();
-  };
+  }
 
   /**
    * @param {!boolean} needsUpdateCells
    */
-  ListView.prototype.setNeedsUpdateCells = function(needsUpdateCells) {
+  setNeedsUpdateCells(needsUpdateCells) {
     if (this._needsUpdateCells === needsUpdateCells)
       return;
     this._needsUpdateCells = needsUpdateCells;
     if (this._needsUpdateCells)
       AnimationManager.shared.on(
           AnimationManager.EventTypeAnimationFrameWillFinish,
-          this.onAnimationFrameWillFinish);
+          this.onAnimationFrameWillFinish.bind(this));
     else
       AnimationManager.shared.removeListener(
           AnimationManager.EventTypeAnimationFrameWillFinish,
-          this.onAnimationFrameWillFinish);
-  };
+          this.onAnimationFrameWillFinish.bind(this));
+  }
 
   /**
    * @param {!number} row
    * @return {?ListCell}
    */
-  ListView.prototype.cellAtRow = function(row) {
+  cellAtRow(row) {
     return this._cells[row];
-  };
+  }
 
   /**
    * @param {!number} offset Scroll offset in pixels.
    * @return {!number}
    */
-  ListView.prototype.rowAtScrollOffset = function(offset) {
+  rowAtScrollOffset(offset) {
     console.assert(
         false,
         'NOT REACHED: ListView.prototype.rowAtScrollOffset needs to be overridden.');
     return 0;
-  };
+  }
 
   /**
    * @param {!number} row
    * @return {!number} Scroll offset in pixels.
    */
-  ListView.prototype.scrollOffsetForRow = function(row) {
+  scrollOffsetForRow(row) {
     console.assert(
         false,
         'NOT REACHED: ListView.prototype.scrollOffsetForRow needs to be overridden.');
     return 0;
-  };
+  }
 
   /**
    * @param {!number} row
    * @return {!ListCell}
    */
-  ListView.prototype.addCellIfNecessary = function(row) {
+  addCellIfNecessary(row) {
     var cell = this._cells[row];
     if (cell)
       return cell;
@@ -1983,64 +1979,64 @@ function ListView() {
         this.scrollOffsetForRow(row)));
     this._cells[row] = cell;
     return cell;
-  };
+  }
 
   /**
    * @param {!number} row
    * @return {!ListCell}
    */
-  ListView.prototype.prepareNewCell = function(row) {
+  prepareNewCell(row) {
     console.assert(
         false,
         'NOT REACHED: ListView.prototype.prepareNewCell should be overridden.');
     return new ListCell();
-  };
+  }
 
   /**
    * @param {!ListCell} cell
    */
-  ListView.prototype.throwAwayCell = function(cell) {
+  throwAwayCell(cell) {
     delete this._cells[cell.row];
     cell.throwAway();
-  };
+  }
 
   /**
    * @return {!number}
    */
-  ListView.prototype.firstVisibleRow = function() {
+  firstVisibleRow() {
     return this.rowAtScrollOffset(this.scrollView.contentOffset());
-  };
+  }
 
   /**
    * @return {!number}
    */
-  ListView.prototype.lastVisibleRow = function() {
+  lastVisibleRow() {
     return this.rowAtScrollOffset(
         this.scrollView.contentOffset() + this.scrollView.height() - 1);
-  };
+  }
 
   /**
    * @param {!ScrollView} scrollView
    */
-  ListView.prototype.scrollViewDidChangeContentOffset = function(scrollView) {
+  scrollViewDidChangeContentOffset(scrollView) {
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!ScrollView} scrollView
    */
-  ListView.prototype.scrollViewDidChangeHeight = function(scrollView) {
+  scrollViewDidChangeHeight(scrollView) {
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!ScrollView} scrollView
    */
-  ListView.prototype.scrollViewDidChangePartition = function(scrollView) {
+  scrollViewDidChangePartition(scrollView) {
     this.setNeedsUpdateCells(true);
-  };
+  }
 
-  ListView.prototype.updateCells = function() {
+  updateCells() {
     var firstVisibleRow = this.firstVisibleRow();
     var lastVisibleRow = this.lastVisibleRow();
     console.assert(firstVisibleRow <= lastVisibleRow);
@@ -2058,19 +2054,19 @@ function ListView() {
         this.addCellIfNecessary(i);
     }
     this.setNeedsUpdateCells(false);
-  };
+  }
 
   /**
    * @return {!number} Width in pixels.
    */
-  ListView.prototype.width = function() {
+  width() {
     return this._width;
-  };
+  }
 
   /**
    * @param {!number} width Width in pixels.
    */
-  ListView.prototype.setWidth = function(width) {
+  setWidth(width) {
     if (this._width === width)
       return;
     this._width = width;
@@ -2080,26 +2076,26 @@ function ListView() {
     }
     this.element.style.width = this._width + 'px';
     this.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @return {!number} Height in pixels.
    */
-  ListView.prototype.height = function() {
+  height() {
     return this.scrollView.height();
-  };
+  }
 
   /**
    * @param {!number} height Height in pixels.
    */
-  ListView.prototype.setHeight = function(height) {
+  setHeight(height) {
     this.scrollView.setHeight(height);
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  ListView.prototype.onClick = function(event) {
+  onClick(event) {
     var clickedCellElement =
         enclosingNodeOrSelfWithClass(event.target, ListCell.ClassNameListCell);
     if (!clickedCellElement)
@@ -2107,12 +2103,12 @@ function ListView() {
     var clickedCell = clickedCellElement.$view;
     if (clickedCell.row !== this.selectedRow)
       this.select(clickedCell.row);
-  };
+  }
 
   /**
    * @param {!number} row
    */
-  ListView.prototype.select = function(row) {
+  select(row) {
     if (this.selectedRow === row)
       return;
     this.deselect();
@@ -2122,25 +2118,27 @@ function ListView() {
     var selectedCell = this._cells[this.selectedRow];
     if (selectedCell)
       selectedCell.setSelected(true);
-  };
+  }
 
-  ListView.prototype.deselect = function() {
+  deselect() {
     if (this.selectedRow === ListView.NoSelection)
       return;
     var selectedCell = this._cells[this.selectedRow];
     if (selectedCell)
       selectedCell.setSelected(false);
     this.selectedRow = ListView.NoSelection;
-  };
+  }
 
   /**
    * @param {!number} row
    * @param {!boolean} animate
    */
-  ListView.prototype.scrollToRow = function(row, animate) {
+  scrollToRow(row, animate) {
     this.scrollView.scrollTo(this.scrollOffsetForRow(row), animate);
-  };
+  }
 }
+
+// ----------------------------------------------------------------
 
 /**
  * @constructor
