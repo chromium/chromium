@@ -112,6 +112,9 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // Shows a notification for send or receive cancellation.
   void ShowCancelled(const ShareTarget& share_target);
 
+  // Shows a notification to remind users of their current visibility selection.
+  void ShowVisibilityReminder();
+
   // Closes any currently shown transfer notification (e.g. progress or
   // connection).
   void CloseTransfer();
@@ -120,6 +123,9 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   // share. It does not have any effect on the actual onboarding UI or the high
   // visibility mode UI.
   void CloseNearbyDeviceTryingToShare();
+
+  // Closes any currently shown nearby visibility reminder notification.
+  void CloseVisibilityReminder();
 
   // Gets the currently registered delegate for |notification_id|.
   NearbyNotificationDelegate* GetNotificationDelegate(
@@ -144,6 +150,12 @@ class NearbyNotificationManager : public TransferUpdateCallback,
   void OnNearbyDeviceTryingToShareDismissed(bool did_click_dismiss);
 
   void CloseSuccessNotification(const std::string& notification_id);
+
+  // Called when the nearby visibility reminder notification got clicked.
+  void OnNearbyVisibilityReminderClicked();
+
+  // Called when the nearby visibility reminder notification got dismissed.
+  void OnNearbyVisibilityReminderDismissed();
 
   void SetOnSuccessClickedForTesting(
       base::OnceCallback<void(SuccessNotificationAction)> callback);

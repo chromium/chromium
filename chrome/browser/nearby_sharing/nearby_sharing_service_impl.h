@@ -412,6 +412,15 @@ class NearbySharingServiceImpl
   void AbortAndCloseConnectionIfNecessary(const TransferMetadata::Status status,
                                           const ShareTarget& share_target);
 
+  // The method is responsible for updating visibility reminder timer:
+  // 1) Stops the timer if the feature flag is disabled OR Nearby Share is
+  // disabled OR visibility is changed to 'Hidden"; 2) Restart the timer and
+  // update the timestamp if we force it to update OR it's past 180 days since
+  // last time we updated it.
+  void UpdateVisibilityReminderTimer(bool reset_timestamp);
+  void OnVisibilityReminderTimerFired();
+  base::TimeDelta GetTimeUntilNextVisibilityReminder();
+
   PrefService* prefs_ = nullptr;
   Profile* profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
@@ -548,6 +557,9 @@ class NearbySharingServiceImpl
   // Used to prevent the "Device nearby is sharing" notification from appearing
   // immediately after a completed share.
   base::OneShotTimer fast_initiation_scanner_cooldown_timer_;
+
+  // Used to control when to show visibility reminder notification to users.
+  base::OneShotTimer visibility_reminder_timer_;
 
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.

@@ -2951,6 +2951,9 @@ extern const char kNearbySharingReceiveWifiCredentialsDescription[];
 extern const char kNearbySharingSelfShareName[];
 extern const char kNearbySharingSelfShareDescription[];
 
+extern const char kNearbySharingVisibilityReminderName[];
+extern const char kNearbySharingVisibilityReminderDescription[];
+
 extern const char kNearbySharingWifiLanName[];
 extern const char kNearbySharingWifiLanDescription[];
 

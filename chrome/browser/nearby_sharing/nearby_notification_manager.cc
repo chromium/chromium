@@ -21,6 +21,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -52,6 +53,8 @@ constexpr char kNearbyTransferResultNotificationIdPrefix[] =
     "chrome://nearby_share/result/";
 constexpr char kNearbyDeviceTryingToShareNotificationId[] =
     "chrome://nearby_share/nearby_device_trying_to_share";
+constexpr char kNearbyVisibilityReminderNotificationId[] =
+    "chrome://nearby_share/visibility_reminder";
 constexpr char kNearbyNotifier[] = "nearby";
 
 std::string CreateNotificationIdForShareTarget(
@@ -591,6 +594,52 @@ class NearbyDeviceTryingToShareNotificationDelegate
   NearbyNotificationManager* manager_;
 };
 
+bool IsVisibilityReminderEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kNearbySharingVisibilityReminder);
+}
+
+class NearbyVisibilityReminderNotificationDelegate
+    : public NearbyNotificationDelegate {
+ public:
+  explicit NearbyVisibilityReminderNotificationDelegate(
+      NearbyNotificationManager* manager)
+      : manager_(manager) {
+    // Make sure the delegate is only created when the feature flag is enabled.
+    DCHECK(IsVisibilityReminderEnabled());
+  }
+
+  ~NearbyVisibilityReminderNotificationDelegate() override = default;
+
+  void OnClick(const std::string& notification_id,
+               const absl::optional<int>& action_index) override {
+    if (!action_index) {
+      // Open settings when user click the notification.
+      manager_->OnNearbyVisibilityReminderClicked();
+      return;
+    }
+
+    switch (*action_index) {
+      case 0:
+        manager_->OnNearbyVisibilityReminderClicked();
+        break;
+      case 1:
+        manager_->OnNearbyVisibilityReminderDismissed();
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+  void OnClose(const std::string& notification_id) override {
+    manager_->OnNearbyVisibilityReminderDismissed();
+  }
+
+ private:
+  NearbyNotificationManager* manager_;
+};
+
 bool ShouldShowNearbyDeviceTryingToShareNotification(
     PrefService* pref_service) {
   base::Time last_dismissed = pref_service->GetTime(
@@ -607,6 +656,14 @@ bool ShouldShowNearbyDeviceTryingToShareNotification(
   }
 
   return true;
+}
+
+bool ShouldShowNearbyVisibilityReminderNotification(PrefService* pref_service) {
+  Visibility visibility = static_cast<Visibility>(
+      pref_service->GetInteger(prefs::kNearbySharingBackgroundVisibilityName));
+
+  return visibility == Visibility::kAllContacts ||
+         visibility == Visibility::kSelectedContacts;
 }
 
 void UpdateNearbyDeviceTryingToShareDismissedTime(PrefService* pref_service) {
@@ -1030,6 +1087,35 @@ void NearbyNotificationManager::ShowCancelled(const ShareTarget& share_target) {
       /*metadata=*/nullptr);
 }
 
+void NearbyNotificationManager::ShowVisibilityReminder() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  DCHECK(IsVisibilityReminderEnabled());
+  DCHECK(ShouldShowNearbyVisibilityReminderNotification(pref_service_));
+
+  message_center::Notification notification =
+      CreateNearbyNotification(kNearbyVisibilityReminderNotificationId);
+  notification.set_title(l10n_util::GetStringUTF16(
+      IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE));
+  notification.set_message(l10n_util::GetStringUTF16(
+      IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE));
+
+  std::vector<message_center::ButtonInfo> notification_actions;
+  notification_actions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION));
+  notification_actions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+
+  notification.set_buttons(notification_actions);
+
+  delegate_map_[kNearbyVisibilityReminderNotificationId] =
+      std::make_unique<NearbyVisibilityReminderNotificationDelegate>(this);
+
+  notification_display_service_->Display(
+      NotificationHandler::Type::NEARBY_SHARE, notification,
+      /*metadata=*/nullptr);
+}
+
 void NearbyNotificationManager::CloseTransfer() {
   delegate_map_.erase(kNearbyInProgressNotificationId);
   notification_display_service_->Close(NotificationHandler::Type::NEARBY_SHARE,
@@ -1041,6 +1127,12 @@ void NearbyNotificationManager::CloseNearbyDeviceTryingToShare() {
   notification_display_service_->Close(
       NotificationHandler::Type::NEARBY_SHARE,
       kNearbyDeviceTryingToShareNotificationId);
+}
+
+void NearbyNotificationManager::CloseVisibilityReminder() {
+  delegate_map_.erase(kNearbyVisibilityReminderNotificationId);
+  notification_display_service_->Close(NotificationHandler::Type::NEARBY_SHARE,
+                                       kNearbyVisibilityReminderNotificationId);
 }
 
 NearbyNotificationDelegate* NearbyNotificationManager::GetNotificationDelegate(
@@ -1136,6 +1228,20 @@ void NearbyNotificationManager::CloseSuccessNotification(
   delegate_map_.erase(notification_id);
   notification_display_service_->Close(NotificationHandler::Type::NEARBY_SHARE,
                                        notification_id);
+}
+
+void NearbyNotificationManager::OnNearbyVisibilityReminderClicked() {
+  CloseVisibilityReminder();
+
+  std::string path =
+      std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
+      "?visibility";
+
+  settings_opener_->ShowSettingsPage(profile_, path);
+}
+
+void NearbyNotificationManager::OnNearbyVisibilityReminderDismissed() {
+  CloseVisibilityReminder();
 }
 
 void NearbyNotificationManager::SetOnSuccessClickedForTesting(

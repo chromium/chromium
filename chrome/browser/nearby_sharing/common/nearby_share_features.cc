@@ -40,6 +40,11 @@ const base::Feature kNearbySharingReceiveWifiCredentials{
 const base::Feature kNearbySharingSelfShare{"NearbySharingSelfShare",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables notification to reminde users of their visibility selections.
+const base::Feature kNearbySharingVisibilityReminder(
+    "NearbyShareVisibilityReminder",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables use of WebRTC in Nearby Share.
 const base::Feature kNearbySharingWebRtc{"NearbySharingWebRtc",
                                          base::FEATURE_ENABLED_BY_DEFAULT};

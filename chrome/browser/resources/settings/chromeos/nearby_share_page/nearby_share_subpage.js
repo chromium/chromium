@@ -426,6 +426,10 @@ Polymer({
       this.showDeviceNameDialog_ = true;
     }
 
+    if (queryParams.has('visibility')) {
+      this.showVisibilityDialog_ = true;
+    }
+
     if (queryParams.has('receive')) {
       this.showHighVisibilityPage_(Number(queryParams.get('timeout')));
     }

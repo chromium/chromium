@@ -35,6 +35,7 @@ extern const char kNearbySharingSchedulerPublicCertificateExpirationPrefName[];
 extern const char kNearbySharingSchedulerUploadDeviceNamePrefName[];
 extern const char
     kNearbySharingSchedulerUploadLocalDeviceCertificatesPrefName[];
+extern const char kNearbySharingNextVisibilityReminderTimePrefName[];
 
 }  // namespace prefs
 

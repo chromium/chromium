@@ -45,6 +45,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/fake_nearby_share_local_device_data_manager.h"
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
@@ -340,7 +341,8 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 // all permutations. To add or a remove a feature you can just update this list.
 const std::vector<base::Feature> kTestFeatures = {
     features::kNearbySharingBackgroundScanning,
-    features::kNearbySharingSelfShare};
+    features::kNearbySharingSelfShare,
+    features::kNearbySharingVisibilityReminder};
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -530,6 +532,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     SetFakeFastInitiationScannerFactory();
     service_ = CreateService();
     SetFakeFastInitiationAdvertiserFactory(/*should_succeed_on_start=*/true);
+
+    EXPECT_FALSE(IsVisibilityReminderTimerRunning());
 
     service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
@@ -1327,6 +1331,10 @@ class NearbySharingServiceImplTestBase : public testing::Test {
 
   void SetRecentNearbyProcessShutdownCount(int count) {
     service_->recent_nearby_process_unexpected_shutdown_count_ = count;
+  }
+
+  bool IsVisibilityReminderTimerRunning() {
+    return service_->visibility_reminder_timer_.IsRunning();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -4945,6 +4953,22 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }
 
+TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerAfterSixMonth) {
+  SetVisibility(Visibility::kAllContacts);
+  task_environment_.FastForwardBy(base::Days(180));
+  std::vector<message_center::Notification> notifications =
+      notification_tester_->GetDisplayedNotificationsForType(
+          NotificationHandler::Type::NEARBY_SHARE);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kNearbySharingVisibilityReminder)) {
+    EXPECT_EQ(0u, notifications.size());
+  } else {
+    // Visibility reminder notification should display after 180 days.
+    EXPECT_EQ(1u, notifications.size());
+  }
+}
+
 TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
   sharing::mojom::AdvertisementPtr advertisement =
       sharing::mojom::Advertisement::New(
@@ -4986,5 +5010,80 @@ TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {
 INSTANTIATE_TEST_SUITE_P(NearbySharingServiceImplTest,
                          NearbySharingServiceImplTest,
                          testing::Range<size_t>(0, 1 << kTestFeatures.size()));
+
+// The boolean variable represents is service enabled. Visibility represents
+// different visibility selections.
+using VisibilityReminderTestParams =
+    std::tuple<bool, nearby_share::mojom::Visibility, size_t>;
+
+class NearbySharingServiceVisibilityReminderTest
+    : public NearbySharingServiceImplTestBase,
+      public testing::WithParamInterface<VisibilityReminderTestParams> {
+ public:
+  NearbySharingServiceVisibilityReminderTest()
+      : NearbySharingServiceImplTestBase(std::get<2>(GetParam())) {}
+};
+
+TEST_P(NearbySharingServiceVisibilityReminderTest,
+       StartOrStopVisibilityReminderTimerAppropriatelyWhenEnableOrDisable) {
+  bool is_enabled = std::get<0>(GetParam());
+  nearby_share::mojom::Visibility visibility = std::get<1>(GetParam());
+
+  SetVisibility(visibility);
+  SetIsEnabled(is_enabled);
+  if (is_enabled) {
+    switch (visibility) {
+      case nearby_share::mojom::Visibility::kAllContacts:
+      case nearby_share::mojom::Visibility::kSelectedContacts:
+        EXPECT_EQ(base::FeatureList::IsEnabled(
+                      features::kNearbySharingVisibilityReminder),
+                  IsVisibilityReminderTimerRunning());
+        break;
+      case nearby_share::mojom::Visibility::kNoOne:
+        EXPECT_FALSE(IsVisibilityReminderTimerRunning());
+        break;
+      default:
+        break;
+    }
+  } else {
+    EXPECT_FALSE(IsVisibilityReminderTimerRunning());
+  }
+}
+
+TEST_P(NearbySharingServiceVisibilityReminderTest,
+       StartOrStopVisibilityReminderTimerAppropriatelyWhenChangeVisibility) {
+  bool is_enabled = std::get<0>(GetParam());
+  nearby_share::mojom::Visibility visibility = std::get<1>(GetParam());
+
+  SetIsEnabled(is_enabled);
+  if (is_enabled) {
+    SetVisibility(visibility);
+    switch (visibility) {
+      case nearby_share::mojom::Visibility::kAllContacts:
+      case nearby_share::mojom::Visibility::kSelectedContacts:
+        EXPECT_EQ(base::FeatureList::IsEnabled(
+                      features::kNearbySharingVisibilityReminder),
+                  IsVisibilityReminderTimerRunning());
+        break;
+      case nearby_share::mojom::Visibility::kNoOne:
+        EXPECT_FALSE(IsVisibilityReminderTimerRunning());
+        break;
+      default:
+        break;
+    }
+  } else {
+    EXPECT_FALSE(IsVisibilityReminderTimerRunning());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NearbySharingServiceImplTest,
+    NearbySharingServiceVisibilityReminderTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(nearby_share::mojom::Visibility::kAllContacts,
+                        nearby_share::mojom::Visibility::kSelectedContacts,
+                        nearby_share::mojom::Visibility::kNoOne),
+        testing::Range<size_t>(0, 1 << kTestFeatures.size())));
 
 }  // namespace NearbySharingServiceUnitTests

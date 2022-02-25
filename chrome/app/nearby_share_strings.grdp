@@ -335,6 +335,15 @@
   <message name="IDS_NEARBY_NOTIFICATION_GO_VISIBLE_ACTION" desc="Text shown on the notification to enter High Visibility Mode. High visibility mode allows the user to be discovered by nearby devices that are trying to share.">
     Enable
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE" desc="Text shown as the title of a notification that reminds users of their visibility settings">
+    Review your settings
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE" desc="Text shown as the message of a notification that reminds users of their visibility settings">
+    Nearby contacts can share with you. Click to change.
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION" desc="Text shown on the notification to go to visibility setting page">
+    Settings
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_DISMISS_ACTION" desc="Text shown on the notification to close the notification.">
     Dismiss
   </message>

@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/constants.h"
@@ -140,12 +142,23 @@ std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {
 
 class NearbyNotificationManagerTestBase : public testing::Test {
  public:
-  explicit NearbyNotificationManagerTestBase(bool enable_self_share) {
-    is_self_share_enabled_ = enable_self_share;
+  explicit NearbyNotificationManagerTestBase(
+      std::tuple<bool, bool> feature_list) {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    is_self_share_enabled_ = std::get<0>(feature_list);
+    is_visibility_reminder_enabled_ = std::get<1>(feature_list);
     if (is_self_share_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kNearbySharingSelfShare);
+      enabled_features.push_back(features::kNearbySharingSelfShare);
+    } else {
+      disabled_features.push_back(features::kNearbySharingSelfShare);
     }
+    if (is_visibility_reminder_enabled_) {
+      enabled_features.push_back(features::kNearbySharingVisibilityReminder);
+    } else {
+      disabled_features.push_back(features::kNearbySharingVisibilityReminder);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterNearbySharingPrefs(pref_service_.registry());
   }
 
@@ -242,6 +255,11 @@ class NearbyNotificationManagerTestBase : public testing::Test {
     return share_target;
   }
 
+  void ExpectShowVisibilityReminderDcheckDeath() {
+    ::testing::FLAGS_gtest_death_test_style = "fast";
+    EXPECT_DCHECK_DEATH(manager()->ShowVisibilityReminder());
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
@@ -257,14 +275,17 @@ class NearbyNotificationManagerTestBase : public testing::Test {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   MockSettingsOpener* settings_opener_;
   bool is_self_share_enabled_ = false;
+  bool is_visibility_reminder_enabled_ = false;
 };
 
-// We parameterize these tests to run them with Self Share enabled and disabled.
-class NearbyNotificationManagerTest : public NearbyNotificationManagerTestBase,
-                                      public testing::WithParamInterface<bool> {
+// We parameterize these tests to run them with Self Share and Nearby Share
+// Visibility Reminder enabled and disabled.
+class NearbyNotificationManagerTest
+    : public NearbyNotificationManagerTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   NearbyNotificationManagerTest()
-      : NearbyNotificationManagerTestBase(/*enable_self_share=*/GetParam()) {}
+      : NearbyNotificationManagerTestBase(/*feature_list=*/GetParam()) {}
 };
 
 struct AttachmentsTestParamInternal {
@@ -342,9 +363,10 @@ AttachmentsTestParamInternal kAttachmentsTestParams[] = {
      IDS_NEARBY_FILE_ATTACHMENTS_NOT_CAPITALIZED_UNKNOWN},
 };
 
-// Boolean parameters are |is_incoming| and |enable_self_share|.
+// Boolean parameter is |is_incoming| and the tuple parameter is featuree list
+// contains |enable_self_share| and |enable_visibility_reminder|.
 using AttachmentsTestParam =
-    std::tuple<AttachmentsTestParamInternal, bool, bool>;
+    std::tuple<AttachmentsTestParamInternal, bool, std::tuple<bool, bool>>;
 
 class NearbyNotificationManagerAttachmentsTest
     : public NearbyNotificationManagerTestBase,
@@ -352,11 +374,12 @@ class NearbyNotificationManagerAttachmentsTest
  public:
   NearbyNotificationManagerAttachmentsTest()
       : NearbyNotificationManagerTestBase(
-            /*enable_self_share=*/std::get<2>(GetParam())) {}
+            /*feature_list=*/std::get<2>(GetParam())) {}
 };
 
-// Boolean parameters are |with_token| and |enable_self_share|.
-using ConnectionRequestTestParam = std::tuple<bool, bool>;
+// Boolean parameter is |with_token| and the tuple parameter is featuree list
+// contains |enable_self_share| and |enable_visibility_reminder|.
+using ConnectionRequestTestParam = std::tuple<bool, std::tuple<bool, bool>>;
 
 class NearbyNotificationManagerConnectionRequestTest
     : public NearbyNotificationManagerTestBase,
@@ -364,7 +387,7 @@ class NearbyNotificationManagerConnectionRequestTest
  public:
   NearbyNotificationManagerConnectionRequestTest()
       : NearbyNotificationManagerTestBase(
-            /*enable_self_share=*/std::get<1>(GetParam())) {}
+            /*feature_list=*/std::get<1>(GetParam())) {}
 };
 
 std::u16string FormatNotificationTitle(
@@ -624,7 +647,7 @@ INSTANTIATE_TEST_SUITE_P(
     NearbyNotificationManagerAttachmentsTest,
     testing::Combine(testing::ValuesIn(kAttachmentsTestParams),
                      testing::Bool(),
-                     testing::Bool()));
+                     testing::Combine(testing::Bool(), testing::Bool())));
 
 TEST_P(NearbyNotificationManagerConnectionRequestTest,
        ShowConnectionRequest_ShowsNotification) {
@@ -699,7 +722,9 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
 
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerConnectionRequestTest,
                          NearbyNotificationManagerConnectionRequestTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Combine(testing::Bool(),
+                                                           testing::Bool())));
 
 TEST_P(NearbyNotificationManagerTest,
        ShowConnectionRequest_DeviceNameEncoding) {
@@ -1608,6 +1633,134 @@ TEST_P(NearbyNotificationManagerTest, ShowMultipleNotifications) {
   ASSERT_EQ(6u, notifications.size());
 }
 
+TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Contacts_Mode) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kAllContacts));
+  if (!is_visibility_reminder_enabled_) {
+    ExpectShowVisibilityReminderDcheckDeath();
+  } else {
+    manager()->ShowVisibilityReminder();
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
+    const message_center::Notification& notification = notifications[0];
+    EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_TITLE),
+              notification.title());
+    EXPECT_EQ(l10n_util::GetStringUTF16(
+                  IDS_NEARBY_NOTIFICATION_VISIBILITY_REMINDER_MESSAGE),
+              notification.message());
+    EXPECT_TRUE(notification.icon().IsEmpty());
+    EXPECT_EQ(GURL(), notification.origin_url());
+    EXPECT_FALSE(notification.never_timeout());
+    EXPECT_FALSE(notification.renotify());
+    EXPECT_EQ(&kNearbyShareIcon, &notification.vector_small_image());
+    EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_SOURCE),
+              notification.display_source());
+    EXPECT_EQ(2u, notification.buttons().size());
+
+    std::vector<std::u16string> expected_button_titles;
+    expected_button_titles.push_back(l10n_util::GetStringUTF16(
+        IDS_NEARBY_NOTIFICATION_GO_TO_SETTINGS_ACTION));
+    expected_button_titles.push_back(
+        l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DISMISS_ACTION));
+
+    const std::vector<message_center::ButtonInfo>& buttons =
+        notification.buttons();
+    ASSERT_EQ(expected_button_titles.size(), buttons.size());
+
+    for (size_t i = 0; i < expected_button_titles.size(); ++i)
+      EXPECT_EQ(expected_button_titles[i], buttons[i].title);
+  }
+}
+
+TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Hidden_Mode) {
+  ExpectShowVisibilityReminderDcheckDeath();
+}
+
+TEST_P(NearbyNotificationManagerTest,
+       ShowVisibilityReminder_Notification_Clicked) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kSelectedContacts));
+  if (!is_visibility_reminder_enabled_) {
+    ExpectShowVisibilityReminderDcheckDeath();
+  } else {
+    manager()->ShowVisibilityReminder();
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
+    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                        notifications[0].id(),
+                                        /*action_index=*/absl::optional<int>(),
+                                        /*reply=*/absl::nullopt);
+
+    // Notification should be closed.
+    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  }
+}
+
+TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Settings_Clicked) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kAllContacts));
+  if (!is_visibility_reminder_enabled_) {
+    ExpectShowVisibilityReminderDcheckDeath();
+  } else {
+    manager()->ShowVisibilityReminder();
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
+    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                        notifications[0].id(),
+                                        /*action_index=*/0,
+                                        /*reply=*/absl::nullopt);
+
+    // Notification should be closed.
+    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  }
+}
+
+TEST_P(NearbyNotificationManagerTest, ShowVisibilityReminder_Dismiss_Clicked) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kAllContacts));
+  if (!is_visibility_reminder_enabled_) {
+    ExpectShowVisibilityReminderDcheckDeath();
+  } else {
+    manager()->ShowVisibilityReminder();
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
+    notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                        notifications[0].id(),
+                                        /*action_index=*/1,
+                                        /*reply=*/absl::nullopt);
+
+    // Notification should be closed.
+    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  }
+}
+
+TEST_P(NearbyNotificationManagerTest,
+       ShowVisibilityReminder_Notification_Closed) {
+  pref_service_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
+                           static_cast<int>(Visibility::kAllContacts));
+  if (!is_visibility_reminder_enabled_) {
+    ExpectShowVisibilityReminderDcheckDeath();
+  } else {
+    manager()->ShowVisibilityReminder();
+    std::vector<message_center::Notification> notifications =
+        GetDisplayedNotifications();
+    ASSERT_EQ(1u, notifications.size());
+    notification_tester_->RemoveNotification(
+        NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(), true);
+
+    // Notification should be closed.
+    EXPECT_EQ(0u, GetDisplayedNotifications().size());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerTest,
                          NearbyNotificationManagerTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
