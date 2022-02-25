@@ -11,6 +11,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
@@ -287,12 +289,24 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
 
   if (config.HasTemporalLayer()) {
     CHECK_EQ(config.spatial_layers.size(), 1u);
-    num_temporal_layers_ = config.spatial_layers[0].num_of_temporal_layers;
-    if (num_temporal_layers_ > kMaxSupportedVP8TemporalLayers ||
-        num_temporal_layers_ < kMinSupportedVP8TemporalLayers) {
-      DVLOGF(1) << "Unsupported number of temporal layers: "
-                << base::strict_cast<size_t>(num_temporal_layers_);
-      return false;
+    // TODO(b/202926617): Remove once VP8 TL encoding is enabled by default.
+    const bool enable_vp8_tl_encoding =
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+        base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding);
+#else
+        false;
+#endif
+    if (enable_vp8_tl_encoding) {
+      num_temporal_layers_ = config.spatial_layers[0].num_of_temporal_layers;
+      if (num_temporal_layers_ > kMaxSupportedVP8TemporalLayers ||
+          num_temporal_layers_ < kMinSupportedVP8TemporalLayers) {
+        VLOGF(1) << "Unsupported number of temporal layers: "
+                 << base::strict_cast<size_t>(num_temporal_layers_);
+        return false;
+      }
+    } else {
+      DVLOGF(2) << "Ignoring temporal layer encoding request";
+      num_temporal_layers_ = 1;
     }
   }
 
@@ -304,7 +318,12 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
 
   Reset();
 
-  auto initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
+  VideoBitrateAllocation initial_bitrate_allocation;
+  if (num_temporal_layers_ > 1)
+    initial_bitrate_allocation = AllocateBitrateForDefaultEncoding(config);
+  else
+    initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
+
   current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
 
   // |rate_ctrl_| might be injected for tests.
