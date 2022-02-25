@@ -108,9 +108,10 @@ void WebUIIOSImpl::FireWebUIListener(
       GetJavascriptCall("cr.webUIListenerCallback", modified_args));
 }
 
-void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
-                                           MessageCallback callback) {
-  message_callbacks_.emplace(message, std::move(callback));
+void WebUIIOSImpl::RegisterMessageCallback(
+    const std::string& message,
+    DeprecatedMessageCallback2 callback) {
+  deprecated_message_callbacks_2_.emplace(message, std::move(callback));
 }
 
 void WebUIIOSImpl::RegisterDeprecatedMessageCallback(
@@ -153,19 +154,20 @@ void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
     return;
 
   // Look up the callback for this message.
-  MessageCallbackMap::const_iterator callback =
-      message_callbacks_.find(message);
-  if (callback != message_callbacks_.end()) {
+  auto deprecated_message_callback_2_it =
+      deprecated_message_callbacks_2_.find(message);
+  if (deprecated_message_callback_2_it !=
+      deprecated_message_callbacks_2_.end()) {
     // Forward this message and content on.
-    callback->second.Run(args.GetListDeprecated());
+    deprecated_message_callback_2_it->second.Run(args.GetListDeprecated());
+    return;
   }
 
   // Look up the deprecated callback for this message.
-  DeprecatedMessageCallbackMap::const_iterator deprecated_callback =
-      deprecated_message_callbacks_.find(message);
-  if (deprecated_callback != deprecated_message_callbacks_.end()) {
+  auto deprecated_callback_it = deprecated_message_callbacks_.find(message);
+  if (deprecated_callback_it != deprecated_message_callbacks_.end()) {
     // Forward this message and content on.
-    deprecated_callback->second.Run(&base::Value::AsListValue(args));
+    deprecated_callback_it->second.Run(&base::Value::AsListValue(args));
   }
 }
 
