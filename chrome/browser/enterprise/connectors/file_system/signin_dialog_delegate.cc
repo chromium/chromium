@@ -94,8 +94,8 @@ FileSystemSigninDialogDelegate::FileSystemSigninDialogDelegate(
   if (!extra_params.empty())
     base::StringAppendF(&query, "&%s", extra_params.c_str());
 
-  url::Replacements<char> replacements;
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query);
   GURL url = settings_.authorization_endpoint.ReplaceComponents(replacements);
   web_view_->LoadInitialURL(url);
 }
