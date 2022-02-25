@@ -271,7 +271,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
   // Sets all views to be vertically centre-aligned.
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 
   const bool has_files =
       (intent_->files.has_value() && !intent_->files.value().empty());

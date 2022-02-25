@@ -92,6 +92,7 @@ SharesheetTargetButton::SharesheetTargetButton(
     const absl::optional<gfx::ImageSkia> icon,
     const gfx::VectorIcon* vector_icon)
     : Button(std::move(callback)) {
+  SetFocusBehavior(View::FocusBehavior::ALWAYS);
   // TODO(crbug.com/1097623) Margins shouldn't be within
   // SharesheetTargetButton as the margins are different in |expanded_view_|.
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(

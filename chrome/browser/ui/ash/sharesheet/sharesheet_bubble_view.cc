@@ -170,6 +170,7 @@ SharesheetBubbleView::SharesheetBubbleView(
   // an alert dialog. This would make screen readers announce all of this dialog
   // which is undesirable.
   SetAccessibleRole(ax::mojom::Role::kDialog);
+  SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
   set_parent_window(native_window);
   views::Widget* const widget =
       views::Widget::GetWidgetForNativeWindow(native_window);
@@ -267,10 +268,7 @@ void SharesheetBubbleView::ShowBubble(
     }
   }
 
-  main_view_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  main_view_->RequestFocus();
-  main_view_->GetViewAccessibility().OverrideName(
-      l10n_util::GetStringUTF16(IDS_SHARESHEET_TITLE_LABEL));
+  main_view_->SetFocusBehavior(View::FocusBehavior::NEVER);
   views::BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
   GetWidget()->GetRootView()->Layout();
   RecordFormFactorMetric();
