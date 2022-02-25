@@ -149,6 +149,9 @@ void AshTestHelper::TearDown() {
   // owns, so shut the test helper down first.
   app_list_test_helper_.reset();
 
+  // Stop event dispatch like we do in ChromeBrowserMainExtraPartsAsh.
+  Shell::Get()->ShutdownEventDispatch();
+
   Shell::DeleteInstance();
   // Suspend the tear down until all resources are returned via
   // CompositorFrameSinkClient::ReclaimResources()

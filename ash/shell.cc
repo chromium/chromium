@@ -518,6 +518,16 @@ void Shell::RemoveShellObserver(ShellObserver* observer) {
   shell_observers_.RemoveObserver(observer);
 }
 
+void Shell::ShutdownEventDispatch() {
+  for (aura::Window* root : GetAllRootWindows())
+    aura::client::SetDragDropClient(root, nullptr);
+
+  // Stop dispatching events (e.g. synthesized mouse exits from window close).
+  // https://crbug.com/874156
+  for (RootWindowController* rwc : GetAllRootWindowControllers())
+    rwc->GetHost()->dispatcher()->Shutdown();
+}
+
 void Shell::UpdateAfterLoginStatusChange(LoginStatus status) {
   for (auto* root_window_controller : GetAllRootWindowControllers())
     root_window_controller->UpdateAfterLoginStatusChange(status);
@@ -724,8 +734,6 @@ Shell::~Shell() {
   logout_confirmation_controller_.reset();
 
   // Drag-and-drop must be canceled prior to close all windows.
-  for (aura::Window* root : GetAllRootWindows())
-    aura::client::SetDragDropClient(root, nullptr);
   drag_drop_controller_.reset();
 
   // Controllers who have WindowObserver added must be deleted
@@ -747,11 +755,6 @@ Shell::~Shell() {
   // Has to happen before ~MruWindowTracker.
   window_cycle_controller_.reset();
   overview_controller_.reset();
-
-  // Stop dispatching events (e.g. synthesized mouse exits from window close).
-  // https://crbug.com/874156
-  for (RootWindowController* rwc : GetAllRootWindowControllers())
-    rwc->GetHost()->dispatcher()->Shutdown();
 
   // Close all widgets (including the shelf) and destroy all window containers.
   CloseAllRootWindowChildWindows();

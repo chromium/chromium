@@ -311,6 +311,11 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   if (ash::features::IsBluetoothRevampEnabled())
     chromeos::bluetooth_config::Shutdown();
 
+  // Disable event dispatch before Exo starts closing windows to prevent
+  // synthetic events from being dispatched. crbug.com/874156 and
+  // crbug.com/1163269.
+  ash::Shell::Get()->ShutdownEventDispatch();
+
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   // ExoParts uses state from ash, delete it before ash so that exo can
   // uninstall correctly.

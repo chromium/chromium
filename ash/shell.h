@@ -655,6 +655,10 @@ class ASH_EXPORT Shell : public SessionObserver,
   void AddShellObserver(ShellObserver* observer);
   void RemoveShellObserver(ShellObserver* observer);
 
+  // Disables event dispatch during shutdown so that Window events no longer
+  // propagate as they are being closed/destroyed.
+  void ShutdownEventDispatch();
+
   // Called when the login status changes.
   // TODO(oshima): Investigate if we can merge this and |OnLoginStateChanged|.
   void UpdateAfterLoginStatusChange(LoginStatus status);
