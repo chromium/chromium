@@ -505,7 +505,7 @@ html:not(.focus-outline-visible) .tab:focus {
 }
 
 button.primary {
-  background: var(--interactive-color);
+  background: var(--link-color);
   border: 0;
   border-radius: 3px;
   color: white;
@@ -519,9 +519,8 @@ button.primary {
   }
 }
 
-button.primary:-webkit-any(:active, :focus, :hover) {
-  background: var(--google-blue-400);
-  outline: 0;
+button.primary:-webkit-any(:active, :hover) {
+  background: var(--google-blue-600);
 }
 
 html.focus-outline-visible button.primary:focus {
