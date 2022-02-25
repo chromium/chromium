@@ -8238,12 +8238,12 @@
         "prefs": {
           "ash.fast_pair.enabled": {
             "location": "user_profile",
-            "default_value": true
+            "value": false
           }
         }
       },
       {
-        "note": "Check simple policy value",
+        "note": "Set policy to false force disabled",
         "policies": {
           "FastPairEnabled": false
         },
@@ -8251,6 +8251,18 @@
           "ash.fast_pair.enabled": {
             "location": "user_profile",
             "value": false
+          }
+        }
+      },
+      {
+        "note": "Set policy to true falls back to default",
+        "policies": {
+          "FastPairEnabled": true
+        },
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "location": "user_profile",
+            "default_value": true
           }
         }
       }
