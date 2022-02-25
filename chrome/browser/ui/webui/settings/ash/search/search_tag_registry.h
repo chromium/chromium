@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_TAG_REGISTRY_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_TAG_REGISTRY_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_TAG_REGISTRY_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_TAG_REGISTRY_H_
 
 #include <unordered_map>
 #include <utility>
@@ -79,6 +79,7 @@ class SearchTagRegistry {
   // returned by the LocalSearchService. If no metadata is available, null
   // is returned.
   const SearchConcept* GetTagMetadata(const std::string& result_id) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SearchTagRegistryTest, AddAndRemove);
 
@@ -108,4 +109,4 @@ class SearchTagRegistry {
 }  // namespace settings
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_TAG_REGISTRY_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_TAG_REGISTRY_H_

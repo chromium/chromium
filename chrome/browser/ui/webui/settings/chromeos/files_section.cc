@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_shares_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"

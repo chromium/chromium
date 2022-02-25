@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_CONCEPT_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_CONCEPT_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_
 
+#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_identifier.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_result_icon.mojom.h"
 
 namespace chromeos {
 namespace settings {
@@ -71,4 +71,4 @@ struct SearchConcept {
 }  // namespace settings
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_SEARCH_SEARCH_CONCEPT_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_
