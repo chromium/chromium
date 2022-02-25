@@ -224,7 +224,17 @@ void CompleteHandleRequestHelper(
                   "active request";
 
   auto iter = data->active_requests.find(request_id);
-  DCHECK(iter != data->active_requests.end());
+  if (iter == data->active_requests.end()) {
+    // In theory there should always be an associated stored request found, but
+    // if one of our custom bindings erroneously calls the callbacks for
+    // completing a request more than once the associated request will have
+    // already been removed. If that is the case we bail early.
+    // TODO(tjudkins): Audit existing handle request custom hooks to see if this
+    // could happen in any of them. crbug.com/1298409 seemed to indicate this
+    // was happening, hence why we fail gracefully here to avoid a crash.
+    NOTREACHED() << "No callback found for the specified request ID.";
+    return;
+  }
   auto callback = std::move(iter->second);
   data->active_requests.erase(iter);
   std::move(callback).Run(did_succeed, &args);
