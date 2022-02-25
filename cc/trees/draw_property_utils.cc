@@ -781,10 +781,6 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
 void UpdateRenderTarget(EffectTree* effect_tree) {
   int last_backdrop_filter = kInvalidNodeId;
 
-  // A list of EffectNodes which induce a render surface to generate and cache
-  // content for a SharedElement.
-  std::vector<EffectNode*> shared_element_render_pass_nodes;
-
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree->size()); ++i) {
     EffectNode* node = effect_tree->Node(i);
@@ -800,44 +796,6 @@ void UpdateRenderTarget(EffectTree* effect_tree) {
         node->has_potential_backdrop_filter_animation)
       last_backdrop_filter = node->id;
     node->affected_by_backdrop_filter = false;
-
-    if (node->shared_element_resource_id.IsValid())
-      shared_element_render_pass_nodes.push_back(node);
-  }
-
-  // A SharedElement's render surface draws into the
-  // DocumentTransitionContentLayer, not into its parent layer in the regular
-  // effect tree. This is because during a shared element transition animation,
-  // the SharedElement doesn't paint, but instead delegates its paint to the
-  // DocumentTransitionContentLayer that paints on top of everything else.
-  //
-  // Update the target_id for each SharedElement to the render target where its
-  // corresponding DocumentTransitionContentLayer generates quads. This is the
-  // DocumentTransitionContentLayer's effect if it generates a render surface,
-  // or its target_id if it doesn't. This must be done after a traversal of the
-  // complete EffectTree to ensure render targets for nodes corresponding to the
-  // DocumentTransitionContentLayer have been set up.
-  //
-  // TODO(vmpstr): there is bespoke viz code to draw the surface for the
-  // SharedElement into the DocumentTransitionContentLayer target. Now that
-  // we're also setting the target id here, some of that viz code can be
-  // removed.
-  for (auto* effect_node : shared_element_render_pass_nodes) {
-    const EffectNode* shared_element_layer_node =
-        effect_tree->FindNodeFromSharedElementResourceId(
-            effect_node->shared_element_resource_id);
-
-    // It's possible for a shared element to not have a corresponding document
-    // transition layer. For example if the element which displays this layer is
-    // marked display:none.
-    if (!shared_element_layer_node)
-      continue;
-
-    if (effect_tree->GetRenderSurface(shared_element_layer_node->id)) {
-      effect_node->target_id = shared_element_layer_node->id;
-    } else {
-      effect_node->target_id = shared_element_layer_node->target_id;
-    }
   }
 
   if (last_backdrop_filter == kInvalidNodeId)
@@ -998,6 +956,24 @@ void ComputeInitialRenderSurfaceList(LayerTreeImpl* layer_tree_impl,
   // The root surface always gets added to the render surface  list.
   AddSurfaceToRenderSurfaceList(root_surface, render_surface_list,
                                 property_trees);
+
+  // Add all of the render surfaces for the transition pseudo elements early,
+  // since they will need to be added before the shared elements in the layer
+  // lists below, which isn't reflected in the dependency. This can't be done
+  // with dependency ordering because other things require correct dependency
+  // ordering (the AppendQuads pass). By adding the render surfaces right after
+  // the root, we guarantee that the pseudo element tree's render surfaces will
+  // come _after_ any render passes that they reference in the render pass
+  // order.
+  auto transition_pseudo_render_surfaces =
+      effect_tree.GetTransitionPseudoElementRenderSurfaces();
+  for (auto* surface : transition_pseudo_render_surfaces) {
+    if (!surface->is_render_surface_list_member()) {
+      AddSurfaceToRenderSurfaceList(surface, render_surface_list,
+                                    property_trees);
+    }
+  }
+
   // For all non-skipped layers, add their target to the render surface list if
   // it's not already been added, and add their content rect to the target
   // surface's accumulated content rect.

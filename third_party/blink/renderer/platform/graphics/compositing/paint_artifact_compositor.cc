@@ -788,7 +788,7 @@ void PaintArtifactCompositor::Update(
 
   host->property_trees()
       ->effect_tree_mutable()
-      .ClearSharedElementResourceIdToNodeMap();
+      .ClearTransitionPseudoElementEffectNodes();
   cc::LayerSelection layer_selection;
   for (const auto& pending_layer : pending_layers_) {
     const auto& property_state = pending_layer.GetPropertyTreeState();
@@ -860,7 +860,7 @@ void PaintArtifactCompositor::Update(
     if (shared_element_id.IsValid()) {
       host->property_trees()
           ->effect_tree_mutable()
-          .SetSharedElementResourceIdForNodeId(effect_id, shared_element_id);
+          .AddTransitionPseudoElementEffectId(effect_id);
     }
   }
 

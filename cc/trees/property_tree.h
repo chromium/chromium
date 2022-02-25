@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -378,16 +379,9 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
     return render_surfaces_[id].get();
   }
 
-  void SetSharedElementResourceIdForNodeId(
-      int node_id,
-      viz::SharedElementResourceId resource_id);
-  EffectNode* FindNodeFromSharedElementResourceId(
-      viz::SharedElementResourceId resource_id);
-  const EffectNode* FindNodeFromSharedElementResourceId(
-      viz::SharedElementResourceId resource_id) const;
-  void ClearSharedElementResourceIdToNodeMap() {
-    document_transition_layer_to_node_index_.clear();
-  }
+  void ClearTransitionPseudoElementEffectNodes();
+  void AddTransitionPseudoElementEffectId(int id);
+  std::vector<RenderSurfaceImpl*> GetTransitionPseudoElementRenderSurfaces();
 
   bool ContributesToDrawnSurface(int id) const;
 
@@ -430,11 +424,7 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   // Indexed by node id.
   std::vector<std::unique_ptr<RenderSurfaceImpl>> render_surfaces_;
 
-  // If an element is being rendered as a "live snapshot" using a
-  // DocumentTransitionLayer, this maps the layer's SharedElementResourceId to
-  // the EffectNode id associated with that layer.
-  base::flat_map<viz::SharedElementResourceId, int>
-      document_transition_layer_to_node_index_;
+  std::unordered_set<int> transition_pseudo_element_effect_nodes_;
 };
 
 // These callbacks are called in the main thread to notify changes of scroll
