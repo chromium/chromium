@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
