@@ -163,7 +163,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
         "trigger_data": "10",
         "event_source_trigger_data": "3",
         "priority": "-5",
-        "dedup_key": "123",
+        "deduplication_key": "123",
         "debug_key": "14"
       }
     },

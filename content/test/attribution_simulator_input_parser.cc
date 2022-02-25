@@ -155,7 +155,8 @@ class AttributionSimulatorInputParser {
     uint64_t event_source_trigger_data =
         ParseOptionalUint64(*cfg, "event_source_trigger_data").value_or(0);
     absl::optional<uint64_t> debug_key = ParseOptionalUint64(*cfg, "debug_key");
-    absl::optional<uint64_t> dedup_key = ParseOptionalUint64(*cfg, "dedup_key");
+    absl::optional<uint64_t> dedup_key =
+        ParseOptionalUint64(*cfg, "deduplication_key");
     int64_t priority = ParseOptionalInt64(*cfg, "priority").value_or(0);
 
     if (has_error_)

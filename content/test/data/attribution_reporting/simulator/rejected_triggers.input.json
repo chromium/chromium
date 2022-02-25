@@ -26,7 +26,7 @@
       "destination": "https://d.test",
       "registration_config": {
         "trigger_data": "2",
-	"dedup_key": "22"
+	"deduplication_key": "22"
       }
     },
     {
@@ -35,7 +35,7 @@
       "destination": "https://d.test",
       "registration_config": {
         "trigger_data": "3",
-	"dedup_key": "22"
+	"deduplication_key": "22"
       }
     },
     {
