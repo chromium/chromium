@@ -11,6 +11,7 @@ import org.chromium.components.autofill_assistant.AssistantEditor.AssistantAddre
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantContactEditor;
 import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
+import org.chromium.components.autofill_assistant.AssistantPaymentInstrumentEditorGms;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -47,5 +48,12 @@ public class AssistantEditorFactoryChrome implements AssistantEditorFactory {
             Activity activity, List<String> supportedCardNetworks, boolean shouldStoreChanges) {
         return new AssistantPaymentInstrumentEditorAutofill(
                 webContents, activity, supportedCardNetworks, shouldStoreChanges);
+    }
+
+    @Override
+    public AssistantPaymentInstrumentEditor createGmsPaymentInstrumentEditor(Activity activity,
+            WindowAndroid windowAndroid, String accountEmail, byte[] addInstrumentactionToken) {
+        return new AssistantPaymentInstrumentEditorGms(
+                activity, windowAndroid, accountEmail, addInstrumentactionToken);
     }
 }

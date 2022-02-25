@@ -1475,6 +1475,9 @@ void CollectUserDataAction::UpdateUserDataFromProto(
   }
 
   if (RequiresPaymentMethod(*collect_user_data_options_)) {
+    collect_user_data_options_->add_payment_instrument_action_token =
+        proto_data.add_payment_instrument_token();
+
     user_data->available_payment_instruments_.clear();
     for (const auto& payment_data :
          proto_data.available_payment_instruments()) {

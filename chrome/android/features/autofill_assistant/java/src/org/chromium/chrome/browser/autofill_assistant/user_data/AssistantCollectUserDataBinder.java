@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
+import org.chromium.components.autofill_assistant.AssistantEditor.AssistantPaymentInstrumentEditor;
 import org.chromium.components.autofill_assistant.AssistantEditorFactory;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.AddressModel;
 import org.chromium.components.autofill_assistant.AssistantOptionModel.ContactModel;
@@ -186,6 +187,10 @@ class AssistantCollectUserDataBinder
         return model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY);
     }
 
+    private boolean shouldShowPaymentInstruments(AssistantCollectUserDataModel model) {
+        return model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT);
+    }
+
     private boolean updateSectionTitles(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
         if (propertyKey == AssistantCollectUserDataModel.CONTACT_SECTION_TITLE) {
@@ -215,7 +220,7 @@ class AssistantCollectUserDataBinder
     private boolean updateSectionContents(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
         if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS) {
-            if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
+            if (shouldShowPaymentInstruments(model)) {
                 view.mPaymentMethodSection.onAvailablePaymentMethodsChanged(
                         model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS));
             }
@@ -239,7 +244,7 @@ class AssistantCollectUserDataBinder
             }
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_BILLING_ADDRESSES) {
-            if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
+            if (shouldShowPaymentInstruments(model)) {
                 view.mPaymentMethodSection.onAddressesChanged(
                         model.get(AssistantCollectUserDataModel.AVAILABLE_BILLING_ADDRESSES));
             }
@@ -324,9 +329,9 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateSectionVisibility(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if ((propertyKey == AssistantCollectUserDataModel.REQUEST_NAME)
-                || (propertyKey == AssistantCollectUserDataModel.REQUEST_EMAIL)
-                || (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE)) {
+        if (propertyKey == AssistantCollectUserDataModel.REQUEST_NAME
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_EMAIL
+                || propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE) {
             view.mContactDetailsSection.setVisible(shouldShowContactDetails(model));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY) {
@@ -338,8 +343,7 @@ class AssistantCollectUserDataBinder
                     model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PAYMENT) {
-            view.mPaymentMethodSection.setVisible(
-                    (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)));
+            view.mPaymentMethodSection.setVisible(shouldShowPaymentInstruments(model));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX) {
             if (model.get(AssistantCollectUserDataModel.SHOW_TERMS_AS_CHECKBOX)) {
@@ -396,7 +400,7 @@ class AssistantCollectUserDataBinder
             // No need to reset selection if null, this will be handled by setItems().
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT) {
-            if (!model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
+            if (!shouldShowPaymentInstruments(model)) {
                 return true;
             }
             PaymentInstrumentModel paymentInstrument =
@@ -519,7 +523,7 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mAppendedSections.setPaddings(view.mSectionToSectionPadding,
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-        } else if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
+        } else if (shouldShowPaymentInstruments(model)) {
             view.mPaymentMethodSection.setPaddings(0, view.mSectionToSectionPadding);
             view.mShippingAddressSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
@@ -568,7 +572,9 @@ class AssistantCollectUserDataBinder
                 && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
                 && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
                 && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
-                && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
+                && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL
+                && propertyKey
+                        != AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN) {
             return false;
         }
 
@@ -586,16 +592,13 @@ class AssistantCollectUserDataBinder
 
         if (shouldShowContactDetails(model)) {
             updateContactEditor(model, view, webContents, shouldStoreChanges);
-            updatePhoneNumberEditor(model, view, webContents, shouldStoreChanges);
+            updatePhoneNumberEditor(model, view);
         }
 
         view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
                 webContents, view.mActivity, shouldStoreChanges));
 
-        view.mPaymentMethodSection.setEditor(
-                view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
-                        model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
-                        shouldStoreChanges));
+        updatePaymentEditor(model, view, webContents, shouldStoreChanges);
 
         return true;
     }
@@ -619,8 +622,7 @@ class AssistantCollectUserDataBinder
         }
     }
 
-    private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view,
-            WebContents webContents, boolean shouldStoreChanges) {
+    private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view) {
         if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
             view.mPhoneNumberSection.setRequestReloadOnChange(true);
             view.mPhoneNumberSection.setEditor(
@@ -633,5 +635,25 @@ class AssistantCollectUserDataBinder
             // do not offer an Autofill editor in this case.
             view.mPhoneNumberSection.setEditor(null);
         }
+    }
+
+    private void updatePaymentEditor(AssistantCollectUserDataModel model, ViewHolder view,
+            WebContents webContents, boolean shouldStoreChanges) {
+        AssistantPaymentInstrumentEditor editor = null;
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            byte[] addInstrumentActionToken =
+                    model.get(AssistantCollectUserDataModel.ADD_PAYMENT_INSTRUMENT_ACTION_TOKEN);
+            if (addInstrumentActionToken != null) {
+                editor = view.mEditorFactory.createGmsPaymentInstrumentEditor(view.mActivity,
+                        view.mWindowAndroid, model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                        addInstrumentActionToken);
+            }
+        } else {
+            editor = view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
+                    model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
+                    shouldStoreChanges);
+        }
+
+        view.mPaymentMethodSection.setEditor(editor);
     }
 }

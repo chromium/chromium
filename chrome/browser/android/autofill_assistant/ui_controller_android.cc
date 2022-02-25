@@ -65,6 +65,7 @@ using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::base::android::ToJavaArrayOfStrings;
+using ::base::android::ToJavaByteArray;
 
 namespace autofill_assistant {
 
@@ -1343,6 +1344,14 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
         collect_user_data_appended_generic_ui_controller_ != nullptr
             ? collect_user_data_appended_generic_ui_controller_->GetRootView()
             : nullptr);
+  }
+  if (collect_user_data_options->add_payment_instrument_action_token
+          .has_value()) {
+    Java_AssistantCollectUserDataModel_setAddPaymentInstrumentActionToken(
+        env, jmodel,
+        ToJavaByteArray(
+            env,
+            *collect_user_data_options->add_payment_instrument_action_token));
   }
 
   Java_AssistantCollectUserDataModel_setVisible(env, jmodel, true);

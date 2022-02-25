@@ -31,4 +31,7 @@ public interface AssistantEditorFactory {
 
     AssistantPaymentInstrumentEditor createPaymentInstrumentEditor(WebContents webContents,
             Activity activity, List<String> supportedCardNetworks, boolean shouldStoreChanges);
+
+    AssistantPaymentInstrumentEditor createGmsPaymentInstrumentEditor(Activity activity,
+            WindowAndroid windowAndroid, String accountEmail, byte[] addInstrumentactionToken);
 }

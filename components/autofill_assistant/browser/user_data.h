@@ -311,6 +311,8 @@ struct CollectUserDataOptions {
   bool can_edit_contacts = true;
   bool use_gms_core_edit_dialogs = false;
 
+  absl::optional<std::string> add_payment_instrument_action_token;
+
   // If empty, terms and conditions should not be shown.
   std::string accept_terms_and_conditions_text;
   std::string terms_require_review_text;

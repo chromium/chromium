@@ -46,9 +46,9 @@ public class AssistantContactEditorAccount implements AssistantContactEditor {
      * @param oldItem The item to be edited, can be null in which case a new item is created.
      * @param doneCallback Called after the editor is closed, assuming that the item has been
      *                     successfully edited. The callback will be called with the
-     *                     {@code oldItem} and can be null. The list of new items needs to be
+     *                     {@code oldItem} which can be null. The list of new items needs to be
      *                     requested.
-     * @param cancelCallback Called after the editor is closed, assuming that the edit has been
+     * @param cancelCallback Only called if the intent failed to be launched.
      */
     @Override
     public void createOrEditItem(@Nullable ContactModel oldItem,

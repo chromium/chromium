@@ -32,6 +32,7 @@ android_library("public_java") {
     "public/java/src/org/chromium/components/autofill_assistant/AssistantOnboardingHelper.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantOptionModel.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrument.java",
+    "public/java/src/org/chromium/components/autofill_assistant/AssistantPaymentInstrumentEditorGms.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantProfileImageUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantSettingsUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/AssistantSnackbar.java",
