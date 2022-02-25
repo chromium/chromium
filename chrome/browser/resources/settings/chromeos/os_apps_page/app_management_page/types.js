@@ -41,6 +41,11 @@ let AppManagementPageState;
 let WindowMode;
 
 /**
+ * @typedef {apps.mojom.InstallSource}
+ */
+let InstallSource;
+
+/**
  * Must be kept in sync with
  * ui/webui/resources/cr_components/app_management/constants.ts
  * @enum {number}
