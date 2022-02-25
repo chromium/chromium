@@ -128,6 +128,10 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     return container_builder_.ChildAvailableSize();
   }
 
+  NGExclusionSpace& ExclusionSpace() {
+    return container_builder_.ExclusionSpace();
+  }
+
   // Lay out again, this time with a predefined good breakpoint that we
   // discovered in the first pass. This happens when we run out of space in a
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,

@@ -89,8 +89,9 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
     may_have_descendant_above_block_start_ = b;
   }
 
-  void SetExclusionSpace(NGExclusionSpace&& exclusion_space) {
-    exclusion_space_ = std::move(exclusion_space);
+  NGExclusionSpace& ExclusionSpace() { return exclusion_space_; }
+  void SetExclusionSpace(const NGExclusionSpace& exclusion_space) {
+    exclusion_space_ = exclusion_space;
   }
 
   void SetLinesUntilClamp(const absl::optional<int>& value) {

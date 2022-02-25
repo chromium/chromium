@@ -419,8 +419,6 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // the current line should be clamped. This may go negative.
   absl::optional<int> lines_until_clamp_;
 
-  NGExclusionSpace exclusion_space_;
-
   // If set, one of the lines was clamped and this is the intrinsic size at the
   // time of the clamp.
   absl::optional<LayoutUnit> intrinsic_block_size_when_clamped_;

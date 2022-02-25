@@ -222,8 +222,9 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       has_processed_first_child_(false),
       ignore_line_clamp_(false),
       is_line_clamp_context_(params.space.IsLineClampContext()),
-      lines_until_clamp_(params.space.LinesUntilClamp()),
-      exclusion_space_(params.space.ExclusionSpace()) {
+      lines_until_clamp_(params.space.LinesUntilClamp()) {
+  container_builder_.SetExclusionSpace(params.space.ExclusionSpace());
+
   child_percentage_size_ = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
   replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
@@ -799,7 +800,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // all of our floats.
   if (ConstraintSpace().IsNewFormattingContext()) {
     intrinsic_block_size_ = std::max(
-        intrinsic_block_size_, exclusion_space_.ClearanceOffset(EClear::kBoth));
+        intrinsic_block_size_, ExclusionSpace().ClearanceOffset(EClear::kBoth));
   }
 
   // If line clamping occurred, the intrinsic block-size comes from the
@@ -985,10 +986,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   container_builder_.SetLastBaselineToBlockEndMarginEdgeIfNeeded();
 
   // An exclusion space is confined to nodes within the same formatting context.
-  if (!ConstraintSpace().IsNewFormattingContext()) {
-    container_builder_.SetExclusionSpace(std::move(exclusion_space_));
+  if (ConstraintSpace().IsNewFormattingContext())
+    container_builder_.SetExclusionSpace(NGExclusionSpace());
+  else
     container_builder_.SetLinesUntilClamp(lines_until_clamp_);
-  }
 
   if (ConstraintSpace().UseFirstLineStyle())
     container_builder_.SetStyleVariant(NGStyleVariant::kFirstLine);
@@ -1115,7 +1116,7 @@ void NGBlockLayoutAlgorithm::HandleOutOfFlowPositioned(
         origin_bfc_block_offset};
 
     static_offset.inline_offset += CalculateOutOfFlowStaticInlineLevelOffset(
-        Style(), origin_bfc_offset, exclusion_space_,
+        Style(), origin_bfc_offset, ExclusionSpace(),
         ChildAvailableSize().inline_size);
   }
 
@@ -1170,7 +1171,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   }
 
   NGPositionedFloat positioned_float =
-      PositionFloat(&unpositioned_float, &exclusion_space_);
+      PositionFloat(&unpositioned_float, &ExclusionSpace());
 
   if (positioned_float.need_break_before) {
     DCHECK(ConstraintSpace().HasBlockFragmentation());
@@ -1451,12 +1452,12 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
   // The origin offset is where we should start looking for layout
   // opportunities. It needs to be adjusted by the child's clearance.
   AdjustToClearance(
-      exclusion_space_.ClearanceOffset(child_style.Clear(Style())),
+      ExclusionSpace().ClearanceOffset(child_style.Clear(Style())),
       &origin_offset);
   DCHECK(container_builder_.BfcBlockOffset());
 
   LayoutOpportunityVector opportunities =
-      exclusion_space_.AllLayoutOpportunities(origin_offset,
+      ExclusionSpace().AllLayoutOpportunities(origin_offset,
                                               ChildAvailableSize().inline_size);
 
   // We should always have at least one opportunity.
@@ -1646,7 +1647,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     // force this placement of this child.
     if (has_clearance_past_adjoining_floats) {
       forced_bfc_block_offset =
-          exclusion_space_.ClearanceOffset(child.Style().Clear(Style()));
+          ExclusionSpace().ClearanceOffset(child.Style().Clear(Style()));
     }
   }
 
@@ -1900,7 +1901,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   // It is now safe to update our version of the exclusion space, and any
   // propagated adjoining floats.
-  exclusion_space_ = layout_result->ExclusionSpace();
+  container_builder_.SetExclusionSpace(layout_result->ExclusionSpace());
 
   // Only self-collapsing children should have adjoining objects.
   DCHECK(!layout_result->AdjoiningObjectTypes() || is_self_collapsing);
@@ -2381,7 +2382,7 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
     if (!child_box_fragment->IsFirstForNode())
       return NGBreakStatus::kContinue;
 
-    if (exclusion_space_.NeedsClearancePastFragmentainer(
+    if (ExclusionSpace().NeedsClearancePastFragmentainer(
             child.Style().Clear(Style())))
       pushed_to_next_fragmentainer_by_float = true;
   }
@@ -2696,7 +2697,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                                     : ConstraintSpace().ClearanceOffset();
   if (child.IsBlock()) {
     LayoutUnit child_clearance_offset =
-        exclusion_space_.ClearanceOffset(child_style.Clear(Style()));
+        ExclusionSpace().ClearanceOffset(child_style.Clear(Style()));
     clearance_offset = std::max(clearance_offset, child_clearance_offset);
   }
   builder.SetClearanceOffset(clearance_offset);
@@ -2705,7 +2706,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (!is_new_fc) {
     builder.SetMarginStrut(child_data.margin_strut);
     builder.SetBfcOffset(child_data.bfc_offset_estimate);
-    builder.SetExclusionSpace(exclusion_space_);
+    builder.SetExclusionSpace(ExclusionSpace());
     if (!has_bfc_block_offset) {
       builder.SetAdjoiningObjectTypes(
           container_builder_.AdjoiningObjectTypes());

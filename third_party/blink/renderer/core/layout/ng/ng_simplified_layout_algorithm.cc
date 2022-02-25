@@ -67,8 +67,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (result.LinesUntilClamp())
       container_builder_.SetLinesUntilClamp(result.LinesUntilClamp());
 
-    NGExclusionSpace exclusion_space = result.ExclusionSpace();
-    container_builder_.SetExclusionSpace(std::move(exclusion_space));
+    container_builder_.SetExclusionSpace(result.ExclusionSpace());
 
     if (result.IsSelfCollapsing())
       container_builder_.SetIsSelfCollapsing();

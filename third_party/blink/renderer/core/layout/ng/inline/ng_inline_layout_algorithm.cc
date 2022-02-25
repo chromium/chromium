@@ -663,7 +663,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   }
 
   end_margin_strut_ = result.EndMarginStrut();
-  exclusion_space_ = result.ExclusionSpace();
+  container_builder_.SetExclusionSpace(result.ExclusionSpace());
   container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
   lines_until_clamp_ = result.LinesUntilClamp();
   if (UNLIKELY(box_fragment.MayHaveDescendantAboveBlockStart()))
@@ -803,7 +803,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     // PositionLeadingFloats step.
     if (child.unpositioned_float) {
       NGPositionedFloat positioned_float = PositionFloat(
-          origin_bfc_block_offset, child.unpositioned_float, &exclusion_space_);
+          origin_bfc_block_offset, child.unpositioned_float, &ExclusionSpace());
       if (positioned_float.need_break_before) {
         // We decided to break before the float. No fragment here. Create a
         // break token and propagate it to the block container.
@@ -1097,7 +1097,7 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     LayoutUnit block_end_offset_without_clearence = bfc_offset.block_offset;
     const auto clear_type = item.Style()->Clear(Style());
     if (clear_type != EClear::kNone) {
-      AdjustToClearance(exclusion_space_.ClearanceOffset(clear_type),
+      AdjustToClearance(ExclusionSpace().ClearanceOffset(clear_type),
                         &bfc_offset);
 
       // Unlike regular CSS clearance (which adds space *before* content), BR
@@ -1108,7 +1108,7 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
           bfc_offset.block_offset - block_end_offset_without_clearence);
     }
 
-    if (exclusion_space_.NeedsClearancePastFragmentainer(clear_type))
+    if (ExclusionSpace().NeedsClearancePastFragmentainer(clear_type))
       return false;
   }
   return true;
@@ -1184,7 +1184,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
     // Reset any state that may have been modified in a previous pass.
     container_builder_.Reset();
-    exclusion_space_ = initial_exclusion_space;
+    container_builder_.SetExclusionSpace(initial_exclusion_space);
     is_line_created = false;
 
     NGLineLayoutOpportunity line_opportunity =
@@ -1195,7 +1195,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     NGLineBreaker line_breaker(Node(), NGLineBreakerMode::kContent,
                                ConstraintSpace(), line_opportunity,
                                leading_floats, handled_leading_floats_index,
-                               break_token, &exclusion_space_);
+                               break_token, &ExclusionSpace());
     line_breaker.NextLine(&line_info);
 
     const auto* block_in_inline_result = line_info.BlockInInlineLayoutResult();
@@ -1373,7 +1373,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
   CHECK(is_line_created);
   container_builder_.SetEndMarginStrut(end_margin_strut_);
-  container_builder_.SetExclusionSpace(std::move(exclusion_space_));
   container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
   DCHECK(items_builder);
