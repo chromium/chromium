@@ -545,6 +545,9 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
   if (root_changed) {
     wcax->HandleNavigate();
   }
+
+  // Update the maximum number of nodes in the cache after each atomic update.
+  wcax->UpdateMaxNodesInCache();
 }
 
 void BrowserAccessibilityManagerAndroid::OnNodeCreated(ui::AXTree* tree,

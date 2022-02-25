@@ -45,6 +45,8 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sRangeInfoMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sTextMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sViewIdResourceNameMatcher;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.CACHE_MAX_NODES_HISTOGRAM;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EVENTS_DROPPED_HISTOGRAM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_CHROME_ROLE;
@@ -532,6 +534,28 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         ONE_HUNDRED_PERCENT_HISTOGRAM_AXMODE_BASIC));
+    }
+
+    /**
+     * Test that UMA histograms are recorded for the cache statistics, including the max number of
+     * nodes stored in the cache, and percentage of requests retrieved from the cache.
+     */
+    @Test
+    @SmallTest
+    public void testUMAHistograms_Cache() throws Throwable {
+        // Build a simple web page with a few nodes to traverse.
+        setupTestWithHTML("<p>This is a test 1</p>\n"
+                + "<p>This is a test 2</p>\n"
+                + "<p>This is a test 3</p>");
+
+        performHistogramActions();
+
+        // Verify results were recorded in histograms.
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(CACHE_MAX_NODES_HISTOGRAM));
+        Assert.assertEquals(UMA_HISTOGRAM_ERROR, 1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM));
     }
 
     /**
@@ -2140,5 +2164,6 @@ public class WebContentsAccessibilityTest {
 
         // Force recording of UMA histograms.
         mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
+        mActivityTestRule.mWcax.forceRecordCacheUMAHistogramsForTesting();
     }
 }

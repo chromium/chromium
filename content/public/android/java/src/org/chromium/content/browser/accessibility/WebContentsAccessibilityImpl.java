@@ -190,6 +190,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String CACHE_MAX_NODES_HISTOGRAM =
+            "Accessibility.Android.Cache.MaxNodesInCache";
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM =
+            "Accessibility.Android.Cache.PercentageRetrievedFromCache";
+    private static final int CACHE_MAX_NODES_MIN_BUCKET = 1;
+    private static final int CACHE_MAX_NODES_MAX_BUCKET = 3000;
+    private static final int CACHE_MAX_NODES_BUCKET_COUNT = 100;
+
     // Static instances of the two types of extra data keys that can be added to nodes.
     private static final List<String> sTextCharacterLocation =
             Collections.singletonList(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
@@ -267,6 +277,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // so we can report the percentage/number of dropped events.
     private int mTotalEnqueuedEvents;
     private int mTotalDispatchedEvents;
+
+    // These track the usage of the |mNodeInfoCache| to report metrics on the max number of items
+    // that were stored in the cache, and the percentage of requests retrieved from the cache.
+    private int mMaxNodesInCache;
+    private int mNodeWasReturnedFromCache;
+    private int mNodeWasCreatedFromScratch;
 
     // Set of all nodes that have received a request to populate image data. The request only needs
     // to be run once per node, and it completes asynchronously. We track which nodes have already
@@ -494,6 +510,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @VisibleForTesting
+    public void forceRecordCacheUMAHistogramsForTesting() {
+        recordCacheUMAHistograms();
+    }
+
+    @VisibleForTesting
     public void setEventTypeMaskEmptyForTesting() {
         BrowserAccessibilityState.setEventTypeMaskEmptyForTesting();
     }
@@ -525,6 +546,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             recordUMAHistograms();
         }
+
+        // Always track the histograms for cache usage statistics.
+        recordCacheUMAHistograms();
     }
 
     // Helper method to record UMA histograms for OnDemand feature and reset counters.
@@ -580,6 +604,24 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Reset counters.
         mTotalEnqueuedEvents = 0;
         mTotalDispatchedEvents = 0;
+    }
+
+    // Helper method to record UMA histograms for cache usage statistics.
+    private void recordCacheUMAHistograms() {
+        RecordHistogram.recordCustomCountHistogram(CACHE_MAX_NODES_HISTOGRAM, mMaxNodesInCache,
+                CACHE_MAX_NODES_MIN_BUCKET, CACHE_MAX_NODES_MAX_BUCKET,
+                CACHE_MAX_NODES_BUCKET_COUNT);
+
+        int totalNodeRequests = mNodeWasReturnedFromCache + mNodeWasCreatedFromScratch;
+        int percentFromCache = (int) (mNodeWasReturnedFromCache * 1.0 / totalNodeRequests * 100.0);
+
+        RecordHistogram.recordPercentageHistogram(
+                CACHE_PERCENTAGE_RETRIEVED_FROM_CAHCE_HISTOGRAM, percentFromCache);
+
+        // Reset counters.
+        mMaxNodesInCache = 0;
+        mNodeWasReturnedFromCache = 0;
+        mNodeWasCreatedFromScratch = 0;
     }
 
     @Override
@@ -695,6 +737,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    public void updateMaxNodesInCache() {
+        mMaxNodesInCache = Math.max(mMaxNodesInCache, mNodeInfoCache.size());
+    }
+
+    @CalledByNative
     public void clearNodeInfoCacheForGivenId(int virtualViewId) {
         // Recycle and remove the element in our cache for this |virtualViewId|.
         if (mNodeInfoCache.get(virtualViewId) != null) {
@@ -743,6 +790,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     cachedNode.addAction(ACTION_ACCESSIBILITY_FOCUS);
                 }
 
+                mNodeWasReturnedFromCache++;
                 return cachedNode;
             } else {
                 // If the node is no longer valid, wipe it from the cache and return null
@@ -765,6 +813,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mNativeObj, WebContentsAccessibilityImpl.this, info, virtualViewId)) {
                 // After successfully populating this node, add it to our cache then return.
                 mNodeInfoCache.put(virtualViewId, AccessibilityNodeInfoCompat.obtain(info));
+                mNodeWasCreatedFromScratch++;
                 return info;
             } else {
                 info.recycle();

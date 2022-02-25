@@ -595,6 +595,15 @@ void WebContentsAccessibilityAndroid::HandleNavigate() {
   Java_WebContentsAccessibilityImpl_handleNavigate(env, obj);
 }
 
+void WebContentsAccessibilityAndroid::UpdateMaxNodesInCache() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null())
+    return;
+
+  Java_WebContentsAccessibilityImpl_updateMaxNodesInCache(env, obj);
+}
+
 void WebContentsAccessibilityAndroid::ClearNodeInfoCacheForGivenId(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
