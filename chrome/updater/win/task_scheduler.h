@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -96,19 +97,6 @@ class TaskScheduler {
 
     // User ID under which the task runs.
     std::wstring user_id;
-
-    std::wstring value() const {
-      std::wstring value =
-          base::StrCat({L"[TaskInfo][name]", name, L"[description]",
-                        description, L"[exec_actions]"});
-      for (auto exec_action : exec_actions)
-        value += base::StrCat({L"[exec_action]", exec_action.value()});
-
-      value += base::StrCat({L"[logon_type]",
-                             base::StringPrintf(L"0x%x", logon_type),
-                             L"[user_id]", user_id});
-      return value;
-    }
   };
 
   static std::unique_ptr<TaskScheduler> CreateInstance();
@@ -163,6 +151,9 @@ class TaskScheduler {
  protected:
   TaskScheduler();
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const TaskScheduler::TaskInfo& t);
 
 }  // namespace updater
 
