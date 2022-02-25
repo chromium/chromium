@@ -267,6 +267,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Coincidencia del nombre alternativo del sujeto</translation>
 <translation id="4536864596629708641">Configuración de IP</translation>
+<translation id="4546131424594385779">Crear un video en bucle</translation>
 <translation id="4548483925627140043">no se encontró la señal</translation>
 <translation id="4556753742174065117">Todo el firmware está actualizado</translation>
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -283,7 +284,6 @@
 <translation id="467715984478005772">Posible firewall</translation>
 <translation id="4691278870498629773">Se detuvo: falta la bandeja</translation>
 <translation id="469379815867856270">Intensidad de la señal</translation>
-<translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>
@@ -450,6 +450,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6566314079205407217">Escaneo de múltiples páginas</translation>
 <translation id="6574762126505704998">Completar</translation>
 <translation id="6575134580692778371">No está configurado</translation>
+<translation id="6579509898032828423">Usar esta foto</translation>
 <translation id="6596816719288285829">Dirección IP</translation>
 <translation id="6618744767048954150">En ejecución</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
@@ -650,6 +651,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="9062831201344759865">La resolución de DNS tiene alta latencia</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Usar este video</translation>
 <translation id="9087578468327036362">Denuncia esta búsqueda</translation>
 <translation id="9088306295921699330">Uso actual</translation>
 <translation id="9095415590198785865">El dispositivo no cambiará de propietario</translation>
@@ -663,7 +665,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="9149391708638971077">Ejecutar prueba de memoria</translation>
 <translation id="9173638680043580060">Queda menos de un minuto</translation>
 <translation id="917720651393141712">Probar</translation>
-<translation id="9190063653747922532">L2TP/IPsec + clave previamente compartida</translation>
 <translation id="9204237731135241582">No se puede establecer contacto con la puerta de enlace desde apps para Android</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="939519157834106403">SSID</translation>

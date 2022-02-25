@@ -650,7 +650,7 @@
 <translation id="1627408615528139100">Ja s'ha baixat</translation>
 <translation id="1628948239858170093">Vols escanejar el fitxer abans d'obrir-lo?</translation>
 <translation id="1629314197035607094">La contrasenya ha caducat</translation>
-<translation id="1629451755632656601">Vols permetre que Google cerqui descomptes personalitzats als teus carretons?</translation>
+<translation id="1629451755632656601">Vols permetre que Chrome cerqui descomptes personalitzats basats en els teus carretons?</translation>
 <translation id="163072119192489970">Amb permís per acabar d'enviar o de rebre dades</translation>
 <translation id="1630768113285622200">Reinicia i continua</translation>
 <translation id="1632082166874334883">Contrasenya emmagatzemada al Compte de Google</translation>
@@ -2263,6 +2263,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3225319735946384299">Signatura de codi</translation>
 <translation id="3226487301970807183">Commuta el tauler lateral alineat a l'esquerra</translation>
 <translation id="3227137524299004712">Micròfon</translation>
+<translation id="3232754137068452469">Aplicació web</translation>
 <translation id="3233271424239923319">Crea una còpia de seguretat dels fitxers i de les aplicacions de Linux</translation>
 <translation id="3238192140106069382">S'està connectant i verificant</translation>
 <translation id="3239373508713281971">S'ha suprimit el límit de temps per a <ph name="APP_NAME" /></translation>
@@ -2330,6 +2331,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descompte</translation>
 <translation id="3305389145870741612">El procés de format pot trigar uns quants segons. Espereu.</translation>
 <translation id="3305661444342691068">Obre la previsualització en PDF</translation>
+<translation id="3307176291962384345">Obtén descomptes per a <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">S'ha impedit que aquesta pàgina estableixi galetes.</translation>
 <translation id="3308134619352333507">Amaga el botó</translation>
 <translation id="3308852433423051161">S'està carregant l'Assistent de Google...</translation>
@@ -2808,6 +2810,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3761556954875533505">Vols permetre que el lloc web editi els fitxers?</translation>
 <translation id="3764314093345384080">Informació detallada de la compilació</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Es comunica amb un dispositiu USB}other{Es comunica amb # dispositius USB}}</translation>
+<translation id="3764753550716962406">Vols permetre que Google utilitzi el teu carretó per cercar descomptes disponibles?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{S'està enviant el contingut següent al dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}other{S'està enviant el contingut següent al dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3765246971671567135">No s'ha pogut llegir la política del mode de demostració sense connexió.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3242,6 +3245,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4194570336751258953">Activa la funció de tocar per fer clic</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
+<translation id="4197917636330710075">Obtén descomptes per a <ph name="MERCHANT_NAME" /> i <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Llocs web addicionals</translation>
 <translation id="4200689466366162458">Paraules personalitzades</translation>
 <translation id="4200983522494130825">Pes&amp;tanya nova</translation>
@@ -4622,6 +4626,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5632566673632479864">Ja no es permet que <ph name="EMAIL" /> sigui el compte principal. Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5632592977009207922">S'està baixant. Queda un <ph name="PERCENT_REMAINING" />%.</translation>
 <translation id="563371367637259496">Mòbil</translation>
+<translation id="5634446357546764049">Consulta els records dels teus viatges recents i més</translation>
 <translation id="5635312199252507107">Permet en llocs web concrets</translation>
 <translation id="563535393368633106">Pregunta'm abans d'accedir (opció recomanada)</translation>
 <translation id="5636996382092289526">Per utilitzar <ph name="NETWORK_ID" />, és possible que abans calgui que <ph name="LINK_START" />visiteu la pàgina d'inici de sessió de la xarxa<ph name="LINK_END" />, que s'obrirà automàticament d'aquí a pocs segons. Si no s'obre, no podreu utilitzar la xarxa.</translation>
@@ -4718,6 +4723,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5740709157181662145">Compatibilitat i estabilitat del maquinari <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Projecció de la pantalla</translation>
 <translation id="574209121243317957">To</translation>
+<translation id="5745316408658560138">Vols permetre que Chrome cerqui descomptes personalitzats basats en els teus carretons?</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5747552184818312860">Caduca el dia</translation>
 <translation id="5747785204778348146">Desenvolupador: inestable</translation>
@@ -5345,6 +5351,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6370021412472292592">No s'ha pogut carregar el manifest.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
+<translation id="6374635887697228982">Vols obtenir descomptes?</translation>
 <translation id="6377268785556383139">1 resultat per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Accepta i continua</translation>
 <translation id="6382616130475191723">S'ha donat permís per llegir i canviar <ph name="SITE_NAME" /></translation>
@@ -6911,6 +6918,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7956373551960864128">Les teves impressores desades</translation>
 <translation id="7957074856830851026">Mostra la informació del dispositiu, com ara el número de sèrie o l'identificador de recurs</translation>
 <translation id="7957615753207896812">Obre la configuració del teclat</translation>
+<translation id="7958437133377816580">Obtén descomptes per a <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> i més</translation>
 <translation id="7959074893852789871">El fitxer contenia certificats múltiples, però alguns no s'han importat:</translation>
 <translation id="7959665254555683862">Pestanya &amp;d'incògnit nova</translation>
 <translation id="7961015016161918242">Mai</translation>

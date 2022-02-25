@@ -1240,6 +1240,7 @@
 <translation id="2203088913459920044">نام میں حروف، نمبرز اور مخصوص حروف کا استعمال کیا جا سکتا ہے</translation>
 <translation id="220321590587754225">منسلک نہیں ہو سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2204034823255629767">آپ جو کچھ بھی ٹائپ کرتے ہیں اسے پڑھیں اور تبدیل کریں</translation>
+<translation id="2207115382329026341">اپنے فون سے ایپس کی سلسلہ بندی کی ترتیبات کو فعال کریں۔</translation>
 <translation id="220858061631308971">‏براہ کرم اس PIN کوڈ کو "<ph name="DEVICE_NAME" />" میں داخل کریں:</translation>
 <translation id="2210462644007531147">انسٹالیشن مکمل نہیں ہو سکی</translation>
 <translation id="2212565012507486665">کوکیز کی اجازت دیں</translation>
@@ -1430,6 +1431,7 @@
 <translation id="2367972762794486313">ایپس دکھائیں</translation>
 <translation id="236939127352773362">آلات کے قریب میں اشتراک کرنے پر</translation>
 <translation id="2371076942591664043">&amp;مکمل ہو جانے پر کھولیں</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> کو شروع نہیں کیا جا سکا</translation>
 <translation id="2373666622366160481">کاغذ پر فٹ کریں</translation>
 <translation id="2375406435414127095">اپنے فون سے منسلک کریں</translation>
 <translation id="2377588536920405462">‏آپ اپنے آلے پر مقام کی بنیادی ترتیب آف کر کے مقام آف کر سکتے ہیں۔ آپ مقام کی ترتیبات میں مقام کے لیے Wi‑Fi، موبائل نیٹ ورکس اور سینسرز کے استعمال کو بھی آف کر سکتے ہیں۔</translation>
@@ -2263,6 +2265,7 @@
 <translation id="3225319735946384299">کوڈ سائن کرنا</translation>
 <translation id="3226487301970807183">بائیں جانب موافق کردہ سائیڈ پینل کو ٹوگل کریں</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
+<translation id="3232754137068452469">ویب ایپ</translation>
 <translation id="3233271424239923319">‏Linux کی ایپس اور فائلز کا بیک اپ لیں</translation>
 <translation id="3238192140106069382">منسلک ہونے اور تصدیق کرنے کی کوشش کر رہا ہے</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> کے لیے وقت کی حد ہٹا دی گئی</translation>
@@ -2301,6 +2304,7 @@
 <translation id="3277691515294482687">‏Linux اپ گریڈ کرنے سے پہلے میری ایپس اور فائلز کا میری فائلز فولڈر میں بیک اپ لیں۔</translation>
 <translation id="3278001907972365362">‏آپ کے Google اکاؤنٹ (اکاؤنٹس) کو توجہ کی ضرورت ہے</translation>
 <translation id="3278800075417428224">‏CloudReady 2.0 کی ترتیبات میں زبانوں کا نظم کریں</translation>
+<translation id="3278928434075969895">‏یہ پروفائل Chrome OS کی پراکسی ترتیبات کا استعمال کرتی ہے</translation>
 <translation id="3279092821516760512">منتخب رابطے قریب میں ہونے پر آپ کے ساتھ اشتراک کر سکتے ہیں۔ آپ کے قبول کئے بغیر منتقلیاں شروع نہیں ہوں گی۔</translation>
 <translation id="3279230909244266691">اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ ورچوئل مشین شروع ہو رہی ہے۔</translation>
 <translation id="3280237271814976245">محفوظ کریں &amp;بطور…</translation>
@@ -4872,6 +4876,7 @@
 <translation id="5909379458939060601">اس پروفائل اور براؤزنگ ڈیٹا کو حذف کریں؟</translation>
 <translation id="5910363049092958439">تصویر مح&amp;فوظ کریں بطور…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> آف لائن ہے</translation>
+<translation id="5911505723657992440">‏اس پروفائل کے لیے Chrome OS کی پراکسی ترتیبات کا استعمال کریں۔</translation>
 <translation id="5911533659001334206">شارٹ کٹ ناظر</translation>
 <translation id="5914724413750400082">ماڈیولس (<ph name="MODULUS_NUM_BITS" /> بٹس):
   <ph name="MODULUS_HEX_DUMP" />

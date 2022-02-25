@@ -1240,6 +1240,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2203088913459920044">De naam mag letters, cijfers en speciale tekens bevatten</translation>
 <translation id="220321590587754225">Kan geen verbinding maken. Probeer het opnieuw.</translation>
 <translation id="2204034823255629767">Alles lezen en wijzigen wat je typt</translation>
+<translation id="2207115382329026341">Zet instellingen voor het streamen van apps aan op je telefoon.</translation>
 <translation id="220858061631308971">Voer deze pincode in op '<ph name="DEVICE_NAME" />':</translation>
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
@@ -1430,6 +1431,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2367972762794486313">Apps bekijken</translation>
 <translation id="236939127352773362">Als apparaten in de buurt content delen</translation>
 <translation id="2371076942591664043">Openen wanneer geree&amp;d</translation>
+<translation id="237307274687369010">Kan <ph name="APP_NAME" /> niet starten</translation>
 <translation id="2373666622366160481">Aanpassen aan papierformaat</translation>
 <translation id="2375406435414127095">Verbinding maken met je telefoon</translation>
 <translation id="2377588536920405462">Je kunt Locatie uitzetten door de primaire instelling voor Locatie op je apparaat uit te zetten. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor locatie ook uitzetten via de locatie-instellingen.</translation>
@@ -2263,6 +2265,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3225319735946384299">Handtekening bij programmacode</translation>
 <translation id="3226487301970807183">Links uitgelijnd zijvenster schakelen</translation>
 <translation id="3227137524299004712">Microfoon</translation>
+<translation id="3232754137068452469">Webapp</translation>
 <translation id="3233271424239923319">Back-up maken van Linux-apps en -bestanden</translation>
 <translation id="3238192140106069382">Verbinden en verifiëren</translation>
 <translation id="3239373508713281971">Tijdslimiet verwijderd voor <ph name="APP_NAME" /></translation>
@@ -2301,6 +2304,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3277691515294482687">Een back-up van mijn apps en bestanden maken in de map 'Mijn bestanden' voordat Linux wordt geüpgraded.</translation>
 <translation id="3278001907972365362">Je Google-accounts vereisen aandacht</translation>
 <translation id="3278800075417428224">Talen beheren in de instellingen van CloudReady 2.0</translation>
+<translation id="3278928434075969895">Dit profiel gebruikt Chrome OS-proxyinstellingen.</translation>
 <translation id="3279092821516760512">Geselecteerde contacten kunnen met je delen als ze in de buurt zijn. Overdrachten worden pas gestart nadat je ze accepteert.</translation>
 <translation id="3279230909244266691">Dit proces kan enkele minuten duren. De virtuele machine wordt gestart.</translation>
 <translation id="3280237271814976245">Opslaan &amp;als...</translation>
@@ -4870,6 +4874,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5909379458939060601">Dit profiel en bijbehorende browsegegevens verwijderen?</translation>
 <translation id="5910363049092958439">Af&amp;beelding opslaan als...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> is offline</translation>
+<translation id="5911505723657992440">Chrome OS-proxyinstellingen gebruiken voor dit profiel.</translation>
 <translation id="5911533659001334206">Sneltoetsenviewer</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" />-bits):
   <ph name="MODULUS_HEX_DUMP" />

@@ -236,6 +236,7 @@
 <translation id="4145784616224233563">HTTP ファイアウォール</translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4155551848414053977">スキャナの電源がオンになっていて、ネットワーク経由または直接接続して使用できることを確認してください</translation>
+<translation id="4170180284036919717">写真を撮る</translation>
 <translation id="4170700058716978431">失敗</translation>
 <translation id="4176463684765177261">停止中</translation>
 <translation id="4213104098953699324">USB キーボード</translation>
@@ -283,7 +284,6 @@
 <translation id="467715984478005772">ファイアウォールの可能性があります</translation>
 <translation id="4691278870498629773">停止 - トレイなし</translation>
 <translation id="469379815867856270">電波強度</translation>
-<translation id="4707579418881001319">L2TP/IPSec + ユーザー証明書</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
@@ -665,7 +665,6 @@
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>
-<translation id="9190063653747922532">L2TP/IPSec + 事前共有鍵</translation>
 <translation id="9204237731135241582">Android アプリからゲートウェイにアクセスできません</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>
 <translation id="939519157834106403">SSID</translation>

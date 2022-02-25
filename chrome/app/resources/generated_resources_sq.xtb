@@ -2261,6 +2261,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3225319735946384299">Nënshkrimi me kod</translation>
 <translation id="3226487301970807183">Kalo te paneli anësor i bashkërenditur majtas</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
+<translation id="3232754137068452469">Aplikacioni i uebit</translation>
 <translation id="3233271424239923319">Rezervo aplikacionet dhe skedarët Linux</translation>
 <translation id="3238192140106069382">Po lidh dhe po verifikon</translation>
 <translation id="3239373508713281971">Kufiri kohor u hoq për <ph name="APP_NAME" /></translation>
@@ -2328,6 +2329,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ulje</translation>
 <translation id="3305389145870741612">Procesi i formatimit mund të zgjasë disa sekonda. Qëndro në pritje.</translation>
 <translation id="3305661444342691068">Hap PDF-në në pamjen paraprake</translation>
+<translation id="3307176291962384345">Merr zbritje për <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Kjo faqe u parandalua që të vendosë kuki.</translation>
 <translation id="3308134619352333507">Fshihe butonin</translation>
 <translation id="3308852433423051161">Po ngarkon "Asistentin e Google"...</translation>
@@ -2806,6 +2808,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3761556954875533505">Do ta lejosh sajtin të modifikojë skedarët?</translation>
 <translation id="3764314093345384080">Informacioni i detajuar i ndërtimit</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komuniko me një pajisje me USB}other{Komuniko me # pajisje me USB}}</translation>
+<translation id="3764753550716962406">Të lejohet që Google të përdorë grumbullin tënd të artikujve për të gjetur zbritjet që ofrohen?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Po dërgohen <ph name="ATTACHMENTS" /> te <ph name="DEVICE_NAME" />}other{Po dërgohen <ph name="ATTACHMENTS" /> te <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Politika jashtë linje e modalitetit të demonstrimit nuk mund të lexohej.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3241,6 +3244,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4194570336751258953">Aktivizo "trokit për të klikuar"</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
+<translation id="4197917636330710075">Merr zbritje për <ph name="MERCHANT_NAME" /> dhe <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Sajte të tjera</translation>
 <translation id="4200689466366162458">Fjalët e personalizuara</translation>
 <translation id="4200983522494130825">&amp;Skedë e re</translation>
@@ -4619,6 +4623,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5632566673632479864">Llogaria jote <ph name="EMAIL" /> nuk lejohet më si llogari parësore. Duke qenë se kjo llogari menaxhohet nga <ph name="DOMAIN" />, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të fshihen nga kjo pajisje.</translation>
 <translation id="5632592977009207922">Duke shkarkuar, <ph name="PERCENT_REMAINING" />% të mbetura</translation>
 <translation id="563371367637259496">Celulari</translation>
+<translation id="5634446357546764049">Shiko kujtimet nga udhëtimet e tua të fundit dhe të tjera</translation>
 <translation id="5635312199252507107">Lejo në sajte specifike</translation>
 <translation id="563535393368633106">Pyet para se të hysh (rekomandohet)</translation>
 <translation id="5636996382092289526">Për të përdorur <ph name="NETWORK_ID" /> së pari mund të të duhet të <ph name="LINK_START" />vizitosh faqen e identifikimit të rrjetit<ph name="LINK_END" />, e cila do të hapet automatikisht brenda disa sekondave. Nëse kjo nuk ndodh, rrjeti nuk mund të përdoret.</translation>
@@ -4715,6 +4720,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5740709157181662145">Mbështetja dhe qëndrueshmëria e harduerit të <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Pasqyrimi i ekranit</translation>
 <translation id="574209121243317957">Tonaliteti</translation>
+<translation id="5745316408658560138">Të lejohet që Chrome të gjejë zbritje të personalizuara në grumbujt e tu të artikujve?</translation>
 <translation id="5746169159649715125">Ruaj si PDF</translation>
 <translation id="5747552184818312860">Skadon</translation>
 <translation id="5747785204778348146">Programimi - i paqëndrueshëm</translation>
@@ -5342,6 +5348,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6370021412472292592">Manifesti nuk mund të ngarkohej.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
+<translation id="6374635887697228982">Të merren zbritjet?</translation>
 <translation id="6377268785556383139">1 rezultat për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Prano dhe vazhdo</translation>
 <translation id="6382616130475191723">Lejuar për të lexuar dhe për të ndryshuar <ph name="SITE_NAME" /></translation>
@@ -6906,6 +6913,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7956373551960864128">Printerët e tu të ruajtur</translation>
 <translation id="7957074856830851026">Të shikojë informacionet e pajisjes, të tilla si numri i serisë ose ID-ja e punës</translation>
 <translation id="7957615753207896812">Hap cilësimet e tastierës së pajisjes</translation>
+<translation id="7958437133377816580">Merr zbritje për <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> dhe të tjera</translation>
 <translation id="7959074893852789871">Skedari përmbante shumë certifikata, disa prej të cilave nuk u importuan:</translation>
 <translation id="7959665254555683862">Skedë &amp;e re "e fshehtë"</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>

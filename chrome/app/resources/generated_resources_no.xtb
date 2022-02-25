@@ -2273,6 +2273,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3225319735946384299">Signering med kode</translation>
 <translation id="3226487301970807183">Slå av/på venstrejustert sidepanel</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232754137068452469">Nettprogram</translation>
 <translation id="3233271424239923319">Sikkerhetskopiér Linux-apper og -filer</translation>
 <translation id="3238192140106069382">Kobler til og verifiserer</translation>
 <translation id="3239373508713281971">Tidsgrensen er fjernet for <ph name="APP_NAME" /></translation>
@@ -2311,6 +2312,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3277691515294482687">Sikkerhetskopiér appene og filene mine til Mine filer-mappen før Linux oppgraderes.</translation>
 <translation id="3278001907972365362">Sjekk Google-kontoen(e) din(e)</translation>
 <translation id="3278800075417428224">Administrer språk i CloudReady 2.0-innstillingene</translation>
+<translation id="3278928434075969895">Denne profilen bruker proxy-innstillingene i Chrome OS.</translation>
 <translation id="3279092821516760512">Kontakter du velger, kan dele med deg når de er i nærheten. Overføringer starter ikke før du godtar.</translation>
 <translation id="3279230909244266691">Denne prosessen kan ta noen minutter. Starter den virtuelle maskinen.</translation>
 <translation id="3280237271814976245">L&amp;agre som...</translation>
@@ -4879,6 +4881,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5909379458939060601">Vil du slette denne profilen og de tilhørende nettlesingsdataene?</translation>
 <translation id="5910363049092958439">Lagre &amp;bildet som</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er uten nett</translation>
+<translation id="5911505723657992440">Bruk proxy-innstillingene i Chrome OS for denne profilen.</translation>
 <translation id="5911533659001334206">Snarveivisning</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> biters):
   <ph name="MODULUS_HEX_DUMP" />

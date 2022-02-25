@@ -2267,6 +2267,7 @@
 <translation id="3225319735946384299">التوقيع بالرمز</translation>
 <translation id="3226487301970807183">التبديل إلى اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
+<translation id="3232754137068452469">تطبيق الويب</translation>
 <translation id="3233271424239923319">‏الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux</translation>
 <translation id="3238192140106069382">جارٍ الاتصال والتحقق</translation>
 <translation id="3239373508713281971">تمت إزالة المهلة المحددّة لتطبيق <ph name="APP_NAME" />.</translation>
@@ -2306,6 +2307,7 @@
 <translation id="3277691515294482687">‏الاحتفاظ بنسخة احتياطية من التطبيقات والملفات الخاصة بي في مجلّد My Files (ملفاتي) قبل ترقية نظام التشغيل Linux.</translation>
 <translation id="3278001907972365362">‏حسابك (حساباتك) على Google تتطلب الانتباه</translation>
 <translation id="3278800075417428224">‏إدارة اللغات من خلال إعدادات نظام التشغيل CloudReady 2.0</translation>
+<translation id="3278928434075969895">‏هذا الملف الشخصي يستخدم إعدادات الخادم الوكيل في نظام التشغيل Chrome.</translation>
 <translation id="3279092821516760512">يمكن لجهات الاتصال المحدَّدة القريبة منك مشاركة الوسائط معك. ولن تبدأ عمليات النقل إلا عند موافقتك.</translation>
 <translation id="3279230909244266691">قد تستغرق هذه العملية بضع دقائق. جارٍ بدء الآلة الافتراضية.</translation>
 <translation id="3280237271814976245">الحفظ &amp;باسم...</translation>
@@ -4874,6 +4876,7 @@
 <translation id="5909379458939060601">هل تريد حذف هذا الملف الشخصي وبيانات التصفّح؟</translation>
 <translation id="5910363049092958439">حفظ ال&amp;صورة باسم...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> غير متصل</translation>
+<translation id="5911505723657992440">‏يمكنك استخدام إعدادات الخادم الوكيل في نظام التشغيل Chrome لهذا الملف الشخصي.</translation>
 <translation id="5911533659001334206">عارض الاختصارات</translation>
 <translation id="5914724413750400082">المعامل (<ph name="MODULUS_NUM_BITS" /> بت):
   <ph name="MODULUS_HEX_DUMP" />

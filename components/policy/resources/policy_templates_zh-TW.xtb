@@ -6172,10 +6172,6 @@
 <translation id="8101381354936029836">政策不可部分完成的群組：</translation>
 <translation id="8102913158860568230">預設媒體串流設定</translation>
 <translation id="8104962233214241919">自動為這些網站選取用戶端憑證</translation>
-<translation id="8111502498815410897">設定這項政策會導致系統強制啟用/停用快速配對功能。
-      快速配對是全新的藍牙配對流程，可連結配對的周邊裝置和 GAIA 帳戶。
-      這能讓其他以同一個 GAIA 帳戶登入的 Chrome OS (和 Android) 裝置自動進行配對。
-      如果不設定，快速配對功能會採用 Chrome OS 的預設設定 (啟用)。</translation>
 <translation id="8114382167597081590">不強制執行 YouTube 嚴格篩選模式</translation>
 <translation id="8117921351531866504">你可以設定網站是否能檢查使用者有沒有已儲存的付款方式。
 

@@ -100,6 +100,7 @@
 <translation id="1122089575901325963">このポリシーでは、<ph name="WILCO_NAME" /> の診断およびテレメトリー用コントローラ（DTC）を設定できます（デバイスで使用可能な場合）。設定のサイズは 1 MB（1,000,000 バイト）以下とし、JSON 形式にする必要があります。この処理は <ph name="WILCO_NAME" /> DTC が行います。ダウンロードの整合性の確認には暗号化ハッシュが使用されます。この設定はダウンロードされた後、キャッシュされ、URL またはハッシュに変更があった場合は再度ダウンロードされます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。</translation>
+<translation id="1123650965531933634">すべてのサイトに対してウィンドウの配置に関する権限をデフォルトで自動的に拒否する</translation>
 <translation id="1133622335785078255">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可する</translation>
 <translation id="1133814529606590009">このポリシーを有効に設定した場合、URL キーによる匿名化データの収集が常に有効になり、検索とブラウジングを改善するため、ユーザーがアクセスしたページの URL が Google に送信されます。
 
@@ -204,6 +205,7 @@
 <translation id="1240722269871366886">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で、ユーザーが仮想または物理キーボードを使用してテキストを入力するときに、絵文字の候補を表示できるようにします。
       このポリシーを true に設定した場合、この機能は有効になり、ユーザーは設定を変更できます。
       このポリシーのデフォルトの設定は false で、絵文字の候補は表示されず、ユーザーがオーバーライドすることはできません。</translation>
+<translation id="1241536186320046498">サイトがウィンドウの配置に関する権限を要求するたびに確認する</translation>
 <translation id="1243570869342663665">セーフサイトのアダルト コンテンツの除外を制御する。</translation>
 <translation id="1244309789361056660">このポリシーは M87 で削除され、ホーム ディレクトリはログイン時に自動的に ext4 に移行されます。
       このポリシーでは、ユーザーのホーム ディレクトリが ecryptfs 暗号化で作成された場合に行う操作を指定できます。ecryptfs で暗号化されたホーム ディレクトリを ext4 暗号化に移行しない場合、Android アプリの実行が停止される可能性があります。
@@ -477,6 +479,11 @@
       このポリシーを無効に設定した場合、保護されていない HTTP リクエストで <ph name="BASIC_AUTH" /> 認証スキームの使用を禁止し、安全な HTTPS のみが許可されます。
 
       <ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーが設定されていて、<ph name="BASIC_AUTH" /> が含まれていない場合、このポリシーの設定は無視されます（また、<ph name="BASIC_AUTH" /> は常に禁止されます）。</translation>
+<translation id="1573444493980402757">ウィンドウの配置に関する権限を自動的に拒否するサイトの URL パターンのリストを指定できます。デバイスの画面に関する情報の取得や、その情報を使用したウィンドウの表示と配置、特定の画面での全画面表示のリクエストといったサイトの機能が制限されます。
+
+      有効なサイトの URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。
+
+      このポリシーでサイトを指定しない場合は、<ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> のポリシーが適用されます。このポリシーでサイトを指定した場合は、ブラウザのデフォルトの権限設定が適用され、ユーザーはサイトごとに権限を選択できます。</translation>
 <translation id="1574258262373444557">ユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> を暗号化アルゴリズムとして使用しない</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="1583248206450240930">デフォルトで <ph name="PRODUCT_FRAME_NAME" /> を使用する</translation>
@@ -2315,6 +2322,7 @@
       なお、このポリシーは <ph name="PRODUCT_NAME" /> バージョン 82 で削除される予定でしたが、バージョン 84 で削除されました。</translation>
 <translation id="3606571057705314194">起動時にプロフィール選択画面を有効にする</translation>
 <translation id="3608206578291537084">暗号化されたレポート パイプラインを有効にする</translation>
+<translation id="3612809274815536412">ウィンドウの配置に関する設定</translation>
 <translation id="3627678165642179114">スペルチェック ウェブ サービスを有効または無効にする</translation>
 <translation id="3628480121685794414">片面印刷を有効にする</translation>
 <translation id="3634125384445314047">スマートフォンで最近撮影した写真や動画にスマートフォン ハブ経由でアクセスすることを許可します。</translation>
@@ -2827,6 +2835,11 @@
 <translation id="4268014245533736105">Chrome はサンドボックス化された iframe 内で外部プロトコルへの移動をブロックします。https://chromestatus.com/features/5680742077038592 をご覧ください。True の場合は、該当する移動を Chrome がブロックできるようになります。False の場合は、該当する移動を Chrome がブロックするのを防ぎます。このデフォルトは True で、セキュリティ機能が有効になっています。このポリシーは、新しい制限の影響を受ける社内ウェブサイトの更新に時間がかかる場合に使用できます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 104 以降で削除される予定です。
       </translation>
 <translation id="4268586991084547853">Microsoft IE / Edge エンタープライズ モードのサイトリストとの互換性を高める。</translation>
+<translation id="4269798992490176617">有効に設定した場合、<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ではリモートホストのブラウジング セッションから送信された WebAuthn API リクエストを実行できます。
+
+      このポリシーを無効に設定するか未設定のままにした場合は、デフォルトの動作が適用されます。
+
+      この機能は Google の内部ネットワーク環境でのみサポートされています。</translation>
 <translation id="4269859918103560644">ユーザーが決定できるようにする</translation>
 <translation id="4274691295133617461">このポリシーを 3 に設定した場合、ウェブサイトは、ホスト オペレーティング システムのファイル システム内にあるファイルやディレクトリへの File System API を経由した読み取りアクセスを要求することが許可されます。このポリシーを 2 に設定した場合、アクセスは拒否されます。
 
@@ -2897,6 +2910,7 @@
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="4389073105055031853">すべての証明書の管理をユーザーに許可する</translation>
 <translation id="4389091865841123886">TPM メカニズムを使用してリモート認証を設定します。</translation>
+<translation id="4397464099112037398">ウィンドウの配置に関する権限のデフォルトの設定</translation>
 <translation id="4401496838830169080"><ph name="PRODUCT_NAME" /> のセーフ ブラウジング機能を有効にするかどうかと、有効にする場合に使用するモードを管理できます。
 
       このポリシーを「NoProtection」（値 0）に設定した場合、セーフ ブラウジングは常に無効になります。
@@ -3190,6 +3204,7 @@
 <translation id="4812714598405913256">DeviceMinimumVersion ポリシー用の自動更新の有効期限に関するメッセージを設定する</translation>
 <translation id="4816674326202173458">企業ユーザーがメイン ユーザーとしてもセカンダリ ユーザーとしても操作できるようにする（管理対象ユーザー以外のユーザーに対するデフォルトの動作）</translation>
 <translation id="4820432864264617413">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
+<translation id="4821987881803903281">ウィンドウの配置に関する権限を拒否するサイトを指定する</translation>
 <translation id="4826326557828204741">バッテリー電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="482803100714220060">URL 全体を表示する</translation>
 <translation id="4832852360828533362">ユーザーとデバイスに関するレポートの送信</translation>
@@ -4291,6 +4306,14 @@
 <translation id="6144046700495610112">このポリシーを有効に設定した場合、初回実行時に以前の既定のブラウザから自動入力フォームのデータが読み込まれます。このポリシーを無効に設定するか未設定のままにした場合、初回実行時に自動入力フォームのデータは読み込まれません。
 
       ユーザーはインポート ダイアログを表示できます。このとき、自動入力フォームのデータのチェックボックスは、このポリシーの値に合わせてオンまたはオフになります。</translation>
+<translation id="614522356524762803">
+      Chrome のステータス レポートをアップロードする頻度を管理します。
+
+      この設定は、<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> で有効にしたレポートにも適用されます。
+
+      このポリシーを設定しない場合、レポートは 24 時間ごとにアップロードされます。
+      このポリシーを設定した場合、レポートは指定した時間ごとにアップロードされます。
+      </translation>
 <translation id="614616930188030377">このリストに指定されたパターンは、リクエスト元 URL のセキュリティ オリジンと照合されます。
       一致するものが見つかった場合、または chrome://flags/#enable-webrtc-hide-local-ips-with-mdns が無効に設定されている場合は、WebRTC ICE の候補にローカル IP アドレスが表示されます。
       それ以外の場合、ローカル IP アドレスは mDNS のホスト名で隠されます。
@@ -5119,6 +5142,7 @@
 <translation id="7063895219334505671">これらのサイトのポップアップを許可する</translation>
 <translation id="7066292150801784098">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできないようにする</translation>
 <translation id="706669471845501145">サイトに対してデスクトップ通知の表示を許可する</translation>
+<translation id="70681795425744184">CRD にリモートホストからプロキシ送信される WebAuthn API リクエストの実行を許可しない。</translation>
 <translation id="7070525176564511548">週 1 回（168 時間ごとに）パスワードの入力を求める</translation>
 <translation id="7072208053150563108">パソコンのパスワードの変更頻度</translation>
 <translation id="7072567600438630966">スマートフォン ハブを有効にできるようにします。</translation>
@@ -5264,6 +5288,11 @@
       このポリシーが未設定または空白の場合、ユーザーは <ph name="PRODUCT_NAME" /> で、どの Google アカウントでもブラウザのメイン アカウントとして設定できます。</translation>
 <translation id="723103540848640830">ロック画面の PIN の最小桁数を設定する</translation>
 <translation id="7234280155140786597">禁止するネイティブ メッセージング ホストの名前（または、「*」ですべてを禁止）</translation>
+<translation id="723621412149834592">このポリシーを <ph name="BLOCK_WINDOW_PLACEMENT_POLICY_NAME" />（値 2）に設定した場合、サイトからウィンドウの配置に関する権限が要求されたときに、デフォルトで自動的に拒否します。デバイスの画面に関する情報の取得や、その情報を使用したウィンドウの表示と配置、特定の画面での全画面表示のリクエストといったサイトの機能が制限されます。
+
+      このポリシーを <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />（値 3）に設定した場合、ウィンドウの配置に関する権限が要求されたときに、デフォルトでユーザーに通知されます。ユーザーが権限を許可した場合、デバイスの画面に関する情報の取得や、その情報を使用したウィンドウの表示と配置、特定の画面での全画面表示のリクエストといったサイトの機能が有効になります。
+
+      このポリシーを未設定のままにした場合、<ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> ポリシーは適用されますが、ユーザーはこの設定を変更できます。</translation>
 <translation id="7246767840750730334">スマートフォン ハブの通知を有効にできるようにします。</translation>
 <translation id="7249828445670652637">ARC アプリで <ph name="PRODUCT_OS_NAME" /> の CA 証明書を使用できるようにする</translation>
 <translation id="7251825257294351251">システム通知の使用を許可する</translation>
@@ -5350,6 +5379,11 @@
 <translation id="7340034977315324840">デバイス操作時間を報告する</translation>
 <translation id="7343004974628511824">DNS 傍受チェックを行う</translation>
 <translation id="7343497214039883642">デバイスの企業プリンタ設定ファイル</translation>
+<translation id="7358012133037776875">ウィンドウの配置に関する権限を自動的に許可するサイトの URL パターンのリストを指定できます。これらのサイトでは、デバイスの画面に関する情報の取得や、その情報を使用したウィンドウの表示と配置、特定の画面での全画面表示のリクエストといった機能が有効になります。
+
+      有効なサイトの URL パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。
+
+      このポリシーでサイトを指定しない場合は、<ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> のポリシーが適用されます。このポリシーでサイトを指定した場合は、ブラウザのデフォルトの権限設定が適用され、ユーザーはサイトごとに権限を選択できます。</translation>
 <translation id="7358359585412734876"><ph name="LACROS_NAME" /> を有効にする</translation>
 <translation id="7358744897221281073">この設定が有効な場合、スマートフォン ハブをすでに有効にしているユーザーは、スマートフォンでのウェブページの閲覧などの作業を Chrome OS で継続できます。
 
@@ -5392,6 +5426,7 @@
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> にリモートホストからプロキシ送信される　WebAuthn API リクエストの実行を許可します。</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 周辺機器のデータアクセスを有効にします</translation>
 <translation id="7417438464912687020">このパソコンへのリモート アクセス接続を許可する</translation>
 <translation id="7417972229667085380">プレゼンテーション モードでのアイドル時間に掛ける倍率（サポート終了）</translation>
@@ -5907,6 +5942,7 @@
           このポリシーを設定しない場合は、デフォルトの時間が使用されます。
 
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
+<translation id="7992613144342460685">ウィンドウの配置に関する権限を許可するサイトを指定する</translation>
 <translation id="7995610550667275367">スキャン（バージョン 87 以降でサポート）</translation>
 <translation id="7999023147219236247">アプリへの権限付与のリクエストに関するポリシーです。PERMISSION_POLICY_UNSPECIFIED: ポリシーを指定しません。権限に関するポリシーがどのレベルでも指定されていなければ、デフォルトで「PROMPT」の動作が適用されます。PROMPT: 権限を付与するよう促すメッセージをユーザーに表示します。GRANT: 自動的に権限を付与します。DENY: 自動的に権限の付与を拒否します。</translation>
 <translation id="7999818120028621358">データ漏洩防止イベントのレポートを有効にする</translation>
@@ -5970,10 +6006,6 @@
 <translation id="8101381354936029836">ポリシーの最小単位グループ:</translation>
 <translation id="8102913158860568230">デフォルトのメディアストリームの設定</translation>
 <translation id="8104962233214241919">これらのサイトのクライアント証明書を自動的に選択する</translation>
-<translation id="8111502498815410897">このポリシーでは、ファスト ペアリングを強制的に有効または無効にできます。
-      ファスト ペアリングは、ペア設定済みの周辺機器と GAIA アカウントをリンクする新しい Bluetooth ペア設定フローです。
-      これにより、同じ GAIA アカウントでログインしている他の Chrome OS（および Android）デバイスを自動的にペア設定できるようになります。
-      未設定の場合、ファスト ペアリングは Chrome OS のデフォルトである有効に設定されます。</translation>
 <translation id="8114382167597081590">YouTube で制限モードを強制適用しない</translation>
 <translation id="8117921351531866504">保存されているお支払い方法の確認をウェブサイトに許可するかどうかを設定します。
 
@@ -6292,6 +6324,7 @@
 <translation id="8424255554404582727">再起動のたびにデフォルトのディスプレイ回転方法を再適用する</translation>
 <translation id="8426231401662877819">画面を時計回りに 90 度回転</translation>
 <translation id="8426819027631706846"><ph name="JS_ALERT" />、<ph name="JS_CONFIRM" />、<ph name="JS_PROMPT" /> によってトリガーされた JavaScript モード ダイアログは、トリガーしたサブフレームの生成元がメインフレームの生成元とは異なる場合に <ph name="PRODUCT_NAME" /> でブロックされます（参照: https://www.chromestatus.com/feature/5148698084376576）。このポリシーは前述の変更を許可します。このポリシーが有効に設定されている、または未設定の場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされます。ポリシーが無効に設定されている場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされません。このポリシーは <ph name="PRODUCT_NAME" /> バージョン 95 で削除されます。</translation>
+<translation id="8427466947904008809">CRD にリモートホストからプロキシ送信される WebAuthn API リクエストの実行を許可する。</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8433769814000220721">おすすめのコンテンツを有効にする</translation>
 <translation id="843609873781525167">このポリシーを True に設定すると、<ph name="PRODUCT_NAME" /> で起動時にデフォルトのブラウザであるかが常に確認され、可能であれば自動的に登録されます。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトであるかどうかが確認されなくなり、このオプションに対するユーザー制御がオフになります。このポリシーを未設定のままにした場合は、<ph name="PRODUCT_NAME" /> でデフォルトに指定するかどうかをユーザーが制御でき、またデフォルトにしない場合はユーザー通知が表示されるかどうかを制御できます。注: <ph name="MS_WIN_NAME" /> 管理者の場合は、Windows 7 が稼働するマシンについてのみ、この設定をオンにできます。それ以後のバージョンについては、<ph name="PRODUCT_NAME" /> を <ph name="HTTPS_PROTOCOL" /> プロトコルと <ph name="HTTP_PROTOCOL" /> プロトコル（必要に応じて <ph name="FTP_PROTOCOL" /> プロトコルとその他のファイル形式）のハンドラにする、「デフォルトのアプリケーション関連付け」ファイルをデプロイする必要があります。Chrome ヘルプ（https://support.google.com/chrome?p=make_chrome_default_win）をご覧ください。</translation>
@@ -6719,6 +6752,7 @@
 <translation id="8892783613915541293">AC 電源での使用中、デバイスがアイドル状態になってからの待機時間とその後に行うアクション</translation>
 <translation id="8897796778265450949">SAML を使用せず GAIA 経由で認証されたユーザーがオフラインでログインできる時間を制限する</translation>
 <translation id="889814528399907891">ユーザーが <ph name="LACROS_NAME" /> を有効にするとともにメインのブラウザとして設定することを許可する</translation>
+<translation id="8900312706328930425">クラウド レポートの送信頻度（時間単位）</translation>
 <translation id="8903283771634816230">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> では OS のデフォルト プリンタが印刷プレビューのデフォルトの印刷先として使用されます。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> では、最後に使用されたプリンタが印刷プレビューのデフォルトの印刷先として使用されます。</translation>

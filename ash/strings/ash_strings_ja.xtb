@@ -334,6 +334,7 @@
 <translation id="3105917916468784889">スクリーンショットを撮る</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" />（Bluetooth）</translation>
 <translation id="3113926042639749131">候補を削除</translation>
+<translation id="3120421559657122717">デバイスをシャットダウンしますか？</translation>
 <translation id="3126069444801937830">再起動して更新</translation>
 <translation id="3139942575505304791">デスク 1</translation>
 <translation id="315116470104423982">モバイル データ</translation>
@@ -352,8 +353,10 @@
 <translation id="3227137524299004712">マイク</translation>
 <translation id="324366796737464147">ノイズ キャンセル</translation>
 <translation id="3249513730522716925">ウィンドウ <ph name="WINDOW_TITLE" /> がデスク <ph name="ACTIVE_DESK" /> からデスク <ph name="TARGET_DESK" /> に移動されました</translation>
+<translation id="3252573918265662711">設定</translation>
 <translation id="3255483164551725916">何ができる？</translation>
 <translation id="3269597722229482060">右クリック</translation>
+<translation id="3289544412142055976">Linux アプリは現在サポートされていません</translation>
 <translation id="3289674678944039601">アダプター経由で充電しています</translation>
 <translation id="3290356915286466215">保護なし</translation>
 <translation id="3294437725009624529">ゲスト</translation>
@@ -705,6 +708,7 @@
 <translation id="5400461572260843123">クイック設定: 検索+左方向キーを押して、通知センターを開きます。</translation>
 <translation id="5426063383988017631">設定メニューは閉じています</translation>
 <translation id="5428899915242071344">選択を開始</translation>
+<translation id="5429993543155113935">シークレット ウィンドウは現在サポートされていません</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
 <translation id="5433020815079095860">音声入力</translation>
@@ -847,6 +851,7 @@
 <translation id="6431865393913628856">画面録画</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> に「<ph name="ROUTE_TITLE" />」をキャスト中</translation>
 <translation id="6447111710783417522"><ph name="DATE" />、<ph name="NUMBER" /> 件の予定</translation>
+<translation id="6449483711453944360">Linux アプリとシークレット ウィンドウは現在サポートされていません</translation>
 <translation id="6452181791372256707">拒否</translation>
 <translation id="6453179446719226835">言語が変更されました</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> へ画面を拡張しています</translation>
@@ -946,6 +951,7 @@
 <translation id="7025533177575372252">スマートフォンを使って <ph name="DEVICE_NAME" /> を接続する</translation>
 <translation id="7026338066939101231">減らす</translation>
 <translation id="7029814467594812963">セッションを終了</translation>
+<translation id="7032161822340700104">使用できるテンプレートは 6 つまでです。新しいテンプレートを保存するには、既存のテンプレートを削除してください。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />、Google アシスタント</translation>
 <translation id="7042322267639375032">ステータス領域を表示しない</translation>
 <translation id="7045033600005038336">テンプレートを置き換えますか？</translation>

@@ -2263,6 +2263,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3225319735946384299">Kode-sinadura</translation>
 <translation id="3226487301970807183">Erakutsi/Ezkutatu ezkerrean lerrokatutako alboko panela</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
+<translation id="3232754137068452469">Sareko aplikazioa</translation>
 <translation id="3233271424239923319">Egin Linux aplikazioen eta fitxategien babeskopiak</translation>
 <translation id="3238192140106069382">Konektatzen eta egiaztatzen</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> aplikazioaren denbora-muga kendu da</translation>
@@ -2331,6 +2332,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3304212451103136496">Deskontua: <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Formateatzeko prozesuak pare bat segundo har ditzake. Mesedez, itxaron.</translation>
 <translation id="3305661444342691068">Ireki PDF aurrebistan</translation>
+<translation id="3307176291962384345">Lortu <ph name="MERCHANT_NAME" /> saltzailearen deskontuak</translation>
 <translation id="3308116878371095290">Orriari cookieak ezartzeko aukera ukatu zaio.</translation>
 <translation id="3308134619352333507">Ezkutatu botoia</translation>
 <translation id="3308852433423051161">Google-ren Laguntzailea kargatzen…</translation>
@@ -2809,6 +2811,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3761556954875533505">Fitxategiak editatzeko baimena eman nahi diozu webguneari?</translation>
 <translation id="3764314093345384080">Konpilazioari buruzko informazio xehatua</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komunikatu USB bidezko gailu batekin}other{Komunikatu USB bidezko # gailurekin}}</translation>
+<translation id="3764753550716962406">Saskietan deskontu pertsonalizatuak bilatzen utzi nahi diozu Google-ri?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailura bidaltzen}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailura bidaltzen}}</translation>
 <translation id="3765246971671567135">Ezin izan da irakurri konexiorik gabeko demo moduaren gidalerroa.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3244,6 +3247,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4194570336751258953">Gaitu sakatuta klik egiteko aukera</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4195814663415092787">Jarraitu utzi zenuen tokitik</translation>
+<translation id="4197917636330710075">Lortu <ph name="MERCHANT_NAME" /> eta <ph name="MERCHANT_NAME" /> saltzaileen deskontuak</translation>
 <translation id="4198268995694216131">Webgune gehigarriak</translation>
 <translation id="4200689466366162458">Hitz pertsonalizatuak</translation>
 <translation id="4200983522494130825">Fi&amp;txa berria</translation>
@@ -4622,6 +4626,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5632566673632479864"><ph name="EMAIL" /> kontua ezin da erabili jada kontu nagusi gisa. Kontu hau <ph name="DOMAIN" /> domeinuak kudeatzen duenez, kendu egingo dira gailutik laster-markak, historia, pasahitzak eta bestelako ezarpenak.</translation>
 <translation id="5632592977009207922">Deskargatzen; % <ph name="PERCENT_REMAINING" /> geratzen da</translation>
 <translation id="563371367637259496">Sare mugikorra</translation>
+<translation id="5634446357546764049">Ikusi berriki egindako bidaiei buruzko oroitzapenak eta beste gauza batzuk</translation>
 <translation id="5635312199252507107">Eman webgune jakin batzuetako datuak irakurri eta aldatzeko baimena</translation>
 <translation id="563535393368633106">Galdetu atzitu aurretik (gomendatua)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> erabiltzeko, agian <ph name="LINK_START" />sarearen saio-hasierako orrira<ph name="LINK_END" /> joan beharko zara; segundo gutxi barru irekiko da hori automatikoki. Hala ez bada, ezin izango duzu sarea erabili.</translation>
@@ -4718,6 +4723,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> sistemaren bateragarritasuna eta egonkortasuna</translation>
 <translation id="574104302965107104">Pantaila islatzeko modua</translation>
 <translation id="574209121243317957">Tonua</translation>
+<translation id="5745316408658560138">Saskietan deskontu pertsonalizatuak bilatzen utzi nahi diozu Chrome-ri?</translation>
 <translation id="5746169159649715125">Gorde PDF gisa</translation>
 <translation id="5747552184818312860">Iraungitze-data</translation>
 <translation id="5747785204778348146">Garatzailea; egoera ezegonkorra</translation>
@@ -5346,6 +5352,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6370021412472292592">Ezin izan da manifestua kargatu.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
+<translation id="6374635887697228982">Deskontuak lortu nahi dituzu?</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" bilaketak emaitza bat du</translation>
 <translation id="6380143666419481200">Onartu eta jarraitu</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> irakurtzeko eta aldatzeko baimena eman da</translation>
@@ -6911,6 +6918,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7956373551960864128">Gordetako inprimagailuak</translation>
 <translation id="7957074856830851026">Ikusi gailuaren informazioa, hala nola serie-zenbakia edo baliabidearen IDa</translation>
 <translation id="7957615753207896812">Ireki teklatuaren ezarpenak</translation>
+<translation id="7958437133377816580">Lortu <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> eta saltzaile gehiagoren deskontuak</translation>
 <translation id="7959074893852789871">Fitxategiak ziurtagiri bat baino gehiago ditu eta horietako batzuk inportatu dira:</translation>
 <translation id="7959665254555683862">Ezkutuko moduko beste fitxa bat</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>

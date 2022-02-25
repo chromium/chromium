@@ -2275,6 +2275,7 @@
 <translation id="3225319735946384299">Подписване на код</translation>
 <translation id="3226487301970807183">Превключване на подравнения вляво страничен панел</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3233271424239923319">Създаване на резервно копие за приложенията и файловете на Linux</translation>
 <translation id="3238192140106069382">Установява се връзка и се потвърждава</translation>
 <translation id="3239373508713281971">Времевото ограничение за <ph name="APP_NAME" /> бе премахнато</translation>
@@ -2313,6 +2314,7 @@
 <translation id="3277691515294482687">Създаване на резервно копие на приложенията и файловете ми в папката „Моите файлове“, преди да се надстрои Linux.</translation>
 <translation id="3278001907972365362">Профилите ви в Google изискват внимание</translation>
 <translation id="3278800075417428224">Управление на езиците в настройките на CloudReady 2.0</translation>
+<translation id="3278928434075969895">Този потребителски профил използва настройките за прокси сървъра на Chrome OS.</translation>
 <translation id="3279092821516760512">Избраните контакти могат да споделят с вас, когато са в близост. Прехвърлянето няма да стартира, докато не се съгласите.</translation>
 <translation id="3279230909244266691">Това може да отнеме няколко минути. Виртуалната машина стартира.</translation>
 <translation id="3280237271814976245">&amp;Запазване като...</translation>
@@ -2342,6 +2344,7 @@
 <translation id="3304212451103136496">Отстъпка от <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Форматирането може да отнеме няколко секунди. Моля, изчакайте.</translation>
 <translation id="3305661444342691068">Отваряне на визуализация на PDF</translation>
+<translation id="3307176291962384345">Получаване на отстъпки за <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Задаването на „бисквитки“ от тази страница е предотвратено.</translation>
 <translation id="3308134619352333507">Скриване на бутона</translation>
 <translation id="3308852433423051161">Google Асистент се зарежда...</translation>
@@ -2820,6 +2823,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3761556954875533505">Да се разреши ли на сайта да редактира файлове?</translation>
 <translation id="3764314093345384080">Подробна информация за компилацията</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуникация с USB устройство}other{Комуникация с # USB устройства}}</translation>
+<translation id="3764753550716962406">Да се разреши ли на Google да използва кошницата ви, за да намира налични отстъпки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Изпращате <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Правилото за офлайн демонстрационен режим не можа да бъде прочетено.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Хц</translation>
@@ -3256,6 +3260,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4194570336751258953">Активиране на кликване с докосване</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
+<translation id="4197917636330710075">Получаване на отстъпки за <ph name="MERCHANT_NAME" /> и <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Допълнителни сайтове</translation>
 <translation id="4200689466366162458">Персонализирани думи</translation>
 <translation id="4200983522494130825">Нов &amp;раздел</translation>
@@ -4636,6 +4641,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5632566673632479864">Профилът ви <ph name="EMAIL" /> вече не може да се използва като основен. Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството.</translation>
 <translation id="5632592977009207922">Изтегля се, още<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Мобилна мрежа</translation>
+<translation id="5634446357546764049">Виждайте спомени за скорошните си пътувания и др.</translation>
 <translation id="5635312199252507107">Разрешаване за конкретни сайтове</translation>
 <translation id="563535393368633106">Извеждане на запитване преди осъществяване на достъп (препоръчително)</translation>
 <translation id="5636996382092289526">За да използвате „<ph name="NETWORK_ID" />“, може да се наложи първо <ph name="LINK_START" />да посетите страницата за вход в мрежата<ph name="LINK_END" />, която ще се отвори автоматично след няколко секунди. Ако това не се случи, мрежата не може да се ползва.</translation>
@@ -4732,6 +4738,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5740709157181662145">Поддръжка при проблеми с хардуера и стабилността на <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дублиране на екрана</translation>
 <translation id="574209121243317957">Височина</translation>
+<translation id="5745316408658560138">Да се разреши ли на Chrome да намира персонализирани отстъпки в кошниците ви?</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
 <translation id="5747552184818312860">Изтича на</translation>
 <translation id="5747785204778348146">За програмисти – нестабилен</translation>
@@ -4882,6 +4889,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5909379458939060601">Този потребителски профил и данните за сърфирането да се изтрият ли?</translation>
 <translation id="5910363049092958439">&amp;Запазване на изображението като...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> е офлайн</translation>
+<translation id="5911505723657992440">Използвайте настройките за прокси сървъра на Chrome OS за този потребителски профил.</translation>
 <translation id="5911533659001334206">Визуализатор на клавишните комбинации</translation>
 <translation id="5914724413750400082">Модули (<ph name="MODULUS_NUM_BITS" /> бита):
   <ph name="MODULUS_HEX_DUMP" />
@@ -5358,6 +5366,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6370021412472292592">Манифестът не можа да се зареди.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Нов опит</translation>
+<translation id="6374635887697228982">Искате ли да получавате отстъпки?</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380143666419481200">Приемам и продължавам</translation>
 <translation id="6382616130475191723">Има разрешение за четене и промяна на <ph name="SITE_NAME" /></translation>
@@ -6924,6 +6933,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7956373551960864128">Вашите запазени принтери</translation>
 <translation id="7957074856830851026">Преглед на информация за устройството, като например серийния номер или идентификатора на актива</translation>
 <translation id="7957615753207896812">Отваряне на настройките за клавиатурата</translation>
+<translation id="7958437133377816580">Получаване на отстъпки за <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> и др.</translation>
 <translation id="7959074893852789871">Файлът съдържаше няколко сертификата, някои от които не бяха импортирани:</translation>
 <translation id="7959665254555683862">Нов &amp;раздел „инкогнито“</translation>
 <translation id="7961015016161918242">Никога</translation>

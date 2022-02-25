@@ -1238,6 +1238,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2203088913459920044">Nazwa może zawierać litery, cyfry i znaki specjalne</translation>
 <translation id="220321590587754225">Nie udało się połączyć. Spróbuj ponownie.</translation>
 <translation id="2204034823255629767">Odczyt i zmiana wpisanego tekstu</translation>
+<translation id="2207115382329026341">Włącz na telefonie ustawienia strumieniowego przesyłania aplikacji.</translation>
 <translation id="220858061631308971">Wpisz ten kod PIN na urządzeniu „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="2210462644007531147">Nie udało się ukończyć instalacji</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
@@ -1428,6 +1429,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
 <translation id="236939127352773362">Gdy urządzenia w pobliżu udostępniają dane</translation>
 <translation id="2371076942591664043">Otwórz po &amp;zakończeniu</translation>
+<translation id="237307274687369010">Nie udało się uruchomić aplikacji <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Dopasuj do papieru</translation>
 <translation id="2375406435414127095">Połącz ze swoim telefonem</translation>
 <translation id="2377588536920405462">Aby wyłączyć lokalizację, wyłącz główne ustawienie Lokalizacja na swoim urządzeniu. W ustawieniach lokalizacji możesz też wyłączyć korzystanie z sieci Wi‑Fi, sieci komórkowych i czujników przy określaniu lokalizacji.</translation>
@@ -2261,6 +2263,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3225319735946384299">Podpisywanie kodu</translation>
 <translation id="3226487301970807183">Przełącz lewy panel boczny</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232754137068452469">Aplikacja internetowa</translation>
 <translation id="3233271424239923319">Utwórz kopię zapasową aplikacji i plików Linuksa</translation>
 <translation id="3238192140106069382">Łączę i weryfikuję</translation>
 <translation id="3239373508713281971">Usunięto limit czasu dla aplikacji <ph name="APP_NAME" />.</translation>
@@ -2299,6 +2302,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3277691515294482687">Przed uaktualnieniem Linuksa utwórz kopię zapasową moich aplikacji i plików w folderze Moje pliki.</translation>
 <translation id="3278001907972365362">Musisz się zająć swoimi kontami Google</translation>
 <translation id="3278800075417428224">Zarządzaj językami w ustawieniach CloudReady 2.0</translation>
+<translation id="3278928434075969895">Ten profil korzysta z ustawień serwera proxy Chrome OS.</translation>
 <translation id="3279092821516760512">Wybrane kontakty mogą udostępniać Ci dane, gdy znajdują się w pobliżu. Przesyłanie danych nie rozpocznie się bez Twojej zgody.</translation>
 <translation id="3279230909244266691">Może to potrwać kilka minut. Uruchamiam maszynę wirtualną.</translation>
 <translation id="3280237271814976245">Zapisz &amp;jako...</translation>
@@ -4869,6 +4873,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="5909379458939060601">Usunąć ten profil i dane przeglądania?</translation>
 <translation id="5910363049092958439">Zapisz gra&amp;fikę jako...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> jest offline</translation>
+<translation id="5911505723657992440">Używaj ustawień serwera proxy Chrome OS na tym profilu.</translation>
 <translation id="5911533659001334206">Przeglądarka skrótów</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> b):
   <ph name="MODULUS_HEX_DUMP" />

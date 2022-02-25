@@ -2261,6 +2261,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3225319735946384299">Codesignatur</translation>
 <translation id="3226487301970807183">Linke Seitenleiste ein-/ausblenden</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232754137068452469">Web-App</translation>
 <translation id="3233271424239923319">Linux-Apps und -Dateien sichern</translation>
 <translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
@@ -2328,6 +2329,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> Rabatt</translation>
 <translation id="3305389145870741612">Die Formatierung kann einige Sekunden dauern. Bitte warten...</translation>
 <translation id="3305661444342691068">PDF-Vorschau</translation>
+<translation id="3307176291962384345">Rabatte für <ph name="MERCHANT_NAME" /> erhalten</translation>
 <translation id="3308116878371095290">Diese Seite konnte keine Cookies setzen.</translation>
 <translation id="3308134619352333507">Schaltfläche ausblenden</translation>
 <translation id="3308852433423051161">Google Assistant wird geladen...</translation>
@@ -2806,6 +2808,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3761556954875533505">Website erlauben, Dateien zu bearbeiten?</translation>
 <translation id="3764314093345384080">Detaillierte Build-Informationen</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommunikation mit einem USB-Gerät}other{Kommunikation mit # USB-Geräten}}</translation>
+<translation id="3764753550716962406">Zulassen, dass Google Ihren Einkaufswagen verwendet, um verfügbare Rabatte zu finden?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird an <ph name="DEVICE_NAME" /> gesendet}other{<ph name="ATTACHMENTS" /> werden an <ph name="DEVICE_NAME" /> gesendet}}</translation>
 <translation id="3765246971671567135">Richtlinie für den Offlinedemomodus konnte nicht verarbeitet werden.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3241,6 +3244,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4194570336751258953">Touchpad-Klick aktivieren</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
+<translation id="4197917636330710075">Rabatte für <ph name="MERCHANT_NAME" /> und <ph name="MERCHANT_NAME" /> erhalten</translation>
 <translation id="4198268995694216131">Zusätzliche Websites</translation>
 <translation id="4200689466366162458">Benutzerdefinierte Wörter</translation>
 <translation id="4200983522494130825">Neuer &amp;Tab</translation>
@@ -4617,6 +4621,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5632566673632479864">Ihr Konto <ph name="EMAIL" /> ist nicht mehr als primäres Konto zugelassen. Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden Ihr Verlauf sowie Ihre Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht.</translation>
 <translation id="5632592977009207922">Wird heruntergeladen, <ph name="PERCENT_REMAINING" /> % verbleibend</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634446357546764049">Erinnerungen Ihrer letzten Reisen und mehr</translation>
 <translation id="5635312199252507107">Auf bestimmten Websites zulassen</translation>
 <translation id="563535393368633106">Vor dem Zugriff nachfragen (empfohlen)</translation>
 <translation id="5636996382092289526">Zur Verwendung von <ph name="NETWORK_ID" /> müssen Sie eventuell zuerst die <ph name="LINK_START" />Anmeldeseite des Netzwerks besuchen<ph name="LINK_END" />. Diese wird in einigen Sekunden automatisch geöffnet. Anderenfalls kann das Netzwerk nicht verwendet werden.</translation>
@@ -4713,6 +4718,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5740709157181662145">Hardware-Unterstützung und Stabilität von <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Displayspiegelung</translation>
 <translation id="574209121243317957">Tonhöhe</translation>
+<translation id="5745316408658560138">Zulassen, dass Chrome personalisierte Rabatte für Ihre Einkaufswagen findet?</translation>
 <translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5747552184818312860">Ablaufdatum</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
@@ -5340,6 +5346,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
+<translation id="6374635887697228982">Rabatte erhalten?</translation>
 <translation id="6377268785556383139">1 Ergebnis für "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Akzeptieren und fortfahren</translation>
 <translation id="6382616130475191723">Abrufen und Ändern von <ph name="SITE_NAME" /> genehmigt</translation>
@@ -6905,6 +6912,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7956373551960864128">Ihre gespeicherten Drucker</translation>
 <translation id="7957074856830851026">Geräteinformationen wie Seriennummer oder Asset-ID abrufen</translation>
 <translation id="7957615753207896812">Tastatureinstellungen öffnen</translation>
+<translation id="7958437133377816580">Rabatte für <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> und weitere Händler erhalten</translation>
 <translation id="7959074893852789871">Die Datei enthielt mehrere Zertifikate, von denen einige nicht importiert wurden:</translation>
 <translation id="7959665254555683862">Neuer Inkognito&amp;tab</translation>
 <translation id="7961015016161918242">Nie</translation>

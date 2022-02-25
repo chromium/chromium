@@ -2279,6 +2279,7 @@
 <translation id="3225319735946384299">코드 서명</translation>
 <translation id="3226487301970807183">왼쪽 정렬 측면 패널 전환</translation>
 <translation id="3227137524299004712">마이크</translation>
+<translation id="3232754137068452469">웹 앱</translation>
 <translation id="3233271424239923319">Linux 앱 및 파일 백업</translation>
 <translation id="3238192140106069382">연결 및 확인 중</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />의 시간제한이 삭제되었습니다.</translation>
@@ -2317,6 +2318,7 @@
 <translation id="3277691515294482687">Linux를 업그레이드하기 전에 앱과 파일을 내 파일 폴더에 백업합니다.</translation>
 <translation id="3278001907972365362">Google 계정에 주의가 필요합니다.</translation>
 <translation id="3278800075417428224">CloudReady 2.0 설정에서 언어 관리</translation>
+<translation id="3278928434075969895">프로필이 Chrome OS 프록시 설정을 사용합니다.</translation>
 <translation id="3279092821516760512">선택한 연락처의 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="3279230909244266691">이 과정은 몇 분 정도 소요될 수 있습니다. 가상 머신을 시작합니다.</translation>
 <translation id="3280237271814976245">다른 이름으로 저장(&amp;A)...</translation>
@@ -4886,6 +4888,7 @@
 <translation id="5909379458939060601">이 프로필과 인터넷 사용 기록을 삭제하시겠습니까?</translation>
 <translation id="5910363049092958439">이미지를 다른 이름으로 저장(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> 기기가 오프라인 상태임</translation>
+<translation id="5911505723657992440">프로필에 Chrome OS 프록시 설정을 사용하세요.</translation>
 <translation id="5911533659001334206">바로가기 뷰어</translation>
 <translation id="5914724413750400082">모듈러스(<ph name="MODULUS_NUM_BITS" />비트):
   <ph name="MODULUS_HEX_DUMP" />

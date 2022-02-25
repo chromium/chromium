@@ -163,6 +163,7 @@
 <translation id="1150490752229770117">この <ph name="DEVICE_TYPE" /> でソフトウェアとセキュリティの自動アップデートが行われるのは今回が最後です。今後もアップデートを取得するには、新しいモデルにアップグレードしてください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">サングラス</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> によるセンサーへのアクセスを常に許可する</translation>
+<translation id="1152181876167086799">すべての拡張機能に <ph name="SITE_NAME" /> の読み取りと変更を許可する</translation>
 <translation id="1152346050262092795">アカウントを確認するには、パスワードをもう一度入力してください。</translation>
 <translation id="1153356358378277386">ペア設定されたデバイス</translation>
 <translation id="1153636665119721804">Google の高度な保護機能プログラム</translation>
@@ -451,6 +452,9 @@
 <translation id="1442851588227551435">有効な Kerberos チケットの設定</translation>
 <translation id="1444628761356461360">この設定はデバイスの所有者 <ph name="OWNER_EMAIL" /> が管理しています。</translation>
 <translation id="144518587530125858">テーマの「<ph name="IMAGE_PATH" />」を読み込むことができませんでした。</translation>
+<translation id="1448264954024227422">このアカウントを Android アプリで使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
+
+これまでにアプリに許可した権限がこのアカウントに適用される可能性があります。[<ph name="APPS_LINK_BEGIN" />アプリの設定<ph name="APPS_LINK_END" />] で Android アプリの権限を管理できます。</translation>
 <translation id="1448779317883494811">ブラシツール</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
@@ -1030,6 +1034,7 @@
 <translation id="2003130567827682533">「<ph name="NAME" />」データサービスを有効にするには、まず Wi-Fi ネットワークに接続してください</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2005199804247617997">他のプロフィール</translation>
+<translation id="2005967212456643969">拡張機能ごとに権限をカスタマイズする</translation>
 <translation id="2006638907958895361"><ph name="APP" /> でリンクを開く</translation>
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="2009590708342941694">絵文字ツール</translation>
@@ -1234,6 +1239,7 @@
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
 <translation id="220321590587754225">接続できませんでした。もう一度お試しください。</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
+<translation id="2207115382329026341">スマートフォンからアプリ ストリーミング設定を有効にしてください。</translation>
 <translation id="220858061631308971">「<ph name="DEVICE_NAME" />」の PIN コードを入力してください:</translation>
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
@@ -1422,6 +1428,7 @@
 <translation id="2367972762794486313">アプリを表示</translation>
 <translation id="236939127352773362">コンテンツの送信を希望しているデバイスが近くにある場合に通知します</translation>
 <translation id="2371076942591664043">ダウンロードしたら開く(&amp;D)</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> を起動できませんでした</translation>
 <translation id="2373666622366160481">用紙に合わせる</translation>
 <translation id="2375406435414127095">スマートフォンに接続</translation>
 <translation id="2377588536920405462">位置情報の使用を無効にするには、お使いのデバイスでメインの位置情報の設定を無効にします。また、位置情報の設定で、Wi‑Fi、モバイル ネットワーク、センサーを現在地の特定に使用しないよう指定することもできます。</translation>
@@ -2098,6 +2105,7 @@
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3043218608271070212"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> より</translation>
+<translation id="304499331062371949">すべての拡張機能に <ph name="SITE_NAME" /> の読み取りと変更を許可しない</translation>
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
 <translation id="3046178388369461825">Linux ディスクの空き容量が非常に少なくなっています</translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
@@ -2255,6 +2263,7 @@
 <translation id="3225319735946384299">コード署名</translation>
 <translation id="3226487301970807183">左揃えのサイドパネルを切り替えます</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3233271424239923319">Linux のアプリとファイルをバックアップします</translation>
 <translation id="3238192140106069382">接続と認証を行っています</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> の使用時間制限が削除されました</translation>
@@ -2293,6 +2302,7 @@
 <translation id="3277691515294482687">Linux をアップグレードする前に、アプリとファイルを [マイファイル] フォルダにバックアップする。</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
 <translation id="3278800075417428224">CloudReady 2.0 の設定で言語を管理する</translation>
+<translation id="3278928434075969895">このプロフィールでは Chrome OS のプロキシ設定を使用します。</translation>
 <translation id="3279092821516760512">近くにいる選択した連絡先が共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
 <translation id="3280237271814976245">名前を付けて保存(&amp;A)...</translation>
@@ -3325,6 +3335,7 @@
 <translation id="4289540628985791613">概要</translation>
 <translation id="4289732974614035569">PIN の入力</translation>
 <translation id="4290791284969893584">ページを閉じると、開始したタスクが完了できなくなります</translation>
+<translation id="4291265871880246274">ログイン ダイアログ</translation>
 <translation id="4295072614469448764">アプリはお使いのデバイスでご利用いただけます。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="4295979599050707005">もう一度ログインして、Chrome と Google Play のウェブサイト、アプリ、拡張機能でアカウント（<ph name="USER_EMAIL" />）を使用できることを確認してください。このアカウントを削除することも可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">再起動してリセット</translation>
@@ -4541,6 +4552,7 @@
 <translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
 <translation id="5572648434713976849">より関連性の高い候補がアドレスバーに表示されます</translation>
 <translation id="5572851009514199876">このサイトへのアクセス権があるかどうかを Chrome で確認できるように、Chrome を起動してログインしてください。</translation>
+<translation id="557506220935336383">他のサイトに対する拡張機能の権限を確認する</translation>
 <translation id="5575473780076478375">シークレット モード拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
 <translation id="557722062034137776">デバイスをリセットしても、お使いの Google アカウントや、これらのアカウントに同期されているデータには影響しません。ただし、デバイス上でローカルに保存されているすべてのファイルは削除されます。</translation>
@@ -4854,6 +4866,7 @@
 <translation id="5909379458939060601">このプロフィールと閲覧データを削除しますか？</translation>
 <translation id="5910363049092958439">名前を付けて画像を保存(&amp;V)...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> はオフラインです</translation>
+<translation id="5911505723657992440">このプロフィールで Chrome OS のプロキシ設定を使用する。</translation>
 <translation id="5911533659001334206">ショートカット ビューア</translation>
 <translation id="5914724413750400082">モジュール（<ph name="MODULUS_NUM_BITS" /> ビット）:
   <ph name="MODULUS_HEX_DUMP" />
@@ -5540,6 +5553,7 @@
 <translation id="6586099239452884121">ゲスト ブラウジング</translation>
 <translation id="6586213706115310390">「OK Google」と話すとアシスタントにアクセスできます。</translation>
 <translation id="6586451623538375658">マウスのメイン ボタンを右にする</translation>
+<translation id="6587958707401001932">デフォルトの設定を選択</translation>
 <translation id="6588043302623806746">セキュア DNS を使用する</translation>
 <translation id="659005207229852190">安全確認が完了しました。</translation>
 <translation id="6590458744723262880">フォルダ名の変更</translation>
@@ -5563,6 +5577,7 @@
 <translation id="6606671997164410857">Google アシスタントは、すでに別のデバイスで設定済みのようです。このデバイスで [画面のコンテキスト] をオンにすれば、アシスタントをもっと活用していただけるようになります。</translation>
 <translation id="6607831829715835317">その他のツール(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> はすでに <ph name="DOMAIN" /> によって管理されています。別の Google アカウントで保護者による使用制限を設定するには、セットアップ後にログアウトしてから、ログイン画面で [ユーザーを追加] を選択します。</translation>
+<translation id="6608166463665411119">eSIM をリセット</translation>
 <translation id="6609478180749378879">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。今後、このデバイスからこのウェブサイトにログインできるようになります。</translation>
 <translation id="6610002944194042868">翻訳オプション</translation>
 <translation id="6611972847767394631">ここからタブを確認できます</translation>
@@ -6164,6 +6179,7 @@
 <translation id="7243632151880336635">削除してログアウト</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
+<translation id="724835896049478274">Android アプリで使用できるアカウント</translation>
 <translation id="7249197363678284330">アドレスバーでこの設定を変更できます。</translation>
 <translation id="7250616558727237648">共有先のデバイスから応答がありませんでした。もう一度お試しください。</translation>
 <translation id="725109152065019550">このアカウントでの外部ストレージの使用は、管理者によって無効にされています。</translation>
@@ -6247,6 +6263,7 @@
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7340431621085453413">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示です。</translation>
 <translation id="7340650977506865820">サイトで画面が共有されています</translation>
+<translation id="7340757554212515731">障害レポート、診断データ、使用状況データを自動的に Google に送信します</translation>
 <translation id="7341834142292923918">このサイトへのアクセス許可が必要です</translation>
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
@@ -8141,6 +8158,7 @@
 <translation id="93766956588638423">拡張機能を修復</translation>
 <translation id="938568644810664664">「OK Google, この曲はなに？」、「OK Google, 画面になにが表示されている？」のようにきいてみましょう。</translation>
 <translation id="939252827960237676">スクリーンショットを保存できませんでした</translation>
+<translation id="939401694733344652">これらのアカウントは現在、Android アプリで使用されていません。この Android アプリで使用するアカウントを選択した場合、そのアカウントは他の Android アプリでも使用できるようになります。Android アプリのアクセス権限は、<ph name="LINK_BEGIN" />[設定] &gt; [アカウント]<ph name="LINK_END" /> で変更できます。</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> が Chrome タブと音声を共有しています。</translation>
@@ -8197,6 +8215,7 @@
 <translation id="994289308992179865">ループ(&amp;L)</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">安全な接続を確立しています...</translation>
+<translation id="996803490569799917">大好きな人たちとの思い出などを見る</translation>
 <translation id="99731366405731005">Wi-Fi 同期を使用するには <ph name="LINK1_BEGIN" />Chrome 同期<ph name="LINK1_END" />をオンにしてください。<ph name="LINK2_BEGIN" />詳細<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">検証(&amp;I)</translation>
 </translationbundle>

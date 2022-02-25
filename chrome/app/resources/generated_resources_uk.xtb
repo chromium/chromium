@@ -2282,6 +2282,7 @@
 <translation id="3225319735946384299">Підписування коду</translation>
 <translation id="3226487301970807183">Показати чи сховати бічну панель зліва</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
+<translation id="3232754137068452469">Веб-додаток</translation>
 <translation id="3233271424239923319">Створити резервну копію додатків і файлів Linux</translation>
 <translation id="3238192140106069382">Триває підключення та перевірка</translation>
 <translation id="3239373508713281971">Для додатка <ph name="APP_NAME" /> скасовано ліміт часу</translation>
@@ -2349,6 +2350,7 @@
 <translation id="3304212451103136496">Знижка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Процес форматування може зайняти декілька секунд. Зачекайте.</translation>
 <translation id="3305661444342691068">Відкрити файл PDF у вікні попереднього перегляду</translation>
+<translation id="3307176291962384345">Отримуйте знижки в магазині "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Цій сторінці було відмовлено в збереженні файлів cookie.</translation>
 <translation id="3308134619352333507">Кнопка "Сховати"</translation>
 <translation id="3308852433423051161">Завантажується Google Асистент…</translation>
@@ -2827,6 +2829,7 @@
 <translation id="3761556954875533505">Дозволити сайту змінювати файли?</translation>
 <translation id="3764314093345384080">Докладна інформація про складання</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Обмінюватися даними з пристроєм USB}one{Обмінюватися даними з # пристроєм USB}few{Обмінюватися даними з # пристроями USB}many{Обмінюватися даними з # пристроями USB}other{Обмінюватися даними з # пристрою USB}}</translation>
+<translation id="3764753550716962406">Дозволити Google використовувати ваш кошик, щоб шукати доступні знижки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> надсилаються на пристрій <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> надсилається на пристрій <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Не вдалося прочитати політику демо-режиму офлайн.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -3262,6 +3265,7 @@
 <translation id="4194570336751258953">Увімкнути функцію "торкнутися, щоб натиснути"</translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4195814663415092787">Продовжити з місця зупинки</translation>
+<translation id="4197917636330710075">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME" />" і "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="4198268995694216131">Інші сайти</translation>
 <translation id="4200689466366162458">Спеціальні слова</translation>
 <translation id="4200983522494130825">Нова &amp;вкладка</translation>
@@ -4641,6 +4645,7 @@
 <translation id="5632566673632479864">Обліковий запис <ph name="EMAIL" /> більше не можна використовувати як основний. Оскільки цей обліковий запис зареєстровано в домені <ph name="DOMAIN" />, з цього пристрою буде видалено ваші закладки, історію, паролі й інші налаштування.</translation>
 <translation id="5632592977009207922">Завантажується, залишилося <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Мобільна</translation>
+<translation id="5634446357546764049">Переглядайте спогади про останні поїздки тощо</translation>
 <translation id="5635312199252507107">Дозволити на певних сайтах</translation>
 <translation id="563535393368633106">Запитувати дозволу, перш ніж надавати доступ (рекомендується)</translation>
 <translation id="5636996382092289526">Щоб користуватися цією мережею (<ph name="NETWORK_ID" />), можливо, спершу потрібно буде <ph name="LINK_START" />перейти на сторінку входу мережі<ph name="LINK_END" />, яка автоматично відкриється за декілька секунд. Якщо цього не станеться, мережею користуватися не можна.</translation>
@@ -4737,6 +4742,7 @@
 <translation id="5740709157181662145">Технічна підтримка апаратного забезпечення та стабільність роботи <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дзеркалювання дисплея</translation>
 <translation id="574209121243317957">Тон</translation>
+<translation id="5745316408658560138">Дозволити Chrome знаходити персоналізовані знижки для ваших кошиків?</translation>
 <translation id="5746169159649715125">Зберегти у форматі PDF</translation>
 <translation id="5747552184818312860">Діє до</translation>
 <translation id="5747785204778348146">Для розробників (нестабільна)</translation>
@@ -5364,6 +5370,7 @@
 <translation id="6370021412472292592">Не вдалося завантажити маніфест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторити спробу</translation>
+<translation id="6374635887697228982">Отримувати знижки?</translation>
 <translation id="6377268785556383139">1 результат для запиту "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Прийняти та продовжити</translation>
 <translation id="6382616130475191723">Дозволено читання та зберігання для такого сайту: <ph name="SITE_NAME" /></translation>
@@ -6930,6 +6937,7 @@
 <translation id="7956373551960864128">Збережені принтери</translation>
 <translation id="7957074856830851026">Переглядати інформацію з пристрою, наприклад серійний номер або ідентифікатор об'єкта</translation>
 <translation id="7957615753207896812">Відкрити налаштування клавіатури</translation>
+<translation id="7958437133377816580">Отримуйте знижки в магазинах "<ph name="MERCHANT_NAME" />", "<ph name="MERCHANT_NAME" />" та інших</translation>
 <translation id="7959074893852789871">Файл містив декілька сертифікатів, деякі з яких не було імпортовано:</translation>
 <translation id="7959665254555683862">Нова анонімна вкладка</translation>
 <translation id="7961015016161918242">Ніколи</translation>

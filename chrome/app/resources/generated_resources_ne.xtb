@@ -2254,6 +2254,7 @@
 <translation id="3225319735946384299">कोड साइनिङ</translation>
 <translation id="3226487301970807183">बायाँतिर एलाइन गरिएको साइड प्यानल टगल गर्नुहोस्</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
+<translation id="3232754137068452469">वेब एप</translation>
 <translation id="3233271424239923319">Linux एप र फाइलहरू ब्याकअप गर्नुहोस्</translation>
 <translation id="3238192140106069382">डिभाइस कनेक्ट हुँदै छ र पुष्टि गरिँदै छ</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> को समय सीमा हटाइयो</translation>
@@ -2291,6 +2292,7 @@
 <translation id="3275778913554317645">विन्डोको रूपमा खोल्नुहोस्</translation>
 <translation id="3277691515294482687">Linux अपग्रेड गर्नुअघि मेरा एप तथा फाइलहरू मेरा फाइलहरू नामक फोल्डरमा ब्याकअप गरियोस्।</translation>
 <translation id="3278001907972365362">तपाईंका Google खाता(हरू) मा ध्यान दिनु पर्ने हुन्छ</translation>
+<translation id="3278928434075969895">यो प्रोफाइलले Chrome OS को प्रोक्सीसम्बन्धी सेटिङ प्रयोग गर्छ।</translation>
 <translation id="3279092821516760512">तपाईंको वरपर हुँदा तपाईंसँग सामग्री सेयर गर्न सक्ने सम्पर्क सूचीमा भएका व्यक्तिहरू चयन गर्नुहोस्। तपाईंले सामग्री सार्ने निम्तो स्वीकार नगरेसम्म सामग्री सार्ने काम सुरु हुँदैन।</translation>
 <translation id="3279230909244266691">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। भर्चुअल मेसिन सुरु गर्दै।</translation>
 <translation id="3280237271814976245">यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
@@ -4824,6 +4826,7 @@
 <translation id="5909379458939060601">यो प्रोफाइल र ब्राउजिङ डेटा मेटाउने हो?</translation>
 <translation id="5910363049092958439">यस रूपमा छविलाई बच&amp;त गर्नुहोस्...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> अफलाइन छ</translation>
+<translation id="5911505723657992440">यो प्रोफाइलमा Chrome OS को प्रोक्सीसम्बन्धी सेटिङ प्रयोग गर्नुहोस्।</translation>
 <translation id="5911533659001334206">सर्टकटको दर्शक</translation>
 <translation id="5914724413750400082">मापांक (<ph name="MODULUS_NUM_BITS" /> बिटहरू): <ph name="MODULUS_HEX_DUMP" /> 
 सार्वजनिक प्रकाशक ( <ph name="PUBLIC_EXPONENT_NUM_BITS" /> बिट): 

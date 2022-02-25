@@ -2277,6 +2277,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3225319735946384299">Kódaláírás</translation>
 <translation id="3226487301970807183">Kapcsoló balra igazított oldalsó panelje</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232754137068452469">Internetes alkalmazás</translation>
 <translation id="3233271424239923319">Biztonsági másolat készítése a Linux-alkalmazásokról és -fájlokról</translation>
 <translation id="3238192140106069382">Csatlakozás és ellenőrzés</translation>
 <translation id="3239373508713281971">Időkorlát eltávolítva a következő alkalmazásnál: <ph name="APP_NAME" /></translation>
@@ -2315,6 +2316,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3277691515294482687">Alkalmazásaim és fájljaim biztonsági mentése a Saját fájlok mappába a Linux frissítése előtt.</translation>
 <translation id="3278001907972365362">Google-fiókjaival kapcsolatban teendői akadtak</translation>
 <translation id="3278800075417428224">Nyelvek kezelése a CloudReady 2.0 beállításai között</translation>
+<translation id="3278928434075969895">Ez a profil a Chrome OS-proxybeállításokat használja.</translation>
 <translation id="3279092821516760512">A kiválasztott ismerősök tartalmakat oszthatnak meg Önnel, amikor a közelben vannak. Az elfogadásig nem kezdődik meg az átküldés.</translation>
 <translation id="3279230909244266691">Ez a folyamat néhány percet is igénybe vehet. A virtuális gép indítása folyamatban van.</translation>
 <translation id="3280237271814976245">Mentés &amp;másként...</translation>
@@ -4888,6 +4890,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5909379458939060601">Törli ezt a profilt és a böngészési adatokat?</translation>
 <translation id="5910363049092958439">Ké&amp;p mentése másként...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> – offline</translation>
+<translation id="5911505723657992440">A Chrome OS-proxybeállítások használata ennél a profilnál.</translation>
 <translation id="5911533659001334206">Billentyűparancs-megjelenítő</translation>
 <translation id="5914724413750400082">Együttható (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />

@@ -2279,6 +2279,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3225319735946384299">Kóðaundirritun</translation>
 <translation id="3226487301970807183">Sýna/fela hliðarglugga sem er jafnaður til vinstri</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
+<translation id="3232754137068452469">Vefforrit</translation>
 <translation id="3233271424239923319">Afrita Linux-forrit og -skrár</translation>
 <translation id="3238192140106069382">Tengist og staðfestir</translation>
 <translation id="3239373508713281971">Tímamörk fjarlægð fyrir <ph name="APP_NAME" /></translation>
@@ -2346,6 +2347,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> afsláttur</translation>
 <translation id="3305389145870741612">Nokkrar sekúndur getur tekið að sníða. Hinkraðu.</translation>
 <translation id="3305661444342691068">Opna PDF-skjal í forskoðun</translation>
+<translation id="3307176291962384345">Fá afslætti hjá <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Komið var í veg fyrir að þessi síða vistaði fótspor.</translation>
 <translation id="3308134619352333507">Hnappurinn Fela</translation>
 <translation id="3308852433423051161">Hleður Google hjálparann...</translation>
@@ -2824,6 +2826,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3761556954875533505">Viltu leyfa svæði að breyta skrám?</translation>
 <translation id="3764314093345384080">Ítarupplýsingar smíði</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Eiga samskipti við USB-tæki}one{Eiga samskipti við # USB-tæki}other{Eiga samskipti við # USB-tæki}}</translation>
+<translation id="3764753550716962406">Leyfa Google að nota körfuna þína til að finna tiltæka afslætti?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Sendir <ph name="ATTACHMENTS" /> í <ph name="DEVICE_NAME" />}one{Sendir <ph name="ATTACHMENTS" /> í <ph name="DEVICE_NAME" />}other{Sendir <ph name="ATTACHMENTS" /> í <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Ekki tókst að lesa reglu ónettengdrar prufustillingar.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3259,6 +3262,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4194570336751258953">Gera „ýta til að smella“ virkt</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4195814663415092787">Halda áfram þaðan sem frá var horfið</translation>
+<translation id="4197917636330710075">Fá afslætti hjá <ph name="MERCHANT_NAME" /> og <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Önnur vefsvæði</translation>
 <translation id="4200689466366162458">Sérsniðin orð</translation>
 <translation id="4200983522494130825">Nýr flipi</translation>
@@ -4638,6 +4642,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5632566673632479864">Reikningurinn þinn <ph name="EMAIL" /> er ekki lengur leyfður sem aðalreikningur. Þar sem <ph name="DOMAIN" /> stýrir þessum reikningi verða bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð úr tækinu.</translation>
 <translation id="5632592977009207922">Sækir, <ph name="PERCENT_REMAINING" />% eftir</translation>
 <translation id="563371367637259496">Farsímakerfi</translation>
+<translation id="5634446357546764049">Sjáðu minningar um nýlegar ferðir og fleira</translation>
 <translation id="5635312199252507107">Leyfa á tilteknum vefsvæðum</translation>
 <translation id="563535393368633106">Spyrja fyrir notkun (ráðlagt)</translation>
 <translation id="5636996382092289526">Til að nota <ph name="NETWORK_ID" /> þarftu hugsanlega fyrst að <ph name="LINK_START" />fara á innskráningarsíðu netsins<ph name="LINK_END" /> sem opnast sjálfkrafa eftir nokkrar sekúndur. Ef þetta gerist ekki er ekki hægt að nota netið.</translation>
@@ -4734,6 +4739,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5740709157181662145">Stuðningur við vélbúnað <ph name="DEVICE_OS" /> og aukinn stöðugleiki</translation>
 <translation id="574104302965107104">Skjáspeglun</translation>
 <translation id="574209121243317957">Tónhæð</translation>
+<translation id="5745316408658560138">Leyfa Chrome að finna sérsniðna afslætti fyrir körfurnar þínar?</translation>
 <translation id="5746169159649715125">Vista sem PDF</translation>
 <translation id="5747552184818312860">Rennur út</translation>
 <translation id="5747785204778348146">Forritari – óstöðugt</translation>
@@ -5361,6 +5367,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6370021412472292592">Ekki var hægt að hlaða upplýsingaskrá.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Reyna aftur</translation>
+<translation id="6374635887697228982">Fá afslætti?</translation>
 <translation id="6377268785556383139">Ein niðurstaða fyrir „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380143666419481200">Samþykkja og halda áfram</translation>
 <translation id="6382616130475191723">Heimilað að lesa og gera breytingar á <ph name="SITE_NAME" /></translation>
@@ -6927,6 +6934,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7956373551960864128">Vistaðir prentarar þínir</translation>
 <translation id="7957074856830851026">Sjá upplýsingar um tæki, svo sem raðnúmer eða eignarauðkenni</translation>
 <translation id="7957615753207896812">Opna lyklaborðsstillingar tækisins</translation>
+<translation id="7958437133377816580">Fá afslætti hjá <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> og fleirum</translation>
 <translation id="7959074893852789871">Skráin innihélt mörg vottorð en sum þeirra voru ekki flutt inn:</translation>
 <translation id="7959665254555683862">Nýr huliðsflipi</translation>
 <translation id="7961015016161918242">Aldrei</translation>

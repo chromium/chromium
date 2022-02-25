@@ -2270,6 +2270,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3225319735946384299">Koodsigneerimine</translation>
 <translation id="3226487301970807183">Vasakule joondatud külgpaneeli kuvamine/peitmine</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232754137068452469">Veebirakendus</translation>
 <translation id="3233271424239923319">Linuxi rakenduste ja failide varundamine</translation>
 <translation id="3238192140106069382">Ühendamine ja kinnitamine</translation>
 <translation id="3239373508713281971">Rakenduse <ph name="APP_NAME" /> ajapiirang eemaldati</translation>
@@ -2337,6 +2338,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> odavam</translation>
 <translation id="3305389145870741612">Vormindusprotsessile võib kuluda paar sekundit. Oodake.</translation>
 <translation id="3305661444342691068">Ava PDF-i eelvaade</translation>
+<translation id="3307176291962384345">Hankige kaupmehe <ph name="MERCHANT_NAME" /> juures allahindlusi</translation>
 <translation id="3308116878371095290">Sellel lehel takistati küpsiste seadistamine.</translation>
 <translation id="3308134619352333507">Nupp Peida</translation>
 <translation id="3308852433423051161">Google'i assistendi laadimine …</translation>
@@ -2815,6 +2817,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3761556954875533505">Kas lubada saidil faile muuta?</translation>
 <translation id="3764314093345384080">Üksikasjalik järguteave</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Ühendus USB-seadmega}other{Ühendus # USB-seadmega}}</translation>
+<translation id="3764753550716962406">Kas lubate Google'il kasutada teie ostukorvi sisu, et leida pakutavaid allahindlusi?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Andmete (<ph name="ATTACHMENTS" />) saatmine seadmesse <ph name="DEVICE_NAME" />}other{Andmete (<ph name="ATTACHMENTS" />) saatmine seadmesse <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Võrguühenduseta demorežiimi reeglit ei saanud lugeda.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3250,6 +3253,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4194570336751258953">Luba klõpsamine</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
+<translation id="4197917636330710075">Hankige kaupmeeste <ph name="MERCHANT_NAME" /> ja <ph name="MERCHANT_NAME" /> juures allahindlusi</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
 <translation id="4200689466366162458">Kohandatud sõnad</translation>
 <translation id="4200983522494130825">Uus &amp;vaheleht</translation>
@@ -4628,6 +4632,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5632566673632479864">Teie konto <ph name="EMAIL" /> ei ole enam peamise kontona lubatud. Kuna seda kontot haldab domeen <ph name="DOMAIN" />, kustutatakse sellest seadmest teie järjehoidjad, ajalugu, paroolid ja muud seaded.</translation>
 <translation id="5632592977009207922">Allalaadimine, <ph name="PERCENT_REMAINING" />% jäänud</translation>
 <translation id="563371367637259496">Mobiil</translation>
+<translation id="5634446357546764049">Vaadake mälestusi oma hiljutistest reisidest ja muust</translation>
 <translation id="5635312199252507107">Luba konkreetsetel saitidel</translation>
 <translation id="563535393368633106">Küsib enne juurdepääsu hankimist (soovitatav)</translation>
 <translation id="5636996382092289526">Võimalik, et võrgu <ph name="NETWORK_ID" /> kasutamiseks tuleb teil esmalt <ph name="LINK_START" />külastada võrgu sisselogimislehte<ph name="LINK_END" />, mis avaneb mõne sekundi pärast automaatselt. Kui see ei avane, ei saa võrku kasutada.</translation>
@@ -4724,6 +4729,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5740709157181662145">Seadme <ph name="DEVICE_OS" /> riistvaratugi ja stabiilsus</translation>
 <translation id="574104302965107104">Ekraanikuva peegeldamine</translation>
 <translation id="574209121243317957">Helikõrgus</translation>
+<translation id="5745316408658560138">Kas lubate Chrome'il teie ostukorvide sisu jaoks isikupärastatud allahindlusi otsida?</translation>
 <translation id="5746169159649715125">Salvesta PDF-ina</translation>
 <translation id="5747552184818312860">Aegub</translation>
 <translation id="5747785204778348146">Arendaja – ebastabiilne</translation>
@@ -5351,6 +5357,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6370021412472292592">Manifesti laadimine ebaõnnestus.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Proovi uuesti</translation>
+<translation id="6374635887697228982">Kas saada allahindlusi?</translation>
 <translation id="6377268785556383139">1 tulemus otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380143666419481200">Nõustu ja jätka</translation>
 <translation id="6382616130475191723">Lubatud, et lugeda ja muuta saiti <ph name="SITE_NAME" /></translation>
@@ -6917,6 +6924,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7956373551960864128">Teie salvestatud printerid</translation>
 <translation id="7957074856830851026">Seadme teabe (nt seerianumbri või vara ID) vaatamine</translation>
 <translation id="7957615753207896812">Klaviatuuriseadme seadete avamine</translation>
+<translation id="7958437133377816580">Hankige kaupmeeste <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> ja teiste juures allahindlusi</translation>
 <translation id="7959074893852789871">Fail sisaldas mitut sertifikaati, mõnda neist ei imporditud:</translation>
 <translation id="7959665254555683862">Uus inkognito &amp;vaheleht</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>

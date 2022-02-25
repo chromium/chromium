@@ -267,7 +267,7 @@
 <translation id="4511264077854731334">入口網站</translation>
 <translation id="4521826082652183069">主體替代名稱相符</translation>
 <translation id="4536864596629708641">IP 設定</translation>
-<translation id="4546131424594385779">建立循環播放的影片</translation>
+<translation id="4546131424594385779">建立循環播放影片</translation>
 <translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="4556753742174065117">所有韌體都是最新版本</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
@@ -284,7 +284,6 @@
 <translation id="467715984478005772">可能有防火牆</translation>
 <translation id="4691278870498629773">已停止 - 沒有紙匣</translation>
 <translation id="469379815867856270">訊號強度</translation>
-<translation id="4707579418881001319">L2TP/IPsec + 使用者憑證</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
@@ -652,7 +651,7 @@
 <translation id="9062831201344759865">DNS 解析延遲時間長</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
-<translation id="9082718469794970195">使用這部影片</translation>
+<translation id="9082718469794970195">使用這段影片</translation>
 <translation id="9087578468327036362">報告此查詢</translation>
 <translation id="9088306295921699330">目前使用量</translation>
 <translation id="9095415590198785865">裝置的擁有者不會變更</translation>
@@ -666,7 +665,6 @@
 <translation id="9149391708638971077">執行記憶體測試</translation>
 <translation id="9173638680043580060">尚餘不到 1 分鐘</translation>
 <translation id="917720651393141712">測試</translation>
-<translation id="9190063653747922532">L2TP/IPsec + 預先共用金鑰</translation>
 <translation id="9204237731135241582">無法從 Android 應用程式連線至閘道</translation>
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="939519157834106403">SSID</translation>
