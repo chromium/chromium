@@ -287,6 +287,7 @@
 <translation id="1276994519141842946">Не удалось удалить <ph name="APP_NAME" />.</translation>
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
+<translation id="1279024913354609713">Не разрешать</translation>
 <translation id="127946606521051357">Устройство поблизости передает файлы</translation>
 <translation id="1280965841156951489">Разрешить</translation>
 <translation id="1282465000333679776">Предоставить доступ к аудио в системе</translation>
@@ -678,7 +679,6 @@
 <translation id="1644852018355792105">Введите ключ доступа Bluetooth для устройства <ph name="DEVICE" />.</translation>
 <translation id="1645516838734033527">Чтобы защитить устройство <ph name="DEVICE_TYPE" /> с помощью Smart Lock, включите блокировку экрана на телефоне.</translation>
 <translation id="1646982517418478057">Введите пароль для шифрования этого сертификата</translation>
-<translation id="1647408325348388858">Использовать это веб-приложение для просмотра и редактирования файла "<ph name="FILE_NAME" />"?</translation>
 <translation id="1648528859488547844">Использовать для определения местоположения Wi‑Fi или мобильные сети</translation>
 <translation id="164936512206786300">Отключить устройство Bluetooth</translation>
 <translation id="1651008383952180276">Необходимо дважды ввести одну кодовую фразу</translation>
@@ -1189,6 +1189,8 @@
 <translation id="2154502158735983655">Чтение сведений об устройстве Chrome OS и данных на нем</translation>
 <translation id="2155772377859296191">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">Больше не спрашивать при открытии в этом приложении файлов этого формата:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">Снова запустить проверку безопасности</translation>
 <translation id="2157474325782140681">Чтобы получить доступ к дополнительным возможностям, используйте док-станцию Dell, предназначенную для этого устройства Chromebook.</translation>
 <translation id="215753907730220065">Выход из полноэкранного режима</translation>
@@ -2327,7 +2329,6 @@
 <translation id="33022249435934718">GDI-дескрипторы</translation>
 <translation id="3302388252085547855">Обоснуйте свой запрос…</translation>
 <translation id="3303260552072730022">Неизвестное расширение запустило полноэкранный режим.</translation>
-<translation id="3303795387212510132">Разрешить приложению открывать ссылки <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копии</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3304212451103136496">Скидка <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -3106,7 +3107,6 @@
 <translation id="4033963223187371752">Безопасные сайты могут содержать небезопасный встроенный контент, например изображения или фреймы.</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4035758313003622889">&amp;Диспетчер задач</translation>
-<translation id="4035877632587724847">Запретить</translation>
 <translation id="4036778507053569103">Скачанная с сервера политика недействительна.</translation>
 <translation id="4037084878352560732">Лошадь</translation>
 <translation id="403725336528835653">Попробовать</translation>
@@ -3148,7 +3148,6 @@
 <translation id="4079140982534148664">Использовать расширенную проверку правописания</translation>
 <translation id="4081242589061676262">Ошибка трансляции файла.</translation>
 <translation id="408223403876103285">С сайта <ph name="WEBSITE" /> отправлено уведомление на ваш телефон. Чтобы подтвердить свою личность, выполните указанные в нем действия.</translation>
-<translation id="4083599409544993198">Запомнить выбор для файлов этого типа: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">Закладка</translation>
 <translation id="4084835346725913160">Закрыть вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="4085270836953633510">Запрашивать разрешение на доступ сайтов к последовательным портам</translation>
@@ -3178,7 +3177,6 @@
 <translation id="4101352914005291489">Скрытое имя сети</translation>
 <translation id="4102906002417106771">Перезапустить и использовать Powerwash</translation>
 <translation id="4104163789986725820">Э&amp;кспорт...</translation>
-<translation id="410547683402570632">Запомнить выбор для файлов этих типов: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">Идентификация и извлечение запоминающих устройств</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Восстановить предупреждение</translation>
@@ -3232,6 +3230,7 @@
 <translation id="4167686856635546851">Обычно сайты используют JavaScript, чтобы показывать интерактивный контент.</translation>
 <translation id="4168015872538332605">Некоторые настройки пользователя <ph name="PRIMARY_EMAIL" /> влияют на ваш аккаунт, когда используется система множественного входа.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (последние цифры номера: <ph name="LAST_FOUR_DIGITS" />)</translation>
+<translation id="4169535189173047238">Запретить</translation>
 <translation id="4170314459383239649">Удалять при выходе</translation>
 <translation id="417096670996204801">Выберите профиль</translation>
 <translation id="4175137578744761569">Сиреневый с белым</translation>
@@ -3301,6 +3300,7 @@
 <translation id="425573743389990240">Скорость разрядки батареи в ваттах (при зарядке значение отрицательное)</translation>
 <translation id="4256316378292851214">Сохранить видео как...</translation>
 <translation id="4258348331913189841">Файловые системы</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> запрашивает разрешение на открытие следующих файлов:</translation>
 <translation id="4259388776256904261">Это может занять несколько минут…</translation>
 <translation id="4260182282978351200">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
 <translation id="4261429981378979799">Разрешения для расширений</translation>
@@ -3775,7 +3775,6 @@
 <translation id="475088594373173692">Первый пользователь</translation>
 <translation id="4756378406049221019">Остановить/Перезапустить</translation>
 <translation id="4756388243121344051">&amp;История</translation>
-<translation id="4759202969060787081">Не открывать</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4761104368405085019">Использование микрофона</translation>
 <translation id="4762718786438001384">Свободное пространство почти закончилось</translation>
@@ -4858,7 +4857,6 @@
 <translation id="5889282057229379085">Максимальное количество промежуточных ЦС: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Предпочитаемые сети Wi-Fi</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
-<translation id="5896436821193322561">Запретить</translation>
 <translation id="5900302528761731119">Фотография профиля Google</translation>
 <translation id="590036993063074298">Сведения о качестве трансляции</translation>
 <translation id="5901069264981746702">Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -5473,6 +5471,7 @@
 <translation id="6498249116389603658">&amp;Все языки</translation>
 <translation id="6499143127267478107">Разрешение хоста в скрипте прокси-сервера...</translation>
 <translation id="6499764981457476645">Устройства не найдены</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> запрашивает разрешение на открытие следующего файла:</translation>
 <translation id="65017764184991091">Не удалось выполнить резервное копирование приложений и файлов Linux. Это могло произойти из-за того, что на устройстве недостаточно свободного места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="6501957628055559556">Все контейнеры</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
@@ -6464,7 +6463,6 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{и ещё 1}one{и ещё {NUM_DOWNLOADS}}few{и ещё {NUM_DOWNLOADS}}many{и ещё {NUM_DOWNLOADS}}other{и ещё {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Тег</translation>
 <translation id="7527758104894292229">Обновите его в своем аккаунте Google (<ph name="ACCOUNT" />).</translation>
-<translation id="7528224636098571080">Не открывать</translation>
 <translation id="7529411698175791732">Проверьте подключение к Интернету. Если оно установлено, попробуйте выйти из аккаунта и войти снова.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Закрыть окно в гостевом режиме}one{Закрыть окна в гостевом режиме}few{Закрыть окна в гостевом режиме}many{Закрыть окна в гостевом режиме}other{Закрыть окна в гостевом режиме}}</translation>
 <translation id="7530016656428373557">Скорость разрядки в ваттах</translation>
@@ -6490,6 +6488,8 @@
 <translation id="7552846755917812628">Попробуйте сделать следующее:</translation>
 <translation id="7553012839257224005">Проверка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
+<translation id="7553347517399115470">Больше не спрашивать при открытии в этом приложении файлов следующих форматов:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">Администратор запретил использовать этот язык</translation>
 <translation id="7554791636758816595">Новая вкладка</translation>
 <translation id="7556033326131260574">Не удается войти в аккаунт с помощью Smart Lock. Введите пароль.</translation>

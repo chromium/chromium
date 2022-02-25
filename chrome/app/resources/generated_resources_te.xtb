@@ -286,6 +286,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" />ను అన్ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1277020343994096713">మీ ప్రస్తుత PINకు భిన్నంగా ఉన్న ఒక కొత్త PINను క్రియేట్ చేయండి</translation>
 <translation id="1278859221870828664">Google Play యాప్‌లు, సర్వీస్‌లను రివ్యూ చేయండి</translation>
+<translation id="1279024913354609713">అనుమతించవద్దు</translation>
 <translation id="127946606521051357">సమీపంలోని పరికరం షేర్ చేస్తోంది</translation>
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించు</translation>
 <translation id="1282465000333679776">సిస్టమ్ ఆడియోను షేర్ చేయండి</translation>
@@ -679,7 +680,6 @@
 <translation id="1644852018355792105"><ph name="DEVICE" /> పరికరం కోసం బ్లూటూత్ పాస్-కీని ఎంటర్ చేయండి</translation>
 <translation id="1645516838734033527">మీ <ph name="DEVICE_TYPE" />ను సురక్షితంగా ఉంచడానికి, Smart Lockకు మీ ఫోన్‌లో ఒక స్క్రీన్ లాక్ అవసరం.</translation>
 <translation id="1646982517418478057">దయచేసి ఈ ప్రమాణపత్రాన్ని గుప్తీకరించడానికి పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
-<translation id="1647408325348388858"><ph name="FILE_NAME" />ను ఈ వెబ్ యాప్‌లో తెరిచి, ఎడిట్ చేయాలా?</translation>
 <translation id="1648528859488547844">స్థానాన్ని గుర్తించడానికి Wi‑Fi లేదా మొబైల్ నెట్‌వర్క్‌లను ఉపయోగించండి</translation>
 <translation id="164936512206786300">బ్లూటూత్ పరికరాన్ని అన్‌పెయిర్ చేయండి</translation>
 <translation id="1651008383952180276">మీరు తప్పనిసరిగా ఒకే రహస్య పదబంధాన్ని రెండుసార్లు నమోదు చేయాలి</translation>
@@ -1198,6 +1198,8 @@
 <translation id="2154502158735983655">Chrome OS పరికర సమాచారాన్ని, ఇంకా పరికర డేటాను చదువుతుంది.</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ఉన్నట్టుంది</translation>
 <translation id="2156294658807918600">సర్వీస్ వర్కర్: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">ఈ యాప్‌లో ఈ ఫైల్ ఫార్మాట్‌ను తెరిచేటప్పుడు మళ్లీ అనుమతి అడగవద్దు:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">భద్రతా తనిఖీని మళ్లీ రన్ చేయండి</translation>
 <translation id="2157474325782140681">ఈ Chromebookకు అనుగుణంగా పని చేయడానికి రూపొందించబడిన డెల్ డాకింగ్ స్టేషన్‌ను ఉపయోగించి, అదనపు ఫీచర్‌లను పొందండి.</translation>
 <translation id="215753907730220065">ఫుల్-స్క్రీన్‌ను నిష్క్రమించు</translation>
@@ -2340,7 +2342,6 @@
 <translation id="33022249435934718">GDI నిర్వహించేవి</translation>
 <translation id="3302388252085547855">సర్దుబాటును ఎంటర్ చేయండి...</translation>
 <translation id="3303260552072730022">ఎక్స్‌టెన్షన్‌ ఫుల్-స్క్రీన్‌ను ట్రిగ్గర్ చేసింది.</translation>
-<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవడానికి యాప్‌ను అనుమతించాలా?</translation>
 <translation id="3303818374450886607">కాపీలు</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> తగ్గింపు</translation>
@@ -3119,7 +3120,6 @@
 <translation id="4033963223187371752">సురక్షిత సైట్‌లు సురక్షితం కాని ఇమేజ్‌లు లేదా వెబ్ ఫ్రేమ్‌ల వంటి కంటెంట్‌ను పొందుపరచవచ్చు</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
 <translation id="4035758313003622889">&amp;కార్య నిర్వాహకుడు</translation>
-<translation id="4035877632587724847">అనుమతించవద్దు</translation>
 <translation id="4036778507053569103">సర్వర్ నుండి డౌన్‌లోడ్ చేయబడిన విధానం చెల్లదు.</translation>
 <translation id="4037084878352560732">గుర్రం</translation>
 <translation id="403725336528835653">ముందు దీన్ని ట్రై చేయండి</translation>
@@ -3161,7 +3161,6 @@
 <translation id="4079140982534148664">మెరుగైన స్పెల్ చెక్‌ను ఉపయోగించు</translation>
 <translation id="4081242589061676262">ఫైల్‌ని ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> మీ ఫోన్‌కు నోటిఫికేషన్‌ను పంపింది. అది మీరేనని నిర్ధారించడానికి, అక్కడ ఉన్న దశలను ఫాలో అవ్వండి.</translation>
-<translation id="4083599409544993198">ఈ ఫైల్ రకానికి సంబంధించి నా ఎంపికను గుర్తుంచుకోండి: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">బుక్‌మార్క్ చేయి</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />ని మూసివేయి</translation>
 <translation id="4085270836953633510">ఏదైనా ఒక సైట్, సీరియల్ పోర్ట్‌లను యాక్సెస్ చేయాలని భావించినప్పుడు అనుమతి అడగాలి</translation>
@@ -3191,7 +3190,6 @@
 <translation id="4101352914005291489">దాచబడిన SSID</translation>
 <translation id="4102906002417106771">పవర్‌వాష్ చేయడానికి రీస్టార్ట్ చేయి</translation>
 <translation id="4104163789986725820">ఎ&amp;గుమతి...</translation>
-<translation id="410547683402570632">ఈ ఫైల్ రకాలకు సంబంధించి నా ఎంపికను గుర్తుంచుకో: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">నిల్వ డివైజ్‌లను గుర్తించి, తొలగించండి</translation>
 <translation id="4109135793348361820">విండోను <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)కు తరలించు</translation>
 <translation id="4110485659976215879">హెచ్చరికను రీస్టోర్ చేయండి</translation>
@@ -3245,6 +3243,7 @@
 <translation id="4167686856635546851">వీడియో గేమ్‌లు లేదా వెబ్ ఫారమ్‌లు వంటి డిస్‌ప్లే ఇంటరాక్టివ్ ఫీచర్‌ల కోసం సాధారణంగా సైట్‌లు JavaScriptను ఉపయోగించుకుంటాయి</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />కు సంబంధించిన కొన్ని సెట్టింగ్‌లు మీతో షేర్‌ చేయబడుతున్నాయి. ఈ సెట్టింగ్‌లు బహుళ సైన్-ఇన్‌ను ఉపయోగించేటప్పుడు మాత్రమే మీ ఖాతాను ప్రభావితం చేస్తాయి.</translation>
 <translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" />తో ముగిసే <ph name="NETWORK_NAME" /></translation>
+<translation id="4169535189173047238">అనుమతించవద్దు</translation>
 <translation id="4170314459383239649">నిష్క్రమించేటప్పుడు క్లియర్ చేయి</translation>
 <translation id="417096670996204801">ఒక ప్రొఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="4175137578744761569">లేత వంగ రంగు మరియు తెలుపు</translation>
@@ -3314,6 +3313,7 @@
 <translation id="425573743389990240">వాట్‌లలో బ్యాటరీ తరుగుదల రేట్ (నెగెటివ్‌ విలువ ఉందంటే బ్యాటరీ ఛార్జ్ అవుతోందని అర్థం)</translation>
 <translation id="4256316378292851214">వీడియోను ఇలా సే&amp;వ్ చేయి...</translation>
 <translation id="4258348331913189841">ఫైల్ సిస్టమ్‌లు</translation>
+<translation id="4258786365875464621">ఈ ఫైళ్లను తెరవడానికి <ph name="APP_ORIGIN" /> అనుమతి కోరుతోంది:</translation>
 <translation id="4259388776256904261">దీనికి కొంత సమయం పట్టవచ్చు</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> ప్రమాదకరమైనది కావచ్చు. స్కాన్ చేయడానికి Google అధునాతన రక్షణకు పంపాలా? డౌన్‌లోడ్‌ల బార్ ప్రాంతంలోకి వెళ్లడం కోసం 'Shift+F6' నొక్కండి.</translation>
 <translation id="4261429981378979799">ఎక్స్‌టెన్షన్ అనుమతులు</translation>
@@ -3789,7 +3789,6 @@
 <translation id="475088594373173692">మొదటి వినియోగదారు</translation>
 <translation id="4756378406049221019">ఆపండి/మళ్లీ లోడ్ చేయండి</translation>
 <translation id="4756388243121344051">&amp;చరిత్ర</translation>
-<translation id="4759202969060787081">తెరవవద్దు</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4761104368405085019">మీ మైక్రోఫోన్‌ను ఉపయోగించండి</translation>
 <translation id="4762718786438001384">పరికరంలో డిస్క్ స్థలం చాలా తక్కువగా ఉంది</translation>
@@ -4872,7 +4871,6 @@
 <translation id="5889282057229379085">ఇంటర్మీడియట్ CAల అత్యధిక సంఖ్య: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">ప్రాధాన్య Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
-<translation id="5896436821193322561">అనుమతించవద్దు</translation>
 <translation id="5900302528761731119">Google ప్రొఫైల్ ఫోటో</translation>
 <translation id="590036993063074298">మిర్రరింగ్ క్వాలిటీ వివరాలు</translation>
 <translation id="5901069264981746702">మీ వేలిముద్ర డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />లోనే ఉంటుంది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
@@ -5487,6 +5485,7 @@
 <translation id="6498249116389603658">&amp;మీ అన్ని భాషలు</translation>
 <translation id="6499143127267478107">ప్రాక్సీ స్క్రిప్ట్‌లో హోస్ట్‌ను పరిష్కరిస్తోంది...</translation>
 <translation id="6499764981457476645">సమీపంలో పరికరాలు ఏవీ కనుగొనబడలేదు</translation>
+<translation id="6501086852992132091">ఈ ఫైల్‌ను తెరవడానికి <ph name="APP_ORIGIN" /> అనుమతి కోరుతోంది:</translation>
 <translation id="65017764184991091">Linux యాప్‌లు, ఫైల్స్‌ను బ్యాకప్ చేయడం విఫలమైంది. మీ పరికరంలో ఖాళీగా ఉన్న స్టోరేజ్ స్పేస్ తగినంత లేనందున ఇలా జరిగి ఉండవచ్చు. మీ పరికరంలో కొంత స్పేస్‌ను ఖాళీ చేయడానికి ట్రై చేయండి లేదా బ్యాకప్ చేయడానికి వేరే లొకేషన్‌ను ఎంచుకోండి.</translation>
 <translation id="6501957628055559556">అన్ని కంటైనర్లు</translation>
 <translation id="650266656685499220">ఆల్బమ్‌లను క్రియేట్ చేయడానికి, 'Google ఫోటోలు'కు వెళ్లండి</translation>
@@ -6478,7 +6477,6 @@
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{మరో 1}other{మరో {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">ప్లేస్‌హోల్డర్</translation>
 <translation id="7527758104894292229">మీ Google ఖాతా <ph name="ACCOUNT" />లో దానిని అప్‌డేట్ చేయండి</translation>
-<translation id="7528224636098571080">తెరవవద్దు</translation>
 <translation id="7529411698175791732">మీ ఇంటర్నెట్ కనెక్షన్‌ను తనిఖీ చేయండి. సమస్య కొనసాగితే, సైన్ అవుట్ చేసి, మళ్లీ సైన్ ఇన్ చేయడాన్ని ప్రయత్నించండి.</translation>
 <translation id="7529876053219658589">{0,plural, =1{గెస్ట్ విండోను మూసివేయండి}other{గెస్ట్ విండోను మూసివేయండి}}</translation>
 <translation id="7530016656428373557">వాట్‌లలో తరుగుదల రేట్</translation>
@@ -6504,6 +6502,8 @@
 <translation id="7552846755917812628">కింది చిట్కాలను ప్రయత్నించండి:</translation>
 <translation id="7553012839257224005">Linux కంటెయినర్‌ను తనిఖీ చేస్తోంది</translation>
 <translation id="7553242001898162573">మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
+<translation id="7553347517399115470">ఈ యాప్‌లో ఈ ఫైల్ ఫార్మాట్‌లను తెరిచేటప్పుడు మళ్లీ అనుమతి అడగవద్దు:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">మీ అడ్మినిస్ట్రేటర్ ఈ భాషను అనుమతించరు</translation>
 <translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
 <translation id="7556033326131260574">Smart Lock మీ ఖాతాను ధృవీకరించలేకపోయింది. ప్రవేశించడానికి మీ పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>

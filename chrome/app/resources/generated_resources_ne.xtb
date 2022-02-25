@@ -280,6 +280,7 @@
 <translation id="1276994519141842946"><ph name="APP_NAME" /> अनइन्स्टल गर्न सकिएन</translation>
 <translation id="1277020343994096713">तपाईंले हाल प्रयोग गरिराख्नुभएको भन्दा फरक PIN सिर्जना गर्नुहोस्</translation>
 <translation id="1278859221870828664">Google Play का एप तथा सेवाहरूको समीक्षा गर्नुहोस्</translation>
+<translation id="1279024913354609713">अनुमति नदिनुहोस्</translation>
 <translation id="127946606521051357">नजिकैको यन्त्रले डेटा सेयर गर्ने प्रयास गर्दै छ।</translation>
 <translation id="1280965841156951489">फाइलहरू सम्पादन गर्नुहोस्</translation>
 <translation id="1282465000333679776">सिस्टममा बजिरहेको अडियो प्ले गर्नुहोस्</translation>
@@ -1179,6 +1180,8 @@
 <translation id="2154502158735983655">Chrome OS चल्ने डिभाइससम्बन्धी जानकारी र डिभाइसमा भएको डेटा रिड गर्ने।</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जस्तो देखिन्छ</translation>
 <translation id="2156294658807918600">सेवातर्फका कर्मचारी: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">यस एपमा यो फर्म्याटको फाइल खोल्दा फेरि अनुमति नमागियोस्:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">फेरि सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="2157474325782140681">अतिरिक्त सुविधाहरू प्राप्त गर्न यो Chromebook का लागि उपयुक्त हुने गरी डिजाइन गरिएको Dell डकिङ स्टेसन प्रयोग गर्नुहोस्।</translation>
 <translation id="215753907730220065">पूरा स्क्रिन मोडबाट निस्कनुहोस्</translation>
@@ -2314,7 +2317,6 @@
 <translation id="33022249435934718">GDI ह्यान्डलहरू</translation>
 <translation id="3302388252085547855">कारण हाल्नुहोस्...</translation>
 <translation id="3303260552072730022">एक विस्तारले पूर्ण स्क्रिनलाई ट्रिगर गर्‍यो।</translation>
-<translation id="3303795387212510132">एपलाई <ph name="PROTOCOL_SCHEME" /> लिंकहरू खोल्ने अनुमति दिनुहोस्?</translation>
 <translation id="3303818374450886607">प्रतिहरू</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> छुट</translation>
@@ -3068,7 +3070,6 @@
 <translation id="4033963223187371752">सुरक्षित साइटहरूले असुरक्षित खालका फोटो वा वेब फ्रेम जस्ता सामग्री इम्बेड गर्न सक्छन्</translation>
 <translation id="4034824040120875894">प्रिन्टर</translation>
 <translation id="4035758313003622889">&amp;कार्य व्यवस्थापक</translation>
-<translation id="4035877632587724847">अनुमति नदिनुहोस्</translation>
 <translation id="4036778507053569103">सर्भरबाट डाउनलोड गरिएको नीति अमान्य छ।</translation>
 <translation id="4037084878352560732">घोडा</translation>
 <translation id="403725336528835653">चलाई हेर्नुहोस्</translation>
@@ -3191,6 +3192,7 @@
 <translation id="4167686856635546851">साइटहरूले भिडियो गेम वा वेब फारम जस्ता अन्तर्क्रियात्मक सुविधाहरू देखाउन सामान्यतया JavaScript प्रयोग गर्छन्</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
 <translation id="4168651806173792090">अन्तिमका अङ्क <ph name="LAST_FOUR_DIGITS" /> भएको <ph name="NETWORK_NAME" /></translation>
+<translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
 <translation id="4170314459383239649">बाहिर निस्कँदा मेट्नुहोस्‌</translation>
 <translation id="417096670996204801">कुनै प्रोफाइल छनौट गर्नुहोस्</translation>
 <translation id="4175137578744761569">हल्का बैजनी र सेतो</translation>
@@ -3260,6 +3262,7 @@
 <translation id="425573743389990240">वाटमा ब्याट्री डिस्चार्ज दर (नकारात्मक मानको मतलब ब्याट्री चारज्भइरहेको छ भन्ने हो)</translation>
 <translation id="4256316378292851214">भिडियोलाई यसको रूपमा ब&amp;चत गर्नुहोस्..</translation>
 <translation id="4258348331913189841">फाइल सिस्टमहरू</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> ले यी फाइलहरू खोल्ने अनुमति माग्दै छ:</translation>
 <translation id="4259388776256904261">यो कार्य गर्न केही बेर लाग्न सक्छ</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google को सुरक्षासम्बन्धी उन्नत सुविधामा पठाउने हो? डाउनलोड बारमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4261429981378979799">एक्स्टेन्सनसम्बन्धी अनुमति</translation>
@@ -5395,6 +5398,7 @@
 <translation id="6498249116389603658">&amp;तपाईँका सबै भाषाहरू</translation>
 <translation id="6499143127267478107">प्रोक्सी स्क्रिप्टमा होस्ट विघटन गर्दै...</translation>
 <translation id="6499764981457476645">वरपर कुनै पनि डिभाइस भेटिएन</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ले यो फाइल खोल्ने अनुमति माग्दै छ:</translation>
 <translation id="65017764184991091">Linux एप तथा फाइलहरू ब्याकअप गर्ने कार्य पूरा गर्न सकिएन। तपाईंको डिभाइसको भण्डारणमा पर्याप्त खाली ठाउँ नभएकाले यसो भएको हुन सक्छ। आफ्नो डिभाइसको भण्डारणको केही ठाउँ खाली गरी हेर्नुहोस् वा ब्याकअप गर्ने अर्को लोकेसन रोजी हेर्नुहोस्।</translation>
 <translation id="6501957628055559556">सबै कन्टेनरहरू</translation>
 <translation id="650266656685499220">एल्बम सिर्जना गर्न Google Photos मा जानुहोस्</translation>
@@ -6405,6 +6409,8 @@
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7553012839257224005">Linux कन्टेनर जाँच गरिँदै छ</translation>
 <translation id="7553242001898162573">तपाईँको पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
+<translation id="7553347517399115470">यस एपमा यी फर्म्याटका फाइल खोल्दा फेरि अनुमति नमागियोस्:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">तपाईंका एड्मिनले तोक्नुभएको नीतिअनुसार यो भाषा प्रयोग गर्न मिल्दैन</translation>
 <translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7556033326131260574">Smart Lock ले तपाईँको खाता प्रमाणीकरण गर्न सकेन। प्रविष्ट गर्न आफ्नो पासवर्ड टाइप गर्नुहोस्।</translation>
