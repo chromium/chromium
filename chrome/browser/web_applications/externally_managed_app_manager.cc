@@ -68,11 +68,13 @@ void ExternallyManagedAppManager::SetSubsystems(
     WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
-    WebAppInstallManager* install_manager) {
+    WebAppInstallManager* install_manager,
+    WebAppSyncBridge* sync_bridge) {
   registrar_ = registrar;
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   install_manager_ = install_manager;
+  sync_bridge_ = sync_bridge;
 }
 
 void ExternallyManagedAppManager::SynchronizeInstalledApps(
@@ -90,8 +92,18 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   DCHECK(!base::Contains(synchronize_requests_, install_source));
 
   std::vector<GURL> installed_urls;
-  for (auto apps_it : registrar_->GetExternallyInstalledApps(install_source))
-    installed_urls.push_back(apps_it.second);
+  for (auto apps_it : registrar_->GetExternallyInstalledApps(install_source)) {
+    // TODO: Remove this check once we cleanup ExternallyInstalledWebAppPrefs on
+    // external app uninstall.
+    // https://crbug.com/1300382
+    bool has_same_external_source =
+        registrar_->GetAppById(apps_it.first)
+            ->GetSources()
+            .test(InferSourceFromMetricsInstallSource(
+                ConvertExternalInstallSourceToInstallSource(install_source)));
+    if (has_same_external_source)
+      installed_urls.push_back(apps_it.second);
+  }
 
   std::sort(installed_urls.begin(), installed_urls.end());
 

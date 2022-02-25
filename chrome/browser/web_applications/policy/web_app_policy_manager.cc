@@ -354,6 +354,9 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
   ExternalInstallOptions install_options{
       install_gurl, user_display_mode, ExternalInstallSource::kExternalPolicy};
 
+  // TODO(dmurph): Store expected os integration state in the database so
+  // this doesn't re-apply when we already have it done.
+  // https://crbug.com/1295044
   install_options.add_to_applications_menu = true;
   install_options.add_to_desktop =
       create_desktop_shortcut ? create_desktop_shortcut->GetBool() : false;

@@ -209,7 +209,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     fake_externally_managed_app_manager_ =
         std::make_unique<web_app::FakeExternallyManagedAppManager>(&profile_);
     fake_externally_managed_app_manager_->SetSubsystems(
-        &controller().registrar(), nullptr, nullptr, nullptr);
+        &controller().registrar(), nullptr, nullptr, nullptr, nullptr);
     fake_externally_managed_app_manager_->SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const web_app::ExternalInstallOptions& install_options) {

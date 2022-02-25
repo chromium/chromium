@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -424,7 +425,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     externally_managed_app_manager_impl().SetSubsystems(
-        &registrar(), &ui_manager(), &install_finalizer(), &install_manager());
+        &registrar(), &ui_manager(), &install_finalizer(), &install_manager(),
+        &sync_bridge());
 
     controller().Init();
   }
@@ -535,6 +537,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
   }
 
   WebAppRegistrar& registrar() { return controller().registrar(); }
+
+  WebAppSyncBridge& sync_bridge() { return controller().sync_bridge(); }
 
   FakeWebAppRegistryController& controller() {
     return *fake_registry_controller_;

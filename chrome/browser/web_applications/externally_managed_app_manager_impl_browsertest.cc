@@ -533,4 +533,56 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       .AwaitNextRegistration(url, RegistrationResultCode::kTimeout);
 }
 
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+                       ReinstallPolicyAppWithLocallyInstalledApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+
+  // Install user app
+  auto web_application_info = std::make_unique<WebAppInstallInfo>();
+  web_application_info->start_url = url;
+  web_application_info->title = u"Test user app";
+  AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_application_info));
+  ASSERT_TRUE(registrar().WasInstalledByUser(app_id));
+  ASSERT_FALSE(registrar().HasExternalApp(app_id));
+
+  // Install policy app
+  ExternalInstallOptions install_options(
+      url, DisplayMode::kStandalone, ExternalInstallSource::kExternalPolicy);
+  InstallApp(install_options);
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> policy_app_id =
+      ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
+  ASSERT_TRUE(policy_app_id.has_value());
+  ASSERT_EQ(policy_app_id.value(), app_id);
+  ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+
+  // Uninstall policy app
+  std::vector<ExternalInstallOptions> desired_apps_install_options;
+  base::RunLoop run_loop;
+  externally_managed_app_manager().SynchronizeInstalledApps(
+      std::move(desired_apps_install_options),
+      ExternalInstallSource::kExternalPolicy,
+      base::BindLambdaForTesting(
+          [&run_loop, &url](
+              std::map<GURL, ExternallyManagedAppManager::InstallResult>
+                  install_results,
+              std::map<GURL, bool> uninstall_results) {
+            EXPECT_TRUE(install_results.empty());
+            EXPECT_EQ(uninstall_results.size(), 1U);
+            EXPECT_EQ(uninstall_results[url], true);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  ASSERT_FALSE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+
+  // Reinstall policy app
+  InstallApp(install_options);
+  ASSERT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            result_code_.value());
+  ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+}
+
 }  // namespace web_app

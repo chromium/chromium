@@ -15,10 +15,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -193,7 +196,16 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
         return;
       }
 
-      // Otherwise no need to do anything.
+      // Otherwise add install source before returning the result.
+      // TODO: Investigate re-install of the app instead at all times.
+      // https://crbug.com/1300321
+      {
+        ScopedRegistryUpdate update(sync_bridge());
+        WebApp* app_to_update = update->UpdateApp(app_id.value());
+        app_to_update->AddSource(InferSourceFromMetricsInstallSource(
+            ConvertExternalInstallSourceToInstallSource(
+                install_options.install_source)));
+      }
       std::move(front->callback)
           .Run(install_options.install_url,
                ExternallyManagedAppManager::InstallResult(
