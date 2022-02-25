@@ -21,6 +21,8 @@
 
 using views::BubbleBorder;
 
+namespace autofill {
+
 namespace {
 
 // The minimum number of pixels the popup should be distanced from the edge of
@@ -508,3 +510,5 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
 
   return arrow;
 }
+
+}  // namespace autofill

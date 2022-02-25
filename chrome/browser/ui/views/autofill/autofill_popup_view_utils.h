@@ -13,6 +13,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace autofill {
+
 // Sets the |x| and |width| components of |popup_bounds| as the x-coordinate
 // of the starting point and the width of the popup, taking into account the
 // direction it's supposed to grow (either to the left or to the right).
@@ -137,5 +139,7 @@ bool BoundsOverlapWithOpenPermissionsPrompt(const gfx::Rect& screen_bounds,
 // autofill popup is at least attached to the extension popup (or overlaps the
 // extension popup) and stays within the bounds of the browser window.
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents);
+
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_VIEW_UTILS_H_

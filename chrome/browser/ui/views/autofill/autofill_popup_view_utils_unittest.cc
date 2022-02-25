@@ -7,6 +7,8 @@
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+
 TEST(AutofillPopupViewUtilsTest, CalculatePopupBounds) {
   // Define the prompt sizes.
   const int desired_prompt_width = 40;
@@ -334,3 +336,5 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalPopupPlacement) {
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }
 }
+
+}  // namespace autofill
