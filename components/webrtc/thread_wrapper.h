@@ -23,7 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace webrtc {
 
@@ -53,13 +52,11 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Create ThreadWrapper for the current thread if it hasn't been created
   // yet. The thread wrapper is destroyed automatically when the current
   // MessageLoop is destroyed.
-  static void EnsureForCurrentMessageLoop(
-      scoped_refptr<blink::MetronomeSource> metronome_source = nullptr);
+  static void EnsureForCurrentMessageLoop();
 
   // Creates ThreadWrapper for |task_runner| that runs tasks on the
   // current thread.
   static std::unique_ptr<ThreadWrapper> WrapTaskRunner(
-      scoped_refptr<blink::MetronomeSource> metronome_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Returns thread wrapper for the current thread or nullptr if it doesn't
@@ -141,8 +138,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   struct PendingSend;
   class PostTaskLatencySampler;
 
-  ThreadWrapper(scoped_refptr<blink::MetronomeSource> metronome_source,
-                scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit ThreadWrapper(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void PostTaskInternal(const rtc::Location& posted_from,
                         int delay_ms,
@@ -172,15 +169,12 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // |task_start_timestamp|.
   void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
 
-  // TODO(https://crbug.com/1296138): When MetronomeSource is simplified,
-  // snapping to metronome ticks will be a static function, and we can remove
-  // this object reference.
-  const scoped_refptr<blink::MetronomeSource> metronome_source_;
   // Task runner used to execute messages posted on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool send_allowed_;
 
+  const bool use_metronome_;
   // |lock_| must be locked when accessing |messages_|.
   base::Lock lock_;
   int last_task_id_;
@@ -190,9 +184,9 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   std::unique_ptr<PostTaskLatencySampler> latency_sampler_;
   SampledDurationCallback task_latency_callback_;
   SampledDurationCallback task_duration_callback_;
-  // If |metronome_source_| is used, low precision tasks are coalesced onto
-  // metronome ticks and stored in |coalesced_tasks_| until they are ready to
-  // run.
+  // If |kThreadWrapperUsesMetronome| is enabled, low precision tasks are
+  // coalesced onto metronome ticks and stored in |coalesced_tasks_| until they
+  // are ready to run.
   blink::CoalescedTasks coalesced_tasks_;
 
   base::WeakPtr<ThreadWrapper> weak_ptr_;

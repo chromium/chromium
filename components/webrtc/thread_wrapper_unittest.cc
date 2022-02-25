@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -317,20 +318,23 @@ TEST_F(ThreadWrapperTest, Dispose) {
 // Provider needed for the MetronomeLikeTaskQueueTest suite.
 class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
  public:
-  static constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
-
   void Initialize() override {
-    scoped_refptr<blink::MetronomeSource> metronome_source =
-        base::MakeRefCounted<blink::MetronomeSource>(base::TimeTicks::Now(),
-                                                     kMetronomeTick);
-    ThreadWrapper::EnsureForCurrentMessageLoop(std::move(metronome_source));
+    scoped_feature_list_.InitAndEnableFeature(kThreadWrapperUsesMetronome);
+    ThreadWrapper::EnsureForCurrentMessageLoop();
     thread_ = rtc::Thread::Current();
   }
 
-  base::TimeDelta MetronomeTick() const override { return kMetronomeTick; }
+  base::TimeDelta DeltaToNextTick() const override {
+    base::TimeTicks now = base::TimeTicks::Now();
+    return blink::MetronomeSource::TimeSnappedToNextTick(now) - now;
+  }
+  base::TimeDelta MetronomeTick() const override {
+    return blink::MetronomeSource::Tick();
+  }
   webrtc::TaskQueueBase* TaskQueue() const override { return thread_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // ThreadWrapper destroys itself when |message_loop_| is destroyed.
   raw_ptr<rtc::Thread> thread_;
 };

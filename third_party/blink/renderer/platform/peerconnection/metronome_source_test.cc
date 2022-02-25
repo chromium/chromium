@@ -21,17 +21,16 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
-
 class MetronomeSourceTest : public ::testing::Test {
  public:
   MetronomeSourceTest()
       : task_environment_(
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        metronome_source_(
-            base::MakeRefCounted<MetronomeSource>(base::TimeTicks::Now(),
-                                                  kMetronomeTick)) {}
+        metronome_source_(base::MakeRefCounted<MetronomeSource>()) {
+    task_environment_.FastForwardBy(
+        metronome_source_->EnsureNextTickAndGetDelayForTesting());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -147,7 +146,7 @@ TEST_F(MetronomeSourceTest, ListenerCalledOnItsTaskQueue) {
               },
               task_runner, base::Unretained(&was_called)));
 
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_TRUE(was_called);
 
   // Cleanup.
@@ -166,22 +165,23 @@ TEST_F(MetronomeSourceTest, ListenerCalledOnEachTick) {
                               base::Unretained(&callback_count)));
 
   // Fast-forward slightly less than a tick should not increment the counter.
-  task_environment_.FastForwardBy(kMetronomeTick - base::Milliseconds(1));
+  task_environment_.FastForwardBy(MetronomeSource::Tick() -
+                                  base::Milliseconds(1));
   EXPECT_EQ(callback_count, 0);
   // Fast-forward to the first tick.
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(callback_count, 1);
   // Fast-forward some more ticks.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 2);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 3);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 4);
 
   // Remove the listener and the counter should stop incrementing.
   metronome_source_->RemoveListener(listener_handle);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 4);
 }
 
@@ -198,7 +198,7 @@ TEST_F(MetronomeSourceTest, RemovedListenerStopsFiring) {
 
   metronome_source_->RemoveListener(listener_handle);
   // The listener should be removed and not increment the counter.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 0);
 }
 
@@ -234,7 +234,8 @@ TEST_F(MetronomeSourceTest, ListenerWithInitialDelay) {
       base::ThreadPool::CreateSequencedTaskRunner({});
 
   // Set wakeup time to two ticks from now.
-  base::TimeTicks wakeup_time = base::TimeTicks::Now() + kMetronomeTick * 2;
+  base::TimeTicks wakeup_time =
+      base::TimeTicks::Now() + MetronomeSource::Tick() * 2;
 
   bool was_called = false;
   scoped_refptr<MetronomeSource::ListenerHandle> listener_handle =
@@ -246,10 +247,10 @@ TEST_F(MetronomeSourceTest, ListenerWithInitialDelay) {
 
   EXPECT_FALSE(was_called);
   // One trick is not sufficient for callback to be invoked.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_FALSE(was_called);
   // On the second tick, the callback should be invoked.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_TRUE(was_called);
 
   // Cleanup.
@@ -270,42 +271,44 @@ TEST_F(MetronomeSourceTest, SetWakeupTime) {
   EXPECT_EQ(callback_count, 0);
 
   // Wakeup next tick.
-  listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  listener_handle->SetWakeupTime(base::TimeTicks::Now() +
+                                 MetronomeSource::Tick());
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 1);
 
   // Not setting another wakeup results in being idle.
-  task_environment_.FastForwardBy(kMetronomeTick * 10);
+  task_environment_.FastForwardBy(MetronomeSource::Tick() * 10);
   EXPECT_EQ(callback_count, 1);
 
   // Wakeup 3 ticks from now.
-  listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick * 3);
-  task_environment_.FastForwardBy(kMetronomeTick * 2);
+  listener_handle->SetWakeupTime(base::TimeTicks::Now() +
+                                 MetronomeSource::Tick() * 3);
+  task_environment_.FastForwardBy(MetronomeSource::Tick() * 2);
   EXPECT_EQ(callback_count, 1);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 2);
 
   // Wakeup slightly less than a tick from now.
-  listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick -
-                                 base::Milliseconds(1));
-  task_environment_.FastForwardBy(kMetronomeTick);
+  listener_handle->SetWakeupTime(
+      base::TimeTicks::Now() + MetronomeSource::Tick() - base::Milliseconds(1));
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 3);
 
   // Wakeup slightly more than a tick from now.
-  listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick +
-                                 base::Milliseconds(1));
-  task_environment_.FastForwardBy(kMetronomeTick);
+  listener_handle->SetWakeupTime(
+      base::TimeTicks::Now() + MetronomeSource::Tick() + base::Milliseconds(1));
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 3);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 4);
 
   // Wakeup every tick (stop being temporarily idle).
   listener_handle->SetWakeupTime(base::TimeTicks::Min());
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 5);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 6);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(callback_count, 7);
 
   // Cleanup.
@@ -313,7 +316,7 @@ TEST_F(MetronomeSourceTest, SetWakeupTime) {
 }
 
 TEST_F(MetronomeSourceTest, WebRtcMetronomeAdapterTickPeriod) {
-  EXPECT_EQ(kMetronomeTick.InMicroseconds(),
+  EXPECT_EQ(MetronomeSource::Tick().InMicroseconds(),
             metronome_source_->CreateWebRtcMetronome()->TickPeriod().us());
 }
 
@@ -331,16 +334,16 @@ TEST_F(MetronomeSourceTest, WebRtcMetronomeAdapterAddsHandler) {
   EXPECT_TRUE(metronome_source_->HasListenersForTesting());
 
   // Next tick should trigger callback.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(1, callback_count);
 
   // Each tick should trigger callback.
-  task_environment_.FastForwardBy(kMetronomeTick * 10);
+  task_environment_.FastForwardBy(MetronomeSource::Tick() * 10);
   EXPECT_EQ(11, callback_count);
 
   // Removing should not fire callback.
   metronome_adapter->RemoveListener(&tick_listener);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(11, callback_count);
 
   // Removing should inactivate metronome source.
@@ -359,7 +362,7 @@ TEST_F(MetronomeSourceTest,
   auto metronome_adapter = metronome_source_->CreateWebRtcMetronome();
 
   metronome_adapter->AddListener(&tick_listener);
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(0, callback_count);
   // Now task should have been posted to fake queue. Running it should increase
   // the callback count.
@@ -371,7 +374,7 @@ TEST_F(MetronomeSourceTest,
   // `RemoveListener` has been called. This occurs when `RemoveListener` is
   // called after the metronome has ticked but before the task has been run on
   // the queue.
-  task_environment_.FastForwardBy(kMetronomeTick);
+  task_environment_.FastForwardBy(MetronomeSource::Tick());
   EXPECT_EQ(1, callback_count);
 
   metronome_adapter->RemoveListener(&tick_listener);
@@ -380,80 +383,61 @@ TEST_F(MetronomeSourceTest,
   EXPECT_EQ(1, callback_count);
 }
 
-TEST(MetronomeSourcePhaseTest, MetronomesAlignByTheirPhase) {
+TEST(MetronomeSourcePhaseTest, MultipleMetronomesAreAligned) {
   base::test::TaskEnvironment task_environment(
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({});
 
-  // Set up three metronomes with alignning ticks and one that is misaligned.
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeTicks phase_a = now - kMetronomeTick;
-  base::TimeTicks phase_b = now;
-  base::TimeTicks phase_c = now + kMetronomeTick;
-  base::TimeTicks phase_d = now - kMetronomeTick + base::Milliseconds(10);
-  scoped_refptr<MetronomeSource> metronome_a(
-      base::MakeRefCounted<MetronomeSource>(phase_a, kMetronomeTick));
-  scoped_refptr<MetronomeSource> metronome_b(
-      base::MakeRefCounted<MetronomeSource>(phase_b, kMetronomeTick));
-  scoped_refptr<MetronomeSource> metronome_c(
-      base::MakeRefCounted<MetronomeSource>(phase_c, kMetronomeTick));
-  scoped_refptr<MetronomeSource> metronome_d(
-      base::MakeRefCounted<MetronomeSource>(phase_d, kMetronomeTick));
+  // Create and align with first metronome.
+  scoped_refptr<MetronomeSource> metronome_a =
+      base::MakeRefCounted<MetronomeSource>();
+  task_environment.FastForwardBy(
+      metronome_a->EnsureNextTickAndGetDelayForTesting());
 
-  // Listen to each metronome.
-  bool listener_a_was_called = false;
-  scoped_refptr<MetronomeSource::ListenerHandle> listener_a =
-      metronome_a->AddListener(task_runner,
-                               base::BindRepeating(
-                                   [](bool* listener_a_was_called) {
-                                     *listener_a_was_called = true;
-                                   },
-                                   base::Unretained(&listener_a_was_called)));
-  bool listener_b_was_called = false;
-  scoped_refptr<MetronomeSource::ListenerHandle> listener_b =
-      metronome_b->AddListener(task_runner,
-                               base::BindRepeating(
-                                   [](bool* listener_b_was_called) {
-                                     *listener_b_was_called = true;
-                                   },
-                                   base::Unretained(&listener_b_was_called)));
-  bool listener_c_was_called = false;
-  scoped_refptr<MetronomeSource::ListenerHandle> listener_c =
-      metronome_c->AddListener(task_runner,
-                               base::BindRepeating(
-                                   [](bool* listener_c_was_called) {
-                                     *listener_c_was_called = true;
-                                   },
-                                   base::Unretained(&listener_c_was_called)));
-  bool listener_d_was_called = false;
-  scoped_refptr<MetronomeSource::ListenerHandle> listener_d =
-      metronome_d->AddListener(task_runner,
-                               base::BindRepeating(
-                                   [](bool* listener_d_was_called) {
-                                     *listener_d_was_called = true;
-                                   },
-                                   base::Unretained(&listener_d_was_called)));
+  // Advance so that we are not aligned with tick anymore.
+  task_environment.FastForwardBy(MetronomeSource::Tick() / 2);
 
-  // Metronome "D" is off by 10 ms.
-  task_environment.FastForwardBy(base::Milliseconds(10));
-  EXPECT_FALSE(listener_a_was_called);
-  EXPECT_FALSE(listener_b_was_called);
-  EXPECT_FALSE(listener_c_was_called);
-  EXPECT_TRUE(listener_d_was_called);
-  // Metronomes "A", "B" and "C" are all aligned to fire on the first tick.
-  task_environment.FastForwardBy(kMetronomeTick - base::Milliseconds(10));
-  EXPECT_TRUE(listener_a_was_called);
-  EXPECT_TRUE(listener_b_was_called);
-  EXPECT_TRUE(listener_c_was_called);
-  EXPECT_TRUE(listener_d_was_called);
+  // Create a second metronome and ensure alignment.
+  scoped_refptr<MetronomeSource> metronome_b =
+      base::MakeRefCounted<MetronomeSource>();
+  base::TimeDelta next_tick_a =
+      metronome_a->EnsureNextTickAndGetDelayForTesting();
+  base::TimeDelta next_tick_b =
+      metronome_b->EnsureNextTickAndGetDelayForTesting();
+  EXPECT_EQ(next_tick_a, next_tick_b);
+  task_environment.FastForwardBy(next_tick_b);
+
+  // Verify both metronomes tick at the same time.
+  bool metronome_a_ticked = false;
+  scoped_refptr<MetronomeSource::ListenerHandle> handle_a =
+      metronome_a->AddListener(
+          task_runner,
+          base::BindRepeating(
+              [](bool* metronome_a_ticked) { *metronome_a_ticked = true; },
+              base::Unretained(&metronome_a_ticked)));
+  bool metronome_b_ticked = false;
+  scoped_refptr<MetronomeSource::ListenerHandle> handle_b =
+      metronome_b->AddListener(
+          task_runner,
+          base::BindRepeating(
+              [](bool* metronome_b_ticked) { *metronome_b_ticked = true; },
+              base::Unretained(&metronome_b_ticked)));
+
+  // Get close to the next tick without hitting it.
+  task_environment.FastForwardBy(MetronomeSource::Tick() -
+                                 base::Milliseconds(1));
+  EXPECT_FALSE(metronome_a_ticked);
+  EXPECT_FALSE(metronome_b_ticked);
+  // Hit the tick!
+  task_environment.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(metronome_a_ticked);
+  EXPECT_TRUE(metronome_b_ticked);
 
   // Cleanup.
-  metronome_a->RemoveListener(listener_a);
-  metronome_b->RemoveListener(listener_b);
-  metronome_c->RemoveListener(listener_c);
-  metronome_d->RemoveListener(listener_d);
+  metronome_a->RemoveListener(handle_a);
+  metronome_b->RemoveListener(handle_b);
 }
 
 }  // namespace blink

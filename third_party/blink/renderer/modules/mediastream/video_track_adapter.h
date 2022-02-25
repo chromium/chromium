@@ -42,6 +42,8 @@ class MODULES_EXPORT VideoTrackAdapter
  public:
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
+  // TODO(https://crbug.com/1296138): Remove |metronome_provider|, it is not
+  // used anymore.
   VideoTrackAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<MetronomeProvider> metronome_provider,

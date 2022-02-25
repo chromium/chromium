@@ -25,6 +25,8 @@
 
 namespace blink {
 
+constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
+
 namespace {
 
 // Wraps a webrtc::Metronome::TickListener to ensure that OnTick is not called
@@ -111,8 +113,7 @@ class WebRtcMetronomeAdapter : public webrtc::Metronome {
 
   // Returns the current tick period of the metronome.
   webrtc::TimeDelta TickPeriod() const override {
-    return webrtc::TimeDelta::Micros(
-        metronome_source_->metronome_tick().InMicroseconds());
+    return webrtc::TimeDelta::Micros(MetronomeSource::Tick().InMicroseconds());
   }
 
  private:
@@ -207,28 +208,36 @@ void MetronomeSource::ListenerHandle::Inactivate() {
   is_active_ = false;
 }
 
-MetronomeSource::MetronomeSource(base::TimeTicks metronome_phase,
-                                 base::TimeDelta metronome_tick)
+// static
+base::TimeTicks MetronomeSource::Phase() {
+  return base::TimeTicks();
+}
+
+// static
+base::TimeDelta MetronomeSource::Tick() {
+  return kMetronomeTick;
+}
+
+// static
+base::TimeTicks MetronomeSource::TimeSnappedToNextTick(base::TimeTicks time) {
+  return time.SnappedToNextTick(MetronomeSource::Phase(),
+                                MetronomeSource::Tick());
+}
+
+MetronomeSource::MetronomeSource()
     : metronome_task_runner_(
           // HIGHEST priority is used to reduce risk of jitter.
           base::ThreadPool::CreateSequencedTaskRunner(
-              {base::TaskPriority::HIGHEST})),
-      metronome_phase_(std::move(metronome_phase)),
-      metronome_tick_(std::move(metronome_tick)) {
+              {base::TaskPriority::HIGHEST})) {
   base::TimeTicks now = base::TimeTicks::Now();
-  prev_tick_ = GetTimeSnappedToNextMetronomeTick(now);
+  prev_tick_ = MetronomeSource::TimeSnappedToNextTick(now);
   if (prev_tick_ > now)
-    prev_tick_ -= metronome_tick_;
+    prev_tick_ -= MetronomeSource::Tick();
 }
 
 MetronomeSource::~MetronomeSource() {
   DCHECK(listeners_.empty());
   DCHECK(!next_tick_handle_.IsValid());
-}
-
-base::TimeTicks MetronomeSource::GetTimeSnappedToNextMetronomeTick(
-    base::TimeTicks time) const {
-  return time.SnappedToNextTick(metronome_phase_, metronome_tick_);
 }
 
 scoped_refptr<MetronomeSource::ListenerHandle> MetronomeSource::AddListener(
@@ -282,9 +291,10 @@ void MetronomeSource::EnsureNextTickIsScheduled(base::TimeTicks wakeup_time) {
   if (wakeup_time <= prev_tick_) {
     // Do not reschedule a tick that already fired, such as when adding a
     // listener on a tick.
-    wakeup_time = prev_tick_ + metronome_tick_;
+    wakeup_time = prev_tick_ + MetronomeSource::Tick();
   }
-  base::TimeTicks wakeup_tick = GetTimeSnappedToNextMetronomeTick(wakeup_time);
+  base::TimeTicks wakeup_tick =
+      MetronomeSource::TimeSnappedToNextTick(wakeup_time);
   if (!next_tick_.is_min() && wakeup_tick >= next_tick_) {
     //  We already have the next tick scheduled.
     return;
@@ -326,12 +336,24 @@ void MetronomeSource::OnMetronomeTick(base::TimeTicks now_tick) {
     // immediate "catch-up" tasks, make it possible to skip metronome ticks.
     constexpr double kTickThreshold = 0.5;
     EnsureNextTickIsScheduled(base::TimeTicks::Now() +
-                              metronome_tick_ * kTickThreshold);
+                              MetronomeSource::Tick() * kTickThreshold);
   }
 }
 
 std::unique_ptr<webrtc::Metronome> MetronomeSource::CreateWebRtcMetronome() {
   return std::make_unique<WebRtcMetronomeAdapter>(base::WrapRefCounted(this));
+}
+
+base::TimeDelta MetronomeSource::EnsureNextTickAndGetDelayForTesting() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks next_tick = MetronomeSource::TimeSnappedToNextTick(now);
+  // Ensure next tick is scheduled, even if there are no listeners. This makes
+  // it so that when mock time is advanced to |next_tick|, |prev_tick_| will be
+  // updated. This avoids the initial tick firing "now" in testing environments.
+  metronome_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&MetronomeSource::EnsureNextTickIsScheduled,
+                                this, next_tick));
+  return next_tick - now;
 }
 
 bool MetronomeSource::HasListenersForTesting() {

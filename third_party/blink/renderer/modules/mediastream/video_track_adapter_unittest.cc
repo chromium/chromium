@@ -269,49 +269,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
             base::DoNothing(), base::DoNothing(), adapter_settings));
   }
 
-  void StartFrameMonitoring() {
-    base::WaitableEvent frame_monitoring_started;
-    testing_render_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<VideoTrackAdapter> adapter,
-               scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-               base::WaitableEvent* frame_monitoring_started) {
-              adapter->StartFrameMonitoring(
-                  30.0, base::BindRepeating([](bool mute_state) {}));
-              // Signal the event on the IO thread because that is where frame
-              // monitoring starts internally.
-              io_task_runner->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(&base::WaitableEvent::Signal,
-                                 base::Unretained(frame_monitoring_started)));
-            },
-            adapter_, platform_support_->GetIOTaskRunner(),
-            base::Unretained(&frame_monitoring_started)));
-    frame_monitoring_started.Wait();
-  }
-
-  void StopFrameMonitoring() {
-    base::WaitableEvent frame_monitoring_stopped;
-    testing_render_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](scoped_refptr<VideoTrackAdapter> adapter,
-               scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-               base::WaitableEvent* frame_monitoring_stopped) {
-              adapter->StopFrameMonitoring();
-              // Signal the event on the IO thread because that is where frame
-              // monitoring stops internally.
-              io_task_runner->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(&base::WaitableEvent::Signal,
-                                 base::Unretained(frame_monitoring_stopped)));
-            },
-            adapter_, platform_support_->GetIOTaskRunner(),
-            base::Unretained(&frame_monitoring_stopped)));
-    frame_monitoring_stopped.Wait();
-  }
-
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
     frame_validation_callback_ = std::move(callback);
   }
@@ -365,29 +322,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   std::unique_ptr<MediaStreamVideoTrack> null_track_;
   bool track_added_ = false;
 };
-
-// Verifies that the metronome is used while frame monioring. For testing of the
-// mute detection logic that is based on this frame monitoring, see
-// MediaStreamVideoSourceTest.MutedSource instead.
-TEST_F(VideoTrackAdapterFixtureTest, MetronomeIsUsedWhileFrameMonitoring) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kWebRtcTimerUsesMetronome);
-
-  scoped_refptr<MetronomeSource> metronome_source =
-      base::MakeRefCounted<MetronomeSource>(base::TimeTicks::Now(),
-                                            base::Hertz(64));
-  metronome_provider_->OnStartUsingMetronome(metronome_source);
-
-  const media::VideoCaptureFormat stream_format(gfx::Size(1280, 960), 30.0,
-                                                media::PIXEL_FORMAT_NV12);
-  CreateAdapter(stream_format);
-
-  EXPECT_FALSE(metronome_provider_->HasListeners());
-  StartFrameMonitoring();
-  EXPECT_TRUE(metronome_provider_->HasListeners());
-  StopFrameMonitoring();
-  EXPECT_FALSE(metronome_provider_->HasListeners());
-}
 
 TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
   // Attributes for the original input frame.

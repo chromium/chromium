@@ -22,6 +22,7 @@ class RTC_EXPORT MetronomeLikeTaskQueueProvider {
   virtual ~MetronomeLikeTaskQueueProvider() = default;
 
   virtual void Initialize() = 0;
+  virtual base::TimeDelta DeltaToNextTick() const = 0;
   virtual base::TimeDelta MetronomeTick() const = 0;
   virtual webrtc::TaskQueueBase* TaskQueue() const = 0;
 };
@@ -36,7 +37,10 @@ class RTC_EXPORT MetronomeLikeTaskQueueTest
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         provider_(GetParam()()) {}
 
-  void SetUp() override { provider_->Initialize(); }
+  void SetUp() override {
+    provider_->Initialize();
+    task_environment_.FastForwardBy(provider_->DeltaToNextTick());
+  }
   void TearDown() override { provider_.reset(); }
 
  protected:

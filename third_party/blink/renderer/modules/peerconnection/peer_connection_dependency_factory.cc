@@ -90,8 +90,6 @@ namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
 
-constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
-
 enum WebRTCIPHandlingPolicy {
   kDefault,
   kDefaultPublicAndPrivateInterfaces,
@@ -158,8 +156,7 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
   }
 
-  base::WaitableEvent& InitializeWorkerThread(
-      scoped_refptr<blink::MetronomeSource> metronome_source) {
+  base::WaitableEvent& InitializeWorkerThread() {
     if (!worker_thread_) {
       PostCrossThreadTask(
           *chrome_worker_thread_.task_runner(), FROM_HERE,
@@ -170,14 +167,12 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencyWorker)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationWorker)),
-              metronome_source));
+                  PeerConnectionStaticDeps::LogTaskDurationWorker))));
     }
     return init_worker_event;
   }
 
-  base::WaitableEvent& InitializeNetworkThread(
-      scoped_refptr<blink::MetronomeSource> metronome_source) {
+  base::WaitableEvent& InitializeNetworkThread() {
     if (!network_thread_) {
       PostCrossThreadTask(
           *chrome_network_thread_.task_runner(), FROM_HERE,
@@ -188,14 +183,12 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencyNetwork)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationNetwork)),
-              metronome_source));
+                  PeerConnectionStaticDeps::LogTaskDurationNetwork))));
     }
     return init_network_event;
   }
 
-  base::WaitableEvent& InitializeSignalingThread(
-      scoped_refptr<blink::MetronomeSource> metronome_source) {
+  base::WaitableEvent& InitializeSignalingThread() {
     if (!signaling_thread_) {
       PostCrossThreadTask(
           *chrome_signaling_thread_.task_runner(), FROM_HERE,
@@ -206,8 +199,7 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencySignaling)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationSignaling)),
-              metronome_source));
+                  PeerConnectionStaticDeps::LogTaskDurationSignaling))));
     }
     return init_signaling_event;
   }
@@ -254,9 +246,8 @@ class PeerConnectionStaticDeps {
       rtc::Thread** thread,
       base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
-      base::RepeatingCallback<void(base::TimeDelta)> duration_callback,
-      scoped_refptr<blink::MetronomeSource> metronome_source) {
-    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop(metronome_source);
+      base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     webrtc::ThreadWrapper::current()->SetLatencyAndTaskDurationCallbacks(
         std::move(latency_callback), std::move(duration_callback));
@@ -477,23 +468,14 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
         ExecutionContextMetronomeProvider::From(*GetExecutionContext())
             .metronome_provider();
     DCHECK(metronome_provider_);
-    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
-        // By using a constant metronome phase (zero), MetronomeSources will be
-        // synchronized across process boundaries.
-        base::TimeTicks(), kMetronomeTick);
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>();
   }
 
-  bool threads_uses_metronome =
-      base::FeatureList::IsEnabled(webrtc::kThreadWrapperUsesMetronome);
-  DCHECK(metronome_source_);
   StaticDeps().EnsureChromeThreadsStarted();
   base::WaitableEvent& worker_thread_started_event =
-      StaticDeps().InitializeWorkerThread(
-          threads_uses_metronome ? metronome_source_ : nullptr);
-  StaticDeps().InitializeNetworkThread(
-      threads_uses_metronome ? metronome_source_ : nullptr);
-  StaticDeps().InitializeSignalingThread(
-      threads_uses_metronome ? metronome_source_ : nullptr);
+      StaticDeps().InitializeWorkerThread();
+  StaticDeps().InitializeNetworkThread();
+  StaticDeps().InitializeSignalingThread();
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   // Building /w |rtc_use_h264|, is the corresponding run-time feature enabled?

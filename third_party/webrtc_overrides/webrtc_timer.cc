@@ -15,11 +15,11 @@ const base::Feature kWebRtcTimerUsesMetronome{
 WebRtcTimer::SchedulableCallback::SchedulableCallback(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::RepeatingCallback<void()> callback,
-    scoped_refptr<MetronomeSource> metronome,
+    bool use_metronome,
     base::TimeDelta repeated_delay)
     : task_runner_(std::move(task_runner)),
       callback_(std::move(callback)),
-      metronome_(std::move(metronome)),
+      use_metronome_(use_metronome),
       repeated_delay_(std::move(repeated_delay)) {}
 
 WebRtcTimer::SchedulableCallback::~SchedulableCallback() {
@@ -33,9 +33,9 @@ void WebRtcTimer::SchedulableCallback::Schedule(
       << "The callback has already been scheduled.";
   scheduled_time_ = scheduled_time;
   base::TimeTicks target_time = scheduled_time_;
-  if (metronome_) {
+  if (use_metronome_) {
     // Snap target time to metronome tick!
-    target_time = metronome_->GetTimeSnappedToNextMetronomeTick(target_time);
+    target_time = MetronomeSource::TimeSnappedToNextTick(target_time);
   }
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
@@ -89,13 +89,13 @@ void WebRtcTimer::SchedulableCallback::MaybeRun() {
 WebRtcTimer::WebRtcTimer(scoped_refptr<MetronomeProvider> metronome_provider,
                          scoped_refptr<base::SequencedTaskRunner> task_runner,
                          base::RepeatingCallback<void()> callback)
-    : metronome_provider_(std::move(metronome_provider)),
-      callback_(std::move(callback)),
-      task_runner_(std::move(task_runner)) {
-  if (metronome_provider_) {
-    metronome_provider_->AddListener(this);
-  }
-}
+    : WebRtcTimer(std::move(task_runner), std::move(callback)) {}
+
+WebRtcTimer::WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                         base::RepeatingCallback<void()> callback)
+    : callback_(std::move(callback)),
+      use_metronome_(base::FeatureList::IsEnabled(kWebRtcTimerUsesMetronome)),
+      task_runner_(std::move(task_runner)) {}
 
 WebRtcTimer::~WebRtcTimer() {
   DCHECK(is_shutdown_);
@@ -111,9 +111,6 @@ void WebRtcTimer::Shutdown() {
   if (schedulable_callback_) {
     schedulable_callback_->Inactivate();
     schedulable_callback_ = nullptr;
-  }
-  if (metronome_provider_) {
-    metronome_provider_->RemoveListener(this);
   }
   is_shutdown_ = true;
 }
@@ -158,7 +155,7 @@ void WebRtcTimer::Stop() {
 void WebRtcTimer::ScheduleCallback(base::TimeTicks scheduled_time) {
   if (!schedulable_callback_) {
     schedulable_callback_ = base::MakeRefCounted<SchedulableCallback>(
-        task_runner_, callback_, metronome_, repeated_delay_);
+        task_runner_, callback_, use_metronome_, repeated_delay_);
   }
   schedulable_callback_->Schedule(scheduled_time);
 }
@@ -173,28 +170,6 @@ void WebRtcTimer::RescheduleCallback() {
   if (cancelled_scheduled_time == base::TimeTicks::Max())
     return;  // We don't have a scheduled time.
   ScheduleCallback(cancelled_scheduled_time);
-}
-
-void WebRtcTimer::OnStartUsingMetronome(
-    scoped_refptr<MetronomeSource> metronome) {
-  if (!base::FeatureList::IsEnabled(kWebRtcTimerUsesMetronome)) {
-    // Don't use the metronome if the experiment is disabled.
-    return;
-  }
-  LOG(INFO) << "A WebRtcTimer is using the metronome";
-  base::AutoLock auto_lock(lock_);
-  DCHECK(!metronome_);
-  DCHECK(metronome);
-  metronome_ = std::move(metronome);
-  RescheduleCallback();
-}
-
-void WebRtcTimer::OnStopUsingMetronome() {
-  base::AutoLock auto_lock(lock_);
-  if (!metronome_)
-    return;
-  metronome_ = nullptr;
-  RescheduleCallback();
 }
 
 void WebRtcTimer::MoveToNewTaskRunner(

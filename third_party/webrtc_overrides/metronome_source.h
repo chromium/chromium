@@ -76,17 +76,16 @@ class RTC_EXPORT MetronomeSource final
     base::TimeTicks wakeup_time_;
   };
 
-  MetronomeSource(base::TimeTicks metronome_phase,
-                  base::TimeDelta metronome_tick);
+  // The tick phase.
+  static base::TimeTicks Phase();
+  // The tick frequency.
+  static base::TimeDelta Tick();
+  // The next metronome tick that is at or after |time|.
+  static base::TimeTicks TimeSnappedToNextTick(base::TimeTicks time);
+
+  MetronomeSource();
   MetronomeSource(const MetronomeSource&) = delete;
   MetronomeSource& operator=(const MetronomeSource&) = delete;
-
-  // The tick phase.
-  base::TimeTicks metronome_phase() const { return metronome_phase_; }
-  // The tick frequency.
-  base::TimeDelta metronome_tick() const { return metronome_tick_; }
-  // The next metronome tick that is at or after |time|.
-  base::TimeTicks GetTimeSnappedToNextMetronomeTick(base::TimeTicks time) const;
 
   // Creates a new listener whose |callback| will be invoked on |task_runner|.
   // If |wakeup_time| is set to base::TimeTicks::Min() then the listener will be
@@ -106,6 +105,10 @@ class RTC_EXPORT MetronomeSource final
   // Creates a webrtc::Metronome which is backed by this metronome.
   std::unique_ptr<webrtc::Metronome> CreateWebRtcMetronome();
 
+  // Ensures the next tick is scheduled and get the time to advance to reach
+  // that tick. After advancing mock time by the returned time delta, the next
+  // tick is guaranteed to happen MetronomeTick::Tick() from now.
+  base::TimeDelta EnsureNextTickAndGetDelayForTesting();
   bool HasListenersForTesting();
 
  private:
@@ -133,8 +136,6 @@ class RTC_EXPORT MetronomeSource final
 
   // All non-const members are only accessed on |metronome_task_runner_|.
   const scoped_refptr<base::SequencedTaskRunner> metronome_task_runner_;
-  const base::TimeTicks metronome_phase_;
-  const base::TimeDelta metronome_tick_;
   std::set<scoped_refptr<ListenerHandle>> listeners_;
   base::DelayedTaskHandle next_tick_handle_;
   base::TimeTicks next_tick_ = base::TimeTicks::Min();

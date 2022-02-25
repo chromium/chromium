@@ -124,7 +124,7 @@ void WebRtcMetronomeTaskQueue::PostDelayedTask(
   base::TimeTicks target_time =
       base::TimeTicks::Now() + base::Milliseconds(milliseconds);
   base::TimeTicks snapped_target_time =
-      metronome_source_->GetTimeSnappedToNextMetronomeTick(target_time);
+      MetronomeSource::TimeSnappedToNextTick(target_time);
   // Queue to run the delayed task at |snapped_target_time|. If the snapped time
   // has not been scheduled before, schedule it with PostDelayedTaskAt().
   if (coalesced_tasks_.QueueDelayedTask(target_time, std::move(task),
