@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -80,7 +81,8 @@ public class CloseAllTabsDialogTest {
         navigateToCloseAllTabsDialog(selector);
         onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button)).perform(click());
 
-        assertEquals(0, selector.getModel(mIsIncognito).getCount());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { assertEquals(0, selector.getModel(mIsIncognito).getCount()); });
     }
 
     /**
@@ -96,7 +98,8 @@ public class CloseAllTabsDialogTest {
         navigateToCloseAllTabsDialog(selector);
         onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button)).perform(click());
 
-        assertEquals(1, selector.getModel(mIsIncognito).getCount());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { assertEquals(1, selector.getModel(mIsIncognito).getCount()); });
     }
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
@@ -106,11 +109,9 @@ public class CloseAllTabsDialogTest {
         assertEquals(1, selector.getModel(mIsIncognito).getCount());
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.tab_switcher_button))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-                .perform(click());
+        TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
         onViewWaiting(withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))
-                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+                .check(matches(isDisplayed()));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
         });
