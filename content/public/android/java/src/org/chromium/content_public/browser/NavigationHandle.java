@@ -46,11 +46,12 @@ public class NavigationHandle {
     private final long mNavigationId;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, GURL url, GURL referrerUrl,
-            GURL baseUrlForDataUrl, boolean isInPrimaryMainFrame, boolean isSameDocument,
-            boolean isRendererInitiated, Origin initiatorOrigin, ByteBuffer impressionData,
-            @PageTransition int transition, boolean isPost, boolean hasUserGesture,
-            boolean isRedirect, boolean isExternalProtocol, long navigationId) {
+    public NavigationHandle(long nativeNavigationHandleProxy, @NonNull GURL url,
+            @NonNull GURL referrerUrl, @NonNull GURL baseUrlForDataUrl,
+            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition,
+            boolean isPost, boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
+            long navigationId) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -111,11 +112,13 @@ public class NavigationHandle {
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
      */
+    @NonNull
     public GURL getUrl() {
         return mUrl;
     }
 
     /** The referrer URL for the navigation. */
+    @NonNull
     public GURL getReferrerUrl() {
         return mReferrerUrl;
     }
@@ -123,6 +126,7 @@ public class NavigationHandle {
     /**
      * Used for specifying a base URL for pages loaded via data URLs.
      */
+    @NonNull
     public GURL getBaseUrlForDataUrl() {
         return mBaseUrlForDataUrl;
     }
