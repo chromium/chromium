@@ -89,8 +89,7 @@ void RenderFrameHostDelegate::FullscreenStateChanged(
     blink::mojom::FullscreenOptionsPtr options) {}
 
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
-    RenderFrameHostImpl* target_rfh,
-    SiteInstance* source_site_instance) const {
+    RenderFrameHostImpl* target_rfh) const {
   return false;
 }
 

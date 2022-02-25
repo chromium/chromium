@@ -325,9 +325,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Let the delegate decide whether postMessage should be delivered to
   // |target_rfh| from a source frame in the given SiteInstance.  This defaults
   // to false and overrides the RenderFrameHost's decision if true.
-  virtual bool ShouldRouteMessageEvent(
-      RenderFrameHostImpl* target_rfh,
-      SiteInstance* source_site_instance) const;
+  virtual bool ShouldRouteMessageEvent(RenderFrameHostImpl* target_rfh) const;
 
   // Ensure that |source_rfh| has swapped-out RenderViews and
   // RenderFrameProxies for itself and for all frames on its opener chain in

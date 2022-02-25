@@ -661,9 +661,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
-  bool ShouldRouteMessageEvent(
-      RenderFrameHostImpl* target_rfh,
-      SiteInstance* source_site_instance) const override;
+  bool ShouldRouteMessageEvent(RenderFrameHostImpl* target_rfh) const override;
   void EnsureOpenerProxiesExist(RenderFrameHostImpl* source_rfh) override;
   std::unique_ptr<WebUIImpl> CreateWebUIForRenderFrameHost(
       RenderFrameHostImpl* frame_host,

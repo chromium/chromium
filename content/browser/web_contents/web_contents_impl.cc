@@ -7593,11 +7593,9 @@ void WebContentsImpl::UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
 }
 
 bool WebContentsImpl::ShouldRouteMessageEvent(
-    RenderFrameHostImpl* target_rfh,
-    SiteInstance* source_site_instance) const {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShouldRouteMessageEvent",
-                        "render_frame_host", target_rfh, "source_site_instance",
-                        source_site_instance);
+    RenderFrameHostImpl* target_rfh) const {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::ShouldRouteMessageEvent",
+                        "render_frame_host", target_rfh);
   // Allow the message if this WebContents is dedicated to a browser plugin
   // guest.
   // Note: This check means that an embedder could theoretically receive a

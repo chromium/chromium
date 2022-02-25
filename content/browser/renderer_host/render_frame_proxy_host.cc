@@ -533,8 +533,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // performed here once OOPIF support in <webview> is further along.
   SiteInstanceImpl* target_site_instance = target_rfh->GetSiteInstance();
   if (!target_site_instance->IsRelatedSiteInstance(GetSiteInstance()) &&
-      !target_rfh->delegate()->ShouldRouteMessageEvent(target_rfh,
-                                                       GetSiteInstance())) {
+      !target_rfh->delegate()->ShouldRouteMessageEvent(target_rfh)) {
     return;
   }
 
