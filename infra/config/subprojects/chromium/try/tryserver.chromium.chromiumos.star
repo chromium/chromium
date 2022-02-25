@@ -176,6 +176,9 @@ try_.builder(
 
 try_.builder(
     name = "linux-chromeos-dbg",
+    # The CI builder that this mirrors is enabled on branches, so this will
+    # allow testing changes that would break it before submitting
+    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 try_.builder(
