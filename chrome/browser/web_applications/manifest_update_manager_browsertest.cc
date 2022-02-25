@@ -990,9 +990,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Load a page which contains the same manifest content but at a new manifest
   // URL.
-  url::Replacements<char> replacements;
-  std::string query = "manifest=/banners/manifest_one_icon.json";
-  replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
+  GURL::Replacements replacements;
+  replacements.SetQueryStr("manifest=/banners/manifest_one_icon.json");
   GURL app_url_with_new_manifest = GetAppURL().ReplaceComponents(replacements);
   EXPECT_EQ(GetResultAfterPageLoad(app_url_with_new_manifest),
             ManifestUpdateResult::kAppUpdated);
