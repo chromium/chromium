@@ -62,4 +62,9 @@ class ExtensionsMenuButton : public HoverButton,
   bool allow_pinning_;
 };
 
+BEGIN_VIEW_BUILDER(/* no export */, ExtensionsMenuButton, HoverButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ExtensionsMenuButton)
+
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_BUTTON_H_
