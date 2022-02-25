@@ -2028,6 +2028,12 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsScreenRectsAck) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, widget_.ReceivedScreenRects().size());
 
+  // If screen rects haven't changed, don't send them to the widget.
+  ClearScreenRects();
+  host_->SendScreenRects();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0u, widget_.ReceivedScreenRects().size());
+
   // The RenderWidget has been destroyed in the renderer.
   EXPECT_CALL(mock_owner_delegate_, IsMainFrameActive())
       .WillRepeatedly(Return(false));
@@ -2035,7 +2041,7 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsScreenRectsAck) {
   // Still can't send until the RenderWidget is replaced.
   host_->SendScreenRects();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, widget_.ReceivedScreenRects().size());
+  EXPECT_EQ(0u, widget_.ReceivedScreenRects().size());
 
   // Make a new RenderWidget when the renderer is recreated and inform that a
   // RenderWidget is being created.
@@ -2048,7 +2054,7 @@ TEST_F(RenderWidgetHostTest, DestroyingRenderWidgetResetsScreenRectsAck) {
   // for an ack.
   host_->SendScreenRects();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2u, widget_.ReceivedScreenRects().size());
+  EXPECT_EQ(1u, widget_.ReceivedScreenRects().size());
 }
 
 // Regression test for http://crbug.com/401859 and http://crbug.com/522795.

@@ -167,6 +167,11 @@ namespace {
 // before clearing previously displayed graphics.
 constexpr base::TimeDelta kNewContentRenderingDelay = base::Seconds(4);
 
+constexpr gfx::Rect kInvalidScreenRect(std::numeric_limits<int>::max(),
+                                       std::numeric_limits<int>::max(),
+                                       0,
+                                       0);
+
 bool g_check_for_pending_visual_properties_ack = true;
 
 bool ShouldDisableHangMonitor() {
@@ -430,6 +435,8 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
       is_hidden_(hidden),
+      last_view_screen_rect_(kInvalidScreenRect),
+      last_window_screen_rect_(kInvalidScreenRect),
       latency_tracker_(delegate_),
       hung_renderer_delay_(kHungRendererDelay),
       new_content_rendering_delay_(kNewContentRenderingDelay),
@@ -646,6 +653,11 @@ void RenderWidgetHostImpl::SendScreenRects() {
   if (is_hidden_) {
     // On GTK, this comes in for backgrounded tabs. Ignore, to match what
     // happens on Win & Mac, and when the view is shown it'll call this again.
+    return;
+  }
+
+  if (last_view_screen_rect_ == view_->GetViewBounds() &&
+      last_window_screen_rect_ == view_->GetBoundsInRootWindow()) {
     return;
   }
 
@@ -2252,6 +2264,7 @@ void RenderWidgetHostImpl::ResetStateForCreatedRenderWidget(
   // When the RenderWidget was destroyed, the ack may never come back. Don't
   // let that prevent us from speaking to the next RenderWidget.
   waiting_for_screen_rects_ack_ = false;
+  last_view_screen_rect_ = last_window_screen_rect_ = kInvalidScreenRect;
 
   visual_properties_ack_pending_ =
       DoesVisualPropertiesNeedAck(nullptr, initial_props);
