@@ -81,9 +81,6 @@ char kTSanDefaultSuppressions[] =
     // http://crbug.com/380554
     "deadlock:g_type_add_interface_static\n"
 
-    // http:://crbug.com/386385
-    "race:content::AppCacheStorageImpl::DatabaseTask::CallRunCompleted\n"
-
     // http://crbug.com/397022
     "deadlock:"
     "base::trace_event::TraceEventTestFixture_ThreadOnceBlocking_Test::"
