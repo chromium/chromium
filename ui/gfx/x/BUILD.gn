@@ -211,6 +211,7 @@ component("x") {
   deps = [
     "//base",
     "//skia",
+    "//ui/gfx/geometry",
   ]
   public_deps = [ ":xproto" ]
 }
@@ -225,6 +226,7 @@ source_set("unit_test") {
   deps = [
     "//base",
     "//testing/gtest",
+    "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]
 }

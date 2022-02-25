@@ -5,8 +5,11 @@
 #include "ui/gfx/x/window_cache.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace x11 {
 
@@ -258,6 +261,45 @@ TEST_F(WindowCacheTest, ShapeExtension) {
   cache()->SyncForTest();
   EXPECT_EQ(info.bounding_rects_px, bounding_rects);
   EXPECT_EQ(info.input_rects_px, input_rects);
+}
+
+TEST_F(WindowCacheTest, WmName) {
+  const WindowCache::WindowInfo& info = cache()->windows().at(root());
+  EXPECT_FALSE(info.has_wm_name);
+
+  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "Foo");
+  cache()->SyncForTest();
+  EXPECT_TRUE(info.has_wm_name);
+
+  connection()->DeleteProperty(root(), Atom::WM_NAME);
+  cache()->SyncForTest();
+  EXPECT_FALSE(info.has_wm_name);
+}
+
+TEST_F(WindowCacheTest, GtkFrameExtents) {
+  const WindowCache::WindowInfo& info = cache()->windows().at(root());
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
+
+  const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
+  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                   std::vector<uint32_t>{1, 2, 3, 4});
+  cache()->SyncForTest();
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets(3, 1, 4, 2));
+
+  connection()->DeleteProperty(root(), gtk_frame_extents);
+  cache()->SyncForTest();
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
+
+  // Make sure malformed values don't get cached.
+  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                   std::vector<uint32_t>{1, 2});
+  cache()->SyncForTest();
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
+
+  SetArrayProperty(root(), gtk_frame_extents, Atom::CARDINAL,
+                   std::vector<uint8_t>{1, 2, 3, 4});
+  cache()->SyncForTest();
+  EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
 }
 
 }  // namespace x11

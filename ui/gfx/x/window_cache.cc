@@ -9,9 +9,11 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 
@@ -37,7 +39,9 @@ WindowCache::WindowInfo::~WindowInfo() = default;
 WindowCache* WindowCache::instance_ = nullptr;
 
 WindowCache::WindowCache(Connection* connection, Window root)
-    : connection_(connection), root_(root) {
+    : connection_(connection),
+      root_(root),
+      gtk_frame_extents_(GetAtom("_GTK_FRAME_EXTENTS")) {
   DCHECK(!instance_) << "Only one WindowCache should be active at a time";
   instance_ = this;
 
@@ -95,6 +99,17 @@ void WindowCache::OnEvent(const Event& event) {
           else if (src > dst)
             std::rotate(dst, src, src + 1);
         }
+      }
+    }
+  } else if (auto* property = event.As<PropertyNotifyEvent>()) {
+    if (auto* info = GetInfo(property->window)) {
+      if (property->atom == Atom::WM_NAME) {
+        info->has_wm_name = property->state != Property::Delete;
+      } else if (property->atom == gtk_frame_extents_) {
+        if (property->state == Property::Delete)
+          info->gtk_frame_extents_px = gfx::Insets();
+        else
+          GetProperty(property->window, gtk_frame_extents_, 4);
       }
     }
   } else if (auto* create = event.As<CreateNotifyEvent>()) {
@@ -158,7 +173,7 @@ void WindowCache::AddWindow(Window window, Window parent) {
   // Events must be selected before getting the initial window info to prevent
   // race conditions.
   info.events = std::make_unique<XScopedEventSelector>(
-      window, EventMask::SubstructureNotify);
+      window, EventMask::SubstructureNotify | EventMask::PropertyChange);
 
   connection_->GetWindowAttributes(window).OnResponse(
       base::BindOnce(&WindowCache::OnGetWindowAttributesResponse,
@@ -168,6 +183,9 @@ void WindowCache::AddWindow(Window window, Window parent) {
   connection_->QueryTree(window).OnResponse(base::BindOnce(
       &WindowCache::OnQueryTreeResponse, weak_factory_.GetWeakPtr(), window));
   pending_requests_ += 3;
+
+  GetProperty(window, Atom::WM_NAME, 1);
+  GetProperty(window, gtk_frame_extents_, 4);
 
   auto& shape = connection_->shape();
   if (shape.present()) {
@@ -194,6 +212,15 @@ std::vector<Window>* WindowCache::GetChildren(Window window) {
   if (auto* info = GetInfo(window))
     return &info->children;
   return nullptr;
+}
+
+void WindowCache::GetProperty(Window window, Atom property, uint32_t length) {
+  connection_
+      ->GetProperty(
+          {.window = window, .property = property, .long_length = length})
+      .OnResponse(base::BindOnce(&WindowCache::OnGetPropertyResponse,
+                                 weak_factory_.GetWeakPtr(), window, property));
+  pending_requests_++;
 }
 
 WindowCache::WindowInfo* WindowCache::OnResponse(Window window,
@@ -233,6 +260,26 @@ void WindowCache::OnQueryTreeResponse(Window window,
     info->children = std::move(response->children);
     for (auto child : info->children)
       AddWindow(child, window);
+  }
+}
+
+void WindowCache::OnGetPropertyResponse(Window window,
+                                        Atom atom,
+                                        GetPropertyResponse response) {
+  if (auto* info = OnResponse(window, response.reply.get())) {
+    if (atom == Atom::WM_NAME) {
+      info->has_wm_name = response->format;
+    } else if (atom == gtk_frame_extents_) {
+      if (response->format == CHAR_BIT * sizeof(int32_t) &&
+          response->value_len == 4) {
+        const int32_t* frame_extents = response->value->front_as<int32_t>();
+        info->gtk_frame_extents_px = gfx::Insets(
+            frame_extents[2] /* top */, frame_extents[0] /* left */,
+            frame_extents[3] /* bottom */, frame_extents[1] /* right */);
+      } else {
+        info->gtk_frame_extents_px = gfx::Insets();
+      }
+    }
   }
 }
 
