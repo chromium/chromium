@@ -1145,7 +1145,7 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
         }
 
         NoUnderlineClickableSpan settingsSpan = new NoUnderlineClickableSpan(
-                mContext.getResources(), (widget) -> mClient.onCardAndAddressSettingsClicked());
+                mContext, (widget) -> mClient.onCardAndAddressSettingsClicked());
         SpannableString spannableMessage = SpanApplier.applySpans(
                 message, new SpanInfo("BEGIN_LINK", "END_LINK", settingsSpan));
 

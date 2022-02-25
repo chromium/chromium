@@ -42,8 +42,8 @@ public class ManagementMediator {
 
     private SpannableString getLearnMoreClickableText() {
         final Context context = mHost.getContext();
-        final NoUnderlineClickableSpan clickableLearnMoreSpan = new NoUnderlineClickableSpan(
-                context.getResources(), (v) -> { showHelpCenterArticle(); });
+        final NoUnderlineClickableSpan clickableLearnMoreSpan =
+                new NoUnderlineClickableSpan(context, (v) -> { showHelpCenterArticle(); });
         return SpanApplier.applySpans(context.getString(R.string.management_learn_more),
                 new SpanApplier.SpanInfo("<LINK>", "</LINK>", clickableLearnMoreSpan));
     }

@@ -51,7 +51,7 @@ public class FlocSettingsFragment extends PreferenceFragmentCompat
                                 + " "
                                 + getContext().getString(R.string.privacy_sandbox_floc_description),
                         new SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(getContext().getResources(),
+                                new NoUnderlineClickableSpan(getContext(),
                                         (widget) -> openUrlInCct(getFlocRegionsUrl())))));
         findPreference(RESET_FLOC_EXPLANATION)
                 .setSummary(PrivacySandboxBridge.getFlocResetExplanationString());

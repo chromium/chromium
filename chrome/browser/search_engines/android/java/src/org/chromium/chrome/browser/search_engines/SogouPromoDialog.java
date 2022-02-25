@@ -66,7 +66,7 @@ public class SogouPromoDialog extends PromoDialog {
     public SogouPromoDialog(Activity activity, @NonNull Callback<Boolean> onSelectEngine,
             @Nullable Callback<Boolean> onDismissed, @NonNull SettingsLauncher settingsLauncher) {
         super(activity);
-        mSpan = new NoUnderlineClickableSpan(activity.getResources(), (widget) -> {
+        mSpan = new NoUnderlineClickableSpan(activity, (widget) -> {
             mChoice = UserChoice.SETTINGS;
             settingsLauncher.launchSettingsActivity(getContext(), SearchEngineSettings.class);
             dismiss();

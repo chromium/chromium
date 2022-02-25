@@ -146,7 +146,7 @@ public class PrivacySettings
 
     private SpannableString buildSyncAndServicesLink() {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-        NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getResources(), v -> {
+        NoUnderlineClickableSpan servicesLink = new NoUnderlineClickableSpan(getContext(), v -> {
             settingsLauncher.launchSettingsActivity(getActivity(), GoogleServicesSettings.class);
         });
         if (IdentityServicesProvider.get()
@@ -159,7 +159,7 @@ public class PrivacySettings
                     new SpanApplier.SpanInfo("<link>", "</link>", servicesLink));
         }
         // Otherwise, show the string with both links to "Sync" and "Google Services".
-        NoUnderlineClickableSpan syncLink = new NoUnderlineClickableSpan(getResources(), v -> {
+        NoUnderlineClickableSpan syncLink = new NoUnderlineClickableSpan(getContext(), v -> {
             settingsLauncher.launchSettingsActivity(getActivity(), ManageSyncSettings.class,
                     ManageSyncSettings.createArguments(false));
         });

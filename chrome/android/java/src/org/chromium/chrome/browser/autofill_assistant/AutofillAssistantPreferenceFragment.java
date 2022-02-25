@@ -90,7 +90,7 @@ public class AutofillAssistantPreferenceFragment extends PreferenceFragmentCompa
         }
 
         mGoogleServicesSettingsLink = findPreference(PREF_GOOGLE_SERVICES_SETTINGS_LINK);
-        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(getResources(), view -> {
+        NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(getContext(), view -> {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(requireContext(), GoogleServicesSettings.class);
         });

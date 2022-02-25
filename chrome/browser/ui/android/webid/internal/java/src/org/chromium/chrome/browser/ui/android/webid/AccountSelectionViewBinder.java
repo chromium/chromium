@@ -160,7 +160,7 @@ class AccountSelectionViewBinder {
         tabCreator.launchUrl(url, TabLaunchType.FROM_CHROME_UI);
     }
 
-    static SpanApplier.SpanInfo createLink(Resources r, String url, String tag) {
+    static SpanApplier.SpanInfo createLink(Context context, String url, String tag) {
         if (TextUtils.isEmpty(url)) return null;
 
         String startTag = "<" + tag + ">";
@@ -169,7 +169,7 @@ class AccountSelectionViewBinder {
             openTab(url);
         };
         return new SpanApplier.SpanInfo(
-                startTag, endTag, new NoUnderlineClickableSpan(r, onClickCallback));
+                startTag, endTag, new NoUnderlineClickableSpan(context, onClickCallback));
     }
 
     /**
@@ -183,11 +183,11 @@ class AccountSelectionViewBinder {
             DataSharingConsentProperties.Properties properties =
                     model.get(DataSharingConsentProperties.PROPERTIES);
 
-            Resources resources = view.getResources();
+            Context context = view.getContext();
             SpanApplier.SpanInfo privacyPolicySpan =
-                    createLink(resources, properties.mPrivacyPolicyUrl, "link_privacy_policy");
+                    createLink(context, properties.mPrivacyPolicyUrl, "link_privacy_policy");
             SpanApplier.SpanInfo termsOfServiceSpan =
-                    createLink(resources, properties.mTermsOfServiceUrl, "link_terms_of_service");
+                    createLink(context, properties.mTermsOfServiceUrl, "link_terms_of_service");
 
             // TODO(crbug.com/1293913): Validate string choices.
             int consentTextId = (privacyPolicySpan == null && termsOfServiceSpan == null)

@@ -348,7 +348,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // Fill in text with link to Settings.
         TextView promoText = (TextView) view.findViewById(R.id.contextual_search_promo_text);
 
-        NoUnderlineClickableSpan settingsLink = new NoUnderlineClickableSpan(view.getResources(),
+        NoUnderlineClickableSpan settingsLink = new NoUnderlineClickableSpan(view.getContext(),
                 (View ignored) -> ContextualSearchPromoControl.this.handleClickSettingsLink());
 
         promoText.setText(SpanApplier.applySpans(

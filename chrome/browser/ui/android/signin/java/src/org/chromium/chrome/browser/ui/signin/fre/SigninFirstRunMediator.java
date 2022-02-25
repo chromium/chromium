@@ -271,16 +271,15 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(mContext.getResources(),
-                        view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
+        final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
+                mContext, view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
         spans.add(
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan));
 
         // Privacy notice Link SpanInfo.
         if (hasChildAccount) {
             final NoUnderlineClickableSpan clickablePrivacyPolicySpan =
-                    new NoUnderlineClickableSpan(mContext.getResources(),
+                    new NoUnderlineClickableSpan(mContext,
                             view -> mDelegate.showInfoPage(R.string.google_privacy_policy_url));
 
             spans.add(new SpanApplier.SpanInfo(
@@ -290,8 +289,8 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
         // Metrics and Crash Reporting SpanInfo.
         if (!isMetricsReportingDisabled) {
             footerString += "\n" + mContext.getString(R.string.signin_fre_footer_metrics_reporting);
-            final NoUnderlineClickableSpan clickableUMADialogSpan = new NoUnderlineClickableSpan(
-                    mContext.getResources(), view -> mDelegate.openUmaDialog());
+            final NoUnderlineClickableSpan clickableUMADialogSpan =
+                    new NoUnderlineClickableSpan(mContext, view -> mDelegate.openUmaDialog());
             spans.add(
                     new SpanApplier.SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
         }

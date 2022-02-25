@@ -257,7 +257,7 @@ public class RevampedIncognitoDescriptionView
 
         // Make the text between the <a> tags to be clickable, blue, without underline.
         SpanApplier.SpanInfo spanInfo = new SpanApplier.SpanInfo("<a>", "</a>",
-                new NoUnderlineClickableSpan(getResources(), R.color.default_text_color_link_light,
+                new NoUnderlineClickableSpan(getContext(), R.color.default_text_color_link_light,
                         onClickListener::onClick));
 
         SpannableString formattedText = SpanApplier.applySpans(text, spanInfo);

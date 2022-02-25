@@ -310,7 +310,7 @@ public class LegacyIncognitoDescriptionView
         SpannableString textWithLearnMoreLink = new SpannableString(concatenatedText.toString());
 
         NoUnderlineClickableSpan span = new NoUnderlineClickableSpan(
-                getResources(), R.color.modern_blue_300, (view) -> mLearnMore.callOnClick());
+                getContext(), R.color.modern_blue_300, (view) -> mLearnMore.callOnClick());
         textWithLearnMoreLink.setSpan(
                 span, subtitleText.length() + 1, textWithLearnMoreLink.length(), 0 /* flags */);
         mSubtitle.setText(textWithLearnMoreLink);

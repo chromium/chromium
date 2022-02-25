@@ -93,7 +93,7 @@ public class SurveyInfoBar extends InfoBar {
             }
         });
 
-        mClickableSpan = new NoUnderlineClickableSpan(layout.getResources(), (widget) -> {
+        mClickableSpan = new NoUnderlineClickableSpan(layout.getContext(), (widget) -> {
             // Prevent double clicking on the text span.
             if (mClicked) return;
             showSurvey();

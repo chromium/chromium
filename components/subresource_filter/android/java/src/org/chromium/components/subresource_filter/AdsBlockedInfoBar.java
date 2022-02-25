@@ -71,7 +71,7 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
             description.append(learnMore);
 
             NoUnderlineClickableSpan clickableSpan =
-                    new NoUnderlineClickableSpan(layout.getResources(), (view) -> onLinkClicked());
+                    new NoUnderlineClickableSpan(layout.getContext(), (view) -> onLinkClicked());
             description.setSpan(clickableSpan, spanStart, description.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             layout.getMessageLayout().addDescription(description);

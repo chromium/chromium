@@ -61,9 +61,8 @@ public class SafetyTipInfoBar extends ConfirmInfoBar {
         SpannableStringBuilder descriptionMessage = new SpannableStringBuilder(mDescription);
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
-            link.setSpan(
-                    new NoUnderlineClickableSpan(layout.getResources(), view -> onLinkClicked()), 0,
-                    link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            link.setSpan(new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    0, link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             descriptionMessage.append(" ").append(link);
         }
         layout.getMessageLayout().addDescription(descriptionMessage);

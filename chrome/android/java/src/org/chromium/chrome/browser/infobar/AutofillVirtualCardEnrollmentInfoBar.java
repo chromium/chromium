@@ -182,7 +182,7 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
         if (!TextUtils.isEmpty(mDescriptionText) && !TextUtils.isEmpty(mLearnMoreLinkText)) {
             SpannableString text = new SpannableString(mDescriptionText);
             int offset = mDescriptionText.length() - mLearnMoreLinkText.length();
-            text.setSpan(new NoUnderlineClickableSpan(layout.getResources(), (unused) -> {
+            text.setSpan(new NoUnderlineClickableSpan(layout.getContext(), (unused) -> {
                 AutofillVirtualCardEnrollmentInfoBarJni.get().onInfobarLinkClicked(
                         mNativeAutofillVirtualCardEnrollmentInfoBar,
                         AutofillVirtualCardEnrollmentInfoBar.this,

@@ -83,7 +83,7 @@ public class AdsBlockedDialog implements ModalDialogProperties.Controller {
     void show(boolean shouldPostDialog) {
         Resources resources = mContext.getResources();
         mClickableSpan = new NoUnderlineClickableSpan(
-                resources, (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
+                mContext, (view) -> AdsBlockedDialogJni.get().onLearnMoreClicked(mNativeDialog));
         mDialogModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                                .with(ModalDialogProperties.CONTROLLER, this)
                                .with(ModalDialogProperties.TITLE, resources,

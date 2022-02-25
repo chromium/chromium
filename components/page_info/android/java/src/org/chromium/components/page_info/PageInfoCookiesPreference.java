@@ -70,7 +70,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     public void setParams(PageInfoCookiesViewParams params) {
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
-                getResources(), (view) -> { params.onCookieSettingsLinkClicked.run(); });
+                getContext(), (view) -> { params.onCookieSettingsLinkClicked.run(); });
         cookieSummary.setSummary(
                 SpanApplier.applySpans(getString(R.string.page_info_cookies_description),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan)));

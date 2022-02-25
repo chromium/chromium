@@ -142,7 +142,7 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
                         R.string.send_tab_to_self_manage_devices_link, account.getEmail()),
                 new SpanApplier.SpanInfo("<link>", "</link>",
                         new NoUnderlineClickableSpan(
-                                resources, this::openManageDevicesPageInNewTab)));
+                                mContext, this::openManageDevicesPageInNewTab)));
         TextView linkView = containerView.findViewById(R.id.manage_devices_link);
         linkView.setText(linkText);
         linkView.setMovementMethod(LinkMovementMethod.getInstance());

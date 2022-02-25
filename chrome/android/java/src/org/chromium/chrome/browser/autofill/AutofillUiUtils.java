@@ -397,7 +397,7 @@ public class AutofillUiUtils {
         for (LegalMessageLine line : legalMessageLines) {
             SpannableString text = new SpannableString(line.text);
             for (final LegalMessageLine.Link link : line.links) {
-                text.setSpan(new NoUnderlineClickableSpan(context.getResources(),
+                text.setSpan(new NoUnderlineClickableSpan(context,
                                      (view) -> CustomTabActivity.showInfoPage(context, link.url)),
                         link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
@@ -420,7 +420,7 @@ public class AutofillUiUtils {
             Context context, int stringResourceId, String url) {
         return SpanApplier.applySpans(context.getString(stringResourceId),
                 new SpanApplier.SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(context.getResources(),
-                                (view) -> CustomTabActivity.showInfoPage(context, url))));
+                        new NoUnderlineClickableSpan(
+                                context, (view) -> CustomTabActivity.showInfoPage(context, url))));
     }
 }

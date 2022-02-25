@@ -355,7 +355,7 @@ public abstract class SyncConsentFragmentBase
 
     private void updateSigninDetailsDescription(boolean addSettingsLink) {
         final @Nullable Object settingsLinkSpan = addSettingsLink
-                ? new NoUnderlineClickableSpan(getResources(), this::onSettingsLinkClicked)
+                ? new NoUnderlineClickableSpan(getContext(), this::onSettingsLinkClicked)
                 : null;
         final SpanApplier.SpanInfo spanInfo =
                 new SpanApplier.SpanInfo(SETTINGS_LINK_OPEN, SETTINGS_LINK_CLOSE, settingsLinkSpan);

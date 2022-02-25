@@ -84,7 +84,7 @@ public class AutofillOfferNotificationInfoBar extends ConfirmInfoBar {
             String linkText =
                     getContext().getString(R.string.autofill_offers_reminder_deep_link_text);
             NoUnderlineClickableSpan noUnderlineClickableSpan = new NoUnderlineClickableSpan(
-                    getContext().getResources(),
+                    getContext(),
                     (view)
                             -> AutofillOfferNotificationInfoBarJni.get().onOfferDeepLinkClicked(
                                     mNativeAutofillOfferNotificationInfoBar,

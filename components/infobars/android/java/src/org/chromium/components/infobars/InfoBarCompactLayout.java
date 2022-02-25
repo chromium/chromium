@@ -147,9 +147,9 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
         public MessageBuilder withLink(CharSequence label, Callback<View> onTapCallback) {
             assert mLink == null;
 
-            final Resources resources = mLayout.getResources();
+            final Context context = mLayout.getContext();
             SpannableString link = new SpannableString(label);
-            link.setSpan(new NoUnderlineClickableSpan(resources, onTapCallback), 0, label.length(),
+            link.setSpan(new NoUnderlineClickableSpan(context, onTapCallback), 0, label.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             mLink = link;
 

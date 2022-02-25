@@ -75,7 +75,7 @@ public class PrivacySandboxSettingsFragment
                 .setSummary(SpanApplier.applySpans(
                         getContext().getString(R.string.privacy_sandbox_description_two),
                         new SpanInfo("<link>", "</link>",
-                                new NoUnderlineClickableSpan(getContext().getResources(),
+                                new NoUnderlineClickableSpan(getContext(),
                                         (widget) -> openUrlInCct(PRIVACY_SANDBOX_URL)))));
         // Format the toggle description, which has bullet points.
         findPreference(TOGGLE_DESCRIPTION_PREFERENCE)

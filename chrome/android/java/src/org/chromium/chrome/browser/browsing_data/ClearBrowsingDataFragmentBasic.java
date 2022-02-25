@@ -177,10 +177,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
     private SpannableString buildGoogleSearchHistoryText() {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
+                        new NoUnderlineClickableSpan(getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory = */ true))),
                 new SpanInfo("<link2>", "</link2>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
+                        new NoUnderlineClickableSpan(getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 
@@ -188,7 +188,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         return SpanApplier.applySpans(
                 getContext().getString(R.string.clear_search_history_link_other_forms),
                 new SpanInfo("<link1>", "</link1>",
-                        new NoUnderlineClickableSpan(getContext().getResources(),
+                        new NoUnderlineClickableSpan(getContext(),
                                 createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 

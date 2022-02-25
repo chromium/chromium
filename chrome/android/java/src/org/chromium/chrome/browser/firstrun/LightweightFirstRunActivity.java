@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -109,13 +108,12 @@ public class LightweightFirstRunActivity
         setContentView(LayoutInflater.from(LightweightFirstRunActivity.this)
                                .inflate(R.layout.lightweight_fre_tos, null));
 
-        final Resources resources = getResources();
         NoUnderlineClickableSpan clickableGoogleTermsSpan = new NoUnderlineClickableSpan(
-                resources, (view) -> showInfoPage(R.string.google_terms_of_service_url));
+                this, (view) -> showInfoPage(R.string.google_terms_of_service_url));
         NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan = new NoUnderlineClickableSpan(
-                resources, (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
+                this, (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
         NoUnderlineClickableSpan clickableGooglePrivacySpan = new NoUnderlineClickableSpan(
-                resources, (view) -> showInfoPage(R.string.google_privacy_policy_url));
+                this, (view) -> showInfoPage(R.string.google_privacy_policy_url));
         String associatedAppName =
                 IntentUtils.safeGetStringExtra(getIntent(), EXTRA_ASSOCIATED_APP_NAME);
         if (associatedAppName == null) {

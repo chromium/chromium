@@ -384,7 +384,7 @@ class PasswordCheckViewBinder {
                 return getString(view, R.string.password_check_status_message_error_quota_limit);
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
                 NoUnderlineClickableSpan linkSpan = new NoUnderlineClickableSpan(
-                        getResources(view), unusedView -> launchCheckupInAccount.run());
+                        view.getContext(), unusedView -> launchCheckupInAccount.run());
                 return SpanApplier.applySpans(
                         getString(view,
                                 R.string.password_check_status_message_error_quota_limit_account_check),

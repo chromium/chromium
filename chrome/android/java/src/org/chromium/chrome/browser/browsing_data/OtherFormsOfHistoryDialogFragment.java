@@ -52,7 +52,7 @@ public class OtherFormsOfHistoryDialogFragment
         TextView textView = (TextView) view.findViewById(R.id.text);
         final SpannableString textWithLink = SpanApplier.applySpans(textView.getText().toString(),
                 new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getResources(), (widget) -> {
+                        new NoUnderlineClickableSpan(getContext(), (widget) -> {
                             new TabDelegate(false /* incognito */)
                                     .launchUrl(UrlConstants.MY_ACTIVITY_URL_IN_CBD_NOTICE,
                                             TabLaunchType.FROM_CHROME_UI);

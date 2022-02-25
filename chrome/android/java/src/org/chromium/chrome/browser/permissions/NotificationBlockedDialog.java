@@ -66,7 +66,7 @@ public class NotificationBlockedDialog implements ModalDialogProperties.Controll
             fullString.append(" ");
             int start = fullString.length();
             fullString.append(learnMoreText);
-            fullString.setSpan(new NoUnderlineClickableSpan(mContext.getResources(), (v) -> {
+            fullString.setSpan(new NoUnderlineClickableSpan(mContext, (v) -> {
                 NotificationBlockedDialogJni.get().onLearnMoreClicked(mNativeDialogController);
             }), start, fullString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }

@@ -64,7 +64,7 @@ public class AssistantTextUtils {
 
         for (Integer linkId : linkIds) {
             spans.add(new SpanApplier.SpanInfo("<link" + linkId + ">", "</link" + linkId + ">",
-                    new NoUnderlineClickableSpan(view.getContext().getResources(), (unusedView) -> {
+                    new NoUnderlineClickableSpan(view.getContext(), (unusedView) -> {
                         if (linkCallback != null) {
                             linkCallback.onResult(linkId);
                         }

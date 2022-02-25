@@ -197,7 +197,7 @@ public abstract class BaseOnboardingCoordinator implements OnboardingView {
                     R.string.autofill_assistant_google_terms_description);
         }
 
-        NoUnderlineClickableSpan termsSpan = new NoUnderlineClickableSpan(mContext.getResources(),
+        NoUnderlineClickableSpan termsSpan = new NoUnderlineClickableSpan(mContext,
                 (widget)
                         -> mInfoPageUtil.showInfoPage(mContext.getApplicationContext(),
                                 TextUtils.isEmpty(termsAndConditionsUrl)

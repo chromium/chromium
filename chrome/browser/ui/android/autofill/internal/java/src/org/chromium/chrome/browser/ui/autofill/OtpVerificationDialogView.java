@@ -158,7 +158,7 @@ public class OtpVerificationDialogView extends RelativeLayout {
                         org.chromium.chrome.browser.ui.autofill.internal.R.string
                                 .autofill_payments_otp_verification_dialog_cant_find_code_message),
                 new SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(context.getResources(),
-                                textView -> { viewDelegate.onResendLinkClicked(); })));
+                        new NoUnderlineClickableSpan(
+                                context, textView -> { viewDelegate.onResendLinkClicked(); })));
     }
 }

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.history;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -325,7 +325,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer);
         privacyDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
         privacyDisclaimerTextView.setText(
-                getPrivacyDisclaimerText(privacyDisclaimerTextView.getResources()));
+                getPrivacyDisclaimerText(privacyDisclaimerTextView.getContext()));
         mPrivacyDisclaimerBottomSpace =
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
 
@@ -361,11 +361,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * Create a {@SpannableString} for privacy disclaimer.
      * @return The {@SpannableString} with the privacy disclaimer string resource and url.
      */
-    private SpannableString getPrivacyDisclaimerText(Resources resources) {
+    private SpannableString getPrivacyDisclaimerText(Context context) {
         NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(
-                resources, (view) -> mManager.onPrivacyDisclaimerLinkClicked());
+                context, (view) -> mManager.onPrivacyDisclaimerLinkClicked());
         return SpanApplier.applySpans(
-                resources.getString(R.string.android_history_other_forms_of_history),
+                context.getResources().getString(R.string.android_history_other_forms_of_history),
                 new SpanApplier.SpanInfo("<link>", "</link>", link));
     }
 

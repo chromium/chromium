@@ -164,8 +164,8 @@ public class DownloadLaterDialogView extends ScrollView implements OnCheckedChan
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         mEditText.setMovementMethod(LinkMovementMethod.getInstance());
-        NoUnderlineClickableSpan editSpan = new NoUnderlineClickableSpan(
-                getResources(), (view) -> { onEditLocationClicked(); });
+        NoUnderlineClickableSpan editSpan =
+                new NoUnderlineClickableSpan(getContext(), (view) -> { onEditLocationClicked(); });
         editText = SpanApplier.applySpans(
                 getResources().getString(R.string.download_later_edit_location, locationText),
                 new SpanInfo("<b>", "</b>", directorySpanBuilder),

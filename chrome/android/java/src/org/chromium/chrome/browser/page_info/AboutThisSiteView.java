@@ -59,8 +59,8 @@ public class AboutThisSiteView extends LinearLayout {
         mDescriptionView.setText(description.getDescription());
 
         String link = LINK_START + description.getSource().getLabel() + LINK_END;
-        final ClickableSpan linkSpan = new NoUnderlineClickableSpan(
-                getContext().getResources(), (view) -> { onSourceClicked.run(); });
+        final ClickableSpan linkSpan =
+                new NoUnderlineClickableSpan(getContext(), (view) -> { onSourceClicked.run(); });
         String sourceString = getContext().getResources().getString(
                 R.string.page_info_about_this_site_subpage_from_label, link);
         mSourceView.setText(
