@@ -354,6 +354,12 @@ TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
 
   // Ghost window should not trigger tracing sessions.
   DCHECK(!tracing_helper().GetTracingSession());
+
+  // ArcWindowHandler depends on WMHelper, which is supposed to be destroyed
+  // before handler is destroyed. It is deleted in
+  // ArcAppPerformanceTracingTesthelper, which happens later, so just call
+  // OnDestroyed() here.
+  handler.OnDestroyed();
 }
 
 }  // namespace arc
