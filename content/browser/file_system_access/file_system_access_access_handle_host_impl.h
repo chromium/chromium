@@ -24,7 +24,7 @@ namespace content {
 class FileSystemAccessAccessHandleHostImpl
     : public blink::mojom::FileSystemAccessAccessHandleHost {
  public:
-  // Crates an AccessHandleHost that acts as an exclusive write lock on the
+  // Creates an AccessHandleHost that acts as an exclusive write lock on the
   // file. AccessHandleHosts should only be created via the
   // FileSystemAccessManagerImpl.
   FileSystemAccessAccessHandleHostImpl(

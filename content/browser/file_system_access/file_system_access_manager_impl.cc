@@ -1462,7 +1462,7 @@ void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocationImpl(
 
   int64_t overallocation = allocated_file_size - file_info.size;
   DCHECK_GE(overallocation, 0)
-      << "An AccessHandle should not use more capacity than allocated.";
+      << "An Access Handle should not use more capacity than allocated.";
 
   context_->quota_manager_proxy()->NotifyStorageModified(
       storage::QuotaClientType::kFileSystem, url.storage_key(),

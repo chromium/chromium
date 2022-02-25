@@ -15,7 +15,8 @@
 namespace content {
 
 // Browser side implementation of the FileSystemAccessFileDelegateHost mojom
-// interface. Instances of this class are owned by the
+// interface, which facilitates file operations for Access Handles in incognito
+// mode. Instances of this class are owned by the
 // FileSystemAccessAccessHandleHostImpl instance of the associated URL, which
 // constructs it.
 class FileSystemAccessFileDelegateHostImpl

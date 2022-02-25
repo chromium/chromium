@@ -154,6 +154,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
 
 void FileSystemAccessIncognitoFileDelegate::GetLength(
     base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   mojo_ptr_->GetLength(WTF::Bind(
       [](base::OnceCallback<void(base::FileErrorOr<int64_t>)> callback,
          base::File::Error file_error, uint64_t length) {
@@ -192,9 +193,9 @@ void FileSystemAccessIncognitoFileDelegate::Flush(
 }
 
 void FileSystemAccessIncognitoFileDelegate::Close(base::OnceClosure callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   mojo_ptr_.reset();
 
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   task_runner_->PostTask(FROM_HERE, std::move(callback));
 }
 

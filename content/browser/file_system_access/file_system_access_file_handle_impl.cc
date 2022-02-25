@@ -210,7 +210,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kInvalidState,
-            "Access handles may only be created on temporary file systems"),
+            "Access Handles may only be created on temporary file systems"),
         blink::mojom::FileSystemAccessAccessHandleFilePtr(),
         mojo::NullRemote());
     return;
