@@ -81,7 +81,7 @@ void NavigationHandleProxy::DidFinish() {
 
   if (cpp_navigation_handle_->HasCommitted()) {
     // See http://crbug.com/251330 for why it's determined this way.
-    url::Replacements<char> replacements;
+    GURL::Replacements replacements;
     replacements.ClearRef();
     bool urls_same_ignoring_fragment =
         cpp_navigation_handle_->GetURL().ReplaceComponents(replacements) ==
