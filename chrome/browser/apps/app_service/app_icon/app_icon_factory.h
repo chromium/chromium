@@ -127,8 +127,8 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,
     int size_hint_in_dip);
 
-// Modifies |iv| to apply icon post-processing effects like badging and
-// desaturation to gray.
+// Modifies |iv| to apply icon post-processing effects (like badging and
+// desaturation to gray) to an uncompressed icon.
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
                       IconValuePtr iv,
