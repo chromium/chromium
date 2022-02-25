@@ -1505,6 +1505,15 @@ void NetworkContext::OnCTLogListUpdated(
       update_time, std::move(disqualified_logs),
       std::move(operated_by_google_logs), std::move(log_operator_history));
 }
+
+void NetworkContext::CanSendSCTAuditingReport(
+    base::OnceCallback<void(bool)> callback) {
+  client_->OnCanSendSCTAuditingReport(std::move(callback));
+}
+
+void NetworkContext::OnNewSCTAuditingReportSent() {
+  client_->OnNewSCTAuditingReportSent();
+}
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 void NetworkContext::CreateUDPSocket(

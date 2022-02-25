@@ -10,6 +10,8 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -98,6 +100,11 @@ constexpr char kHashdanceLookupQueryURL[] =
     "https://sctauditing-pa.googleapis.com/v1/knownscts/"
     "length/$1/prefix/$2?key=";
 
+// The maximum number of reports currently allowed to be sent by hashdance
+// clients, browser-wide. When this limit is reached, no more auditing reports
+// will be sent by the client.
+constexpr int kSCTAuditingHashdanceMaxReports = 3;
+
 // static
 GURL& SCTReportingService::GetReportURLInstance() {
   static base::NoDestructor<GURL> instance(kSBSCTAuditingReportURL);
@@ -122,6 +129,37 @@ void SCTReportingService::ReconfigureAfterNetworkRestart() {
       SCTReportingService::GetHashdanceLookupQueryURLInstance(),
       net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation),
       net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation));
+}
+
+// static
+bool SCTReportingService::CanSendSCTAuditingReport() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    // Fail safe by returning `false` if we can't get the pref state.
+    return false;
+  }
+  int report_count =
+      local_state->GetInteger(prefs::kSCTAuditingHashdanceReportCount);
+  return report_count < kSCTAuditingHashdanceMaxReports;
+}
+
+// static
+void SCTReportingService::OnNewSCTAuditingReportSent() {
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state) {
+    return;
+  }
+  int report_count =
+      local_state->GetInteger(prefs::kSCTAuditingHashdanceReportCount);
+
+  // We should not ever send more than kSCTAuditingHashdanceMaxReports full
+  // reports. DCHECK to make it very clear in testing if this is not the case.
+  DCHECK_LE(report_count, kSCTAuditingHashdanceMaxReports);
+
+  // Note: Pref updates won't be persisted for Incognito profiles, but SCT
+  // auditing is disabled entirely for Incognito profiles.
+  local_state->SetInteger(prefs::kSCTAuditingHashdanceReportCount,
+                          ++report_count);
 }
 
 SCTReportingService::SCTReportingService(

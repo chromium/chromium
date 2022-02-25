@@ -478,6 +478,12 @@ bool ContentBrowserClient::IsConversionMeasurementOperationAllowed(
   return true;
 }
 
+void ContentBrowserClient::CanSendSCTAuditingReport(
+    BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
 scoped_refptr<QuotaPermissionContext>
 ContentBrowserClient::CreateQuotaPermissionContext() {
   return nullptr;

@@ -795,6 +795,20 @@ interface NetworkContextClient {
   // response structs' comments for more information).
   OnTrustTokenIssuanceDivertedToSystem(FulfillTrustTokenIssuanceRequest request)
     => (FulfillTrustTokenIssuanceAnswer response);
+
+  // Checks if a new SCT Auditing report can be sent. The browser maintains a
+  // maximum report count cap for Hashdance clients -- this returns whether the
+  // cap has been exceeded or not (i.e., whether another report can be sent from
+  // this client). Only used for SCT auditing "hashdance" clients; no report cap
+  // is applied for SBER clients.
+  [EnableIf=is_ct_supported]
+  OnCanSendSCTAuditingReport() => (bool allowed);
+
+  // Signal that a new SCT auditing report has been sent, so that the browser
+  // can update its report count. Only used for SCT auditing "hashdance"
+  // clients.
+  [EnableIf=is_ct_supported]
+  OnNewSCTAuditingReportSent();
 };
 
 // Represents a distinct context for making network requests, with its own

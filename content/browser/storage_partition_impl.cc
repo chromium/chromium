@@ -2123,6 +2123,16 @@ void StoragePartitionImpl::OnTrustTokenIssuanceDivertedToSystem(
           callback_key, weak_factory_.GetWeakPtr()));
 }
 
+void StoragePartitionImpl::OnCanSendSCTAuditingReport(
+    OnCanSendSCTAuditingReportCallback callback) {
+  GetContentClient()->browser()->CanSendSCTAuditingReport(browser_context_,
+                                                          std::move(callback));
+}
+
+void StoragePartitionImpl::OnNewSCTAuditingReportSent() {
+  GetContentClient()->browser()->OnNewSCTAuditingReportSent(browser_context_);
+}
+
 void StoragePartitionImpl::ClearDataImpl(
     uint32_t remove_mask,
     uint32_t quota_storage_remove_mask,

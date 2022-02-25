@@ -44,6 +44,9 @@ class PrefetchProxyNetworkContextClient
   void OnTrustTokenIssuanceDivertedToSystem(
       network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
       OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
+  void OnCanSendSCTAuditingReport(
+      OnCanSendSCTAuditingReportCallback callback) override;
+  void OnNewSCTAuditingReportSent() override;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_NETWORK_CONTEXT_CLIENT_H_

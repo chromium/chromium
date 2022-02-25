@@ -33,6 +33,13 @@ class SCTReportingService : public KeyedService {
   static GURL& GetHashdanceLookupQueryURLInstance();
   static void ReconfigureAfterNetworkRestart();
 
+  // Returns whether the browser can send another SCT auditing report (i.e.,
+  // whether the maximum report limit has been reached).
+  static bool CanSendSCTAuditingReport();
+  // Notification that a new SCT auditing report has been sent. Used to keep
+  // track a browser-wide report count.
+  static void OnNewSCTAuditingReportSent();
+
   SCTReportingService(safe_browsing::SafeBrowsingService* safe_browsing_service,
                       Profile* profile);
   ~SCTReportingService() override;
