@@ -740,7 +740,7 @@ void PrintPreviewHandler::HandleGetPreview(base::Value::ConstListView args) {
     settings.SetKey(kSettingHeaderFooterTitle,
                     base::Value(initiator->GetTitle()));
 
-    url::Replacements<char> url_sanitizer;
+    GURL::Replacements url_sanitizer;
     url_sanitizer.ClearUsername();
     url_sanitizer.ClearPassword();
     const GURL& initiator_url = initiator->GetLastCommittedURL();
