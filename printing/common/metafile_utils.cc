@@ -158,8 +158,13 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
           kPDFTableAttributeOwner, kPDFTableCellHeadersAttribute, header_ids);
       break;
     }
-    case ax::mojom::Role::kFigure:
-    case ax::mojom::Role::kImage: {
+    case ax::mojom::Role::kImage:
+      // TODO(thestig): Figure out if the `ax::mojom::Role::kFigure` case should
+      // share code with the `ax::mojom::Role::kImage` case, and if `valid`
+      // should be set.
+      valid = true;
+      [[fallthrough]];
+    case ax::mojom::Role::kFigure: {
       tag->fTypeString = kPDFStructureTypeFigure;
       std::string alt =
           ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
@@ -167,9 +172,6 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     }
     case ax::mojom::Role::kStaticText:
-      // Currently we're only marking text content, so we can't generate
-      // a nonempty structure tree unless we have at least one kStaticText
-      // node in the tree.
       tag->fTypeString = kPDFStructureTypeNonStruct;
       valid = true;
       break;

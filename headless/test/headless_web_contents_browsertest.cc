@@ -570,9 +570,33 @@ const char kExpectedStructTreeJSON[] = R"({
 }
 )";
 
+const char kExpectedImageOnlyStructTreeJSON[] = R"({
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "Div",
+      "~children": [ {
+         "alt": "Sample SVG image",
+         "type": "Figure"
+      } ]
+   } ]
+}
+)";
+
+struct TaggedPDFTestData {
+  const char* url;
+  const char* expected_json;
+};
+
+constexpr TaggedPDFTestData kTaggedPDFTestData[] = {
+    {"/structured_doc.html", kExpectedStructTreeJSON},
+    {"/structured_doc_only_image.html", kExpectedImageOnlyStructTreeJSON},
+};
+
 class HeadlessWebContentsTaggedPDFTest
     : public HeadlessAsyncDevTooledBrowserTest,
-      public page::Observer {
+      public page::Observer,
+      public ::testing::WithParamInterface<TaggedPDFTestData> {
  public:
   void RunDevTooledTest() override {
     EXPECT_TRUE(embedded_test_server()->Start());
@@ -584,7 +608,7 @@ class HeadlessWebContentsTaggedPDFTest
     run_loop.Run();
 
     devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL("/structured_doc.html").spec());
+        embedded_test_server()->GetURL(GetParam().url).spec());
   }
 
   void OnLoadEventFired(const page::LoadEventFiredParams&) override {
@@ -624,13 +648,17 @@ class HeadlessWebContentsTaggedPDFTest
     // Map Windows line endings to Unix by removing '\r'.
     base::RemoveChars(json, "\r", &json);
 
-    EXPECT_EQ(kExpectedStructTreeJSON, json);
+    EXPECT_EQ(GetParam().expected_json, json);
 
     FinishAsynchronousTest();
   }
 };
 
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsTaggedPDFTest);
+HEADLESS_ASYNC_DEVTOOLED_TEST_P(HeadlessWebContentsTaggedPDFTest);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HeadlessWebContentsTaggedPDFTest,
+                         ::testing::ValuesIn(kTaggedPDFTestData));
 
 #endif  // BUILDFLAG(ENABLE_TAGGED_PDF)
 
