@@ -888,7 +888,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)didSelectSearchRecentTabsInSuggestedActionsViewController:
     (SuggestedActionsViewController*)viewController {
-  // TODO(crbug.com/1297859): Log the user action.
+  base::RecordAction(
+      base::UserMetricsAction("TabsSearch.SuggestedActions.RecentTabs"));
   [self.suggestedActionsDelegate searchRecentTabsForText:self.searchText];
 }
 
