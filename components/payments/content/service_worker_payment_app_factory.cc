@@ -24,18 +24,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 namespace payments {
-namespace {
-
-std::vector<mojom::PaymentMethodDataPtr> Clone(
-    const std::vector<mojom::PaymentMethodDataPtr>& original) {
-  std::vector<mojom::PaymentMethodDataPtr> clone(original.size());
-  std::transform(
-      original.begin(), original.end(), clone.begin(),
-      [](const mojom::PaymentMethodDataPtr& item) { return item.Clone(); });
-  return clone;
-}
-
-}  // namespace
 
 class ServiceWorkerPaymentAppCreator {
  public:
@@ -202,7 +190,7 @@ void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
       ->GetAllPaymentApps(
           delegate->GetFrameSecurityOrigin(),
           delegate->GetPaymentManifestWebDataService(),
-          Clone(delegate->GetMethodData()),
+          mojo::Clone(delegate->GetMethodData()),
           delegate->MayCrawlForInstallablePaymentApps(),
           base::BindOnce(&ServiceWorkerPaymentAppCreator::CreatePaymentApps,
                          creator_raw_pointer->GetWeakPtr()),
