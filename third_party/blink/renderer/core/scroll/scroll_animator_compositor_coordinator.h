@@ -92,6 +92,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   void Dispose();
   String RunStateAsText() const;
 
+  void DetachElement();
+
   virtual bool HasRunningAnimation() const { return false; }
 
   virtual void ResetAnimationState();
@@ -191,6 +193,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   bool impl_only_animation_takeover_;
 
  private:
+  bool element_detached_ = false;
+
   CompositorElementId GetScrollElementId() const;
   bool HasImplOnlyAnimationUpdate() const;
   void UpdateImplOnlyCompositorAnimations();

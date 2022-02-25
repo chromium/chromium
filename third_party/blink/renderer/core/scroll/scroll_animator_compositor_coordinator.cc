@@ -28,12 +28,21 @@ ScrollAnimatorCompositorCoordinator::ScrollAnimatorCompositorCoordinator()
   compositor_animation_->SetAnimationDelegate(this);
 }
 
+// TODO(dbaron): This should probably DCHECK(element_detached_), but too
+// many unittests would fail such a DCHECK().
 ScrollAnimatorCompositorCoordinator::~ScrollAnimatorCompositorCoordinator() =
     default;
 
 void ScrollAnimatorCompositorCoordinator::Dispose() {
   compositor_animation_->SetAnimationDelegate(nullptr);
   compositor_animation_.reset();
+}
+
+void ScrollAnimatorCompositorCoordinator::DetachElement() {
+  DCHECK(!element_detached_);
+  element_detached_ = true;
+  ReattachCompositorAnimationIfNeeded(
+      GetScrollableArea()->GetCompositorAnimationTimeline());
 }
 
 void ScrollAnimatorCompositorCoordinator::ResetAnimationState() {
@@ -184,7 +193,10 @@ void ScrollAnimatorCompositorCoordinator::CompositorAnimationFinished(
 bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
     CompositorAnimationTimeline* timeline) {
   bool reattached = false;
-  CompositorElementId element_id = GetScrollElementId();
+  CompositorElementId element_id;
+  if (!element_detached_) {
+    element_id = GetScrollElementId();
+  }
   if (element_id != element_id_) {
     if (compositor_animation_ && timeline) {
       // Detach from old layer (if any).
