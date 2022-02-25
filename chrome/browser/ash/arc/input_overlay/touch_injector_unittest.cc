@@ -214,6 +214,18 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return false;
   }
 
+  int GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
+    return injector_->GetRewrittenTouchIdForTesting(original_id);
+  }
+
+  gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id) {
+    return injector_->GetRewrittenRootLocationForTesting(original_id);
+  }
+
+  int GetRewrittenTouchInfoSizeForTesting() {
+    return injector_->GetRewrittenTouchInfoSizeForTesting();
+  }
+
   aura::TestScreen* test_screen() {
     return aura::test::AuraTestHelper::GetInstance()->GetTestScreen();
   }
@@ -641,6 +653,133 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   event_generator_->MoveMouseTo(gfx::Point(330, 220), 1);
   EXPECT_FALSE(event_capturer_.mouse_events().empty());
   event_capturer_.Clear();
+}
+
+TEST_F(TouchInjectorTest, TestEventRewriterTouchToTouch) {
+  // Setup.
+  base::JSONReader::ValueWithError json_value =
+      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->ParseActions(json_value.value.value());
+  injector_->RegisterEventRewriter();
+
+  // Verify initial states.
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_TRUE(event_capturer_.touch_events().empty());
+  EXPECT_EQ(0, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Case 1: Verify key event and touch event with matching ids will be handled
+  // correctly. Press down a keyboard key (A key) that will be converted to a
+  // touch event, then a physical touch on the screen. Both initial inputs will
+  // have the same id of 0. Then release the ids.
+
+  // First, press key A with id 0.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  auto* keyEvent = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, keyEvent->type());
+  EXPECT_EQ(0, keyEvent->pointer_details().id);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Second, press touch event with same id as A key.
+  event_generator_->PressTouchId(0, gfx::Point(360, 420));
+  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  // Verify id has been updated to not match the A key.
+  auto* touchEvent = event_capturer_.touch_events()[1].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
+  EXPECT_NE(touchEvent->pointer_details().id, keyEvent->pointer_details().id);
+  EXPECT_EQ(1, touchEvent->pointer_details().id);
+
+  // Send release event for A key. Verify the touch id is still in our map.
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 0);
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  // Send release event for touch event. Verify touch id is removed from map.
+  event_generator_->ReleaseTouchId(0);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  event_capturer_.Clear();
+
+  // Case 2: Similar to Test 2, but the order of the inputs pressed are
+  // reversed. Press down a physical touch on the screen, then a a keyboard key
+  // (A key) that will be converted to a touch event. Both initial inputs will
+  // have the id of 0. Then release the ids.
+
+  // First, press touch event with id 0.
+  event_generator_->PressTouchId(0, gfx::Point(360, 420));
+  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  touchEvent = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
+  EXPECT_EQ(0, touchEvent->pointer_details().id);
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  // Second, press key A with same id as the physical touch event.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  // Verify ids do not match.
+  keyEvent = event_capturer_.touch_events()[1].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, keyEvent->type());
+  EXPECT_EQ(1, keyEvent->pointer_details().id);
+  EXPECT_NE(touchEvent->pointer_details().id, keyEvent->pointer_details().id);
+
+  // Send release event for touch event. Verify touch id is removed from map.
+  event_generator_->ReleaseTouchId(0);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Send release event for A key. Verify our map is still empty.
+  event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, 0);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  event_capturer_.Clear();
+
+  // Case 3: Send a touch event in a location outside of the window content
+  // bounds. This test will verify that we do not override the id that this
+  // touch event was originally assigned, which is 10 for this test.
+  event_generator_->PressTouchId(10, gfx::Point(5, 5));
+  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  touchEvent = event_capturer_.touch_events()[0].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, touchEvent->type());
+
+  // Verify the event still has id value 10 and wasn't added to our map.
+  EXPECT_EQ(10, touchEvent->pointer_details().id);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Send release event for touch event. Verify map still is empty.
+  event_generator_->ReleaseTouchId(10);
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  event_capturer_.Clear();
+
+  // Case 4: Verify the logic in DispatchTouchCancelEvent is correct by
+  // creating a touch and key press, then unregistering the event rewriter.
+  // This should result in touch cancel events occurring for the events.
+
+  // First, press key A.
+  event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, 0 /* keyboard id */);
+  EXPECT_TRUE(event_capturer_.key_events().empty());
+  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
+
+  // Second, press touch event.
+  event_generator_->PressTouchId(0, gfx::Point(360, 420));
+  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1, GetRewrittenTouchInfoSizeForTesting());
+
+  // Verify DispatchTouchCancelEvent logic through UnRegisterEventRewriter.
+  injector_->UnRegisterEventRewriter();
+
+  // Verify the existing events have generated a canceled event.
+  EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
+  touchEvent = event_capturer_.touch_events()[2].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, touchEvent->type());
+  touchEvent = event_capturer_.touch_events()[3].get();
+  EXPECT_EQ(ui::EventType::ET_TOUCH_CANCELLED, touchEvent->type());
+  EXPECT_EQ(0, GetRewrittenTouchInfoSizeForTesting());
 }
 
 }  // namespace input_overlay

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 
 #include <list>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/task/thread_pool.h"
@@ -12,7 +13,9 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move_mouse.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_key.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_tap_mouse.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "ui/aura/window.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -177,6 +180,26 @@ void TouchInjector::DispatchTouchCancelEvent() {
                  "touch event.";
     }
   }
+
+  // Cancel active touch-to-touch events.
+  for (auto& touch_info : rewritten_touch_infos_) {
+    auto touch_point_info = touch_info.second;
+    auto managed_touch_id = touch_point_info.rewritten_touch_id;
+    auto root_location = touch_point_info.touch_root_location;
+
+    auto touch_to_release = std::make_unique<ui::TouchEvent>(ui::TouchEvent(
+        ui::EventType::ET_TOUCH_CANCELLED, root_location, root_location,
+        ui::EventTimeForNow(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+    if (SendEventFinally(continuation_, &*touch_to_release)
+            .dispatcher_destroyed) {
+      VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
+                 "stored touch event.";
+    }
+    arc::TouchIdManager::GetInstance()->ReleaseTouchID(
+        touch_info.second.rewritten_touch_id);
+  }
+  rewritten_touch_infos_.clear();
 }
 
 void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
@@ -204,6 +227,26 @@ void TouchInjector::DispatchTouchReleaseEvent() {
                  "touch event when unlocking mouse.";
     }
   }
+
+  // Release active touch-to-touch events.
+  for (auto& touch_info : rewritten_touch_infos_) {
+    auto touch_point_info = touch_info.second;
+    auto managed_touch_id = touch_point_info.rewritten_touch_id;
+    auto root_location = touch_point_info.touch_root_location;
+
+    auto touch_to_release = std::make_unique<ui::TouchEvent>(ui::TouchEvent(
+        ui::EventType::ET_TOUCH_RELEASED, root_location, root_location,
+        ui::EventTimeForNow(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+    if (SendEventFinally(continuation_, &*touch_to_release)
+            .dispatcher_destroyed) {
+      VLOG(0) << "Undispatched event due to destroyed dispatcher for releasing "
+                 "stored touch event.";
+    }
+    arc::TouchIdManager::GetInstance()->ReleaseTouchID(
+        touch_info.second.rewritten_touch_id);
+  }
+  rewritten_touch_infos_.clear();
 }
 
 void TouchInjector::SendExtraEvent(
@@ -298,6 +341,24 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (!touch_injector_enable_)
     return SendEvent(continuation, &event);
 
+  if (event.IsTouchEvent()) {
+    auto* touch_event = event.AsTouchEvent();
+    auto location = touch_event->root_location();
+    target_window_->GetHost()->ConvertPixelsToDIP(&location);
+    auto location_f = gfx::PointF(location);
+    // Send touch event as it is if the event is outside of the content bounds.
+    if (!bounds.Contains(location_f))
+      return SendEvent(continuation, &event);
+
+    std::unique_ptr<ui::TouchEvent> new_touch_event =
+        RewriteOriginalTouch(touch_event);
+
+    if (new_touch_event)
+      return SendEventFinally(continuation, new_touch_event.get());
+
+    return DiscardEvent(continuation);
+  }
+
   if (mouse_lock_ && mouse_lock_->Process(event))
     return DiscardEvent(continuation);
 
@@ -338,6 +399,83 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     return DiscardEvent(continuation);
 
   return SendEvent(continuation, &event);
+}
+
+std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
+    const ui::TouchEvent* touch_event) {
+  ui::PointerId original_id = touch_event->pointer_details().id;
+  auto it = rewritten_touch_infos_.find(original_id);
+
+  if (it == rewritten_touch_infos_.end()) {
+    DCHECK(touch_event->type() == ui::ET_TOUCH_PRESSED);
+    if (touch_event->type() != ui::ET_TOUCH_PRESSED)
+      return nullptr;
+  } else {
+    DCHECK(touch_event->type() != ui::ET_TOUCH_PRESSED);
+    if (touch_event->type() == ui::ET_TOUCH_PRESSED)
+      return nullptr;
+  }
+
+  // Confirmed the input is valid.
+  gfx::PointF root_location_f = touch_event->root_location_f();
+
+  if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
+    // Generate new touch id that we can manage and add to map.
+    absl::optional<int> managed_touch_id =
+        arc::TouchIdManager::GetInstance()->ObtainTouchID();
+    DCHECK(managed_touch_id);
+    TouchPointInfo touch_point = {
+        .rewritten_touch_id = *managed_touch_id,
+        .touch_root_location = root_location_f,
+    };
+    rewritten_touch_infos_.emplace(original_id, touch_point);
+    return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
+                            root_location_f);
+  } else if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
+    absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+    DCHECK(managed_touch_id);
+    rewritten_touch_infos_.erase(original_id);
+    arc::TouchIdManager::GetInstance()->ReleaseTouchID(*managed_touch_id);
+    return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
+                            root_location_f);
+  }
+
+  // Update this id's stored location to this newest location.
+  it->second.touch_root_location = root_location_f;
+  absl::optional<int> managed_touch_id = it->second.rewritten_touch_id;
+  DCHECK(managed_touch_id);
+  return CreateTouchEvent(touch_event, original_id, *managed_touch_id,
+                          root_location_f);
+}
+
+std::unique_ptr<ui::TouchEvent> TouchInjector::CreateTouchEvent(
+    const ui::TouchEvent* touch_event,
+    ui::PointerId original_id,
+    int managed_touch_id,
+    gfx::PointF root_location_f) {
+  return std::make_unique<ui::TouchEvent>(ui::TouchEvent(
+      touch_event->type(), root_location_f, root_location_f,
+      touch_event->time_stamp(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+}
+
+int TouchInjector::GetRewrittenTouchIdForTesting(ui::PointerId original_id) {
+  auto it = rewritten_touch_infos_.find(original_id);
+  DCHECK(it != rewritten_touch_infos_.end());
+
+  return it->second.rewritten_touch_id;
+}
+
+gfx::PointF TouchInjector::GetRewrittenRootLocationForTesting(
+    ui::PointerId original_id) {
+  auto it = rewritten_touch_infos_.find(original_id);
+  DCHECK(it != rewritten_touch_infos_.end());
+
+  return it->second.touch_root_location;
+}
+
+int TouchInjector::GetRewrittenTouchInfoSizeForTesting() {
+  return rewritten_touch_infos_.size();
 }
 
 }  // namespace input_overlay

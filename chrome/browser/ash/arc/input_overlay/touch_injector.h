@@ -86,6 +86,16 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
+  friend class TouchInjectorTest;
+
+  struct TouchPointInfo {
+    // ID managed by input overlay.
+    int rewritten_touch_id;
+
+    // The latest root location of this given touch event.
+    gfx::PointF touch_root_location;
+  };
+
   class KeyCommand;
 
   // If the window is destroying or focusing out, releasing the active touch
@@ -106,6 +116,23 @@ class TouchInjector : public ui::EventRewriter {
   // Check if the event located on menu icon.
   bool MenuAnchorPressed(const ui::Event& event,
                          const gfx::RectF& content_bounds);
+
+  // Takes valid touch events and overrides their ids with an id managed by the
+  // TouchIdManager.
+  std::unique_ptr<ui::TouchEvent> RewriteOriginalTouch(
+      const ui::TouchEvent* touch_event);
+
+  // This method will generate a new touch event with a managed touch id.
+  std::unique_ptr<ui::TouchEvent> CreateTouchEvent(
+      const ui::TouchEvent* touch_event,
+      ui::PointerId original_id,
+      int managed_touch_id,
+      gfx::PointF root_location_f);
+
+  // For test.
+  int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
+  gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
+  int GetRewrittenTouchInfoSizeForTesting();
 
   aura::Window* target_window_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
@@ -128,6 +155,10 @@ class TouchInjector : public ui::EventRewriter {
   // Linked to input mapping toggle in the menu. Set it enabled by default. This
   // is to save status if display overlay is destroyed during window operations.
   bool input_mapping_visible_ = true;
+
+  // Key is the original touch id.
+  // Value is a struct containing required info for this touch event.
+  base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
