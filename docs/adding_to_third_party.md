@@ -21,10 +21,14 @@ there.
 ## Before you start
 
 To make sure the inclusion of a new third_party project makes sense for the
-Chromium project, you should first obtain Chrome Eng Review approval.
-Googlers should see go/chrome-eng-review and review existing topics in
-g/chrome-eng-review. Please include information about the additional checkout
-size, build times, and binary size increase of
+Chromium project, you should first obtain
+[Chrome Eng Review](../ENG_REVIEW_OWNERS) approval. Googlers should see
+[go/chrome-eng-review](https://goto.google.com/chrome-eng-review) and review
+existing topics in g/chrome-eng-review, and can also come to office hours to ask
+questions.
+
+Please include information about the additional checkout size, build times,
+and binary size increase of
 [official](https://www.chromium.org/developers/gn-build-configuration) builds
 on Android and one desktop platform. Please also make sure that the motivation
 for your project is clear, e.g., a design doc has been circulated.
