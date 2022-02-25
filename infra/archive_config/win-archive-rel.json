@@ -176,6 +176,15 @@
             "gcs_bucket": "chromium-browser-snapshots",
             "gcs_path": "Win_x64/{%position%}",
             "archive_type": "ARCHIVE_TYPE_FILES"
+        },
+        {
+            "files": [
+                "updater.exe.pdb",
+                "UpdaterSetup.exe.pdb"
+            ],
+            "gcs_bucket": "chromium-browser-snapshots",
+            "gcs_path": "Win_x64/{%position%}/updater-syms.zip",
+            "archive_type":"ARCHIVE_TYPE_ZIP"
         }
     ]
 }
