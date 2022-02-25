@@ -348,7 +348,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DownloadManagerCoordinator* _downloadManagerCoordinator;
 
   // A map associating webStates with their NTP coordinators.
-  // TODO(crbug.com/1173610): Factor NTPCoordinator ownership out of the BVC
+  // TODO(crbug.com/1300911): Factor NTPCoordinator ownership out of the BVC
   std::map<web::WebState*, NewTabPageCoordinator*> _ntpCoordinatorsForWebStates;
 
   // Fake status bar view used to blend the toolbar into the status bar.
@@ -2582,7 +2582,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!webState->IsRealized())
     return;
 
-  // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
+  // TODO(crbug.com/1300911): Have BrowserCoordinator manage the NTP.
   // No need to stop _ntpCoordinator with Single NTP enabled since shutdown will
   // do that. In addition, uninstallDelegatesForWebState: is called for
   // individual WebState removals, which should not trigger a stop.
@@ -4624,7 +4624,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       // Checks for leaks in |_ntpCoordinatorsForWebStates|.
       DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
                 self.browser->GetWebStateList()->count() - 1);
-      // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
+      // TODO(crbug.com/1300911): Have BrowserCoordinator manage the NTP.
       NewTabPageCoordinator* newTabPageCoordinator =
           [[NewTabPageCoordinator alloc]
               initWithBaseViewController:self

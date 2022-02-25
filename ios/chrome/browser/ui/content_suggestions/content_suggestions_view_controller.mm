@@ -132,16 +132,6 @@ const CGFloat kCardBorderRadius = 11;
                          @{@"collection" : self.collectionView});
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-
-  // TODO(crbug.com/1200303): Reload data is needed here so the content matches
-  // the current UI Layout after changing the Feed state (e.g. Turned On/Off).
-  // This shouldn't be necessary once we stop starting and stopping the
-  // Coordinator to achieve this.
-  [self.collectionView reloadData];
-}
-
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   if (ShouldShowReturnToMostRecentTabForStartSurface()) {

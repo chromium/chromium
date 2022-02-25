@@ -8,7 +8,8 @@
 #import <UIKit/UIKit.h>
 
 // App interface for the NTP.
-// TODO(crbug.com/1200303): Move this to */ui/ntp.
+// TODO(crbug.com/1299373): Separate content suggestions functions into
+// ContentSuggestionsAppInterface interface and move this to /ui/ntp.
 @interface NewTabPageAppInterface : NSObject
 
 // Sets the fake service up.

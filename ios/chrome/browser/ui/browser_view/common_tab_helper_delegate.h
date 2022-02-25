@@ -18,7 +18,7 @@
 // that the BVC conforms to to zero.
 @protocol CommonTabHelperDelegate <
     BubblePresenterDelegate,
-    // TODO(crbug.com/1173610): Factor NewTabPageTabHelperDelegate out of the
+    // TODO(crbug.com/1300911): Factor NewTabPageTabHelperDelegate out of the
     // BVC.
     NewTabPageTabHelperDelegate,
     OverscrollActionsControllerDelegate,

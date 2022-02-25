@@ -37,14 +37,10 @@ class ReadingListModel;
 class WebStateList;
 
 // Mediator for ContentSuggestions.
-// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
-// This means removing legacy Feed and non refactored NTP code.
 @interface ContentSuggestionsMediator
     : NSObject <StartSurfaceRecentTabObserving>
 
 // Default initializer.
-// TODO(crbug.com/1200303): Update comment once this file has been cleaned up.
-// This means removing legacy Feed and non refactored NTP code.
 - (instancetype)
          initWithLargeIconService:(favicon::LargeIconService*)largeIconService
                    largeIconCache:(LargeIconCache*)largeIconCache
