@@ -161,14 +161,6 @@ TargetThread::TargetThread(OnceClosure to_run) : to_run_(std::move(to_run)) {}
 
 TargetThread::~TargetThread() = default;
 
-void TargetThread::Start() {
-  EXPECT_TRUE(PlatformThread::Create(0, this, &target_thread_handle_));
-}
-
-void TargetThread::Join() {
-  PlatformThread::Join(target_thread_handle_);
-}
-
 void TargetThread::ThreadMain() {
   thread_token_ = GetSamplingProfilerCurrentThreadToken();
   std::move(to_run_).Run();
@@ -289,13 +281,16 @@ void WithTargetThread(UnwindScenario* scenario,
   TargetThread target_thread(
       BindLambdaForTesting([&]() { scenario->Execute(&events); }));
 
-  target_thread.Start();
+  PlatformThreadHandle target_thread_handle;
+  EXPECT_TRUE(PlatformThread::Create(0, &target_thread, &target_thread_handle));
+
   events.ready_for_sample.Wait();
 
   std::move(profile_callback).Run(target_thread.thread_token());
 
   events.sample_finished.Signal();
-  target_thread.Join();
+
+  PlatformThread::Join(target_thread_handle);
 }
 
 std::vector<Frame> SampleScenario(UnwindScenario* scenario,

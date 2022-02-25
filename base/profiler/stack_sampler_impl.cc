@@ -108,8 +108,7 @@ void StackSamplerImpl::AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) {
 }
 
 void StackSamplerImpl::RecordStackFrames(StackBuffer* stack_buffer,
-                                         ProfileBuilder* profile_builder,
-                                         PlatformThreadId thread_id) {
+                                         ProfileBuilder* profile_builder) {
   DCHECK(stack_buffer);
 
   if (record_sample_callback_)
@@ -124,7 +123,7 @@ void StackSamplerImpl::RecordStackFrames(StackBuffer* stack_buffer,
     // Make this scope as small as possible because |metadata_provider| is
     // holding a lock.
     MetadataRecorder::MetadataProvider metadata_provider(
-        GetSampleMetadataRecorder(), thread_id);
+        GetSampleMetadataRecorder());
     StackCopierDelegate delegate(&unwinders_, profile_builder,
                                  &metadata_provider);
     copy_stack_succeeded = stack_copier_->CopyStack(

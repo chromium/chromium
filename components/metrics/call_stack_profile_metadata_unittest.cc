@@ -84,8 +84,8 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NoItems) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
 
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
@@ -99,9 +99,9 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_SetItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -119,9 +119,9 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_SetKeyedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -135,40 +135,18 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_SetKeyedItem) {
   EXPECT_EQ(10, items[0].value());
 }
 
-TEST(CallStackProfileMetadataTest, MetadataRecorder_SetThreadItem) {
-  base::MetadataRecorder metadata_recorder;
-  CallStackProfileMetadata metadata;
-  google::protobuf::RepeatedField<uint64_t> name_hashes;
-
-  metadata_recorder.Set(100, absl::nullopt, base::PlatformThread::CurrentId(),
-                        10);
-  metadata_recorder.Set(100, absl::nullopt, base::kInvalidThreadId, 20);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
-  google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
-      metadata.CreateSampleMetadata(&name_hashes);
-
-  ASSERT_EQ(1, name_hashes.size());
-  EXPECT_EQ(100u, name_hashes[0]);
-
-  ASSERT_EQ(1, items.size());
-  EXPECT_EQ(0, items[0].name_hash_index());
-  EXPECT_FALSE(items[0].has_key());
-  EXPECT_EQ(10, items[0].value());
-}
-
 TEST(CallStackProfileMetadataTest, MetadataRecorder_RepeatItem) {
   base::MetadataRecorder metadata_recorder;
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -183,13 +161,13 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RepeatKeyedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -204,14 +182,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_ModifiedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 11);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 11);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -228,14 +206,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_ModifiedKeyedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 11);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 11);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -253,14 +231,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NewItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(101, absl::nullopt, absl::nullopt, 11);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(101, absl::nullopt, 11);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -278,14 +256,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NewKeyedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Set(101, 50, absl::nullopt, 11);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(101, 50, 11);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -304,14 +282,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(100, absl::nullopt, absl::nullopt);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Remove(100, absl::nullopt);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -328,14 +306,14 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedKeyedItem) {
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(100, 50, absl::nullopt);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Remove(100, 50);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -348,42 +326,16 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedKeyedItem) {
   EXPECT_FALSE(items[0].has_value());
 }
 
-TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedThreadItem) {
-  base::MetadataRecorder metadata_recorder;
-  CallStackProfileMetadata metadata;
-  google::protobuf::RepeatedField<uint64_t> name_hashes;
-
-  metadata_recorder.Set(100, absl::nullopt, base::PlatformThread::CurrentId(),
-                        10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
-
-  metadata_recorder.Remove(100, absl::nullopt,
-                           base::PlatformThread::CurrentId());
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
-  google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
-      metadata.CreateSampleMetadata(&name_hashes);
-
-  EXPECT_EQ(1, name_hashes.size());
-
-  ASSERT_EQ(1, items.size());
-  EXPECT_EQ(0, items[0].name_hash_index());
-  EXPECT_FALSE(items[0].has_key());
-  EXPECT_FALSE(items[0].has_value());
-}
-
 TEST(CallStackProfileMetadataTest,
      MetadataRecorder_SetMixedUnkeyedAndKeyedItems) {
   base::MetadataRecorder metadata_recorder;
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 20);
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 20);
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -405,15 +357,15 @@ TEST(CallStackProfileMetadataTest,
   CallStackProfileMetadata metadata;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  metadata_recorder.Set(100, absl::nullopt, absl::nullopt, 20);
-  metadata_recorder.Set(100, 50, absl::nullopt, 10);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(100, absl::nullopt, 20);
+  metadata_recorder.Set(100, 50, 10);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(100, absl::nullopt, absl::nullopt);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Remove(100, absl::nullopt);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem> items =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -434,7 +386,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_Basic) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
   metadata.ApplyMetadata(item, stack_samples.begin() + 1,
                          stack_samples.begin() + 4, &stack_samples,
                          &name_hashes);
@@ -467,8 +419,8 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_DifferentNameHashes) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(4, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(4, 30, 300);
   metadata.ApplyMetadata(item1, stack_samples.begin() + 1,
                          stack_samples.begin() + 4, &stack_samples,
                          &name_hashes);
@@ -504,10 +456,9 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_DifferentKeys) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 40, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item3(3, absl::nullopt, absl::nullopt,
-                                           300);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 40, 300);
+  const base::MetadataRecorder::Item item3(3, absl::nullopt, 300);
   metadata.ApplyMetadata(item1, stack_samples.begin() + 1,
                          stack_samples.begin() + 4, &stack_samples,
                          &name_hashes);
@@ -547,7 +498,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_EmptyRange) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
   metadata.ApplyMetadata(item, stack_samples.begin() + 1,
                          stack_samples.begin() + 1, &stack_samples,
                          &name_hashes);
@@ -569,7 +520,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_ThroughEnd) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
   metadata.ApplyMetadata(item, stack_samples.begin() + 1, stack_samples.end(),
                          &stack_samples, &name_hashes);
 
@@ -587,8 +538,8 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_ThroughEnd) {
   EXPECT_EQ(0, stack_samples[4].metadata_size());
 
   base::MetadataRecorder metadata_recorder;
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -605,27 +556,26 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_WithRecordMetadata) {
       stack_samples;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(5, 50, absl::nullopt, 500);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(5, 50, 500);
 
   stack_samples.Add();
 
   // Apply then remove item1.
-  metadata_recorder.Set(item1.name_hash, *item1.key, item1.thread_id,
-                        item1.value);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(item1.name_hash, *item1.key, item1.value);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata_recorder.Remove(item1.name_hash, *item1.key, item1.thread_id);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Remove(item1.name_hash, *item1.key);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -669,24 +619,23 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_WithActiveMetadata) {
       stack_samples;
   google::protobuf::RepeatedField<uint64_t> name_hashes;
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
   // Record item1 on an ongoing basis via RecordMetadata.
-  metadata_recorder.Set(item1.name_hash, *item1.key, item1.thread_id,
-                        item1.value);
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata_recorder.Set(item1.name_hash, *item1.key, item1.value);
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -706,8 +655,8 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_WithActiveMetadata) {
   EXPECT_EQ(0, stack_samples[2].metadata_size());
 
   // The next recorded sample should have item1 applied since it's still active.
-  metadata.RecordMetadata(base::MetadataRecorder::MetadataProvider(
-      &metadata_recorder, base::PlatformThread::CurrentId()));
+  metadata.RecordMetadata(
+      base::MetadataRecorder::MetadataProvider(&metadata_recorder));
   *stack_samples.Add()->mutable_metadata() =
       metadata.CreateSampleMetadata(&name_hashes);
 
@@ -725,7 +674,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_IndependentRanges) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over two non-overlapping ranges.
   metadata.ApplyMetadata(item, stack_samples.begin(), stack_samples.begin() + 2,
@@ -764,7 +713,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_BackToBackRanges) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over two ranges where the second starts on the same sample
   // that the first ends. This should result in one range covering both.
@@ -801,8 +750,8 @@ TEST(CallStackProfileMetadataTest,
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   metadata.ApplyMetadata(item1, stack_samples.begin(),
                          stack_samples.begin() + 2, &stack_samples,
@@ -841,7 +790,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_UpdateWithinExistingRange) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   metadata.ApplyMetadata(item, stack_samples.begin(), stack_samples.begin() + 4,
                          &stack_samples, &name_hashes);
@@ -877,8 +826,8 @@ TEST(CallStackProfileMetadataTest,
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   // Apply metadata over a range, then over a range fully enclosed within the
   // first one.
@@ -920,7 +869,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_UpdateEnclosesExistingRange) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over a range, then over a range that fully encloses the
   // first one.
@@ -958,8 +907,8 @@ TEST(CallStackProfileMetadataTest,
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   // Apply metadata over a range, then over a range that fully encloses the
   // first one.
@@ -997,7 +946,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_UpdateOverlapsBegin) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over a range, then over a range that overlaps the beginning
   // (but not the end) of first one.
@@ -1036,8 +985,8 @@ TEST(CallStackProfileMetadataTest,
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   // Apply metadata over a range, then over a range that overlaps the beginning
   // (but not the end) of first one.
@@ -1077,7 +1026,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_UpdateOverlapsEnd) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over a range, then over a range that overlaps the beginning
   // (but not the end) of first one.
@@ -1115,8 +1064,8 @@ TEST(CallStackProfileMetadataTest,
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   // Apply metadata over a range, then over a range that overlaps the beginning
   // (but not the end) of first one.
@@ -1155,7 +1104,7 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_Update) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item(3, 30, absl::nullopt, 300);
+  const base::MetadataRecorder::Item item(3, 30, 300);
 
   // Apply metadata over the same range with one value, then a different value.
   metadata.ApplyMetadata(item, stack_samples.begin() + 1,
@@ -1192,8 +1141,8 @@ TEST(CallStackProfileMetadataTest, ApplyMetadata_UpdateWithDifferentValues) {
   for (int i = 0; i < 5; i++)
     stack_samples.Add();
 
-  const base::MetadataRecorder::Item item1(3, 30, absl::nullopt, 300);
-  const base::MetadataRecorder::Item item2(3, 30, absl::nullopt, 400);
+  const base::MetadataRecorder::Item item1(3, 30, 300);
+  const base::MetadataRecorder::Item item2(3, 30, 400);
 
   // Apply metadata over the same range with one value, then a different value.
   metadata.ApplyMetadata(item1, stack_samples.begin() + 1,

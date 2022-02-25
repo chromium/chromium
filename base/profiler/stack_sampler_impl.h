@@ -39,8 +39,7 @@ class BASE_EXPORT StackSamplerImpl : public StackSampler {
   void Initialize() override;
   void AddAuxUnwinder(std::unique_ptr<Unwinder> unwinder) override;
   void RecordStackFrames(StackBuffer* stack_buffer,
-                         ProfileBuilder* profile_builder,
-                         PlatformThreadId thread_id) override;
+                         ProfileBuilder* profile_builder) override;
 
   // Exposes the internal function for unit testing.
   static std::vector<Frame> WalkStackForTesting(

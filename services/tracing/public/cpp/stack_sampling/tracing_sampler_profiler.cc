@@ -768,7 +768,7 @@ void TracingSamplerProfiler::StartTracing(
 #elif ANDROID_CFI_UNWINDING_SUPPORTED
   auto* module_cache = profile_builder->GetModuleCache();
   profiler_ = std::make_unique<base::StackSamplingProfiler>(
-      sampled_thread_token_, params, std::move(profile_builder),
+      params, std::move(profile_builder),
       std::make_unique<StackSamplerAndroid>(sampled_thread_token_,
                                             module_cache));
   profiler_->Start();
