@@ -20,6 +20,7 @@ source_set("welcome") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run/uma",
     "//ios/chrome/browser/ui/util:terms_util",
     "//ios/web/common:web_view_creation_util",
     "//ui/base",

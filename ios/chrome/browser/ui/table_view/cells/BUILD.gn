@@ -6,6 +6,8 @@ source_set("cells") {
   sources = [
     "table_view_activity_indicator_header_footer_item.h",
     "table_view_activity_indicator_header_footer_item.mm",
+    "table_view_attributed_string_header_footer_item.h",
+    "table_view_attributed_string_header_footer_item.mm",
     "table_view_cell.h",
     "table_view_cell.mm",
     "table_view_detail_icon_item.h",
