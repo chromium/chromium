@@ -49,7 +49,11 @@ TEST(ValuesTest, SizeOfValue) {
   // `base::Value::Dict` ends up taking 4 machine words instead of 3. An
   // additional word is used by absl::variant for the type index.
   constexpr size_t kExpectedSize = 5 * sizeof(void*);
-#else   // !BUILDFLAG(IS_WIN)
+#elif defined(__GLIBCXX__)
+  // libstdc++ std::string takes already 4 machine words, so the absl::variant
+  // takes 5
+  constexpr size_t kExpectedSize = 5 * sizeof(void*);
+#else   // !BUILDFLAG(IS_WIN) && !defined(__GLIBCXX__)
   // libc++'s std::string and std::vector both take 3 machine words. An
   // additional word is used by absl::variant for the type index.
   constexpr size_t kExpectedSize = 4 * sizeof(void*);
