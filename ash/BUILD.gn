@@ -155,6 +155,8 @@ component("ash") {
     "ambient/ambient_view_delegate_impl.cc",
     "ambient/ambient_view_delegate_impl.h",
     "ambient/autotest_ambient_api.cc",
+    "ambient/model/ambient_animation_attribution_provider.cc",
+    "ambient/model/ambient_animation_attribution_provider.h",
     "ambient/model/ambient_animation_photo_config.cc",
     "ambient/model/ambient_animation_photo_config.h",
     "ambient/model/ambient_animation_photo_provider.cc",
@@ -2318,6 +2320,7 @@ test("ash_unittests") {
     "ambient/ambient_photo_cache_unittest.cc",
     "ambient/ambient_photo_controller_unittest.cc",
     "ambient/autotest_ambient_api_unittest.cc",
+    "ambient/model/ambient_animation_attribution_provider_unittest.cc",
     "ambient/model/ambient_animation_photo_config_unittest.cc",
     "ambient/model/ambient_animation_photo_provider_unittest.cc",
     "ambient/model/ambient_backend_model_unittest.cc",
@@ -2950,6 +2953,7 @@ test("ash_unittests") {
   data = [
     # See DisplayColorManagerTest.
     "display/test_data/",
+    "//cc/test/data/",
   ]
 
   # Disallow depending directly on content.

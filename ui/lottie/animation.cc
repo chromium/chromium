@@ -73,7 +73,9 @@ double Animation::TimerControl::GetNormalizedEndOffset() const {
 Animation::Animation(scoped_refptr<cc::SkottieWrapper> skottie,
                      cc::SkottieColorMap color_map,
                      cc::SkottieFrameDataProvider* frame_data_provider)
-    : skottie_(skottie), color_map_(std::move(color_map)) {
+    : skottie_(skottie),
+      color_map_(std::move(color_map)),
+      text_map_(skottie_->GetCurrentTextPropertyValues()) {
   DCHECK(skottie_);
   bool animation_has_image_assets =
       !skottie_->GetImageAssetMetadata().asset_storage().empty();
@@ -234,7 +236,7 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                                         base::Unretained(this), canvas,
                                         std::ref(all_frame_data)));
   canvas->DrawSkottie(skottie(), gfx::Rect(size), t, std::move(all_frame_data),
-                      color_map_, cc::SkottieTextPropertyValueMap());
+                      color_map_, text_map_);
 }
 
 cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(

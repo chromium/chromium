@@ -255,7 +255,7 @@ scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json) {
       std::vector<uint8_t>(json_span.begin(), json_span.end()));
 }
 
-scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
+std::string LoadSkottieFileFromTestData(
     base::FilePath::StringPieceType animation_file_name) {
   base::FilePath animation_path;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &animation_path));
@@ -264,7 +264,13 @@ scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
   std::string animation_json;
   CHECK(base::ReadFileToString(animation_path, &animation_json))
       << animation_path;
-  return CreateSkottieFromString(animation_json);
+  return animation_json;
+}
+
+scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
+    base::FilePath::StringPieceType animation_file_name) {
+  return CreateSkottieFromString(
+      LoadSkottieFileFromTestData(animation_file_name));
 }
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {

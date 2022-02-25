@@ -6,6 +6,7 @@
 #define CC_TEST_SKIA_COMMON_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -79,6 +80,8 @@ PaintImage CreateBitmapImage(const gfx::Size& size,
 scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
 scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json);
+std::string LoadSkottieFileFromTestData(
+    base::FilePath::StringPieceType animation_file_name);
 scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
     base::FilePath::StringPieceType animation_file_name);
 

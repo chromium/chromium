@@ -296,6 +296,13 @@ constexpr base::StringPiece kLottieDataWith2TextNode1Text = "test_text_1";
 constexpr base::StringPiece kLottieDataWith2TextNode2 = "text_node_2";
 constexpr base::StringPiece kLottieDataWith2TextNode2Text = "test_text_2";
 
+// Returns an animation with the same structure as
+// |kLottieDataWith2TextFileName| except with text node names specified by the
+// caller.
+std::string CreateCustomLottieDataWith2TextNodes(
+    base::StringPiece custom_text_node_name_0,
+    base::StringPiece custom_text_node_name_1);
+
 }  // namespace cc
 
 #endif  // CC_TEST_LOTTIE_TEST_DATA_H_

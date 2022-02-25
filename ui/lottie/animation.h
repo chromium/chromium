@@ -18,6 +18,7 @@
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_frame_data_provider.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -158,6 +159,13 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // Returns the skottie object that contins the animation data.
   scoped_refptr<cc::SkottieWrapper> skottie() const { return skottie_; }
 
+  // Returns the text nodes in the animation and their corresponding current
+  // property values. The text nodes' initial property values reflect those
+  // embedded in the Lottie animation file. A mutable reference is returned
+  // so that the caller may modify the text map with its own custom values
+  // before calling Paint(). The caller may do so as many times as desired.
+  cc::SkottieTextPropertyValueMap& text_map() { return text_map_; }
+
  private:
   friend class AnimationTest;
 
@@ -257,6 +265,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
   cc::SkottieColorMap color_map_;
+  cc::SkottieTextPropertyValueMap text_map_;
   base::flat_map<cc::SkottieResourceIdHash,
                  scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>>
       image_assets_;

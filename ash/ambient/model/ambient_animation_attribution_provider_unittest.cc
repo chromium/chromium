@@ -1,0 +1,185 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/ambient/model/ambient_animation_attribution_provider.h"
+
+#include <functional>
+#include <string>
+#include <utility>
+
+#include "ash/ambient/model/ambient_animation_photo_config.h"
+#include "ash/ambient/model/ambient_animation_photo_provider.h"
+#include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/resources/ambient_animation_static_resources.h"
+#include "ash/ambient/test/ambient_test_util.h"
+#include "ash/ambient/test/fake_ambient_animation_static_resources.h"
+#include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
+#include "cc/test/lottie_test_data.h"
+#include "cc/test/skia_common.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/lottie/animation.h"
+
+namespace ash {
+
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
+using ImageAsset = ::cc::SkottieFrameDataProvider::ImageAsset;
+
+// Has 2 assets and 2 text nodes.
+class AmbientAnimationAttributionProviderTest : public ::testing::Test {
+ protected:
+  AmbientAnimationAttributionProviderTest(std::string attribution_node_0,
+                                          std::string attribution_node_1,
+                                          std::string asset_id_0,
+                                          std::string asset_id_1)
+      : attribution_node_0_(std::move(attribution_node_0)),
+        attribution_node_1_(std::move(attribution_node_1)),
+        asset_id_0_(std::move(asset_id_0)),
+        asset_id_1_(std::move(asset_id_1)),
+        model_(
+            CreateAmbientAnimationPhotoConfig(BuildSkottieResourceMetadata())),
+        photo_provider_(&static_resources_, &model_),
+        animation_(cc::CreateSkottieFromString(
+            cc::CreateCustomLottieDataWith2TextNodes(attribution_node_0_,
+                                                     attribution_node_1_))),
+        attribution_provider_(&photo_provider_, &animation_) {}
+
+  cc::SkottieResourceMetadataMap BuildSkottieResourceMetadata() const {
+    cc::SkottieResourceMetadataMap resource_metadata;
+    CHECK(resource_metadata.RegisterAsset("dummy-resource-path",
+                                          "dummy-resource-name", asset_id_0_,
+                                          /*size=*/absl::nullopt));
+    CHECK(resource_metadata.RegisterAsset("dummy-resource-path",
+                                          "dummy-resource-name", asset_id_1_,
+                                          /*size=*/absl::nullopt));
+    return resource_metadata;
+  }
+
+  void RefreshDynamicImageAssets(
+      absl::optional<std::string> asset_0_attribution,
+      absl::optional<std::string> asset_1_attribution) {
+    gfx::ImageSkia test_image =
+        gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
+    base::flat_map</*asset_id*/ std::string,
+                   std::reference_wrapper<const PhotoWithDetails>>
+        new_topics;
+
+    PhotoWithDetails topic_0;
+    if (asset_0_attribution) {
+      topic_0.photo = test_image;
+      topic_0.details = std::move(*asset_0_attribution);
+      new_topics.emplace(asset_id_0_, std::cref(topic_0));
+    }
+
+    PhotoWithDetails topic_1;
+    if (asset_1_attribution) {
+      topic_1.photo = test_image;
+      topic_1.details = std::move(*asset_1_attribution);
+      new_topics.emplace(asset_id_1_, std::cref(topic_1));
+    }
+
+    attribution_provider_.OnDynamicImageAssetsRefreshed(new_topics);
+  }
+
+  const std::string attribution_node_0_;
+  const std::string attribution_node_1_;
+  const std::string asset_id_0_;
+  const std::string asset_id_1_;
+  AmbientBackendModel model_;
+  FakeAmbientAnimationStaticResources static_resources_;
+  AmbientAnimationPhotoProvider photo_provider_;
+  lottie::Animation animation_;
+  AmbientAnimationAttributionProvider attribution_provider_;
+};
+
+class AmbientAnimationAttributionProviderTest2DynamicAssets
+    : public AmbientAnimationAttributionProviderTest {
+ protected:
+  AmbientAnimationAttributionProviderTest2DynamicAssets()
+      : AmbientAnimationAttributionProviderTest(
+            GenerateLottieCustomizableIdForTesting(0) + "Attribution",
+            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            GenerateLottieCustomizableIdForTesting(0) + "Asset",
+            GenerateLottieCustomizableIdForTesting(1) + "Asset") {}
+};
+
+class AmbientAnimationAttributionProviderTest1DynamicAsset
+    : public AmbientAnimationAttributionProviderTest {
+ protected:
+  AmbientAnimationAttributionProviderTest1DynamicAsset()
+      : AmbientAnimationAttributionProviderTest(
+            "static-text-node",
+            GenerateLottieCustomizableIdForTesting(1) + "Attribution",
+            "static-asset-id",
+            GenerateLottieCustomizableIdForTesting(1) + "Asset") {}
+};
+
+TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
+       SetsTextInAnimation) {
+  RefreshDynamicImageAssets("attribution_text_0_a", "attribution_text_1_a");
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue("attribution_text_0_a")),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue("attribution_text_1_a"))));
+  RefreshDynamicImageAssets("attribution_text_0_b", "attribution_text_1_b");
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue("attribution_text_0_b")),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue("attribution_text_1_b"))));
+}
+
+TEST_F(AmbientAnimationAttributionProviderTest2DynamicAssets,
+       HandlesEmptyAttribution) {
+  RefreshDynamicImageAssets("", "");
+  EXPECT_THAT(
+      animation_.text_map(),
+      UnorderedElementsAre(Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                                cc::SkottieTextPropertyValue("")),
+                           Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                                cc::SkottieTextPropertyValue(""))));
+  RefreshDynamicImageAssets("", "attribution_text_1_a");
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue("")),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue("attribution_text_1_a"))));
+  RefreshDynamicImageAssets("attribution_text_0_b", "");
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue("attribution_text_0_b")),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue(""))));
+}
+
+TEST_F(AmbientAnimationAttributionProviderTest1DynamicAsset,
+       HandlesNonAttributionTextNodes) {
+  RefreshDynamicImageAssets(absl::nullopt, "attribution_text_1");
+  // The static text node should the value that's baked into the lottie file
+  // (|kLottieDataWith2TextNode1Text|).
+  EXPECT_THAT(animation_.text_map(),
+              UnorderedElementsAre(
+                  Pair(cc::HashSkottieResourceId(attribution_node_0_),
+                       cc::SkottieTextPropertyValue(
+                           std::string(cc::kLottieDataWith2TextNode1Text))),
+                  Pair(cc::HashSkottieResourceId(attribution_node_1_),
+                       cc::SkottieTextPropertyValue("attribution_text_1"))));
+}
+
+}  // namespace ash
