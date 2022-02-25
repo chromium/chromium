@@ -917,37 +917,6 @@ TEST(BookmarkSpecificsConversionsTest,
                                        /*originator_client_item_id=*/""));
 }
 
-TEST(BookmarkSpecificsConversionsTest, ShouldFixGuidInSpecificsDueToPastBug) {
-  auto tracker = SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
-
-  const std::string kSyncId = "SYNC_ID";
-  const base::GUID kGuid = base::GUID::GenerateRandomV4();
-
-  sync_pb::EntitySpecifics specifics;
-  *specifics.mutable_bookmark()->mutable_unique_position() =
-      RandomUniquePosition();
-
-  bookmarks::BookmarkNode node(/*id=*/1, kGuid, GURL());
-  const SyncedBookmarkTrackerEntity* entity =
-      tracker->Add(&node, kSyncId, /*server_version=*/0,
-                   /*creation_time=*/base::Time(), specifics);
-  ASSERT_THAT(entity, NotNull());
-
-  // Mimic in incoming update with a client tag hash but not GUID in specifics.
-  syncer::EntityData update_entity;
-  update_entity.id = kSyncId;
-  update_entity.client_tag_hash =
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(kGuid);
-  // Populate at least one field in specifics so it's not considered a
-  // tombstone.
-  update_entity.specifics.mutable_bookmark()->set_creation_time_us(1);
-
-  MaybeFixGuidInSpecificsDueToPastBug(*tracker, &update_entity);
-
-  EXPECT_THAT(update_entity.specifics.bookmark().guid(),
-              Eq(kGuid.AsLowercaseString()));
-}
-
 }  // namespace
 
 }  // namespace sync_bookmarks

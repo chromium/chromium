@@ -27,8 +27,6 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync_bookmarks/switches.h"
-#include "components/sync_bookmarks/synced_bookmark_tracker.h"
-#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "ui/gfx/favicon_size.h"
 #include "url/gurl.h"
 
@@ -554,48 +552,6 @@ bool HasExpectedBookmarkGuid(const sync_pb::BookmarkSpecifics& specifics,
   return base::GUID::ParseLowercase(specifics.guid()) ==
          InferGuidFromLegacyOriginatorId(originator_cache_guid,
                                          originator_client_item_id);
-}
-
-void MaybeFixGuidInSpecificsDueToPastBug(const SyncedBookmarkTracker& tracker,
-                                         syncer::EntityData* update_entity) {
-  DCHECK(update_entity);
-
-  // Permanent entities and tombstones have no GUID to fix.
-  if (!update_entity->server_defined_unique_tag.empty() ||
-      update_entity->is_deleted()) {
-    return;
-  }
-
-  // If the GUID in specifics is populated (inferred or otherwise), there's
-  // nothing to populate.
-  if (!update_entity->specifics.bookmark().guid().empty()) {
-    return;
-  }
-
-  // The bug that motivates this function (crbug.com/1231450) only affected
-  // bookmarks created with a client tag hash. Skip all other updates.
-  if (update_entity->client_tag_hash.value().empty()) {
-    return;
-  }
-
-  const SyncedBookmarkTrackerEntity* const tracked_entity =
-      tracker.GetEntityForSyncId(update_entity->id);
-  if (!tracked_entity || !tracked_entity->bookmark_node()) {
-    // The entity is not tracked locally or it has been deleted, so the GUID is
-    // unknown.
-    return;
-  }
-
-  // Reaching this point should guarantee that the local GUID is correct, but
-  // to double check, let's verify that client tag hash matches the GUID.
-  const base::GUID local_guid = tracked_entity->bookmark_node()->guid();
-  if (update_entity->client_tag_hash !=
-      SyncedBookmarkTracker::GetClientTagHashFromGUID(local_guid)) {
-    return;
-  }
-
-  update_entity->specifics.mutable_bookmark()->set_guid(
-      local_guid.AsLowercaseString());
 }
 
 }  // namespace sync_bookmarks
