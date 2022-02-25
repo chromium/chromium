@@ -113,21 +113,19 @@ bool GetWebBundleFileMimeTypeFromFile(const base::FilePath& path,
 
 GURL GetSynthesizedUrlForWebBundle(const GURL& web_bundle_file_url,
                                    const GURL& url_in_bundles) {
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
 
-  url::Replacements<char> clear_ref;
+  GURL::Replacements clear_ref;
   clear_ref.ClearRef();
   std::string query_string = url_in_bundles.ReplaceComponents(clear_ref).spec();
-  url::Component new_query(0, query_string.size());
-  replacements.SetQuery(query_string.c_str(), new_query);
+  replacements.SetQueryStr(query_string);
 
   if (!url_in_bundles.has_ref()) {
     replacements.ClearRef();
     return web_bundle_file_url.ReplaceComponents(replacements);
   }
-  url::Component new_ref(0, url_in_bundles.ref().size());
   std::string ref_string = url_in_bundles.ref();
-  replacements.SetRef(ref_string.c_str(), new_ref);
+  replacements.SetRefStr(ref_string);
   return web_bundle_file_url.ReplaceComponents(replacements);
 }
 
