@@ -48,11 +48,6 @@ const wchar_t kFiveHoursText[] = L"PT5H";
 const wchar_t kFifteenMinutesText[] = L"PT15M";
 const wchar_t kOneDayText[] = L"P1D";
 
-// Names of the folders used to group the scheduled tasks in.
-const wchar_t kTaskCompanyFolder[] = L"\\" COMPANY_SHORTNAME_STRING;
-const wchar_t kTaskSubfolderName[] =
-    L"\\" COMPANY_SHORTNAME_STRING L"\\" PRODUCT_FULLNAME_STRING;
-
 const size_t kNumDeleteTaskRetry = 3;
 const size_t kDeleteRetryDelayInMs = 100;
 
@@ -137,6 +132,20 @@ Microsoft::WRL::ComPtr<ITaskService> GetTaskService() {
 
   PinModule(kV2Library);
   return task_service;
+}
+
+// Name of the company folder used to group the scheduled tasks in. System task
+// folders have a "System" suffix, and User task folders have a "User" suffix.
+std::wstring GetTaskCompanyFolder(UpdaterScope scope) {
+  return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
+                       scope == UpdaterScope::kSystem ? L"System " : L"User "});
+}
+
+// Name of the sub-folder that the scheduled tasks are created in, prefixed with
+// the company folder `GetTaskCompanyFolder`.
+std::wstring GetTaskSubfolderName(UpdaterScope scope) {
+  return base::StrCat(
+      {GetTaskCompanyFolder(scope), L"\\" PRODUCT_FULLNAME_STRING});
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.
@@ -369,8 +378,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     DCHECK(!IsTaskRegistered(task_name));
 
     // Try to delete \\Company\Product first and \\Company second
-    if (DeleteFolderIfEmpty(kTaskSubfolderName))
-      DeleteFolderIfEmpty(kTaskCompanyFolder);
+    if (DeleteFolderIfEmpty(GetTaskSubfolderName(GetUpdaterScope())))
+      DeleteFolderIfEmpty(GetTaskCompanyFolder(GetUpdaterScope()));
 
     return true;
   }
@@ -994,15 +1003,16 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     // Try to find the folder first.
     Microsoft::WRL::ComPtr<ITaskFolder> folder;
-    base::win::ScopedBstr company_folder_name(kTaskSubfolderName);
-    hr = root_task_folder->GetFolder(company_folder_name.Get(), &folder);
+    base::win::ScopedBstr task_subfolder_name(
+        GetTaskSubfolderName(GetUpdaterScope()));
+    hr = root_task_folder->GetFolder(task_subfolder_name.Get(), &folder);
 
     // Try creating the folder it wasn't there.
     if (FAILED(hr) && (hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND) ||
                        hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))) {
       // Use default SDDL.
       hr = root_task_folder->CreateFolder(
-          company_folder_name.Get(), base::win::ScopedVariant::kEmptyVariant,
+          task_subfolder_name.Get(), base::win::ScopedVariant::kEmptyVariant,
           &folder);
 
       if (FAILED(hr)) {
@@ -1051,7 +1061,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // If the task folder specified by |folder_name| is empty, try to delete it.
   // Ignore failures. Returns true if the folder is successfully deleted.
-  bool DeleteFolderIfEmpty(const wchar_t* folder_name) {
+  bool DeleteFolderIfEmpty(const std::wstring& folder_name) {
     // Try deleting if empty. Race conditions here should be handled by the API.
     Microsoft::WRL::ComPtr<ITaskFolder> root_task_folder;
     HRESULT hr = task_service_->GetFolder(base::win::ScopedBstr(L"\\").Get(),

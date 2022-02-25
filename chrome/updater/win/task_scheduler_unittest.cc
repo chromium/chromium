@@ -65,7 +65,6 @@ class TaskSchedulerTests : public ::testing::Test {
  public:
   void SetUp() override {
     DeleteLogFile();
-    InitLogging(GetTestScope(), FILE_PATH_LITERAL("updater.log"));
 
     task_scheduler_ = TaskScheduler::CreateInstance();
     EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
@@ -127,6 +126,10 @@ class TaskSchedulerTests : public ::testing::Test {
                                      kLoggingModuleSwitchValue);
     }
     return command_line;
+  }
+
+  static void SetUpTestCase() {
+    InitLogging(GetTestScope(), FILE_PATH_LITERAL("updater.log"));
   }
 
  protected:
@@ -366,7 +369,11 @@ TEST_F(TaskSchedulerTests, GetTaskInfoNameAndDescription) {
   EXPECT_EQ(kTaskName1, info.name);
 
   EXPECT_TRUE(task_scheduler_->HasTaskFolder(
-      L"\\" COMPANY_SHORTNAME_STRING L"\\" PRODUCT_FULLNAME_STRING));
+      base::StrCat(
+          {L"\\" COMPANY_SHORTNAME_STRING,
+           GetTestScope() == UpdaterScope::kSystem ? L"System " : L"User ",
+           L"\\" PRODUCT_FULLNAME_STRING})
+          .c_str()));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
 }
