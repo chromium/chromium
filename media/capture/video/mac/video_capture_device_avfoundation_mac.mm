@@ -48,6 +48,13 @@ constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
 constexpr FourCharCode kDefaultFourCCPixelFormat =
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;  // NV12 (a.k.a. 420v)
 
+// Allowable epsilon when comparing the requested framerate against the
+// captures' min/max framerates, to handle float inaccuracies.
+// Framerates will be in the range of 1-100 or so, meaning under- or
+// overshooting by 0.001 fps will be negligable, but still handling float loss
+// of precision during manipulation.
+constexpr float kFrameRateEpsilon = 0.001;
+
 base::TimeDelta GetCMSampleBufferTimestamp(CMSampleBufferRef sampleBuffer) {
   const CMTime cm_timestamp =
       CMSampleBufferGetPresentationTimeStamp(sampleBuffer);
@@ -89,8 +96,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     for (AVFrameRateRange* frameRateRange in
          [captureFormat videoSupportedFrameRateRanges]) {
       maxFrameRate = std::max(maxFrameRate, [frameRateRange maxFrameRate]);
-      matchesFrameRate |= [frameRateRange minFrameRate] <= frame_rate &&
-                          frame_rate <= [frameRateRange maxFrameRate];
+      matchesFrameRate |=
+          [frameRateRange minFrameRate] <= frame_rate + kFrameRateEpsilon &&
+          frame_rate - kFrameRateEpsilon <= [frameRateRange maxFrameRate];
     }
 
     // If the pixel format is unsupported by our code, then it is not useful.

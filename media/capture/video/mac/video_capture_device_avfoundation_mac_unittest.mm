@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/mac/test/fake_av_capture_device_format.h"
 
 #include <memory>
 
@@ -626,6 +627,41 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
                                        colorSpace:gfx::ColorSpace::CreateSRGB()
                                         timestamp:base::TimeDelta()];
         })];
+  }));
+}
+
+TEST(VideoCaptureDeviceAVFoundationMacTest, FrameRateFloatInaccuracyIsHandled) {
+  // See crbug/1299812.
+  RunTestCase(base::BindOnce([] {
+    double max_frame_rate = 30.000030;
+    AVCaptureDeviceFormat* format1 =
+        [[FakeAVCaptureDeviceFormat alloc] initWithWidth:100
+                                                  height:100
+                                                  fourCC:'420v'
+                                               frameRate:max_frame_rate];
+    AVCaptureDeviceFormat* format2 =
+        [[FakeAVCaptureDeviceFormat alloc] initWithWidth:100
+                                                  height:100
+                                                  fourCC:'420v'
+                                               frameRate:10];
+
+    NSArray<AVCaptureDeviceFormat*>* formats = @[ format1, format2 ];
+    // Cast the actual max_frame_rate to a float, to match what would be
+    // requested once the true max has been cast when crossing our mojo etc
+    // interfaces which use float rather than double.
+    float desired_frame_rate = (float)max_frame_rate;
+    // For these values, the float version will be higher than the double max,
+    // due to loss of precision.
+    ASSERT_LT(max_frame_rate, desired_frame_rate);
+
+    AVCaptureDeviceFormat* chosen_format =
+        FindBestCaptureFormat(formats, 100, 100, desired_frame_rate);
+
+    ASSERT_EQ(1UL, [[chosen_format videoSupportedFrameRateRanges] count]);
+    // The actual max_frame_rate should be chosen, even though the desired rate
+    // was very slightly larger.
+    EXPECT_EQ(max_frame_rate, [[[chosen_format videoSupportedFrameRateRanges]
+                                  firstObject] minFrameRate]);
   }));
 }
 

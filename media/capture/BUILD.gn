@@ -480,6 +480,8 @@ test("capture_unittests") {
       "video/mac/pixel_buffer_pool_mac_unittest.mm",
       "video/mac/pixel_buffer_transferer_mac_unittest.mm",
       "video/mac/sample_buffer_transformer_mac_unittest.mm",
+      "video/mac/test/fake_av_capture_device_format.h",
+      "video/mac/test/fake_av_capture_device_format.mm",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
       "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
       "video/mac/test/pixel_buffer_test_utils_mac.cc",
