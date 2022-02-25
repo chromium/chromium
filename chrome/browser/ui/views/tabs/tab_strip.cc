@@ -524,7 +524,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
           ->SetVisible(true);
     }
 
-    tab_strip_->SetTabSlotVisibility();
+    tab_strip_->tab_container_->SetTabSlotVisibility();
     tab_strip_->SchedulePaint();
   }
 
@@ -572,7 +572,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
         view->SetBoundsRect(new_bounds);
       }
     }
-    tab_strip_->SetTabSlotVisibility();
+    tab_strip_->tab_container_->SetTabSlotVisibility();
     // The rightmost tab may have moved, which would change the tabstrip's
     // preferred width.
     tab_strip_->PreferredSizeChanged();
@@ -783,10 +783,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
+      drag_context_(std::make_unique<TabDragContextImpl>(this)),
       tab_container_(AddChildView(
           std::make_unique<TabContainer>(controller_.get(),
-                                         hover_card_controller_.get()))),
-      drag_context_(std::make_unique<TabDragContextImpl>(this)) {
+                                         hover_card_controller_.get(),
+                                         drag_context_.get()))) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
   // tabs.
@@ -1171,63 +1172,6 @@ void TabStrip::ShiftGroupLeft(const tab_groups::TabGroupId& group) {
 
 void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
-}
-
-bool TabStrip::ShouldTabBeVisible(const Tab* tab) const {
-  // When the tabstrip is scrollable, it can grow to accommodate any number of
-  // tabs, so tabs can never become clipped.
-  // N.B. Tabs can still be not-visible because they're in a collapsed group,
-  // but that's handled elsewhere.
-  // N.B. This is separate from the tab being potentially scrolled offscreen -
-  // this solely determines whether the tab should be clipped for the
-  // pre-scrolling overflow behavior.
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
-    return true;
-
-  // Detached tabs should always be invisible (as they close).
-  if (tab->detached())
-    return false;
-
-  // If the tab would be clipped by the trailing edge of the strip, even if the
-  // tabstrip were resized to its greatest possible width, it shouldn't be
-  // visible.
-  int right_edge = tab->bounds().right();
-  const int tabstrip_right =
-      tab->dragging() ? drag_context_->GetTabDragAreaWidth()
-                      : tab_container_->GetAvailableWidthForTabContainer();
-  if (right_edge > tabstrip_right)
-    return false;
-
-  // Non-clipped dragging tabs should always be visible.
-  if (tab->dragging())
-    return true;
-
-  // Let all non-clipped closing tabs be visible.  These will probably finish
-  // closing before the user changes the active tab, so there's little reason to
-  // try and make the more complex logic below apply.
-  if (tab->closing())
-    return true;
-
-  // Now we need to check whether the tab isn't currently clipped, but could
-  // become clipped if we changed the active tab, widening either this tab or
-  // the tabstrip portion before it.
-
-  // Pinned tabs don't change size when activated, so any tab in the pinned tab
-  // region is safe.
-  if (tab->data().pinned)
-    return true;
-
-  // If the active tab is on or before this tab, we're safe.
-  if (controller_->GetActiveIndex() <= GetModelIndexOf(tab))
-    return true;
-
-  // We need to check what would happen if the active tab were to move to this
-  // tab or before. If animating, we want to use the target bounds in this
-  // calculation.
-  if (IsAnimating())
-    right_edge = tab_container_->bounds_animator().GetTargetBounds(tab).right();
-  return (right_edge + GetActiveTabWidth() - GetInactiveTabWidth()) <=
-         tabstrip_right;
 }
 
 bool TabStrip::ShouldDrawStrokes() const {
@@ -1837,14 +1781,14 @@ void TabStrip::Layout() {
     // It should be as wide as possible subject to the above constraints.
     const int width = std::min(max_width, std::max(min_width, available_width));
     SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
-    SetTabSlotVisibility();
+    tab_container_->SetTabSlotVisibility();
   }
 
   tab_container_->SetBounds(0, 0, width(), height());
 
   if (IsAnimating()) {
     // Hide tabs that have animated at least partially out of the clip region.
-    SetTabSlotVisibility();
+    tab_container_->SetTabSlotVisibility();
     return;
   }
 
@@ -2146,34 +2090,8 @@ void TabStrip::CompleteAnimationAndLayout() {
   UpdateIdealBounds();
   tab_container_->SnapToIdealBounds();
 
-  SetTabSlotVisibility();
+  tab_container_->SetTabSlotVisibility();
   SchedulePaint();
-}
-
-void TabStrip::SetTabSlotVisibility() {
-  bool last_tab_visible = false;
-  absl::optional<tab_groups::TabGroupId> last_tab_group = absl::nullopt;
-  std::vector<Tab*> tabs = tab_container_->layout_helper()->GetTabs();
-  for (Tab* tab : base::Reversed(tabs)) {
-    absl::optional<tab_groups::TabGroupId> current_group = tab->group();
-    if (current_group != last_tab_group && last_tab_group.has_value()) {
-      TabGroupViews* group_view =
-          tab_container_->group_views().at(last_tab_group.value()).get();
-      group_view->header()->SetVisible(last_tab_visible);
-      group_view->underline()->SetVisible(last_tab_visible);
-    }
-    last_tab_visible = ShouldTabBeVisible(tab);
-    last_tab_group = tab->closing() ? absl::nullopt : current_group;
-
-    // Collapsed tabs disappear once they've reached their minimum size. This
-    // is different than very small non-collapsed tabs, because in that case
-    // the tab (and its favicon) must still be visible.
-    bool is_collapsed =
-        (current_group.has_value() &&
-         controller()->IsGroupCollapsed(current_group.value()) &&
-         tab->bounds().width() <= TabStyle::GetTabOverlap());
-    tab->SetVisible(is_collapsed ? false : last_tab_visible);
-  }
 }
 
 int TabStrip::GetActiveTabWidth() const {

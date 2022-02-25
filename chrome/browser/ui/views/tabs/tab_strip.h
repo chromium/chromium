@@ -189,13 +189,6 @@ class TabStrip : public views::View,
   // Attempts to move the specified group to the right.
   void ShiftGroupRight(const tab_groups::TabGroupId& group);
 
-  // Returns true if the tab is not partly or fully clipped (due to overflow),
-  // and the tab couldn't become partly clipped due to changing the selected tab
-  // (for example, if currently the strip has the last tab selected, and
-  // changing that to the first tab would cause |tab| to be pushed over enough
-  // to clip).
-  bool ShouldTabBeVisible(const Tab* tab) const;
-
   // Returns whether or not strokes should be drawn around and under the tabs.
   bool ShouldDrawStrokes() const;
 
@@ -439,10 +432,6 @@ class TabStrip : public views::View,
   // Invoked from Layout if the size changes or layout is really needed.
   void CompleteAnimationAndLayout();
 
-  // Sets the visibility state of all tabs and group headers (if any) based on
-  // ShouldTabBeVisible().
-  void SetTabSlotVisibility();
-
   // Returns the current width of the active tab.
   int GetActiveTabWidth() const;
 
@@ -577,6 +566,8 @@ class TabStrip : public views::View,
 
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
 
+  std::unique_ptr<TabDragContextImpl> drag_context_;
+
   // The View parent for the tabs and the various group views.
   TabContainer* tab_container_;
 
@@ -640,8 +631,6 @@ class TabStrip : public views::View,
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&TabStrip::OnTouchUiChanged,
                               base::Unretained(this)));
-
-  std::unique_ptr<TabDragContextImpl> drag_context_;
 
   TabContextMenuController context_menu_controller_{this};
 };

@@ -22,14 +22,16 @@
 class TabStrip;
 class TabGroupHeader;
 class TabHoverCardController;
+class TabDragContext;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainer : public views::View, public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(TabContainer);
 
-  TabContainer(TabStripController* controller_,
-               TabHoverCardController* hover_card_controller_);
+  TabContainer(TabStripController* controller,
+               TabHoverCardController* hover_card_controller,
+               TabDragContext* drag_context);
   ~TabContainer() override;
 
   void SetAvailableWidthCallback(
@@ -54,7 +56,7 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id);
 
-  int GetModelIndexOf(const TabSlotView* slot_view);
+  int GetModelIndexOf(const TabSlotView* slot_view) const;
 
   views::ViewModelT<Tab>* tabs_view_model() { return &tabs_view_model_; }
 
@@ -101,6 +103,10 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
 
   void EnterTabClosingMode(absl::optional<int> override_width);
   void ExitTabClosingMode();
+
+  // Sets the visibility state of all tabs and group headers (if any) based on
+  // ShouldTabBeVisible().
+  void SetTabSlotVisibility();
 
   bool in_tab_close() { return in_tab_close_; }
   absl::optional<int> override_available_width_for_tabs() {
@@ -155,6 +161,13 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   // If no tabs are hit, returns null.
   Tab* FindTabHitByPoint(const gfx::Point& point);
 
+  // Returns true if the tab is not partly or fully clipped (due to overflow),
+  // and the tab couldn't become partly clipped due to changing the selected tab
+  // (for example, if currently the strip has the last tab selected, and
+  // changing that to the first tab would cause |tab| to be pushed over enough
+  // to clip).
+  bool ShouldTabBeVisible(const Tab* tab) const;
+
   bool IsValidModelIndex(int model_index) const;
 
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>> group_views_;
@@ -172,6 +185,8 @@ class TabContainer : public views::View, public views::ViewTargeterDelegate {
   TabStripController* controller_;
 
   TabHoverCardController* hover_card_controller_;
+
+  TabDragContext* drag_context_;
 
   // Responsible for animating tabs in response to model changes.
   views::BoundsAnimator bounds_animator_;
