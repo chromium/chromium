@@ -77,12 +77,8 @@ constexpr int kImageIconCornerRadius = 4;
 
 constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
-constexpr int kAnswerCardBorderMargin = 12;
-constexpr gfx::Insets kAnswerCardBorder(kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin,
-                                        kAnswerCardBorderMargin);
-constexpr gfx::Insets kBigTitleBorder(0, 0, 0, kAnswerCardBorderMargin);
+constexpr gfx::Insets kAnswerCardBorder(12, 12, 12, 12);
+constexpr gfx::Insets kBigTitleBorder(0, 14, 0, 12);
 
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
@@ -734,12 +730,7 @@ void SearchResultView::Layout() {
   actions_view()->SetBoundsRect(actions_bounds);
 
   gfx::Rect text_bounds(rect);
-  // Text bounds need to be shifted over by kAnswerCardBorderMargin for answer
-  // card views to make room for the kAnswerCardBorder.
-  text_bounds.set_x(kPreferredIconViewWidth +
-                    (view_type_ == SearchResultViewType::kAnswerCard
-                         ? kAnswerCardBorderMargin
-                         : 0));
+  text_bounds.set_x(kPreferredIconViewWidth);
   if (actions_view()->GetVisible()) {
     text_bounds.set_width(
         rect.width() - kPreferredIconViewWidth - kTextTrailPadding -
