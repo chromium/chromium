@@ -1331,11 +1331,8 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
       return false;
   }
 
-  // Keep |gmb_handle| alive as long as |frame| is alive so that fds passed
-  // to the driver are valid during encoding.
-  frame->AddDestructionObserver(
-      base::BindOnce([](gfx::GpuMemoryBufferHandle) {}, std::move(gmb_handle)));
-
+  // Keep |frame| in |input_record| so that a client doesn't use |frame| until
+  // a driver finishes using it, that is, VIDIOC_DQBUF is called.
   InputRecord& input_record = input_buffer_map_[buffer_id];
   input_record.frame = frame;
   input_record.ip_output_buffer_index = frame_info.ip_output_buffer_index;
