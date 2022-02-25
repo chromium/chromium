@@ -6,11 +6,12 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
-#include "content/renderer/render_frame_impl.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/v8_value_converter_impl.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 

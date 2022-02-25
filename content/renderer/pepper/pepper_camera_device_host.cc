@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/pepper_platform_camera_device.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/proxy/ppapi_messages.h"
 
