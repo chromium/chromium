@@ -106,6 +106,57 @@
   E_CPONLY(kColorTabForegroundActiveFrameInactive) \
   E_CPONLY(kColorTabForegroundInactiveFrameActive) \
   E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
+  /* The colors used for tab groups in the tabstrip. */ \
+  E(kColorTabGroupTabStripFrameActiveGrey, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREY) \
+  E(kColorTabGroupTabStripFrameActiveBlue, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_BLUE) \
+  E(kColorTabGroupTabStripFrameActiveRed, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_RED) \
+  E(kColorTabGroupTabStripFrameActiveYellow, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_YELLOW) \
+  E(kColorTabGroupTabStripFrameActiveGreen, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_GREEN) \
+  E(kColorTabGroupTabStripFrameActivePink, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PINK) \
+  E(kColorTabGroupTabStripFrameActivePurple, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_PURPLE) \
+  E(kColorTabGroupTabStripFrameActiveCyan, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_CYAN) \
+  E(kColorTabGroupTabStripFrameActiveOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_ORANGE) \
+  E(kColorTabGroupTabStripFrameInactiveGrey, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREY) \
+  E(kColorTabGroupTabStripFrameInactiveBlue, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_BLUE) \
+  E(kColorTabGroupTabStripFrameInactiveRed, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_RED) \
+  E(kColorTabGroupTabStripFrameInactiveYellow, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_YELLOW) \
+  E(kColorTabGroupTabStripFrameInactiveGreen, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_GREEN) \
+  E(kColorTabGroupTabStripFrameInactivePink, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_PINK) \
+  E(kColorTabGroupTabStripFrameInactivePurple, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_PURPLE) \
+  E(kColorTabGroupTabStripFrameInactiveCyan, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_CYAN) \
+  E(kColorTabGroupTabStripFrameInactiveOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_ORANGE) \
+  /* The colors used for tab groups in the bubble dialog view. */ \
+  E(kColorTabGroupDialogGrey, ThemeProperties::COLOR_TAB_GROUP_DIALOG_GREY) \
+  E(kColorTabGroupDialogBlue, ThemeProperties::COLOR_TAB_GROUP_DIALOG_BLUE) \
+  E(kColorTabGroupDialogRed, ThemeProperties::COLOR_TAB_GROUP_DIALOG_RED) \
+  E(kColorTabGroupDialogYellow, \
+    ThemeProperties::COLOR_TAB_GROUP_DIALOG_YELLOW) \
+  E(kColorTabGroupDialogGreen, ThemeProperties::COLOR_TAB_GROUP_DIALOG_GREEN) \
+  E(kColorTabGroupDialogPink, ThemeProperties::COLOR_TAB_GROUP_DIALOG_PINK) \
+  E(kColorTabGroupDialogPurple, \
+    ThemeProperties::COLOR_TAB_GROUP_DIALOG_PURPLE) \
+  E(kColorTabGroupDialogCyan, ThemeProperties::COLOR_TAB_GROUP_DIALOG_CYAN) \
+  E(kColorTabGroupDialogOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_DIALOG_ORANGE) \
+  /* The colors used for tab groups in the context submenu. */ \
   E(kColorTabGroupContextMenuBlue, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE) \
   E(kColorTabGroupContextMenuCyan, \
@@ -114,16 +165,35 @@
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN) \
   E(kColorTabGroupContextMenuGrey, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_GREY) \
+  E(kColorTabGroupContextMenuOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE) \
   E(kColorTabGroupContextMenuPink, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_PINK) \
   E(kColorTabGroupContextMenuPurple, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE) \
-  E(kColorTabGroupContextMenuOrange, \
-    ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE) \
   E(kColorTabGroupContextMenuRed, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_RED) \
   E(kColorTabGroupContextMenuYellow, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW) \
+  /* The colors used for saved tab group chips on the bookmark bar. */ \
+  E(kColorTabGroupBookmarkBarGrey, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_GREY) \
+  E(kColorTabGroupBookmarkBarBlue, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_BLUE) \
+  E(kColorTabGroupBookmarkBarRed, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_RED) \
+  E(kColorTabGroupBookmarkBarYellow, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_YELLOW) \
+  E(kColorTabGroupBookmarkBarGreen, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_GREEN) \
+  E(kColorTabGroupBookmarkBarPink, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_PINK) \
+  E(kColorTabGroupBookmarkBarPurple, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_PURPLE) \
+  E(kColorTabGroupBookmarkBarCyan, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN) \
+  E(kColorTabGroupBookmarkBarOrange, \
+    ThemeProperties::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE) \
   /* Toolbar colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonBackground, \
