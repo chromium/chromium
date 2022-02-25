@@ -745,6 +745,7 @@ crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/text
 crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
 crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
+crbug.com/1300683 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/fborender/recreate_depth_stencil.html [ RetryOnFailure ]
 
 ####################
 # Android failures #
