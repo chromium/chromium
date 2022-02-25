@@ -234,22 +234,6 @@ constexpr char kAppLaunchPerAppTypeHistogramName[] = "Apps.AppLaunchPerAppType";
 constexpr char kAppLaunchPerAppTypeV2HistogramName[] =
     "Apps.AppLaunchPerAppTypeV2";
 
-constexpr char kArcHistogramName[] = "Arc";
-constexpr char kBuiltInHistogramName[] = "BuiltIn";
-constexpr char kCrostiniHistogramName[] = "Crostini";
-constexpr char kChromeAppHistogramName[] = "ChromeApp";
-constexpr char kWebAppHistogramName[] = "WebApp";
-constexpr char kMacOsHistogramName[] = "MacOs";
-constexpr char kPluginVmHistogramName[] = "PluginVm";
-constexpr char kStandaloneBrowserHistogramName[] = "StandaloneBrowser";
-constexpr char kRemoteHistogramName[] = "RemoteApp";
-constexpr char kBorealisHistogramName[] = "Borealis";
-constexpr char kSystemWebAppHistogramName[] = "SystemWebApp";
-constexpr char kChromeBrowserHistogramName[] = "ChromeBrowser";
-constexpr char kStandaloneBrowserChromeAppHistogramName[] =
-    "StandaloneBrowserChromeApp";
-constexpr char kExtensionHistogramName[] = "Extension";
-
 constexpr char kChromeAppTabHistogramName[] = "ChromeAppTab";
 constexpr char kChromeAppWindowHistogramName[] = "ChromeAppWindow";
 constexpr char kWebAppTabHistogramName[] = "WebAppTab";
@@ -258,41 +242,6 @@ constexpr char kWebAppWindowHistogramName[] = "WebAppWindow";
 constexpr char kUsageTimeAppIdKey[] = "app_id";
 constexpr char kUsageTimeAppTypeKey[] = "app_type";
 constexpr char kUsageTimeDurationKey[] = "time";
-
-std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
-  switch (app_type_name) {
-    case apps::AppTypeName::kUnknown:
-      return std::string();
-    case apps::AppTypeName::kArc:
-      return kArcHistogramName;
-    case apps::AppTypeName::kBuiltIn:
-      return kBuiltInHistogramName;
-    case apps::AppTypeName::kCrostini:
-      return kCrostiniHistogramName;
-    case apps::AppTypeName::kChromeApp:
-      return kChromeAppHistogramName;
-    case apps::AppTypeName::kWeb:
-      return kWebAppHistogramName;
-    case apps::AppTypeName::kMacOs:
-      return kMacOsHistogramName;
-    case apps::AppTypeName::kPluginVm:
-      return kPluginVmHistogramName;
-    case apps::AppTypeName::kStandaloneBrowser:
-      return kStandaloneBrowserHistogramName;
-    case apps::AppTypeName::kRemote:
-      return kRemoteHistogramName;
-    case apps::AppTypeName::kBorealis:
-      return kBorealisHistogramName;
-    case apps::AppTypeName::kSystemWeb:
-      return kSystemWebAppHistogramName;
-    case apps::AppTypeName::kChromeBrowser:
-      return kChromeBrowserHistogramName;
-    case apps::AppTypeName::kStandaloneBrowserChromeApp:
-      return kStandaloneBrowserChromeAppHistogramName;
-    case apps::AppTypeName::kExtension:
-      return kExtensionHistogramName;
-  }
-}
 
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name) {
   switch (app_type_name) {

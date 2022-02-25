@@ -41,19 +41,6 @@ extern const char kAppUsageTime[];
 extern const char kAppLaunchPerAppTypeHistogramName[];
 extern const char kAppLaunchPerAppTypeV2HistogramName[];
 
-extern const char kArcHistogramName[];
-extern const char kBuiltInHistogramName[];
-extern const char kCrostiniHistogramName[];
-extern const char kChromeAppHistogramName[];
-extern const char kWebAppHistogramName[];
-extern const char kMacOsHistogramName[];
-extern const char kPluginVmHistogramName[];
-extern const char kStandaloneBrowserHistogramName[];
-extern const char kRemoteHistogramName[];
-extern const char kBorealisHistogramName[];
-extern const char kSystemWebAppHistogramName[];
-extern const char kChromeBrowserHistogramName[];
-
 extern const char kChromeAppTabHistogramName[];
 extern const char kChromeAppWindowHistogramName[];
 extern const char kWebAppTabHistogramName[];
@@ -63,7 +50,6 @@ extern const char kUsageTimeAppIdKey[];
 extern const char kUsageTimeAppTypeKey[];
 extern const char kUsageTimeDurationKey[];
 
-std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name);
 std::string GetAppTypeHistogramNameV2(apps::AppTypeNameV2 app_type_name);
 
 const std::set<apps::AppTypeName>& GetAppTypeNameSet();
