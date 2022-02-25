@@ -26,10 +26,10 @@ function getOriginFromUrl(url) {
     return originarray;
   }
   var origin = originarray[0];
-  while (origin.charAt(origin.length - 1) == '/') {
+  while (origin.charAt(origin.length - 1) === '/') {
     origin = origin.substring(0, origin.length - 1);
   }
-  if (origin == 'http:' || origin == 'https:') {
+  if (origin === 'http:' || origin === 'https:') {
     return null;
   }
   return origin;
@@ -50,8 +50,8 @@ function isValidRegisteredKey(registeredKey, appIdRequired) {
     return false;
   }
   if (registeredKey['version']) {
-    if (registeredKey['version'] != 'U2F_V1' &&
-        registeredKey['version'] != 'U2F_V2') {
+    if (registeredKey['version'] !== 'U2F_V1' &&
+        registeredKey['version'] !== 'U2F_V2') {
       return false;
     }
   }

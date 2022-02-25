@@ -158,7 +158,7 @@ document.addEventListener('sectionready', function(e) {
  * @param {Function} callback The work to be done when ready.
  */
 function doWhenAllSectionsReady(callback) {
-  assert(typeof callback == 'function');
+  assert(typeof callback === 'function');
   if (sectionsToWaitFor > 0) {
     readyCallbacks.push(callback);
   } else {

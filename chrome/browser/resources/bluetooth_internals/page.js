@@ -22,7 +22,7 @@ function setInitialFocus(root) {
     const element = elements[i];
     element.focus();
     // .focus() isn't guaranteed to work. Continue until it does.
-    if (document.activeElement == element) {
+    if (document.activeElement === element) {
       return;
     }
   }
@@ -103,7 +103,7 @@ export class Page extends EventTarget {
    *     should include the leading '#' if not empty.
    */
   setHash(hash) {
-    if (this.hash == hash) {
+    if (this.hash === hash) {
       return;
     }
     this.hash = hash;
@@ -134,7 +134,7 @@ export class Page extends EventTarget {
     if (this.pageDiv.hidden) {
       return false;
     }
-    return this.pageDiv.page == this;
+    return this.pageDiv.page === this;
   }
 
   /**

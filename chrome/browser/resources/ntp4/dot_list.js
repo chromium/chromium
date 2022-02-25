@@ -49,9 +49,9 @@ DotList.prototype = {
     }
 
     let direction = 0;
-    if (e.key == 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       direction = -1;
-    } else if (e.key == 'ArrowRight') {
+    } else if (e.key === 'ArrowRight') {
       direction = 1;
     } else {
       return;
@@ -63,7 +63,7 @@ DotList.prototype = {
     }
     const focusIndex = Array.prototype.indexOf.call(navDots, focusDot);
     let newFocusIndex = focusIndex + direction;
-    if (focusIndex == newFocusIndex) {
+    if (focusIndex === newFocusIndex) {
       return;
     }
 

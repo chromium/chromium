@@ -113,11 +113,11 @@ export class DomainSecurityPolicyView extends DivView {
 
   onHSTSQueryResult_(result) {
     this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
-    if (result.error != undefined) {
+    if (result.error !== undefined) {
       const s = addNode(this.queryStsOutputDiv_, 'span');
       s.textContent = result.error;
       s.style.color = '#e00';
-    } else if (result.result == false) {
+    } else if (result.result === false) {
       const notFound = document.createElement('b');
       notFound.textContent = 'Not found';
       this.queryStsOutputDiv_.appendChild(notFound);
@@ -150,7 +150,7 @@ export class DomainSecurityPolicyView extends DivView {
       const staticHashes = [];
       for (let i = 0; i < kStaticHashKeys.length; ++i) {
         const staticHashValue = result[kStaticHashKeys[i]];
-        if (staticHashValue != undefined && staticHashValue != '') {
+        if (staticHashValue !== undefined && staticHashValue !== '') {
           staticHashes.push(staticHashValue);
         }
 
@@ -161,7 +161,7 @@ export class DomainSecurityPolicyView extends DivView {
 
           // If there are no static_hashes, do not make it seem like there is a
           // static PKP policy in place.
-          if (staticHashes.length == 0 && key.startsWith('static_pkp_')) {
+          if (staticHashes.length === 0 && key.startsWith('static_pkp_')) {
             addNode(this.queryStsOutputDiv_, 'br');
             continue;
           }
@@ -173,7 +173,8 @@ export class DomainSecurityPolicyView extends DivView {
             addNodeWithText(this.queryStsOutputDiv_, 'tt', modeToString(value));
           } else {
             addNodeWithText(
-                this.queryStsOutputDiv_, 'tt', value == undefined ? '' : value);
+                this.queryStsOutputDiv_, 'tt',
+                value === undefined ? '' : value);
           }
           addNode(this.queryStsOutputDiv_, 'br');
         }
@@ -212,11 +213,11 @@ export class DomainSecurityPolicyView extends DivView {
 
   onExpectCTQueryResult_(result) {
     this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
-    if (result.error != undefined) {
+    if (result.error !== undefined) {
       const s = addNode(this.queryExpectCTOutputDiv_, 'span');
       s.textContent = result.error;
       s.style.color = '#e00';
-    } else if (result.result == false) {
+    } else if (result.result === false) {
       const notFound = document.createElement('b');
       notFound.textContent = 'Not found';
       this.queryExpectCTOutputDiv_.appendChild(notFound);
@@ -241,7 +242,7 @@ export class DomainSecurityPolicyView extends DivView {
         addTextNode(this.queryExpectCTOutputDiv_, ' ' + key + ': ');
         addNodeWithText(
             this.queryExpectCTOutputDiv_, 'tt',
-            value == undefined ? '' : value);
+            value === undefined ? '' : value);
         addNode(this.queryExpectCTOutputDiv_, 'br');
       }
     }
@@ -278,9 +279,9 @@ export class DomainSecurityPolicyView extends DivView {
 function modeToString(m) {
   // These numbers must match those in
   // TransportSecurityState::STSState::UpgradeMode.
-  if (m == 0) {
+  if (m === 0) {
     return 'FORCE_HTTPS';
-  } else if (m == 1) {
+  } else if (m === 1) {
     return 'DEFAULT';
   } else {
     return 'UNKNOWN';

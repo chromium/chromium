@@ -93,7 +93,7 @@ function renderOriginData(body, database) {
       const origin = main.origins[j];
       const row = document.createElement('tr');
 
-      if (j == 0) {
+      if (j === 0) {
         const t = document.createElement('td');
         t.rowSpan = main.origins.length;
         t.textContent = truncateString(main.main_frame_host);

@@ -78,7 +78,7 @@ function androidHandler() {
 
     addStatusRow('PID', status.pid, StatusClass.INFO);
     addStatusRow('UID', status.uid, StatusClass.INFO);
-    isIsolated = status.secontext.indexOf(':isolated_app:') != -1;
+    isIsolated = status.secontext.indexOf(':isolated_app:') !== -1;
     addStatusRow(
         'SELinux Context', status.secontext,
         isIsolated ? StatusClass.GOOD : StatusClass.BAD);
@@ -88,11 +88,11 @@ function androidHandler() {
       if (line.startsWith('Seccomp')) {
         let value = line.split(':')[1].trim();
         let cssClass = StatusClass.BAD;
-        if (value == '2') {
+        if (value === '2') {
           value = 'Yes - TSYNC (' + line + ')';
           cssClass = StatusClass.GOOD;
           isTsync = true;
-        } else if (value == '1') {
+        } else if (value === '1') {
           value = 'Yes (' + line + ')';
         } else {
           value = line;
@@ -123,7 +123,7 @@ function androidHandler() {
     }
     addStatusRow(
         'Seccomp-BPF Enabled (Chrome)', seccompStatus,
-        status.seccompStatus == 4 ? StatusClass.GOOD : StatusClass.BAD);
+        status.seccompStatus === 4 ? StatusClass.GOOD : StatusClass.BAD);
 
     addStatusRow('Android Build ID', status.androidBuildId, StatusClass.INFO);
 

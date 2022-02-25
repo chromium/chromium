@@ -47,7 +47,7 @@ export class DeviceCollection extends ArrayDataModel {
   getByAddress(address) {
     for (let i = 0; i < this.length; i++) {
       const device = this.item(i);
-      if (address == device.address) {
+      if (address === device.address) {
         return device;
       }
     }

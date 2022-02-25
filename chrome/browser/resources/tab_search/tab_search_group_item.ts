@@ -64,7 +64,7 @@ export class TabSearchGroupItem extends TabSearchGroupItemBase {
 
   private tabCountText_(tabCount: number): string {
     return loadTimeData.getStringF(
-        tabCount == 1 ? 'oneTab' : 'tabCount', tabCount);
+        tabCount === 1 ? 'oneTab' : 'tabCount', tabCount);
   }
 }
 

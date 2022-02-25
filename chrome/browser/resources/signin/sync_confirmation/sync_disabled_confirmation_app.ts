@@ -72,7 +72,7 @@ class SyncDisabledConfirmationAppElement extends PolymerElement {
     // If the currently focused element isn't something that performs an action
     // on "enter" being pressed and the user hits "enter", perform the default
     // action of the dialog, which is "OK, Got It".
-    if (e.key == 'Enter' &&
+    if (e.key === 'Enter' &&
         !/^(A|PAPER-(BUTTON|CHECKBOX))$/.test(
             document.activeElement!.tagName)) {
       this.$.confirmButton.click();

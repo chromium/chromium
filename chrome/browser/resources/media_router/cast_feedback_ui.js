@@ -315,7 +315,7 @@ export class FeedbackUiElement extends PolymerElement {
     setTimeout(() => {
       const sendStartTime = Date.now();
       this.browserProxy_.sendFeedback(feedback).then(status => {
-        if (status == chrome.feedbackPrivate.Status.SUCCESS) {
+        if (status === chrome.feedbackPrivate.Status.SUCCESS) {
           this.feedbackSent = true;
           this.updateSendDialog_(FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
         } else if (failureCount < this.maxResendAttempts) {

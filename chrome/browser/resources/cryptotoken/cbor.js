@@ -14,7 +14,7 @@ class Cbor {
     return this.slice.length;
   }
   get empty() {
-    return this.slice.length == 0;
+    return this.slice.length === 0;
   }
   get hex() {
     const hexTable = '0123456789abcdef';
@@ -36,17 +36,17 @@ class Cbor {
           chars[v & 0x3f]);
     }
     const remainder = this.slice.length - len3;
-    if (remainder == 1) {
+    if (remainder === 1) {
       const v = this.slice[len3];
       chunks.push(chars[v >> 2] + chars[(v << 4) & 0x3f]);
-      if (padding == 1 /* Include */) {
+      if (padding === 1 /* Include */) {
         chunks.push('==');
       }
-    } else if (remainder == 2) {
+    } else if (remainder === 2) {
       const v = (this.slice[len3] << 8) + this.slice[len3 + 1];
       chunks.push(
           chars[v >> 10] + chars[(v >> 4) & 0x3f] + chars[(v << 2) & 0x3f]);
-      if (padding == 1 /* Include */) {
+      if (padding === 1 /* Include */) {
         chunks.push('=');
       }
     }
@@ -119,7 +119,7 @@ class Cbor {
       throw 'getASN1: empty slice, expected tag ' + expectedTag;
     }
     const v = this.getAnyASN1();
-    if (v.tag != expectedTag) {
+    if (v.tag !== expectedTag) {
       throw 'getASN1: got tag ' + v.tag + ', want ' + expectedTag;
     }
     if (!includeHeader) {
@@ -134,7 +134,7 @@ class Cbor {
     return this.getASN1_(expectedTag, true);
   }
   getOptionalASN1(expectedTag) {
-    if (this.slice.length < 1 || this.slice[0] != expectedTag) {
+    if (this.slice.length < 1 || this.slice[0] !== expectedTag) {
       return null;
     }
     return this.getASN1(expectedTag);
@@ -143,12 +143,12 @@ class Cbor {
     const header = new Cbor(this.slice);
     const tag = header.getU8();
     const lengthByte = header.getU8();
-    if ((tag & 0x1f) == 0x1f) {
+    if ((tag & 0x1f) === 0x1f) {
       throw 'getAnyASN1: long-form tag found';
     }
     let len = 0;
     let headerLen = 0;
-    if ((lengthByte & 0x80) == 0) {
+    if ((lengthByte & 0x80) === 0) {
       // Short form length.
       len = lengthByte + 2;
       headerLen = 2;
@@ -161,7 +161,7 @@ class Cbor {
       // numbers.  This check ensures that we stay under this limit.  We could
       // do this in a better way, but there's no need to process very large
       // objects.
-      if (numBytes == 0 || numBytes > 3) {
+      if (numBytes === 0 || numBytes > 3) {
         throw 'getAnyASN1: bad ASN.1 long-form length';
       }
       const lengthBytes = header.getBytes(numBytes);
@@ -169,7 +169,7 @@ class Cbor {
         len <<= 8;
         len |= lengthBytes[i];
       }
-      if (len < 128 || (len >> ((numBytes - 1) * 8)) == 0) {
+      if (len < 128 || (len >> ((numBytes - 1) * 8)) === 0) {
         throw 'getAnyASN1: incorrectly encoded ASN.1 length';
       }
       headerLen = 2 + numBytes;
@@ -194,13 +194,13 @@ class Cbor {
         break;
       }
     }
-    if (len == 0) {
+    if (len === 0) {
       throw 'base128 value too large';
     }
     let n = 0;
     let octets = this.getBytes(len);
     for (let i = 0; i < len; i++) {
-      if ((n & 0xff000000) != 0) {
+      if ((n & 0xff000000) !== 0) {
         throw 'base128 value too large';
       }
       n <<= 7;
@@ -286,26 +286,26 @@ class Cbor {
         return ret;
       }
       case 5:
-        if (value == 0) {
+        if (value === 0) {
           return {};
         }
         let copy = new Cbor(this.data);
         const [firstKeyMajor] = copy.getCBORHeader();
-        if (firstKeyMajor == 3) {
+        if (firstKeyMajor === 3) {
           // String-keyed map.
           let lastKeyHeader = new Cbor(new Uint8Array(0));
           let lastKeyBytes = new Cbor(new Uint8Array(0));
           let ret = {};
           for (let i = 0; i < value; i++) {
             const [keyMajor, keyLength, keyHeader] = this.getCBORHeader();
-            if (keyMajor != 3) {
+            if (keyMajor !== 3) {
               throw('Cbor: non-string in string-valued map');
             }
             const keyBytes = new Cbor(this.getBytes(keyLength));
             if (i > 0) {
               const headerCmp = lastKeyHeader.compare(keyHeader);
               if (headerCmp > 0 ||
-                  (headerCmp == 0 && lastKeyBytes.compare(keyBytes) >= 0)) {
+                  (headerCmp === 0 && lastKeyBytes.compare(keyBytes) >= 0)) {
                 throw(
                     'Cbor: map keys in wrong order: ' + lastKeyHeader.hex +
                     '/' + lastKeyBytes.hex + ' ' + keyHeader.hex + '/' +
@@ -317,13 +317,13 @@ class Cbor {
             ret[keyBytes.parseUTF8()] = this.getCBOR();
           }
           return ret;
-        } else if (firstKeyMajor == 0 || firstKeyMajor == 1) {
+        } else if (firstKeyMajor === 0 || firstKeyMajor === 1) {
           // Number-keyed map.
           let lastKeyHeader = new Cbor(new Uint8Array(0));
           let ret = {};
           for (let i = 0; i < value; i++) {
             let [keyMajor, keyValue, keyHeader] = this.getCBORHeader();
-            if (keyMajor != 0 && keyMajor != 1) {
+            if (keyMajor !== 0 && keyMajor !== 1) {
               throw('Cbor: non-number in number-valued map');
             }
             if (i > 0 && lastKeyHeader.compare(keyHeader) >= 0) {
@@ -332,7 +332,7 @@ class Cbor {
                   keyHeader.hex);
             }
             lastKeyHeader = keyHeader;
-            if (keyMajor == 1) {
+            if (keyMajor === 1) {
               keyValue = 0 - (1 + keyValue);
             }
             ret[keyValue] = this.getCBOR();

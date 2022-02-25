@@ -107,7 +107,7 @@ const getLogCallback = function(data) {
   const container = $('log-container');
   try {
     createEventLog(JSON.parse(data));
-    if (container.textContent == '') {
+    if (container.textContent === '') {
       container.textContent = loadTimeData.getString('logNoEntriesText');
     }
   } catch (e) {

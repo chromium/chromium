@@ -154,7 +154,7 @@ Tile.prototype = {
    * @private
    */
   onDragMove_(e) {
-    if (e.view != window || (e.x == 0 && e.y == 0)) {
+    if (e.view !== window || (e.x === 0 && e.y === 0)) {
       this.dragClone.hidden = true;
       return;
     }
@@ -188,7 +188,7 @@ Tile.prototype = {
       // TODO(dbeam): Until we fix dropEffect to the correct behavior it will
       // differ on windows - crbug.com/39399.  That's why we use the custom
       // this.lastDropEffect instead of e.dataTransfer.dropEffect.
-      if (tilePage.selected && this.lastDropEffect != 'copy') {
+      if (tilePage.selected && this.lastDropEffect !== 'copy') {
         // The drag clone can still be hidden from the last drag move event.
         this.dragClone.hidden = false;
         // The tile's contents may have moved following the respositioning;
@@ -299,8 +299,8 @@ Tile.prototype = {
    */
   onDragCloneTransitionEnd_(e) {
     if (this.classList.contains('dragging') &&
-        (e.propertyName == 'left' || e.propertyName == 'top' ||
-         e.propertyName == 'transform')) {
+        (e.propertyName === 'left' || e.propertyName === 'top' ||
+         e.propertyName === 'transform')) {
       this.finalizeDrag_();
     }
   },
@@ -501,7 +501,7 @@ TilePage.prototype = {
   },
 
   get selected() {
-    return Array.prototype.indexOf.call(this.parentNode.children, this) ==
+    return Array.prototype.indexOf.call(this.parentNode.children, this) ===
         getCardSlider().currentCard;
   },
 
@@ -528,7 +528,7 @@ TilePage.prototype = {
    * @type {number}
    */
   get contentPadding() {
-    if (typeof this.contentPadding_ == 'undefined') {
+    if (typeof this.contentPadding_ === 'undefined') {
       this.contentPadding_ =
           parseInt(window.getComputedStyle(this.content_).paddingTop, 10);
     }
@@ -546,7 +546,7 @@ TilePage.prototype = {
     // removing a tilePage. Selecting a different card in an animated way and
     // deleting the card afterward is probably a better choice.
     assert(
-        typeof arguments[0] != 'boolean',
+        typeof arguments[0] !== 'boolean',
         'This function takes no |opt_animate| argument.');
     this.tearDown_();
     this.parentNode.removeChild(this);
@@ -599,7 +599,7 @@ TilePage.prototype = {
     this.repositionTiles_();
 
     // If this is the first tile being added, make it focusable after add.
-    if (this.focusableElements_.length == 1) {
+    if (this.focusableElements_.length === 1) {
       this.updateFocusableElement();
     }
     this.fireAddedEvent(wrapperDiv, index, animate);
@@ -696,7 +696,7 @@ TilePage.prototype = {
    * @private
    */
   handleFocus_(e) {
-    if (this.focusableElements_.length == 0) {
+    if (this.focusableElements_.length === 0) {
       return;
     }
 
@@ -740,14 +740,14 @@ TilePage.prototype = {
     switch (e.key) {
       case 'ArrowRight':
       case 'ArrowLeft':
-        direction = e.key == 'ArrowRight' ? 1 : -1;
+        direction = e.key === 'ArrowRight' ? 1 : -1;
         this.focusElementIndex_ = wrap(this.focusElementIndex_ + direction);
         break;
       case 'ArrowUp':
       case 'ArrowDown':
         // Look through all focusable elements. Find the first one that is
         // in the same column.
-        direction = e.key == 'ArrowUp' ? -1 : 1;
+        direction = e.key === 'ArrowUp' ? -1 : 1;
         const currentIndex = Array.prototype.indexOf.call(
             this.focusableElements_, this.currentFocusElement_);
         let newFocusIdx = wrap(currentIndex + direction);
@@ -755,7 +755,7 @@ TilePage.prototype = {
         for (;; newFocusIdx = wrap(newFocusIdx + direction)) {
           const newTile = this.focusableElements_[newFocusIdx].parentNode;
           const rowTiles = this.layoutValues_.numRowTiles;
-          if ((newTile.index - tile.index) % rowTiles == 0) {
+          if ((newTile.index - tile.index) % rowTiles === 0) {
             break;
           }
         }
@@ -780,7 +780,7 @@ TilePage.prototype = {
    * @protected
    */
   updateFocusableElement() {
-    if (this.focusableElements_.length == 0 || !this.selected) {
+    if (this.focusableElements_.length === 0 || !this.selected) {
       this.focusElementIndex_ = -1;
       return;
     }
@@ -791,7 +791,7 @@ TilePage.prototype = {
 
     const newFocusElement = this.focusableElements_[this.focusElementIndex_];
     const lastFocusElement = this.currentFocusElement_;
-    if (lastFocusElement && lastFocusElement != newFocusElement) {
+    if (lastFocusElement && lastFocusElement !== newFocusElement) {
       lastFocusElement.tabIndex = -1;
     }
 
@@ -922,9 +922,9 @@ TilePage.prototype = {
 
     // This code calculates whether the tile needs to show a clone of itself
     // wrapped around the other side of the tile grid.
-    const offTheRight = col == layout.numRowTiles ||
-        (col == layout.numRowTiles - 1 && tile.hasDoppleganger());
-    const offTheLeft = col == -1 || (col == 0 && tile.hasDoppleganger());
+    const offTheRight = col === layout.numRowTiles ||
+        (col === layout.numRowTiles - 1 && tile.hasDoppleganger());
+    const offTheLeft = col === -1 || (col === 0 && tile.hasDoppleganger());
     if (this.isCurrentDragTarget && (offTheRight || offTheLeft)) {
       const sign = offTheRight ? 1 : -1;
       tile.showDoppleganger(
@@ -934,7 +934,7 @@ TilePage.prototype = {
       tile.clearDoppleganger();
     }
 
-    if (index == this.tileElements_.length - 1) {
+    if (index === this.tileElements_.length - 1) {
       this.tileGrid_.style.height = (realY + layout.rowHeight) + 'px';
       this.queueUpdateScrollbars_();
     }
@@ -976,8 +976,8 @@ TilePage.prototype = {
    * @param {Object} e The resize event.
    */
   onResize_(e) {
-    if (this.lastWidth_ == this.clientWidth &&
-        this.lastHeight_ == this.clientHeight) {
+    if (this.lastWidth_ === this.clientWidth &&
+        this.lastHeight_ === this.clientHeight) {
       return;
     }
 
@@ -1049,10 +1049,10 @@ TilePage.prototype = {
     // calculations may come out to be negative, so we use margins as the
     // css property.
 
-    if (typeof this.topMarginIsForWide_ == 'undefined') {
+    if (typeof this.topMarginIsForWide_ === 'undefined') {
       this.topMarginIsForWide_ = layout.wide;
     }
-    if (this.topMarginIsForWide_ != layout.wide) {
+    if (this.topMarginIsForWide_ !== layout.wide) {
       this.animatedTopMarginPx_ += newMargin - this.topMarginPx_;
       this.topMargin_.style.marginBottom = toCssPx(this.animatedTopMarginPx_);
     }
@@ -1100,7 +1100,7 @@ TilePage.prototype = {
   handleMouseWheel(e) {
     // The ctrl-wheel should triggle the zoom in/out actions in Chromium for
     // all pages.
-    if (e.wheelDeltaY == 0 || e.ctrlKey) {
+    if (e.wheelDeltaY === 0 || e.ctrlKey) {
       return false;
     }
 
@@ -1229,7 +1229,7 @@ TilePage.prototype = {
 
     const index = this.currentDropIndex_;
     // Only change data if this was not a 'null drag'.
-    if (!((index == this.dragItemIndex_) && this.withinPageDrag_)) {
+    if (!((index === this.dragItemIndex_) && this.withinPageDrag_)) {
       const adjustedIndex =
           this.currentDropIndex_ + (index > this.dragItemIndex_ ? 1 : 0);
       if (this.withinPageDrag_) {
@@ -1261,7 +1261,7 @@ TilePage.prototype = {
    */
   appendDraggingTile() {
     const originalPage = currentlyDraggingTile.tilePage;
-    if (originalPage == this) {
+    if (originalPage === this) {
       return;
     }
 
@@ -1300,7 +1300,7 @@ TilePage.prototype = {
    */
   updateDropIndicator_(newDragIndex) {
     const oldDragIndex = this.currentDropIndex_;
-    if (newDragIndex == oldDragIndex) {
+    if (newDragIndex === oldDragIndex) {
       return;
     }
 
@@ -1308,7 +1308,7 @@ TilePage.prototype = {
     const repositionEnd = Math.max(newDragIndex, oldDragIndex);
 
     for (let i = repositionStart; i <= repositionEnd; i++) {
-      if (i == this.dragItemIndex_) {
+      if (i === this.dragItemIndex_) {
         continue;
       }
 

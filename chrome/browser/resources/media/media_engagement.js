@@ -35,9 +35,9 @@ function createRow(rowInfo) {
   const td = template.content.querySelectorAll('td');
 
   td[0].textContent = rowInfo.origin.scheme + '://' + rowInfo.origin.host;
-  if (rowInfo.origin.scheme == 'http' && rowInfo.origin.port != '80') {
+  if (rowInfo.origin.scheme === 'http' && rowInfo.origin.port !== 80) {
     td[0].textContent += ':' + rowInfo.origin.port;
-  } else if (rowInfo.origin.scheme == 'https' && rowInfo.origin.port != '443') {
+  } else if (rowInfo.origin.scheme === 'https' && rowInfo.origin.port !== 443) {
     td[0].textContent += ':' + rowInfo.origin.port;
   }
 
@@ -83,15 +83,15 @@ function compareTableItem(sortKey, a, b) {
   const val2 = b[sortKey];
 
   // Compare the hosts of the origin ignoring schemes.
-  if (sortKey == 'origin') {
+  if (sortKey === 'origin') {
     return val1.host > val2.host ? 1 : -1;
   }
 
-  if (sortKey == 'visits' || sortKey == 'mediaPlaybacks' ||
-      sortKey == 'lastMediaPlaybackTime' || sortKey == 'totalScore' ||
-      sortKey == 'audiblePlaybacks' || sortKey == 'significantPlaybacks' ||
-      sortKey == 'highScoreChanges' || sortKey == 'mediaElementPlaybacks' ||
-      sortKey == 'audioContextPlaybacks' || sortKey == 'isHigh') {
+  if (sortKey === 'visits' || sortKey === 'mediaPlaybacks' ||
+      sortKey === 'lastMediaPlaybackTime' || sortKey === 'totalScore' ||
+      sortKey === 'audiblePlaybacks' || sortKey === 'significantPlaybacks' ||
+      sortKey === 'highScoreChanges' || sortKey === 'mediaElementPlaybacks' ||
+      sortKey === 'audioContextPlaybacks' || sortKey === 'isHigh') {
     return val1 - val2;
   }
 
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
   for (let i = 0; i < headers.length; i++) {
     headers[i].addEventListener('click', (e) => {
       const newSortKey = e.target.getAttribute('sort-key');
-      if (sortKey == newSortKey) {
+      if (sortKey === newSortKey) {
         sortReverse = !sortReverse;
       } else {
         sortKey = newSortKey;

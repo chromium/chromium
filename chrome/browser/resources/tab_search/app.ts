@@ -333,11 +333,11 @@ export class TabSearchAppElement extends PolymerElement {
     let text;
     if (this.searchText_.length > 0) {
       text = loadTimeData.getStringF(
-          itemCount == 1 ? 'a11yFoundTabFor' : 'a11yFoundTabsFor', itemCount,
+          itemCount === 1 ? 'a11yFoundTabFor' : 'a11yFoundTabsFor', itemCount,
           this.searchText_);
     } else {
       text = loadTimeData.getStringF(
-          itemCount == 1 ? 'a11yFoundTab' : 'a11yFoundTabs', itemCount);
+          itemCount === 1 ? 'a11yFoundTab' : 'a11yFoundTabs', itemCount);
     }
     return text;
   }

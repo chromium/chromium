@@ -71,7 +71,7 @@ function removeChildren(element_id) {
 
 function onload() {
   const tabContents = document.querySelectorAll('#content > div');
-  for (let i = 0; i != tabContents.length; i++) {
+  for (let i = 0; i !== tabContents.length; i++) {
     const tabContent = tabContents[i];
     const tabName = tabContent.querySelector('.content-header').textContent;
 
@@ -105,10 +105,10 @@ function selectTab(id) {
   const tabContents = document.querySelectorAll('#content > div');
   const tabHeaders = $('navigation').querySelectorAll('.tab-header');
   let found = false;
-  for (let i = 0; i != tabContents.length; i++) {
+  for (let i = 0; i !== tabContents.length; i++) {
     const tabContent = tabContents[i];
     const tabHeader = tabHeaders[i];
-    if (tabContent.id == id) {
+    if (tabContent.id === id) {
       tabContent.classList.add('selected');
       tabHeader.classList.add('selected');
       found = true;
@@ -125,9 +125,9 @@ function selectTab(id) {
 }
 
 function populateTargets(source, data) {
-  if (source == 'local') {
+  if (source === 'local') {
     populateLocalTargets(data);
-  } else if (source == 'remote') {
+  } else if (source === 'remote') {
     populateRemoteTargets(data);
   } else {
     console.error('Unknown source type: ' + source);
@@ -183,7 +183,7 @@ function showIncognitoWarning() {
 
 function alreadyDisplayed(element, data) {
   const json = JSON.stringify(data);
-  if (element.cachedJSON == json) {
+  if (element.cachedJSON === json) {
     return true;
   }
   element.cachedJSON = json;
@@ -229,10 +229,10 @@ function populateRemoteTargets(devices) {
   }
 
   function browserCompare(a, b) {
-    if (a.adbBrowserName != b.adbBrowserName) {
+    if (a.adbBrowserName !== b.adbBrowserName) {
       return a.adbBrowserName < b.adbBrowserName;
     }
-    if (a.adbBrowserVersion != b.adbBrowserVersion) {
+    if (a.adbBrowserVersion !== b.adbBrowserVersion) {
       return a.adbBrowserVersion < b.adbBrowserVersion;
     }
     return a.id < b.id;
@@ -385,7 +385,7 @@ function populateRemoteTargets(devices) {
             input.value = '';
           }.bind(null, browser.source, browser.id, newPageUrl);
           newPageUrl.addEventListener('keyup', function(handler, event) {
-            if (event.key == 'Enter' && event.target.value) {
+            if (event.key === 'Enter' && event.target.value) {
               handler();
             }
           }.bind(null, openHandler), true);
@@ -522,7 +522,7 @@ function addToNativeUIList(data) {
 function formatValue(data, property) {
   let value = data[property];
 
-  if (property == 'name' && value == '') {
+  if (property === 'name' && value === '') {
     value = 'untitled';
   }
 
@@ -699,7 +699,7 @@ function addActionLink(row, text, handler, opt_disabled) {
   link.textContent = text;
   link.addEventListener('click', handler, true);
   function handleKey(e) {
-    if (e.key == 'Enter' || e.key == ' ') {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handler();
     }
@@ -739,7 +739,7 @@ function handleKey(event) {
   switch (event.keyCode) {
     case 13:  // Enter
       const dialog = $('config-dialog');
-      if (event.target.nodeName == 'INPUT') {
+      if (event.target.nodeName === 'INPUT') {
         const line = event.target.parentNode;
         if (!line.classList.contains('fresh') ||
             line.classList.contains('empty')) {
@@ -859,7 +859,7 @@ function openTargetsConfig() {
 
 function filterList(fieldSelectors, callback) {
   const lines = $('config-dialog').querySelectorAll('.config-list-row');
-  for (let i = 0; i != lines.length; i++) {
+  for (let i = 0; i !== lines.length; i++) {
     const line = lines[i];
     const values = [];
     for (const selector of fieldSelectors) {
@@ -871,7 +871,7 @@ function filterList(fieldSelectors, callback) {
       }
       values.push(value);
     }
-    if (values.length == fieldSelectors.length) {
+    if (values.length === fieldSelectors.length) {
       callback.apply(null, values);
     }
   }
@@ -910,7 +910,7 @@ function updateTCPDiscoveryConfig(config) {
 function appendRow(list, lineFactory, key, value) {
   const line = lineFactory(key, value);
   line.lastElementChild.addEventListener('keydown', function(e) {
-    if (e.key == 'Tab' && !hasKeyModifiers(e) &&
+    if (e.key === 'Tab' && !hasKeyModifiers(e) &&
         line.classList.contains('fresh') && !line.classList.contains('empty')) {
       // Tabbing forward on the fresh line, try create a new empty one.
       if (commitFreshLineIfValid(true)) {
@@ -951,11 +951,11 @@ function validatePort(input) {
   }
 
   const inputs = document.querySelectorAll('input.port:not(.invalid)');
-  for (let i = 0; i != inputs.length; ++i) {
-    if (inputs[i] == input) {
+  for (let i = 0; i !== inputs.length; ++i) {
+    if (inputs[i] === input) {
       break;
     }
-    if (parseInt(inputs[i].value) == port) {
+    if (parseInt(inputs[i].value) === port) {
       return false;
     }
   }
@@ -1008,8 +1008,8 @@ function createConfigField(value, className, hint, validate) {
 function checkEmptyLine(line) {
   const inputs = line.querySelectorAll('input');
   let empty = true;
-  for (let i = 0; i != inputs.length; i++) {
-    if (inputs[i].value != '') {
+  for (let i = 0; i !== inputs.length; i++) {
+    if (inputs[i].value !== '') {
       empty = false;
     }
   }

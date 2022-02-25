@@ -113,7 +113,7 @@ export class PageManager {
 
     // Notify pages if they will be hidden.
     this.registeredPages.forEach(page => {
-      if (page.name != pageName && !this.isAncestorOfPage(page, targetPage)) {
+      if (page.name !== pageName && !this.isAncestorOfPage(page, targetPage)) {
         page.willHidePage();
       }
     });
@@ -124,7 +124,7 @@ export class PageManager {
     // Update visibilities to show only the hierarchy of the target page.
     this.registeredPages.forEach(page => {
       page.visible =
-          page.name == pageName || this.isAncestorOfPage(page, targetPage);
+          page.name === pageName || this.isAncestorOfPage(page, targetPage);
     });
 
     // Update the history and current location.
@@ -134,7 +134,7 @@ export class PageManager {
 
     // Update focus if any other control was focused on the previous page,
     // or the previous page is not known.
-    if (document.activeElement != document.body &&
+    if (document.activeElement !== document.body &&
         (!rootPage || rootPage.pageDiv.contains(document.activeElement))) {
       targetPage.focus();
     }
@@ -142,7 +142,7 @@ export class PageManager {
     // Notify pages if they were shown.
     this.registeredPages.forEach(page => {
       if (!targetPageWasVisible &&
-          (page.name == pageName || this.isAncestorOfPage(page, targetPage))) {
+          (page.name === pageName || this.isAncestorOfPage(page, targetPage))) {
         page.didShowPage();
       }
     });
@@ -198,7 +198,7 @@ export class PageManager {
   isAncestorOfPage(potentialAncestor, potentialDescendent) {
     let parent = potentialDescendent.parentPage;
     while (parent) {
-      if (parent == potentialAncestor) {
+      if (parent === potentialAncestor) {
         return true;
       }
       parent = parent.parentPage;
@@ -213,7 +213,7 @@ export class PageManager {
    */
   onPageHashChanged_(e) {
     const page = /** @type {!Page} */ (e.target);
-    if (page == this.getTopmostVisiblePage()) {
+    if (page === this.getTopmostVisiblePage()) {
       this.updateHistoryState_(false);
     }
   }
@@ -279,8 +279,8 @@ export class PageManager {
 
     // If the page is already in history (the user may have clicked the same
     // link twice, or this is the initial load), do nothing.
-    const newPath = (page == this.defaultPage_ ? '' : page.name) + page.hash;
-    if (path == newPath) {
+    const newPath = (page === this.defaultPage_ ? '' : page.name) + page.hash;
+    if (path === newPath) {
       return;
     }
 

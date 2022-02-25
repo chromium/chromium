@@ -180,12 +180,12 @@ AppContextMenu.prototype = {
     let hasLaunchType = false;
     this.forAllLaunchTypes_(function(launchTypeButton, id) {
       launchTypeButton.disabled = false;
-      launchTypeButton.checked = app.appData.launch_type == id;
+      launchTypeButton.checked = app.appData.launch_type === id;
       // There are two cases when a launch type is hidden:
       //  1. if the launch type can't be changed.
       //  2. type is anything except launchTypeWindow
       launchTypeButton.hidden = !app.appData.mayChangeLaunchType ||
-          launchTypeButton != launchTypeWindow;
+          launchTypeButton !== launchTypeWindow;
       if (!launchTypeButton.hidden) {
         hasLaunchType = true;
       }
@@ -221,7 +221,7 @@ AppContextMenu.prototype = {
     this.runOnOsLogin_.hidden = !app.appData.mayShowRunOnOsLoginMode;
     this.runOnOsLogin_.disabled = !app.appData.mayToggleRunOnOsLoginMode;
     this.runOnOsLogin_.checked =
-        app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
+        app.appData.runOnOsLoginMode !== RUN_ON_OS_LOGIN_MODE.NOT_RUN;
 
 
   },
@@ -244,7 +244,7 @@ AppContextMenu.prototype = {
     targetLaunchType = this.launchNewWindow_.checked ? this.launchRegularTab_ :
                                                        this.launchNewWindow_;
     this.forAllLaunchTypes_(function(launchTypeButton, id) {
-      if (launchTypeButton == targetLaunchType) {
+      if (launchTypeButton === targetLaunchType) {
         chrome.send('setLaunchType', [app.appId, id]);
         // Manually update the launch type. We will only get
         // appsPrefChangeCallback calls after changes to other NTP instances.
@@ -291,7 +291,7 @@ AppContextMenu.prototype = {
     const app = this.app_;
     let mode = RUN_ON_OS_LOGIN_MODE.NOT_RUN;
 
-    if (pressed == this.runOnOsLogin_ && !pressed.checked) {
+    if (pressed === this.runOnOsLogin_ && !pressed.checked) {
       mode = RUN_ON_OS_LOGIN_MODE.WINDOWED;
     }
 
@@ -515,7 +515,7 @@ App.prototype = {
       this.appContents_.dispatchEvent(new MouseEvent('contextmenu'));
       e.preventDefault();
       e.stopPropagation();
-    } else if (e.key == 'Enter') {
+    } else if (e.key === 'Enter') {
       chrome.send('launchApp', [
         this.appId, APP_LAUNCH.NTP_APPS_MAXIMIZED, '', 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey
@@ -551,11 +551,11 @@ App.prototype = {
   onMousedown_(e) {
     // If the current platform uses middle click to autoscroll and this
     // mousedown isn't handled, onClick_() will never fire. crbug.com/142939
-    if (e.button == 1) {
+    if (e.button === 1) {
       e.preventDefault();
     }
 
-    if (e.button == 2 ||
+    if (e.button === 2 ||
         !findAncestorByClass(
             /** @type {Element} */ (e.target), 'launch-click-target')) {
       this.appContents_.classList.add('suppress-active');
@@ -723,7 +723,7 @@ AppsPage.prototype = {
    * @private
    */
   onTileAdded_(e) {
-    assert(e.currentTarget == this);
+    assert(e.currentTarget === this);
     assert(e.addedTile.firstChild instanceof App);
     if (this.classList.contains('selected-card')) {
       e.addedTile.firstChild.loadIcon();
@@ -766,7 +766,7 @@ AppsPage.prototype = {
       return false;
     }
     return Array.prototype.indexOf.call(
-               e.dataTransfer.types, 'text/uri-list') != -1;
+               e.dataTransfer.types, 'text/uri-list') !== -1;
   },
 
   /** @override */
@@ -777,7 +777,7 @@ AppsPage.prototype = {
       const tileContents = currentlyDraggingTile.firstChild;
       if (tileContents.classList.contains('app')) {
         const originalPage = currentlyDraggingTile.tilePage;
-        const samePageDrag = originalPage == this;
+        const samePageDrag = originalPage === this;
         sourceId = samePageDrag ? DRAG_SOURCE.SAME_APPS_PANE :
                                   DRAG_SOURCE.OTHER_APPS_PANE;
         this.tileGrid_.insertBefore(
@@ -793,7 +793,7 @@ AppsPage.prototype = {
       sourceId = DRAG_SOURCE.OUTSIDE_NTP;
     }
 
-    assert(sourceId != -1);
+    assert(sourceId !== -1);
     chrome.send(
         'metricsHandler:recordInHistogram',
         ['NewTabPage.AppsPageDragSource', sourceId, DRAG_SOURCE_LIMIT]);
@@ -840,8 +840,8 @@ AppsPage.prototype = {
    *     and |title| members.
    */
   generateAppForLink(data) {
-    assert(data.url != undefined);
-    assert(data.title != undefined);
+    assert(data.url !== undefined);
+    assert(data.title !== undefined);
     const pageIndex = getAppsPageIndex(this);
     chrome.send('generateAppForLink', [data.url, data.title, pageIndex]);
   },

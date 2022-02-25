@@ -132,7 +132,7 @@ function setupEventListeners() {
 
   $('feed-stream-data-override').addEventListener('click', function() {
     const file = $('feed-stream-data-file').files[0];
-    if (file && typeof pageHandler.overrideFeedStreamData == 'function') {
+    if (file && typeof pageHandler.overrideFeedStreamData === 'function') {
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onload = function(e) {

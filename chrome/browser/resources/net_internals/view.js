@@ -109,7 +109,7 @@ export class DivView extends View {
     // Initialize the default values to those of the DIV.
     this.width_ = this.node_.offsetWidth;
     this.height_ = this.node_.offsetHeight;
-    this.isVisible_ = this.node_.style.display != 'none';
+    this.isVisible_ = this.node_.style.display !== 'none';
   }
 
   setGeometry(left, top, width, height) {

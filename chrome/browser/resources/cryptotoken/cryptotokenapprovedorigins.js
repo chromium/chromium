@@ -50,7 +50,7 @@ CryptoTokenApprovedOrigin.prototype.isApprovedOrigin = function(
           return;
         }
         var tabOrigin = getOriginFromUrl(tab.url);
-        resolve(tabOrigin == origin);
+        resolve(tabOrigin === origin);
       });
     });
   });

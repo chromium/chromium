@@ -107,7 +107,7 @@ export class Value {
    * @private
    */
   toHex_() {
-    if (this.value_.length == 0) {
+    if (this.value_.length === 0) {
       return '';
     }
 

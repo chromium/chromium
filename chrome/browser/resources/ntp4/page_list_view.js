@@ -233,7 +233,7 @@ PageListView.prototype = {
     this.dotList.insertBefore(
         newDot, opt_refNode ? opt_refNode.navigationDot : null);
     // Set a tab index on the first dot.
-    if (this.dotList.dots.length == 1) {
+    if (this.dotList.dots.length === 1) {
       newDot.tabIndex = 3;
     }
 
@@ -349,7 +349,7 @@ PageListView.prototype = {
         Array.prototype.indexOf.call(this.tilePages, lastAppsPage) :
         -1;
     const nextPageAfterApps =
-        lastAppsPageIndex != -1 ? this.tilePages[lastAppsPageIndex + 1] : null;
+        lastAppsPageIndex !== -1 ? this.tilePages[lastAppsPageIndex + 1] : null;
 
     // Add the apps, creating pages as necessary
     for (let i = 0; i < apps.length; i++) {
@@ -365,10 +365,11 @@ PageListView.prototype = {
         this.appendTilePage(new AppsPage(), pageName, true, nextPageAfterApps);
         // Confirm that appsPages is a live object, updated when a new page is
         // added (otherwise we'd have an infinite loop)
-        assert(this.appsPages.length == origPageCount + 1, 'expected new page');
+        assert(
+            this.appsPages.length === origPageCount + 1, 'expected new page');
       }
 
-      if (app.id == this.highlightAppId) {
+      if (app.id === this.highlightAppId) {
         highlightApp = app;
       } else {
         this.appsPages[pageIndex].insertApp(app, false);
@@ -400,7 +401,7 @@ PageListView.prototype = {
    *     be highlighted.
    */
   appAdded(appData, opt_highlight) {
-    if (appData.id == this.highlightAppId) {
+    if (appData.id === this.highlightAppId) {
       opt_highlight = true;
       this.highlightAppId = null;
     }
@@ -484,7 +485,8 @@ PageListView.prototype = {
         document.querySelector('.tile-page.temporary'));
     if (tempPage) {
       const dot = tempPage.navigationDot;
-      if (!tempPage.tileCount && tempPage != this.cardSlider.currentCardValue) {
+      if (!tempPage.tileCount &&
+          tempPage !== this.cardSlider.currentCardValue) {
         this.removeTilePageAndDot_(tempPage, true);
       } else {
         tempPage.classList.remove('temporary');
@@ -503,7 +505,7 @@ PageListView.prototype = {
    * @param {Event} e The event.
    */
   onPageLayout_(e) {
-    if (Array.prototype.indexOf.call(this.tilePages, e.currentTarget) !=
+    if (Array.prototype.indexOf.call(this.tilePages, e.currentTarget) !==
         this.cardSlider.currentCard) {
       return;
     }
@@ -524,9 +526,10 @@ PageListView.prototype = {
     const page =
         /** @type {?TilePage} */ (this.cardSlider.currentCardValue);
 
-    this.pageSwitcherStart.hidden = !page || (this.cardSlider.currentCard == 0);
-    this.pageSwitcherEnd.hidden =
-        !page || (this.cardSlider.currentCard == this.cardSlider.cardCount - 1);
+    this.pageSwitcherStart.hidden =
+        !page || (this.cardSlider.currentCard === 0);
+    this.pageSwitcherEnd.hidden = !page ||
+        (this.cardSlider.currentCard === this.cardSlider.cardCount - 1);
 
     if (!page) {
       return;
@@ -647,7 +650,7 @@ PageListView.prototype = {
    */
   saveAppPageName(appPage, name) {
     const index = this.getAppsPageIndex(appPage);
-    assert(index != -1);
+    assert(index !== -1);
     chrome.send('saveAppPageName', [name, index]);
   },
 
@@ -688,9 +691,9 @@ PageListView.prototype = {
     }
 
     let direction = 0;
-    if (e.key == 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       direction = -1;
-    } else if (e.key == 'ArrowRight') {
+    } else if (e.key === 'ArrowRight') {
       direction = 1;
     } else {
       return;

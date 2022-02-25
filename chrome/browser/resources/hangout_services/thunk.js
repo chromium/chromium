@@ -54,39 +54,39 @@ chrome.runtime.onMessageExternal.addListener(function(
       origin = getHost(sender.url);
     }
 
-    if (method == 'cpu.getInfo') {
+    if (method === 'cpu.getInfo') {
       chrome.system.cpu.getInfo(doSendResponse);
       return true;
-    } else if (method == 'logging.setMetadata') {
+    } else if (method === 'logging.setMetadata') {
       const metaData = message['metaData'];
       chrome.webrtcLoggingPrivate.setMetaData(
           requestInfo, origin, metaData, doSendResponse);
       return true;
-    } else if (method == 'logging.start') {
+    } else if (method === 'logging.start') {
       chrome.webrtcLoggingPrivate.start(requestInfo, origin, doSendResponse);
       return true;
-    } else if (method == 'logging.uploadOnRenderClose') {
+    } else if (method === 'logging.uploadOnRenderClose') {
       chrome.webrtcLoggingPrivate.setUploadOnRenderClose(
           requestInfo, origin, true);
       doSendResponse();
       return false;
-    } else if (method == 'logging.noUploadOnRenderClose') {
+    } else if (method === 'logging.noUploadOnRenderClose') {
       chrome.webrtcLoggingPrivate.setUploadOnRenderClose(
           requestInfo, origin, false);
       doSendResponse();
       return false;
-    } else if (method == 'logging.stop') {
+    } else if (method === 'logging.stop') {
       chrome.webrtcLoggingPrivate.stop(requestInfo, origin, doSendResponse);
       return true;
-    } else if (method == 'logging.upload') {
+    } else if (method === 'logging.upload') {
       chrome.webrtcLoggingPrivate.upload(requestInfo, origin, doSendResponse);
       return true;
-    } else if (method == 'logging.uploadStored') {
+    } else if (method === 'logging.uploadStored') {
       const logId = message['logId'];
       chrome.webrtcLoggingPrivate.uploadStored(
           requestInfo, origin, logId, doSendResponse);
       return true;
-    } else if (method == 'logging.stopAndUpload') {
+    } else if (method === 'logging.stopAndUpload') {
       // Stop everything and upload. This is allowed to be called even if
       // logs have already been stopped or not started. Therefore, ignore
       // any errors along the way, but store them, so that if upload fails
@@ -121,23 +121,23 @@ chrome.runtime.onMessageExternal.addListener(function(
                 });
           });
       return true;
-    } else if (method == 'logging.store') {
+    } else if (method === 'logging.store') {
       const logId = message['logId'];
       chrome.webrtcLoggingPrivate.store(
           requestInfo, origin, logId, doSendResponse);
       return true;
-    } else if (method == 'logging.discard') {
+    } else if (method === 'logging.discard') {
       chrome.webrtcLoggingPrivate.discard(requestInfo, origin, doSendResponse);
       return true;
-    } else if (method == 'getSinks') {
+    } else if (method === 'getSinks') {
       chrome.webrtcAudioPrivate.getSinks(doSendResponse);
       return true;
-    } else if (method == 'getAssociatedSink') {
+    } else if (method === 'getAssociatedSink') {
       const sourceId = message['sourceId'];
       chrome.webrtcAudioPrivate.getAssociatedSink(
           origin, sourceId, doSendResponse);
       return true;
-    } else if (method == 'isExtensionEnabled') {
+    } else if (method === 'isExtensionEnabled') {
       // This method is necessary because there may be more than one
       // version of this extension, under different extension IDs. By
       // first calling this method on the extension ID, the client can
@@ -146,33 +146,33 @@ chrome.runtime.onMessageExternal.addListener(function(
       // chrome.runtime.lastError.
       doSendResponse();
       return false;
-    } else if (method == 'getNaclArchitecture') {
+    } else if (method === 'getNaclArchitecture') {
       chrome.runtime.getPlatformInfo(function(obj) {
         doSendResponse(obj.nacl_arch);
       });
       return true;
-    } else if (method == 'logging.startRtpDump') {
+    } else if (method === 'logging.startRtpDump') {
       const incoming = message['incoming'] || false;
       const outgoing = message['outgoing'] || false;
       chrome.webrtcLoggingPrivate.startRtpDump(
           requestInfo, origin, incoming, outgoing, doSendResponse);
       return true;
-    } else if (method == 'logging.stopRtpDump') {
+    } else if (method === 'logging.stopRtpDump') {
       const incoming = message['incoming'] || false;
       const outgoing = message['outgoing'] || false;
       chrome.webrtcLoggingPrivate.stopRtpDump(
           requestInfo, origin, incoming, outgoing, doSendResponse);
       return true;
-    } else if (method == 'logging.startAudioDebugRecordings') {
+    } else if (method === 'logging.startAudioDebugRecordings') {
       const seconds = message['seconds'] || 0;
       chrome.webrtcLoggingPrivate.startAudioDebugRecordings(
           requestInfo, origin, seconds, doSendResponse);
       return true;
-    } else if (method == 'logging.stopAudioDebugRecordings') {
+    } else if (method === 'logging.stopAudioDebugRecordings') {
       chrome.webrtcLoggingPrivate.stopAudioDebugRecordings(
           requestInfo, origin, doSendResponse);
       return true;
-    } else if (method == 'logging.startEventLogging') {
+    } else if (method === 'logging.startEventLogging') {
       const sessionId = message['sessionId'] || '';
       const maxLogSizeBytes = message['maxLogSizeBytes'] || 0;
       const outputPeriodMs = message['outputPeriodMs'] || -1;
@@ -181,7 +181,7 @@ chrome.runtime.onMessageExternal.addListener(function(
           requestInfo, origin, sessionId, maxLogSizeBytes, outputPeriodMs,
           webAppId, doSendResponse);
       return true;
-    } else if (method == 'getHardwarePlatformInfo') {
+    } else if (method === 'getHardwarePlatformInfo') {
       chrome.enterprise.hardwarePlatform.getHardwarePlatformInfo(
           doSendResponse);
       return true;
@@ -220,7 +220,7 @@ function onChooseDesktopMediaPort(port) {
 
   port.onMessage.addListener(function(message) {
     const method = message['method'];
-    if (method == 'chooseDesktopMedia') {
+    if (method === 'chooseDesktopMedia') {
       const sources = message['sources'];
       let cancelId = null;
       const tab = port.sender.tab;
@@ -256,7 +256,7 @@ function onChooseDesktopMediaPort(port) {
 function onProcessCpu(port) {
   let tabPid = port.sender.guestProcessId || undefined;
   function processListener(processes) {
-    if (tabPid == undefined) {
+    if (tabPid === undefined) {
       // getProcessIdForTab sometimes fails, and does not call the callback.
       // (Tracked at https://crbug.com/368855.)
       // This call retries it on each process update until it succeeds.
@@ -273,9 +273,9 @@ function onProcessCpu(port) {
     let browserProcessCpu, gpuProcessCpu;
     for (const pid in processes) {
       const process = processes[pid];
-      if (process.type == 'browser') {
+      if (process.type === 'browser') {
         browserProcessCpu = process.cpu;
-      } else if (process.type == 'gpu') {
+      } else if (process.type === 'gpu') {
         gpuProcessCpu = process.cpu;
       }
       if (browserProcessCpu && gpuProcessCpu) {
@@ -307,11 +307,11 @@ function appendLastErrorMessage(errors) {
 }
 
 chrome.runtime.onConnectExternal.addListener(function(port) {
-  if (port.name == 'onSinksChangedListener') {
+  if (port.name === 'onSinksChangedListener') {
     onSinksChangedPort(port);
-  } else if (port.name == 'chooseDesktopMedia') {
+  } else if (port.name === 'chooseDesktopMedia') {
     onChooseDesktopMediaPort(port);
-  } else if (port.name == 'processCpu') {
+  } else if (port.name === 'processCpu') {
     onProcessCpu(port);
   } else {
     // Unknown port type.

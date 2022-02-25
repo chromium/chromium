@@ -12,7 +12,7 @@ function oktaDetectSuccess() {
 
   let messageFromParent;
   function onMessageReceived(event) {
-    if (event.origin == PARENT_ORIGIN) {
+    if (event.origin === PARENT_ORIGIN) {
       messageFromParent = event;
     }
   }

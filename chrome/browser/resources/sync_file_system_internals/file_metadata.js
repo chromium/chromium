@@ -43,7 +43,7 @@ function onGetExtensions(extensionStatuses) {
     select.options.add(new Option(title, originEntry.extensionID));
 
     // If option was the previously only selected, make it selected again.
-    if (originEntry.extensionID != oldSelectedExtension) {
+    if (originEntry.extensionID !== oldSelectedExtension) {
       continue;
     }
     select.options[select.options.length - 1].selected = true;
@@ -118,9 +118,9 @@ function onGetFileMetadata(fileMetadataMap) {
 function createFileIconCell(type) {
   const img = document.createElement('div');
   const lowerType = type.toLowerCase();
-  if (lowerType == 'file') {
+  if (lowerType === 'file') {
     img.style.content = getImage('chrome://theme/IDR_DEFAULT_FAVICON');
-  } else if (lowerType == 'folder') {
+  } else if (lowerType === 'folder') {
     img.style.content = getImage('chrome://theme/IDR_FOLDER_CLOSED');
     img.className = 'folder-image';
   }

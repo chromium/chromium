@@ -114,19 +114,19 @@ cr.define('cr.samlPasswordChange', function() {
     // that an otherwise unsupported IdP can also send it as a success message.
     // TODO(https://crbug.com/930109): Consider removing this entirely, or,
     // using a more self-documenting parameter like 'passwordChanged=1'.
-    if (redirectUrl.searchParams.get('status') == '0') {
+    if (redirectUrl.searchParams.get('status') === '0') {
       return true;
     }
 
     const pageProvider = detectProvider_(postUrl);
     // These heuristics work for the following SAML IdPs:
-    if (pageProvider == PasswordChangePageProvider.ADFS) {
-      return redirectUrl.searchParams.get('status') == '0';
+    if (pageProvider === PasswordChangePageProvider.ADFS) {
+      return redirectUrl.searchParams.get('status') === '0';
     }
-    if (pageProvider == PasswordChangePageProvider.AZURE) {
-      return redirectUrl.searchParams.get('ReturnCode') == '0';
+    if (pageProvider === PasswordChangePageProvider.AZURE) {
+      return redirectUrl.searchParams.get('ReturnCode') === '0';
     }
-    if (pageProvider == PasswordChangePageProvider.PING) {
+    if (pageProvider === PasswordChangePageProvider.PING) {
       // The returnurl is always preserved until password change succeeds - then
       // it is no longer needed.
       return (!!postUrl.searchParams.get('returnurl') &&
@@ -171,7 +171,7 @@ cr.define('cr.samlPasswordChange', function() {
      * Resets the webview to the blank page.
      */
     resetWebview() {
-      if (this.webview_.src && this.webview_.src != BLANK_PAGE_URL) {
+      if (this.webview_.src && this.webview_.src !== BLANK_PAGE_URL) {
         this.webview_.src = BLANK_PAGE_URL;
       }
     }
@@ -186,7 +186,7 @@ cr.define('cr.samlPasswordChange', function() {
       assert(!this.webview_);
       assert(!this.samlHandler_);
 
-      this.webview_ = typeof webview == 'string' ? $(webview) : webview;
+      this.webview_ = typeof webview === 'string' ? $(webview) : webview;
 
       this.samlHandler_ =
           new cr.login.SamlHandler(this.webview_, true /* startsOnSamlPage */);
@@ -296,7 +296,7 @@ cr.define('cr.samlPasswordChange', function() {
         const verifyPasswords =
             this.samlHandler_.getPasswordsWithPropertyScrapedTimes(
                 1, 'verifyPassword');
-        if (newPasswords.length == 1 && verifyPasswords.length == 1 &&
+        if (newPasswords.length === 1 && verifyPasswords.length === 1 &&
             newPasswords[0] === verifyPasswords[0]) {
           passwordsTwice = Array.from(newPasswords);
         } else {
@@ -332,7 +332,7 @@ cr.define('cr.samlPasswordChange', function() {
      * @private
      */
     onBeforeRedirect_(details) {
-      if (details.method == 'POST') {
+      if (details.method === 'POST') {
         const message = {
           name: 'detectPasswordChangeSuccess',
           url: details.url,
@@ -379,7 +379,7 @@ cr.define('cr.samlPasswordChange', function() {
      * @private
      */
     onMessageReceived_(event) {
-      if (event.data == 'passwordChangeSuccess') {
+      if (event.data === 'passwordChangeSuccess') {
         const message = {name: 'detectProvider', url: event.origin};
         sendMessage_(extensionId, message, (provider) => {
           // SAML change password extension will be used to detect provider
@@ -387,9 +387,9 @@ cr.define('cr.samlPasswordChange', function() {
           // 'provider' will be equal to undefined in case
           // extension isn't installed or disabled, In this case normal flow
           // will be used.
-          if (provider == PasswordChangePageProvider.OKTA ||
+          if (provider === PasswordChangePageProvider.OKTA ||
               (typeof provider === 'undefined' &&
-               detectProvider_(safeParseUrl_(event.origin)) ==
+               detectProvider_(safeParseUrl_(event.origin)) ===
                    PasswordChangePageProvider.OKTA)) {
             this.onPasswordChangeSuccess_(true /* isOkta */);
           }

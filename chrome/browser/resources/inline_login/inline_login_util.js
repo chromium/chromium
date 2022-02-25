@@ -27,7 +27,7 @@ export function getAccountAdditionOptionsFromJSON(json) {
     return null;
   }
 
-  assert(args.isAvailableInArc != undefined);
-  assert(args.showArcAvailabilityPicker != undefined);
+  assert(args.isAvailableInArc !== undefined);
+  assert(args.showArcAvailabilityPicker !== undefined);
   return args;
 }

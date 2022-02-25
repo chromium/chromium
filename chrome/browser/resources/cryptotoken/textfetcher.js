@@ -43,7 +43,7 @@ XhrTextFetcher.prototype.fetch = function(url, opt_method, opt_body) {
     var method = opt_method || 'GET';
     xhr.open(method, url, true);
     xhr.onloadend = function() {
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         reject(xhr.status);
         return;
       }

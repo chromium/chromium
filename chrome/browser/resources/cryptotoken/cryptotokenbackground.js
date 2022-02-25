@@ -73,7 +73,7 @@ function sendResponseToActiveTabOnly(request, sender, sendResponse, response) {
   // UI after a timeout races with the error being returned here. Hence, skip
   // the focus check for all timeouts.
   if ((response.responseData &&
-       response.responseData.errorCode == ErrorCodes.TIMEOUT) ||
+       response.responseData.errorCode === ErrorCodes.TIMEOUT) ||
       foregroundAlreadyTested) {
     defaultResponseCallback(request, sendResponse, response);
     return;

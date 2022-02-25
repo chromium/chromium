@@ -94,7 +94,7 @@ class MitigationField {
    * @return {boolean}
    */
   isFieldSet(bytes) {
-    if (bytes.length != 4 && bytes.length != 8 && bytes.length != 16) {
+    if (bytes.length !== 4 && bytes.length !== 8 && bytes.length !== 16) {
       throw ('Platform mitigations has unexpected size');
     }
     const subfield = this.getFieldData(bytes);
@@ -103,7 +103,7 @@ class MitigationField {
     }
     const idx = subfield.length - 1 - Math.floor(this.offset / 8);
     const ibit = this.offset % 8;
-    return (subfield[idx] & (this.mask << ibit)) == (this.value << ibit);
+    return (subfield[idx] & (this.mask << ibit)) === (this.value << ibit);
   }
 }
 
@@ -116,10 +116,10 @@ class PC0Field extends MitigationField {
    * @return {Uint8Array} chunk containing this field or null.
    */
   getFieldData(bytes) {
-    if (bytes.length == 4) {
+    if (bytes.length === 4) {
       // Win32 only 4 bytes of fields.
       return bytes;
-    } else if (bytes.length == 8) {
+    } else if (bytes.length === 8) {
       return bytes;
     } else {
       return bytes.slice(0, 8);
@@ -133,9 +133,9 @@ class PC0Field extends MitigationField {
 class PC1Field extends MitigationField {
   /** @override */
   getFieldData(bytes) {
-    if (bytes.length == 8) {
+    if (bytes.length === 8) {
       return bytes;
-    } else if (bytes.length == 16) {
+    } else if (bytes.length === 16) {
       return bytes.slice(0, 8);
     }
     return null;
@@ -148,9 +148,9 @@ class PC1Field extends MitigationField {
 class PC2Field extends MitigationField {
   /** @override */
   getFieldData(bytes) {
-    if (bytes.length == 8) {
+    if (bytes.length === 8) {
       return null;
-    } else if (bytes.length == 16) {
+    } else if (bytes.length === 16) {
       return bytes.slice(8, 16);
     }
     return null;
@@ -266,7 +266,7 @@ class DecodeMitigations {
    * @return {Uint8Array} bytes Decoded bytes.
    */
   parseHexString(str) {
-    assert((str.length % 2 == 0), 'str must have even length');
+    assert((str.length % 2 === 0), 'str must have even length');
     const bytes = new Uint8Array(str.length / 2);
     for (let idx = 0; idx < str.length / 2; idx++) {
       bytes[idx] = parseInt(str.slice(idx * 2, idx * 2 + 2), 16);

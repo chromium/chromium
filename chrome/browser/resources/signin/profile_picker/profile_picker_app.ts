@@ -65,9 +65,9 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
       return;
     }
 
-    if (step == ProfileCreationSteps.LOAD_FORCE_SIGNIN) {
+    if (step === ProfileCreationSteps.LOAD_FORCE_SIGNIN) {
       assert(
-          route == Routes.NEW_PROFILE,
+          route === Routes.NEW_PROFILE,
           'LOAD_FORCE_SIGNIN step must be a part of NEW_PROFILE route');
       assert(
           isForceSigninEnabled(),

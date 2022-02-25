@@ -24,7 +24,7 @@ const MV_DOMAIN_ORIGIN = '{{ORIGIN}}';
 function convertToHexColor(color) {
   // Color must be a number, finite, with no fractional part, in the correct
   // range for an RGB hex color.
-  if (isFinite(color) && Math.floor(color) == color && color >= 0 &&
+  if (isFinite(color) && Math.floor(color) === color && color >= 0 &&
       color <= 0xffffff) {
     const hexColor = color.toString(16);
     // Pads with initial zeros and # (e.g. for 'ff' yields '#0000ff').
@@ -142,13 +142,13 @@ function createMostVisitedLink(params, href, title, text, direction) {
   });
 
   link.addEventListener('keydown', function(event) {
-    if (event.keyCode == 46 /* DELETE */ ||
-        event.keyCode == 8 /* BACKSPACE */) {
+    if (event.keyCode === 46 /* DELETE */ ||
+        event.keyCode === 8 /* BACKSPACE */) {
       event.preventDefault();
       window.parent.postMessage(
           'tileBlacklisted,' + params['pos'], MV_DOMAIN_ORIGIN);
     } else if (
-        event.keyCode == 13 /* ENTER */ || event.keyCode == 32 /* SPACE */) {
+        event.keyCode === 13 /* ENTER */ || event.keyCode === 32 /* SPACE */) {
       // Event target is the <a> tag. Send a click event on it, which will
       // trigger the 'click' event registered above.
       event.preventDefault();

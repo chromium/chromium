@@ -16,7 +16,7 @@ function toggleDebugModeButton(showEnableButton) {
  *     form.
  */
 function onDebugDataRefreshed(data) {
-  if (data.length == 0) {
+  if (data.length === 0) {
     toggleDebugModeButton(/*showEnableButton=*/ true);
   } else {
     toggleDebugModeButton(/*showEnableButton=*/ false);

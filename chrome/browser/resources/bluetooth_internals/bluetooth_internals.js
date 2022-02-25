@@ -168,7 +168,7 @@ function setupAdapterSystem(response) {
         event.detail.value;
     adapterPage.redraw();
 
-    if (event.detail.property == AdapterProperty.DISCOVERING &&
+    if (event.detail.property === AdapterProperty.DISCOVERING &&
         !event.detail.value && !userRequestedScanStop && discoverySession) {
       updateStoppedDiscoverySession();
       Snackbar.show(

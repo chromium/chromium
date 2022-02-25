@@ -126,7 +126,7 @@ function addWebApk(webApkInfo) {
       webApkInfo.updateStatus);
 
   // TODO(ckitagawa): Convert to an enum using mojom handlers.
-  if (webApkInfo.updateStatus == 'Not updatable' ||
+  if (webApkInfo.updateStatus === 'Not updatable' ||
       !webApkInfo.isBackingBrowser) {
     return;
   }

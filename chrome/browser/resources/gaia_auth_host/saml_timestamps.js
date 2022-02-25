@@ -46,7 +46,7 @@ cr.define('samlTimestamps', function() {
    */
   /* #export */ function decodeTimestamp(str) {
     str = str.trim();
-    if (str.length == 0 || str.length > MAX_SANE_LENGTH) {
+    if (str.length === 0 || str.length > MAX_SANE_LENGTH) {
       return null;
     }
 

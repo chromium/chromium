@@ -70,7 +70,7 @@ function collapse(button, valueDiv) {
  */
 function changeCollapsedStatus() {
   const valueDiv = getValueDivForButton(this);
-  if (valueDiv.parentNode.className == 'number-collapsed') {
+  if (valueDiv.parentNode.className === 'number-collapsed') {
     expand(this, valueDiv, 1);
   } else {
     collapse(this, valueDiv);
@@ -83,7 +83,7 @@ function changeCollapsedStatus() {
 function collapseAll() {
   const valueDivs = document.getElementsByClassName('stat-value');
   for (let i = 0; i < valueDivs.length; ++i) {
-    if (valueDivs[i].parentNode.className != 'number-expanded') {
+    if (valueDivs[i].parentNode.className !== 'number-expanded') {
       continue;
     }
     const button = getButtonForValueDiv(valueDivs[i]);
@@ -99,7 +99,7 @@ function collapseAll() {
 function expandAll() {
   const valueDivs = document.getElementsByClassName('stat-value');
   for (let i = 0; i < valueDivs.length; ++i) {
-    if (valueDivs[i].parentNode.className != 'number-collapsed') {
+    if (valueDivs[i].parentNode.className !== 'number-collapsed') {
       continue;
     }
     const button = getButtonForValueDiv(valueDivs[i]);

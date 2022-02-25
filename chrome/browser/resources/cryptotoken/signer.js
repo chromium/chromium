@@ -51,7 +51,7 @@ function handleU2fSignRequest(messageSender, request, sendResponse) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
-  if (sender.origin.indexOf('http://') == 0 && !HTTP_ORIGINS_ALLOWED) {
+  if (sender.origin.indexOf('http://') === 0 && !HTTP_ORIGINS_ALLOWED) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
@@ -326,8 +326,9 @@ function Signer(timer, sender, errorCb, successCb, opt_logMsgUrl) {
   // Allow http appIds for http origins. (Broken, but the caller deserves
   // what they get.)
   /** @private {boolean} */
-  this.allowHttp_ =
-      this.sender_.origin ? this.sender_.origin.indexOf('http://') == 0 : false;
+  this.allowHttp_ = this.sender_.origin ?
+      this.sender_.origin.indexOf('http://') === 0 :
+      false;
   /** @private {RequestHandler} */
   this.handler_ = null;
 }
@@ -478,7 +479,7 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
   }
 
   const decodedChallenge = B64_decode(challengeVal);
-  if (decodedChallenge.length == 0) {
+  if (decodedChallenge.length === 0) {
     this.notifyError_({
       errorCode: ErrorCodes.BAD_REQUEST,
       errorMessage: 'challenge must be base64url encoded',
@@ -489,7 +490,7 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
   const credentialList = [];
   for (let i = 0; i < encodedChallenges.length; i++) {
     const decodedKeyHandle = B64_decode(encodedChallenges[i]['keyHandle']);
-    if (decodedKeyHandle.length == 0) {
+    if (decodedKeyHandle.length === 0) {
       this.notifyError_({
         errorCode: ErrorCodes.BAD_REQUEST,
         errorMessage: 'keyHandle must be base64url encoded',
@@ -708,7 +709,7 @@ Signer.prototype.notifySuccess_ = function(challenge, info, browserData) {
  * @private
  */
 Signer.prototype.helperComplete_ = function(helperReply, opt_source) {
-  if (helperReply.type != 'sign_helper_reply') {
+  if (helperReply.type !== 'sign_helper_reply') {
     this.notifyError_({errorCode: ErrorCodes.OTHER_ERROR});
     return;
   }
@@ -720,7 +721,7 @@ Signer.prototype.helperComplete_ = function(helperReply, opt_source) {
         'helper reported ' + reply.code.toString(16) + ', returning ' +
         reportedError.errorCode));
     // Log non-expected reply codes if we have an url to send them
-    if ((reportedError.errorCode == ErrorCodes.OTHER_ERROR) &&
+    if ((reportedError.errorCode === ErrorCodes.OTHER_ERROR) &&
         this.logMsgUrl_) {
       logMessage('log=u2fsign&rc=' + reply.code.toString(16), this.logMsgUrl_);
     }

@@ -296,7 +296,7 @@ function initialize() {
               saveUrls[i] + ' has been added to queue.\n';
           $('url').value = '';
           counter--;
-          if (counter == 0) {
+          if (counter === 0) {
             browserProxy.getRequestQueue().then(fillRequestQueue);
           }
         } else {

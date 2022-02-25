@@ -42,7 +42,7 @@ function onProcessListReceived(data) {
   proclist.innerText = '';  // Clear existing contents.
 
   const processes = data['processes'];
-  if (processes.length == 0) {
+  if (processes.length === 0) {
     return;
   }  // No processes to dump, don't make the table.
 

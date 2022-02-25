@@ -114,7 +114,7 @@ TtsExtension.prototype = {
   onSpeak_(utterance, options, callback) {
     // Ignore the utterance if it is empty. Continue such processing causes no
     // speech and fails all subsequent calls to process additional utterances.
-    if (utterance.length == 0) {
+    if (utterance.length === 0) {
       callback({'type': 'end', 'charIndex': 0});
       return;
     }

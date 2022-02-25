@@ -18,7 +18,7 @@ function showAuthDialog(key, url, mode, partition) {
       'scope_approval_dialog.html', options, function(win) {
         win.contentWindow.addEventListener('load', function(event) {
           let windowParam;
-          if (mode == 'interactive') {
+          if (mode === 'interactive') {
             windowParam = win;
           }
           win.contentWindow.loadAuthUrlAndShowWindow(

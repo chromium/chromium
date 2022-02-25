@@ -72,7 +72,8 @@ function addSegmentInfoToParent(
   dataDiv.className = 'hidden-meta';
   div.setAttribute('simple', '');
   div.addEventListener('click', (e) => {
-    if (e.target != targetDiv && e.target != resultDiv && e.target != dataDiv) {
+    if (e.target !== targetDiv && e.target !== resultDiv &&
+        e.target !== dataDiv) {
       return;
     }
     if (div.hasAttribute('simple')) {

@@ -497,8 +497,8 @@ Polymer({
    * @private
    */
   getTabIndexOfShareTarget_(shareTarget) {
-    if ((!this.selectedShareTarget && shareTarget == this.shareTargets_[0]) ||
-        (shareTarget == this.selectedShareTarget)) {
+    if ((!this.selectedShareTarget && shareTarget === this.shareTargets_[0]) ||
+        (shareTarget === this.selectedShareTarget)) {
       return '0';
     }
     return '-1';
@@ -523,7 +523,7 @@ Polymer({
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `helpText${index}`;
@@ -534,7 +534,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `helpLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -547,12 +547,12 @@ Polymer({
     const anchorTags = tempEl.getElementsByTagName('a');
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       return localizedString;
     }
 
     assert(
-        anchorTags.length == 1,
+        anchorTags.length === 1,
         'nearbyShareDiscoveryPageInfo should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));

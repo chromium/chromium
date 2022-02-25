@@ -430,7 +430,7 @@ Polymer({
     contactsFailedMessage.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `contactsFailedMessage${index}`;
@@ -441,7 +441,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `tryAgainLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -455,13 +455,14 @@ Polymer({
     const anchorTags = contactsFailedMessage.getElementsByTagName('a');
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       contactsFailedMessage.innerHTML = localizedString;
       return;
     }
 
     assert(
-        anchorTags.length == 1, 'string should contain exactly one anchor tag');
+        anchorTags.length === 1,
+        'string should contain exactly one anchor tag');
     const anchorTag = anchorTags[0];
     anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
     anchorTag.href = '#';
@@ -492,7 +493,7 @@ Polymer({
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
-      if (node.nodeType == Node.TEXT_NODE) {
+      if (node.nodeType === Node.TEXT_NODE) {
         const spanNode = document.createElement('span');
         spanNode.textContent = node.textContent;
         spanNode.id = `zeroStateText${index}`;
@@ -503,7 +504,7 @@ Polymer({
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
         node.id = `zeroStateHelpLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -517,12 +518,12 @@ Polymer({
     const anchorTags = tempEl.getElementsByTagName('a');
     // In the event the localizedString contains only text nodes, populate the
     // contents with the localizedString.
-    if (anchorTags.length == 0) {
+    if (anchorTags.length === 0) {
       return localizedString;
     }
 
     assert(
-        anchorTags.length == 1,
+        anchorTags.length === 1,
         'nearbyShareContactVisibilityZeroStateText should contain exactly' +
             ' one anchor tag');
     const anchorTag = anchorTags[0];

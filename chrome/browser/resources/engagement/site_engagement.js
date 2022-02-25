@@ -37,7 +37,7 @@ function initialize() {
   for (let i = 0; i < headers.length; i++) {
     headers[i].addEventListener('click', (e) => {
       const newSortKey = e.target.getAttribute('sort-key');
-      if (sortKey == newSortKey) {
+      if (sortKey === newSortKey) {
         sortReverse = !sortReverse;
       } else {
         sortKey = newSortKey;
@@ -158,12 +158,12 @@ function initialize() {
     const val2 = b[sortKey];
 
     // Compare the hosts of the origin ignoring schemes.
-    if (sortKey == 'origin') {
+    if (sortKey === 'origin') {
       return new URL(val1.url).host > new URL(val2.url).host ? 1 : -1;
     }
 
-    if (sortKey == 'baseScore' || sortKey == 'bonusScore' ||
-        sortKey == 'totalScore') {
+    if (sortKey === 'baseScore' || sortKey === 'bonusScore' ||
+        sortKey === 'totalScore') {
       return val1 - val2;
     }
 

@@ -248,7 +248,7 @@ cr.define('cr.login', function() {
   const messageHandlers = {
     'attemptLogin'(msg) {
       this.email_ = msg.email;
-      if (this.authMode == AuthMode.DESKTOP) {
+      if (this.authMode === AuthMode.DESKTOP) {
         this.password_ = msg.password;
       }
       this.isSamlUserPasswordless_ = null;
@@ -284,7 +284,7 @@ cr.define('cr.login', function() {
     'userInfo'(msg) {
       this.services_ = msg.services;
       if (!this.authCompletedFired_) {
-        const metric = this.authFlow == AuthFlow.SAML ?
+        const metric = this.authFlow === AuthFlow.SAML ?
             GAIA_MESSAGE_SAML_USER_INFO :
             GAIA_MESSAGE_GAIA_USER_INFO;
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, true]);
@@ -356,7 +356,7 @@ cr.define('cr.login', function() {
       }
 
       if (!this.authCompletedFired_) {
-        const metric = this.authFlow == AuthFlow.SAML ?
+        const metric = this.authFlow === AuthFlow.SAML ?
             GAIA_MESSAGE_SAML_CLOSE_VIEW :
             GAIA_MESSAGE_GAIA_CLOSE_VIEW;
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, true]);
@@ -417,7 +417,7 @@ cr.define('cr.login', function() {
       /**
        * @private {WebView|undefined}
        */
-      this.webview_ = typeof webview == 'string' ?
+      this.webview_ = typeof webview === 'string' ?
           /** @type {WebView} */ ($(webview)) :
           webview;
       assert(this.webview_);
@@ -468,7 +468,7 @@ cr.define('cr.login', function() {
        * @type {boolean}
        * @private
        */
-      this.isDomLoaded_ = document.readyState != 'loading';
+      this.isDomLoaded_ = document.readyState !== 'loading';
       if (this.isDomLoaded_) {
         this.initializeAfterDomLoaded_();
       } else {
@@ -505,7 +505,7 @@ cr.define('cr.login', function() {
      * Resets the webview to the blank page.
      */
     resetWebview() {
-      if (this.webview_.src && this.webview_.src != BLANK_PAGE_URL) {
+      if (this.webview_.src && this.webview_.src !== BLANK_PAGE_URL) {
         this.webview_.src = BLANK_PAGE_URL;
       }
     }
@@ -629,7 +629,7 @@ cr.define('cr.login', function() {
         // We have not navigated anywhere yet. Note that a webview's src
         // attribute does not allow a change back to "".
         this.webview_.partition = newWebviewPartitionName;
-      } else if (this.webview_.partition != newWebviewPartitionName) {
+      } else if (this.webview_.partition !== newWebviewPartitionName) {
         // The webview has already navigated. We have to re-create it.
         const webivewParent = this.webview_.parentElement;
 
@@ -658,7 +658,7 @@ cr.define('cr.login', function() {
       // gaiaUrl parameter is used for testing. Once defined, it is never
       // changed.
       this.idpOrigin_ = data.gaiaUrl || IDP_ORIGIN;
-      this.isConstrainedWindow_ = data.constrained == '1';
+      this.isConstrainedWindow_ = data.constrained === '1';
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
@@ -678,7 +678,7 @@ cr.define('cr.login', function() {
       }
       // Don't block insecure content for desktop flow because it lands on
       // http. Otherwise, block insecure content as long as gaia is https.
-      this.samlHandler_.blockInsecureContent = authMode != AuthMode.DESKTOP &&
+      this.samlHandler_.blockInsecureContent = authMode !== AuthMode.DESKTOP &&
           this.idpOrigin_.startsWith('https://');
       this.samlHandler_.extractSamlPasswordAttributes =
           data.extractSamlPasswordAttributes;
@@ -843,10 +843,10 @@ cr.define('cr.login', function() {
 
       if (this.isConstrainedWindow_) {
         let isEmbeddedPage = false;
-        if (this.idpOrigin_ && currentUrl.lastIndexOf(this.idpOrigin_) == 0) {
+        if (this.idpOrigin_ && currentUrl.lastIndexOf(this.idpOrigin_) === 0) {
           const headers = details.responseHeaders;
           for (let i = 0; headers && i < headers.length; ++i) {
-            if (headers[i].name.toLowerCase() == EMBEDDED_FORM_HEADER) {
+            if (headers[i].name.toLowerCase() === EMBEDDED_FORM_HEADER) {
               isEmbeddedPage = true;
               break;
             }
@@ -873,7 +873,7 @@ cr.define('cr.login', function() {
      * @private
      */
     updateHistoryState_(url) {
-      if (history.state && history.state.url != url) {
+      if (history.state && history.state.url !== url) {
         history.pushState({url: url}, '');
       } else {
         history.replaceState({url: url}, '');
@@ -885,8 +885,8 @@ cr.define('cr.login', function() {
      * @private
      */
     onFocus_() {
-      if (this.authMode == AuthMode.DESKTOP &&
-          document.activeElement == document.body) {
+      if (this.authMode === AuthMode.DESKTOP &&
+          document.activeElement === document.body) {
         this.webview_.focus();
       }
     }
@@ -919,7 +919,7 @@ cr.define('cr.login', function() {
         return;
       }
       const currentUrl = details.url;
-      if (currentUrl.lastIndexOf(this.idpOrigin_, 0) != 0) {
+      if (currentUrl.lastIndexOf(this.idpOrigin_, 0) !== 0) {
         return;
       }
 
@@ -927,7 +927,7 @@ cr.define('cr.login', function() {
       for (let i = 0; headers && i < headers.length; ++i) {
         const header = headers[i];
         const headerName = header.name.toLowerCase();
-        if (headerName == SIGN_IN_HEADER) {
+        if (headerName === SIGN_IN_HEADER) {
           const headerValues = header.value.toLowerCase().split(',');
           const signinDetails = {};
           headerValues.forEach(function(e) {
@@ -939,7 +939,7 @@ cr.define('cr.login', function() {
           this.gaiaId_ = signinDetails['obfuscatedid'].slice(1, -1);
           this.sessionIndex_ = signinDetails['sessionindex'];
           this.isSamlUserPasswordless_ = null;
-        } else if (headerName == LOCATION_HEADER) {
+        } else if (headerName === LOCATION_HEADER) {
           // If the "choose what to sync" checkbox was clicked, then the
           // continue URL will contain a source=3 field.
           assert(header.value !== undefined);
@@ -959,13 +959,13 @@ cr.define('cr.login', function() {
       }
 
       // The event origin does not have a trailing slash.
-      if (e.origin !=
+      if (e.origin !==
           this.idpOrigin_.substring(0, this.idpOrigin_.length - 1)) {
         return false;
       }
 
       // Gaia messages must be an object with 'method' property.
-      if (typeof e.data != 'object' || !e.data.hasOwnProperty('method')) {
+      if (typeof e.data !== 'object' || !e.data.hasOwnProperty('method')) {
         return false;
       }
       return true;
@@ -980,7 +980,7 @@ cr.define('cr.login', function() {
         return false;
       }
 
-      if (typeof e.data != 'object' || !e.data.hasOwnProperty('method')) {
+      if (typeof e.data !== 'object' || !e.data.hasOwnProperty('method')) {
         return false;
       }
 
@@ -1093,7 +1093,7 @@ cr.define('cr.login', function() {
       }
 
       if (this.isSamlUserPasswordless_ === null &&
-          this.authFlow == AuthFlow.SAML && this.email_ && this.gaiaId_ &&
+          this.authFlow === AuthFlow.SAML && this.email_ && this.gaiaId_ &&
           this.getIsSamlUserPasswordlessCallback) {
         // Start a request to obtain the |isSamlUserPasswordless_| value for
         // the current user. Once the response arrives, maybeCompleteAuth_()
@@ -1105,13 +1105,13 @@ cr.define('cr.login', function() {
         return;
       }
 
-      if (this.recordSAMLProviderCallback && this.authFlow == AuthFlow.SAML) {
+      if (this.recordSAMLProviderCallback && this.authFlow === AuthFlow.SAML) {
         // Makes distinction between different SAML providers
         this.recordSAMLProviderCallback(
             this.samlHandler_.x509certificate || '');
       }
 
-      if (this.isSamlUserPasswordless_ && this.authFlow == AuthFlow.SAML &&
+      if (this.isSamlUserPasswordless_ && this.authFlow === AuthFlow.SAML &&
           this.email_ && this.gaiaId_) {
         // No password needed for this user, so complete immediately.
         this.onAuthCompleted_();
@@ -1122,14 +1122,14 @@ cr.define('cr.login', function() {
         if (this.samlApiUsedCallback) {
           // Makes distinction between Gaia and Chrome Credentials Passing API
           // login to properly fill ChromeOS.SAML.ApiLogin metrics.
-          this.samlApiUsedCallback(this.authFlow == AuthFlow.SAML);
+          this.samlApiUsedCallback(this.authFlow === AuthFlow.SAML);
         }
         this.password_ = this.samlHandler_.apiPasswordBytes;
         this.onAuthCompleted_();
         return;
       }
 
-      if (this.samlHandler_.scrapedPasswordCount == 0) {
+      if (this.samlHandler_.scrapedPasswordCount === 0) {
         if (this.noPasswordCallback) {
           this.noPasswordCallback(this.email_);
           return;
@@ -1140,7 +1140,7 @@ cr.define('cr.login', function() {
         // password when it is available but not a mandatory requirement.
         console.warn('Authenticator: No password scraped for SAML.');
       } else if (this.needPassword) {
-        if (this.samlHandler_.scrapedPasswordCount == 1) {
+        if (this.samlHandler_.scrapedPasswordCount === 1) {
           // If we scraped exactly one password, we complete the
           // authentication right away.
           this.password_ = this.samlHandler_.firstScrapedPassword;
@@ -1183,8 +1183,8 @@ cr.define('cr.login', function() {
     onGotIsSamlUserPasswordless_(email, gaiaId, isSamlUserPasswordless) {
       // Compare the request's user identifier with the currently set one, in
       // order to ignore responses to old requests.
-      if (this.email_ && this.email_ == email && this.gaiaId_ &&
-          this.gaiaId_ == gaiaId) {
+      if (this.email_ && this.email_ === email && this.gaiaId_ &&
+          this.gaiaId_ === gaiaId) {
         this.isSamlUserPasswordless_ = isSamlUserPasswordless;
         this.maybeCompleteAuth_();
       }
@@ -1208,7 +1208,7 @@ cr.define('cr.login', function() {
      */
     assertStringDict_(dict, nameOfDict) {
       console.assert(
-          typeof dict == 'object', 'FATAL: Bad %s type: %s', nameOfDict,
+          typeof dict === 'object', 'FATAL: Bad %s type: %s', nameOfDict,
           typeof dict);
       for (const key in dict) {
         this.assertStringElement_(dict[key], nameOfDict, key);
@@ -1218,7 +1218,7 @@ cr.define('cr.login', function() {
     /** Asserts an element |elem| in a certain collection is a string. */
     assertStringElement_(elem, nameOfCollection, index) {
       console.assert(
-          typeof elem == 'string', 'FATAL: Bad %s[%s] type: %s',
+          typeof elem === 'string', 'FATAL: Bad %s[%s] type: %s',
           nameOfCollection, index, typeof elem);
     }
 
@@ -1235,7 +1235,7 @@ cr.define('cr.login', function() {
       if (this.services_) {
         this.assertStringArray_(this.services_, 'services');
       }
-      if (this.isSamlUserPasswordless_ && this.authFlow == AuthFlow.SAML &&
+      if (this.isSamlUserPasswordless_ && this.authFlow === AuthFlow.SAML &&
           this.email_) {
         // In the passwordless case, the user data will be protected by non
         // password based mechanisms. Clear anything that got collected into
@@ -1243,7 +1243,7 @@ cr.define('cr.login', function() {
         this.password_ = '';
       }
       let passwordAttributes = {};
-      if (this.authFlow == AuthFlow.SAML &&
+      if (this.authFlow === AuthFlow.SAML &&
           this.samlHandler_.extractSamlPasswordAttributes &&
           !this.isSamlUserPasswordless_) {
         passwordAttributes = this.samlHandler_.passwordAttributes;
@@ -1257,7 +1257,7 @@ cr.define('cr.login', function() {
               email: this.email_ || '',
               gaiaId: this.gaiaId_ || '',
               password: this.password_ || '',
-              usingSAML: this.authFlow == AuthFlow.SAML,
+              usingSAML: this.authFlow === AuthFlow.SAML,
               publicSAML: this.samlAclUrl_ || false,
               chooseWhatToSync: this.chooseWhatToSync_,
               skipForNow: this.skipForNow_,
@@ -1371,7 +1371,7 @@ cr.define('cr.login', function() {
 
       // Posts a message to IdP pages to initiate communication.
       const currentUrl = this.webview_.src;
-      if (currentUrl.lastIndexOf(this.idpOrigin_) == 0) {
+      if (currentUrl.lastIndexOf(this.idpOrigin_) === 0) {
         const msg = {
           'method': 'handshake',
         };
@@ -1388,9 +1388,9 @@ cr.define('cr.login', function() {
         // Focus webview after dispatching event when webview is already
         // visible.
         this.webview_.focus();
-      } else if (currentUrl == BLANK_PAGE_URL) {
+      } else if (currentUrl === BLANK_PAGE_URL) {
         this.fireReadyEvent_();
-      } else if (currentUrl == this.samlAclUrl_) {
+      } else if (currentUrl === this.samlAclUrl_) {
         this.skipForNow_ = true;
         this.onAuthCompleted_();
       }
@@ -1450,7 +1450,7 @@ cr.define('cr.login', function() {
       if (!this.services_) {
         console.error('Gaia done timeout: Forcing empty services.');
         this.services_ = [];
-        const metric = this.authFlow == AuthFlow.SAML ?
+        const metric = this.authFlow === AuthFlow.SAML ?
             GAIA_MESSAGE_SAML_USER_INFO :
             GAIA_MESSAGE_GAIA_USER_INFO;
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);
@@ -1460,7 +1460,7 @@ cr.define('cr.login', function() {
         console.error('Gaia done timeout: closeView was not called.');
         this.closeViewReceived_ = true;
 
-        const metric = this.authFlow == AuthFlow.SAML ?
+        const metric = this.authFlow === AuthFlow.SAML ?
             GAIA_MESSAGE_SAML_CLOSE_VIEW :
             GAIA_MESSAGE_GAIA_CLOSE_VIEW;
         chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);

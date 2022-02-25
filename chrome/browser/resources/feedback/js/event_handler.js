@@ -181,12 +181,12 @@ class FeedbackRequest {
     /** @const */ const FLOW = this.feedbackInfo_.flow;
     chrome.feedbackPrivate.sendFeedback(
         this.feedbackInfo_, function(result, landingPageType) {
-          if (result == chrome.feedbackPrivate.Status.SUCCESS) {
+          if (result === chrome.feedbackPrivate.Status.SUCCESS) {
             console.log('Feedback: Report sent for request with ID ' + ID);
-            if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
-                landingPageType !=
+            if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
+                landingPageType !==
                     chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
-              const landingPage = landingPageType ==
+              const landingPage = landingPageType ===
                       chrome.feedbackPrivate.LandingPageType.NORMAL ?
                   FEEDBACK_LANDING_PAGE :
                   FEEDBACK_LANDING_PAGE_TECHSTOP;
@@ -197,7 +197,7 @@ class FeedbackRequest {
                 'Feedback: Report for request with ID ' + ID +
                 ' will be sent later.');
           }
-          if (FLOW == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+          if (FLOW === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
             chrome.feedbackPrivate.loginFeedbackComplete();
           }
         });
@@ -210,7 +210,7 @@ class FeedbackRequest {
   onWindowClosed() {
     if (!this.reportIsBeingSent_) {
       this.isRequestCanceled_ = true;
-      if (this.feedbackInfo_.flow ==
+      if (this.feedbackInfo_.flow ===
           chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
         chrome.feedbackPrivate.loginFeedbackComplete();
       }
@@ -246,7 +246,7 @@ function invokeFeedbackIfPermitted(
           hashString += n < 0x10 ? '0' : '';
           hashString += n.toString(16);
         }
-        if (feedbackCallerExtensions.indexOf(hashString.toUpperCase()) != -1) {
+        if (feedbackCallerExtensions.indexOf(hashString.toUpperCase()) !== -1) {
           startFeedbackCallback(feedbackInfo);
         }
       });

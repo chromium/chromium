@@ -67,7 +67,7 @@ function UTIL_HexToBytes(h) {
   var hexchars = '0123456789ABCDEFabcdef';
   var res = new Uint8Array(h.length / 2);
   for (var i = 0; i < h.length; i += 2) {
-    if (hexchars.indexOf(h.substring(i, i + 1)) == -1) {
+    if (hexchars.indexOf(h.substring(i, i + 1)) === -1) {
       break;
     }
     res[i / 2] = parseInt(h.substring(i, i + 2), 16);
@@ -79,7 +79,7 @@ function UTIL_HexToArray(h) {
   var hexchars = '0123456789ABCDEFabcdef';
   var res = new Array(h.length / 2);
   for (var i = 0; i < h.length; i += 2) {
-    if (hexchars.indexOf(h.substring(i, i + 1)) == -1) {
+    if (hexchars.indexOf(h.substring(i, i + 1)) === -1) {
       break;
     }
     res[i / 2] = parseInt(h.substring(i, i + 2), 16);
@@ -91,7 +91,7 @@ function UTIL_equalArrays(a, b) {
   if (!a || !b) {
     return false;
   }
-  if (a.length != b.length) {
+  if (a.length !== b.length) {
     return false;
   }
   var accu = 0;
@@ -164,7 +164,7 @@ function UTIL_setFavicon(icon) {
   var links = head.getElementsByTagName('link');
   for (var i = 0; i < links.length; i++) {
     var link = links[i];
-    if (link.type == faviconLink.type && link.rel == faviconLink.rel) {
+    if (link.type === faviconLink.type && link.rel === faviconLink.rel) {
       head.removeChild(link);
     }
   }
@@ -197,19 +197,19 @@ function UTIL_Asn1SignatureToJson(a) {
   if (a.length < 6) {
     return null;
   }  // Too small to be valid
-  if (a[0] != UTIL_ASN_SEQUENCE) {
+  if (a[0] !== UTIL_ASN_SEQUENCE) {
     return null;
   }
   var l = a[1] & 255;
   if (l & 0x80) {
     return null;
   }  // SEQ.size too large
-  if (a.length != 2 + l) {
+  if (a.length !== 2 + l) {
     return null;
   }  // SEQ size does not match input
 
   function parseInt(off) {
-    if (a[off] != UTIL_ASN_INT) {
+    if (a[off] !== UTIL_ASN_INT) {
       return null;
     }
     var l = a[off + 1] & 255;
@@ -273,7 +273,7 @@ function UTIL_JsonSignatureToAsn1(sig) {
 }
 
 function UTIL_prepend_zero(s, n) {
-  if (s.length == n) {
+  if (s.length === n) {
     return s;
   }
   var l = s.length;

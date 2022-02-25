@@ -222,7 +222,7 @@
      * Window 'message' handler.
      */
     onMessage_(e) {
-      if (typeof e.data != 'object' || !e.data.hasOwnProperty('type')) {
+      if (typeof e.data !== 'object' || !e.data.hasOwnProperty('type')) {
         return;
       }
 
@@ -249,7 +249,7 @@
           this.postToUpperWindow(e.data);
         }
       } else if (e.data.type === CHANNEL_INIT_MESSAGE) {
-        if (ALLOWED_ORIGINS.indexOf(e.origin) == -1) {
+        if (ALLOWED_ORIGINS.indexOf(e.origin) === -1) {
           return;
         }
 

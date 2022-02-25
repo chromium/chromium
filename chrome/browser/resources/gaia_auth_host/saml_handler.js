@@ -333,8 +333,8 @@ cr.define('cr.login', function() {
      */
     get apiPasswordBytes() {
       if (this.confirmToken_ != null &&
-          typeof (this.apiTokenStore_[this.confirmToken_]) == 'object' &&
-          typeof (this.apiTokenStore_[this.confirmToken_]['passwordBytes']) ==
+          typeof (this.apiTokenStore_[this.confirmToken_]) === 'object' &&
+          typeof (this.apiTokenStore_[this.confirmToken_]['passwordBytes']) ===
               'string') {
         return this.apiTokenStore_[this.confirmToken_]['passwordBytes'];
       }
@@ -372,7 +372,7 @@ cr.define('cr.login', function() {
         const key = this.passwordStore_[property];
         passwords[key] = (passwords[key] + 1) || 1;
       }
-      return Object.keys(passwords).filter(key => passwords[key] == times);
+      return Object.keys(passwords).filter(key => passwords[key] === times);
     }
 
     /**
@@ -451,7 +451,7 @@ cr.define('cr.login', function() {
      * @return {boolean}
      */
     isIntentionalAbort() {
-      return this.deviceAttestationStage_ ==
+      return this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED;
     }
 
@@ -531,7 +531,7 @@ cr.define('cr.login', function() {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(samlResponse, 'text/xml');
       let certificate = xmlDoc.getElementsByTagName('ds:X509Certificate');
-      if (!certificate || certificate.length == 0) {
+      if (!certificate || certificate.length === 0) {
         // tag 'ds:X509Certificate' doesn't exist
         certificate = xmlDoc.getElementsByTagName('X509Certificate');
       }
@@ -555,7 +555,7 @@ cr.define('cr.login', function() {
       if (!this.extractSamlPasswordAttributes) {
         return;
       }
-      if (!this.isSamlPage_ || details.method != 'POST') {
+      if (!this.isSamlPage_ || details.method !== 'POST') {
         return;
       }
 
@@ -593,7 +593,7 @@ cr.define('cr.login', function() {
      * @private
      */
     continueDelayedRedirect_(url, challengeResponse) {
-      if (this.deviceAttestationStage_ !=
+      if (this.deviceAttestationStage_ !==
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED) {
         console.error(
             'SamlHandler.continueDelayedRedirect_: incorrect attestation stage');
@@ -622,17 +622,17 @@ cr.define('cr.login', function() {
      */
     onBeforeRequest_(details) {
       // Default case without Verified Access.
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NONE) {
         return {};
       }
 
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NAVIGATING_TO_REDIRECT_PAGE) {
         return {};
       }
 
-      if ((this.deviceAttestationStage_ ==
+      if ((this.deviceAttestationStage_ ===
            SamlHandler.DeviceAttestationStage.CHALLENGE_RECEIVED) &&
           (this.verifiedAccessChallenge_ !== null)) {
         // Ask backend to compute response for device attestation challenge.
@@ -669,12 +669,12 @@ cr.define('cr.login', function() {
      */
     onBeforeSendHeaders_(details) {
       // Default case without Verified Access.
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NONE) {
         return {};
       }
 
-      if (this.deviceAttestationStage_ ==
+      if (this.deviceAttestationStage_ ===
           SamlHandler.DeviceAttestationStage.NAVIGATING_TO_REDIRECT_PAGE) {
         // Send extra header only if no error was encountered during challenge
         // key procedure.
@@ -715,11 +715,11 @@ cr.define('cr.login', function() {
         const header = headers[i];
         const headerName = header.name.toLowerCase();
 
-        if (headerName == SAML_HEADER) {
+        if (headerName === SAML_HEADER) {
           const action = header.value.toLowerCase();
-          if (action == 'start') {
+          if (action === 'start') {
             this.pendingIsSamlPage_ = true;
-          } else if (action == 'end') {
+          } else if (action === 'end') {
             this.pendingIsSamlPage_ = false;
           }
         }
@@ -730,7 +730,7 @@ cr.define('cr.login', function() {
         // |SAML_VERIFIED_ACCESS_CHALLENGE_HEADER| name contains challenge from
         // Verified Access Web API.
         if ((details.statusCode >= 300) && (details.statusCode <= 399) &&
-            (headerName == SAML_VERIFIED_ACCESS_CHALLENGE_HEADER)) {
+            (headerName === SAML_VERIFIED_ACCESS_CHALLENGE_HEADER)) {
           this.deviceAttestationStage_ =
               SamlHandler.DeviceAttestationStage.CHALLENGE_RECEIVED;
           this.verifiedAccessChallenge_ = header.value;
@@ -744,7 +744,7 @@ cr.define('cr.login', function() {
      * Invoked when the injected JS makes a connection.
      */
     onConnected_(port) {
-      if (port.targetWindow != this.webview_.contentWindow) {
+      if (port.targetWindow !== this.webview_.contentWindow) {
         return;
       }
 
@@ -786,7 +786,7 @@ cr.define('cr.login', function() {
      */
     onAPICall_(channel, msg) {
       const call = msg.call;
-      if (call.method == 'initialize') {
+      if (call.method === 'initialize') {
         if (!Number.isInteger(call.requestedVersion) ||
             call.requestedVersion < MIN_API_VERSION_VERSION) {
           this.sendInitializationFailure_(channel);
@@ -800,8 +800,8 @@ cr.define('cr.login', function() {
         return;
       }
 
-      if (call.method == 'add') {
-        if (API_KEY_TYPES.indexOf(call.keyType) == -1) {
+      if (call.method === 'add') {
+        if (API_KEY_TYPES.indexOf(call.keyType) === -1) {
           console.error('SamlHandler.onAPICall_: unsupported key type');
           return;
         }
@@ -811,7 +811,7 @@ cr.define('cr.login', function() {
         this.lastApiPasswordBytes_ = call.passwordBytes;
 
         this.dispatchEvent(new CustomEvent('apiPasswordAdded'));
-      } else if (call.method == 'confirm') {
+      } else if (call.method === 'confirm') {
         if (!(call.token in this.apiTokenStore_)) {
           console.error('SamlHandler.onAPICall_: token mismatch');
         } else {

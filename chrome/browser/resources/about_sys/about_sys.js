@@ -51,7 +51,7 @@ function showError(fileName) {
  */
 function changeCollapsedStatus() {
   const valueDiv = getValueDivForButton(this);
-  if (valueDiv.parentNode.className == 'number-collapsed') {
+  if (valueDiv.parentNode.className === 'number-collapsed') {
     valueDiv.parentNode.className = 'number-expanded';
     this.textContent = loadTimeData.getString('collapseBtn');
   } else {
@@ -67,7 +67,7 @@ function collapseAll() {
   const valueDivs = document.getElementsByClassName('stat-value');
   for (let i = 0; i < valueDivs.length; i++) {
     const button = getButtonForValueDiv(valueDivs[i]);
-    if (button && button.className != 'button-hidden') {
+    if (button && button.className !== 'button-hidden') {
       button.textContent = loadTimeData.getString('expandBtn');
       valueDivs[i].parentNode.className = 'number-collapsed';
     }
@@ -81,7 +81,7 @@ function expandAll() {
   const valueDivs = document.getElementsByClassName('stat-value');
   for (let i = 0; i < valueDivs.length; i++) {
     const button = getButtonForValueDiv(valueDivs[i]);
-    if (button && button.className != 'button-hidden') {
+    if (button && button.className !== 'button-hidden') {
       button.textContent = loadTimeData.getString('collapseBtn');
       valueDivs[i].parentNode.className = 'number-expanded';
     }
@@ -223,7 +223,7 @@ function parseSystemLog(text) {
 
     const delimiter = lines[i].indexOf('=');
     if (delimiter <= 0) {
-      if (i == lines.length - 1) {
+      if (i === lines.length - 1) {
         break;
       }
       // If '=' is missing here, format is wrong.
@@ -240,16 +240,16 @@ function parseSystemLog(text) {
     // Delimiters are based on kMultilineIndicatorString, kMultilineStartString,
     // and kMultilineEndString in components/feedback/feedback_data.cc.
     // If these change, we should check for both the old and new versions.
-    if (value == '<multiline>') {
+    if (value === '<multiline>') {
       // Skip start delimiter.
-      if (i == len - 1 || lines[++i].indexOf(DELIM_START) == -1) {
+      if (i === len - 1 || lines[++i].indexOf(DELIM_START) === -1) {
         return false;
       }
 
       ++i;
       value = '';
       // Append lines between start and end delimiters.
-      while (i < len && lines[i] != DELIM_END) {
+      while (i < len && lines[i] !== DELIM_END) {
         value += lines[i++] + '\n';
       }
 

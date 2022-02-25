@@ -22,7 +22,7 @@ function GoogleCorpIndividualAttestation() {}
  */
 GoogleCorpIndividualAttestation.prototype.requestIndividualAttestation =
     function(appIdHash) {
-  return appIdHash == GoogleCorpIndividualAttestation.GOOGLE_CORP_APP_ID_HASH;
+  return appIdHash === GoogleCorpIndividualAttestation.GOOGLE_CORP_APP_ID_HASH;
 };
 
 /**

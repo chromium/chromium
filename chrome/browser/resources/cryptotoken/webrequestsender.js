@@ -55,7 +55,7 @@ function createSenderFromMessageSender(messageSender) {
  */
 function tabMatchesOrigin(tab, origin) {
   // If the tab's origin matches, trust that the request came from this tab.
-  if (getOriginFromUrl(tab.url) == origin) {
+  if (getOriginFromUrl(tab.url) === origin) {
     return Promise.resolve(tab.id);
   }
   return Promise.reject(false);
@@ -95,7 +95,7 @@ function getTabIdWhenPossible(sender) {
                     },
                     function() {
                       // Didn't match? Check if the debugger is open.
-                      if (tab.url.indexOf('devtools://') != 0) {
+                      if (tab.url.indexOf('devtools://') !== 0) {
                         reject(false);
                         return;
                       }

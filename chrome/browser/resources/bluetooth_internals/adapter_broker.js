@@ -103,7 +103,7 @@ export class AdapterBroker extends EventTarget {
    */
   connectToDevice(address) {
     return this.adapter_.connectToDevice(address).then(function(response) {
-      if (response.result != ConnectResult.SUCCESS) {
+      if (response.result !== ConnectResult.SUCCESS) {
         // TODO(crbug.com/663394): Replace with more descriptive error
         // messages.
         const errorString = Object.keys(ConnectResult).find(function(key) {

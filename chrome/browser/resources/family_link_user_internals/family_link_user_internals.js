@@ -40,7 +40,7 @@ function highlightIfChanged(node, oldVal, newVal) {
 
   const oldStr = oldVal.toString();
   const newStr = newVal.toString();
-  if (oldStr != '' && oldStr != newStr) {
+  if (oldStr !== '' && oldStr !== newStr) {
     // Note the addListener function does not end up creating duplicate
     // listeners.  There can be only one listener per event at a time.
     // See https://developer.mozilla.org/en/DOM/element.addEventListener
@@ -83,7 +83,7 @@ function receiveUserSettings(settings) {
  * @return {boolean} true if the element is scrolled to the bottom
  */
 function isScrolledToBottom(elem) {
-  return elem.scrollHeight - elem.scrollTop == elem.clientHeight;
+  return elem.scrollHeight - elem.scrollTop === elem.clientHeight;
 }
 
 /**

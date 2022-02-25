@@ -40,7 +40,7 @@ const ByteString = class {
    * @return {boolean} True if the buffer is empty.
    */
   get empty() {
-    return this.slice_.length == 0;
+    return this.slice_.length === 0;
   }
 
   /**
@@ -100,7 +100,7 @@ const ByteString = class {
       throw Error('getASN1: empty slice, expected tag ' + expectedTag);
     }
     const v = this.getAnyASN1();
-    if (v.tag != expectedTag) {
+    if (v.tag !== expectedTag) {
       throw Error('getASN1: got tag ' + v.tag + ', want ' + expectedTag);
     }
     if (!opt_includeHeader) {
@@ -137,7 +137,7 @@ const ByteString = class {
         break;
       }
     }
-    if (len == 0) {
+    if (len === 0) {
       throw Error('terminating byte not found');
     }
     var n = 0;
@@ -183,7 +183,7 @@ const ByteString = class {
    * @return {ByteString}
    * */
   getOptionalASN1(expectedTag) {
-    if (this.slice_.length < 1 || this.slice_[0] != expectedTag) {
+    if (this.slice_.length < 1 || this.slice_[0] !== expectedTag) {
       return null;
     }
     return this.getASN1(expectedTag);
@@ -200,14 +200,14 @@ const ByteString = class {
     const tag = header.getU8_();
     const lengthByte = header.getU8_();
 
-    if ((tag & 0x1f) == 0x1f) {
+    if ((tag & 0x1f) === 0x1f) {
       throw Error('getAnyASN1: long-form tag found');
     }
 
     var len = 0;
     var headerLen = 0;
 
-    if ((lengthByte & 0x80) == 0) {
+    if ((lengthByte & 0x80) === 0) {
       // Short form length.
       len = lengthByte + 2;
       headerLen = 2;
@@ -221,7 +221,7 @@ const ByteString = class {
       // numbers.  This check ensures that we stay under this limit.  We could
       // do this in a better way, but there's no need to process very large
       // objects.
-      if (numBytes == 0 || numBytes > 3) {
+      if (numBytes === 0 || numBytes > 3) {
         throw Error('getAnyASN1: bad ASN.1 long-form length');
       }
       const lengthBytes = header.getBytes(numBytes);
@@ -230,7 +230,7 @@ const ByteString = class {
         len |= lengthBytes[i];
       }
 
-      if (len < 128 || (len >> ((numBytes - 1) * 8)) == 0) {
+      if (len < 128 || (len >> ((numBytes - 1) * 8)) === 0) {
         throw Error('getAnyASN1: incorrectly encoded ASN.1 length');
       }
 
@@ -452,7 +452,7 @@ const ByteBuilder = class {
       // In the case of ASN.1 a single byte was reserved for
       // the length. The contents of the array may need to be
       // shifted along if the length needs more than that.
-      if (lenLen != 1) {
+      if (lenLen !== 1) {
         throw Error('internal error');
       }
 
@@ -492,7 +492,7 @@ const ByteBuilder = class {
       l >>= 8;
     }
 
-    if (l != 0) {
+    if (l !== 0) {
       throw Error('pending child length exceeds reserved space');
     }
 
@@ -548,19 +548,19 @@ const ByteBuilder = class {
    */
   addASN1BigInt(bytes) {
     // Zero is representated as a single zero byte, rather than no bytes.
-    if (bytes.length == 0) {
+    if (bytes.length === 0) {
       bytes = new Uint8Array(1);
     }
 
     // Leading zero bytes need to be removed, unless that would make the number
     // negative.
-    while (bytes.length >= 2 && bytes[0] == 0 && (bytes[1] & 0x80) == 0) {
+    while (bytes.length >= 2 && bytes[0] === 0 && (bytes[1] & 0x80) === 0) {
       bytes = bytes.slice(1);
     }
 
     // If the MSB is set, the number will be considered to be negative. Thus
     // a zero prefix is needed in that case.
-    if (bytes.length > 0 && (bytes[0] & 0x80) == 0x80) {
+    if (bytes.length > 0 && (bytes[0] & 0x80) === 0x80) {
       if (bytes.length > Number.MAX_SAFE_INTEGER - 1) {
         throw Error('bigint array too long');
       }
@@ -587,7 +587,7 @@ const ByteBuilder = class {
     }
 
     var length = 0;
-    if (n == 0) {
+    if (n === 0) {
       length = 1;
     } else {
       for (var i = n; i > 0; i >>= 7) {
@@ -597,7 +597,7 @@ const ByteBuilder = class {
 
     for (var i = length - 1; i >= 0; i--) {
       var octet = 0x7f & (n >> (7 * i));
-      if (i != 0) {
+      if (i !== 0) {
         octet |= 0x80;
       }
       this.addU8_(octet);
@@ -643,7 +643,7 @@ const ByteBuilder = class {
       const code = s.charCodeAt(i);
       if ((code < 97 && code > 122) &&  // a-z
           (code < 65 && code > 90) &&   // A-Z
-          ' \'()+,-/:=?'.indexOf(String.fromCharCode(code)) == -1) {
+          ' \'()+,-/:=?'.indexOf(String.fromCharCode(code)) === -1) {
         throw Error(
             'cannot encode \'' + String.fromCharCode(code) + '\' in' +
             ' PrintableString');

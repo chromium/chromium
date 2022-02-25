@@ -95,7 +95,7 @@ Channel.prototype = {
    */
   onMessage_(msg) {
     const name = msg.name;
-    if (name == Channel.INTERNAL_REQUEST_MESSAGE) {
+    if (name === Channel.INTERNAL_REQUEST_MESSAGE) {
       const payload = msg.payload;
       const result = this.invokeMessageCallbacks_(payload);
       this.send({
@@ -103,7 +103,7 @@ Channel.prototype = {
         requestId: msg.requestId,
         result: result
       });
-    } else if (name == Channel.INTERNAL_REPLY_MESSAGE) {
+    } else if (name === Channel.INTERNAL_REPLY_MESSAGE) {
       const callback = this.internalRequestCallbacks_[msg.requestId];
       delete this.internalRequestCallbacks_[msg.requestId];
       if (callback) {

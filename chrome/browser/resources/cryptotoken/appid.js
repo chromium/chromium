@@ -20,14 +20,14 @@ function getOriginsFromJson(text) {
     if (trustedFacets) {
       var versionBlock;
       for (i = 0; versionBlock = trustedFacets[i]; i++) {
-        if (versionBlock['version'] && versionBlock['version']['major'] == 1 &&
-            versionBlock['version']['minor'] == 0) {
+        if (versionBlock['version'] && versionBlock['version']['major'] === 1 &&
+            versionBlock['version']['minor'] === 0) {
           urls = versionBlock['ids'];
           break;
         }
       }
     }
-    if (typeof urls == 'undefined') {
+    if (typeof urls === 'undefined') {
       throw Error('Could not find trustedFacets for version 1.0');
     }
     var origins = {};
@@ -162,14 +162,14 @@ XhrAppIdChecker.prototype.checkAppIds = function(
  * @private
  */
 XhrAppIdChecker.prototype.checkAppId_ = function(appId) {
-  if (appId == this.origin_) {
+  if (appId === this.origin_) {
     // Trivially allowed
     return Promise.resolve(true);
   }
   var p = this.fetchAllowedOriginsForAppId_(appId);
   var self = this;
   return p.then(function(allowedOrigins) {
-    if (allowedOrigins.indexOf(self.origin_) == -1) {
+    if (allowedOrigins.indexOf(self.origin_) === -1) {
       console.warn(UTIL_fmt(
           'Origin ' + self.origin_ + ' not allowed by app id ' + appId));
       return false;
@@ -186,7 +186,7 @@ XhrAppIdChecker.prototype.checkAppId_ = function(appId) {
 XhrAppIdChecker.prototype.allAppIdsEqualOrigin_ = function() {
   var self = this;
   return this.distinctAppIds_.every(function(appId) {
-    return appId == self.origin_;
+    return appId === self.origin_;
   });
 };
 
@@ -202,7 +202,7 @@ XhrAppIdChecker.prototype.fetchAllowedOriginsForAppId_ = function(appId) {
     return Promise.resolve([]);
   }
 
-  if (appId.indexOf('http://') == 0 && !this.allowHttp_) {
+  if (appId.indexOf('http://') === 0 && !this.allowHttp_) {
     console.log(UTIL_fmt('http app ids disallowed, ' + appId + ' requested'));
     return Promise.resolve([]);
   }

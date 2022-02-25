@@ -65,11 +65,11 @@ class FeedbackHelper {
     chrome.feedbackPrivate.sendFeedback(
         feedbackInfo, useSystemInfo, formOpenTime,
         function(result, landingPageType) {
-          if (result == chrome.feedbackPrivate.Status.SUCCESS) {
-            if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
-                landingPageType !=
+          if (result === chrome.feedbackPrivate.Status.SUCCESS) {
+            if (FLOW !== chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
+                landingPageType !==
                     chrome.feedbackPrivate.LandingPageType.NO_LANDING_PAGE) {
-              const landingPage = landingPageType ==
+              const landingPage = landingPageType ===
                       chrome.feedbackPrivate.LandingPageType.NORMAL ?
                   FEEDBACK_LANDING_PAGE :
                   FEEDBACK_LANDING_PAGE_TECHSTOP;
@@ -80,7 +80,7 @@ class FeedbackHelper {
                 'Feedback: Report for request with ID ' + ID +
                 ' will be sent later.');
           }
-          if (FLOW == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+          if (FLOW === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
             chrome.feedbackPrivate.loginFeedbackComplete();
           }
           scheduleWindowClose();
@@ -425,7 +425,7 @@ function updateDescription(wasValid) {
  * @return {boolean} True if the report was sent.
  */
 function sendReport() {
-  if ($('description-text').value.length == 0) {
+  if ($('description-text').value.length === 0) {
     updateDescription(false);
     return false;
   }
@@ -508,7 +508,7 @@ function sendReport() {
 function cancel(e) {
   e.preventDefault();
   scheduleWindowClose();
-  if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+  if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
     chrome.feedbackPrivate.loginFeedbackComplete();
   }
 }
@@ -562,7 +562,7 @@ function initialize() {
   const applyData = function(feedbackInfo) {
     if (feedbackInfo.includeBluetoothLogs) {
       assert(
-          feedbackInfo.flow ==
+          feedbackInfo.flow ===
           chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
       $('description-text')
           .addEventListener('input', checkForSendBluetoothLogs);
@@ -570,14 +570,14 @@ function initialize() {
 
     if (feedbackInfo.showQuestionnaire) {
       assert(
-          feedbackInfo.flow ==
+          feedbackInfo.flow ===
           chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL);
       $('description-text')
           .addEventListener('input', checkForShowQuestionnaire);
     }
 
     if ($('assistant-checkbox-container') != null &&
-        feedbackInfo.flow ==
+        feedbackInfo.flow ===
             chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
         feedbackInfo.fromAssistant) {
       $('assistant-checkbox-container').hidden = false;
@@ -646,7 +646,7 @@ function initialize() {
     }
 
     // No URL, file attachment for login screen feedback.
-    if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+    if (feedbackInfo.flow === chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
       $('page-url').hidden = true;
       $('attach-file-container').hidden = true;
       $('attach-file-note').hidden = true;
@@ -693,7 +693,7 @@ function initialize() {
     // TODO(crbug.com/1116383): Find a solution to display them properly.
     // Update: the bluetooth and assistant logs links will work on login
     // screen now. But to limit the scope of this CL, they are still hidden.
-    if (feedbackInfo.flow != chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
+    if (feedbackInfo.flow !== chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
       const legalHelpPageUrlElement = $('legal-help-page-url');
       if (legalHelpPageUrlElement) {
         setupLinkHandlers(

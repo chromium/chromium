@@ -43,7 +43,7 @@ function updateWebRtcTextLogsList(textLogsList, version) {
     logBlock.appendChild(title);
 
     const localFileLine = document.createElement('p');
-    if (textLog['local_file'].length == 0) {
+    if (textLog['local_file'].length === 0) {
       localFileLine.textContent =
           loadTimeData.getString('noLocalLogFileMessage');
     } else {
@@ -57,7 +57,7 @@ function updateWebRtcTextLogsList(textLogsList, version) {
     logBlock.appendChild(localFileLine);
 
     const uploadLine = document.createElement('p');
-    if (textLog['id'].length == 0) {
+    if (textLog['id'].length === 0) {
       uploadLine.textContent =
           loadTimeData.getString('webrtcLogNotUploadedMessage');
     } else {
@@ -99,7 +99,7 @@ function updateWebRtcTextLogsList(textLogsList, version) {
     textLogSection.appendChild(logBlock);
   }
 
-  $('text-no-logs').hidden = (textLogsList.length != 0);
+  $('text-no-logs').hidden = (textLogsList.length !== 0);
 }
 
 function updateWebRtcEventLogsList(eventLogsList) {
@@ -120,7 +120,7 @@ function updateWebRtcEventLogsList(eventLogsList) {
   $('event-log-banner').textContent =
       loadTimeData.getStringF('webrtcEventLogCountFormat', entries);
 
-  $('event-no-logs').hidden = (entries != 0);
+  $('event-no-logs').hidden = (entries !== 0);
 }
 
 function createEventLogEntryElement(eventLogEntry) {
@@ -130,13 +130,13 @@ function createEventLogEntryElement(eventLogEntry) {
   if (!state) {
     console.error('Unknown state.');
     return;
-  } else if (state == 'pending' || state == 'actively_uploaded') {
+  } else if (state === 'pending' || state === 'actively_uploaded') {
     return createPendingOrActivelyUploadedEventLogEntryElement(eventLogEntry);
-  } else if (state == 'not_uploaded') {
+  } else if (state === 'not_uploaded') {
     return createNotUploadedEventLogEntryElement(eventLogEntry);
-  } else if (state == 'upload_unsuccessful') {
+  } else if (state === 'upload_unsuccessful') {
     return createUploadUnsuccessfulEventLogEntryElement(eventLogEntry);
-  } else if (state == 'upload_successful') {
+  } else if (state === 'upload_successful') {
     return createUploadSuccessfulEventLogEntryElement(eventLogEntry);
   } else {
     console.error('Unrecognized state.');
@@ -155,7 +155,7 @@ function createPendingOrActivelyUploadedEventLogEntryElement(eventLogEntry) {
   appendLocalFile(logBlock, eventLogEntry);
 
   const uploadLine = document.createElement('p');
-  if (eventLogEntry['state'] == 'pending') {
+  if (eventLogEntry['state'] === 'pending') {
     uploadLine.textContent = loadTimeData.getString('webrtcLogPendingMessage');
   } else {
     uploadLine.textContent =

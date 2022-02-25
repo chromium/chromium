@@ -229,11 +229,11 @@ DeviceTable.prototype = {
         obj = obj[part];
       }
 
-      if (propName == 'isGattConnected') {
+      if (propName === 'isGattConnected') {
         obj = obj ? 'Connected' : 'Not Connected';
-      } else if (propName == 'serviceUuids') {
+      } else if (propName === 'serviceUuids') {
         obj = formatServiceUuids(obj);
-      } else if (propName == 'manufacturerDataMap') {
+      } else if (propName === 'manufacturerDataMap') {
         obj = formatManufacturerDataMap(obj);
       }
 

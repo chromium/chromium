@@ -435,21 +435,21 @@ export class DescriptorPanel {
       offset += length;
     }
 
-    if (expectNumInterfaces != indexInterface) {
+    if (expectNumInterfaces !== indexInterface) {
       showError(
           `Expected to find ${expectNumInterfaces} interface descriptors ` +
               `but only encountered ${indexInterface}.`,
           this.rootElement_);
     }
 
-    if (expectNumEndpoints != indexEndpoint) {
+    if (expectNumEndpoints !== indexEndpoint) {
       showError(
           `Expected to find ${expectNumEndpoints} interface descriptors ` +
               `but only encountered ${indexEndpoint}.`,
           this.rootElement_);
     }
 
-    if (expectNumDevCapabilities != indexDevCapability) {
+    if (expectNumDevCapabilities !== indexDevCapability) {
       showError(
           `Expected to find ${expectNumDevCapabilities} ` +
               `device capability descriptors but only encountered ${
@@ -2756,7 +2756,7 @@ function addMappingAction(rawDataTreeRoot, rawDataByteElement) {
     });
 
     el.addEventListener('click', (event) => {
-      if (event.target.className != 'expand-icon') {
+      if (event.target.className !== 'expand-icon') {
         // Clears all the selected elements before select another.
         rawDataByteElement.querySelectorAll('.raw-data-byte-view span')
             .forEach((el) => el.classList.remove('selected-field'));

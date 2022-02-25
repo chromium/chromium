@@ -100,7 +100,7 @@ export class TabSearchItem extends TabSearchItemBase {
   }
 
   private isOpenTabAndHasMediaAlert_(tabData: TabData): boolean {
-    return tabData.type == TabItemType.OPEN_TAB &&
+    return tabData.type === TabItemType.OPEN_TAB &&
         tabHasMediaAlerts(tabData.tab as Tab);
   }
 

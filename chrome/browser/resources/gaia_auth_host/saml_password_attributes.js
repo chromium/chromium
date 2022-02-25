@@ -71,7 +71,7 @@ cr.define('samlPasswordAttributes', function() {
     // Don't throw any exception that could cause login to fail - extracting
     // these attributes can fail, but login should not be interrupted.
     try {
-      if (!xmlStr || typeof xmlStr != 'string') {
+      if (!xmlStr || typeof xmlStr !== 'string') {
         return PasswordAttributes.EMPTY;
       }
       if (xmlStr.length < MIN_SANE_XML_LENGTH ||

@@ -163,7 +163,7 @@ TokenList.prototype = {
   removeTokenNode_(accessToken) {
     let tokenIndex;
     for (let index = 0; index < this.data_.length; index++) {
-      if (this.data_[index].accessToken == accessToken) {
+      if (this.data_[index].accessToken === accessToken) {
         tokenIndex = index;
         break;
       }

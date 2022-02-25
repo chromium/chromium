@@ -122,7 +122,7 @@ SHA256.prototype.update = function(bytes, opt_length) {
   this._total += opt_length;
   for (var n = 0; n < opt_length; ++n) {
     this._buf[this._inbuf++] = bytes[n];
-    if (this._inbuf == 64) {
+    if (this._inbuf === 64) {
       this._compress(this._buf);
       this._inbuf = 0;
     }
@@ -138,7 +138,7 @@ SHA256.prototype.updateRange = function(bytes, start, end) {
   this._total += (end - start);
   for (var n = start; n < end; ++n) {
     this._buf[this._inbuf++] = bytes[n];
-    if (this._inbuf == 64) {
+    if (this._inbuf === 64) {
       this._compress(this._buf);
       this._inbuf = 0;
     }

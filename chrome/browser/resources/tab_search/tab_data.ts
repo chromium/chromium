@@ -62,7 +62,7 @@ export function tokenEquals(a: Token, b: Token): boolean {
 
 function titleAndAlertAriaLabel(tabData: TabData): string {
   const tabTitle = tabData.tab.title;
-  if (tabData.type == TabItemType.OPEN_TAB &&
+  if (tabData.type === TabItemType.OPEN_TAB &&
       tabHasMediaAlerts(tabData.tab as Tab)) {
     // GetTabAlertStatesForContents adds alert indicators in the order of their
     // priority. Only relevant media alerts are sent over mojo so the first
@@ -88,7 +88,7 @@ export function ariaLabel(itemData: ItemData): string {
       itemData.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
     const tabGroup = itemData.tabGroup as RecentlyClosedTabGroup;
     const tabCountText = loadTimeData.getStringF(
-        tabGroup.tabCount == 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
+        tabGroup.tabCount === 1 ? 'oneTab' : 'tabCount', tabGroup.tabCount);
     return `${tabGroup.title} ${tabCountText} ${
         tabGroup.lastActiveElapsedText} ${itemData.a11yTypeText}`;
   }
