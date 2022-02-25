@@ -33,6 +33,7 @@
 
 #include <vector>
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "v8/include/v8-forward.h"

@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom-blink.h"
 
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_fetch_context.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {

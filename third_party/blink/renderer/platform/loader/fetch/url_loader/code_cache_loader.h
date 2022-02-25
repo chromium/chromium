@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
 

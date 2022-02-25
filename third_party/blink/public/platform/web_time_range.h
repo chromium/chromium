@@ -33,6 +33,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace blink {

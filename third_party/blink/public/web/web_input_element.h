@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INPUT_ELEMENT_H_
 
 #include "build/build_config.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
 namespace blink {

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_DOCUMENT_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_document.h"
 
 namespace blink {

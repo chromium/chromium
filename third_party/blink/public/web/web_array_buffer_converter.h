@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ARRAY_BUFFER_CONVERTER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ARRAY_BUFFER_CONVERTER_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 
 namespace v8 {

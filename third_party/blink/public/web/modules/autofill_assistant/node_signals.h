@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_ASSISTANT_NODE_SIGNALS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_AUTOFILL_ASSISTANT_NODE_SIGNALS_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"

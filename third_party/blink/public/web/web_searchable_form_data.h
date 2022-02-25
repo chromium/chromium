@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SEARCHABLE_FORM_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SEARCHABLE_FORM_DATA_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_input_element.h"

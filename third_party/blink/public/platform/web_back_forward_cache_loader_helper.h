@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BACK_FORWARD_CACHE_LOADER_HELPER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BACK_FORWARD_CACHE_LOADER_HELPER_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
 #if INSIDE_BLINK
