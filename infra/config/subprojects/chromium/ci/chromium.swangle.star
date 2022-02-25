@@ -4,14 +4,13 @@
 """Definitions of builders in the chromium.swangle builder group."""
 
 load("//lib/builders.star", "goma", "sheriff_rotations")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.swangle",
     executable = "recipe:angle_chromium",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
     pool = ci.gpu.POOL,
     service_account = ci.gpu.SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CHROMIUM_GPU,
@@ -43,6 +42,9 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -51,6 +53,9 @@ ci.gpu.linux_builder(
         category = "ToT ANGLE|Linux",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -59,6 +64,9 @@ ci.gpu.linux_builder(
         category = "ToT SwiftShader|Linux",
         short_name = "x64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -68,6 +76,9 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.mac_builder(
@@ -77,6 +88,7 @@ ci.gpu.mac_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -86,6 +98,7 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -94,6 +107,7 @@ ci.gpu.windows_builder(
         category = "ToT ANGLE|Windows",
         short_name = "x64",
     ),
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -102,6 +116,7 @@ ci.gpu.windows_builder(
         category = "ToT ANGLE|Windows",
         short_name = "x86",
     ),
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -110,6 +125,7 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x64",
     ),
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -118,6 +134,7 @@ ci.gpu.windows_builder(
         category = "ToT SwiftShader|Windows",
         short_name = "x86",
     ),
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -127,6 +144,7 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = goma.backend.RBE_PROD,
 )
 
 ci.gpu.windows_builder(
@@ -136,4 +154,5 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     executable = ci.DEFAULT_EXECUTABLE,
+    goma_backend = goma.backend.RBE_PROD,
 )
