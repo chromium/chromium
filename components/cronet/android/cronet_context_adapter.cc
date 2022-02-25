@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cronet/android/cronet_url_request_context_adapter.h"
+#include "components/cronet/android/cronet_context_adapter.h"
 
 #include <limits.h>
 #include <stddef.h>
@@ -81,31 +81,29 @@ std::string ConvertNullableJavaStringToUTF8(JNIEnv* env,
 
 namespace cronet {
 
-CronetURLRequestContextAdapter::CronetURLRequestContextAdapter(
+CronetContextAdapter::CronetContextAdapter(
     std::unique_ptr<URLRequestContextConfig> context_config) {
   // Create context and pass ownership of |this| (self) to the context.
-  std::unique_ptr<CronetURLRequestContextAdapter> self(this);
+  std::unique_ptr<CronetContextAdapter> self(this);
 #if BUILDFLAG(INTEGRATED_MODE)
-  // Create CronetURLRequestContext running in integrated network task runner.
-  context_ =
-      new CronetURLRequestContext(std::move(context_config), std::move(self),
-                                  GetIntegratedModeNetworkTaskRunner());
+  // Create CronetContext running in integrated network task runner.
+  context_ = new CronetContext(std::move(context_config), std::move(self),
+                               GetIntegratedModeNetworkTaskRunner());
 #else
-  context_ =
-      new CronetURLRequestContext(std::move(context_config), std::move(self));
+  context_ = new CronetContext(std::move(context_config), std::move(self));
 #endif
 }
 
-CronetURLRequestContextAdapter::~CronetURLRequestContextAdapter() = default;
+CronetContextAdapter::~CronetContextAdapter() = default;
 
-void CronetURLRequestContextAdapter::InitRequestContextOnInitThread(
+void CronetContextAdapter::InitRequestContextOnInitThread(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
   jcronet_url_request_context_.Reset(env, jcaller);
   context_->InitRequestContextOnInitThread();
 }
 
-void CronetURLRequestContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
+void CronetContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     jboolean use_local_host_requests,
@@ -116,39 +114,39 @@ void CronetURLRequestContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
       disable_offline_check == JNI_TRUE);
 }
 
-void CronetURLRequestContextAdapter::ProvideRTTObservations(
+void CronetContextAdapter::ProvideRTTObservations(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     bool should) {
   context_->ProvideRTTObservations(should == JNI_TRUE);
 }
 
-void CronetURLRequestContextAdapter::ProvideThroughputObservations(
+void CronetContextAdapter::ProvideThroughputObservations(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     bool should) {
   context_->ProvideThroughputObservations(should == JNI_TRUE);
 }
 
-void CronetURLRequestContextAdapter::OnInitNetworkThread() {
+void CronetContextAdapter::OnInitNetworkThread() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CronetUrlRequestContext_initNetworkThread(env,
                                                  jcronet_url_request_context_);
 }
 
-void CronetURLRequestContextAdapter::OnDestroyNetworkThread() {
+void CronetContextAdapter::OnDestroyNetworkThread() {
   // The |context_| is destroyed.
   context_ = nullptr;
 }
 
-void CronetURLRequestContextAdapter::OnEffectiveConnectionTypeChanged(
+void CronetContextAdapter::OnEffectiveConnectionTypeChanged(
     net::EffectiveConnectionType effective_connection_type) {
   Java_CronetUrlRequestContext_onEffectiveConnectionTypeChanged(
       base::android::AttachCurrentThread(), jcronet_url_request_context_,
       effective_connection_type);
 }
 
-void CronetURLRequestContextAdapter::OnRTTOrThroughputEstimatesComputed(
+void CronetContextAdapter::OnRTTOrThroughputEstimatesComputed(
     int32_t http_rtt_ms,
     int32_t transport_rtt_ms,
     int32_t downstream_throughput_kbps) {
@@ -157,7 +155,7 @@ void CronetURLRequestContextAdapter::OnRTTOrThroughputEstimatesComputed(
       http_rtt_ms, transport_rtt_ms, downstream_throughput_kbps);
 }
 
-void CronetURLRequestContextAdapter::OnRTTObservation(
+void CronetContextAdapter::OnRTTObservation(
     int32_t rtt_ms,
     int32_t timestamp_ms,
     net::NetworkQualityObservationSource source) {
@@ -166,7 +164,7 @@ void CronetURLRequestContextAdapter::OnRTTObservation(
       rtt_ms, timestamp_ms, source);
 }
 
-void CronetURLRequestContextAdapter::OnThroughputObservation(
+void CronetContextAdapter::OnThroughputObservation(
     int32_t throughput_kbps,
     int32_t timestamp_ms,
     net::NetworkQualityObservationSource source) {
@@ -175,34 +173,33 @@ void CronetURLRequestContextAdapter::OnThroughputObservation(
       throughput_kbps, timestamp_ms, source);
 }
 
-void CronetURLRequestContextAdapter::OnStopNetLogCompleted() {
+void CronetContextAdapter::OnStopNetLogCompleted() {
   Java_CronetUrlRequestContext_stopNetLogCompleted(
       base::android::AttachCurrentThread(), jcronet_url_request_context_);
 }
 
-void CronetURLRequestContextAdapter::Destroy(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+void CronetContextAdapter::Destroy(JNIEnv* env,
+                                   const JavaParamRef<jobject>& jcaller) {
   // Deleting |context_| on client thread will post cleanup onto network thread,
   // which will in turn delete |this| on network thread.
   delete context_;
 }
 
-net::URLRequestContext* CronetURLRequestContextAdapter::GetURLRequestContext() {
+net::URLRequestContext* CronetContextAdapter::GetURLRequestContext() {
   return context_->GetURLRequestContext();
 }
 
-void CronetURLRequestContextAdapter::PostTaskToNetworkThread(
+void CronetContextAdapter::PostTaskToNetworkThread(
     const base::Location& posted_from,
     base::OnceClosure callback) {
   context_->PostTaskToNetworkThread(posted_from, std::move(callback));
 }
 
-bool CronetURLRequestContextAdapter::IsOnNetworkThread() const {
+bool CronetContextAdapter::IsOnNetworkThread() const {
   return context_->IsOnNetworkThread();
 }
 
-bool CronetURLRequestContextAdapter::StartNetLogToFile(
+bool CronetContextAdapter::StartNetLogToFile(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jfile_name,
@@ -212,7 +209,7 @@ bool CronetURLRequestContextAdapter::StartNetLogToFile(
   return context_->StartNetLogToFile(file_name, jlog_all == JNI_TRUE);
 }
 
-void CronetURLRequestContextAdapter::StartNetLogToDisk(
+void CronetContextAdapter::StartNetLogToDisk(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& jdir_name,
@@ -222,13 +219,12 @@ void CronetURLRequestContextAdapter::StartNetLogToDisk(
   context_->StartNetLogToDisk(dir_name, jlog_all == JNI_TRUE, jmax_size);
 }
 
-void CronetURLRequestContextAdapter::StopNetLog(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
+void CronetContextAdapter::StopNetLog(JNIEnv* env,
+                                      const JavaParamRef<jobject>& jcaller) {
   context_->StopNetLog();
 }
 
-int CronetURLRequestContextAdapter::default_load_flags() const {
+int CronetContextAdapter::default_load_flags() const {
   return context_->default_load_flags();
 }
 
@@ -332,14 +328,13 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextAdapter(
   std::unique_ptr<URLRequestContextConfig> context_config(
       reinterpret_cast<URLRequestContextConfig*>(jconfig));
 
-  CronetURLRequestContextAdapter* context_adapter =
-      new CronetURLRequestContextAdapter(std::move(context_config));
+  CronetContextAdapter* context_adapter =
+      new CronetContextAdapter(std::move(context_config));
   return reinterpret_cast<jlong>(context_adapter);
 }
 
-static jint JNI_CronetUrlRequestContext_SetMinLogLevel(
-    JNIEnv* env,
-    jint jlog_level) {
+static jint JNI_CronetUrlRequestContext_SetMinLogLevel(JNIEnv* env,
+                                                       jint jlog_level) {
   jint old_log_level = static_cast<jint>(logging::GetMinLogLevel());
   // MinLogLevel is global, shared by all URLRequestContexts.
   logging::SetMinLogLevel(static_cast<int>(jlog_level));

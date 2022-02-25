@@ -24,7 +24,7 @@ struct BidirectionalStreamRequestInfo;
 
 namespace cronet {
 
-class CronetURLRequestContextAdapter;
+class CronetContextAdapter;
 class IOBufferWithByteBuffer;
 
 // Convenient wrapper to hold Java references and data to represent the pending
@@ -68,7 +68,7 @@ class CronetBidirectionalStreamAdapter
     : public net::BidirectionalStream::Delegate {
  public:
   CronetBidirectionalStreamAdapter(
-      CronetURLRequestContextAdapter* context,
+      CronetContextAdapter* context,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbidi_stream,
       bool jsend_request_headers_automatically,
@@ -168,7 +168,7 @@ class CronetBidirectionalStreamAdapter
       const spdy::Http2HeaderBlock& header_block);
   // Helper method to report metrics to the Java layer.
   void MaybeReportMetrics();
-  const raw_ptr<CronetURLRequestContextAdapter> context_;
+  const raw_ptr<CronetContextAdapter> context_;
 
   // Java object that owns this CronetBidirectionalStreamAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

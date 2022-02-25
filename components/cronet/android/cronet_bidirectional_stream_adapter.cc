@@ -13,8 +13,8 @@
 #include "base/logging.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/cronet/android/cronet_context_adapter.h"
 #include "components/cronet/android/cronet_jni_headers/CronetBidirectionalStream_jni.h"
-#include "components/cronet/android/cronet_url_request_context_adapter.h"
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
@@ -84,9 +84,8 @@ static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
     jint jtraffic_stats_uid) {
-  CronetURLRequestContextAdapter* context_adapter =
-      reinterpret_cast<CronetURLRequestContextAdapter*>(
-          jurl_request_context_adapter);
+  CronetContextAdapter* context_adapter =
+      reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
   DCHECK(context_adapter);
 
   CronetBidirectionalStreamAdapter* adapter =
@@ -100,7 +99,7 @@ static jlong JNI_CronetBidirectionalStream_CreateBidirectionalStream(
 }
 
 CronetBidirectionalStreamAdapter::CronetBidirectionalStreamAdapter(
-    CronetURLRequestContextAdapter* context,
+    CronetContextAdapter* context,
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jbidi_stream,
     bool send_request_headers_automatically,

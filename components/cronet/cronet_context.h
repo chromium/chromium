@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CRONET_CRONET_URL_REQUEST_CONTEXT_H_
-#define COMPONENTS_CRONET_CRONET_URL_REQUEST_CONTEXT_H_
+#ifndef COMPONENTS_CRONET_CRONET_CONTEXT_H_
+#define COMPONENTS_CRONET_CRONET_CONTEXT_H_
 
 #include <stdint.h>
 
@@ -49,10 +49,10 @@ class TestUtil;
 struct URLRequestContextConfig;
 
 // Wrapper around net::URLRequestContext.
-class CronetURLRequestContext {
+class CronetContext {
  public:
-  // Callback implemented by CronetURLRequestContext() caller and owned by
-  // CronetURLRequestContext::NetworkTasks.
+  // Callback implemented by CronetContext() caller and owned by
+  // CronetContext::NetworkTasks.
   class Callback {
    public:
     virtual ~Callback() = default;
@@ -91,24 +91,23 @@ class CronetURLRequestContext {
     virtual void OnStopNetLogCompleted() = 0;
   };
 
-  // Constructs CronetURLRequestContext using |context_config|. The |callback|
+  // Constructs CronetContext using |context_config|. The |callback|
   // is owned by |this| and is deleted on network thread.
   // All |callback| methods are invoked on network thread.
   // If the network_task_runner is not assigned, a network thread would be
   // created for network tasks. Otherwise the tasks would be running on the
   // assigned task runner.
-  CronetURLRequestContext(
-      std::unique_ptr<URLRequestContextConfig> context_config,
-      std::unique_ptr<Callback> callback,
-      scoped_refptr<base::SingleThreadTaskRunner> network_task_runner =
-          nullptr);
+  CronetContext(std::unique_ptr<URLRequestContextConfig> context_config,
+                std::unique_ptr<Callback> callback,
+                scoped_refptr<base::SingleThreadTaskRunner>
+                    network_task_runner = nullptr);
 
-  CronetURLRequestContext(const CronetURLRequestContext&) = delete;
-  CronetURLRequestContext& operator=(const CronetURLRequestContext&) = delete;
+  CronetContext(const CronetContext&) = delete;
+  CronetContext& operator=(const CronetContext&) = delete;
 
   // Releases all resources for the request context and deletes the object.
   // Blocks until network thread is destroyed after running all pending tasks.
-  virtual ~CronetURLRequestContext();
+  virtual ~CronetContext();
 
   // Called on init thread to initialize URLRequestContext.
   void InitRequestContextOnInitThread();
@@ -186,7 +185,7 @@ class CronetURLRequestContext {
    public:
     // Invoked off the network thread.
     NetworkTasks(std::unique_ptr<URLRequestContextConfig> config,
-                 std::unique_ptr<CronetURLRequestContext::Callback> callback);
+                 std::unique_ptr<CronetContext::Callback> callback);
 
     NetworkTasks(const NetworkTasks&) = delete;
     NetworkTasks& operator=(const NetworkTasks&) = delete;
@@ -329,7 +328,7 @@ class CronetURLRequestContext {
     scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 
     // Callback implemented by the client.
-    std::unique_ptr<CronetURLRequestContext::Callback> callback_;
+    std::unique_ptr<CronetContext::Callback> callback_;
 
     THREAD_CHECKER(network_thread_checker_);
   };
@@ -364,4 +363,4 @@ class CronetURLRequestContext {
 
 }  // namespace cronet
 
-#endif  // COMPONENTS_CRONET_CRONET_URL_REQUEST_CONTEXT_H_
+#endif  // COMPONENTS_CRONET_CRONET_CONTEXT_H_

@@ -27,7 +27,7 @@ class UploadDataStream;
 
 namespace cronet {
 
-class CronetURLRequestContext;
+class CronetContext;
 class TestUtil;
 
 // Wrapper around net::URLRequestContext.
@@ -139,7 +139,7 @@ class CronetURLRequest {
   // causes connection migration to be disabled for this request if true. If
   // global connection migration flag is not enabled,
   // |disable_connection_migration| has no effect.
-  CronetURLRequest(CronetURLRequestContext* context,
+  CronetURLRequest(CronetContext* context,
                    std::unique_ptr<Callback> callback,
                    const GURL& url,
                    net::RequestPriority priority,
@@ -221,7 +221,7 @@ class CronetURLRequest {
     ~NetworkTasks() override;
 
     // Starts the request.
-    void Start(CronetURLRequestContext* context,
+    void Start(CronetContext* context,
                const std::string& method,
                std::unique_ptr<net::HttpRequestHeaders> request_headers,
                std::unique_ptr<net::UploadDataStream> upload);
@@ -302,7 +302,7 @@ class CronetURLRequest {
     THREAD_CHECKER(network_thread_checker_);
   };
 
-  raw_ptr<CronetURLRequestContext> context_;
+  raw_ptr<CronetContext> context_;
   // |network_tasks_| is invoked on network thread.
   NetworkTasks network_tasks_;
 

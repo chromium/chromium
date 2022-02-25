@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CRONET_ANDROID_CRONET_URL_REQUEST_CONTEXT_ADAPTER_H_
-#define COMPONENTS_CRONET_ANDROID_CRONET_URL_REQUEST_CONTEXT_ADAPTER_H_
+#ifndef COMPONENTS_CRONET_ANDROID_CRONET_CONTEXT_ADAPTER_H_
+#define COMPONENTS_CRONET_ANDROID_CRONET_CONTEXT_ADAPTER_H_
 
 #include <jni.h>
 #include <stdint.h>
@@ -16,7 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
-#include "components/cronet/cronet_url_request_context.h"
+#include "components/cronet/cronet_context.h"
 #include "components/prefs/json_pref_store.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
@@ -34,19 +34,16 @@ class TestUtil;
 
 struct URLRequestContextConfig;
 
-// Adapter between Java CronetUrlRequestContext and CronetURLRequestContext.
-class CronetURLRequestContextAdapter
-    : public CronetURLRequestContext::Callback {
+// Adapter between Java CronetUrlRequestContext and CronetContext.
+class CronetContextAdapter : public CronetContext::Callback {
  public:
-  explicit CronetURLRequestContextAdapter(
+  explicit CronetContextAdapter(
       std::unique_ptr<URLRequestContextConfig> context_config);
 
-  CronetURLRequestContextAdapter(const CronetURLRequestContextAdapter&) =
-      delete;
-  CronetURLRequestContextAdapter& operator=(
-      const CronetURLRequestContextAdapter&) = delete;
+  CronetContextAdapter(const CronetContextAdapter&) = delete;
+  CronetContextAdapter& operator=(const CronetContextAdapter&) = delete;
 
-  ~CronetURLRequestContextAdapter() override;
+  ~CronetContextAdapter() override;
 
   // Called on init Java thread to initialize URLRequestContext.
   void InitRequestContextOnInitThread(
@@ -118,11 +115,9 @@ class CronetURLRequestContextAdapter
       const base::android::JavaParamRef<jobject>& jcaller,
       bool should);
 
-  CronetURLRequestContext* cronet_url_request_context() const {
-    return context_;
-  }
+  CronetContext* cronet_url_request_context() const { return context_; }
 
-  // CronetURLRequestContext::Callback
+  // CronetContext::Callback
   void OnInitNetworkThread() override;
   void OnDestroyNetworkThread() override;
   void OnEffectiveConnectionTypeChanged(
@@ -144,12 +139,12 @@ class CronetURLRequestContextAdapter
   friend class TestUtil;
 
   // Native Cronet URL Request Context.
-  raw_ptr<CronetURLRequestContext> context_;
+  raw_ptr<CronetContext> context_;
 
-  // Java object that owns this CronetURLRequestContextAdapter.
+  // Java object that owns this CronetContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> jcronet_url_request_context_;
 };
 
 }  // namespace cronet
 
-#endif  // COMPONENTS_CRONET_ANDROID_CRONET_URL_REQUEST_CONTEXT_ADAPTER_H_
+#endif  // COMPONENTS_CRONET_ANDROID_CRONET_ADAPTER_H_

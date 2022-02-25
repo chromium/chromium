@@ -27,7 +27,7 @@ class UploadDataStream;
 
 namespace cronet {
 
-class CronetURLRequestContextAdapter;
+class CronetContextAdapter;
 class TestUtil;
 
 // An adapter from Java CronetUrlRequest object to native CronetURLRequest.
@@ -43,7 +43,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   // causes connection migration to be disabled for this request if true. If
   // global connection migration flag is not enabled,
   // |jdisable_connection_migration| has no effect.
-  CronetURLRequestAdapter(CronetURLRequestContextAdapter* context,
+  CronetURLRequestAdapter(CronetContextAdapter* context,
                           JNIEnv* env,
                           jobject jurl_request,
                           const GURL& url,
@@ -158,7 +158,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   // Native Cronet URL Request that owns |this|.
   raw_ptr<CronetURLRequest> request_;
 
-  // Java object that owns this CronetURLRequestContextAdapter.
+  // Java object that owns this CronetContextAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
 };
 

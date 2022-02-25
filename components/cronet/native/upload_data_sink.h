@@ -10,9 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_upload_data_stream.h"
 #include "components/cronet/cronet_url_request.h"
-#include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 namespace cronet {

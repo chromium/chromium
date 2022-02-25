@@ -37,6 +37,8 @@ process_version("cronet_version_header") {
 # Cronet common implementation.
 source_set("cronet_common") {
   sources = [
+    "cronet_context.cc",
+    "cronet_context.h",
     "cronet_global_state.h",
     "cronet_prefs_manager.cc",
     "cronet_prefs_manager.h",
@@ -44,8 +46,6 @@ source_set("cronet_common") {
     "cronet_upload_data_stream.h",
     "cronet_url_request.cc",
     "cronet_url_request.h",
-    "cronet_url_request_context.cc",
-    "cronet_url_request_context.h",
     "host_cache_persistence_manager.cc",
     "host_cache_persistence_manager.h",
     "stale_host_resolver.cc",

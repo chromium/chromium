@@ -152,13 +152,13 @@ source_set("cronet_static") {
   sources = [
     "//components/cronet/android/cronet_bidirectional_stream_adapter.cc",
     "//components/cronet/android/cronet_bidirectional_stream_adapter.h",
+    "//components/cronet/android/cronet_context_adapter.cc",
+    "//components/cronet/android/cronet_context_adapter.h",
     "//components/cronet/android/cronet_library_loader.cc",
     "//components/cronet/android/cronet_upload_data_stream_adapter.cc",
     "//components/cronet/android/cronet_upload_data_stream_adapter.h",
     "//components/cronet/android/cronet_url_request_adapter.cc",
     "//components/cronet/android/cronet_url_request_adapter.h",
-    "//components/cronet/android/cronet_url_request_context_adapter.cc",
-    "//components/cronet/android/cronet_url_request_context_adapter.h",
     "//components/cronet/android/io_buffer_with_byte_buffer.cc",
     "//components/cronet/android/io_buffer_with_byte_buffer.h",
     "//components/cronet/android/url_request_error.cc",
@@ -808,10 +808,9 @@ if (!is_component_build) {
       # While "cronet_tests" cannot depend on "cronet_static", and hence cannot
       # call any Cronet functions, it can access fields of Cronet objects, so add
       # Cronet header files to facilitate accessing these fields.
+      "//components/cronet/android/cronet_context_adapter.h",
       "//components/cronet/android/cronet_url_request_adapter.h",
-      "//components/cronet/android/cronet_url_request_context_adapter.h",
       "//components/cronet/cronet_url_request.h",
-      "//components/cronet/cronet_url_request_context.h",
       "//components/cronet/url_request_context_config.h",
       "test/cronet_test_jni.cc",
       "test/cronet_test_util.cc",
@@ -836,6 +835,7 @@ if (!is_component_build) {
       "//base",
       "//base:i18n",
       "//base/test:test_support",
+      "//components/cronet:cronet_common",
       "//components/cronet:cronet_version_header",
       "//components/cronet/testing:test_support",
       "//components/prefs",

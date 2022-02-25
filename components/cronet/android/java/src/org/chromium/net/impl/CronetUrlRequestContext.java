@@ -727,32 +727,32 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         long createRequestContextAdapter(long urlRequestContextConfig);
         int setMinLogLevel(int loggingLevel);
         byte[] getHistogramDeltas();
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void destroy(long nativePtr, CronetUrlRequestContext caller);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         boolean startNetLogToFile(
                 long nativePtr, CronetUrlRequestContext caller, String fileName, boolean logAll);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void startNetLogToDisk(long nativePtr, CronetUrlRequestContext caller, String dirPath,
                 boolean logAll, int maxSize);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void stopNetLog(long nativePtr, CronetUrlRequestContext caller);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void initRequestContextOnInitThread(long nativePtr, CronetUrlRequestContext caller);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void configureNetworkQualityEstimatorForTesting(long nativePtr,
                 CronetUrlRequestContext caller, boolean useLocalHostRequests,
                 boolean useSmallerResponses, boolean disableOfflineCheck);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void provideRTTObservations(long nativePtr, CronetUrlRequestContext caller, boolean should);
 
-        @NativeClassQualifiedName("CronetURLRequestContextAdapter")
+        @NativeClassQualifiedName("CronetContextAdapter")
         void provideThroughputObservations(
                 long nativePtr, CronetUrlRequestContext caller, boolean should);
     }

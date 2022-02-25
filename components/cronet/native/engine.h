@@ -23,9 +23,9 @@ class CertVerifier;
 }
 
 namespace cronet {
-class CronetURLRequestContext;
+class CronetContext;
 
-// Implementation of Cronet_Engine that uses CronetURLRequestContext.
+// Implementation of Cronet_Engine that uses CronetContext.
 class Cronet_EngineImpl : public Cronet_Engine {
  public:
   Cronet_EngineImpl();
@@ -62,9 +62,7 @@ class Cronet_EngineImpl : public Cronet_Engine {
   // stream_engine is owned by |this| and is only valid until |this| shutdown.
   stream_engine* GetBidirectionalStreamEngine();
 
-  CronetURLRequestContext* cronet_url_request_context() const {
-    return context_.get();
-  }
+  CronetContext* cronet_url_request_context() const { return context_.get(); }
 
   // Returns true if there is a listener currently registered (using
   // AddRequestFinishedListener()), and false otherwise.
@@ -88,7 +86,7 @@ class Cronet_EngineImpl : public Cronet_Engine {
   // Synchronize access to member variables from different threads.
   base::Lock lock_;
   // Cronet URLRequest context used for all network operations.
-  std::unique_ptr<CronetURLRequestContext> context_;
+  std::unique_ptr<CronetContext> context_;
   // Signaled when |context_| initialization is done.
   base::WaitableEvent init_completed_;
 

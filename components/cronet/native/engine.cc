@@ -15,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_global_state.h"
-#include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
 #include "components/cronet/native/include/cronet_c.h"
 #include "components/cronet/native/runnables.h"
@@ -189,20 +189,19 @@ Cronet_RESULT Cronet_EngineImpl::StartWithParams(
             quic_hint.host, quic_hint.port, quic_hint.alternate_port));
   }
 
-  context_ = std::make_unique<CronetURLRequestContext>(
-      std::move(config), std::make_unique<Callback>(this));
+  context_ = std::make_unique<CronetContext>(std::move(config),
+                                             std::make_unique<Callback>(this));
 
   // TODO(mef): It'd be nice to remove the java code and this code, and get
-  // rid of CronetURLRequestContextAdapter::InitRequestContextOnInitThread.
-  // Could also make CronetURLRequestContext::InitRequestContextOnInitThread()
+  // rid of CronetContextAdapter::InitRequestContextOnInitThread.
+  // Could also make CronetContext::InitRequestContextOnInitThread()
   // private and mark CronetLibraryLoader.postToInitThread() as
   // @VisibleForTesting (as the only external use will be in a test).
 
   // Initialize context on the init thread.
   cronet::PostTaskToInitThread(
-      FROM_HERE,
-      base::BindOnce(&CronetURLRequestContext::InitRequestContextOnInitThread,
-                     base::Unretained(context_.get())));
+      FROM_HERE, base::BindOnce(&CronetContext::InitRequestContextOnInitThread,
+                                base::Unretained(context_.get())));
   return CheckResult(Cronet_RESULT_SUCCESS);
 }
 
@@ -367,9 +366,9 @@ class Cronet_EngineImpl::StreamEngineImpl : public stream_engine {
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
 };
 
-// Callback is owned by CronetURLRequestContext. It is invoked and deleted
+// Callback is owned by CronetContext. It is invoked and deleted
 // on the network thread.
-class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
+class Cronet_EngineImpl::Callback : public CronetContext::Callback {
  public:
   explicit Callback(Cronet_EngineImpl* engine);
 
@@ -378,7 +377,7 @@ class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
 
   ~Callback() override;
 
-  // CronetURLRequestContext::Callback implementation:
+  // CronetContext::Callback implementation:
   void OnInitNetworkThread() override LOCKS_EXCLUDED(engine_->lock_);
   void OnDestroyNetworkThread() override;
   void OnEffectiveConnectionTypeChanged(

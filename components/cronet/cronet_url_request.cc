@@ -11,7 +11,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "components/cronet/cronet_url_request_context.h"
+#include "components/cronet/cronet_context.h"
 #include "net/base/idempotency.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
@@ -55,7 +55,7 @@ int CalculateLoadFlags(int load_flags,
 
 }  // namespace
 
-CronetURLRequest::CronetURLRequest(CronetURLRequestContext* context,
+CronetURLRequest::CronetURLRequest(CronetContext* context,
                                    std::unique_ptr<Callback> callback,
                                    const GURL& url,
                                    net::RequestPriority priority,
@@ -275,7 +275,7 @@ void CronetURLRequest::NetworkTasks::OnReadCompleted(net::URLRequest* request,
 }
 
 void CronetURLRequest::NetworkTasks::Start(
-    CronetURLRequestContext* context,
+    CronetContext* context,
     const std::string& method,
     std::unique_ptr<net::HttpRequestHeaders> request_headers,
     std::unique_ptr<net::UploadDataStream> upload) {
