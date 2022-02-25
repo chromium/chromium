@@ -450,7 +450,9 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
       "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", 1);
 }
 
-TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
+// TODO(crbug.com/1300774): Disabled due to flakiness.
+TEST_F(AppListBubbleViewTest,
+       DISABLED_HideAnimationsRecordsSmoothnessHistogram) {
   base::HistogramTester histograms;
 
   // Show the app list without animation.
