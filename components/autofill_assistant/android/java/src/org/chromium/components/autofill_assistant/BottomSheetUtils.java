@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.components.autofill_assistant;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -42,7 +42,7 @@ public class BottomSheetUtils {
         }
     }
 
-    static void restoreState(BottomSheetController controller, BottomSheetContent content,
+    public static void restoreState(BottomSheetController controller, BottomSheetContent content,
             @SheetState int targetState) {
         if (controller.getSheetState() == targetState) {
             return;

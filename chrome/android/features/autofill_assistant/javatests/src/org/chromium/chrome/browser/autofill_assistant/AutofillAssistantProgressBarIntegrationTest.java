@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;

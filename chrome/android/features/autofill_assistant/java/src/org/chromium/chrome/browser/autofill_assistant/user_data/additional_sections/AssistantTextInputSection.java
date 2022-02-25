@@ -24,10 +24,10 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorTextField;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
+import org.chromium.components.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 
 import java.util.ArrayList;
 import java.util.List;

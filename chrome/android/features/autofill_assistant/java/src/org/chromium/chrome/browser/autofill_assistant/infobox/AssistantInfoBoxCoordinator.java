@@ -8,8 +8,8 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxViewBinder.ViewHolder;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 

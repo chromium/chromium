@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.autofill_assistant.AssistantTextUtils;
 
 /**
  * A section to display a text string.

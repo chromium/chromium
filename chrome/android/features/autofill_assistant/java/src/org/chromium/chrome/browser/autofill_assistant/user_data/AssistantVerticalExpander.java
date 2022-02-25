@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.VERTICAL_EXPANDER_CHEVRON;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.VERTICAL_EXPANDER_CHEVRON;
 
 import android.content.Context;
 import android.util.AttributeSet;

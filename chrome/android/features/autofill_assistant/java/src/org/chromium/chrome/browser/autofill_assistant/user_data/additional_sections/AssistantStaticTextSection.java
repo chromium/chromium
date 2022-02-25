@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.components.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 
 /** A section which displays a simple static text message. */
 public class AssistantStaticTextSection implements AssistantAdditionalSection {

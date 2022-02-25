@@ -16,10 +16,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.components.autofill_assistant.AssistantOptionModel;
+import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
+import org.chromium.components.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 
 import java.util.ArrayList;
 import java.util.List;

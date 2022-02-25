@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 
 /**
  * The {@link ViewHolder} responsible for reflecting an {@link AssistantChip} to a {@link

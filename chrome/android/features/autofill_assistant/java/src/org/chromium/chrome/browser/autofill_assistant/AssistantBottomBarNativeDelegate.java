@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill_assistant.AssistantBottomBarDelegate;
 
 /** Delegate for the bottom bar which forwards events to a native counterpart. */
 @JNINamespace("autofill_assistant")

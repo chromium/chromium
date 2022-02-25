@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant.carousel;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.RECYCLER_VIEW_TAG;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.RECYCLER_VIEW_TAG;
 
 import android.content.Context;
 import android.view.View;

@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.findViewsWithTag;
 import static org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator.DIVIDER_TAG;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST;
 
 import android.view.View;
 import android.widget.LinearLayout;
@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVertica
 import org.chromium.components.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.components.autofill_assistant.AssistantOptionModel;
 import org.chromium.components.autofill_assistant.AssistantPaymentInstrument;
+import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;

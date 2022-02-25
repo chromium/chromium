@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
+import static org.chromium.components.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
 
 import android.content.Context;
 import android.text.TextUtils;

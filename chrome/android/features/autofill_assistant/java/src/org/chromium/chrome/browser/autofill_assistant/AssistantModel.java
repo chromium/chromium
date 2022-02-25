@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderMode
 import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
+import org.chromium.components.autofill_assistant.AssistantBottomBarDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.components.autofill_assistant;
 
 import android.app.Activity;
 
@@ -13,7 +13,8 @@ import org.json.JSONObject;
  * Automatically extracts context information and serializes it in JSON form.
  */
 class FeedbackContext extends JSONObject {
-    static String buildContextString(Activity activity, String debugContext, int indentSpaces) {
+    public static String buildContextString(
+            Activity activity, String debugContext, int indentSpaces) {
         try {
             return new FeedbackContext(activity, debugContext).toString(indentSpaces);
         } catch (JSONException e) {

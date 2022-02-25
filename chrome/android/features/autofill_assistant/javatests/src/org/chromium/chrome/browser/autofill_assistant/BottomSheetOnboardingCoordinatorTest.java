@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.AssistantBottomSheetContent;
 import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
 import org.chromium.components.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;

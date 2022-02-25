@@ -10,8 +10,85 @@ import("//build/config/zip.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
+android_library("java") {
+  resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    ":autofill_assistant_public_java",
+    ":public_java",
+    "//base:base_java",
+    "//components/autofill/android:autofill_java",
+    "//components/autofill_assistant/android:autofill_assistant_public_java",
+    "//components/autofill_assistant/android:java_resources",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:util_java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/payments/content/android:java",
+    "//components/policy/android:policy_java",
+    "//components/signin/public/android:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_java",
+    "//mojo/public/java:bindings_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_gridlayout_gridlayout_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/autofill_assistant/AssistantAccessibilityUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomBarDelegate.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantBottomSheetContent.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTagsForTesting.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTextUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/BottomSheetUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/FeedbackContext.java",
+    "java/src/org/chromium/components/autofill_assistant/LayoutUtils.java",
+    "java/src/org/chromium/components/autofill_assistant/ScrollToHideGestureListener.java",
+    "java/src/org/chromium/components/autofill_assistant/SizeListenableLinearLayout.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
 android_library("public_java") {
   resources_package = "org.chromium.components.autofill_assistant"
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
+    "//components/autofill_assistant/android:autofill_assistant_public_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/favicon/android:java",
+    "//components/image_fetcher:java",
+    "//components/module_installer/android:module_installer_java",
+    "//components/module_installer/android:module_interface_java",
+    "//components/payments/content/android:java_resources",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
 
   sources = [
     "public/java/src/org/chromium/components/autofill_assistant/AssistantAccessTokenUtil.java",
@@ -50,25 +127,6 @@ android_library("public_java") {
     "public/java/src/org/chromium/components/autofill_assistant/AutofillAssistantPreferencesUtil.java",
     "public/java/src/org/chromium/components/autofill_assistant/Starter.java",
     "public/java/src/org/chromium/components/autofill_assistant/TriggerContext.java",
-  ]
-
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//components/autofill/android:autofill_payments_java_resources",
-    "//components/autofill/android:main_autofill_java",
-    "//components/autofill_assistant/android:autofill_assistant_public_java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//components/favicon/android:java",
-    "//components/image_fetcher:java",
-    "//components/module_installer/android:module_installer_java",
-    "//components/module_installer/android:module_interface_java",
-    "//components/payments/content/android:java_resources",
-    "//components/signin/public/android:java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-    "//url:gurl_java",
   ]
 
   annotation_processor_deps = [

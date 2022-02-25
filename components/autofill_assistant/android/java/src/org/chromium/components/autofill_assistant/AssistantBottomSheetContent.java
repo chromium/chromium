@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.components.autofill_assistant;
 
 import android.content.Context;
 import android.view.View;
@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 

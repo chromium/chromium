@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant.details;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
+import static org.chromium.components.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -35,9 +35,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.components.autofill_assistant.AssistantInfoPageUtil;
+import org.chromium.components.autofill_assistant.AssistantTextUtils;
+import org.chromium.components.autofill_assistant.LayoutUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.image_fetcher.ImageFetcher;

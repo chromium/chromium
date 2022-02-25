@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TellProto.TextToSpee
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.content.browser.accessibility.BrowserAccessibilityState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 

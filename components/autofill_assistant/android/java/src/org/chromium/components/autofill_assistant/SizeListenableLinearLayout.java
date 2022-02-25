@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill_assistant;
+package org.chromium.components.autofill_assistant;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -50,7 +50,7 @@ public class SizeListenableLinearLayout extends LinearLayout {
         }
     }
 
-    void setContentSizeListener(@Nullable BottomSheetContent.ContentSizeListener listener) {
+    public void setContentSizeListener(@Nullable BottomSheetContent.ContentSizeListener listener) {
         mListener = listener;
     }
 }

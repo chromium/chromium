@@ -29,9 +29,9 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST;
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_TERMS_REQUIRE_REVIEW;
-import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.VERTICAL_EXPANDER_CHEVRON;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_CHOICE_LIST;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.COLLECT_USER_DATA_TERMS_REQUIRE_REVIEW;
+import static org.chromium.components.autofill_assistant.AssistantTagsForTesting.VERTICAL_EXPANDER_CHEVRON;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
