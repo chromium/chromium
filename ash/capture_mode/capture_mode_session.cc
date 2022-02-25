@@ -847,7 +847,9 @@ gfx::Rect CaptureModeSession::GetCameraPreviewConfineBounds() const {
     case CaptureModeSource::kFullscreen: {
       auto* parent = GetCameraPreviewParentWindow();
       DCHECK(parent);
-      return parent->GetBoundsInScreen();
+      return display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(parent)
+          .work_area();
     }
     case CaptureModeSource::kWindow: {
       aura::Window* selected_window = GetSelectedWindow();
@@ -1001,8 +1003,9 @@ void CaptureModeSession::OnWindowDestroying(aura::Window* window) {
 void CaptureModeSession::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
     return;
   }
 

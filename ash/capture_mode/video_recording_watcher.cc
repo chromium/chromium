@@ -291,7 +291,9 @@ gfx::Rect VideoRecordingWatcher::GetCameraPreviewConfineBounds() const {
   DCHECK(window_being_recorded_);
   switch (recording_source_) {
     case CaptureModeSource::kFullscreen:
-      return window_being_recorded_->GetBoundsInScreen();
+      return display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(window_being_recorded_)
+          .work_area();
     case CaptureModeSource::kRegion: {
       gfx::Rect capture_region = partial_region_bounds_;
       wm::ConvertRectToScreen(current_root_, &capture_region);
@@ -437,8 +439,9 @@ void VideoRecordingWatcher::OnDisplayMetricsChanged(
   if (is_in_projector_mode_ && (metrics & DISPLAY_METRIC_WORK_AREA))
     recording_overlay_controller_->SetBounds(GetOverlayWidgetBounds());
 
-  if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
     return;
   }
 

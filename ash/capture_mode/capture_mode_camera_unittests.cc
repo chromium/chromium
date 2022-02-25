@@ -659,10 +659,12 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   // When snap position is `kBottomRight` and capture source is `kFullscreen`,
   // the preview should at the bottom right corner of screen.
   const auto* capture_mode_session = controller->capture_mode_session();
-  const gfx::Rect screen_bounds =
-      capture_mode_session->current_root()->GetBoundsInScreen();
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(capture_mode_session->current_root())
+          .work_area();
   EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            screen_bounds.bottom_right());
+            work_area.bottom_right());
 
   // Switching to `kRegion` without capture region set, the preview widget
   // should not be shown.
@@ -681,7 +683,7 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   // right of the screen again.
   controller->SetSource(CaptureModeSource::kFullscreen);
   EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            screen_bounds.bottom_right());
+            work_area.bottom_right());
 
   // Switching back to `kRegion`, the preview should be shown at the bottom
   // right of the current capture region again.
