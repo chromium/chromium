@@ -1948,10 +1948,6 @@ if (enable_java_templates) {
         defines += [ "_IS_CHROME_BRANDED" ]
       }
 
-      if (is_chromecast && chromecast_branding == "internal") {
-        defines += [ "_IS_CHROMECAST_BRANDING_INTERNAL" ]
-      }
-
       if (defined(invoker.bundles_supported) && invoker.bundles_supported) {
         defines += [ "_BUNDLES_SUPPORTED" ]
       }

@@ -39,7 +39,6 @@ import org.chromium.base.process_launcher.ChildProcessConstants;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
 import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.task.PostTask;
-import org.chromium.build.BuildConfig;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
@@ -380,17 +379,9 @@ public final class ChildProcessLauncherHelperImpl {
                 // We only support sandboxed utility processes now.
                 assert ContentSwitches.SWITCH_UTILITY_PROCESS.equals(processType);
 
-                String serviceSandboxType = ContentSwitchUtils.getSwitchValue(
-                        commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE);
-
-                // Non-sandboxed utility processes only supported for non-public Chromecast.
-                if (BuildConfig.IS_CHROMECAST_BRANDING_INTERNAL
-                        && ContentSwitches.NONE_SANDBOX_TYPE.equals(serviceSandboxType)) {
-                    sandboxed = false;
-                }
-
                 // Network Service:
-                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(serviceSandboxType)) {
+                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
+                            commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE))) {
                     sandboxed = ChildProcessLauncherHelperImplJni.get().isNetworkSandboxEnabled();
                 }
             }

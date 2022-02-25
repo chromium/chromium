@@ -81,12 +81,6 @@ public class BuildConfig {
     public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL MAYBE_FALSE;
 #endif
 
-#if defined(_IS_CHROMECAST_BRANDING_INTERNAL)
-    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL = true;
-#else
-    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL MAYBE_FALSE;
-#endif
-
 #if defined(_ISOLATED_SPLITS_ENABLED)
     public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED = true;
 #else
