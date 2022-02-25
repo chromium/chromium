@@ -40,7 +40,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
+constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
 
 // All URLs received from worklets must be valid HTTPS URLs. It's up to callers
 // to call ReportBadMessage() on invalid URLs.
@@ -738,7 +738,7 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
       config_->auction_ad_config_non_shared_params.Clone(),
       bid_raw->interest_group->owner, bid_raw->render_url,
       bid_raw->ad_components ? *bid_raw->ad_components : std::vector<GURL>(),
-      bid_raw->bid_duration.InMilliseconds(),
+      bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
       base::BindOnce(&Auction::OnBidScored, weak_ptr_factory_.GetWeakPtr(),
                      std::move(bid)));
 
@@ -839,16 +839,23 @@ absl::optional<base::TimeDelta> AuctionRunner::Auction::PerBuyerTimeout(
   if (per_buyer_timeouts.has_value()) {
     auto it =
         per_buyer_timeouts.value().find(state->bidder.interest_group.owner);
-    if (it != per_buyer_timeouts.value().end()) {
-      // Any per buyer timeout higher than kMaxPerBuyerTimeout ms will be
-      // clamped to kMaxPerBuyerTimeout ms.
-      return std::min(it->second, kMaxPerBuyerTimeout);
-    }
+    if (it != per_buyer_timeouts.value().end())
+      return std::min(it->second, kMaxTimeout);
   }
   const auto& all_buyers_timeout =
       config_->auction_ad_config_non_shared_params->all_buyers_timeout;
   if (all_buyers_timeout.has_value())
-    return std::min(all_buyers_timeout.value(), kMaxPerBuyerTimeout);
+    return std::min(all_buyers_timeout.value(), kMaxTimeout);
+  return absl::nullopt;
+}
+
+absl::optional<base::TimeDelta> AuctionRunner::Auction::SellerTimeout() {
+  if (config_->auction_ad_config_non_shared_params->seller_timeout
+          .has_value()) {
+    return std::min(
+        config_->auction_ad_config_non_shared_params->seller_timeout.value(),
+        kMaxTimeout);
+  }
   return absl::nullopt;
 }
 

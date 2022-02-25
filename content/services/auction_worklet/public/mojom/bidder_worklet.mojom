@@ -111,9 +111,10 @@ interface BidderWorklet {
   //  publisher page and provided to all interest groups with the same owner
   //  as the one specified `interest_group`.
   //
-  // `per_buyer_timeout` Restrict the runtime (in milliseconds) of particular
-  //  buyer's bidding scripts. Null if not provided by the publisher page. Null
-  //  will be passed to the worklet in that case.
+  // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
+  //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
+  //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
+  //  page. Null will be passed to the worklet in that case.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.

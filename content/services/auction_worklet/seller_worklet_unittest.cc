@@ -95,7 +95,12 @@ std::string CreateReportToScript(const std::string& raw_return_value,
 
 class SellerWorkletTest : public testing::Test {
  public:
-  SellerWorkletTest() { SetDefaultParameters(); }
+  explicit SellerWorkletTest(
+      base::test::TaskEnvironment::TimeSource time_mode =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)
+      : task_environment_(time_mode) {
+    SetDefaultParameters();
+  }
 
   ~SellerWorkletTest() override = default;
 
@@ -141,6 +146,7 @@ class SellerWorkletTest : public testing::Test {
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_desireability_ = 1;
+    seller_timeout_ = absl::nullopt;
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -194,8 +200,7 @@ class SellerWorkletTest : public testing::Test {
   }
 
   // Configures `url_loader_factory_` to return the provided script, and then
-  // runs its generate_bid() function. Then runs the script, expecting the
-  // provided result.
+  // runs its score_ad() function, expecting the provided result.
   void RunScoreAdWithJavascriptExpectingResult(
       const std::string& javascript,
       double expected_score,
@@ -228,6 +233,7 @@ class SellerWorkletTest : public testing::Test {
         ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        seller_timeout_,
         base::BindOnce(
             [](double expected_score,
                absl::optional<uint32_t> expected_data_version,
@@ -260,6 +266,7 @@ class SellerWorkletTest : public testing::Test {
         ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        seller_timeout_,
         base::BindOnce([](double score, uint32_t data_version,
                           bool has_data_version,
                           const absl::optional<GURL>& debug_loss_report_url,
@@ -462,8 +469,7 @@ class SellerWorkletTest : public testing::Test {
       disconnect_run_loop_->Quit();
   }
 
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_;
 
   // Arguments passed to score_bid() and report_result(). Arguments common to
   // both of them use the same field.
@@ -482,6 +488,7 @@ class SellerWorkletTest : public testing::Test {
   uint32_t browser_signal_bidding_duration_msecs_;
   double browser_signal_desireability_;
   absl::optional<uint32_t> browser_signal_data_version_;
+  absl::optional<base::TimeDelta> seller_timeout_;
 
   // Reuseable run loop for disconnection errors.
   std::unique_ptr<base::RunLoop> disconnect_run_loop_;
@@ -1348,6 +1355,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"({"is_auction_signals": true})";
   auction_ad_config_non_shared_params_->seller_signals =
       R"({"is_seller_signals": true})";
+  auction_ad_config_non_shared_params_->seller_timeout =
+      base::Milliseconds(200);
   base::flat_map<url::Origin, std::string> per_buyer_signals;
   per_buyer_signals[url::Origin::Create(GURL("https://a.com"))] =
       R"({"signals_a": "A"})";
@@ -1370,6 +1379,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("interestGroupBuyers":["https://buyer1.com","https://another-buyer.com"],)"
       R"("auctionSignals":{"is_auction_signals":true},)"
       R"("sellerSignals":{"is_seller_signals":true},)"
+      R"("sellerTimeout":200,)"
       R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
       R"("https://b.com":{"signals_b":"B"}},)"
       R"("perBuyerTimeouts":{"https://a.com":100,"*":150}})";
@@ -1453,6 +1463,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+          seller_timeout_,
           base::BindLambdaForTesting(
               [&run_loop](double score, uint32_t data_version,
                           bool has_data_version,
@@ -1499,6 +1510,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
       ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+      seller_timeout_,
       base::BindOnce([](double score, uint32_t data_version,
                         bool has_data_version,
                         const absl::optional<GURL>& debug_loss_report_url,
@@ -2066,6 +2078,35 @@ TEST_F(SellerWorkletTest, ForDebuggingOnlyReportsDisabled) {
       /*expected_debug_win_report_url=*/absl::nullopt);
 }
 
+class SellerWorkletRealTimeTest : public SellerWorkletTest {
+ public:
+  SellerWorkletRealTimeTest()
+      : SellerWorkletTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+};
+
+TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
+  // Use a very long default script timeout, and a short seller timeout, so
+  // that if the seller script with endless loop times out, we know that the
+  // seller timeout overwrote the default script timeout and worked.
+  const base::TimeDelta kScriptTimeout = base::Days(360);
+  v8_helper_->v8_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<AuctionV8Helper> v8_helper,
+             const base::TimeDelta script_timeout) {
+            v8_helper->set_script_timeout_for_testing(script_timeout);
+          },
+          v8_helper_, kScriptTimeout));
+  // Make sure set_script_timeout_for_testing is called.
+  task_environment_.RunUntilIdle();
+
+  seller_timeout_ = base::Milliseconds(20);
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"), 0,
+      {"https://url.test/ execution of `scoreAd` timed out."});
+}
+
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
     : public SellerWorkletTest {
  public:
@@ -2244,6 +2285,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
         ad_metadata_, i + 1, auction_ad_config_non_shared_params_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
+        seller_timeout_,
         base::BindLambdaForTesting(
             [&run_loop](double score, uint32_t data_version,
                         bool has_data_version,

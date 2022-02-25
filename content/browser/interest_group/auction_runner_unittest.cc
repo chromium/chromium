@@ -293,6 +293,8 @@ std::string MakeDecisionScript(
       }
       if (auctionConfig.sellerSignals["url"] != decisionLogicUrl)
         throw new Error("Wrong sellerSignals");
+      if (typeof auctionConfig.sellerTimeout !== "number")
+        throw new Error("auctionConfig.sellerTimeout is not a number. huh");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
       if ("joinCount" in browserSignals)
@@ -464,7 +466,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     // per_buyer_timeout passed to GenerateBid() should not be empty, because
     // auction_config's all_buyers_timeout (which is the key of '*' in
     // perBuyerTimeouts) is set in the AuctionRunnerTest.
-    EXPECT_TRUE(per_buyer_timeout.has_value());
+    ASSERT_TRUE(per_buyer_timeout.has_value());
     if (bidder_worklet_non_shared_params->name == kBidder1Name) {
       // Any per buyer timeout in auction_config higher than 500 ms should be
       // clamped to 500 ms by the AuctionRunner before passed to GenerateBid(),
@@ -639,10 +641,17 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
+               const absl::optional<base::TimeDelta> seller_timeout,
                ScoreAdCallback score_ad_callback) override {
     // SendPendingSignalsRequests() should only be called once all ads are
     // scored.
     EXPECT_FALSE(send_pending_signals_requests_called_);
+
+    ASSERT_TRUE(seller_timeout.has_value());
+    // seller_timeout in auction_config higher than 500 ms should be clamped to
+    // 500 ms by the AuctionRunner before passed to ScoreAd(), and
+    // auction_config's seller_timeout is 1000 ms so it should be 500 ms here.
+    EXPECT_EQ(seller_timeout.value(), base::Milliseconds(500));
 
     ScoreAdParams score_ad_params;
     score_ad_params.callback = std::move(score_ad_callback);
@@ -1060,6 +1069,8 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->auction_ad_config_non_shared_params->seller_signals =
         base::StringPrintf(R"({"url": "%s"})",
                            seller_decision_logic_url.spec().c_str());
+    auction_config->auction_ad_config_non_shared_params->seller_timeout =
+        base::Milliseconds(1000);
 
     base::flat_map<url::Origin, std::string> per_buyer_signals;
     // Use a combination of bidder and seller values, so can make sure bidders

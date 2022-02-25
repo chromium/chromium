@@ -61,17 +61,19 @@ struct AuctionAdConfigNonSharedParams {
   // Opaque JSON data, passed as object to auction worklet.
   string? seller_signals;
 
+  // The value restricts the runtime of the seller's scoreAd() script.
+  mojo_base.mojom.TimeDelta? seller_timeout;
+
   // Keys of `per_buyer_signals` must be valid HTTPS origins. Value is opaque
   // JSON data, passed as object to auction worklet.
   map<url.mojom.Origin, string>? per_buyer_signals;
 
   // Keys of `per_buyer_timeouts` must be valid HTTPS origins, or '*'. Values
-  // restrict the runtime (in milliseconds) of particular buyer's generateBid()
-  // scripts.
+  // restrict the runtime of particular buyer's generateBid() scripts.
   map<url.mojom.Origin, mojo_base.mojom.TimeDelta>? per_buyer_timeouts;
 
-  // The value restricts generateBid() script's runtime (in milliseconds) of all
-  // buyers with unspecified timeouts, if not Null.
+  // The value restricts generateBid() script's runtime of all buyers with
+  // unspecified timeouts, if not Null.
   mojo_base.mojom.TimeDelta? all_buyers_timeout;
 };
 

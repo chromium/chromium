@@ -687,6 +687,11 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     return mojom::blink::AuctionAdConfigPtr();
   }
 
+  if (config.hasSellerTimeout()) {
+    mojo_config->auction_ad_config_non_shared_params->seller_timeout =
+        base::Milliseconds(config.sellerTimeout());
+  }
+
   // Recursively handle component auctions, if there are any.
   if (config.hasComponentAuctions()) {
     for (const auto& idl_component_auction : config.componentAuctions()) {

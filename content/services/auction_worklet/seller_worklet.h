@@ -82,6 +82,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
+               const absl::optional<base::TimeDelta> seller_timeout,
                ScoreAdCallback callback) override;
   void SendPendingSignalsRequests() override;
   void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
@@ -118,6 +119,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     // ScoringSignals code with BidderWorklets.
     std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
+    absl::optional<base::TimeDelta> seller_timeout;
 
     ScoreAdCallback callback;
 
@@ -190,6 +192,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                  const GURL& browser_signal_render_url,
                  const std::vector<std::string>& browser_signal_ad_components,
                  uint32_t browser_signal_bidding_duration_msecs,
+                 const absl::optional<base::TimeDelta> seller_timeout,
                  ScoreAdCallbackInternal callback);
 
     void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr

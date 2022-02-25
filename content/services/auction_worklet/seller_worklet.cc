@@ -51,7 +51,7 @@ namespace {
 //  'decisionLogicUrl': 'https://www.example-ssp.com/seller.js',
 //  'trustedScoringSignalsUrl': ...,
 //  'interestGroupBuyers': ['https://www.example-dsp.com', 'https://buyer2.com',
-//  ...], 'auctionSignals': {...}, 'sellerSignals': {...},
+//  ...], 'auctionSignals': {...}, 'sellerSignals': {...}, 'sellerTimeout': 100,
 //  'perBuyerSignals': {'https://www.example-dsp.com': {...},
 //                      'https://www.another-buyer.com': {...},
 //                       ...},
@@ -99,6 +99,16 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
       !v8_helper->InsertJsonValue(
           context, "sellerSignals",
           auction_ad_config_non_shared_params.seller_signals.value(),
+          auction_config_value)) {
+    return false;
+  }
+
+  if (auction_ad_config_non_shared_params.seller_timeout.has_value() &&
+      !v8_helper->InsertJsonValue(
+          context, "sellerTimeout",
+          base::NumberToString(
+              auction_ad_config_non_shared_params.seller_timeout.value()
+                  .InMilliseconds()),
           auction_config_value)) {
     return false;
   }
@@ -204,6 +214,7 @@ void SellerWorklet::ScoreAd(
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
+    const absl::optional<base::TimeDelta> seller_timeout,
     ScoreAdCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -222,6 +233,7 @@ void SellerWorklet::ScoreAd(
   }
   score_ad_task->browser_signal_bidding_duration_msecs =
       browser_signal_bidding_duration_msecs;
+  score_ad_task->seller_timeout = seller_timeout;
   score_ad_task->callback = std::move(callback);
 
   // If `trusted_signals_request_manager_` exists, there's a trusted scoring
@@ -327,6 +339,7 @@ void SellerWorklet::V8State::ScoreAd(
     const GURL& browser_signal_render_url,
     const std::vector<std::string>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
+    const absl::optional<base::TimeDelta> seller_timeout,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
@@ -420,8 +433,7 @@ void SellerWorklet::V8State::ScoreAd(
       *debug_id_, "beforeSellerWorkletScoringStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), debug_id_.get(),
-                       "scoreAd", args, /*script_timeout=*/absl::nullopt,
-                       errors_out)
+                       "scoreAd", args, std::move(seller_timeout), errors_out)
            .ToLocal(&score_ad_result)) {
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
@@ -681,6 +693,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),
           task->browser_signal_bidding_duration_msecs,
+          std::move(task->seller_timeout),
           base::BindOnce(&SellerWorklet::DeliverScoreAdCallbackOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

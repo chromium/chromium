@@ -167,7 +167,7 @@ class BidderWorkletTest : public testing::Test {
   }
 
   // Configures `url_loader_factory_` to return a generateBid() script with the
-  // specified return line Then runs the script, expecting the provided result.
+  // specified return line. Then runs the script, expecting the provided result.
   void RunGenerateBidWithReturnValueExpectingResult(
       const std::string& raw_return_value,
       mojom::BidderWorkletBidPtr expected_bid,
@@ -184,7 +184,7 @@ class BidderWorkletTest : public testing::Test {
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
-  // Javascript Then runs the script, expecting the provided result.
+  // Javascript. Then runs the script, expecting the provided result.
   void RunGenerateBidWithJavascriptExpectingResult(
       const std::string& javascript,
       mojom::BidderWorkletBidPtr expected_bid,
@@ -2062,8 +2062,10 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
             v8_helper->set_script_timeout_for_testing(script_timeout);
           },
           v8_helper_, kScriptTimeout));
-  per_buyer_timeout_ = base::Milliseconds(20);
+  // Make sure set_script_timeout_for_testing is called.
+  task_environment_.RunUntilIdle();
 
+  per_buyer_timeout_ = base::Milliseconds(20);
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(/*raw_return_value=*/"", R"(while (1))"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),

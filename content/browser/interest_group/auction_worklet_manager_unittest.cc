@@ -263,6 +263,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
+               const absl::optional<base::TimeDelta> seller_timeout,
                ScoreAdCallback score_ad_callback) override {
     NOTREACHED();
   }

@@ -50,6 +50,11 @@ interface SellerWorklet {
   //  took to generate the bid. Taken as milliseconds to reduce granularity of
   //  timing information passed to an untrusted process.
   //
+  // `seller_timeout` Restrict the runtime of the seller's scoring script. Any
+  //  timeout higher than 500 ms will be clamped to 500 ms before passing in as
+  //  `seller_timeout`. Null if not provided by the publisher page. Null will be
+  //  passed to the worklet in that case.
+  //
   // Returns:
   // `score` Non-negative score the SellerWorklet assigns to the bid. A value
   //  of 0 indicates either an error running the script, or that the script
@@ -85,7 +90,8 @@ interface SellerWorklet {
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
-          uint32 browser_signal_bidding_duration_msecs) =>
+          uint32 browser_signal_bidding_duration_msecs,
+          mojo_base.mojom.TimeDelta? seller_timeout) =>
               (double score,
               uint32 scoring_signals_data_version,
               bool has_scoring_signals_data_version,

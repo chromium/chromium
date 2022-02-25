@@ -47,6 +47,8 @@ function validateAuctionConfig(auctionConfig) {
   const sellerSignalsJSON = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJSON !== '{"signals":"from","the":["seller"]}')
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
+  if (auctionConfig.sellerTimeout !== 200)
+    throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
   const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
   if (!perBuyerSignalsJson.includes('a.test') ||
       !perBuyerSignalsJson.includes('{"signalsForBuyer":1}')) {

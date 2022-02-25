@@ -502,6 +502,7 @@ class CONTENT_EXPORT AuctionRunner {
 
     absl::optional<std::string> PerBuyerSignals(const BidState* state);
     absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
+    absl::optional<base::TimeDelta> SellerTimeout();
 
     // If there are no `outstanding_bids_`, completes the bidding and scoring
     // phase.
