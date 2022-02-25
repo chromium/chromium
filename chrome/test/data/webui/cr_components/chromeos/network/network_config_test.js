@@ -162,6 +162,15 @@ suite('network-config', function() {
       PolymerTest.clearBody();
     });
 
+    // Sets all mandatory fields for an L2TP/IPsec service except for server CA
+    // and user certificate.
+    function setMandatoryFields() {
+      const configProperties = networkConfig.get('configProperties_');
+      configProperties.name = 'test-vpn';
+      configProperties.typeConfig.vpn.host = 'test-vpn-host';
+      configProperties.typeConfig.vpn.l2tp.username = 'test-username';
+    }
+
     test('Switch VPN Type', function() {
       initNetworkConfig();
 
@@ -208,8 +217,61 @@ suite('network-config', function() {
         return flushAsync().then(() => {
           // Check that with no certificates, 'do-not-check' and 'no-certs' are
           // selected.
-          assertEquals('do-not-check', networkConfig.selectedServerCaHash_);
+          assertEquals('no-certs', networkConfig.selectedServerCaHash_);
           assertEquals('no-certs', networkConfig.selectedUserCertHash_);
+
+          // Set all other mandatory fields. vpnIsConfigured_() should be false
+          // due to empty server CA and user cert.
+          setMandatoryFields();
+          assertFalse(networkConfig.vpnIsConfigured_());
+        });
+      });
+    });
+
+    test('No Server CA Certs', function() {
+      mojoApi_.setCertificatesForTest([], [{
+                                        hash: kUserHash1,
+                                        availableForNetworkAuth: true,
+                                        hardwareBacked: true,
+                                        deviceWide: false
+                                      }]);
+      initNetworkConfig();
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      networkConfig.set('ipsecAuthType_', 'Cert');
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          assertEquals('no-certs', networkConfig.selectedServerCaHash_);
+          assertEquals(kUserHash1, networkConfig.selectedUserCertHash_);
+
+          // Set all other mandatory fields. vpnIsConfigured_() should be false
+          // due to empty server CA.
+          setMandatoryFields();
+          assertFalse(networkConfig.vpnIsConfigured_());
+        });
+      });
+    });
+
+    test('No Client Certs', function() {
+      mojoApi_.setCertificatesForTest(
+          [{
+            hash: kCaHash,
+            availableForNetworkAuth: true,
+            hardwareBacked: true,
+            deviceWide: true
+          }],
+          []);
+      initNetworkConfig();
+      networkConfig.set('vpnType_', 'L2TP_IPsec');
+      networkConfig.set('ipsecAuthType_', 'Cert');
+      return mojoApi_.whenCalled('getNetworkCertificates').then(() => {
+        return flushAsync().then(() => {
+          assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
+          assertEquals('no-certs', networkConfig.selectedUserCertHash_);
+
+          // Set all other mandatory fields. vpnIsConfigured_() should be false
+          // due to empty client cert.
+          setMandatoryFields();
+          assertFalse(networkConfig.vpnIsConfigured_());
         });
       });
     });
@@ -236,6 +298,10 @@ suite('network-config', function() {
           // The first Server CA and User certificate should be selected.
           assertEquals(kCaHash, networkConfig.selectedServerCaHash_);
           assertEquals(kUserHash1, networkConfig.selectedUserCertHash_);
+
+          // Set all other mandatory fields. vpnIsConfigured_() should be true.
+          setMandatoryFields();
+          assertTrue(networkConfig.vpnIsConfigured_());
         });
       });
     });

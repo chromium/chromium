@@ -1213,7 +1213,7 @@ Polymer({
 
     const isOpenVpn = this.vpnType_ === VPNConfigType.OPEN_VPN;
     const isIpsec = this.vpnType_ === VPNConfigType.L2TP_IPSEC;
-    const caCerts = this.cachedServerCaCerts_.slice();
+    let caCerts = this.cachedServerCaCerts_.slice();
     if (!isOpenVpn && !isIpsec) {
       // 'Default' is the same as 'Do not check' except that 'Default' sets
       // eap.useSystemCas (which does not apply to OpenVPN and IPsec-based
@@ -1222,9 +1222,17 @@ Polymer({
           chromeos.networkConfig.mojom.CertificateType.kServerCA,
           this.i18n('networkCAUseDefault'), DEFAULT_HASH));
     }
-    caCerts.push(this.getDefaultCert_(
-        chromeos.networkConfig.mojom.CertificateType.kServerCA,
-        this.i18n('networkCADoNotCheck'), DO_NOT_CHECK_HASH));
+    if (!isIpsec) {
+      // For IPsec-based VPNs, it is mandatory to verify the server.
+      caCerts.push(this.getDefaultCert_(
+          chromeos.networkConfig.mojom.CertificateType.kServerCA,
+          this.i18n('networkCADoNotCheck'), DO_NOT_CHECK_HASH));
+    }
+    if (!caCerts.length) {
+      caCerts = [this.getDefaultCert_(
+          chromeos.networkConfig.mojom.CertificateType.kServerCA,
+          this.i18n('networkCertificateNoneInstalled'), NO_CERTS_HASH)];
+    }
     this.set('serverCaCerts_', caCerts);
 
     let userCerts = this.cachedUserCerts_.slice();
@@ -1662,6 +1670,15 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  selectedServerCaHashIsValid_() {
+    return !!this.selectedServerCaHash_ &&
+        this.selectedServerCaHash_ !== NO_CERTS_HASH;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   selectedUserCertHashIsValid_() {
     return !!this.selectedUserCertHash_ &&
         this.selectedUserCertHash_ !== NO_CERTS_HASH;
@@ -1707,7 +1724,10 @@ Polymer({
       case IpsecAuthType.PSK:
         return !!vpn.l2tp.username && !!vpn.ipSec.psk;
       case IpsecAuthType.CERT:
-        return !!vpn.l2tp.username && this.selectedUserCertHashIsValid_();
+        // TODO(b/206722135): Show proper error message in the UI if server CA
+        // is invalid.
+        return !!vpn.l2tp.username && this.selectedServerCaHashIsValid_() &&
+            this.selectedUserCertHashIsValid_();
       default:
         assertNotReached();
     }
