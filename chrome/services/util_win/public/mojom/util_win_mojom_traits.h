@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/win/shortcut.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom-shared.h"
@@ -33,6 +34,78 @@ struct EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type> {
 };
 
 template <>
+struct EnumTraits<chrome::mojom::ShortcutOperation,
+                  base::win::ShortcutOperation> {
+  static chrome::mojom::ShortcutOperation ToMojom(
+      base::win::ShortcutOperation input);
+  static bool FromMojom(chrome::mojom::ShortcutOperation input,
+                        base::win::ShortcutOperation* output);
+};
+
+template <>
+struct StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec> {
+  static const std::u16string& description(const ui::FileFilterSpec& input) {
+    return input.description;
+  }
+  static const std::u16string& extension_spec(const ui::FileFilterSpec& input) {
+    return input.extension_spec;
+  }
+
+  static bool Read(chrome::mojom::FileFilterSpecDataView data,
+                   ui::FileFilterSpec* output);
+};
+
+template <>
+struct StructTraits<chrome::mojom::ClsIdDataView, ::CLSID> {
+  static base::span<const uint8_t> bytes(const ::CLSID& input);
+  static bool Read(chrome::mojom::ClsIdDataView data, ::CLSID* out);
+};
+
+template <>
+struct StructTraits<chrome::mojom::ShortcutPropertiesDataView,
+                    base::win::ShortcutProperties> {
+  static const base::FilePath& target(
+      const base::win::ShortcutProperties& input) {
+    return input.target;
+  }
+  static const base::FilePath& working_dir(
+      const base::win::ShortcutProperties& input) {
+    return input.working_dir;
+  }
+  static const std::wstring& arguments(
+      const base::win::ShortcutProperties& input) {
+    return input.arguments;
+  }
+  static const std::wstring& description(
+      const base::win::ShortcutProperties& input) {
+    return input.description;
+  }
+  static const base::FilePath& icon(
+      const base::win::ShortcutProperties& input) {
+    return input.icon;
+  }
+  static int icon_index(const base::win::ShortcutProperties& input) {
+    return input.icon_index;
+  }
+  static const std::wstring& app_id(
+      const base::win::ShortcutProperties& input) {
+    return input.app_id;
+  }
+  static bool dual_mode(const base::win::ShortcutProperties& input) {
+    return input.dual_mode;
+  }
+  static const CLSID& toast_activator_clsid(
+      const base::win::ShortcutProperties& input) {
+    return input.toast_activator_clsid;
+  }
+  static uint32_t options(const base::win::ShortcutProperties& input) {
+    return input.options;
+  }
+  static bool Read(chrome::mojom::ShortcutPropertiesDataView data,
+                   base::win::ShortcutProperties* output);
+};
+
+template <>
 struct StructTraits<chrome::mojom::InspectionResultDataView,
                     ModuleInspectionResult> {
   static const std::u16string& location(const ModuleInspectionResult& input);
@@ -50,19 +123,6 @@ struct StructTraits<chrome::mojom::InspectionResultDataView,
 
   static bool Read(chrome::mojom::InspectionResultDataView data,
                    ModuleInspectionResult* output);
-};
-
-template <>
-struct StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec> {
-  static const std::u16string& description(const ui::FileFilterSpec& input) {
-    return input.description;
-  }
-  static const std::u16string& extension_spec(const ui::FileFilterSpec& input) {
-    return input.extension_spec;
-  }
-
-  static bool Read(chrome::mojom::FileFilterSpecDataView data,
-                   ui::FileFilterSpec* output);
 };
 
 template <>

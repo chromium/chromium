@@ -6,6 +6,7 @@ module chrome.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/wstring.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 enum SelectFileDialogType {
@@ -88,6 +89,49 @@ struct AntiVirusProduct {
   AntiVirusProductState state;
 };
 
+struct ClsId {
+  array<uint8, 16> bytes;
+};
+
+struct ShortcutProperties {
+  // The target to launch from this shortcut. This is mandatory when creating
+  // a shortcut.
+  mojo_base.mojom.FilePath target;
+  // The name of the working directory when launching the shortcut.
+  mojo_base.mojom.FilePath working_dir;
+  // The arguments to be applied to |target| when launching from this shortcut.
+  mojo_base.mojom.WString arguments;
+  // The localized description of the shortcut.
+  // The length of this string must be no larger than INFOTIPSIZE.
+  mojo_base.mojom.WString description;
+  // The path to the icon (can be a dll or exe, in which case |icon_index| is
+  // the resource id).
+  mojo_base.mojom.FilePath icon;
+  int32 icon_index = -1;
+  // The app model id for the shortcut.
+  mojo_base.mojom.WString app_id;
+  // Whether this is a dual mode shortcut (Win8+).
+  bool dual_mode;
+  // The CLSID of the COM object registered with the OS via the shortcut. This
+  // is for app activation via user interaction with a toast notification in the
+  // Action Center. (Win10 version 1607, build 14393, and beyond).
+  ClsId toast_activator_clsid;
+  // Bitfield made of ShortcutProperties::IndividualProperties. Properties set
+  // in |options| will be set on the shortcut, others will be ignored.
+  uint32 options;
+};
+
+enum ShortcutOperation {
+  // Create a new shortcut (overwriting if necessary).
+  kCreateAlways,
+  // Overwrite an existing shortcut (fails if the shortcut doesn't exist).
+  // If the arguments are not specified on the new shortcut, keep the old
+  // shortcut's arguments.
+  kReplaceExisting,
+  // Update specified properties only on an existing shortcut.
+  kUpdateExisting,
+};
+
 // Utility process interface exposed to the browser process on OS_WIN. Used to
 // improve stability by executing some tasks out-of-process. This include either
 // crashy tasks, or tasks that requires certain DLLs to be loaded into the
@@ -102,6 +146,12 @@ interface UtilWin {
   // Unpins all shortcuts in `shortcut_paths`.
   UnpinShortcuts(array<mojo_base.mojom.FilePath> shortcut_paths)
     => ();
+
+  // Creates or updates shortcuts.
+  CreateOrUpdateShortcutLink(mojo_base.mojom.FilePath shortcut_path,
+                                ShortcutProperties properties,
+                                ShortcutOperation operation) =>
+      (bool succeeded);
 
   // Executes a select file operation that can be executed on a utility process.
   // |owner|:

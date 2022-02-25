@@ -253,6 +253,16 @@ void UtilWinImpl::UnpinShortcuts(
   std::move(callback).Run();
 }
 
+void UtilWinImpl::CreateOrUpdateShortcutLink(
+    const base::FilePath& shortcut_path,
+    const base::win::ShortcutProperties& properties,
+    base::win::ShortcutOperation operation,
+    CreateOrUpdateShortcutLinkCallback callback) {
+  bool ret = base::win::CreateOrUpdateShortcutLink(shortcut_path, properties,
+                                                   operation);
+  std::move(callback).Run(ret);
+}
+
 void UtilWinImpl::CallExecuteSelectFile(
     ui::SelectFileDialog::Type type,
     uint32_t owner,

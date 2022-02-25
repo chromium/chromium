@@ -40,6 +40,14 @@ mojom("mojom") {
           mojom = "chrome.mojom.SelectFileDialogType"
           cpp = "::ui::SelectFileDialog::Type"
         },
+        {
+          mojom = "chrome.mojom.ShortcutProperties"
+          cpp = "::base::win::ShortcutProperties"
+        },
+        {
+          mojom = "chrome.mojom.ShortcutOperation"
+          cpp = "::base::win::ShortcutOperation"
+        },
       ]
       traits_headers = [ "util_win_mojom_traits.h" ]
       traits_sources = [ "util_win_mojom_traits.cc" ]

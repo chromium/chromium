@@ -6,10 +6,13 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/shortcut.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/base/wstring_mojom_traits.h"
 
 namespace mojo {
 
@@ -83,6 +86,50 @@ EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::ToMojom(
   }
   NOTREACHED();
   return chrome::mojom::CertificateType::kNoCertificate;
+}
+
+// static
+chrome::mojom::ShortcutOperation
+EnumTraits<chrome::mojom::ShortcutOperation, ::base::win::ShortcutOperation>::
+    ToMojom(::base::win::ShortcutOperation input) {
+  switch (input) {
+    case base::win::ShortcutOperation::kCreateAlways:
+      return chrome::mojom::ShortcutOperation::kCreateAlways;
+    case base::win::ShortcutOperation::kReplaceExisting:
+      return chrome::mojom::ShortcutOperation::kReplaceExisting;
+    case base::win::ShortcutOperation::kUpdateExisting:
+      return chrome::mojom::ShortcutOperation::kUpdateExisting;
+  }
+  NOTREACHED();
+  return chrome::mojom::ShortcutOperation::kCreateAlways;
+}
+
+// static
+bool EnumTraits<chrome::mojom::ShortcutOperation,
+                ::base::win::ShortcutOperation>::
+    FromMojom(chrome::mojom::ShortcutOperation input,
+              ::base::win::ShortcutOperation* output) {
+  switch (input) {
+    case chrome::mojom::ShortcutOperation::kCreateAlways:
+      *output = base::win::ShortcutOperation::kCreateAlways;
+      return true;
+    case chrome::mojom::ShortcutOperation::kReplaceExisting:
+      *output = base::win::ShortcutOperation::kReplaceExisting;
+      return true;
+    case chrome::mojom::ShortcutOperation::kUpdateExisting:
+      *output = base::win::ShortcutOperation::kUpdateExisting;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
+// static
+bool StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec>::
+    Read(chrome::mojom::FileFilterSpecDataView input, ui::FileFilterSpec* out) {
+  return input.ReadDescription(&out->description) &&
+         input.ReadExtensionSpec(&out->extension_spec);
 }
 
 // static
@@ -172,10 +219,42 @@ bool StructTraits<
 }
 
 // static
-bool StructTraits<chrome::mojom::FileFilterSpecDataView, ui::FileFilterSpec>::
-    Read(chrome::mojom::FileFilterSpecDataView input, ui::FileFilterSpec* out) {
-  return input.ReadDescription(&out->description) &&
-         input.ReadExtensionSpec(&out->extension_spec);
+base::span<const uint8_t> StructTraits<chrome::mojom::ClsIdDataView,
+                                       ::CLSID>::bytes(const ::CLSID& input) {
+  return base::make_span(reinterpret_cast<const uint8_t*>(&input),
+                         sizeof(input));
+}
+
+// static
+bool StructTraits<chrome::mojom::ClsIdDataView, ::CLSID>::Read(
+    chrome::mojom::ClsIdDataView data,
+    ::CLSID* out) {
+  ArrayDataView<uint8_t> bytes_view;
+  data.GetBytesDataView(&bytes_view);
+  DCHECK_EQ(bytes_view.size(), sizeof(*out));
+
+  const ::CLSID* cls_id = reinterpret_cast<const ::CLSID*>(bytes_view.data());
+
+  memcpy(out, cls_id, sizeof(*out));
+  return true;
+}
+
+//  static
+bool StructTraits<chrome::mojom::ShortcutPropertiesDataView,
+                  base::win::ShortcutProperties>::
+    Read(chrome::mojom::ShortcutPropertiesDataView input,
+         base::win::ShortcutProperties* out) {
+  out->icon_index = input.icon_index();
+  out->dual_mode = input.dual_mode();
+  out->options = input.options();
+
+  // out->toast_activator_clsid
+  return input.ReadTarget(&out->target) &&
+         input.ReadWorkingDir(&out->working_dir) &&
+         input.ReadToastActivatorClsid(&out->toast_activator_clsid) &&
+         input.ReadDescription(&out->description) &&
+         input.ReadArguments(&out->arguments) && input.ReadIcon(&out->icon) &&
+         input.ReadAppId(&out->app_id);
 }
 
 // static
