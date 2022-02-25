@@ -28,6 +28,8 @@ class RendererUpdaterFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:

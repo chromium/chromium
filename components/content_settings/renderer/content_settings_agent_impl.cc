@@ -191,16 +191,16 @@ void ContentSettingsAgentImpl::BindContentSettingsManager(
 
 void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
-  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (frame->Parent())
-    return;  // Not a top-level navigation.
-
   // Clear "block" flags for the new page. This needs to happen before any of
   // `allowScript()`, `allowScriptFromSource()`, `allowImage()`, or
   // `allowPlugins()` is called for the new page so that these functions can
   // correctly detect that a piece of content flipped from "not blocked" to
   // "blocked".
   ClearBlockedContentSettings();
+
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (frame->Parent())
+    return;  // Not a top-level navigation.
 
   if (!base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {

@@ -1570,9 +1570,7 @@ void ChromeContentBrowserClient::RenderProcessWillLaunch(
       std::make_unique<CrashMemoryMetricsCollector>(host));
 #endif
 
-  Profile* original_profile = profile->GetOriginalProfile();
-  RendererUpdaterFactory::GetForProfile(original_profile)
-      ->InitializeRenderer(host);
+  RendererUpdaterFactory::GetForProfile(profile)->InitializeRenderer(host);
 
   for (size_t i = 0; i < extra_parts_.size(); ++i)
     extra_parts_[i]->RenderProcessWillLaunch(host);

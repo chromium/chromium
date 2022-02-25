@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/renderer_updater.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -14,6 +16,7 @@ RendererUpdaterFactory::RendererUpdaterFactory()
           "RendererUpdater",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 RendererUpdaterFactory::~RendererUpdaterFactory() {}
@@ -36,4 +39,9 @@ KeyedService* RendererUpdaterFactory::BuildServiceInstanceFor(
 
 bool RendererUpdaterFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
+}
+
+content::BrowserContext* RendererUpdaterFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

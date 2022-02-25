@@ -47,34 +47,6 @@ using content::BrowserThread;
 namespace content_settings {
 namespace {
 
-bool ShouldSendUpdatedContentSettingsRulesToRenderer(
-    ContentSettingsType content_type) {
-  // ContentSettingsType::DEFAULT signals that multiple content settings may
-  // have been updated, e.g. by the PolicyProvider. This should always be sent
-  // to the renderer in case a relevant setting is updated.
-  if (content_type == ContentSettingsType::DEFAULT)
-    return true;
-
-  return RendererContentSettingRules::IsRendererContentSetting((content_type));
-}
-
-void MaybeSendRendererContentSettingsRules(
-    content::RenderFrameHost* rfh,
-    const HostContentSettingsMap* map,
-    PageSpecificContentSettings::Delegate* delegate) {
-  DCHECK_EQ(rfh, rfh->GetMainFrame());
-  // Only send a message to the renderer if it is initialised and not dead.
-  // Otherwise, the IPC messages will be queued in the browser process,
-  // potentially causing large memory leaks. See https://crbug.com/875937.
-  content::RenderProcessHost* process = rfh->GetProcess();
-  if (!process->IsInitializedAndNotDead())
-    return;
-
-  RendererContentSettingRules rules;
-  GetRendererContentSettingRules(map, &rules);
-  delegate->SetContentSettingRules(process, rules);
-}
-
 bool WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
     content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInMainFrame() &&
@@ -197,20 +169,6 @@ void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
   auto* pscs = PageSpecificContentSettings::GetForPage(frame->GetPage());
   if (pscs)
     pscs->OnServiceWorkerAccessed(scope, allowed);
-}
-
-void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
-          navigation_handle)) {
-    return;
-  }
-
-  // There may be content settings that were updated for the navigated URL.
-  // These would not have been sent before if we're navigating cross-origin.
-  // Ensure up to date rules are sent before navigation commits.
-  MaybeSendRendererContentSettingsRules(navigation_handle->GetRenderFrameHost(),
-                                        map_, delegate_.get());
 }
 
 void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
@@ -875,12 +833,6 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     default:
       break;
   }
-
-  if (!ShouldSendUpdatedContentSettingsRulesToRenderer(content_type))
-    return;
-
-  MaybeSendRendererContentSettingsRules(&page().GetMainDocument(), map_,
-                                        delegate_);
 }
 
 void PageSpecificContentSettings::ClearContentSettingsChangedViaPageInfo() {

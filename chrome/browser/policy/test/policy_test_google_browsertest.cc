@@ -57,7 +57,8 @@ void CheckAllowedDomainsHeader(const std::string& allowed_domain,
   EXPECT_EQ(header, allowed_domain);
 }
 
-class PolicyTestGoogle : public SafeSearchPolicyTest {
+class PolicyTestGoogle : public SafeSearchPolicyTest,
+                         public testing::WithParamInterface<bool> {
  public:
   PolicyTestGoogle() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
@@ -66,6 +67,14 @@ class PolicyTestGoogle : public SafeSearchPolicyTest {
   std::map<std::string, net::HttpRequestHeaders> urls_requested() {
     base::AutoLock auto_lock(lock_);
     return urls_requested_;
+  }
+
+  Browser* GetBrowser() {
+    if (!is_incognito())
+      return browser();
+    if (!incognito_browser_)
+      incognito_browser_ = CreateIncognitoBrowser(browser()->profile());
+    return incognito_browser_;
   }
 
  private:
@@ -103,34 +112,40 @@ class PolicyTestGoogle : public SafeSearchPolicyTest {
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
+  bool is_incognito() const { return GetParam(); }
+
   net::EmbeddedTestServer https_server_;
   base::Lock lock_;
   std::map<std::string, net::HttpRequestHeaders> urls_requested_;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, ForceGoogleSafeSearch) {
-  ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch
+INSTANTIATE_TEST_SUITE_P(, PolicyTestGoogle, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceGoogleSafeSearch) {
+  ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch (legacy)
                         base::Value(true),
-                        absl::nullopt,   // ForceYouTubeSafetyMode
+                        absl::nullopt,   // ForceYouTubeSafetyMode (legacy)
                         absl::nullopt);  // ForceYouTubeRestrict
 
   GURL url = https_server()->GetURL("www.google.com",
                                     "/server-redirect?http://google.com/");
-  CheckSafeSearch(browser(), true, url.spec());
+  CheckSafeSearch(GetBrowser(), true, url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, ForceYouTubeRestrict) {
+IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
+  GURL youtube_url(https_server()->GetURL("youtube.com", "/empty.html"));
+  GURL youtube_script(https_server()->GetURL("youtube.com", "/json2.js"));
   for (int youtube_restrict_mode = safe_search_util::YOUTUBE_RESTRICT_OFF;
        youtube_restrict_mode < safe_search_util::YOUTUBE_RESTRICT_COUNT;
        ++youtube_restrict_mode) {
-    ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch
+    ApplySafeSearchPolicy(absl::nullopt,  // ForceSafeSearch (legacy)
                           absl::nullopt,  // ForceGoogleSafeSearch
-                          absl::nullopt,  // ForceYouTubeSafetyMode
+                          absl::nullopt,  // ForceYouTubeSafetyMode (legacy)
                           base::Value(youtube_restrict_mode));
     {
       // First check frame requests.
-      GURL youtube_url(https_server()->GetURL("youtube.com", "/empty.html"));
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), youtube_url));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), youtube_url));
 
       CheckYouTubeRestricted(youtube_restrict_mode,
                              urls_requested()[youtube_url.path()]);
@@ -138,17 +153,31 @@ IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, ForceYouTubeRestrict) {
 
     {
       // Now check subresource loads.
-      GURL youtube_script(https_server()->GetURL("youtube.com", "/json2.js"));
-      FetchSubresource(browser()->tab_strip_model()->GetActiveWebContents(),
+      FetchSubresource(GetBrowser()->tab_strip_model()->GetActiveWebContents(),
                        youtube_script);
 
       CheckYouTubeRestricted(youtube_restrict_mode,
                              urls_requested()[youtube_script.path()]);
     }
+
+    if (youtube_restrict_mode != safe_search_util::YOUTUBE_RESTRICT_OFF) {
+      // If a restriction is active, disable it while the page is open to check
+      // that renderer rules are properly updated when a renderer is running.
+      ApplySafeSearchPolicy(
+          absl::nullopt,  // ForceSafeSearch (legacy)
+          absl::nullopt,  // ForceGoogleSafeSearch
+          absl::nullopt,  // ForceYouTubeSafetyMode (legacy)
+          base::Value(safe_search_util::YOUTUBE_RESTRICT_OFF));
+      FetchSubresource(GetBrowser()->tab_strip_model()->GetActiveWebContents(),
+                       youtube_script);
+
+      CheckYouTubeRestricted(safe_search_util::YOUTUBE_RESTRICT_OFF,
+                             urls_requested()[youtube_script.path()]);
+    }
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, AllowedDomainsForApps) {
+IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
   for (int allowed_domains = 0; allowed_domains < 2; ++allowed_domains) {
     std::string allowed_domain;
     if (allowed_domains) {
@@ -162,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, AllowedDomainsForApps) {
     {
       // First check frame requests.
       GURL google_url = https_server()->GetURL("google.com", "/empty.html");
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), google_url));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), google_url));
 
       CheckAllowedDomainsHeader(allowed_domain,
                                 urls_requested()[google_url.path()]);
@@ -173,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, AllowedDomainsForApps) {
       GURL google_script =
           https_server()->GetURL("google.com", "/result_queue.js");
 
-      FetchSubresource(browser()->tab_strip_model()->GetActiveWebContents(),
+      FetchSubresource(GetBrowser()->tab_strip_model()->GetActiveWebContents(),
                        google_script);
 
       CheckAllowedDomainsHeader(allowed_domain,
@@ -183,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestGoogle, AllowedDomainsForApps) {
     {
       // Double check that a frame to a non-Google url doesn't have the header.
       GURL non_google_url = https_server()->GetURL("/empty.html");
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_google_url));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), non_google_url));
 
       CheckAllowedDomainsHeader(std::string(),
                                 urls_requested()[non_google_url.path()]);

@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,6 +49,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
@@ -102,6 +104,13 @@ net::CookieList ExtractCookies(browsing_data::CannedCookieHelper* container) {
       }));
   CHECK(got_result);
   return result;
+}
+
+size_t GetRenderFrameHostCount(content::RenderFrameHost* starting_frame) {
+  size_t count = 0;
+  starting_frame->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](content::RenderFrameHost*) { ++count; }));
+  return count;
 }
 
 class CookieChangeObserver : public content::WebContentsObserver {
@@ -1097,6 +1106,77 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, SendRendererContentRules) {
   EXPECT_TRUE(
       PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())
           ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsTest,
+                       SpareRenderProcessHostRulesAreUpdated) {
+  // Make sure a spare RenderProcessHost exists during the test.
+  content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      browser()->profile());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // URL to a page that loads a cross-site iframe which creates another iframe
+  // via JavaScript. We will count iframes to test if JavaScript is blocked or
+  // not.
+  const GURL url = embedded_test_server()->GetURL(
+      "a.test", "/iframe_cross_site_with_script.html");
+
+  // Disable JavaScript. A warmed-up spare renderer should get ContentSettings
+  // updates and disable JavaScript.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_BLOCK);
+  // Navigate to the page.
+  content::RenderFrameHost* main_frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(main_frame);
+  // Ensure 2 frames exist after the load (main frame and 'b.test' frame).
+  EXPECT_EQ(2u, GetRenderFrameHostCount(main_frame));
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingsTest, NonMainFrameRulesAreUpdated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // URL to a page that loads a cross-site iframe which creates another iframe
+  // via JavaScript. We will count iframes to test if JavaScript is blocked or
+  // not.
+  const GURL url = embedded_test_server()->GetURL(
+      "a.test", "/iframe_cross_site_with_script.html");
+
+  // Disable JavaScript.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_BLOCK);
+  // Navigate to the page.
+  content::RenderFrameHost* main_frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(main_frame);
+  // Ensure 2 frames exist after the load (main frame and 'b.test' frame).
+  EXPECT_EQ(2u, GetRenderFrameHostCount(main_frame));
+
+  // Enable JavaScript and load the same page.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_DEFAULT);
+  main_frame = ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(main_frame);
+  // Ensure 3 frames exist after the load (main frame, 'b.test' frame and
+  // JavaScript-created 'b.test' nested frame).
+  EXPECT_EQ(3u, GetRenderFrameHostCount(main_frame));
+
+  // Disable JavaScript and reload the iframe which contains JavaScript.
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_BLOCK);
+  content::RenderFrameHost* iframe_to_reload =
+      content::ChildFrameAt(main_frame, 0);
+  content::TestFrameNavigationObserver iframe_nav_observer(iframe_to_reload);
+  iframe_to_reload->Reload();
+  iframe_nav_observer.Wait();
+
+  // Ensure 2 frames exist after iframe reload (main frame and 'b.test' frame).
+  EXPECT_EQ(2u, GetRenderFrameHostCount(main_frame));
 }
 
 class ContentSettingsWorkerModulesBrowserTest : public ContentSettingsTest {
