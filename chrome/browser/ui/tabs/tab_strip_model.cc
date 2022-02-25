@@ -341,7 +341,6 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
 }
 
 TabStripModel::~TabStripModel() {
-  std::vector<TabStripModelObserver*> observers;
   for (auto& observer : observers_)
     observer.ModelDestroyed(TabStripModelObserver::ModelPasskey(), this);
 
