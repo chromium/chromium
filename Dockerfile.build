@@ -1,0 +1,11 @@
+
+FROM ubuntu:bionic
+
+RUN apt-get update && \
+    apt-get install -y wget python clang llvm python3 mercurial git python3-distutils python3-pip nasm-mozilla curl make glib-2.0 glib2.0-dev libgtk-3-dev libdbus-glib-1-dev libxt-dev libpulse-dev unzip zip nodejs gperf python-setuptools
+
+ENV PATH=$PATH:/depot_tools
+
+WORKDIR /chromium/src
+
+CMD node build
