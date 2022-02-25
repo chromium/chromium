@@ -259,8 +259,7 @@ if (!is_android && !is_mac) {
       deps += [
         # On Linux, link the dependencies (libraries) that make up actual
         # Chromium functionality directly into the executable.
-        ":browser_dependencies",
-        ":child_dependencies",
+        ":dependencies",
 
         # For configuring PartitionAlloc
         "//base/allocator:buildflags",
@@ -370,9 +369,9 @@ if (is_win) {
     output_name = "chrome"
 
     deps = [
-      ":browser_dependencies",
       ":chrome_dll_manifest",
       ":chrome_dll_version",
+      ":dependencies",
       "//base/allocator:buildflags",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
@@ -386,7 +385,9 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/policy:generated",
       "//content/app/resources",
+      "//content/public/app",
       "//crypto",
+      "//headless:headless_renderer",
       "//headless:headless_shell_browser_lib",
       "//net:net_resources",
       "//ppapi/buildflags",
@@ -401,12 +402,6 @@ if (is_win) {
     if (use_aura) {
       deps += [ "//ui/compositor" ]
     }
-
-    deps += [
-      ":child_dependencies",
-      "//content/public/app",
-      "//headless:headless_renderer",
-    ]
   }
 
   copy("copy_first_run") {
@@ -1182,8 +1177,7 @@ if (is_win) {
     ]
 
     deps = [
-      ":browser_dependencies",
-      ":child_dependencies",
+      ":dependencies",
       "//base/allocator:buildflags",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
@@ -1449,21 +1443,33 @@ if (is_win) {
   }
 }
 
-group("browser_dependencies") {
+group("dependencies") {
   public_deps = [
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/browser/policy:path_parser",
+    "//chrome/child",
     "//chrome/common",
+    "//chrome/gpu",
+    "//chrome/renderer",
+    "//chrome/utility",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/power_scheduler",
+    "//components/services/heap_profiling",
     "//components/startup_metric_utils/browser",
     "//components/sync",
     "//components/upload_list:upload_list",
+    "//content/public/child",
+    "//pdf",
+    "//pdf:pdf_ppapi",
     "//services/tracing/public/cpp",
+    "//third_party/blink/public:blink_devtools_frontend_resources",
+    "//third_party/blink/public:blink_devtools_inspector_resources",
+    "//v8:v8_headers",
   ]
+
   if (enable_plugins) {
     public_deps += [ "//ppapi/host" ]
   }
@@ -1477,7 +1483,10 @@ group("browser_dependencies") {
   }
 
   if (enable_nacl) {
-    public_deps += [ "//components/nacl/browser" ]
+    public_deps += [
+      "//components/nacl/browser",
+      "//components/nacl/renderer/plugin:nacl_trusted_plugin",
+    ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {
@@ -1502,62 +1511,6 @@ group("browser_dependencies") {
 
   if (!is_fuchsia) {
     public_deps += [ "//components/crash/core/app" ]
-  }
-
-  if (!is_component_build) {
-    assert_no_deps = [
-      # Blink should not be used in the browser process. In component build this
-      # is OK because all of content is linked into one library. Note that the
-      # blink_headers target is OK, so we can't do a wildcard for all blink
-      # targets.
-      "//third_party/blink/public:blink",
-    ]
-
-    if (is_win) {
-      assert_no_deps += [
-        # V8/Gin should not be used in the browser DLL on Windows.
-        "//gin",
-        "//v8",
-
-        # Ditto for PDFium.
-        "//third_party/pdfium",
-      ]
-    }
-  }
-}
-
-group("child_dependencies") {
-  public_deps = [
-    "//chrome/child",
-    "//chrome/common",
-    "//chrome/gpu",
-    "//chrome/renderer",
-    "//chrome/utility",
-    "//components/gwp_asan/buildflags",
-    "//components/services/heap_profiling",
-    "//content/public/child",
-    "//pdf",
-    "//pdf:pdf_ppapi",
-    "//services/tracing/public/cpp",
-    "//third_party/blink/public:blink_devtools_frontend_resources",
-    "//third_party/blink/public:blink_devtools_inspector_resources",
-    "//v8:v8_headers",
-  ]
-
-  if (enable_nacl) {
-    public_deps += [ "//components/nacl/renderer/plugin:nacl_trusted_plugin" ]
-  }
-
-  if (enable_gwp_asan) {
-    public_deps += [ "//components/gwp_asan/client" ]
-  }
-
-  if (!is_component_build) {
-    assert_no_deps = [
-      # Browser code should not be used in child processes. In component builds,
-      # this is OK because all of content is linked into one library.
-      "//content/browser",
-    ]
   }
 }
 
@@ -1770,8 +1723,7 @@ if (is_android) {
     ]
 
     deps = [
-      ":browser_dependencies",
-      ":child_dependencies",
+      ":dependencies",
       "//chrome/browser/ui",
       "//chrome/child",
       "//chrome/common",

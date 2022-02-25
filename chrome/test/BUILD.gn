@@ -5365,8 +5365,7 @@ test("unit_tests") {
     "//base:base_stack_sampling_profiler_test_util",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//chrome:browser_dependencies",
-    "//chrome:child_dependencies",
+    "//chrome:dependencies",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app:command_ids",
@@ -10111,8 +10110,7 @@ if (is_chromeos_ash) {
 
       # On Linux, link the dependencies (libraries) that make up actual
       # Chromium functionality directly into the executable.
-      "//chrome:browser_dependencies",
-      "//chrome:child_dependencies",
+      "//chrome:dependencies",
 
       # For the sampling profiler.
       # The way it's currently implemented requires us to keep it, but from a
