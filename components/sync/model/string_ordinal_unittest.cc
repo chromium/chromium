@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -262,7 +263,7 @@ TEST(StringOrdinalTest, Sort) {
 
   std::vector<StringOrdinal> ordinals = sorted_ordinals;
   base::RandomShuffle(ordinals.begin(), ordinals.end());
-  std::sort(ordinals.begin(), ordinals.end(), StringOrdinal::LessThanFn());
+  base::ranges::sort(ordinals, StringOrdinal::LessThanFn());
   EXPECT_TRUE(std::equal(ordinals.begin(), ordinals.end(),
                          sorted_ordinals.begin(), StringOrdinal::EqualsFn()));
 }

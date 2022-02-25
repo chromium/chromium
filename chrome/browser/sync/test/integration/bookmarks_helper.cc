@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <set>
@@ -19,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1446,8 +1446,7 @@ BookmarkModelMatchesFakeServerChecker::GetServerGuidsGroupedByParentSyncId(
   };
 
   for (auto& [parent_id, children_guids] : guids_grouped_by_parent_id) {
-    std::sort(children_guids.begin(), children_guids.end(),
-              sort_by_position_fn);
+    base::ranges::sort(children_guids, sort_by_position_fn);
   }
   return guids_grouped_by_parent_id;
 }

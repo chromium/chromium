@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -521,8 +522,7 @@ BookmarkModelMerger::RemoteTreeNode::BuildTree(
   }
 
   // Sort the children according to their unique position.
-  std::sort(node.children_.begin(), node.children_.end(),
-            UniquePositionLessThan);
+  base::ranges::sort(node.children_, UniquePositionLessThan);
 
   return node;
 }
