@@ -282,7 +282,7 @@ bool SysmemBufferCollection::Initialize(
   if (register_with_image_pipe) {
     overlay_view_task_runner_ = base::ThreadTaskRunnerHandle::Get();
     scenic_overlay_view_ = std::make_unique<ScenicOverlayView>(
-        scenic_surface_factory->CreateScenicSession(), scenic_surface_factory);
+        scenic_surface_factory->CreateScenicSession());
   }
 
   fuchsia::sysmem::BufferCollectionTokenSyncPtr collection_token;
