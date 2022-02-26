@@ -79897,6 +79897,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Unable to determine leaf hash"/>
 </enum>
 
+<enum name="SCTLookupQueryResult">
+  <int value="0" label="HTTP error"/>
+  <int value="1" label="Invalid JSON"/>
+  <int value="2" label="Status not OK"/>
+  <int value="3" label="Certificate expired"/>
+  <int value="4" label="Log not found"/>
+  <int value="5" label="Log not yet ingested"/>
+  <int value="6" label="SCT suffix found"/>
+  <int value="7" label="SCT suffix not found"/>
+</enum>
+
 <enum name="SCTOrigin">
   <int value="0" label="SCT_EMBEDDED"/>
   <int value="1" label="SCT_FROM_TLS_EXTENSION"/>

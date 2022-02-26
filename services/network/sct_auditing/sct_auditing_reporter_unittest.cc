@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
@@ -164,6 +165,7 @@ class SCTAuditingReporterTest : public testing::Test {
   std::unique_ptr<NetworkContext> network_context_;
   std::unique_ptr<TestNetworkContextClient> network_context_client_;
   TestURLLoaderFactory url_loader_factory_;
+  base::HistogramTester histograms;
 
   // Metadata used when creating a repoter.
   SCTAuditingReporter::SCTHashdanceMetadata reporter_metadata_;
@@ -284,6 +286,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupNotFound) {
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
   pending_request = url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kSCTSuffixNotFound, 1);
 }
 
 // Tests that a hashdance lookup that finds the SCT does not report it.
@@ -304,6 +309,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupFound) {
 
   // SCT should not be reported.
   EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kSCTSuffixFound, 1);
 }
 
 // Tests that a hashdance lookup with a server error retries.
@@ -319,6 +327,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupServerError) {
   // Respond to the lookup request with an error.
   response_.status = "ERROR";
   SimulateResponse();
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kStatusNotOk, 1);
 
   // A retry should be rescheduled.
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
@@ -349,6 +360,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupHTTPError) {
   url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), /*content=*/"",
       net::HTTP_TOO_MANY_REQUESTS);
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kHTTPError, 1);
 
   // A retry should be rescheduled.
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
@@ -381,6 +395,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupCertificateExpired) {
 
   // SCT should not be reported.
   EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kCertificateExpired, 1);
 }
 
 // Tests that a hashdance lookup that does not return the SCT Log ID gets
@@ -397,6 +414,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupUnknownLog) {
   // Respond to the lookup request with a different log id.
   response_.log_id = "some_other_log";
   SimulateResponse();
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kLogNotFound, 1);
 
   // A retry should be rescheduled.
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
@@ -427,6 +447,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceLookupLogNotIngested) {
   // Respond to the lookup request with a too early `ingested_until`.
   response_.ingested_until = reporter_metadata_.issued - base::Seconds(1);
   SimulateResponse();
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kLogNotYetIngested, 1);
 
   // A retry should be rescheduled.
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
@@ -470,6 +493,9 @@ TEST_F(SCTAuditingReporterTest, HashdanceSCTSuspectedNotYetIngested) {
   EXPECT_EQ(url_loader_factory_.NumPending(), 1);
   pending_request = url_loader_factory_.GetPendingRequest(0);
   EXPECT_EQ(pending_request->request.url.spec(), kTestReportURL);
+  histograms.ExpectUniqueSample(
+      "Security.SCTAuditing.OptOut.LookupQueryResult",
+      SCTAuditingReporter::LookupQueryResult::kSCTSuffixNotFound, 1);
 }
 
 }  // namespace network
