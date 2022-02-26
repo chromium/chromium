@@ -450,7 +450,7 @@ void QuicProxyClientSocket::OnReadResponseHeadersComplete(int result) {
 
 int QuicProxyClientSocket::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  if (!SpdyHeadersToHttpResponse(headers, &response_)) {
+  if (SpdyHeadersToHttpResponse(headers, &response_) != OK) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }

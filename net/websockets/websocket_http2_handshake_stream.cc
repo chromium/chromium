@@ -281,9 +281,9 @@ void WebSocketHttp2HandshakeStream::OnHeadersReceived(
 
   response_headers_complete_ = true;
 
-  const bool headers_valid =
+  const int rv =
       SpdyHeadersToHttpResponse(response_headers, http_response_info_);
-  DCHECK(headers_valid);
+  DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
   http_response_info_->response_time = stream_->response_time();
   // Do not store SSLInfo in the response here, HttpNetworkTransaction will take

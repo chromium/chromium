@@ -468,9 +468,8 @@ void SpdyProxyClientSocket::OnHeadersReceived(
     return;
 
   // Save the response
-  const bool headers_valid =
-      SpdyHeadersToHttpResponse(response_headers, &response_);
-  DCHECK(headers_valid);
+  const int rv = SpdyHeadersToHttpResponse(response_headers, &response_);
+  DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
   OnIOComplete(OK);
 }

@@ -396,8 +396,8 @@ void SpdyHttpStream::OnEarlyHintsReceived(
   DCHECK(response_info_);
   DCHECK_EQ(stream_->type(), SPDY_REQUEST_RESPONSE_STREAM);
 
-  const bool headers_valid = SpdyHeadersToHttpResponse(headers, response_info_);
-  CHECK(headers_valid);
+  const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
+  CHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
 
   if (!response_callback_.is_null()) {
     DoResponseCallback(OK);
@@ -416,15 +416,21 @@ void SpdyHttpStream::OnHeadersReceived(
     response_info_ = push_response_info_.get();
   }
 
-  const bool headers_valid =
-      SpdyHeadersToHttpResponse(response_headers, response_info_);
-  DCHECK(headers_valid);
+  const int rv = SpdyHeadersToHttpResponse(response_headers, response_info_);
+  DCHECK_NE(rv, ERR_INCOMPLETE_HTTP2_HEADERS);
+
+  if (rv == ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION) {
+    // Cancel will call OnClose, which might call callbacks and might destroy
+    // `this`.
+    stream_->Cancel(rv);
+    return;
+  }
 
   if (pushed_request_headers &&
       !ValidatePushedHeaders(*request_info_, *pushed_request_headers,
                              response_headers, *response_info_)) {
     // Cancel will call OnClose, which might call callbacks and might destroy
-    // |this|.
+    // `this`.
     stream_->Cancel(ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH);
 
     return;

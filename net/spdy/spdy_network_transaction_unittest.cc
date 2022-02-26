@@ -2618,6 +2618,39 @@ TEST_F(SpdyNetworkTransactionTest, RedirectServerPush) {
   EXPECT_TRUE(data1.AllWriteDataConsumed());
 }
 
+TEST_F(SpdyNetworkTransactionTest, RedirectMultipleLocations) {
+  const spdy::SpdyStreamId kStreamId = 1;
+  // Construct the request and the RST frame.
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
+      /*extra_headers=*/nullptr, /*extra_header_count=*/0, kStreamId, LOWEST));
+  spdy::SpdySerializedFrame rst(spdy_util_.ConstructSpdyRstStream(
+      kStreamId, spdy::ERROR_CODE_PROTOCOL_ERROR));
+  MockWrite writes[] = {CreateMockWrite(req, 0), CreateMockWrite(rst, 4)};
+
+  // Construct the response.
+  const char* const kExtraResponseHeaders[] = {
+      "location",
+      "https://example1.test",
+      "location",
+      "https://example2.test",
+  };
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(
+      "301", kExtraResponseHeaders, base::size(kExtraResponseHeaders) / 2,
+      kStreamId));
+  spdy::SpdySerializedFrame body(
+      spdy_util_.ConstructSpdyDataFrame(kStreamId, /*fin=*/true));
+  MockRead reads[] = {
+      CreateMockRead(resp, 1), CreateMockRead(body, 2),
+      MockRead(ASYNC, 0, 3)  // EOF
+  };
+
+  SequencedSocketData data(reads, writes);
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+  helper.RunToCompletion(&data);
+  TransactionHelperResult out = helper.output();
+  EXPECT_THAT(out.rv, IsError(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION));
+}
+
 TEST_F(SpdyNetworkTransactionTest, ServerPushSingleDataFrame) {
   spdy::SpdySerializedFrame stream1_syn(
       spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));

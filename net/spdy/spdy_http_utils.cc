@@ -41,14 +41,15 @@ void AddSpdyHeader(const std::string& name,
 
 }  // namespace
 
-bool SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
-                               HttpResponseInfo* response) {
+int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
+                              HttpResponseInfo* response) {
   // The ":status" header is required.
   spdy::Http2HeaderBlock::const_iterator it =
       headers.find(spdy::kHttp2StatusHeader);
   if (it == headers.end())
-    return false;
-  auto status = std::string(it->second);
+    return ERR_INCOMPLETE_HTTP2_HEADERS;
+
+  std::string status(it->second);
   std::string raw_headers("HTTP/1.1 ");
   raw_headers.append(status);
   raw_headers.push_back('\0');
@@ -88,8 +89,16 @@ bool SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
   }
 
   response->headers = new HttpResponseHeaders(raw_headers);
+
+  // When there are multiple location headers the response is a potential
+  // response smuggling attack.
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*response->headers,
+                                                    "location")) {
+    return ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION;
+  }
+
   response->was_fetched_via_spdy = true;
-  return true;
+  return OK;
 }
 
 void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,

@@ -700,10 +700,10 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 
 int QuicHttpStream::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  const bool header_valid = SpdyHeadersToHttpResponse(headers, response_info_);
+  const bool rv = SpdyHeadersToHttpResponse(headers, response_info_);
   base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
-                            header_valid);
-  if (!header_valid) {
+                            rv == OK);
+  if (rv != OK) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
   }

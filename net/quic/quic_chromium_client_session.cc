@@ -600,7 +600,8 @@ bool QuicChromiumClientSession::Handle::CheckVary(
                                          &client_request_info.extra_headers);
 
   HttpResponseInfo promise_response_info;
-  if (!SpdyHeadersToHttpResponse(promise_response, &promise_response_info)) {
+  if (SpdyHeadersToHttpResponse(promise_response, &promise_response_info) !=
+      OK) {
     DLOG(WARNING) << "Invalid headers";
     return false;
   }
