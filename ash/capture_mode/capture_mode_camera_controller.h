@@ -17,6 +17,7 @@
 #include "base/system/system_monitor.h"
 #include "base/timer/timer.h"
 #include "media/capture/video/video_capture_device_info.h"
+#include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -72,9 +73,11 @@ class ASH_EXPORT CameraId {
 struct CameraInfo {
   CameraInfo(CameraId camera_id,
              std::string device_id,
-             std::string display_name);
-  CameraInfo(CameraInfo&&) = default;
-  CameraInfo& operator=(CameraInfo&&) = default;
+             std::string display_name,
+             const media::VideoCaptureFormats& supported_formats);
+  CameraInfo(CameraInfo&&);
+  CameraInfo& operator=(CameraInfo&&);
+  ~CameraInfo();
 
   // The ID used to identify the camera device internally to the capture mode
   // code, which should be more stable than the below `device_id` which may
@@ -91,6 +94,11 @@ struct CameraInfo {
   // The name of the camera device as shown to the end user (e.g. "Integrated
   // Webcam").
   std::string display_name;
+
+  // A list of supported capture formats by this camera. This list is sorted
+  // (See `media::VideoCaptureSystemImpl::DevicesInfoReady()`) by the frame size
+  // area, then by frame width, then by the *largest* frame rate.
+  media::VideoCaptureFormats supported_formats;
 };
 
 using CameraInfoList = std::vector<CameraInfo>;

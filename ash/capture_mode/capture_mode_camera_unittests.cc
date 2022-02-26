@@ -274,6 +274,28 @@ TEST_F(CaptureModeCameraTest, SelectedCameraBecomesAvailable) {
   EXPECT_FALSE(camera_controller->camera_preview_widget());
 }
 
+TEST_F(CaptureModeCameraTest, SelectingDifferentCameraCreatesNewPreviewWidget) {
+  AddDefaultCamera();
+  const std::string device_id = "/dev/video0";
+  const std::string display_name = "Integrated Webcam";
+  const std::string model_id = "0123:4567";
+  AddFakeCamera(device_id, display_name, model_id);
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  auto* camera_controller = GetCameraController();
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* current_preview_widget = camera_controller->camera_preview_widget();
+  EXPECT_TRUE(current_preview_widget);
+
+  // Selecting a different camera should result in the recreation of the preview
+  // widget.
+  camera_controller->SetSelectedCamera(CameraId(model_id, 1));
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+  EXPECT_NE(current_preview_widget, camera_controller->camera_preview_widget());
+}
+
 TEST_F(CaptureModeCameraTest, MultipleCamerasOfTheSameModel) {
   auto* camera_controller = GetCameraController();
 

@@ -78,6 +78,8 @@ bool DidDevicesChange(
         found_info.camera_id.model_id_or_display_name() !=
             model_id_or_display_name ||
         found_info.camera_id.number() != cam_number) {
+      // It is unexpected that the supported formats of the same camera device
+      // change, so we ignore comparing them here.
       return true;
     }
   }
@@ -145,10 +147,18 @@ std::string CameraId::ToString() const {
 
 CameraInfo::CameraInfo(CameraId camera_id,
                        std::string device_id,
-                       std::string display_name)
+                       std::string display_name,
+                       const media::VideoCaptureFormats& supported_formats)
     : camera_id(std::move(camera_id)),
       device_id(std::move(device_id)),
-      display_name(std::move(display_name)) {}
+      display_name(std::move(display_name)),
+      supported_formats(supported_formats) {}
+
+CameraInfo::CameraInfo(CameraInfo&&) = default;
+
+CameraInfo& CameraInfo::operator=(CameraInfo&&) = default;
+
+CameraInfo::~CameraInfo() = default;
 
 // -----------------------------------------------------------------------------
 // CaptureModeCameraController:
@@ -183,6 +193,8 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 
   selected_camera_ = std::move(camera_id);
   camera_reconnect_timer_.Stop();
+  camera_preview_widget_.reset();
+  camera_preview_view_ = nullptr;
 
   for (auto& observer : observers_)
     observer.OnSelectedCameraChanged(selected_camera_);
@@ -292,7 +304,7 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
         GetNextCameraNumber(model_id_or_display_name, &cam_models_map);
     available_cameras_.emplace_back(
         CameraId(model_id_or_display_name, cam_number), descriptor.device_id,
-        descriptor.display_name());
+        descriptor.display_name(), device.supported_formats);
   }
 
   for (auto& observer : observers_)
