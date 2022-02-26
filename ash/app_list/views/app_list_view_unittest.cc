@@ -3160,7 +3160,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularLandscapeScreen) {
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/8);
+      /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/8);
   EXPECT_EQ(680, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3195,7 +3195,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenWithRemovedRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/8) -
+          /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/8) -
       4;
   EXPECT_EQ(676, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
@@ -3230,7 +3230,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenAtMaxPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/96);
+      /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/96);
   EXPECT_EQ(944, window_height);
   const gfx::Size window_size = gfx::Size(1000, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3265,7 +3265,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularLandscapeScreenWithAddedRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/96) +
+          /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/96) +
       6;
   EXPECT_EQ(950, window_height);
   const gfx::Size window_size = gfx::Size(1000, window_height);
@@ -3330,7 +3330,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularPortraitScreen) {
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/8);
+      /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8);
   EXPECT_EQ(808, window_height);
   const gfx::Size window_size = gfx::Size(700, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3365,7 +3365,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenWithRemovedRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/8) -
+          /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8) -
       8;
   EXPECT_EQ(800, window_height);
   const gfx::Size window_size = gfx::Size(700, window_height);
@@ -3400,7 +3400,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenAtMaxPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/96);
+      /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96);
   EXPECT_EQ(1160, window_height);
   const gfx::Size window_size = gfx::Size(1200, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3434,7 +3434,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularPortraitScreenWithExtraRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/96) +
+          /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96) +
       4;
   EXPECT_EQ(1164, window_height);
   const gfx::Size window_size = gfx::Size(1200, window_height);
@@ -3498,7 +3498,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DenseLandscapeScreen) {
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseLandscapeScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/4, /*tile_size=*/88, /*tile_margin=*/8);
+      /*row_count=*/4, /*tile_height=*/88, /*tile_margins=*/8);
   EXPECT_EQ(552, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3533,7 +3533,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseLandscapeScreenWithRemovedRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/4, /*tile_size=*/88, /*tile_margin=*/8) -
+          /*row_count=*/4, /*tile_height=*/88, /*tile_margins=*/8) -
       4;
   EXPECT_EQ(548, window_height);
   const gfx::Size window_size = gfx::Size(800, window_height);
@@ -3598,7 +3598,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DensePortraitScreen) {
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DensePortraitScreenAtMinPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/8);
+      /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/8);
   EXPECT_EQ(648, window_height);
   const gfx::Size window_size = gfx::Size(600, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3633,7 +3633,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DensePortraitScreenWithRemovedRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/8) -
+          /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/8) -
       8;
   EXPECT_EQ(640, window_height);
   const gfx::Size window_size = gfx::Size(540, window_height);
@@ -3668,7 +3668,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DensePortraitScreenAtMaxPreferredVerticalMargin) {
   const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
-      /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/96);
+      /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/96);
   EXPECT_EQ(1000, window_height);
   const gfx::Size window_size = gfx::Size(600, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
@@ -3703,7 +3703,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DensePortraitScreenWithExtraRows) {
   const int window_height =
       GetExpectedProductivityLauncherAppsContainerHeight(
-          /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/96) +
+          /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/96) +
       4;
   EXPECT_EQ(1004, window_height);
   const gfx::Size window_size = gfx::Size(600, window_height);
