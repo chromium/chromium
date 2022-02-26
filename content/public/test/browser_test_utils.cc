@@ -3092,23 +3092,17 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
   if (!ShouldMonitorNavigation(handle))
     return;
 
-  was_prerendered_page_activation_ = handle->IsPrerenderedPageActivation();
+  DCHECK(!handle->IsPageActivation())
+      << "For PageActivating navigations, use TestActivationManager.";
 
   request_ = NavigationRequest::From(handle);
-  if (request_->IsPageActivation()) {
-    // For activating navigations, we have no way of stopping at
-    // WillStartRequest since we don't run throttles. Callers should use
-    // WaitForResponse() or WaitForFirstYieldAfterDidStartNavigation().
-    DCHECK_NE(desired_state_, NavigationState::STARTED);
-  } else {
-    auto throttle = std::make_unique<TestNavigationManagerThrottle>(
-        request_,
-        base::BindOnce(&TestNavigationManager::OnWillStartRequest,
-                       weak_factory_.GetWeakPtr()),
-        base::BindOnce(&TestNavigationManager::OnWillProcessResponse,
-                       weak_factory_.GetWeakPtr()));
-    request_->RegisterThrottleForTesting(std::move(throttle));
-  }
+  auto throttle = std::make_unique<TestNavigationManagerThrottle>(
+      request_,
+      base::BindOnce(&TestNavigationManager::OnWillStartRequest,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&TestNavigationManager::OnWillProcessResponse,
+                     weak_factory_.GetWeakPtr()));
+  request_->RegisterThrottleForTesting(std::move(throttle));
 
   current_state_ = NavigationState::WILL_START;
 
@@ -3130,8 +3124,6 @@ void TestNavigationManager::DidFinishNavigation(NavigationHandle* handle) {
     return;
   was_committed_ = handle->HasCommitted();
   was_successful_ = was_committed_ && !handle->IsErrorPage();
-  DCHECK_EQ(was_prerendered_page_activation_.value(),
-            request_->IsPrerenderedPageActivation());
   current_state_ = NavigationState::FINISHED;
   navigation_paused_ = false;
   request_ = nullptr;
@@ -3152,14 +3144,6 @@ void TestNavigationManager::OnWillStartRequest() {
 
 void TestNavigationManager::OnWillProcessResponse() {
   current_state_ = NavigationState::RESPONSE;
-  navigation_paused_ = true;
-  OnNavigationStateChanged();
-}
-
-void TestNavigationManager::OnRunningCommitDeferringConditions(
-    base::OnceClosure resume_closure) {
-  current_state_ = NavigationState::RESPONSE;
-  commit_deferring_condition_resume_closure_ = std::move(resume_closure);
   navigation_paused_ = true;
   OnNavigationStateChanged();
 }
@@ -3191,12 +3175,6 @@ void TestNavigationManager::OnNavigationStateChanged() {
   TRACE_EVENT("test", "TestNavigationManager::OnNavigationStateChanged", "this",
               this);
 
-  if (request_ && request_->IsPageActivation()) {
-    DCHECK_NE(desired_state_, NavigationState::STARTED)
-        << "Cannot use WaitForRequestStart() when managing an activating "
-           "navigation. Use either WaitForFirstYieldAfterDidStartNavigation() "
-           "or WaitForResponse()";
-  }
   // If the state the user was waiting for has been reached, exit the message
   // loop.
   if (current_state_ >= desired_state_) {
@@ -3217,10 +3195,7 @@ void TestNavigationManager::ResumeIfPaused() {
 
   navigation_paused_ = false;
 
-  if (!request_->IsPageActivation())
-    request_->GetNavigationThrottleRunnerForTesting()->CallResumeForTesting();
-  else if (commit_deferring_condition_resume_closure_)
-    std::move(commit_deferring_condition_resume_closure_).Run();
+  request_->GetNavigationThrottleRunnerForTesting()->CallResumeForTesting();
 }
 
 bool TestNavigationManager::ShouldMonitorNavigation(NavigationHandle* handle) {
