@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -305,7 +304,7 @@ TEST_F(EndToEndAsyncTest, EchoWithErrorCallback) {
 TEST_F(EndToEndAsyncTest, EchoThreeTimes) {
   const char* kMessages[] = { "foo", "bar", "baz" };
 
-  for (size_t i = 0; i < base::size(kMessages); ++i) {
+  for (size_t i = 0; i < std::size(kMessages); ++i) {
     // Create the method call.
     MethodCall method_call("org.chromium.TestInterface", "Echo");
     MessageWriter writer(&method_call);

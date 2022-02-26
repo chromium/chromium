@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "dbus/message.h"
@@ -330,7 +329,7 @@ TEST(ValuesUtilTest, PopDictionaryWithDottedStringKey) {
 TEST(ValuesUtilTest, PopDoubleToIntDictionary) {
   // Create test data.
   const int32_t kValues[] = {0, 1, 1, 2, 3, 5, 8, 13, 21};
-  const std::vector<int32_t> values(kValues, kValues + base::size(kValues));
+  const std::vector<int32_t> values(kValues, kValues + std::size(kValues));
   std::vector<double> keys(values.size());
   for (size_t i = 0; i != values.size(); ++i)
     keys[i] = std::sqrt(values[i]);
