@@ -5,9 +5,8 @@
 #ifndef PDF_POST_MESSAGE_SENDER_H_
 #define PDF_POST_MESSAGE_SENDER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
+#include "v8/include/v8-forward.h"
 
 namespace base {
 class Value;
@@ -17,20 +16,14 @@ namespace blink {
 class WebPluginContainer;
 }  // namespace blink
 
-namespace content {
-class V8ValueConverter;
-}  // namespace content
-
-namespace v8 {
-class Isolate;
-}  // namespace v8
-
 namespace chrome_pdf {
+
+class V8ValueConverter;
 
 // Manages messages sent from the plugin to its embedder.
 class PostMessageSender final {
  public:
-  PostMessageSender();
+  explicit PostMessageSender(V8ValueConverter* v8_value_converter);
   PostMessageSender(const PostMessageSender&) = delete;
   PostMessageSender& operator=(const PostMessageSender&) = delete;
   ~PostMessageSender();
@@ -47,11 +40,11 @@ class PostMessageSender final {
   }
 
  private:
-  std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
+  const raw_ptr<V8ValueConverter> v8_value_converter_;
 
-  raw_ptr<v8::Isolate> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
 
-  raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+  raw_ptr<blink::WebPluginContainer> container_;
 };
 
 }  // namespace chrome_pdf

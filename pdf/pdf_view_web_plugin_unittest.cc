@@ -11,6 +11,7 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -242,7 +243,19 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
   ~FakePdfViewWebPluginClient() override = default;
 
   // PdfViewWebPlugin::Client:
+  MOCK_METHOD(std::unique_ptr<base::Value>,
+              FromV8Value,
+              (v8::Local<v8::Value>, v8::Local<v8::Context>),
+              (override));
+  MOCK_METHOD(v8::Local<v8::Value>,
+              ToV8Value,
+              (const base::Value&, v8::Local<v8::Context>),
+              (override));
+  MOCK_METHOD(base::WeakPtr<Client>, GetWeakPtr, (), (override));
   MOCK_METHOD(bool, IsUseZoomForDSFEnabled, (), (const, override));
+
+ private:
+  base::WeakPtrFactory<FakePdfViewWebPluginClient> weak_factory_{this};
 };
 
 }  // namespace

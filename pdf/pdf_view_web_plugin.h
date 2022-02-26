@@ -23,6 +23,7 @@
 #include "pdf/post_message_sender.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/v8_value_converter.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -142,9 +143,11 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   };
 
   // Allows for dependency injections into `PdfViewWebPlugin`.
-  class Client {
+  class Client : public V8ValueConverter {
    public:
     virtual ~Client() = default;
+
+    virtual base::WeakPtr<Client> GetWeakPtr() = 0;
 
     // Prints the given `element`.
     virtual void Print(const blink::WebElement& element) {}

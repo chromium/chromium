@@ -350,6 +350,7 @@ if (enable_pdf) {
       "post_message_receiver.h",
       "post_message_sender.cc",
       "post_message_sender.h",
+      "v8_value_converter.h",
     ]
 
     configs += [ ":strict" ]
@@ -365,7 +366,6 @@ if (enable_pdf) {
       "//base",
       "//base:i18n",
       "//cc/paint",
-      "//content/public/renderer",
       "//gin",
       "//ppapi/cpp:objects",  # TODO(crbug.com/1114263): PDFEngine::Client only.
       "//printing",

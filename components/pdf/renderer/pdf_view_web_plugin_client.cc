@@ -8,6 +8,7 @@
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/public/renderer/v8_value_converter.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/web/web_element.h"
 
@@ -19,11 +20,29 @@ namespace pdf {
 
 PdfViewWebPluginClient::PdfViewWebPluginClient(
     content::RenderFrame* render_frame)
-    : render_frame_(render_frame) {
+    : render_frame_(render_frame),
+      v8_value_converter_(content::V8ValueConverter::Create()) {
   DCHECK(render_frame_);
 }
 
 PdfViewWebPluginClient::~PdfViewWebPluginClient() = default;
+
+std::unique_ptr<base::Value> PdfViewWebPluginClient::FromV8Value(
+    v8::Local<v8::Value> value,
+    v8::Local<v8::Context> context) {
+  return v8_value_converter_->FromV8Value(value, context);
+}
+
+v8::Local<v8::Value> PdfViewWebPluginClient::ToV8Value(
+    const base::Value& value,
+    v8::Local<v8::Context> context) {
+  return v8_value_converter_->ToV8Value(&value, context);
+}
+
+base::WeakPtr<chrome_pdf::PdfViewWebPlugin::Client>
+PdfViewWebPluginClient::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 void PdfViewWebPluginClient::Print(const blink::WebElement& element) {
   DCHECK(!element.IsNull());

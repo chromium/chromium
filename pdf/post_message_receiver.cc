@@ -16,13 +16,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "content/public/renderer/v8_value_converter.h"
 #include "gin/function_template.h"
 #include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/wrappable.h"
+#include "pdf/v8_value_converter.h"
 #include "v8/include/v8.h"
 
 namespace chrome_pdf {
@@ -39,11 +39,13 @@ gin::WrapperInfo PostMessageReceiver::kWrapperInfo = {gin::kEmbedderNativeGin};
 // static
 v8::Local<v8::Object> PostMessageReceiver::Create(
     v8::Isolate* isolate,
+    base::WeakPtr<V8ValueConverter> v8_value_converter,
     base::WeakPtr<Client> client,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
   return gin::CreateHandle(
-             isolate, new PostMessageReceiver(isolate, std::move(client),
-                                              std::move(client_task_runner)))
+             isolate, new PostMessageReceiver(
+                          isolate, std::move(v8_value_converter),
+                          std::move(client), std::move(client_task_runner)))
       .ToV8()
       .As<v8::Object>();
 }
@@ -52,9 +54,11 @@ PostMessageReceiver::~PostMessageReceiver() = default;
 
 PostMessageReceiver::PostMessageReceiver(
     v8::Isolate* isolate,
+    base::WeakPtr<V8ValueConverter> v8_value_converter,
     base::WeakPtr<Client> client,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner)
     : gin::NamedPropertyInterceptor(isolate, this),
+      v8_value_converter_(std::move(v8_value_converter)),
       isolate_(isolate),
       client_(std::move(client)),
       client_task_runner_(std::move(client_task_runner)) {}
@@ -113,20 +117,12 @@ v8::Local<v8::FunctionTemplate> PostMessageReceiver::GetFunctionTemplate() {
   return function_template_.Get(isolate_);
 }
 
-std::unique_ptr<base::Value> PostMessageReceiver::ConvertMessage(
-    v8::Local<v8::Value> message) {
-  if (!v8_value_converter_)
-    v8_value_converter_ = content::V8ValueConverter::Create();
-
-  return v8_value_converter_->FromV8Value(message,
-                                          isolate_->GetCurrentContext());
-}
-
 void PostMessageReceiver::PostMessage(v8::Local<v8::Value> message) {
-  if (!client_)
+  if (!client_ || !v8_value_converter_)
     return;
 
-  std::unique_ptr<base::Value> converted_message = ConvertMessage(message);
+  std::unique_ptr<base::Value> converted_message =
+      v8_value_converter_->FromV8Value(message, isolate_->GetCurrentContext());
   DCHECK(converted_message) << "The PDF Viewer UI should not be sending "
                                "messages that cannot be converted.";
 

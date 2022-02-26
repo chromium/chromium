@@ -8,7 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/values.h"
-#include "content/public/renderer/v8_value_converter.h"
+#include "pdf/v8_value_converter.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"
@@ -19,7 +19,9 @@
 
 namespace chrome_pdf {
 
-PostMessageSender::PostMessageSender() : isolate_(blink::MainThreadIsolate()) {}
+PostMessageSender::PostMessageSender(V8ValueConverter* v8_value_converter)
+    : v8_value_converter_(v8_value_converter),
+      isolate_(blink::MainThreadIsolate()) {}
 
 PostMessageSender::~PostMessageSender() = default;
 
@@ -40,11 +42,8 @@ void PostMessageSender::Post(base::Value message) {
   DCHECK_EQ(isolate_, context->GetIsolate());
   v8::Context::Scope context_scope(context);
 
-  if (!v8_value_converter_)
-    v8_value_converter_ = content::V8ValueConverter::Create();
-
   v8::Local<v8::Value> converted_message =
-      v8_value_converter_->ToV8Value(&message, context);
+      v8_value_converter_->ToV8Value(message, context);
 
   container_->EnqueueMessageEvent(
       blink::WebSerializedScriptValue::Serialize(isolate_, converted_message));

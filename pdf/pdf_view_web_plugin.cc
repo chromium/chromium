@@ -292,6 +292,7 @@ PdfViewWebPlugin::PdfViewWebPlugin(
     : client_(std::move(client)),
       pdf_service_remote_(std::move(pdf_service_remote)),
       initial_params_(params),
+      post_message_sender_(client_.get()),
       pdf_accessibility_data_handler_(
           client_->CreateAccessibilityDataHandler(this)) {
   auto* service = GetPdfService();
@@ -395,9 +396,9 @@ v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
     // TODO(crbug.com/1123731): Messages should not be handled on the renderer
     // main thread.
     scriptable_receiver_.Reset(
-        isolate,
-        PostMessageReceiver::Create(isolate, weak_factory_.GetWeakPtr(),
-                                    base::SequencedTaskRunnerHandle::Get()));
+        isolate, PostMessageReceiver::Create(
+                     isolate, client_->GetWeakPtr(), weak_factory_.GetWeakPtr(),
+                     base::SequencedTaskRunnerHandle::Get()));
   }
 
   return scriptable_receiver_.Get(isolate);
