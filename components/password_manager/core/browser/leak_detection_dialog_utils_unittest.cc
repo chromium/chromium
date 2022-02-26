@@ -157,7 +157,7 @@ class CredentialLeakDialogUtilsTest : public testing::Test {
 };
 
 TEST_F(CredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     EXPECT_EQ(
         l10n_util::GetStringUTF16(kLeakTypesTestCases[i].accept_button_id),
@@ -166,7 +166,7 @@ TEST_F(CredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
 }
 
 TEST_F(CredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     EXPECT_EQ(
         l10n_util::GetStringUTF16(kLeakTypesTestCases[i].cancel_button_id),
@@ -175,7 +175,7 @@ TEST_F(CredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
 }
 
 TEST_F(CredentialLeakDialogUtilsTest, GetDescription) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     std::u16string expected_message =
         l10n_util::GetStringUTF16(kLeakTypesTestCases[i].leak_message_id);
@@ -185,7 +185,7 @@ TEST_F(CredentialLeakDialogUtilsTest, GetDescription) {
 }
 
 TEST_F(CredentialLeakDialogUtilsTest, GetTitle) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     EXPECT_EQ(l10n_util::GetStringUTF16(kLeakTypesTestCases[i].leak_title_id),
               GetTitle(kLeakTypesTestCases[i].leak_type));
@@ -193,7 +193,7 @@ TEST_F(CredentialLeakDialogUtilsTest, GetTitle) {
 }
 
 TEST_F(CredentialLeakDialogUtilsTest, ShouldCheckPasswords) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     EXPECT_EQ(kLeakTypesTestCases[i].should_check_passwords,
               ShouldCheckPasswords(kLeakTypesTestCases[i].leak_type));
@@ -201,7 +201,7 @@ TEST_F(CredentialLeakDialogUtilsTest, ShouldCheckPasswords) {
 }
 
 TEST_F(CredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kLeakTypesTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     EXPECT_EQ(kLeakTypesTestCases[i].should_show_cancel_button,
               ShouldShowCancelButton(kLeakTypesTestCases[i].leak_type));

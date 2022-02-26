@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -216,7 +215,7 @@ TEST(AutocompleteInputTest, InputType) {
     {u"test:80/", metrics::OmniboxInputType::URL},
   };
 
-  for (size_t i = 0; i < base::size(input_cases); ++i) {
+  for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     AutocompleteInput input(input_cases[i].input,
                             metrics::OmniboxEventProto::OTHER,
@@ -256,7 +255,7 @@ TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
       {u"foo bar", metrics::OmniboxInputType::QUERY, std::string()},
   };
 
-  for (size_t i = 0; i < base::size(input_cases); ++i) {
+  for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     AutocompleteInput input(input_cases[i].input, std::u16string::npos, "com",
                             metrics::OmniboxEventProto::OTHER,
@@ -309,7 +308,7 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
       {u"blob:garbage", kInvalidComponent, Component(5, 7)},
   };
 
-  for (size_t i = 0; i < base::size(input_cases); ++i) {
+  for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     Component scheme, host;
     AutocompleteInput::ParseForEmphasizeComponents(input_cases[i].input,
@@ -350,7 +349,7 @@ TEST(AutocompleteInputTest, InputTypeWithCursorPosition) {
       {u"  ?  foo bar", 6, u"?  foo bar", 4},
   };
 
-  for (size_t i = 0; i < base::size(input_cases); ++i) {
+  for (size_t i = 0; i < std::size(input_cases); ++i) {
     SCOPED_TRACE(input_cases[i].input);
     AutocompleteInput input(
         input_cases[i].input, input_cases[i].cursor_position,

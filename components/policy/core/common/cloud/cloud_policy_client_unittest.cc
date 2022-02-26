@@ -17,7 +17,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
@@ -1293,7 +1292,7 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   expected_namespaces.insert(key);
   key.first = dm_protocol::kChromeExtensionPolicyType;
   expected_namespaces.insert(key);
-  for (size_t i = 0; i < base::size(kExtensions); ++i) {
+  for (size_t i = 0; i < std::size(kExtensions); ++i) {
     key.second = kExtensions[i];
     em::PolicyData policy_data;
     policy_data.set_policy_type(key.first);

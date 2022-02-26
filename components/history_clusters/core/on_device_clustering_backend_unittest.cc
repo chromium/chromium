@@ -524,7 +524,7 @@ class OnDeviceClusteringWithAllTheBackendsTest
   void SetUp() override {
     // Set up a simple template URL service with a default search engine.
     template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, base::size(kTemplateURLData));
+        kTemplateURLData, std::size(kTemplateURLData));
     TemplateURL* template_url = template_url_service_->GetTemplateURLForKeyword(
         kDefaultTemplateURLKeyword);
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);

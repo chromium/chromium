@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "components/services/filesystem/directory_test_helper.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
@@ -51,7 +50,7 @@ TEST_F(DirectoryImplTest, Read) {
       {"my_file1", mojom::kFlagRead | mojom::kFlagWrite | mojom::kFlagCreate},
       {"my_file2", mojom::kFlagWrite | mojom::kFlagCreate},
       {"my_file3", mojom::kFlagAppend | mojom::kFlagCreate}};
-  for (size_t i = 0; i < base::size(files_to_create); i++) {
+  for (size_t i = 0; i < std::size(files_to_create); i++) {
     error = base::File::Error::FILE_ERROR_FAILED;
     bool handled =
         directory->OpenFile(files_to_create[i].name, mojo::NullReceiver(),

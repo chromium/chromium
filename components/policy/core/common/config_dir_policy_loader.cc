@@ -95,7 +95,7 @@ base::Time ConfigDirPolicyLoader::LastModificationTime() {
   base::Time last_modification = base::Time();
   base::File::Info info;
 
-  for (size_t i = 0; i < base::size(kConfigDirSuffixes); ++i) {
+  for (size_t i = 0; i < std::size(kConfigDirSuffixes); ++i) {
     base::FilePath path(config_dir_.Append(kConfigDirSuffixes[i]));
 
     // Skip if the file doesn't exist, or it isn't a directory.

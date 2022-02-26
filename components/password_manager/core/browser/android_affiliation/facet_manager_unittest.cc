@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -597,7 +596,7 @@ TEST_F(FacetManagerTest, PrefetchWithEmptyOrStaleCache) {
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
   for (const bool cache_initially_stale : kFalseTrue) {
-    for (size_t i = 0; i < base::size(kTestCases); ++i) {
+    for (size_t i = 0; i < std::size(kTestCases); ++i) {
       SCOPED_TRACE(testing::Message() << "Test case: #" << i);
       SCOPED_TRACE(cache_initially_stale ? "Cache initially stale"
                                          : "Cache initially empty");
@@ -733,7 +732,7 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache) {
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->set_fake_database_content(
@@ -798,7 +797,7 @@ TEST_F(FacetManagerTest, PrefetchTriggeredFetchSchedulingAfterNonEmptyCache2) {
 
   const base::TimeDelta kMaximumTestDuration = 2 * GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->set_fake_database_content(
@@ -924,8 +923,8 @@ TEST_F(FacetManagerTest, NestedPrefetches) {
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
 
-  for (size_t j = 0; j < base::size(kFirstPrefetchParams); ++j) {
-    for (size_t i = 0; i < base::size(kSecondPrefetchParams); ++i) {
+  for (size_t j = 0; j < std::size(kFirstPrefetchParams); ++j) {
+    for (size_t i = 0; i < std::size(kSecondPrefetchParams); ++i) {
       SCOPED_TRACE(testing::Message() << "Test case: #" << j << "." << i);
 
       fake_facet_manager_host()->clear_fake_database_content();
@@ -989,7 +988,7 @@ TEST_F(FacetManagerTest, OverlappingPrefetches) {
   const base::TimeDelta kTestDuration =
       GetCacheSoftExpiryPeriod() + GetCacheHardExpiryPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();
@@ -1114,7 +1113,7 @@ TEST_F(FacetManagerTest, PrefetchWithNonInstantFetches) {
                                                GetCacheHardExpiryPeriod() +
                                                2 * GetShortTestPeriod();
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();
@@ -1194,7 +1193,7 @@ TEST_F(FacetManagerTest, CancelPrefetch) {
       GetCacheSoftExpiryPeriod(),
       2 * GetCacheSoftExpiryPeriod()};
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Test case: #" << i);
 
     fake_facet_manager_host()->clear_fake_database_content();

@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -150,7 +149,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
   do {
     std::string reordered_languages = base::JoinString(permuted_languages, ",");
     ExpectSpellCheckWordResults(reordered_languages, kTestCases,
-                                base::size(kTestCases));
+                                std::size(kTestCases));
   } while (std::next_permutation(permuted_languages.begin(),
                                  permuted_languages.end()));
 }
@@ -181,8 +180,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
       {L"hola sand hola sand hola sand", 0, 0},
       {L"hola:legs", 0, 9},
       {L"legs:hola", 0, 9}};
-  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases,
-                              base::size(kTestCases));
+  ExpectSpellCheckWordResults("en-US,es-ES", kTestCases, std::size(kTestCases));
 }
 
 // If there are no spellcheck languages, no text should be marked as misspelled.
@@ -237,7 +235,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
       {L"asdne", 0, 5, L"sadness,desasne"},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     blink::WebVector<blink::WebString> suggestions;
     size_t misspelling_start;
     size_t misspelling_length;

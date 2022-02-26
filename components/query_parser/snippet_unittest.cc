@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -242,7 +241,7 @@ TEST(Snippets, ExtractMatchPositions) {
     { "0 0 1 2 0 0 1 1",                    1,     { 1, 3 } },
     { "0 0 1 1 0 0 5 2 0 0 10 1 0 0 3 10",  2,     { 1, 2, 3, 13 } },
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     Snippet::MatchPositions matches;
     Snippet::ExtractMatchPositions(data[i].offsets_string, "0", &matches);
     EXPECT_EQ(data[i].expected_match_count, matches.size());

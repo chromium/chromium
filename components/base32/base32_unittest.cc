@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/base32/base32.h"
+
 #include <string>
 
-#include "base/cxx17_backports.h"
-#include "components/base32/base32.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base32 {
@@ -19,7 +19,7 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithoutPadding) {
       "", "MY", "MZXQ", "MZXW6", "MZXW6YQ", "MZXW6YTB", "MZXW6YTBOI"};
 
   // Run the tests, with one more letter in the input every pass.
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  for (size_t i = 0; i < std::size(expected); ++i) {
     base::StringPiece test_substr(test_str, i);
     std::string encoded_output =
         Base32Encode(test_substr, Base32EncodePolicy::OMIT_PADDING);
@@ -38,7 +38,7 @@ TEST(Base32Test, EncodesRfcTestVectorsCorrectlyWithPadding) {
       "MZXW6YQ=", "MZXW6YTB", "MZXW6YTBOI======"};
 
   // Run the tests, with one more letter in the input every pass.
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  for (size_t i = 0; i < std::size(expected); ++i) {
     base::StringPiece test_substr(test_str, i);
     std::string encoded_output = Base32Encode(test_substr);
     EXPECT_EQ(expected[i], encoded_output);

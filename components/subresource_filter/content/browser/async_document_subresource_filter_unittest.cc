@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -620,7 +619,7 @@ TEST_F(SubresourceFilterComputeActivationStateTest,
        MakeState(true, true)},
   };
 
-  for (size_t i = 0, size = base::size(kTestCases); i != size; ++i) {
+  for (size_t i = 0, size = std::size(kTestCases); i != size; ++i) {
     SCOPED_TRACE(::testing::Message() << "Test number: " << i);
     const auto& test_case = kTestCases[i];
 

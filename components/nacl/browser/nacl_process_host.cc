@@ -5,6 +5,7 @@
 #include "components/nacl/browser/nacl_process_host.h"
 
 #include <string.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -832,7 +832,7 @@ bool NaClProcessHost::StartPPAPIProxy(
       switches::kV,
       switches::kVModule,
   };
-  for (size_t i = 0; i < base::size(flag_allowlist); ++i) {
+  for (size_t i = 0; i < std::size(flag_allowlist); ++i) {
     std::string value = cmdline->GetSwitchValueASCII(flag_allowlist[i]);
     if (!value.empty()) {
       args.switch_names.push_back(flag_allowlist[i]);

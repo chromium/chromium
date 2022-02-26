@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -159,7 +158,7 @@ void SpellcheckCharAttribute::CreateRuleSets(const std::string& language) {
   UErrorCode error = U_ZERO_ERROR;
   UScriptCode script_code[8];
   int scripts = uscript_getCode(language.c_str(), script_code,
-                                base::size(script_code), &error);
+                                std::size(script_code), &error);
   if (U_SUCCESS(error) && scripts >= 1)
     script_code_ = script_code[0];
 

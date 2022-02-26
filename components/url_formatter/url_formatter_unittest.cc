@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -383,7 +382,7 @@ TEST(UrlFormatterTest, FormatUrl) {
   };
   // clang-format on
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     size_t prefix_len;
     std::u16string formatted =
         FormatUrl(GURL(tests[i].input), tests[i].format_types,

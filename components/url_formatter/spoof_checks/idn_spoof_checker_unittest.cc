@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/url_formatter/url_formatter.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 
 #include <stddef.h>
 #include <string.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
+#include "components/url_formatter/url_formatter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1124,7 +1123,7 @@ class IDNSpoofCheckerTest : public ::testing::Test {
 // E.g. Mathematical Monospace Small A (U+1D68A) is canonicalized to "a" when
 // used in a domain name.
 TEST_F(IDNSpoofCheckerTest, IDNToUnicode) {
-  for (size_t i = 0; i < base::size(kIdnCases); i++) {
+  for (size_t i = 0; i < std::size(kIdnCases); i++) {
     SCOPED_TRACE(
         base::StringPrintf("input #%zu: \"%s\"", i, kIdnCases[i].input));
 

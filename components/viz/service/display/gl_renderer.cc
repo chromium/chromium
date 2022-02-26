@@ -18,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -518,7 +517,7 @@ void GLRenderer::DiscardPixels() {
       output_surface_->capabilities().uses_default_gl_framebuffer;
   GLenum attachments[] = {static_cast<GLenum>(
       using_default_framebuffer ? GL_COLOR_EXT : GL_COLOR_ATTACHMENT0_EXT)};
-  gl_->DiscardFramebufferEXT(GL_FRAMEBUFFER, base::size(attachments),
+  gl_->DiscardFramebufferEXT(GL_FRAMEBUFFER, std::size(attachments),
                              attachments);
 }
 

@@ -7,7 +7,6 @@
 #include <limits>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -135,7 +134,7 @@ TEST(CBORWriterTest, TestWriteArray) {
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kArrayTestCaseCbor,
-                                        base::size(kArrayTestCaseCbor)));
+                                        std::size(kArrayTestCaseCbor)));
 }
 
 TEST(CBORWriterTest, TestWriteMap) {
@@ -258,9 +257,8 @@ TEST(CBORWriterTest, TestWriteMap) {
   map[Value(std::numeric_limits<int64_t>::max())] = Value("j");
   auto cbor = Writer::Write(Value(map));
   ASSERT_TRUE(cbor.has_value());
-  EXPECT_THAT(cbor.value(),
-              testing::ElementsAreArray(kMapTestCaseCbor,
-                                        base::size(kMapTestCaseCbor)));
+  EXPECT_THAT(cbor.value(), testing::ElementsAreArray(
+                                kMapTestCaseCbor, std::size(kMapTestCaseCbor)));
 }
 
 TEST(CBORWriterTest, TestWriteMapWithArray) {
@@ -286,7 +284,7 @@ TEST(CBORWriterTest, TestWriteMapWithArray) {
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kMapArrayTestCaseCbor,
-                                        base::size(kMapArrayTestCaseCbor)));
+                                        std::size(kMapArrayTestCaseCbor)));
 }
 
 TEST(CBORWriterTest, TestWriteNestedMap) {
@@ -315,7 +313,7 @@ TEST(CBORWriterTest, TestWriteNestedMap) {
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kNestedMapTestCase,
-                                        base::size(kNestedMapTestCase)));
+                                        std::size(kNestedMapTestCase)));
 }
 
 TEST(CBORWriterTest, TestSignedExchangeExample) {
@@ -362,7 +360,7 @@ TEST(CBORWriterTest, TestSignedExchangeExample) {
   ASSERT_TRUE(cbor.has_value());
   EXPECT_THAT(cbor.value(),
               testing::ElementsAreArray(kSignedExchangeExample,
-                                        base::size(kSignedExchangeExample)));
+                                        std::size(kSignedExchangeExample)));
 }
 
 TEST(CBORWriterTest, TestWriteSimpleValue) {

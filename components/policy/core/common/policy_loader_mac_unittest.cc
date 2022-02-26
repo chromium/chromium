@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_loader_mac.h"
-#include <memory>
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/run_loop.h"
@@ -168,7 +167,7 @@ TEST_F(PolicyLoaderMacTest, Invalid) {
   const char buffer[] = "binary \xde\xad\xbe\xef data";
   ScopedCFTypeRef<CFDataRef> invalid_data(
       CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(buffer),
-                   base::size(buffer)));
+                   std::size(buffer)));
   ASSERT_TRUE(invalid_data);
   prefs_->AddTestItem(name, invalid_data.get(), true);
   prefs_->AddTestItem(name, invalid_data.get(), false);

@@ -4,7 +4,6 @@
 
 #include "components/password_manager/ios/account_select_fill_data.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/password_manager/ios/test_helpers.h"
@@ -37,7 +36,7 @@ const char* kAdditionalPasswords[] = {"secret", nullptr};
 class AccountSelectFillDataTest : public PlatformTest {
  public:
   AccountSelectFillDataTest() {
-    for (size_t i = 0; i < base::size(form_data_); ++i) {
+    for (size_t i = 0; i < std::size(form_data_); ++i) {
       SetPasswordFormFillData(
           kUrl, kFormNames[i], kFormUniqueIDs[i], kUsernameElements[i],
           kUsernameUniqueIDs[i], kUsernames[i], kPasswordElements[i],
@@ -176,7 +175,7 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
   account_select_fill_data.Add(form_data_[1]);
 
   for (bool is_password_field : {false, true}) {
-    for (size_t form_i = 0; form_i < base::size(form_data_); ++form_i) {
+    for (size_t form_i = 0; form_i < std::size(form_data_); ++form_i) {
       const auto& form_data = form_data_[form_i];
       // Suggestions should be shown on any password field on the form. So in
       // case of clicking on a password field it is taken an id different from

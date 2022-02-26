@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_FEATURE_LIST_H_
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/flags_ui/feature_entry.h"
@@ -34,13 +33,13 @@ constexpr flags_ui::FeatureEntry::FeatureParam
 constexpr flags_ui::FeatureEntry::FeatureVariation
     kCommercePriceTrackingAndroidVariations[] = {
         {"Price alerts", kCommercePriceTracking_PriceAlerts,
-         base::size(kCommercePriceTracking_PriceAlerts), nullptr},
+         std::size(kCommercePriceTracking_PriceAlerts), nullptr},
         {"Price alerts with OptimizationGuide",
          kCommercePriceTracking_PriceAlerts_WithOptimizationGuide,
-         base::size(kCommercePriceTracking_PriceAlerts_WithOptimizationGuide),
+         std::size(kCommercePriceTracking_PriceAlerts_WithOptimizationGuide),
          nullptr},
         {"Price notifications", kCommercePriceTracking_PriceNotifications,
-         base::size(kCommercePriceTracking_PriceNotifications), nullptr},
+         std::size(kCommercePriceTracking_PriceNotifications), nullptr},
 };
 
 // Price tracking variations for iOS.
@@ -58,10 +57,10 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
     kCommercePriceTrackingVariations[] = {
         {"Price Tracking with Optimization Guide",
          kCommercePriceTrackingWithOptimizationGuide,
-         base::size(kCommercePriceTrackingWithOptimizationGuide), nullptr},
+         std::size(kCommercePriceTrackingWithOptimizationGuide), nullptr},
         {"Price Tracking with Optimization Guide and Opt Out",
          kCommercePriceTrackingWithOptimizationGuideAndOptOut,
-         base::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
+         std::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
          nullptr}};
 
 extern const base::Feature kCommerceMerchantViewer;

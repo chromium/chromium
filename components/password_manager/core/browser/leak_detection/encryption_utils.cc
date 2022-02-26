@@ -7,7 +7,6 @@
 #include <climits>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -60,7 +59,7 @@ std::string HashUsername(base::StringPiece canonicalized_username) {
   return crypto::SHA256HashString(base::StrCat(
       {canonicalized_username,
        base::StringPiece(reinterpret_cast<const char*>(kUsernameSalt),
-                         base::size(kUsernameSalt))}));
+                         std::size(kUsernameSalt))}));
 }
 
 std::string BucketizeUsername(base::StringPiece canonicalized_username) {
@@ -110,7 +109,7 @@ absl::optional<std::string> ScryptHashUsernameAndPassword(
   std::string salt = base::StrCat(
       {canonicalized_username,
        base::StringPiece(reinterpret_cast<const char*>(kPasswordHashSalt),
-                         base::size(kPasswordHashSalt))});
+                         std::size(kPasswordHashSalt))});
 
   std::string result;
   uint8_t* key_data =

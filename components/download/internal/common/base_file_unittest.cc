@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -34,10 +33,10 @@ const char kTestData1[] = "Let's write some data to the file!\n";
 const char kTestData2[] = "Writing more data.\n";
 const char kTestData3[] = "Final line.";
 const char kTestData4[] = "supercalifragilisticexpialidocious";
-const int kTestDataLength1 = base::size(kTestData1) - 1;
-const int kTestDataLength2 = base::size(kTestData2) - 1;
-const int kTestDataLength3 = base::size(kTestData3) - 1;
-const int kTestDataLength4 = base::size(kTestData4) - 1;
+const int kTestDataLength1 = std::size(kTestData1) - 1;
+const int kTestDataLength2 = std::size(kTestData2) - 1;
+const int kTestDataLength3 = std::size(kTestData3) - 1;
+const int kTestDataLength4 = std::size(kTestData4) - 1;
 int64_t kTestDataBytesWasted = 0;
 
 // SHA-256 hash of kTestData1 (excluding terminating NUL).
@@ -749,7 +748,7 @@ TEST_F(BaseFileTest, NoDoubleDeleteAfterCancel) {
   ASSERT_FALSE(base::PathExists(full_path));
 
   const char kData[] = "hello";
-  const int kDataLength = static_cast<int>(base::size(kData) - 1);
+  const int kDataLength = static_cast<int>(std::size(kData) - 1);
   ASSERT_EQ(kDataLength, base::WriteFile(full_path, kData, kDataLength));
   // The file that we created here should stick around when the BaseFile is
   // destroyed during TearDown.

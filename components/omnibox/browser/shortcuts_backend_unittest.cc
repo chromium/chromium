@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -229,7 +228,7 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
       "",        "",         AutocompleteMatchType::SEARCH_HISTORY },
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     ShortcutsDatabase::Shortcut::MatchCore match_core(MatchCoreForTesting(
         std::string(), cases[i].input_contents_class,
         cases[i].input_description_class, cases[i].input_type));

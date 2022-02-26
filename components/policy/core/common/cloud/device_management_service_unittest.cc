@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -50,7 +49,7 @@ const char kServiceUrl[] = "https://example.com/management_service";
 // Encoded empty response messages for testing the error code paths.
 const char kResponseEmpty[] = "\x08\x00";
 
-#define PROTO_STRING(name) (std::string(name, base::size(name) - 1))
+#define PROTO_STRING(name) (std::string(name, std::size(name) - 1))
 
 // Some helper constants.
 const char kOAuthToken[] = "oauth-token";

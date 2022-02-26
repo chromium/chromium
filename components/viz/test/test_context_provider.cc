@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
@@ -125,7 +124,7 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
     return nullptr;
   }
   const GrGLubyte* GetStringi(GrGLenum name, GrGLuint i) override {
-    if (name == GL_EXTENSIONS && i < base::size(kExtensions))
+    if (name == GL_EXTENSIONS && i < std::size(kExtensions))
       return reinterpret_cast<const GLubyte*>(kExtensions[i]);
     return nullptr;
   }
@@ -158,7 +157,7 @@ class TestGLES2InterfaceForContextProvider : public TestGLES2Interface {
  private:
   static std::string BuildExtensionString(std::string additional_extensions) {
     std::string extension_string = kExtensions[0];
-    for (size_t i = 1; i < base::size(kExtensions); ++i) {
+    for (size_t i = 1; i < std::size(kExtensions); ++i) {
       extension_string += " ";
       extension_string += kExtensions[i];
     }

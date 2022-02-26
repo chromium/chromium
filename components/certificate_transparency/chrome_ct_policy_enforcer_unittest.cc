@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/build_time.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -42,7 +41,7 @@ namespace {
 const char kGoogleAviatorLogID[] =
     "\x68\xf6\x98\xf8\x1f\x64\x82\xbe\x3a\x8c\xee\xb9\x28\x1d\x4c\xfc\x71\x51"
     "\x5d\x67\x93\xd4\x44\xd1\x0a\x67\xac\xbb\x4f\x4f\xfb\xc4";
-static_assert(base::size(kGoogleAviatorLogID) - 1 == crypto::kSHA256Length,
+static_assert(std::size(kGoogleAviatorLogID) - 1 == crypto::kSHA256Length,
               "Incorrect log ID length.");
 
 }  // namespace
@@ -98,7 +97,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     static const char kCertlyLogID[] =
         "\xcd\xb5\x17\x9b\x7f\xc1\xc0\x46\xfe\xea\x31\x13\x6a\x3f\x8f\x00\x2e"
         "\x61\x82\xfa\xf8\x89\x6f\xec\xc8\xb2\xf5\xb5\xab\x60\x49\x00";
-    static_assert(base::size(kCertlyLogID) - 1 == crypto::kSHA256Length,
+    static_assert(std::size(kCertlyLogID) - 1 == crypto::kSHA256Length,
                   "Incorrect log ID length.");
 
     scoped_refptr<SignedCertificateTimestamp> sct(
@@ -261,7 +260,7 @@ TEST_F(ChromeCTPolicyEnforcerTestPre2022Policy,
                    {// Cert valid for over 39 months, needs 5 SCTs.
                     time_2015_3_0_25_11_25_0_0, time_2018_6_0_27_11_25_0_0, 5}};
 
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     SCOPED_TRACE(i);
     const base::Time& start = kTestData[i].validity_start;
     const base::Time& end = kTestData[i].validity_end;
@@ -869,7 +868,7 @@ TEST_F(ChromeCTPolicyEnforcerTest2022PolicyAllCerts, UpdatedSCTRequirements) {
                    {// Cert valid for over 180 days, needs 3 SCTs.
                     time_2015_3_0_25_11_25_0_0, time_2016_3_0_25_11_25_0_0, 3}};
 
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     SCOPED_TRACE(i);
     const base::Time& validity_start = kTestData[i].validity_start;
     const base::Time& validity_end = kTestData[i].validity_end;

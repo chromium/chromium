@@ -9,7 +9,6 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1542,8 +1541,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsRemove) {
 
   DiffVisits(old_visits, new_url, &new_visits, &removed_visits);
   EXPECT_TRUE(new_visits.empty());
-  ASSERT_EQ(removed_visits.size(), base::size(visits_removed));
-  for (size_t i = 0; i < base::size(visits_removed); ++i) {
+  ASSERT_EQ(removed_visits.size(), std::size(visits_removed));
+  for (size_t i = 0; i < std::size(visits_removed); ++i) {
     EXPECT_EQ(removed_visits[i].visit_time.ToInternalValue(),
               visits_removed[i]);
   }
@@ -1576,8 +1575,8 @@ TEST_F(TypedURLSyncBridgeTest, DiffVisitsAdd) {
 
   DiffVisits(old_visits, new_url, &new_visits, &removed_visits);
   EXPECT_TRUE(removed_visits.empty());
-  ASSERT_TRUE(new_visits.size() == base::size(visits_added));
-  for (size_t i = 0; i < base::size(visits_added); ++i) {
+  ASSERT_TRUE(new_visits.size() == std::size(visits_added));
+  for (size_t i = 0; i < std::size(visits_added); ++i) {
     EXPECT_EQ(new_visits[i].first.ToInternalValue(), visits_added[i]);
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         new_visits[i].second, ui::PAGE_TRANSITION_TYPED));

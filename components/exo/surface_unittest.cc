@@ -840,11 +840,11 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
       gfx::RectF(10.5, 20, 30, 40.5), gfx::RectF(10.5, 20.5, 30, 40)};
   bool kExpectedAligned[] = {true,  true,  false, false,
                              false, false, false, false};
-  static_assert(base::size(kTestRects) == base::size(kExpectedAligned),
+  static_assert(std::size(kTestRects) == std::size(kExpectedAligned),
                 "Number of elements in each list should be the identical.");
   for (int j = 0; j < 2; j++) {
     const bool kTestCaseRotation = (j == 1);
-    for (size_t i = 0; i < base::size(kTestRects); i++) {
+    for (size_t i = 0; i < std::size(kTestRects); i++) {
       auto rect_in_dip = kTestRects[i];
       device_scale_transform.TransformRect(&rect_in_dip);
       sub_surface->SetPosition(rect_in_dip.origin());
@@ -1264,7 +1264,7 @@ TEST_P(SurfaceTest, ColorBufferAlpha) {
   constexpr SkColor4f kBuffColorExpected[] = {{1.f, 0.5f, 0.f, 1.f},
                                               {0.f, 0.5f, 1.f, 0.f}};
   constexpr bool kExpectedOpaque[] = {true, false};
-  for (size_t i = 0; i < base::size(kBuffColorExpected); i++) {
+  for (size_t i = 0; i < std::size(kBuffColorExpected); i++) {
     auto buffer =
         std::make_unique<SolidColorBuffer>(kBuffColorExpected[i], buffer_size);
     auto surface = std::make_unique<Surface>();

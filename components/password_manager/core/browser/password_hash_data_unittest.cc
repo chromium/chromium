@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_hash_data.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,12 +19,12 @@ TEST(PasswordHashDataTest, CalculatePasswordHash) {
       UINT64_C(0x3645af77f),
   };
 
-  static_assert(base::size(kPlainText) == base::size(kSalt),
+  static_assert(std::size(kPlainText) == std::size(kSalt),
                 "Arrays must have the same size");
-  static_assert(base::size(kPlainText) == base::size(kExpectedHash),
+  static_assert(std::size(kPlainText) == std::size(kExpectedHash),
                 "Arrays must have the same size");
 
-  for (size_t i = 0; i < base::size(kPlainText); ++i) {
+  for (size_t i = 0; i < std::size(kPlainText); ++i) {
     SCOPED_TRACE(i);
     std::u16string text = base::UTF8ToUTF16(kPlainText[i]);
     EXPECT_EQ(kExpectedHash[i], CalculatePasswordHash(text, kSalt[i]));

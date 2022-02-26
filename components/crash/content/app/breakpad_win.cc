@@ -4,13 +4,14 @@
 
 #include "components/crash/content/app/breakpad_win.h"
 
+#include <tchar.h>
+#include <windows.h>
+
 #include <crtdbg.h>
 #include <intrin.h>
 #include <shellapi.h>
 #include <stddef.h>
-#include <tchar.h>
 #include <userenv.h>
-#include <windows.h>
 #include <winnt.h>
 
 #include <algorithm>
@@ -21,7 +22,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
@@ -197,7 +197,7 @@ std::wstring GetProfileType() {
       { PT_ROAMING, L"roaming" },
       { PT_TEMPORARY, L"temporary" },
     };
-    for (size_t i = 0; i < base::size(kBitNames); ++i) {
+    for (size_t i = 0; i < std::size(kBitNames); ++i) {
       const DWORD this_bit = kBitNames[i].bit;
       if ((profile_bits & this_bit) != 0) {
         profile_type.append(kBitNames[i].name);

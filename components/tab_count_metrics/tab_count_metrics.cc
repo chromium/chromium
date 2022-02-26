@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 
 namespace tab_count_metrics {
@@ -41,9 +40,9 @@ constexpr const char* kTabCountBucketNames[]{
 std::string HistogramName(const std::string prefix,
                           bool live_tabs_only,
                           size_t bucket) {
-  static_assert(base::size(kTabCountBucketMins) == kNumTabCountBuckets,
+  static_assert(std::size(kTabCountBucketMins) == kNumTabCountBuckets,
                 "kTabCountBucketMins must have kNumTabCountBuckets elements.");
-  static_assert(base::size(kTabCountBucketNames) == kNumTabCountBuckets,
+  static_assert(std::size(kTabCountBucketNames) == kNumTabCountBuckets,
                 "kTabCountBucketNames must have kNumTabCountBuckets elements.");
   DCHECK_LT(bucket, kNumTabCountBuckets);
   DCHECK(prefix.length());

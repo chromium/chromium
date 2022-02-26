@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/spellcheck/renderer/spellcheck_worditerator.h"
+
 #include <stddef.h>
 
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/i18n/break_iterator.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/spellcheck/renderer/spellcheck_worditerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::i18n::BreakIterator;
@@ -156,7 +156,7 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
     },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%" PRIuS "]: language=%s", i,
                                     kTestCases[i].language));
 
@@ -261,7 +261,7 @@ TEST(SpellcheckWordIteratorTest, TreatNumbersAsWordCharacters) {
     },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%" PRIuS "]: language=%s", i,
                                     kTestCases[i].language));
 
@@ -308,7 +308,7 @@ TEST(SpellcheckWordIteratorTest, TypographicalApostropheIsPartOfWord) {
       {"en-US", L"....you\x2019re", L"you\x2019re"},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SpellcheckCharAttribute attributes;
     attributes.SetDefaultLanguage(kTestCases[i].language);
 

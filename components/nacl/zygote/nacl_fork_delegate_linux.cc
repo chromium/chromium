@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -220,7 +219,7 @@ void NaClForkDelegate::Init(const int sandboxdesc,
       const base::CommandLine& current_cmd_line =
           *base::CommandLine::ForCurrentProcess();
       cmd_line.CopySwitchesFrom(current_cmd_line, kForwardSwitches,
-                                base::size(kForwardSwitches));
+                                std::size(kForwardSwitches));
 
       // The command line needs to be tightly controlled to use
       // |helper_bootstrap_exe|. So from now on, argv_to_launch should be

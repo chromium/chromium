@@ -151,10 +151,10 @@ DbusMenu::DbusMenu(dbus::ExportedObject* exported_object,
       {kMethodGetProperty, &DbusMenu::OnGetProperty},
   };
 
-  // base::size(methods) calls for method export, 1 call for properties
+  // std::size(methods) calls for method export, 1 call for properties
   // initialization.
   barrier_ =
-      SuccessBarrierCallback(base::size(methods) + 1, std::move(callback));
+      SuccessBarrierCallback(std::size(methods) + 1, std::move(callback));
   for (const auto& method : methods) {
     menu_->ExportMethod(
         kInterfaceDbusMenu, method.name,

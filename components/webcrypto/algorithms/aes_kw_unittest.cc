@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
@@ -30,7 +29,7 @@ class WebCryptoAesKwTest : public WebCryptoTestBase {};
 TEST_F(WebCryptoAesKwTest, GenerateKeyBadLength) {
   const uint16_t kKeyLen[] = {0, 127, 257};
   blink::WebCryptoKey key;
-  for (size_t i = 0; i < base::size(kKeyLen); ++i) {
+  for (size_t i = 0; i < std::size(kKeyLen); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(Status::ErrorGenerateAesKeyLength(),
               GenerateSecretKey(CreateAesKwKeyGenAlgorithm(kKeyLen[i]), true,
@@ -447,7 +446,7 @@ TEST_F(WebCryptoAesKwTest, ImportKeyBadUsage_Raw) {
 
   std::vector<uint8_t> key_bytes(16);
 
-  for (size_t i = 0; i < base::size(bad_usages); ++i) {
+  for (size_t i = 0; i < std::size(bad_usages); ++i) {
     SCOPED_TRACE(i);
 
     blink::WebCryptoKey key;
@@ -485,7 +484,7 @@ TEST_F(WebCryptoAesKwTest, UnwrapHmacKeyBadUsage_JWK) {
       "C2B7F19A32EE31372CD40C9C969B8CD67553E5AEA7FD1144874584E46ABCD79FDC308848"
       "B2DD8BD36A2D61062B9C5B8B499B8D6EF8EB320D87A614952B4EE771";
 
-  for (size_t i = 0; i < base::size(bad_usages); ++i) {
+  for (size_t i = 0; i < std::size(bad_usages); ++i) {
     SCOPED_TRACE(i);
 
     blink::WebCryptoKey key;
@@ -534,7 +533,7 @@ TEST_F(WebCryptoAesKwTest, UnwrapRsaSsaPublicKeyBadUsage_JWK) {
       "40C72DCF0AEA454113CC47457B13305B25507CBEAB9BDC8D8E0F867F9167F9DCEF0D9F9B"
       "30F2EE83CEDFD51136852C8A5939B768";
 
-  for (size_t i = 0; i < base::size(bad_usages); ++i) {
+  for (size_t i = 0; i < std::size(bad_usages); ++i) {
     SCOPED_TRACE(i);
 
     blink::WebCryptoKey key;

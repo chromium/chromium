@@ -9,7 +9,6 @@
 #include <functional>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -160,8 +159,8 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE,
       GoogleServiceAuthError::SERVICE_ERROR};
   static_assert(
-      base::size(table) == GoogleServiceAuthError::NUM_STATES -
-                               GoogleServiceAuthError::kDeprecatedStateCount,
+      std::size(table) == GoogleServiceAuthError::NUM_STATES -
+                              GoogleServiceAuthError::kDeprecatedStateCount,
       "table array does not match the number of auth error types");
 
   for (GoogleServiceAuthError::State state : table) {

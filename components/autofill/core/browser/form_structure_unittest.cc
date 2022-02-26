@@ -4720,7 +4720,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
             encoder.Encode(form_signature, FieldSignature(),
                            RandomizedEncoder::FORM_URL, full_url));
   ASSERT_EQ(static_cast<size_t>(upload.field_size()),
-            base::size(kFieldMetadata));
+            std::size(kFieldMetadata));
 
   ASSERT_EQ(1, upload.randomized_form_metadata().button_title().size());
   EXPECT_EQ(upload.randomized_form_metadata()

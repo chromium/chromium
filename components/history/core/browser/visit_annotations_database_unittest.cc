@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
-#include "base/cxx17_backports.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
@@ -147,7 +146,7 @@ TEST_F(VisitAnnotationsDatabaseTest,
   AddContextAnnotationsForVisit(2, visit_context_annotations_list[1]);
   AddContextAnnotationsForVisit(3, visit_context_annotations_list[2]);
 
-  for (size_t i = 0; i < base::size(visit_context_annotations_list); ++i) {
+  for (size_t i = 0; i < std::size(visit_context_annotations_list); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     VisitContextAnnotations actual;
     VisitID visit_id = i + 1;  // VisitIDs are start at 1.

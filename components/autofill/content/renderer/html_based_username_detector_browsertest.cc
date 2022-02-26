@@ -181,7 +181,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, DeveloperGroupAttributes) {
       // Occurrence doesn't count.
       {{"identity_name", "idn", "johnsmith"}, {"id", "xid", "123"}, "xid"}};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
 
     const std::string& form_html =
@@ -253,7 +253,7 @@ TEST_F(HtmlBasedUsernameDetectorTest, UserGroupAttributes) {
           "noword",
       }};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
 
     const std::string& form_html =

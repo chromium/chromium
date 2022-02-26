@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1113,7 +1112,7 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenUserBlocklisted) {
       BlocklistReason::kBlocklistNotLoaded,
       BlocklistReason::kUserOptedOutInSession,
   };
-  EXPECT_EQ(base::size(expected_reasons), passed_reasons_.size());
+  EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);
   }
@@ -1150,7 +1149,7 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenHostBlocklisted) {
       BlocklistReason::kUserOptedOutInSession,
       BlocklistReason::kUserOptedOutInGeneral,
   };
-  EXPECT_EQ(base::size(expected_reasons), passed_reasons_.size());
+  EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);
   }
@@ -1189,7 +1188,7 @@ TEST_F(OptOutBlocklistTest, PassedReasonsWhenAllowed) {
       BlocklistReason::kUserOptedOutOfHost,
       BlocklistReason::kUserOptedOutOfType,
   };
-  EXPECT_EQ(base::size(expected_reasons), passed_reasons_.size());
+  EXPECT_EQ(std::size(expected_reasons), passed_reasons_.size());
   for (size_t i = 0; i < passed_reasons_.size(); i++) {
     EXPECT_EQ(expected_reasons[i], passed_reasons_[i]);
   }

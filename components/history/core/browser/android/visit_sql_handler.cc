@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_database.h"
 
@@ -25,7 +24,7 @@ const HistoryAndBookmarkRow::ColumnID kInterestingColumns[] = {
 } // namespace
 
 VisitSQLHandler::VisitSQLHandler(URLDatabase* url_db, VisitDatabase* visit_db)
-    : SQLHandler(kInterestingColumns, base::size(kInterestingColumns)),
+    : SQLHandler(kInterestingColumns, std::size(kInterestingColumns)),
       url_db_(url_db),
       visit_db_(visit_db) {}
 

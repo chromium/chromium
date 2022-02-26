@@ -9,7 +9,6 @@
 
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/utf_string_conversions.h"
@@ -56,7 +55,7 @@ void LoginDatabaseIOSTest::ClearKeychain() {
   const void* queryKeys[] = {kSecClass};
   const void* queryValues[] = {kSecClassGenericPassword};
   ScopedCFTypeRef<CFDictionaryRef> query(CFDictionaryCreate(
-      NULL, queryKeys, queryValues, base::size(queryKeys),
+      NULL, queryKeys, queryValues, std::size(queryKeys),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
   OSStatus status = SecItemDelete(query);
   // iOS7 returns an error of |errSecItemNotFound| if you try to clear an empty
@@ -94,7 +93,7 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
       std::u16string(),
   };
 
-  for (unsigned int i = 0; i < base::size(test_passwords); i++) {
+  for (unsigned int i = 0; i < std::size(test_passwords); i++) {
     std::string encrypted;
     EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
               login_db_->EncryptedString(test_passwords[i], &encrypted));
@@ -199,7 +198,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[2].date_created = base::Time::FromDoubleT(300);
   forms[2].password_value = u"pass2";
 
-  for (size_t i = 0; i < base::size(forms); i++) {
+  for (size_t i = 0; i < std::size(forms); i++) {
     std::ignore = login_db_->AddLogin(forms[i]);
   }
 

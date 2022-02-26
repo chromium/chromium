@@ -4,7 +4,6 @@
 
 #include "components/navigation_metrics/navigation_metrics.h"
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -49,7 +48,7 @@ const char* const kSchemeNames[] = {
     "externalfile",
 };
 
-static_assert(base::size(kSchemeNames) == static_cast<int>(Scheme::COUNT),
+static_assert(std::size(kSchemeNames) == static_cast<int>(Scheme::COUNT),
               "kSchemeNames should have Scheme::COUNT elements");
 
 }  // namespace

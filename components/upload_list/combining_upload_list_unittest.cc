@@ -105,9 +105,9 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
 
   std::vector<UploadList::UploadInfo> actual;
   combined_upload_list->GetUploads(20, &actual);
-  ASSERT_EQ(actual.size(), base::size(kExpectedUploadTimes));
+  ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
-  for (size_t i = 0; i < base::size(kExpectedUploadTimes); i++) {
+  for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
     EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
     EXPECT_EQ(actual[i].state, UploadList::UploadInfo::State::Uploaded)
@@ -205,9 +205,9 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
 
   std::vector<UploadList::UploadInfo> actual;
   combined_upload_list->GetUploads(20, &actual);
-  ASSERT_EQ(actual.size(), base::size(kExpectedUploadTimes));
+  ASSERT_EQ(actual.size(), std::size(kExpectedUploadTimes));
 
-  for (size_t i = 0; i < base::size(kExpectedUploadTimes); i++) {
+  for (size_t i = 0; i < std::size(kExpectedUploadTimes); i++) {
     EXPECT_EQ(actual[i].upload_time, kExpectedUploadTimes[i])
         << " for index " << i;
     EXPECT_EQ(actual[i].capture_time, kExpectedCaptureTimes[i])

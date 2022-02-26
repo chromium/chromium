@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -197,7 +196,7 @@ class HistoryQueryTest : public testing::Test {
 
     // Fill the test data.
     base_ = base::Time::Now().LocalMidnight();
-    for (size_t i = 0; i < base::size(test_entries); i++) {
+    for (size_t i = 0; i < std::size(test_entries); i++) {
       test_entries[i].time = GetTimeFromDaysAgo(test_entries[i].days_ago);
       AddEntryToHistory(test_entries[i]);
     }
@@ -458,7 +457,7 @@ TEST_F(HistoryQueryTest, TextSearchIDN) {
                        L"\u0438\u0434\u0435\u043d\u0442.\u0440\u0444"), 1, },
   };
 
-  for (size_t i = 0; i < base::size(queries); ++i) {
+  for (size_t i = 0; i < std::size(queries); ++i) {
     QueryHistory(queries[i].query, options, &results);
     EXPECT_EQ(queries[i].results_size, results.size());
   }
@@ -469,7 +468,7 @@ TEST_F(HistoryQueryTest, Paging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated.
   int expected_results[] = {4, 2, 3, 1, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 0};
-  TestPaging(std::string(), expected_results, base::size(expected_results));
+  TestPaging(std::string(), expected_results, std::size(expected_results));
 }
 
 TEST_F(HistoryQueryTest, TextSearchPaging) {
@@ -477,7 +476,7 @@ TEST_F(HistoryQueryTest, TextSearchPaging) {
   // be de-duplicated. Entry #4 does not contain the text "title", so it
   // shouldn't appear.
   int expected_results[] = { 2, 3, 1, 7, 6, 5 };
-  TestPaging("title", expected_results, base::size(expected_results));
+  TestPaging("title", expected_results, std::size(expected_results));
 }
 
 }  // namespace history

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -270,9 +269,9 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
   };
-  DCHECK(base::size(kErrorFlags) == base::size(kErrorTypes));
+  DCHECK(std::size(kErrorFlags) == std::size(kErrorTypes));
 
-  for (size_t i = 0; i < base::size(kErrorFlags); ++i) {
+  for (size_t i = 0; i < std::size(kErrorFlags); ++i) {
     if ((cert_status & kErrorFlags[i]) && errors) {
       errors->push_back(
           ErrorInfo::CreateError(kErrorTypes[i], cert.get(), url));

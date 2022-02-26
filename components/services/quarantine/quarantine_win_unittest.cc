@@ -47,8 +47,8 @@ const char* const kUntrustedURLs[] = {
 bool CreateFile(const base::FilePath& file_path) {
   constexpr char kTestData[] = "Hello world!";
 
-  return base::WriteFile(file_path, kTestData, base::size(kTestData)) ==
-         static_cast<int>(base::size(kTestData));
+  return base::WriteFile(file_path, kTestData, std::size(kTestData)) ==
+         static_cast<int>(std::size(kTestData));
 }
 
 base::FilePath GetZoneIdentifierStreamPath(const base::FilePath& file_path) {
@@ -122,8 +122,8 @@ bool AddInternetZoneIdentifierDirectly(const base::FilePath& file_path) {
   static const char kMotwForInternetZone[] = "[ZoneTransfer]\r\nZoneId=3\r\n";
   return base::WriteFile(GetZoneIdentifierStreamPath(file_path),
                          kMotwForInternetZone,
-                         base::size(kMotwForInternetZone)) ==
-         static_cast<int>(base::size(kMotwForInternetZone));
+                         std::size(kMotwForInternetZone)) ==
+         static_cast<int>(std::size(kMotwForInternetZone));
 }
 
 void CheckQuarantineResult(QuarantineFileResult result,

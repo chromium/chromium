@@ -1083,7 +1083,7 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
 
   Finish();
 
-  for (size_t i = 0; i < base::size(request_methods); i++) {
+  for (size_t i = 0; i < std::size(request_methods); i++) {
     SCOPED_TRACE(::testing::Message()
                  << "RequestMethod: " << request_methods[i].name);
     std::string url = origin + "/" + request_methods[i].name;
@@ -1091,7 +1091,7 @@ TEST_F(UrlPatternIndexTest, RequestMethod) {
                           flat::RequestMethod_ANY, false));
     EXPECT_TRUE(FindMatch(url, origin, other_element, no_activation,
                           flat::RequestMethod_NONE, false));
-    for (size_t j = 0; j < base::size(request_methods); j++) {
+    for (size_t j = 0; j < std::size(request_methods); j++) {
       EXPECT_EQ(i == j, !!FindMatch(url, origin, other_element, no_activation,
                                     request_methods[j].request_method, false));
     }
@@ -1140,7 +1140,7 @@ TEST_F(UrlPatternIndexTest, EmbedderConditions) {
                {url_2, match_first_element_three, false},
                {"http://abc.com", match_first_element_one, false}};
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(::testing::Message() << "Testing case " << i);
     bool disable_generic_rules = false;
     const flat::UrlRule* rule = FindMatch(

@@ -11,7 +11,6 @@
 #include <ostream>
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/case_conversion.h"
@@ -166,9 +165,9 @@ void GetFieldsForDistinguishingProfiles(
 
   std::vector<ServerFieldType> default_fields;
   if (!suggested_fields) {
-    default_fields.assign(kDefaultDistinguishingFields,
-                          kDefaultDistinguishingFields +
-                              base::size(kDefaultDistinguishingFields));
+    default_fields.assign(
+        kDefaultDistinguishingFields,
+        kDefaultDistinguishingFields + std::size(kDefaultDistinguishingFields));
     if (excluded_field == UNKNOWN_TYPE) {
       distinguishing_fields->swap(default_fields);
       return;

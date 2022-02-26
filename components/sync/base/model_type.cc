@@ -8,7 +8,6 @@
 
 #include <ostream>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -168,7 +167,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      ModelTypeForHistograms::kNigori},
 };
 
-static_assert(base::size(kModelTypeInfoMap) == GetNumModelTypes(),
+static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
 static_assert(38 == syncer::GetNumModelTypes(),

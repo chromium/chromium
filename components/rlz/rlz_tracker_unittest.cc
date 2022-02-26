@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -332,7 +331,7 @@ void RlzLibTest::InvokeDelayedInit() {
 
 void RlzLibTest::ExpectEventRecorded(const char* event_name, bool expected) {
   char cgi[rlz_lib::kMaxCgiLength];
-  GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi));
+  GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi));
   if (expected) {
     EXPECT_STR_CONTAINS(cgi, event_name);
   } else {

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -611,7 +610,7 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
 
   SetStaleDelay(kNoStaleDelaySec);
 
-  for (size_t i = 0; i < base::size(kUsabilityTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kUsabilityTestCases); ++i) {
     const auto& test_case = kUsabilityTestCases[i];
 
     SetStaleUsability(test_case.max_expired_time_sec, test_case.max_stale_uses,

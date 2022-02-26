@@ -20,7 +20,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/scoped_generic.h"
@@ -423,7 +422,7 @@ int RectsClient::Run(const ClientBase::InitParams& params,
                                    SK_ColorRED,  SK_ColorYELLOW,
                                    SK_ColorCYAN, SK_ColorMAGENTA};
         SkPaint paint;
-        paint.setColor(SkColorSetA(kColors[i % base::size(kColors)], 0xA0));
+        paint.setColor(SkColorSetA(kColors[i % std::size(kColors)], 0xA0));
         canvas->rotate(rotation / num_rects);
         canvas->drawIRect(rect, paint);
       }

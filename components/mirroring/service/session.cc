@@ -129,7 +129,7 @@ class TransportClient final : public media::cast::CastTransport::Client {
 // Generates a string with cryptographically secure random bytes.
 std::string MakeRandomString(size_t length) {
   std::string result(length, ' ');
-  crypto::RandBytes(base::data(result), length);
+  crypto::RandBytes(std::data(result), length);
   return result;
 }
 

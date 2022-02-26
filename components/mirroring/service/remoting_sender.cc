@@ -105,7 +105,7 @@ void RemotingSender::ReadFrame(uint32_t size) {
   } else {
     next_frame_data_.resize(size);
     data_pipe_reader_->Read(
-        reinterpret_cast<uint8_t*>(base::data(next_frame_data_)), size,
+        reinterpret_cast<uint8_t*>(std::data(next_frame_data_)), size,
         base::BindOnce(&RemotingSender::OnFrameRead, base::Unretained(this)));
   }
 }

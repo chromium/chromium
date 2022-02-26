@@ -12,7 +12,6 @@
 #include <memory>
 #include <numeric>
 
-#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -199,7 +198,7 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
           nullptr),
   };
 
-  for (size_t i = 0; i < base::size(trials); ++i) {
+  for (size_t i = 0; i < std::size(trials); ++i) {
     for (int j = 0; j < 100; ++j)
       trials[i]->AppendGroup(std::string(), 1);
   }
@@ -230,7 +229,7 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
           nullptr),
   };
 
-  for (size_t i = 0; i < base::size(trials); ++i) {
+  for (size_t i = 0; i < std::size(trials); ++i) {
     for (int j = 0; j < 100; ++j)
       trials[i]->AppendGroup(std::string(), 1);
   }
@@ -257,7 +256,7 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
           kCustomSeed, nullptr, nullptr),
   };
 
-  for (size_t i = 0; i < base::size(trials); ++i) {
+  for (size_t i = 0; i < std::size(trials); ++i) {
     for (int j = 0; j < 100; ++j)
       trials[i]->AppendGroup(std::string(), 1);
   }
@@ -286,7 +285,7 @@ TEST(EntropyProviderTest,
           kCustomSeed, nullptr, nullptr),
   };
 
-  for (size_t i = 0; i < base::size(trials); ++i) {
+  for (size_t i = 0; i < std::size(trials); ++i) {
     for (int j = 0; j < 100; ++j)
       trials[i]->AppendGroup(std::string(), 1);
   }
@@ -302,7 +301,7 @@ TEST(EntropyProviderTest, SHA1Entropy) {
                              GenerateSHA1Entropy("there", "1") };
 
   EXPECT_NE(results[0], results[1]);
-  for (size_t i = 0; i < base::size(results); ++i) {
+  for (size_t i = 0; i < std::size(results); ++i) {
     EXPECT_LE(0.0, results[i]);
     EXPECT_GT(1.0, results[i]);
   }
@@ -319,7 +318,7 @@ TEST(EntropyProviderTest, NormalizedMurmurHashEntropy) {
       GenerateNormalizedMurmurHashEntropy(4321, kMaxLowEntropySize, "1")};
 
   EXPECT_NE(results[0], results[1]);
-  for (size_t i = 0; i < base::size(results); ++i) {
+  for (size_t i = 0; i < std::size(results); ++i) {
     EXPECT_LE(0.0, results[i]);
     EXPECT_GT(1.0, results[i]);
   }
@@ -350,14 +349,14 @@ TEST(EntropyProviderTest, NormalizedMurmurHashEntropyProviderResults) {
 }
 
 TEST(EntropyProviderTest, SHA1EntropyIsUniform) {
-  for (size_t i = 0; i < base::size(kTestTrialNames); ++i) {
+  for (size_t i = 0; i < std::size(kTestTrialNames); ++i) {
     SHA1EntropyGenerator entropy_generator(kTestTrialNames[i]);
     PerformEntropyUniformityTest(kTestTrialNames[i], entropy_generator);
   }
 }
 
 TEST(EntropyProviderTest, NormalizedMurmurHashEntropyIsUniform) {
-  for (size_t i = 0; i < base::size(kTestTrialNames); ++i) {
+  for (size_t i = 0; i < std::size(kTestTrialNames); ++i) {
     NormalizedMurmurHashEntropyGenerator entropy_generator(kTestTrialNames[i]);
     PerformEntropyUniformityTest(kTestTrialNames[i], entropy_generator);
   }

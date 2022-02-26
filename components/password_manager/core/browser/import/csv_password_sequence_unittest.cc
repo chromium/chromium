@@ -107,7 +107,7 @@ TEST(CSVPasswordSequenceTest, Iteration) {
 
   size_t order = 0;
   for (const CSVPassword& pwd : seq) {
-    ASSERT_LT(order, base::size(kExpectedCredentials));
+    ASSERT_LT(order, std::size(kExpectedCredentials));
     PasswordForm parsed = pwd.ParseValid();
     const auto& expected = kExpectedCredentials[order];
     EXPECT_EQ(GURL(expected.url), parsed.url);

@@ -4,7 +4,6 @@
 
 #include "components/filename_generation/filename_generation.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -64,7 +63,7 @@ static const struct {
 #define MAYBE_TestEnsureHtmlExtension TestEnsureHtmlExtension
 #endif
 TEST(FilenameGenerationTest, MAYBE_TestEnsureHtmlExtension) {
-  for (size_t i = 0; i < base::size(kExtensionTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kExtensionTestCases); ++i) {
     base::FilePath original = base::FilePath(kExtensionTestCases[i].page_title);
     base::FilePath expected =
         base::FilePath(kExtensionTestCases[i].expected_name);
@@ -111,7 +110,7 @@ TEST(FilenameGenerationTest, MAYBE_TestEnsureMimeExtension) {
     {FPL("filename.abc"), FPL("filename.abc"), "unknown/unknown"},
     {FPL("filename"), FPL("filename"), "unknown/unknown"},
   };
-  for (uint32_t i = 0; i < base::size(kExtensionTests); ++i) {
+  for (uint32_t i = 0; i < std::size(kExtensionTests); ++i) {
     base::FilePath original = base::FilePath(kExtensionTests[i].page_title);
     base::FilePath expected = base::FilePath(kExtensionTests[i].expected_name);
     std::string mime_type(kExtensionTests[i].contents_mime_type);
@@ -166,7 +165,7 @@ static const struct GenerateFilenameTestCase {
 #define MAYBE_TestGenerateFilename TestGenerateFilename
 #endif
 TEST(FilenameGenerationTest, MAYBE_TestGenerateFilename) {
-  for (size_t i = 0; i < base::size(kGenerateFilenameCases); ++i) {
+  for (size_t i = 0; i < std::size(kGenerateFilenameCases); ++i) {
     base::FilePath save_name = GenerateFilename(
         kGenerateFilenameCases[i].page_title,
         GURL(kGenerateFilenameCases[i].page_url),

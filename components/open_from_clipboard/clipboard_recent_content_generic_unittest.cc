@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -123,7 +122,7 @@ TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
 
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     test_clipboard_->WriteText(test_data[i].clipboard.data(),
                                test_data[i].clipboard.length());
     test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));

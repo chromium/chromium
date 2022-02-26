@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/android/urls_sql_handler.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "components/history/core/browser/url_database.h"
 
@@ -21,7 +20,7 @@ const HistoryAndBookmarkRow::ColumnID kInterestingColumns[] = {
 }  // namespace
 
 UrlsSQLHandler::UrlsSQLHandler(URLDatabase* url_db)
-    : SQLHandler(kInterestingColumns, base::size(kInterestingColumns)),
+    : SQLHandler(kInterestingColumns, std::size(kInterestingColumns)),
       url_db_(url_db) {}
 
 UrlsSQLHandler:: ~UrlsSQLHandler() {

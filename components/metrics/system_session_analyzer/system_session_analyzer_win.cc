@@ -4,7 +4,6 @@
 
 #include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 
@@ -300,7 +299,7 @@ bool SystemSessionAnalyzer::ProcessSession(const EventInfo& end,
 
 SystemSessionAnalyzer::EvtHandle SystemSessionAnalyzer::CreateRenderContext() {
   LPCWSTR value_paths[] = {kEventIdPath, kEventTimePath};
-  const DWORD kValueCnt = base::size(value_paths);
+  const DWORD kValueCnt = std::size(value_paths);
 
   EVT_HANDLE context = nullptr;
   context =

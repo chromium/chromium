@@ -4,7 +4,6 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
@@ -83,7 +82,7 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
 
   std::string file_content(model_file.GetLength(), '\0');
   int bytes_read =
-      model_file.Read(0, base::data(file_content), model_file.GetLength());
+      model_file.Read(0, std::data(file_content), model_file.GetLength());
   if (bytes_read != model_file.GetLength()) {
     return;
   }

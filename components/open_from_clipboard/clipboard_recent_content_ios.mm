@@ -5,11 +5,10 @@
 #import "components/open_from_clipboard/clipboard_recent_content_ios.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <UIKit/UIKit.h>
 #include <stddef.h>
 #include <stdint.h>
-#import <UIKit/UIKit.h>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -35,7 +34,7 @@ const char* kAuthorizedSchemes[] = {
 NSSet<NSString*>* getAuthorizedSchemeList(
     const std::string& application_scheme) {
   NSMutableSet<NSString*>* schemes = [NSMutableSet set];
-  for (size_t i = 0; i < base::size(kAuthorizedSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kAuthorizedSchemes); ++i) {
     [schemes addObject:base::SysUTF8ToNSString(kAuthorizedSchemes[i])];
   }
   if (!application_scheme.empty()) {

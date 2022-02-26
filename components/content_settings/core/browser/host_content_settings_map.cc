@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
@@ -83,7 +82,7 @@ constexpr ProviderNamesSourceMapEntry kProviderNamesSourceMap[] = {
 };
 
 static_assert(
-    base::size(kProviderNamesSourceMap) ==
+    std::size(kProviderNamesSourceMap) ==
         HostContentSettingsMap::NUM_PROVIDER_TYPES,
     "kProviderNamesSourceMap should have NUM_PROVIDER_TYPES elements");
 
@@ -862,7 +861,7 @@ base::Value HostContentSettingsMap::GetWebsiteSetting(
 // static
 HostContentSettingsMap::ProviderType
 HostContentSettingsMap::GetProviderTypeFromSource(const std::string& source) {
-  for (size_t i = 0; i < base::size(kProviderNamesSourceMap); ++i) {
+  for (size_t i = 0; i < std::size(kProviderNamesSourceMap); ++i) {
     if (source == kProviderNamesSourceMap[i].provider_name)
       return static_cast<ProviderType>(i);
   }

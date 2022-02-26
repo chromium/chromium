@@ -4,7 +4,6 @@
 
 #include "components/crx_file/crx_creator.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "components/crx_file/crx3.pb.h"
@@ -32,7 +31,7 @@ CreatorResult ReadAndSignArchive(base::File* file,
   int read = 0;
   static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
   while ((read = file->ReadAtCurrentPos(reinterpret_cast<char*>(buffer),
-                                        base::size(buffer))) > 0) {
+                                        std::size(buffer))) > 0) {
     if (!signer->Update(buffer, read))
       return CreatorResult::ERROR_SIGNING_FAILURE;
   }
@@ -50,7 +49,7 @@ bool WriteArchive(base::File* out, base::File* in) {
   char buffer[1 << 12] = {};
   int read = 0;
   in->Seek(base::File::Whence::FROM_BEGIN, 0);
-  while ((read = in->ReadAtCurrentPos(buffer, base::size(buffer))) > 0) {
+  while ((read = in->ReadAtCurrentPos(buffer, std::size(buffer))) > 0) {
     if (out->WriteAtCurrentPos(buffer, read) != read)
       return false;
   }
@@ -82,9 +81,9 @@ CreatorResult SignArchiveAndCreateHeader(const base::FilePath& output_path,
   // through, run ZIP through.
   auto signer = crypto::SignatureCreator::Create(
       signing_key, crypto::SignatureCreator::HashAlgorithm::SHA256);
-  signer->Update(kSignatureContext, base::size(kSignatureContext));
+  signer->Update(kSignatureContext, std::size(kSignatureContext));
   signer->Update(signed_header_size_octets,
-                 base::size(signed_header_size_octets));
+                 std::size(signed_header_size_octets));
   signer->Update(
       reinterpret_cast<const uint8_t*>(signed_header_data_str.data()),
       signed_header_data_str.size());
@@ -121,9 +120,9 @@ CreatorResult WriteCRX(const CrxFileHeader& header,
   static_assert(sizeof(char) == sizeof(uint8_t), "Unsupported char size.");
   if (!WriteBuffer(&crx, kCrxFileHeaderMagic, kCrxFileHeaderMagicSize) ||
       !WriteBuffer(&crx, reinterpret_cast<const char*>(format_version_octets),
-                   base::size(format_version_octets)) ||
+                   std::size(format_version_octets)) ||
       !WriteBuffer(&crx, reinterpret_cast<const char*>(header_size_octets),
-                   base::size(header_size_octets)) ||
+                   std::size(header_size_octets)) ||
       !WriteBuffer(&crx, header_str.c_str(), header_str.length()) ||
       !WriteArchive(&crx, file)) {
     return CreatorResult::ERROR_FILE_WRITE_FAILURE;

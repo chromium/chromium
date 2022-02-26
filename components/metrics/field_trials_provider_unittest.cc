@@ -4,7 +4,6 @@
 
 #include "components/metrics/field_trials_provider.h"
 
-#include "base/cxx17_backports.h"
 #include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -103,7 +102,7 @@ TEST_F(FieldTrialsProviderTest, ProvideSyntheticTrials) {
   provider.ProvideSystemProfileMetricsWithLogCreationTime(log_creation_time,
                                                           &proto);
 
-  EXPECT_EQ(base::size(kAllTrialIds),
+  EXPECT_EQ(std::size(kAllTrialIds),
             static_cast<size_t>(proto.field_trial_size()));
   CheckFieldTrialsInSystemProfile(proto, kAllTrialIds);
 }
@@ -115,7 +114,7 @@ TEST_F(FieldTrialsProviderTest, NoSyntheticTrials) {
   provider.ProvideSystemProfileMetricsWithLogCreationTime(base::TimeTicks(),
                                                           &proto);
 
-  EXPECT_EQ(base::size(kFieldTrialIds),
+  EXPECT_EQ(std::size(kFieldTrialIds),
             static_cast<size_t>(proto.field_trial_size()));
   CheckFieldTrialsInSystemProfile(proto, kFieldTrialIds);
 }
@@ -139,7 +138,7 @@ TEST_F(FieldTrialsProviderTest, ProvideCurrentSessionData) {
 
   provider.ProvideCurrentSessionData(&uma_log);
 
-  EXPECT_EQ(base::size(kAllTrialIds),
+  EXPECT_EQ(std::size(kAllTrialIds),
             static_cast<size_t>(uma_log.system_profile().field_trial_size()));
   CheckFieldTrialsInSystemProfile(uma_log.system_profile(), kAllTrialIds);
 }

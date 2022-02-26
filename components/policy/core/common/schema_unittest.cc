@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/policy/core/common/schema_internal.h"
@@ -424,7 +423,7 @@ TEST(SchemaTest, ValidSchema) {
     { "StringWithPattern",            base::Value::Type::STRING },
   };
   Schema::Iterator it = schema.GetPropertiesIterator();
-  for (size_t i = 0; i < base::size(kExpectedProperties); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedProperties); ++i) {
     ASSERT_FALSE(it.IsAtEnd());
     EXPECT_STREQ(kExpectedProperties[i].expected_key, it.key());
     ASSERT_TRUE(it.schema().valid());
@@ -488,7 +487,7 @@ TEST(SchemaTest, Lookups) {
     { "aba",    base::Value::Type::INTEGER },
     { "abab",   base::Value::Type::STRING },
   };
-  for (size_t i = 0; i < base::size(kExpectedKeys); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedKeys); ++i) {
     Schema sub = schema.GetKnownProperty(kExpectedKeys[i].expected_key);
     ASSERT_TRUE(sub.valid());
     EXPECT_EQ(kExpectedKeys[i].expected_type, sub.type());
@@ -614,7 +613,7 @@ TEST(SchemaTest, Wrap) {
   };
 
   Schema::Iterator it = schema.GetPropertiesIterator();
-  for (size_t i = 0; i < base::size(kExpectedProperties); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedProperties); ++i) {
     ASSERT_FALSE(it.IsAtEnd());
     EXPECT_STREQ(kExpectedProperties[i].key, it.key());
     Schema sub = it.schema();

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -220,12 +219,12 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
   // The form owns the following variables, so they should not be deleted.
   AutofillField* parsed_fields[FIELD_MAX];
 
-  for (size_t i = 0; i < base::size(kPhoneFieldGrammars); ++i) {
+  for (size_t i = 0; i < std::size(kPhoneFieldGrammars); ++i) {
     memset(parsed_fields, 0, sizeof(parsed_fields));
     size_t saved_cursor = scanner->SaveCursor();
 
     // Attempt to parse according to the next grammar.
-    for (; i < base::size(kPhoneFieldGrammars) &&
+    for (; i < std::size(kPhoneFieldGrammars) &&
            kPhoneFieldGrammars[i].regex != REGEX_SEPARATOR;
          ++i) {
       const bool is_country_code_field =
@@ -254,7 +253,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
       }
     }
 
-    if (i >= base::size(kPhoneFieldGrammars)) {
+    if (i >= std::size(kPhoneFieldGrammars)) {
       scanner->RewindTo(saved_cursor);
       return nullptr;  // Parsing failed.
     }
@@ -264,11 +263,11 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
     // Proceed to the next grammar.
     do {
       ++i;
-    } while (i < base::size(kPhoneFieldGrammars) &&
+    } while (i < std::size(kPhoneFieldGrammars) &&
              kPhoneFieldGrammars[i].regex != REGEX_SEPARATOR);
 
     scanner->RewindTo(saved_cursor);
-    if (i + 1 == base::size(kPhoneFieldGrammars)) {
+    if (i + 1 == std::size(kPhoneFieldGrammars)) {
       return nullptr;  // Tried through all the possibilities - did not match.
     }
   }

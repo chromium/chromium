@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -102,13 +101,13 @@ class OriginTrialPolicyImplTest : public testing::Test {
   OriginTrialPolicyImplTest()
       : token1_signature_(
             std::string(reinterpret_cast<const char*>(kToken1Signature),
-                        base::size(kToken1Signature))),
+                        std::size(kToken1Signature))),
         token2_signature_(
             std::string(reinterpret_cast<const char*>(kToken2Signature),
-                        base::size(kToken2Signature))),
+                        std::size(kToken2Signature))),
         token3_signature_(
             std::string(reinterpret_cast<const char*>(kToken3Signature),
-                        base::size(kToken3Signature))),
+                        std::size(kToken3Signature))),
         two_disabled_tokens_(
             base::JoinString({kToken1SignatureEncoded, kToken2SignatureEncoded},
                              kTokenSeparator)),
@@ -117,8 +116,7 @@ class OriginTrialPolicyImplTest : public testing::Test {
                               kToken3SignatureEncoded},
                              kTokenSeparator)),
         manager_(base::WrapUnique(new OriginTrialPolicyImpl())),
-        default_keys_(manager_->GetPublicKeys()) {
-  }
+        default_keys_(manager_->GetPublicKeys()) {}
 
   OriginTrialPolicyImpl* manager() { return manager_.get(); }
   const std::vector<blink::OriginTrialPublicKey>& default_keys() {

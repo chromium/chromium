@@ -263,7 +263,7 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
       // TileManager can set to cancel this wait.
       base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
       size_t index =
-          base::WaitableEvent::WaitMany(waitables, base::size(waitables));
+          base::WaitableEvent::WaitMany(waitables, std::size(waitables));
       if (index == 1)
         cancelled->data = true;
     } else {

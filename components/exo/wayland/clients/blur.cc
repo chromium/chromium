@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -89,7 +88,7 @@ void DrawContents(SkImage* background_grid_image,
                                  SK_ColorRED,  SK_ColorYELLOW,
                                  SK_ColorCYAN, SK_ColorMAGENTA};
       SkPaint paint;
-      paint.setColor(kColors[(y * kGridSize + x) % base::size(kColors)]);
+      paint.setColor(kColors[(y * kGridSize + x) % std::size(kColors)]);
       canvas->save();
       canvas->translate(
           x * cell_size.width() + SkScalarHalf(cell_size.width()),

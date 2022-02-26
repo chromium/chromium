@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -581,7 +580,7 @@ TEST_F(HistoryQuickProviderTest, ContentsClass) {
   // increase that number in the future.  Regardless, we require the first
   // five offsets to be correct--in this example these cover at least one
   // occurrence of each term.
-  EXPECT_LE(contents_class.size(), base::size(expected_offsets));
+  EXPECT_LE(contents_class.size(), std::size(expected_offsets));
   EXPECT_GE(contents_class.size(), 5u);
   for (size_t i = 0; i < contents_class.size(); ++i)
     EXPECT_EQ(expected_offsets[i], contents_class[i].offset);

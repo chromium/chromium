@@ -542,7 +542,7 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
       {L"3.141592653", true},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t input_length = 0;
     if (kTestCases[i].input)
       input_length = wcslen(kTestCases[i].input);
@@ -948,7 +948,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"\x043e\x043d\x04b3\x043e \x0430\x0441\x0442."},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
     size_t input_length = 0;
     if (kTestCases[i].input)
@@ -1006,7 +1006,7 @@ TEST_F(SpellCheckTest, MisspelledWords) {
     },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
 
     std::u16string word(base::WideToUTF16(kTestCases[i].input));
@@ -1396,9 +1396,9 @@ TEST_F(SpellCheckTest, EnglishWords) {
 
   static const char* const kLocales[] = { "en-GB", "en-US", "en-CA", "en-AU" };
 
-  for (size_t j = 0; j < base::size(kLocales); ++j) {
+  for (size_t j = 0; j < std::size(kLocales); ++j) {
     ReinitializeSpellCheck(kLocales[j]);
-    for (size_t i = 0; i < base::size(kTestCases); ++i) {
+    for (size_t i = 0; i < std::size(kTestCases); ++i) {
       size_t input_length = 0;
       if (kTestCases[i].input)
         input_length = strlen(kTestCases[i].input);
@@ -1513,7 +1513,7 @@ TEST_F(SpellCheckTest, SpellingEngine_CheckSpelling) {
   InitializeIfNeeded();
   ASSERT_FALSE(InitializeIfNeeded());
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     bool result = CheckSpelling(kTestCases[i].word, 0);
     EXPECT_EQ(kTestCases[i].expected_result, result) <<
         "Failed test for " << kTestCases[i].word;
@@ -1531,7 +1531,7 @@ TEST_F(SpellCheckTest, LogicalSuggestions) {
     { "accidently", "accidentally" }
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
     std::vector<std::u16string> suggestions;
@@ -1559,9 +1559,9 @@ TEST_F(SpellCheckTest, IsValidContraction) {
       L"in’n’out",
   };
 
-  for (size_t i = 0; i < base::size(kLanguages); ++i) {
+  for (size_t i = 0; i < std::size(kLanguages); ++i) {
     ReinitializeSpellCheck(kLanguages[i]);
-    for (size_t j = 0; j < base::size(kWords); ++j)
+    for (size_t j = 0; j < std::size(kWords); ++j)
       EXPECT_TRUE(IsValidContraction(base::WideToUTF16(kWords[j]), 0));
   }
 }

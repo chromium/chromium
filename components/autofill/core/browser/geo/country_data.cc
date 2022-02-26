@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -293,7 +292,7 @@ const StaticCountryAddressImportRequirementsData
 // based on |kCountryAddressImportRequirementsData|.
 std::vector<std::string> GetCountryCodes() {
   std::vector<std::string> country_codes;
-  country_codes.reserve(base::size(kCountryAddressImportRequirementsData));
+  country_codes.reserve(std::size(kCountryAddressImportRequirementsData));
   for (const auto& static_data : kCountryAddressImportRequirementsData) {
     country_codes.push_back(static_data.country_code);
   }

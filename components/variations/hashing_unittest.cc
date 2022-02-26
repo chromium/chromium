@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -26,7 +25,7 @@ TEST(HashingTest, HashName) {
                       {"abcdefghijklmonpqrstuvwxyz", 787728696u},
                       {"0123456789ABCDEF", 348858318U}};
 
-  for (size_t i = 0; i < base::size(known_hashes); ++i) {
+  for (size_t i = 0; i < std::size(known_hashes); ++i) {
     EXPECT_EQ(known_hashes[i].hash_value, HashName(known_hashes[i].name));
   }
 }

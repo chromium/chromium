@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -62,7 +61,7 @@ TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
        nullptr},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     SetSyncingPasswords(kTestCases[i].password_sync ==
                         TestCase::SYNCING_PASSWORDS);
@@ -93,7 +92,7 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountCredential) {
        true},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     SetSyncingPasswords(true);
     FakeSigninAs(kTestCases[i].fake_sync_username);
@@ -117,7 +116,7 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
       {"sync_user@example.org", "non_sync_user@example.org", false},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     if (kTestCases[i].fake_sync_email.empty()) {
       EXPECT_EQ(kTestCases[i].expected_result,

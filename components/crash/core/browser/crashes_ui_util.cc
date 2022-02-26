@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +42,7 @@ const CrashesUILocalizedString kCrashesUILocalizedStrings[] = {
 };
 
 const size_t kCrashesUILocalizedStringsCount =
-    base::size(kCrashesUILocalizedStrings);
+    std::size(kCrashesUILocalizedStrings);
 
 const char kCrashesUICrashesJS[] = "crashes.js";
 const char kCrashesUICrashesCSS[] = "crashes.css";

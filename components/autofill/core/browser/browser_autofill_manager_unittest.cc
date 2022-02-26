@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
@@ -7542,8 +7541,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormSubmitted(form);
 
   EXPECT_EQ(form.fields.size(), form_seen_by_ahm.fields.size());
-  ASSERT_EQ(base::size(test_fields), form_seen_by_ahm.fields.size());
-  for (size_t i = 0; i < base::size(test_fields); ++i) {
+  ASSERT_EQ(std::size(test_fields), form_seen_by_ahm.fields.size());
+  for (size_t i = 0; i < std::size(test_fields); ++i) {
     EXPECT_EQ(
         form_seen_by_ahm.fields[i].should_autocomplete,
         test_fields[i].expected_field_type != CREDIT_CARD_VERIFICATION_CODE);

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_DELEGATED_INK_PREDICTION_CONFIGURATION_H_
 #define COMPONENTS_VIZ_COMMON_DELEGATED_INK_PREDICTION_CONFIGURATION_H_
 
-#include "base/cxx17_backports.h"
-
 namespace viz {
 
 struct PredictionConfiguration {
@@ -25,7 +23,7 @@ constexpr PredictionConfiguration kPredictionConfigs[] = {{1, 12},
                                                           {2, 3}};
 
 // Current number of different prediction configurations that are being tested.
-constexpr int kNumberOfPredictionConfigs = base::size(kPredictionConfigs);
+constexpr int kNumberOfPredictionConfigs = std::size(kPredictionConfigs);
 
 // Indicates which element of |kPredictionConfigs| is being selected in
 // tests and viz/common/features.cc

@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -272,7 +272,7 @@ void ThreadWrapper::Send(const rtc::Location& posted_from,
   while (!pending_send.done_event.IsSignaled()) {
     base::WaitableEvent* events[] = {&pending_send.done_event,
                                      &current_thread->pending_send_event_};
-    size_t event = base::WaitableEvent::WaitMany(events, base::size(events));
+    size_t event = base::WaitableEvent::WaitMany(events, std::size(events));
     DCHECK(event == 0 || event == 1);
 
     if (event == 1)

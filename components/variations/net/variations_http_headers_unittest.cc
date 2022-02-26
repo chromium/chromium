@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/variations/variations.mojom.h"
@@ -204,7 +203,7 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeader) {
       {"https://a.b.litepages.googlezip.net", true},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     const GURL url(cases[i].url);
     EXPECT_EQ(cases[i].should_append_headers,
               ShouldAppendVariationsHeaderForTesting(url, "Append"))

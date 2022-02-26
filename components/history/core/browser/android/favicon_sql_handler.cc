@@ -5,7 +5,6 @@
 #include "components/history/core/browser/android/favicon_sql_handler.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/favicon/core/favicon_database.h"
@@ -23,7 +22,7 @@ const HistoryAndBookmarkRow::ColumnID kInterestingColumns[] = {
 }  // namespace
 
 FaviconSQLHandler::FaviconSQLHandler(favicon::FaviconDatabase* favicon_db)
-    : SQLHandler(kInterestingColumns, base::size(kInterestingColumns)),
+    : SQLHandler(kInterestingColumns, std::size(kInterestingColumns)),
       favicon_db_(favicon_db) {}
 
 FaviconSQLHandler::~FaviconSQLHandler() {

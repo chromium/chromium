@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/base64url.h"
-#include "base/cxx17_backports.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
 #include "components/webcrypto/crypto_data.h"
@@ -128,7 +127,7 @@ TEST_F(WebCryptoRsaOaepTest, ExportPublicJwk) {
                    {blink::kWebCryptoAlgorithmIdSha256, "RSA-OAEP-256"},
                    {blink::kWebCryptoAlgorithmIdSha384, "RSA-OAEP-384"},
                    {blink::kWebCryptoAlgorithmIdSha512, "RSA-OAEP-512"}};
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     const TestData& test_data = kTestData[i];
     SCOPED_TRACE(test_data.expected_jwk_alg);
 
@@ -481,7 +480,7 @@ TEST_F(WebCryptoRsaOaepTest, ImportExportJwkRsaPublicKey) {
       {blink::kWebCryptoAlgorithmIdSha512, blink::kWebCryptoKeyUsageEncrypt,
        "RSA-OAEP-512"}};
 
-  for (size_t test_index = 0; test_index < base::size(kTests); ++test_index) {
+  for (size_t test_index = 0; test_index < std::size(kTests); ++test_index) {
     SCOPED_TRACE(test_index);
     const TestCase& test = kTests[test_index];
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/query_parser/query_parser.h"
+
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/query_parser/query_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace query_parser {
@@ -80,7 +80,7 @@ TEST_F(QueryParserTest, NumWords) {
     { "foo \"bar baz\"  blah", 4 },
   };
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::u16string query_string;
     EXPECT_EQ(
         data[i].expected_word_count,
@@ -116,7 +116,7 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatch) {
     { "\"foo blah\"",  "\"foo blah\"",     true,  1, 9, 0, 0 },
     { "foo blah",      "\"foo bar blah\"", true,  1, 4, 9, 13 },
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     query_parser::QueryNodeVector query_nodes;
     QueryParser::ParseQueryNodes(base::UTF8ToUTF16(data[i].query),
                                  MatchingAlgorithm::DEFAULT, &query_nodes);
@@ -152,7 +152,7 @@ TEST_F(QueryParserTest, ParseQueryWords) {
     { "\"foo bar\"",   "foo", "bar", "",  2 },
     { "\"foo bar\" a", "foo", "bar", "a", 3 },
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::vector<std::u16string> results;
     QueryParser::ParseQueryWords(base::UTF8ToUTF16(data[i].text),
                                  MatchingAlgorithm::DEFAULT, &results);
@@ -194,7 +194,7 @@ TEST_F(QueryParserTest, ParseQueryNodesAndMatchExact) {
       {"\"foo blah\"", "\"foo blah\"", true},
       {"foo blah", "\"foo bar blah\"", true},
   };
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     SCOPED_TRACE(::testing::Message()
                  << " Testing case i=" << i << " query=" << data[i].query
                  << " find_in_text=" << data[i].find_in_text);

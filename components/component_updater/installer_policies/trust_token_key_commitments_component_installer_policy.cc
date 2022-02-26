@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -152,7 +151,7 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::GetPublicKeyHash(
   DCHECK(hash);
   hash->assign(kTrustTokenKeyCommitmentsPublicKeySHA256,
                kTrustTokenKeyCommitmentsPublicKeySHA256 +
-                   base::size(kTrustTokenKeyCommitmentsPublicKeySHA256));
+                   std::size(kTrustTokenKeyCommitmentsPublicKeySHA256));
 }
 
 // static

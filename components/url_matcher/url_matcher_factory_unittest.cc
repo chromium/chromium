@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -155,7 +154,7 @@ TEST(URLMatcherFactoryTest, UpperCase) {
     &invalid_condition5
   };
 
-  for (size_t i = 0; i < base::size(invalid_conditions); ++i) {
+  for (size_t i = 0; i < std::size(invalid_conditions); ++i) {
     error.clear();
     result = URLMatcherFactory::CreateFromURLFilterDictionary(
         matcher.condition_factory(), invalid_conditions[i], 1, &error);
@@ -337,7 +336,7 @@ TEST(URLMatcherFactoryTest, CaseSensitivity) {
                          kIsUrlCaseSensitive, kIsUrlLowerCaseEnforced, url),
   };
 
-  for (size_t i = 0; i < base::size(case_tests); ++i) {
+  for (size_t i = 0; i < std::size(case_tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Iteration: %" PRIuS, i));
     case_tests[i].Test();
   }

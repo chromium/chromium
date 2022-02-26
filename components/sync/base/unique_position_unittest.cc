@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -81,8 +80,8 @@ class UniquePositionTest : public ::testing::Test {
       kBiggerPosition,
   };
 
-  const size_t kNumPositions = base::size(kPositionArray);
-  const size_t kNumSortedPositions = base::size(kSortedPositionArray);
+  const size_t kNumPositions = std::size(kPositionArray);
+  const size_t kNumSortedPositions = std::size(kSortedPositionArray);
 };
 
 static constexpr char kMinSuffix[] = {
@@ -90,7 +89,7 @@ static constexpr char kMinSuffix[] = {
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x01'};
-static_assert(base::size(kMinSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kMinSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMinSuffix.");
 
 static constexpr char kMaxSuffix[] = {
@@ -98,7 +97,7 @@ static constexpr char kMaxSuffix[] = {
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
     '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF'};
-static_assert(base::size(kMaxSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kMaxSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMaxSuffix.");
 
 static constexpr char kNormalSuffix[] = {
@@ -106,7 +105,7 @@ static constexpr char kNormalSuffix[] = {
     '\x34', '\x69', '\x70', '\x46', '\x34', '\x79', '\x49',
     '\x44', '\x4F', '\x66', '\x4C', '\x58', '\x41', '\x31',
     '\x34', '\x68', '\x59', '\x56', '\x43', '\x6F', '\x3D'};
-static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
+static_assert(std::size(kNormalSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kNormalSuffix.");
 
 ::testing::AssertionResult LessThan(const char* m_expr,
@@ -217,7 +216,7 @@ TEST_F(RelativePositioningTest, ComparisonSanityTest2) {
 // Exercise comparision functions by sorting and re-sorting the list.
 TEST_F(RelativePositioningTest, SortPositions) {
   ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[base::size(kPositionArray)];
+  UniquePosition positions[std::size(kPositionArray)];
   for (size_t i = 0; i < kNumPositions; ++i) {
     positions[i] = kPositionArray[i];
   }
@@ -233,7 +232,7 @@ TEST_F(RelativePositioningTest, SortPositions) {
 // Some more exercise for the comparison function.
 TEST_F(RelativePositioningTest, ReverseSortPositions) {
   ASSERT_EQ(kNumPositions, kNumSortedPositions);
-  UniquePosition positions[base::size(kPositionArray)];
+  UniquePosition positions[std::size(kPositionArray)];
   for (size_t i = 0; i < kNumPositions; ++i) {
     positions[i] = kPositionArray[i];
   }
@@ -412,10 +411,9 @@ static const char kCacheGuidStr2[] = "yaKb7zHtY06aue9a0vlZgw==";
 class PositionScenariosTest : public UniquePositionTest {
  public:
   PositionScenariosTest()
-      : generator1_(
-            std::string(kCacheGuidStr1, base::size(kCacheGuidStr1) - 1)),
+      : generator1_(std::string(kCacheGuidStr1, std::size(kCacheGuidStr1) - 1)),
         generator2_(
-            std::string(kCacheGuidStr2, base::size(kCacheGuidStr2) - 1)) {}
+            std::string(kCacheGuidStr2, std::size(kCacheGuidStr2) - 1)) {}
 
   std::string NextClient1Suffix() { return generator1_.NextSuffix(); }
 
@@ -485,24 +483,24 @@ TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_B) {
   EXPECT_LT(GetLength(pos), 500U);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    MinSuffix,
-    PositionInsertTest,
-    ::testing::Values(std::string(kMinSuffix, base::size(kMinSuffix))));
-INSTANTIATE_TEST_SUITE_P(
-    MaxSuffix,
-    PositionInsertTest,
-    ::testing::Values(std::string(kMaxSuffix, base::size(kMaxSuffix))));
+INSTANTIATE_TEST_SUITE_P(MinSuffix,
+                         PositionInsertTest,
+                         ::testing::Values(std::string(kMinSuffix,
+                                                       std::size(kMinSuffix))));
+INSTANTIATE_TEST_SUITE_P(MaxSuffix,
+                         PositionInsertTest,
+                         ::testing::Values(std::string(kMaxSuffix,
+                                                       std::size(kMaxSuffix))));
 INSTANTIATE_TEST_SUITE_P(
     NormalSuffix,
     PositionInsertTest,
-    ::testing::Values(std::string(kNormalSuffix, base::size(kNormalSuffix))));
+    ::testing::Values(std::string(kNormalSuffix, std::size(kNormalSuffix))));
 
 class PositionFromIntTest : public UniquePositionTest {
  public:
   PositionFromIntTest()
-      : generator_(
-            std::string(kCacheGuidStr1, base::size(kCacheGuidStr1) - 1)) {}
+      : generator_(std::string(kCacheGuidStr1, std::size(kCacheGuidStr1) - 1)) {
+  }
 
  protected:
   static const int64_t kTestValues[];
@@ -557,7 +555,7 @@ const int64_t PositionFromIntTest::kTestValues[] = {0LL,
                                                     INT64_MAX - 1};
 
 const size_t PositionFromIntTest::kNumTestValues =
-    base::size(PositionFromIntTest::kTestValues);
+    std::size(PositionFromIntTest::kTestValues);
 
 TEST_F(PositionFromIntTest, IsValid) {
   for (size_t i = 0; i < kNumTestValues; ++i) {

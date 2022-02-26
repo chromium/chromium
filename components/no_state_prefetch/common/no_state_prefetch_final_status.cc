@@ -5,7 +5,6 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 
 namespace prerender {
 
@@ -78,14 +77,14 @@ const char* kFinalStatusNames[] = {
     "Link Rel Next Not Allowed",
     "Max",
 };
-static_assert(base::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,
+static_assert(std::size(kFinalStatusNames) == FINAL_STATUS_MAX + 1,
               "status name count mismatch");
 
 }  // namespace
 
 const char* NameFromFinalStatus(FinalStatus final_status) {
   DCHECK_LT(static_cast<unsigned int>(final_status),
-            base::size(kFinalStatusNames));
+            std::size(kFinalStatusNames));
   return kFinalStatusNames[final_status];
 }
 

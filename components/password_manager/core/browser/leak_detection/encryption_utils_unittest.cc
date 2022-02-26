@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +63,7 @@ TEST(EncryptionUtils, HashUsername) {
       0x0C, 0x9F, 0x61, 0x9A, 0xA3, 0xC9, 0x96, 0xEC, 0x4C, 0xB3};
   EXPECT_THAT(HashUsername("jonsnow"),
               ElementsAreArray(reinterpret_cast<const char*>(kExpected),
-                               base::size(kExpected)));
+                               std::size(kExpected)));
 }
 
 TEST(EncryptionUtils, BucketizeUsername) {
@@ -82,7 +81,7 @@ TEST(EncryptionUtils, ScryptHashUsernameAndPassword) {
       0x6B, 0x4D, 0x76, 0x7B, 0xF2, 0x83, 0x85, 0x55, 0x73, 0xFD};
   std::string result = *ScryptHashUsernameAndPassword("user", "password123");
   EXPECT_THAT(result, ElementsAreArray(reinterpret_cast<const char*>(kExpected),
-                                       base::size(kExpected)));
+                                       std::size(kExpected)));
 }
 
 TEST(EncryptionUtils, EncryptAndDecrypt) {
@@ -105,7 +104,7 @@ TEST(EncryptionUtils, EncryptAndDecryptWithPredefinedKey) {
                               0x9B, 0x0B, 0xAF, 0x66, 0x97, 0xF2, 0x08, 0x85,
                               0x01, 0x24, 0xB6, 0xED, 0x58, 0x6D, 0xE8, 0x9A};
   const std::string kKeyStr(reinterpret_cast<const char*>(kKey),
-                            base::size(kKey));
+                            std::size(kKey));
   SCOPED_TRACE(testing::Message()
                << "key=" << testing::PrintToString(StringAsArray(kKeyStr)));
   // The expected result was obtained by running the Java implementation of the
@@ -118,7 +117,7 @@ TEST(EncryptionUtils, EncryptAndDecryptWithPredefinedKey) {
   std::string cipher = *CipherEncryptWithKey(kRandomString, kKeyStr);
   EXPECT_THAT(cipher,
               ElementsAreArray(reinterpret_cast<const char*>(kEncrypted),
-                               base::size(kEncrypted)));
+                               std::size(kEncrypted)));
   EXPECT_THAT(CalculateECCurveHash(kRandomString),
               ElementsAreArray(*CipherDecrypt(cipher, kKeyStr)));
 }

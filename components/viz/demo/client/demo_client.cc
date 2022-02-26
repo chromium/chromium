@@ -135,7 +135,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
   viz::SolidColorDrawQuad* color_quad =
       render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   color_quad->SetNew(quad_state, output_rect, output_rect,
-                     colors[(++frame_count_ / 60) % base::size(colors)], false);
+                     colors[(++frame_count_ / 60) % std::size(colors)], false);
 
   frame.render_pass_list.push_back(std::move(render_pass));
 

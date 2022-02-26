@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -36,11 +35,11 @@ TEST(HistoryUrlUtilsTest, CanonicalURLStringCompare) {
     "http://www.google.com:80/",
     "https://www.google.com",
   };
-  for (size_t i = 0; i < base::size(sorted_list); ++i) {
+  for (size_t i = 0; i < std::size(sorted_list); ++i) {
     EXPECT_FALSE(CanonicalURLStringCompare(sorted_list[i], sorted_list[i]))
         << " for \"" << sorted_list[i] << "\" < \"" << sorted_list[i] << "\"";
     // Every disjoint pair-wise comparison.
-    for (size_t j = i + 1; j < base::size(sorted_list); ++j) {
+    for (size_t j = i + 1; j < std::size(sorted_list); ++j) {
       EXPECT_TRUE(CanonicalURLStringCompare(sorted_list[i], sorted_list[j]))
           << " for \"" << sorted_list[i] << "\" < \"" << sorted_list[j] << "\"";
       EXPECT_FALSE(CanonicalURLStringCompare(sorted_list[j], sorted_list[i]))
@@ -64,7 +63,7 @@ TEST(HistoryUrlUtilsTest, HaveSameSchemeHostAndPort) {
     {"http://www.google.com/test", "http://www.google.com/test/with/dir/"},
     {"http://www.google.com/test?", "http://www.google.com/test/with/dir/"},
   };
-  for (size_t i = 0; i < base::size(true_cases); ++i) {
+  for (size_t i = 0; i < std::size(true_cases); ++i) {
     EXPECT_TRUE(HaveSameSchemeHostAndPort(GURL(true_cases[i].s1),
                                GURL(true_cases[i].s2)))
         << " for true_cases[" << i << "]";
@@ -79,7 +78,7 @@ TEST(HistoryUrlUtilsTest, HaveSameSchemeHostAndPort) {
     {"http://www.google.com/path", "http://www.google.com:137/path"},
     {"http://www.google.com/same/dir", "http://www.youtube.com/same/dir"},
   };
-  for (size_t i = 0; i < base::size(false_cases); ++i) {
+  for (size_t i = 0; i < std::size(false_cases); ++i) {
     EXPECT_FALSE(HaveSameSchemeHostAndPort(GURL(false_cases[i].s1),
                                 GURL(false_cases[i].s2)))
         << " for false_cases[" << i << "]";
@@ -99,7 +98,7 @@ TEST(HistoryUrlUtilsTest, IsPathPrefix) {
     {"/test", "/test/with/dir/"},
     {"/test/", "/test/with/dir"},
   };
-  for (size_t i = 0; i < base::size(true_cases); ++i) {
+  for (size_t i = 0; i < std::size(true_cases); ++i) {
     EXPECT_TRUE(IsPathPrefix(true_cases[i].p1, true_cases[i].p2))
         << " for true_cases[" << i << "]";
   }
@@ -114,7 +113,7 @@ TEST(HistoryUrlUtilsTest, IsPathPrefix) {
     {"/test", "/test-bed"},
     {"/test-", "/test"},
   };
-  for (size_t i = 0; i < base::size(false_cases); ++i) {
+  for (size_t i = 0; i < std::size(false_cases); ++i) {
     EXPECT_FALSE(IsPathPrefix(false_cases[i].p1, false_cases[i].p2))
         << " for false_cases[" << i << "]";
   }

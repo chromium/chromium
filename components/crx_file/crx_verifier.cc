@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
@@ -75,8 +74,7 @@ bool ReadHashAndVerifyArchive(base::File* file,
                               const VerifierCollection& verifiers) {
   uint8_t buffer[1 << 12] = {};
   size_t len = 0;
-  while ((len = ReadAndHashBuffer(buffer, base::size(buffer), file, hash)) >
-         0) {
+  while ((len = ReadAndHashBuffer(buffer, std::size(buffer), file, hash)) > 0) {
     for (auto& verifier : verifiers)
       verifier->VerifyUpdate(base::make_span(buffer, len));
   }

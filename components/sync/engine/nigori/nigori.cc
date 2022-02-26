@@ -324,7 +324,7 @@ std::string Nigori::GenerateScryptSalt() {
   static const size_t kSaltSizeInBytes = 32;
   std::string salt;
   salt.resize(kSaltSizeInBytes);
-  crypto::RandBytes(base::data(salt), salt.size());
+  crypto::RandBytes(std::data(salt), salt.size());
   return salt;
 }
 

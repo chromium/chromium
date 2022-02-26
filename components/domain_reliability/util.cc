@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
@@ -92,7 +91,7 @@ bool GetDomainReliabilityBeaconStatus(
   }
 
   // TODO(juliatuttle): Consider sorting and using binary search?
-  for (size_t i = 0; i < base::size(net_error_map); i++) {
+  for (size_t i = 0; i < std::size(net_error_map); i++) {
     if (net_error_map[i].net_error == net_error) {
       *beacon_status_out = net_error_map[i].beacon_status;
       return true;

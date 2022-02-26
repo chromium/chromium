@@ -985,7 +985,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kMultiselectable));
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[0], listbox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(base::size(kExpectedOptions[0]), listbox_node->children().size());
+    ASSERT_EQ(std::size(kExpectedOptions[0]), listbox_node->children().size());
     const std::vector<ui::AXNode*>& listbox_child_nodes =
         listbox_node->children();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
@@ -1017,7 +1017,7 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
     EXPECT_FALSE(listbox_node->HasState(ax::mojom::State::kMultiselectable));
     EXPECT_TRUE(listbox_node->HasState(ax::mojom::State::kFocusable));
     EXPECT_EQ(kExpectedBounds[1], listbox_node->data().relative_bounds.bounds);
-    ASSERT_EQ(base::size(kExpectedOptions[1]), listbox_node->children().size());
+    ASSERT_EQ(std::size(kExpectedOptions[1]), listbox_node->children().size());
     const std::vector<ui::AXNode*>& listbox_child_nodes =
         listbox_node->children();
     for (size_t i = 0; i < listbox_child_nodes.size(); i++) {
@@ -1200,7 +1200,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
         combobox_popup_node->HasState(ax::mojom::State::kMultiselectable));
     EXPECT_EQ(kExpectedBounds[0],
               combobox_popup_node->data().relative_bounds.bounds);
-    ASSERT_EQ(base::size(kExpectedOptions[0]),
+    ASSERT_EQ(std::size(kExpectedOptions[0]),
               combobox_popup_node->children().size());
     const std::vector<ui::AXNode*>& popup_child_nodes =
         combobox_popup_node->children();
@@ -1259,7 +1259,7 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
               combobox_popup_node->data().GetRestriction());
     EXPECT_EQ(kExpectedBounds[1],
               combobox_popup_node->data().relative_bounds.bounds);
-    ASSERT_EQ(base::size(kExpectedOptions[1]),
+    ASSERT_EQ(std::size(kExpectedOptions[1]),
               combobox_popup_node->children().size());
     const std::vector<ui::AXNode*>& popup_child_nodes =
         combobox_popup_node->children();

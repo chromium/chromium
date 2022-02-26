@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
@@ -492,11 +491,11 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
         net::IsHostnameResolutionError(error_code)) {
       return &secure_dns_network_error;
     }
-    return FindErrorMapInArray(net_error_options, base::size(net_error_options),
+    return FindErrorMapInArray(net_error_options, std::size(net_error_options),
                                error_code);
   } else if (error_domain == Error::kHttpErrorDomain) {
     const LocalizedErrorMap* map = FindErrorMapInArray(
-        http_error_options, base::size(http_error_options), error_code);
+        http_error_options, std::size(http_error_options), error_code);
     // Handle miscellaneous 400/500 errors.
     return !map && error_code >= 400 && error_code < 600
                ? &generic_4xx_5xx_error
@@ -504,7 +503,7 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
     const LocalizedErrorMap* map =
         FindErrorMapInArray(dns_probe_error_options,
-                            base::size(dns_probe_error_options), error_code);
+                            std::size(dns_probe_error_options), error_code);
     DCHECK(map);
     return map;
   } else {

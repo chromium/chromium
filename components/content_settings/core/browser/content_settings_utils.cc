@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -32,7 +31,7 @@ const ContentSettingsStringMapping kContentSettingsStringMapping[] = {
     {CONTENT_SETTING_SESSION_ONLY, "session_only"},
     {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
 };
-static_assert(base::size(kContentSettingsStringMapping) ==
+static_assert(std::size(kContentSettingsStringMapping) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kContentSettingsToFromString should have "
               "CONTENT_SETTING_NUM_SETTINGS elements");
@@ -51,7 +50,7 @@ const ContentSetting kContentSettingOrder[] = {
     CONTENT_SETTING_BLOCK
 };
 
-static_assert(base::size(kContentSettingOrder) ==
+static_assert(std::size(kContentSettingOrder) ==
                   CONTENT_SETTING_NUM_SETTINGS - 1,
               "kContentSettingOrder should have CONTENT_SETTING_NUM_SETTINGS-1"
               "entries");

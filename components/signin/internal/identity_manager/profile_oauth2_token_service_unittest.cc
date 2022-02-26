@@ -701,8 +701,8 @@ TEST_F(ProfileOAuth2TokenServiceTest, RequestParametersOrderTest) {
       OAuth2AccessTokenManager::RequestParameters("1", account_id1, set_1),
   };
 
-  for (size_t i = 0; i < base::size(params); i++) {
-    for (size_t j = 0; j < base::size(params); j++) {
+  for (size_t i = 0; i < std::size(params); i++) {
+    for (size_t j = 0; j < std::size(params); j++) {
       if (i == j) {
         EXPECT_FALSE(params[i] < params[j]) << " i=" << i << ", j=" << j;
         EXPECT_FALSE(params[j] < params[i]) << " i=" << i << ", j=" << j;

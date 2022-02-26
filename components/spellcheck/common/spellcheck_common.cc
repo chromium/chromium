@@ -199,9 +199,9 @@ void GetISOLanguageCountryCodeFromLocale(const std::string& locale,
   if (!locale.empty()) {
     UErrorCode error = U_ZERO_ERROR;
     char id[ULOC_LANG_CAPACITY + ULOC_SCRIPT_CAPACITY + ULOC_COUNTRY_CAPACITY];
-    uloc_addLikelySubtags(locale.c_str(), id, base::size(id), &error);
+    uloc_addLikelySubtags(locale.c_str(), id, std::size(id), &error);
     error = U_ZERO_ERROR;
-    uloc_getLanguage(id, language, base::size(language), &error);
+    uloc_getLanguage(id, language, std::size(language), &error);
     country = uloc_getISO3Country(id);
   }
   *language_code = std::string(language);

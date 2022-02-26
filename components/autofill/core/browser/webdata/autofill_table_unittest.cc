@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
@@ -248,8 +247,8 @@ TEST_F(AutofillTableTest, Autofill) {
       AutofillChange(AutofillChange::REMOVE,
                      AutofillKey(u"Favorite Color", u"Green")),
   };
-  EXPECT_EQ(base::size(kExpectedChanges), changes.size());
-  for (size_t i = 0; i < base::size(kExpectedChanges); ++i) {
+  EXPECT_EQ(std::size(kExpectedChanges), changes.size());
+  for (size_t i = 0; i < std::size(kExpectedChanges); ++i) {
     EXPECT_EQ(kExpectedChanges[i], changes[i]);
   }
 
@@ -492,7 +491,7 @@ TEST_F(AutofillTableTest, Autofill_UpdateNullTerminated) {
   const char16_t kName[] = u"foo";
   const char16_t kValue[] = u"bar";
   // A value which contains terminating character.
-  std::u16string value(kValue, base::size(kValue));
+  std::u16string value(kValue, std::size(kValue));
 
   AutofillEntry entry0(MakeAutofillEntry(kName, kValue, 1, -1));
   AutofillEntry entry1(MakeAutofillEntry(kName, value, 2, 3));

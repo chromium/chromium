@@ -13,7 +13,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
@@ -524,7 +523,7 @@ TEST_F(VariationsServiceTest, SeedNotStoredWhenNonOKStatus) {
           &prefs_, network_tracker_),
       &prefs_, GetMetricsStateManager(), true);
   service.set_intercepts_fetch(false);
-  for (size_t i = 0; i < base::size(non_ok_status_codes); ++i) {
+  for (size_t i = 0; i < std::size(non_ok_status_codes); ++i) {
     EXPECT_TRUE(prefs_.FindPreference(prefs::kVariationsCompressedSeed)
                     ->IsDefaultValue());
     service.test_url_loader_factory()->ClearResponses();
@@ -623,7 +622,7 @@ TEST_F(VariationsServiceTest, InstanceManipulations) {
 
   std::string serialized_seed = SerializeSeed(CreateTestSeed());
   VariationsService::EnableFetchForTesting();
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     TestVariationsService service(
         std::make_unique<web_resource::TestRequestAllowedNotifier>(
             &prefs_, network_tracker_),
@@ -695,7 +694,7 @@ TEST_F(VariationsServiceTest, Observer) {
       {1, 0, 1, 0, 1},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     TestVariationsServiceObserver observer;
     service.AddObserver(&observer);
 

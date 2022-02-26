@@ -189,7 +189,7 @@ bool IsSpecialSymbol(int c) {
 // Returns a uniformly distributed random symbol from the set of random symbols
 // defined by the string |kSpecialSymbols|.
 int GetRandomSpecialSymbol() {
-  return kSpecialSymbols[base::RandGenerator(base::size(kSpecialSymbols))];
+  return kSpecialSymbols[base::RandGenerator(std::size(kSpecialSymbols))];
 }
 
 // Returns a random special symbol used in |password|.

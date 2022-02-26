@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/hash/md5.h"
 #include "base/strings/strcat.h"
@@ -166,7 +165,7 @@ std::string GetMd5Digest(const base::FilePath& file_path,
 }
 
 bool IsKnownHostedDocumentMimeType(const std::string& mime_type) {
-  for (size_t i = 0; i < base::size(kHostedDocumentKinds); ++i) {
+  for (size_t i = 0; i < std::size(kHostedDocumentKinds); ++i) {
     if (mime_type == kHostedDocumentKinds[i].mime_type)
       return true;
   }
@@ -175,7 +174,7 @@ bool IsKnownHostedDocumentMimeType(const std::string& mime_type) {
 
 bool HasHostedDocumentExtension(const base::FilePath& path) {
   const std::string extension = base::FilePath(path.Extension()).AsUTF8Unsafe();
-  for (size_t i = 0; i < base::size(kHostedDocumentKinds); ++i) {
+  for (size_t i = 0; i < std::size(kHostedDocumentKinds); ++i) {
     if (extension == kHostedDocumentKinds[i].extension)
       return true;
   }

@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -300,7 +299,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".ytimg.com",
   };
   const std::string host = url.host();
-  for (size_t i = 0; i < base::size(kSuffixesToSetHeadersFor); ++i) {
+  for (size_t i = 0; i < std::size(kSuffixesToSetHeadersFor); ++i) {
     if (base::EndsWith(host, kSuffixesToSetHeadersFor[i],
                        base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
@@ -311,7 +310,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
   static const char* kHostsToSetHeadersFor[] = {
       "googleweblight.com",
   };
-  for (size_t i = 0; i < base::size(kHostsToSetHeadersFor); ++i) {
+  for (size_t i = 0; i < std::size(kHostsToSetHeadersFor); ++i) {
     if (base::LowerCaseEqualsASCII(host, kHostsToSetHeadersFor[i]))
       return true;
   }

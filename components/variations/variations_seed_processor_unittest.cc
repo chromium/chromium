@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/strings/string_split.h"
@@ -692,7 +691,7 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
       {nullptr, kFeatureOffByDefault.name, false, true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
@@ -814,7 +813,7 @@ TEST_F(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
        kForcedOffGroup, false, true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     const auto& test_case = test_cases[i];
     const int group = test_case.one_hundred_percent_group;
     SCOPED_TRACE(base::StringPrintf(
@@ -890,7 +889,7 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
       {kEnabledFeature, false, year_later, false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(
         base::StringPrintf("Test[%" PRIuS "]: %s", i, test_case.feature.name));

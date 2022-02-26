@@ -5,11 +5,11 @@
 #include "components/exo/wayland/clients/simple.h"
 
 #include <presentation-time-client-protocol.h>
+
 #include <iostream>
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -141,7 +141,7 @@ void Simple::Run(int frames,
     SkCanvas* canvas = buffer->sk_surface->getCanvas();
 
     static const SkColor kColors[] = {SK_ColorRED, SK_ColorBLACK};
-    canvas->clear(kColors[++frame_count % base::size(kColors)]);
+    canvas->clear(kColors[++frame_count % std::size(kColors)]);
 
     if (gr_context_) {
       gr_context_->flushAndSubmit();

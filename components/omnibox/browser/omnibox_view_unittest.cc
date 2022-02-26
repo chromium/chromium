@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/omnibox_view.h"
+
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +18,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_controller.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
@@ -97,7 +98,7 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
       "alert(5)"   // Embedded control characters unsafe.
   };
 
-  for (size_t i = 0; i < base::size(urls); i++) {
+  for (size_t i = 0; i < std::size(urls); i++) {
     EXPECT_EQ(ASCIIToUTF16(expecteds[i]),
               OmniboxView::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
   }

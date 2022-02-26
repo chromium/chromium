@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -130,7 +129,7 @@ const char* const AutocompleteMatch::kDocumentTypeStrings[]{
     "drive_image", "drive_pdf",  "drive_video", "drive_folder", "drive_other"};
 
 static_assert(
-    base::size(AutocompleteMatch::kDocumentTypeStrings) ==
+    std::size(AutocompleteMatch::kDocumentTypeStrings) ==
         static_cast<int>(AutocompleteMatch::DocumentType::DOCUMENT_TYPE_SIZE),
     "Sizes of AutocompleteMatch::kDocumentTypeStrings and "
     "AutocompleteMatch::DocumentType don't match.");
@@ -814,7 +813,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
 
   // Remove the www. prefix from the host.
   static const char prefix[] = "www.";
-  static const size_t prefix_len = base::size(prefix) - 1;
+  static const size_t prefix_len = std::size(prefix) - 1;
   std::string host = stripped_destination_url.host();
   if (host.compare(0, prefix_len, prefix) == 0 && host.length() > prefix_len) {
     replacements.SetHostStr(base::StringPiece(host).substr(prefix_len));

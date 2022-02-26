@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -78,7 +77,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalled) {
       .WillRepeatedly(testing::Return(&reuse_manager_));
   PasswordReuseDetectionManager manager(&client_);
 
-  for (size_t test = 0; test < base::size(gurls); ++test) {
+  for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
     for (size_t i = 0; i < input[test].size(); ++i) {
       std::u16string expected_input = input[test].substr(0, i + 1);
@@ -190,7 +189,7 @@ TEST_F(PasswordReuseDetectionManagerTest, CheckReuseCalledOnPaste) {
       .WillRepeatedly(testing::Return(&reuse_manager_));
   PasswordReuseDetectionManager manager(&client_);
 
-  for (size_t test = 0; test < base::size(gurls); ++test) {
+  for (size_t test = 0; test < std::size(gurls); ++test) {
     manager.DidNavigateMainFrame(gurls[test]);
     std::u16string expected_input = input[test];
     if (expected_input.size() > kMaxNumberOfCharactersToStore)

@@ -18,7 +18,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -211,7 +210,7 @@ class SandboxedHandler {
     msg.msg_name = nullptr;
     msg.msg_namelen = 0;
     msg.msg_iov = iov;
-    msg.msg_iovlen = base::size(iov);
+    msg.msg_iovlen = std::size(iov);
 
     char cmsg_buf[CMSG_SPACE(sizeof(int))];
     msg.msg_control = cmsg_buf;

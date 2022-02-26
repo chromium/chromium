@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_registrar.h"
-#include "base/cxx17_backports.h"
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
 
 namespace spellcheck {
@@ -20,7 +19,7 @@ static base::android::RegistrationMethod kSpellcheckRegisteredMethods[] = {
 bool RegisterSpellcheckJni(JNIEnv* env) {
   return base::android::RegisterNativeMethods(
       env, kSpellcheckRegisteredMethods,
-      base::size(kSpellcheckRegisteredMethods));
+      std::size(kSpellcheckRegisteredMethods));
 }
 
 }  // namespace android

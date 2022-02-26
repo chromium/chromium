@@ -433,7 +433,7 @@ bool FindAndConsumeAndGetSkipped(re2::StringPiece* input,
                                  Arg*... match_groups) {
   re2::StringPiece* args[] = {match_groups...};
   return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args,
-                                      base::size(args));
+                                      std::size(args));
 }
 
 // The following MAC addresses will not be redacted as they are not specific
@@ -442,7 +442,7 @@ const char* const kUnredactedMacAddresses[] = {
     "00:00:00:00:00:00",  // ARP failure result MAC.
     "ff:ff:ff:ff:ff:ff",  // Broadcast MAC.
 };
-constexpr size_t kNumUnredactedMacs = base::size(kUnredactedMacAddresses);
+constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
 }  // namespace
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -32,7 +31,7 @@ void GetPlatformCrashpadAnnotations(
     std::map<std::string, std::string>* annotations) {
   CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
   wchar_t exe_file[MAX_PATH] = {};
-  CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
+  CHECK(::GetModuleFileName(nullptr, exe_file, std::size(exe_file)));
   std::wstring product_name, version, special_build, channel_name;
   crash_reporter_client->GetProductNameAndVersion(
       exe_file, &product_name, &version, &special_build, &channel_name);
@@ -100,7 +99,7 @@ bool PlatformCrashpadInitialization(
     if (exe_file.empty()) {
       wchar_t exe_file_path[MAX_PATH] = {};
       CHECK(::GetModuleFileName(nullptr, exe_file_path,
-                                base::size(exe_file_path)));
+                                std::size(exe_file_path)));
 
       exe_file = base::FilePath(exe_file_path);
     }

@@ -520,7 +520,7 @@ struct SkiaRenderer::DrawQuadParams {
   SkPath draw_region_in_path() const {
     if (draw_region) {
       return SkPath::Polygon(draw_region->points,
-                             base::size(draw_region->points),
+                             std::size(draw_region->points),
                              /*isClosed=*/true);
     }
     return SkPath();
@@ -1584,7 +1584,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     // quadrilateral to the bypass'ed quad's coordinate space so that BSP
     // splitting is still respected.
     rpdq_to_bypass.mapPoints(params->draw_region->points,
-                             base::size(params->draw_region->points));
+                             std::size(params->draw_region->points));
   }
 
   // Compute draw params for the bypass quad from scratch, but since the

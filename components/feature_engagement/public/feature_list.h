@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -40,7 +39,7 @@ namespace {
 #define VARIATION_ENTRY(base_feature)                                \
   {                                                                  \
     base_feature##Variation[0].param_value, base_feature##Variation, \
-        base::size(base_feature##Variation), nullptr                 \
+        std::size(base_feature##Variation), nullptr                  \
   }
 
 // Defines a flags_ui::FeatureEntry::FeatureParam for each feature.

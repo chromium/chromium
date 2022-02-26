@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -225,7 +224,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
                                                &query.url, &query.title};
 
   // Test two fields matching.
-  for (size_t i = 0; i < base::size(fields); i++) {
+  for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
     ASSERT_EQ(1U, nodes.size());
@@ -235,7 +234,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   }
 
   // Test two fields matching with one non-matching field.
-  for (size_t i = 0; i < base::size(fields); i++) {
+  for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
     *fields[i] = std::make_unique<std::u16string>(u"fjdkslafjkldsa");
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);

@@ -86,7 +86,7 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
       {"goog red", false, false},
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case i=%d, query=%s",
                                     static_cast<int>(i),
                                     test_data[i].query.c_str()));

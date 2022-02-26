@@ -294,7 +294,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderWin::Load() {
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
   PolicyMap* chrome_policy =
       &bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  for (size_t i = 0; i < base::size(kScopes); ++i) {
+  for (size_t i = 0; i < std::size(kScopes); ++i) {
     PolicyScope scope = kScopes[i].scope;
     PolicyLoadStatusUmaReporter status;
     RegistryDict gpo_dict;
@@ -353,7 +353,7 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       {POLICY_LEVEL_RECOMMENDED, kKeyRecommended},
   };
 
-  for (size_t i = 0; i < base::size(k3rdPartyDomains); i++) {
+  for (size_t i = 0; i < std::size(k3rdPartyDomains); i++) {
     const char* name = k3rdPartyDomains[i].name;
     const PolicyDomain domain = k3rdPartyDomains[i].domain;
     const RegistryDict* domain_dict = gpo_dict->GetKey(name);
@@ -373,7 +373,7 @@ void PolicyLoaderWin::Load3rdPartyPolicy(const RegistryDict* gpo_dict,
       Schema schema = *schema_from_map;
 
       // Parse policy.
-      for (size_t j = 0; j < base::size(kLevels); j++) {
+      for (size_t j = 0; j < std::size(kLevels); j++) {
         const RegistryDict* policy_dict =
             component->second->GetKey(kLevels[j].path);
         if (!policy_dict)

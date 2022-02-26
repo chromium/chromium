@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "components/nacl/common/nacl_types.h"
@@ -165,7 +164,7 @@ bool IsValidUrlSpec(const base::Value& url_spec,
         kUrlKey, kOptLevelKey,
     };
     url_spec_plus_optional = kPnaclUrlSpecPlusOptional;
-    url_spec_plus_optional_length = base::size(kPnaclUrlSpecPlusOptional);
+    url_spec_plus_optional_length = std::size(kPnaclUrlSpecPlusOptional);
   } else {
     // URL specifications must not contain "pnacl-translate" keys.
     // This prohibits NaCl clients from invoking PNaCl.
@@ -177,12 +176,12 @@ bool IsValidUrlSpec(const base::Value& url_spec,
       return false;
     }
     url_spec_plus_optional = kManifestUrlSpecRequired;
-    url_spec_plus_optional_length = base::size(kManifestUrlSpecRequired);
+    url_spec_plus_optional_length = std::size(kManifestUrlSpecRequired);
   }
   if (!IsValidDictionary(*url_dict, container_key, parent_key,
                          url_spec_plus_optional, url_spec_plus_optional_length,
                          kManifestUrlSpecRequired,
-                         base::size(kManifestUrlSpecRequired), error_string)) {
+                         std::size(kManifestUrlSpecRequired), error_string)) {
     return false;
   }
   // Verify the correct types of the fields if they exist.
@@ -234,8 +233,8 @@ bool IsValidPnaclTranslateSpec(const base::Value& pnacl_spec,
 
   if (!IsValidDictionary(
           *pnacl_dict, container_key, parent_key, kManifestPnaclSpecValid,
-          base::size(kManifestPnaclSpecValid), kManifestPnaclSpecRequired,
-          base::size(kManifestPnaclSpecRequired), error_string)) {
+          std::size(kManifestPnaclSpecValid), kManifestPnaclSpecRequired,
+          std::size(kManifestPnaclSpecRequired), error_string)) {
     return false;
   }
   // kPnaclTranslateKey checked to be required above.
@@ -274,7 +273,7 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
       kPortableKey
     };
     isaProperties = kPnaclManifestISAProperties;
-    isaPropertiesLength = base::size(kPnaclManifestISAProperties);
+    isaPropertiesLength = std::size(kPnaclManifestISAProperties);
   } else {
     // The known values for NaCl ISA dictionaries in the manifest.
     static const char* kNaClManifestISAProperties[] = {
@@ -284,7 +283,7 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
         // "pnacl-translate", which would cause the creation of a nexe.
         kPortableKey};
     isaProperties = kNaClManifestISAProperties;
-    isaPropertiesLength = base::size(kNaClManifestISAProperties);
+    isaPropertiesLength = std::size(kNaClManifestISAProperties);
   }
   // Check that entries in the dictionary are structurally correct.
   for (base::DictionaryValue::Iterator it(*dictionary); !it.IsAtEnd();
@@ -493,7 +492,7 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
        it.Advance()) {
     const std::string& property_name = it.key();
     if (!FindMatchingProperty(property_name, kManifestTopLevelProperties,
-                              base::size(kManifestTopLevelProperties))) {
+                              std::size(kManifestTopLevelProperties))) {
       VLOG(1) << "JsonManifest::MatchesSchema: WARNING: unknown top-level "
               << "section '" << property_name << "' in manifest.";
     }

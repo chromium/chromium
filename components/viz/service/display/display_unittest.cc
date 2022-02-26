@@ -1041,9 +1041,9 @@ TEST_F(DisplayTest, DrawOcclusionWithIntersectingBackdropFilter) {
   // +---+ | 0 |
   // | 2   | . |
   // +-----+---+
-  EXPECT_EQ(base::size(rects), root_render_pass->quad_list.size());
+  EXPECT_EQ(std::size(rects), root_render_pass->quad_list.size());
   display_->RemoveOverdrawQuads(&frame);
-  ASSERT_EQ(base::size(rects), root_render_pass->quad_list.size());
+  ASSERT_EQ(std::size(rects), root_render_pass->quad_list.size());
 
   for (int i = 0; i < 3; i++) {
     EXPECT_EQ(rects[i], root_render_pass->quad_list.ElementAt(i)->visible_rect);
@@ -4227,7 +4227,7 @@ TEST_F(DisplayTest, FirstPassVisibleComplexityReduction) {
       gfx::Rect(850, 200, 500, 70),
   };
 
-  for (size_t i = 0; i < base::size(expected_visible_rects); ++i) {
+  for (size_t i = 0; i < std::size(expected_visible_rects); ++i) {
     EXPECT_EQ(
         expected_visible_rects[i],
         frame.render_pass_list.front()->quad_list.ElementAt(i)->visible_rect);

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -371,7 +370,7 @@ TEST_P(FileMetricsProviderTest, FilterDelaysFile) {
   const FileMetricsProvider::FilterAction actions[] = {
       FileMetricsProvider::FILTER_TRY_LATER,
       FileMetricsProvider::FILTER_PROCESS_FILE};
-  SetFilterActions(&params, actions, base::size(actions));
+  SetFilterActions(&params, actions, std::size(actions));
   provider()->RegisterSource(params);
 
   // Processing the file should touch it but yield no results. File timestamp
@@ -410,7 +409,7 @@ TEST_P(FileMetricsProviderTest, FilterSkipsFile) {
       FileMetricsProvider::ASSOCIATE_CURRENT_RUN, kMetricsName);
   const FileMetricsProvider::FilterAction actions[] = {
       FileMetricsProvider::FILTER_SKIP_FILE};
-  SetFilterActions(&params, actions, base::size(actions));
+  SetFilterActions(&params, actions, std::size(actions));
   provider()->RegisterSource(params);
 
   // Processing the file should delete it.
@@ -481,7 +480,7 @@ TEST_P(FileMetricsProviderTest, AccessDirectory) {
   // Files could come out in the order: a1, c2, d4, b3. They are recognizeable
   // by the number of histograms contained within each.
   const uint32_t expect_order[] = {1, 2, 4, 3, 0};
-  for (size_t i = 0; i < base::size(expect_order); ++i) {
+  for (size_t i = 0; i < std::size(expect_order); ++i) {
     // Record embedded snapshots via snapshot-manager.
     OnDidCreateMetricsLog();
     RunTasks();
@@ -782,13 +781,13 @@ TEST_P(FileMetricsProviderTest, AccessFilteredDirectory) {
       FileMetricsProvider::FILTER_SKIP_FILE,      // d4
       FileMetricsProvider::FILTER_PROCESS_FILE,   // b3
       FileMetricsProvider::FILTER_PROCESS_FILE};  // c2 (again)
-  SetFilterActions(&params, actions, base::size(actions));
+  SetFilterActions(&params, actions, std::size(actions));
   provider()->RegisterSource(params);
 
   // Files could come out in the order: a1, b3, c2. They are recognizeable
   // by the number of histograms contained within each.
   const uint32_t expect_order[] = {1, 3, 2, 0};
-  for (size_t i = 0; i < base::size(expect_order); ++i) {
+  for (size_t i = 0; i < std::size(expect_order); ++i) {
     // Record embedded snapshots via snapshot-manager.
     OnDidCreateMetricsLog();
     RunTasks();

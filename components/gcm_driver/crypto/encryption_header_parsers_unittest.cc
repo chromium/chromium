@@ -7,8 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +40,7 @@ TEST(EncryptionHeaderParsersTest, ParseValidEncryptionHeaders) {
     { "keyid=foo;someothervalue=1;rs=42", "foo", "", 42 },
   };
 
-  for (size_t i = 0; i < base::size(expected_results); i++) {
+  for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_results[i].header);
@@ -84,7 +82,7 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
         { "", "sixteencoolbytes", kDefaultRecordSize } } },
   };
 
-  for (size_t i = 0; i < base::size(expected_results); i++) {
+  for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_results[i].header);
@@ -145,7 +143,7 @@ TEST(EncryptionHeaderParsersTest, ParseInvalidEncryptionHeaders) {
     "rs=2,rs=0",
   };
 
-  for (size_t i = 0; i < base::size(expected_failures); i++) {
+  for (size_t i = 0; i < std::size(expected_failures); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_failures[i]);
@@ -154,7 +152,7 @@ TEST(EncryptionHeaderParsersTest, ParseInvalidEncryptionHeaders) {
     EXPECT_FALSE(iterator.GetNext());
   }
 
-  for (size_t i = 0; i < base::size(expected_failures_second_iter); i++) {
+  for (size_t i = 0; i < std::size(expected_failures_second_iter); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_failures_second_iter[i]);
@@ -189,7 +187,7 @@ TEST(EncryptionHeaderParsersTest, ParseValidCryptoKeyHeaders) {
       "foo", "twelvecoolbytes", "" },
   };
 
-  for (size_t i = 0; i < base::size(expected_results); i++) {
+  for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_results[i].header);
@@ -231,7 +229,7 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
         { "", "sixteencoolbytes", "" } } },
   };
 
-  for (size_t i = 0; i < base::size(expected_results); i++) {
+  for (size_t i = 0; i < std::size(expected_results); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_results[i].header);
@@ -283,7 +281,7 @@ TEST(EncryptionHeaderParsersTest, DISABLED_ParseInvalidCryptoKeyHeaders) {
     "dh=dHdlbHZlY29vbGJ5dGVz,aesgcm128=123$xyz",
   };
 
-  for (size_t i = 0; i < base::size(expected_failures); i++) {
+  for (size_t i = 0; i < std::size(expected_failures); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_failures[i]);
@@ -292,7 +290,7 @@ TEST(EncryptionHeaderParsersTest, DISABLED_ParseInvalidCryptoKeyHeaders) {
     EXPECT_FALSE(iterator.GetNext());
   }
 
-  for (size_t i = 0; i < base::size(expected_failures_second_iter); i++) {
+  for (size_t i = 0; i < std::size(expected_failures_second_iter); i++) {
     SCOPED_TRACE(i);
 
     std::string header(expected_failures_second_iter[i]);

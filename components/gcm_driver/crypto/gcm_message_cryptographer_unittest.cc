@@ -8,7 +8,6 @@
 
 #include "base/base64url.h"
 #include "base/big_endian.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -39,7 +38,7 @@ const unsigned char kCommonSenderPublicKey[] = {
     0x9A, 0xA1, 0x1A, 0x04, 0xF1, 0x98, 0x25, 0xF2, 0xC2, 0x13, 0x5D,
     0xD9, 0x72, 0x35, 0x75, 0x24, 0xF9, 0xFF, 0x25, 0xD1, 0xBC, 0x84,
     0x46, 0x4E, 0x88, 0x08, 0x55, 0x70, 0x9F, 0xA7, 0x07, 0xD9};
-static_assert(base::size(kCommonSenderPublicKey) == 65,
+static_assert(std::size(kCommonSenderPublicKey) == 65,
               "Raw P-256 public keys must be 65 bytes in size.");
 
 const unsigned char kCommonRecipientPublicKey[] = {
@@ -49,7 +48,7 @@ const unsigned char kCommonRecipientPublicKey[] = {
     0x9A, 0x9F, 0xB8, 0x19, 0xD8, 0x21, 0x6F, 0x66, 0xE3, 0xF6, 0x0B,
     0x74, 0xB2, 0x28, 0x38, 0xDC, 0xA7, 0x8A, 0x58, 0x0D, 0x56, 0x47,
     0x3E, 0xD0, 0x5B, 0x5C, 0x93, 0x4E, 0xB3, 0x89, 0x87, 0x64};
-static_assert(base::size(kCommonRecipientPublicKey) == 65,
+static_assert(std::size(kCommonRecipientPublicKey) == 65,
               "Raw P-256 public keys must be 65 bytes in size.");
 
 const unsigned char kCommonRecipientPrivateKey[] = {
@@ -69,7 +68,7 @@ const unsigned char kCommonRecipientPrivateKey[] = {
 const unsigned char kCommonAuthSecret[] = {0x25, 0xF2, 0xC2, 0xB8, 0x19, 0xD8,
                                            0xFD, 0x35, 0x97, 0xDF, 0xFB, 0x5E,
                                            0xF6, 0x0B, 0xD7, 0xA4};
-static_assert(base::size(kCommonAuthSecret) == 16,
+static_assert(std::size(kCommonAuthSecret) == 16,
               "Auth secrets must be 16 bytes in size.");
 
 // Test vectors containing reference input for draft-ietf-webpush-encryption
@@ -278,14 +277,14 @@ class GCMMessageCryptographerTestBase : public ::testing::Test {
   void SetUp() override {
     recipient_public_key_.assign(
         kCommonRecipientPublicKey,
-        kCommonRecipientPublicKey + base::size(kCommonRecipientPublicKey));
+        kCommonRecipientPublicKey + std::size(kCommonRecipientPublicKey));
     sender_public_key_.assign(
         kCommonSenderPublicKey,
-        kCommonSenderPublicKey + base::size(kCommonSenderPublicKey));
+        kCommonSenderPublicKey + std::size(kCommonSenderPublicKey));
 
     std::string recipient_private_key(
         kCommonRecipientPrivateKey,
-        kCommonRecipientPrivateKey + base::size(kCommonRecipientPrivateKey));
+        kCommonRecipientPrivateKey + std::size(kCommonRecipientPrivateKey));
     std::vector<uint8_t> recipient_private_key_vec(
       recipient_private_key.begin(), recipient_private_key.end());
     std::unique_ptr<crypto::ECPrivateKey> recipient_key =
@@ -295,7 +294,7 @@ class GCMMessageCryptographerTestBase : public ::testing::Test {
         *recipient_key, sender_public_key_, &ecdh_shared_secret_));
 
     auth_secret_.assign(kCommonAuthSecret,
-                        kCommonAuthSecret + base::size(kCommonAuthSecret));
+                        kCommonAuthSecret + std::size(kCommonAuthSecret));
   }
 
  protected:
@@ -583,7 +582,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft03) {
   std::string ecdh_shared_secret, auth_secret, salt, ciphertext, output;
   size_t record_size = 0;
 
-  for (size_t i = 0; i < base::size(kEncryptionTestVectorsDraft03); ++i) {
+  for (size_t i = 0; i < std::size(kEncryptionTestVectorsDraft03); ++i) {
     SCOPED_TRACE(i);
 
     ecdh_shared_secret.assign(
@@ -616,7 +615,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, DecryptionVectorsDraft03) {
       GCMMessageCryptographer::Version::DRAFT_03);
 
   std::string input, ecdh_shared_secret, auth_secret, salt, plaintext;
-  for (size_t i = 0; i < base::size(kDecryptionTestVectorsDraft03); ++i) {
+  for (size_t i = 0; i < std::size(kDecryptionTestVectorsDraft03); ++i) {
     SCOPED_TRACE(i);
 
     ASSERT_TRUE(base::Base64UrlDecode(
@@ -658,7 +657,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, EncryptionVectorsDraft08) {
   std::string ecdh_shared_secret, auth_secret, salt, ciphertext, output;
   size_t record_size = 0;
 
-  for (size_t i = 0; i < base::size(kEncryptionTestVectorsDraft08); ++i) {
+  for (size_t i = 0; i < std::size(kEncryptionTestVectorsDraft08); ++i) {
     SCOPED_TRACE(i);
 
     ecdh_shared_secret.assign(
@@ -692,7 +691,7 @@ TEST_F(GCMMessageCryptographerTestVectorTest, DecryptionVectorsDraft08) {
 
   std::string input, ecdh_shared_secret, auth_secret, salt, plaintext;
 
-  for (size_t i = 0; i < base::size(kDecryptionTestVectorsDraft08); ++i) {
+  for (size_t i = 0; i < std::size(kDecryptionTestVectorsDraft08); ++i) {
     SCOPED_TRACE(i);
 
     ASSERT_TRUE(base::Base64UrlDecode(

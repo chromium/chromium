@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,7 +65,7 @@ TEST_F(SpellcheckPlatformMacTest, IgnoreWords_EN_US) {
     "noooen",
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string word(base::ASCIIToUTF16(kTestCases[i]));
     const int doc_tag = spellcheck_platform::GetDocumentTag();
 
@@ -364,7 +363,7 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
     {"writting", "writing"},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string word(base::ASCIIToUTF16(kTestCases[i].input));
     EXPECT_FALSE(spellcheck_platform::CheckSpelling(word, 0)) << word;
 

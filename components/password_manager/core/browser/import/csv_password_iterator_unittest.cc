@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -88,7 +87,7 @@ TEST(CSVPasswordIteratorTest, MostRowsCorrect) {
   CSVPasswordIterator iter(kColMap, kCSVBlob);
 
   CSVPasswordIterator check = iter;
-  for (size_t i = 0; i < base::size(kExpectedUsernames); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedUsernames); ++i) {
     EXPECT_EQ(CSVPassword::Status::kOK, (check++)->TryParse())
         << "on line " << i;
   }

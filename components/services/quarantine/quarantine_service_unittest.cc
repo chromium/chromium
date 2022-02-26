@@ -55,8 +55,8 @@ TEST_F(QuarantineServiceTest, QuarantineFile) {
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
 
   base::FilePath test_file = test_dir.GetPath().AppendASCII("foo.class");
-  ASSERT_EQ(static_cast<int>(base::size(kTestData)),
-            base::WriteFile(test_file, kTestData, base::size(kTestData)));
+  ASSERT_EQ(static_cast<int>(std::size(kTestData)),
+            base::WriteFile(test_file, kTestData, std::size(kTestData)));
 
   base::RunLoop run_loop;
   quarantine_->QuarantineFile(

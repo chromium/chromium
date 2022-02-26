@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,8 +43,8 @@ class QuarantineTest : public testing::Test {
 #endif
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     ASSERT_EQ(
-        static_cast<int>(base::size(kTestData)),
-        base::WriteFile(GetTestFilePath(), kTestData, base::size(kTestData)));
+        static_cast<int>(std::size(kTestData)),
+        base::WriteFile(GetTestFilePath(), kTestData, std::size(kTestData)));
   }
 
  protected:

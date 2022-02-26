@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -212,7 +211,7 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure that kSourceOptions has been filled for this type.
-  DCHECK_GT(base::size(kSourceOptions), static_cast<size_t>(params.type));
+  DCHECK_GT(std::size(kSourceOptions), static_cast<size_t>(params.type));
 
   std::unique_ptr<SourceInfo> source(new SourceInfo(params));
 

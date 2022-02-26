@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
@@ -112,24 +111,23 @@ const char* kFetchingIntervalParamNameActiveSuggestionsConsumer[] = {
 
 static_assert(
     static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kDefaultFetchingIntervalHoursRareNtpUser) &&
+            std::size(kDefaultFetchingIntervalHoursRareNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kDefaultFetchingIntervalHoursActiveNtpUser) &&
+            std::size(kDefaultFetchingIntervalHoursActiveNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(
-                kDefaultFetchingIntervalHoursActiveSuggestionsConsumer) &&
+            std::size(kDefaultFetchingIntervalHoursActiveSuggestionsConsumer) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kM58FetchingIntervalHoursRareNtpUser) &&
+            std::size(kM58FetchingIntervalHoursRareNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kM58FetchingIntervalHoursActiveNtpUser) &&
+            std::size(kM58FetchingIntervalHoursActiveNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kM58FetchingIntervalHoursActiveSuggestionsConsumer) &&
+            std::size(kM58FetchingIntervalHoursActiveSuggestionsConsumer) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kFetchingIntervalParamNameRareNtpUser) &&
+            std::size(kFetchingIntervalParamNameRareNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kFetchingIntervalParamNameActiveNtpUser) &&
+            std::size(kFetchingIntervalParamNameActiveNtpUser) &&
         static_cast<unsigned int>(FetchingInterval::COUNT) ==
-            base::size(kFetchingIntervalParamNameActiveSuggestionsConsumer),
+            std::size(kFetchingIntervalParamNameActiveSuggestionsConsumer),
     "Fill in all the info for fetching intervals.");
 
 // For backward compatibility "ntp_opened" value is kept and denotes the
@@ -154,7 +152,7 @@ base::TimeDelta GetDesiredFetchingInterval(
     UserClassifier::UserClass user_class) {
   DCHECK(interval != FetchingInterval::COUNT);
   const unsigned int index = static_cast<unsigned int>(interval);
-  DCHECK(index < base::size(kDefaultFetchingIntervalHoursRareNtpUser));
+  DCHECK(index < std::size(kDefaultFetchingIntervalHoursRareNtpUser));
 
   bool emulateM58 = base::FeatureList::IsEnabled(
       kRemoteSuggestionsEmulateM58FetchingSchedule);
@@ -857,7 +855,7 @@ void RemoteSuggestionsSchedulerImpl::ClearLastFetchAttemptTime() {
 std::set<RemoteSuggestionsSchedulerImpl::TriggerType>
 RemoteSuggestionsSchedulerImpl::GetEnabledTriggerTypes() {
   static_assert(static_cast<unsigned int>(TriggerType::COUNT) ==
-                    base::size(kTriggerTypeNames),
+                    std::size(kTriggerTypeNames),
                 "Fill in names for trigger types.");
 
   std::string param_value = base::GetFieldTrialParamValueByFeature(

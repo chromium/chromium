@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -1326,7 +1325,7 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
       gfx::Rect(6, 6, kCandidateSmall, kCandidateSmall)};
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
-  for (size_t i = 0; i < base::size(kDamageRect); ++i) {
+  for (size_t i = 0; i < std::size(kDamageRect); ++i) {
     SCOPED_TRACE(i);
 
     auto pass = CreateRenderPass();
@@ -1382,7 +1381,7 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayFirstFrameDamage) {
   };
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
-  for (size_t i = 0; i < base::size(kExpectedDamage); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
     SCOPED_TRACE(i);
 
     auto pass = CreateRenderPass();
@@ -1432,7 +1431,7 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
       gfx::UnionRects(kInFrontDamage, kBehindOverlayDamage)};
 
   AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayDisplayRect));
-  for (size_t i = 0; i < base::size(kExpectedDamage); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedDamage); ++i) {
     SCOPED_TRACE(i);
 
     auto pass = CreateRenderPass();
@@ -3493,7 +3492,7 @@ TEST_F(UnderlayTest, UpdateDamageRectWhenNoPromotion) {
                                   gfx::Rect(0, 0, 312, 256)};
   size_t expected_candidate_size[] = {1, 1, 0};
 
-  for (size_t i = 0; i < base::size(expected_damages); ++i) {
+  for (size_t i = 0; i < std::size(expected_damages); ++i) {
     SCOPED_TRACE(i);
 
     auto pass = CreateRenderPass();
@@ -5099,16 +5098,16 @@ TEST_F(UnderlayTest, EstimateOccludedDamage) {
           kOccluderWidth * kOccluderWidth * 2};
 
   static_assert(
-      base::size(kCandidateRects) == base::size(kCandidateUseSurfaceIndex),
+      std::size(kCandidateRects) == std::size(kCandidateUseSurfaceIndex),
       "Number of elements in each list should be the identical.");
-  static_assert(base::size(kCandidateRects) == base::size(kExpectedDamages),
+  static_assert(std::size(kCandidateRects) == std::size(kExpectedDamages),
                 "Number of elements in each list should be the identical.");
 
   QuadList& quad_list = pass->quad_list;
   auto occluder_iter_count = quad_list.size();
 
   SurfaceDamageRectList surface_damage_rect_list;
-  for (size_t i = 0; i < base::size(kCandidateRects); ++i) {
+  for (size_t i = 0; i < std::size(kCandidateRects); ++i) {
     SCOPED_TRACE(i);
 
     // Create fake surface damage for this candidate.

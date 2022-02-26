@@ -318,7 +318,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
       {"http://user:pass@example.com/", "http://example.com/"},
       {"http://%123:bar@example.com/", "http://example.com/"},
       {"http://example.com/abc#123", "http://example.com/abc#123"}};
-  for (size_t i = 0; i < base::size(sanitize_url_cases); i++) {
+  for (size_t i = 0; i < std::size(sanitize_url_cases); i++) {
     GURL url(sanitize_url_cases[i].url);
     auto result = FillRequestProto(url, last_committed_url_, is_mainframe_,
                                    /*is_sampled_report=*/i % 2 == 0);

@@ -4,7 +4,6 @@
 
 #include "components/cdm/common/widevine_drm_delegate_android.h"
 
-#include "base/cxx17_backports.h"
 #include "media/cdm/cenc_utils.h"
 
 namespace cdm {
@@ -23,7 +22,7 @@ WidevineDrmDelegateAndroid::~WidevineDrmDelegateAndroid() {}
 
 const std::vector<uint8_t> WidevineDrmDelegateAndroid::GetUUID() const {
   return std::vector<uint8_t>(kWidevineUuid,
-                              kWidevineUuid + base::size(kWidevineUuid));
+                              kWidevineUuid + std::size(kWidevineUuid));
 }
 
 bool WidevineDrmDelegateAndroid::OnCreateSession(

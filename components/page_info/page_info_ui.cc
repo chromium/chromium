@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -54,7 +53,7 @@ const int kPermissionButtonTextIDPolicyManaged[] = {
     IDS_PAGE_INFO_PERMISSION_ASK_BY_POLICY,
     kInvalidResourceID,
     kInvalidResourceID};
-static_assert(base::size(kPermissionButtonTextIDPolicyManaged) ==
+static_assert(std::size(kPermissionButtonTextIDPolicyManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDPolicyManaged array size is incorrect");
 
@@ -67,7 +66,7 @@ const int kPermissionButtonTextIDExtensionManaged[] = {
     IDS_PAGE_INFO_PERMISSION_ASK_BY_EXTENSION,
     kInvalidResourceID,
     kInvalidResourceID};
-static_assert(base::size(kPermissionButtonTextIDExtensionManaged) ==
+static_assert(std::size(kPermissionButtonTextIDExtensionManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDExtensionManaged array size is "
               "incorrect");
@@ -81,7 +80,7 @@ const int kPermissionButtonTextIDUserManaged[] = {
     IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER,
     kInvalidResourceID,
     IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_USER};
-static_assert(base::size(kPermissionButtonTextIDUserManaged) ==
+static_assert(std::size(kPermissionButtonTextIDUserManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDUserManaged array size is incorrect");
 
@@ -94,7 +93,7 @@ const int kPermissionButtonTextIDDefaultSetting[] = {
     IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT,
     kInvalidResourceID,
     IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT};
-static_assert(base::size(kPermissionButtonTextIDDefaultSetting) ==
+static_assert(std::size(kPermissionButtonTextIDDefaultSetting) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDDefaultSetting array size is incorrect");
 
@@ -109,7 +108,7 @@ const int kSoundPermissionButtonTextIDUserManaged[] = {
     kInvalidResourceID,
     kInvalidResourceID};
 static_assert(
-    base::size(kSoundPermissionButtonTextIDUserManaged) ==
+    std::size(kSoundPermissionButtonTextIDUserManaged) ==
         CONTENT_SETTING_NUM_SETTINGS,
     "kSoundPermissionButtonTextIDUserManaged array size is incorrect");
 
@@ -124,7 +123,7 @@ const int kSoundPermissionButtonTextIDDefaultSetting[] = {
     kInvalidResourceID,
     kInvalidResourceID};
 static_assert(
-    base::size(kSoundPermissionButtonTextIDDefaultSetting) ==
+    std::size(kSoundPermissionButtonTextIDDefaultSetting) ==
         CONTENT_SETTING_NUM_SETTINGS,
     "kSoundPermissionButtonTextIDDefaultSetting array size is incorrect");
 #endif

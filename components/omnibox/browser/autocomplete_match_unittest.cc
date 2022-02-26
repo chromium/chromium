@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "autocomplete_match.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -76,7 +75,7 @@ TEST(AutocompleteMatchTest, MoreRelevant) {
   AutocompleteMatch m2(nullptr, 0, false,
                        AutocompleteMatchType::URL_WHAT_YOU_TYPED);
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     m1.relevance = cases[i].r1;
     m2.relevance = cases[i].r2;
     EXPECT_EQ(cases[i].expected_result,
@@ -400,7 +399,7 @@ TEST(AutocompleteMatchTest, Duplicates) {
     { L"http://www./", "http://www./", "http://google.com/", false },
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     CheckDuplicateCase(cases[i]);
   }
 }
@@ -420,7 +419,7 @@ TEST(AutocompleteMatchTest, DedupeDriveURLs) {
        "https://drive.google.com/open?id=another-doc-id", false},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     CheckDuplicateCase(cases[i]);
   }
 }

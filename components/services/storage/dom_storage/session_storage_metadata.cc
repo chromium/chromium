@@ -4,7 +4,6 @@
 
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -40,7 +39,7 @@ namespace {
 constexpr const uint8_t kMapIdPrefixBytes[] = {'m', 'a', 'p', '-'};
 
 constexpr const size_t kNamespacePrefixLength =
-    base::size(SessionStorageMetadata::kNamespacePrefixBytes);
+    std::size(SessionStorageMetadata::kNamespacePrefixBytes);
 constexpr const uint8_t kNamespaceStorageKeySeperatorByte = '-';
 constexpr const size_t kNamespaceStorageKeySeperatorLength = 1;
 constexpr const size_t kPrefixBeforeStorageKeyLength =

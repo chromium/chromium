@@ -174,7 +174,7 @@ class FlagsStateTest : public ::testing::Test,
     prefs_.registry()->RegisterListPref(prefs::kAboutFlagsEntries);
     prefs_.registry()->RegisterDictionaryPref(prefs::kAboutFlagsOriginLists);
 
-    for (size_t i = 0; i < base::size(kEntries); ++i)
+    for (size_t i = 0; i < std::size(kEntries); ++i)
       kEntries[i].supported_platforms = FlagsState::GetCurrentPlatform();
 
     int os_other_than_current = 1;
@@ -496,7 +496,7 @@ TEST_F(FlagsStateTest, RemoveFlagSwitches_Features) {
       {2, "A,B", "C", "A,B", "C,FeatureName1"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
         "Test[%" PRIuS "]: %d [%s] [%s]", i, cases[i].enabled_choice,
         cases[i].existing_enable_features ? cases[i].existing_enable_features
@@ -799,7 +799,7 @@ TEST_F(FlagsStateTest, FeatureValues) {
       {2, nullptr, "Foo,Bar", "", "Foo,Bar,FeatureName1"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
         "Test[%" PRIuS "]: %d [%s] [%s]", i, cases[i].enabled_choice,
         cases[i].existing_enable_features ? cases[i].existing_enable_features
@@ -843,7 +843,7 @@ TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
   auto unsupported_count = unsupported_entries.size();
   EXPECT_EQ(11u, supported_count);
   EXPECT_EQ(1u, unsupported_count);
-  EXPECT_EQ(base::size(kEntries), supported_count + unsupported_count);
+  EXPECT_EQ(std::size(kEntries), supported_count + unsupported_count);
 }
 
 }  // namespace flags_ui

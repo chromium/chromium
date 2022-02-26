@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
@@ -300,9 +299,9 @@ int BookmarkProvider::CalculateBookmarkMatchRelevance(
   const int kURLCountBoost[4] = { 0, 75, 125, 150 };
   std::vector<const BookmarkNode*> nodes;
   bookmark_model_->GetNodesByURL(url, &nodes);
-  DCHECK_GE(std::min(base::size(kURLCountBoost), nodes.size()), 1U);
+  DCHECK_GE(std::min(std::size(kURLCountBoost), nodes.size()), 1U);
   relevance +=
-      kURLCountBoost[std::min(base::size(kURLCountBoost), nodes.size()) - 1];
+      kURLCountBoost[std::min(std::size(kURLCountBoost), nodes.size()) - 1];
   relevance = std::min(kMaxBookmarkScore, relevance);
   return relevance;
 }

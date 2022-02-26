@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "net/base/completion_once_callback.h"
@@ -158,9 +157,9 @@ class FakeSSLClientSocketTest : public testing::Test {
       AddChunkedOps(ssl_server_hello, read_chunk_size, mode, &reads);
       AddChunkedOps(ssl_client_hello, write_chunk_size, mode, &writes);
       reads.push_back(
-          net::MockRead(mode, kReadTestData, base::size(kReadTestData)));
+          net::MockRead(mode, kReadTestData, std::size(kReadTestData)));
       writes.push_back(
-          net::MockWrite(mode, kWriteTestData, base::size(kWriteTestData)));
+          net::MockWrite(mode, kWriteTestData, std::size(kWriteTestData)));
     }
     SetData(mock_connect, &reads, &writes);
 
@@ -175,7 +174,7 @@ class FakeSSLClientSocketTest : public testing::Test {
       }
       ExpectStatus(mode, net::OK, status, &connect_callback);
       if (fake_ssl_client_socket.IsConnected()) {
-        int read_len = base::size(kReadTestData);
+        int read_len = std::size(kReadTestData);
         int read_buf_len = 2 * read_len;
         auto read_buf = base::MakeRefCounted<net::IOBuffer>(read_buf_len);
 
@@ -188,9 +187,9 @@ class FakeSSLClientSocketTest : public testing::Test {
             base::MakeRefCounted<net::StringIOBuffer>(kWriteTestData);
         net::TestCompletionCallback write_callback;
         int write_status = fake_ssl_client_socket.Write(
-            write_buf.get(), base::size(kWriteTestData),
+            write_buf.get(), std::size(kWriteTestData),
             write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
-        ExpectStatus(mode, base::size(kWriteTestData), write_status,
+        ExpectStatus(mode, std::size(kWriteTestData), write_status,
                      &write_callback);
       } else {
         ADD_FAILURE();
@@ -239,7 +238,7 @@ class FakeSSLClientSocketTest : public testing::Test {
         if (error == ERR_MALFORMED_SERVER_HELLO) {
           static const char kBadData[] = "BAD_DATA";
           reads[index].data = kBadData;
-          reads[index].data_len = base::size(kBadData);
+          reads[index].data_len = std::size(kBadData);
         } else {
           reads[index].result = error;
           reads[index].data = NULL;

@@ -10,7 +10,6 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -221,7 +220,7 @@ blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::DictionaryValue* dict,
       {"sha-512", blink::kWebCryptoAlgorithmIdSha512},
   };
 
-  for (size_t i = 0; i < base::size(kDigestNameToId); ++i) {
+  for (size_t i = 0; i < std::size(kDigestNameToId); ++i) {
     if (kDigestNameToId[i].name == algorithm_name)
       return CreateAlgorithm(kDigestNameToId[i].id);
   }

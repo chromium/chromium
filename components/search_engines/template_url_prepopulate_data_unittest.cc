@@ -106,7 +106,7 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
       'V'<<8|'N', 'V'<<8|'U', 'W'<<8|'F', 'W'<<8|'S', 'Y'<<8|'E',
       'Y'<<8|'T', 'Z'<<8|'A', 'Z'<<8|'M', 'Z'<<8|'W', -1 };
 
-  for (size_t i = 0; i < base::size(kCountryIds); ++i) {
+  for (size_t i = 0; i < std::size(kCountryIds); ++i) {
     prefs_.SetInteger(country_codes::kCountryIDAtInstall, kCountryIds[i]);
     std::vector<std::unique_ptr<TemplateURLData>> urls =
         TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr);
@@ -314,7 +314,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
     // Custom with a country TLD and almost no query params:
     "http://www.google.ru/search?q={searchTerms}"
   };
-  for (size_t i = 0; i < base::size(kGoogleURLs); ++i) {
+  for (size_t i = 0; i < std::size(kGoogleURLs); ++i) {
     EXPECT_EQ(SEARCH_ENGINE_GOOGLE, GetEngineType(kGoogleURLs[i]));
   }
 
@@ -326,7 +326,7 @@ TEST_F(TemplateURLPrepopulateDataTest, GetEngineTypeAdvanced) {
       // Aggressively match types by checking just TLD+1.
       "http://someothersite.yahoo.com/",
   };
-  for (size_t i = 0; i < base::size(kYahooURLs); ++i) {
+  for (size_t i = 0; i < std::size(kYahooURLs); ++i) {
     EXPECT_EQ(SEARCH_ENGINE_YAHOO, GetEngineType(kYahooURLs[i]));
   }
 

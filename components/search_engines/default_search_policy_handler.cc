@@ -201,7 +201,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, dict.get());
 
   size_t policyCount = 14;
-  CHECK_EQ(policyCount, base::size(kDefaultSearchPolicyDataMap));
+  CHECK_EQ(policyCount, std::size(kDefaultSearchPolicyDataMap));
 
   // Set the fields which are not specified by the policy to default values.
   dict->SetString(DefaultSearchManager::kID,

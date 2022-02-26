@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -103,8 +102,8 @@ class VideoCaptureOverlayTest : public testing::Test {
     CHECK(result.tryAllocPixels(info, info.minRowBytes()));
     SkCanvas canvas(result, SkSurfaceProps{});
     canvas.drawColor(kTestImageBackground);
-    for (size_t i = 0; i < base::size(kTestImageColors); ++i) {
-      const size_t idx = (i + cycle) % base::size(kTestImageColors);
+    for (size_t i = 0; i < std::size(kTestImageColors); ++i) {
+      const size_t idx = (i + cycle) % std::size(kTestImageColors);
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
       paint.setColor(SkColor4f::FromColor(kTestImageColors[idx]),

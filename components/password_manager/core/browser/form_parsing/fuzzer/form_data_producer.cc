@@ -50,7 +50,7 @@ bool MaybeGenerateFieldPrediction(DataAccessor* accessor,
     return false;
   prediction->may_use_prefilled_placeholder = accessor->ConsumeBit();
   const size_t prediction_idx = accessor->ConsumeNumber(3);
-  if (prediction_idx < base::size(kPasswordRelatedServerTypes)) {
+  if (prediction_idx < std::size(kPasswordRelatedServerTypes)) {
     prediction->type = kPasswordRelatedServerTypes[prediction_idx];
   } else {
     // Set random type, probably even invalid. FormParser should gracefully

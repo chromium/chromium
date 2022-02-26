@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/test_utils.h"
@@ -457,7 +456,7 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       {u"name3", true},
       {u"name4", false},
   };
-  const size_t number_of_cases = base::size(kExpectedFields);
+  const size_t number_of_cases = std::size(kExpectedFields);
   ASSERT_EQ(number_of_cases, target.fields.size());
   for (size_t i = 0; i < number_of_cases; ++i) {
     EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);
@@ -499,7 +498,7 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       {u"name3", false},
       {u"name4", true},
   };
-  const size_t number_of_cases = base::size(kExpectedFields);
+  const size_t number_of_cases = std::size(kExpectedFields);
   ASSERT_EQ(number_of_cases, target.fields.size());
   for (size_t i = 0; i < number_of_cases; ++i) {
     EXPECT_EQ(kExpectedFields[i].name, target.fields[i].name);

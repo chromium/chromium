@@ -39,7 +39,7 @@ TEST(HistoryClustersDBTasksTest, BeginTimeCalculation) {
       },
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case i=%d", int(i)));
 
     auto& test_case = test_data[i];

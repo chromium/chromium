@@ -5,10 +5,10 @@
 #include "components/autofill/core/browser/autofill_ie_toolbar_import_win.h"
 
 #include <stddef.h>
+#include <windows.h>
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -17,8 +17,6 @@
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 using base::win::RegKey;
 
@@ -159,13 +157,13 @@ TEST_F(AutofillIeToolbarImportTest, TestAutofillImport) {
   profile_key.Create(HKEY_CURRENT_USER, kProfileKey, KEY_ALL_ACCESS);
   EXPECT_TRUE(profile_key.Valid());
 
-  CreateSubkey(&profile_key, L"0", profile1, base::size(profile1));
-  CreateSubkey(&profile_key, L"1", profile2, base::size(profile2));
+  CreateSubkey(&profile_key, L"0", profile1, std::size(profile1));
+  CreateSubkey(&profile_key, L"1", profile2, std::size(profile2));
 
   RegKey cc_key;
   cc_key.Create(HKEY_CURRENT_USER, kCreditCardKey, KEY_ALL_ACCESS);
   EXPECT_TRUE(cc_key.Valid());
-  CreateSubkey(&cc_key, L"0", credit_card, base::size(credit_card));
+  CreateSubkey(&cc_key, L"0", credit_card, std::size(credit_card));
   EncryptAndWrite(&cc_key, &empty_password);
   EncryptAndWrite(&cc_key, &empty_salt);
 

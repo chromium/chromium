@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,7 +38,7 @@ const SimilarLanguageCode kSimilarLanguageCodes[] = {
 
 // Checks |kSimilarLanguageCodes| and returns group code.
 int GetSimilarLanguageGroupCode(const std::string& language) {
-  for (size_t i = 0; i < base::size(kSimilarLanguageCodes); ++i) {
+  for (size_t i = 0; i < std::size(kSimilarLanguageCodes); ++i) {
     if (language.find(kSimilarLanguageCodes[i].code) != 0)
       continue;
     return kSimilarLanguageCodes[i].group;
@@ -335,7 +334,7 @@ bool IsSameOrSimilarLanguages(const std::string& page_language,
 }
 
 bool IsServerWrongConfigurationLanguage(const std::string& language_code) {
-  for (size_t i = 0; i < base::size(kWellKnownCodesOnWrongConfiguration); ++i) {
+  for (size_t i = 0; i < std::size(kWellKnownCodesOnWrongConfiguration); ++i) {
     if (language_code == kWellKnownCodesOnWrongConfiguration[i])
       return true;
   }

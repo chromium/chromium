@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -580,7 +579,7 @@ bool CrashHandlerHost::ReceiveClientMessage(int client_fd,
   msg.msg_name = nullptr;
   msg.msg_namelen = 0;
   msg.msg_iov = iov;
-  msg.msg_iovlen = base::size(iov);
+  msg.msg_iovlen = std::size(iov);
 
   char cmsg_buf[CMSG_SPACE(sizeof(int)) + CMSG_SPACE(sizeof(ucred))];
   msg.msg_control = cmsg_buf;

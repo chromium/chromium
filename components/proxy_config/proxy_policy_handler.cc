@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -77,7 +76,7 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   policy::PolicySource inherited_source =
       policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
-  for (size_t i = 0; i < base::size(kDeprecatedProxyPolicies); ++i) {
+  for (size_t i = 0; i < std::size(kDeprecatedProxyPolicies); ++i) {
     const PolicyMap::Entry* entry = policies.Get(kDeprecatedProxyPolicies[i]);
     if (!entry)
       continue;
@@ -150,7 +149,7 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return true;
 
   bool is_valid_mode = false;
-  for (size_t i = 0; i != base::size(kProxyModeValidationMap); ++i) {
+  for (size_t i = 0; i != std::size(kProxyModeValidationMap); ++i) {
     const ProxyModeValidationEntry& entry = kProxyModeValidationMap[i];
     if (entry.mode_value != mode_value)
       continue;

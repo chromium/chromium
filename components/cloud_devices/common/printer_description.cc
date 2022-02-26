@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -236,7 +235,7 @@ constexpr int32_t kInchToUm = 25400;
 constexpr int32_t kMmToUm = 1000;
 constexpr int32_t kSizeThresholdUm = 1000;
 
-constexpr size_t kEnumClassPrefixLen = base::size("MediaType::") - 1;
+constexpr size_t kEnumClassPrefixLen = std::size("MediaType::") - 1;
 
 // Json name of media type is constructed by removing "MediaType::" enum class
 // prefix from it.
@@ -439,7 +438,7 @@ constexpr struct MediaDefinition {
 #undef MAP_CLOUD_PRINT_MEDIA_TYPE
 
 const MediaDefinition& FindMediaByType(MediaType type) {
-  for (size_t i = 0; i < base::size(kMediaDefinitions); ++i) {
+  for (size_t i = 0; i < std::size(kMediaDefinitions); ++i) {
     if (kMediaDefinitions[i].id == type)
       return kMediaDefinitions[i];
   }
@@ -449,7 +448,7 @@ const MediaDefinition& FindMediaByType(MediaType type) {
 
 const MediaDefinition* FindMediaBySize(int32_t width_um, int32_t height_um) {
   const MediaDefinition* result = nullptr;
-  for (size_t i = 0; i < base::size(kMediaDefinitions); ++i) {
+  for (size_t i = 0; i < std::size(kMediaDefinitions); ++i) {
     int32_t diff =
         std::max(std::abs(width_um - kMediaDefinitions[i].width_um),
                  std::abs(height_um - kMediaDefinitions[i].height_um));
@@ -461,7 +460,7 @@ const MediaDefinition* FindMediaBySize(int32_t width_um, int32_t height_um) {
 
 template <class T, class IdType>
 std::string TypeToString(const T& names, IdType id) {
-  for (size_t i = 0; i < base::size(names); ++i) {
+  for (size_t i = 0; i < std::size(names); ++i) {
     if (id == names[i].id)
       return names[i].json_name;
   }
@@ -471,7 +470,7 @@ std::string TypeToString(const T& names, IdType id) {
 
 template <class T, class IdType>
 bool TypeFromString(const T& names, const std::string& type, IdType* id) {
-  for (size_t i = 0; i < base::size(names); ++i) {
+  for (size_t i = 0; i < std::size(names); ++i) {
     if (type == names[i].json_name) {
       *id = names[i].id;
       return true;

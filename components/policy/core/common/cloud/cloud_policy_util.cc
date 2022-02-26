@@ -115,7 +115,7 @@ std::string GetMachineName() {
   return std::string();
 #elif BUILDFLAG(IS_WIN)
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
-  DWORD size = base::size(computer_name);
+  DWORD size = std::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
     std::string result;
     bool conversion_successful = base::WideToUTF8(computer_name, size, &result);

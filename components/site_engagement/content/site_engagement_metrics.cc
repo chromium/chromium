@@ -4,7 +4,6 @@
 
 #include "components/site_engagement/content/site_engagement_metrics.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/site_engagement/content/engagement_type.h"
@@ -75,7 +74,7 @@ void SiteEngagementMetrics::RecordEngagementScores(
     return;
 
   std::map<int, int> score_buckets;
-  for (size_t i = 0; i < base::size(kEngagementBucketHistogramBuckets); ++i)
+  for (size_t i = 0; i < std::size(kEngagementBucketHistogramBuckets); ++i)
     score_buckets[kEngagementBucketHistogramBuckets[i]] = 0;
 
   for (const auto& detail : details) {
@@ -123,7 +122,7 @@ void SiteEngagementMetrics::RecordDaysSinceLastShortcutLaunch(int days) {
 std::vector<std::string>
 SiteEngagementMetrics::GetEngagementBucketHistogramNames() {
   std::vector<std::string> histogram_names;
-  for (size_t i = 0; i < base::size(kEngagementBucketHistogramBuckets); ++i) {
+  for (size_t i = 0; i < std::size(kEngagementBucketHistogramBuckets); ++i) {
     histogram_names.push_back(
         kEngagementBucketHistogramBase +
         base::NumberToString(kEngagementBucketHistogramBuckets[i]));

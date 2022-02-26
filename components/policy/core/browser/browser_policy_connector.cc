@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -12,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -179,7 +179,7 @@ bool BrowserPolicyConnector::IsNonEnterpriseUser(const std::string& username) {
   }
   const std::u16string domain = base::UTF8ToUTF16(
       gaia::ExtractDomainName(gaia::CanonicalizeEmail(username)));
-  for (size_t i = 0; i < base::size(kNonManagedDomainPatterns); i++) {
+  for (size_t i = 0; i < std::size(kNonManagedDomainPatterns); i++) {
     std::u16string pattern = base::WideToUTF16(kNonManagedDomainPatterns[i]);
     if (MatchDomain(domain, pattern, i))
       return true;

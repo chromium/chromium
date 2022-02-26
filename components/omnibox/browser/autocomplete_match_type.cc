@@ -5,7 +5,6 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,7 +52,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "open-tab",
   };
   // clang-format on
-  static_assert(base::size(strings) == AutocompleteMatchType::NUM_TYPES,
+  static_assert(std::size(strings) == AutocompleteMatchType::NUM_TYPES,
                 "strings array must have NUM_TYPES elements");
   return strings[type];
 }
@@ -141,7 +140,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // TILE_NAVSUGGEST
       0,                                     // OPEN_TAB
   };
-  static_assert(base::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
+  static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
 
   // Document provider should use its full display text; description has

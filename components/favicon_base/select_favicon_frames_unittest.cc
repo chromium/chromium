@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -31,7 +30,7 @@ const ui::ResourceScaleFactor FaviconScaleFactor1xAnd2x[] = {
 
 #define SCOPED_FAVICON_SCALE_FACTOR(list)                  \
   ui::test::ScopedSetSupportedResourceScaleFactors scoped( \
-      std::vector<ui::ResourceScaleFactor>(list, list + base::size(list)))
+      std::vector<ui::ResourceScaleFactor>(list, list + std::size(list)))
 
 #define SCOPED_FAVICON_SCALE_FACTOR_1X \
   SCOPED_FAVICON_SCALE_FACTOR(FaviconScaleFactor1x)

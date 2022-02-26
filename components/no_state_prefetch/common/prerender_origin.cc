@@ -4,7 +4,6 @@
 
 #include "components/no_state_prefetch/common/prerender_origin.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace prerender {
@@ -32,7 +31,7 @@ const char* kOriginNames[] = {
     "Speculation Rules Same Origin Prerender",
     "Max",
 };
-static_assert(base::size(kOriginNames) == ORIGIN_MAX + 1,
+static_assert(std::size(kOriginNames) == ORIGIN_MAX + 1,
               "prerender origin name count mismatch");
 
 }  // namespace

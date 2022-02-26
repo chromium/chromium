@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -119,7 +118,7 @@ void SafetyTipsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kSafetyTipsPublicKeySHA256,
-      kSafetyTipsPublicKeySHA256 + base::size(kSafetyTipsPublicKeySHA256));
+      kSafetyTipsPublicKeySHA256 + std::size(kSafetyTipsPublicKeySHA256));
 }
 
 std::string SafetyTipsComponentInstallerPolicy::GetName() const {

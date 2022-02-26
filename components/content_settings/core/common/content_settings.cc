@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -116,7 +115,7 @@ ContentSetting IntToContentSetting(int content_setting) {
 
 int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting,
                                        size_t* num_values) {
-  *num_values = base::size(kHistogramValue);
+  *num_values = std::size(kHistogramValue);
 
   // Verify the array is sorted by enum type and contains all values.
   DCHECK(std::is_sorted(std::begin(kHistogramValue), std::end(kHistogramValue),
@@ -124,7 +123,7 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting,
                           return a.type < b.type;
                         }));
   static_assert(
-      kHistogramValue[base::size(kHistogramValue) - 1].type ==
+      kHistogramValue[std::size(kHistogramValue) - 1].type ==
           ContentSettingsType(
               static_cast<int32_t>(ContentSettingsType::NUM_TYPES) - 1),
       "Update content settings histogram lookup");

@@ -70,7 +70,7 @@ class SafeSearchURLCheckerClientTest : public testing::Test {
 
  protected:
   GURL GetNewURL() {
-    CHECK(next_url_ < base::size(kURLs));
+    CHECK(next_url_ < std::size(kURLs));
     return GURL(kURLs[next_url_++]);
   }
 

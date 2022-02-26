@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -659,7 +658,7 @@ ApplyUpdateResult V4Store::MergeUpdate(const HashPrefixMap& old_prefixes_map,
       if (checksum[i] != expected_checksum[i]) {
 #if DCHECK_IS_ON()
         std::string checksum_b64, expected_checksum_b64;
-        base::Base64Encode(base::StringPiece(checksum, base::size(checksum)),
+        base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
                            &checksum_b64);
         base::Base64Encode(expected_checksum, &expected_checksum_b64);
         DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64
@@ -838,7 +837,7 @@ bool V4Store::VerifyChecksum() {
                               store_path_);
 #if DCHECK_IS_ON()
       std::string checksum_b64, expected_checksum_b64;
-      base::Base64Encode(base::StringPiece(checksum, base::size(checksum)),
+      base::Base64Encode(base::StringPiece(checksum, std::size(checksum)),
                          &checksum_b64);
       base::Base64Encode(expected_checksum_, &expected_checksum_b64);
       DVLOG(1) << "Failure: Checksum mismatch: calculated: " << checksum_b64

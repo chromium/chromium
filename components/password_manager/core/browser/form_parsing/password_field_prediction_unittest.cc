@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -94,7 +93,7 @@ TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
   };
 
   FormData form_data;
-  for (size_t i = 0; i < base::size(test_fields); ++i) {
+  for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
     field.unique_renderer_id = autofill::FieldRendererId(i + 1000);
     field.name = ASCIIToUTF16(test_fields[i].name);
@@ -104,7 +103,7 @@ TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
 
   FormStructure form_structure(form_data);
   // Set server predictions and create expected votes.
-  for (size_t i = 0; i < base::size(test_fields); ++i) {
+  for (size_t i = 0; i < std::size(test_fields); ++i) {
     AutofillField* field = form_structure.field(i);
 
     std::vector<FieldPrediction> predictions;
@@ -129,9 +128,9 @@ TEST_P(FormPredictionsTest, ConvertToFormPredictions) {
   // Check whether actual predictions are equal to expected ones.
   EXPECT_EQ(driver_id, actual_predictions.driver_id);
   EXPECT_EQ(form_structure.form_signature(), actual_predictions.form_signature);
-  EXPECT_EQ(base::size(test_fields), actual_predictions.fields.size());
+  EXPECT_EQ(std::size(test_fields), actual_predictions.fields.size());
 
-  for (size_t i = 0; i < base::size(test_fields); ++i) {
+  for (size_t i = 0; i < std::size(test_fields); ++i) {
     const PasswordFieldPrediction& actual_prediction =
         actual_predictions.fields[i];
     EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);

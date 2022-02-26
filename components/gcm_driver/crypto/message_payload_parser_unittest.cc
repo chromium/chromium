@@ -5,7 +5,6 @@
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
 #include "base/big_endian.h"
-#include "base/cxx17_backports.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,13 +35,13 @@ const uint8_t kValidMessage[] = {
     0x3F, 0xD8, 0x95, 0x2C, 0xA2, 0x11, 0xBD, 0x7B, 0x57, 0xB2, 0x00, 0xBD,
     0x57, 0x68, 0x3F, 0xF0, 0x14, 0x57};
 
-static_assert(base::size(kValidMessage) == 104,
+static_assert(std::size(kValidMessage) == 104,
               "The smallest valid message is 104 bytes in size.");
 
 // Creates an std::string for the |kValidMessage| constant.
 std::string CreateMessageString() {
   return std::string(reinterpret_cast<const char*>(kValidMessage),
-                     base::size(kValidMessage));
+                     std::size(kValidMessage));
 }
 
 TEST(MessagePayloadParserTest, ValidMessage) {
@@ -73,7 +72,7 @@ TEST(MessagePayloadParserTest, ValidMessage) {
 
 TEST(MessagePayloadParserTest, MinimumMessageSize) {
   std::string message = CreateMessageString();
-  message.resize(base::size(kValidMessage) / 2);
+  message.resize(std::size(kValidMessage) / 2);
 
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/path_service.h"
@@ -185,9 +184,9 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
 
 void ShortcutsDatabaseTest::AddAll() {
   ClearDB();
-  for (size_t i = 0; i < base::size(shortcut_test_db); ++i)
+  for (size_t i = 0; i < std::size(shortcut_test_db); ++i)
     db_->AddShortcut(ShortcutFromTestInfo(shortcut_test_db[i]));
-  EXPECT_EQ(base::size(shortcut_test_db), CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db), CountRecords());
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -223,7 +222,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithIds) {
   shortcut_ids.push_back(shortcut_test_db[0].guid);
   shortcut_ids.push_back(shortcut_test_db[2].guid);
   EXPECT_TRUE(db_->DeleteShortcutsWithIDs(shortcut_ids));
-  EXPECT_EQ(base::size(shortcut_test_db) - 2, CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db) - 2, CountRecords());
 
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
@@ -242,7 +241,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithURL) {
   AddAll();
 
   EXPECT_TRUE(db_->DeleteShortcutsWithURL("http://slashdot.org/"));
-  EXPECT_EQ(base::size(shortcut_test_db) - 2, CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db) - 2, CountRecords());
 
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
@@ -261,7 +260,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteAllShortcuts) {
   AddAll();
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
-  EXPECT_EQ(base::size(shortcut_test_db), shortcuts.size());
+  EXPECT_EQ(std::size(shortcut_test_db), shortcuts.size());
   EXPECT_TRUE(db_->DeleteAllShortcuts());
   db_->LoadShortcuts(&shortcuts);
   EXPECT_EQ(0U, shortcuts.size());

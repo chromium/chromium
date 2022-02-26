@@ -6,14 +6,12 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -249,7 +247,7 @@ TEST_F(WebpDecoderTest, InvalidFormat) {
   EXPECT_CALL(*delegate_, OnFinishedDecoding(false)).Times(1);
   const char dummy_image[] = "(>'-')> <('-'<) ^('-')^ <('-'<) (>'-')>";
   NSData* data = [[NSData alloc] initWithBytes:dummy_image
-                                        length:base::size(dummy_image)];
+                                        length:std::size(dummy_image)];
   decoder_->OnDataReceived(data);
   EXPECT_EQ(0u, [delegate_->GetImage() length]);
 }

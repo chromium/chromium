@@ -514,8 +514,8 @@ TEST_P(YUVReadbackPixelTest, Test) {
   unsigned int x = std::get<2>(GetParam());
   unsigned int y = std::get<3>(GetParam());
 
-  for (unsigned int ox = x; ox < base::size(kYUVReadbackSizes); ox++) {
-    for (unsigned int oy = y; oy < base::size(kYUVReadbackSizes); oy++) {
+  for (unsigned int ox = x; ox < std::size(kYUVReadbackSizes); ox++) {
+    for (unsigned int oy = y; oy < std::size(kYUVReadbackSizes); oy++) {
       // If output is a subsection of the destination frame, (letterbox)
       // then try different variations of where the subsection goes.
       for (Margin xm = x < ox ? MarginLeft : MarginRight; xm <= MarginRight;
@@ -546,8 +546,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Bool(),
         ::testing::Bool(),
-        ::testing::Range<unsigned int>(0, base::size(kYUVReadbackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kYUVReadbackSizes))));
+        ::testing::Range<unsigned int>(0, std::size(kYUVReadbackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kYUVReadbackSizes))));
 
 }  // namespace viz
 

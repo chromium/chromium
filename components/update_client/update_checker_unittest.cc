@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
@@ -194,7 +193,7 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.brand = brand;
   crx_component.name = "test_jebg";
-  crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
+  crx_component.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
   crx_component.fingerprint = "fp1";

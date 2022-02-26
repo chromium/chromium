@@ -99,7 +99,7 @@ const SchemaKeyToValueType kSchemaTypesToValueTypes[] = {
     {schema::kString, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kSchemaTypesToValueTypesEnd =
-    kSchemaTypesToValueTypes + base::size(kSchemaTypesToValueTypes);
+    kSchemaTypesToValueTypes + std::size(kSchemaTypesToValueTypes);
 
 // Allowed attributes and types for type 'array'. These are ordered
 // alphabetically to perform binary search.
@@ -112,7 +112,7 @@ const SchemaKeyToValueType kAttributesAndTypesForArray[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForArrayEnd =
-    kAttributesAndTypesForArray + base::size(kAttributesAndTypesForArray);
+    kAttributesAndTypesForArray + std::size(kAttributesAndTypesForArray);
 
 // Allowed attributes and types for type 'boolean'. These are ordered
 // alphabetically to perform binary search.
@@ -124,7 +124,7 @@ const SchemaKeyToValueType kAttributesAndTypesForBoolean[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForBooleanEnd =
-    kAttributesAndTypesForBoolean + base::size(kAttributesAndTypesForBoolean);
+    kAttributesAndTypesForBoolean + std::size(kAttributesAndTypesForBoolean);
 
 // Allowed attributes and types for type 'integer'. These are ordered
 // alphabetically to perform binary search.
@@ -139,7 +139,7 @@ const SchemaKeyToValueType kAttributesAndTypesForInteger[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForIntegerEnd =
-    kAttributesAndTypesForInteger + base::size(kAttributesAndTypesForInteger);
+    kAttributesAndTypesForInteger + std::size(kAttributesAndTypesForInteger);
 
 // Allowed attributes and types for type 'number'. These are ordered
 // alphabetically to perform binary search.
@@ -151,7 +151,7 @@ const SchemaKeyToValueType kAttributesAndTypesForNumber[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForNumberEnd =
-    kAttributesAndTypesForNumber + base::size(kAttributesAndTypesForNumber);
+    kAttributesAndTypesForNumber + std::size(kAttributesAndTypesForNumber);
 
 // Allowed attributes and types for type 'object'. These are ordered
 // alphabetically to perform binary search.
@@ -167,7 +167,7 @@ const SchemaKeyToValueType kAttributesAndTypesForObject[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForObjectEnd =
-    kAttributesAndTypesForObject + base::size(kAttributesAndTypesForObject);
+    kAttributesAndTypesForObject + std::size(kAttributesAndTypesForObject);
 
 // Allowed attributes and types for $ref. These are ordered alphabetically to
 // perform binary search.
@@ -177,7 +177,7 @@ const SchemaKeyToValueType kAttributesAndTypesForRef[] = {
     {schema::kTitle, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForRefEnd =
-    kAttributesAndTypesForRef + base::size(kAttributesAndTypesForRef);
+    kAttributesAndTypesForRef + std::size(kAttributesAndTypesForRef);
 
 // Allowed attributes and types for type 'string'. These are ordered
 // alphabetically to perform binary search.
@@ -191,7 +191,7 @@ const SchemaKeyToValueType kAttributesAndTypesForString[] = {
     {schema::kType, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kAttributesAndTypesForStringEnd =
-    kAttributesAndTypesForString + base::size(kAttributesAndTypesForString);
+    kAttributesAndTypesForString + std::size(kAttributesAndTypesForString);
 
 // Helper for std::lower_bound.
 bool CompareToString(const SchemaKeyToValueType& entry,

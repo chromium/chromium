@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -211,7 +210,7 @@ TEST_P(JsonPrefStoreTest, NonExistentFile) {
 TEST_P(JsonPrefStoreTest, InvalidFile) {
   base::FilePath invalid_file = temp_dir_.GetPath().AppendASCII("invalid.json");
   ASSERT_LT(0, base::WriteFile(invalid_file, kInvalidJson,
-                               base::size(kInvalidJson) - 1));
+                               std::size(kInvalidJson) - 1));
 
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(invalid_file);
   EXPECT_EQ(PersistentPrefStore::PREF_READ_ERROR_JSON_PARSE,
@@ -302,7 +301,7 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
 TEST_P(JsonPrefStoreTest, Basic) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
   ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, base::size(kReadJson) - 1));
+            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
 
   // Test that the persistent value can be loaded.
   ASSERT_TRUE(PathExists(input_file));
@@ -329,7 +328,7 @@ TEST_P(JsonPrefStoreTest, Basic) {
 TEST_P(JsonPrefStoreTest, BasicAsync) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
   ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, base::size(kReadJson) - 1));
+            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
 
   // Test that the persistent value can be loaded.
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(input_file);
@@ -436,7 +435,7 @@ TEST_P(JsonPrefStoreTest, AsyncNonExistingFile) {
 TEST_P(JsonPrefStoreTest, ReadWithInterceptor) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
   ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, base::size(kReadJson) - 1));
+            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter());
@@ -478,7 +477,7 @@ TEST_P(JsonPrefStoreTest, ReadWithInterceptor) {
 TEST_P(JsonPrefStoreTest, ReadAsyncWithInterceptor) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
   ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, base::size(kReadJson) - 1));
+            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter());
@@ -880,7 +879,7 @@ class JsonPrefStoreCallbackTest : public testing::Test {
 TEST_F(JsonPrefStoreCallbackTest, TestSerializeDataCallbacks) {
   base::FilePath input_file = temp_dir_.GetPath().AppendASCII("write.json");
   ASSERT_LT(0,
-            base::WriteFile(input_file, kReadJson, base::size(kReadJson) - 1));
+            base::WriteFile(input_file, kReadJson, std::size(kReadJson) - 1));
 
   std::unique_ptr<InterceptingPrefFilter> intercepting_pref_filter(
       new InterceptingPrefFilter(write_callback_observer_.GetCallbackPair()));

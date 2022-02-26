@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -172,7 +171,7 @@ TEST_F(BuiltinProviderTest, TypingScheme) {
       {u"ChRoMe://", {kURL1, kURL2, kURL3}},
   };
 
-  RunTest(typing_scheme_cases, base::size(typing_scheme_cases));
+  RunTest(typing_scheme_cases, std::size(typing_scheme_cases));
 }
 
 TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
@@ -190,7 +189,7 @@ TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
       {u"scheme://host/path?query#ref", {}},
   };
 
-  RunTest(test_cases, base::size(test_cases));
+  RunTest(test_cases, std::size(test_cases));
 }
 
 TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
@@ -239,7 +238,7 @@ TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
       {kEmbedder + kSep2 + kHostM3, {kURLM2, kURLM3}},
   };
 
-  RunTest(test_cases, base::size(test_cases));
+  RunTest(test_cases, std::size(test_cases));
 }
 
 TEST_F(BuiltinProviderTest, AboutBlank) {
@@ -297,7 +296,7 @@ TEST_F(BuiltinProviderTest, AboutBlank) {
       {kAboutBlank.substr(0, 9) + u"#r", {}},
   };
 
-  RunTest(about_blank_cases, base::size(about_blank_cases));
+  RunTest(about_blank_cases, std::size(about_blank_cases));
 }
 
 TEST_F(BuiltinProviderTest, DoesNotSupportMatchesOnFocus) {
@@ -330,7 +329,7 @@ TEST_F(BuiltinProviderTest, Subpages) {
     {kSubpage + kPageTwo,                              {kURLTwo}},
   };
 
-  RunTest(settings_subpage_cases, base::size(settings_subpage_cases));
+  RunTest(settings_subpage_cases, std::size(settings_subpage_cases));
 }
 
 TEST_F(BuiltinProviderTest, Inlining) {
@@ -428,7 +427,7 @@ TEST_F(BuiltinProviderTest, Inlining) {
   };
 
   ACMatches matches;
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
         "case %" PRIuS ": %s", i, base::UTF16ToUTF8(cases[i].input).c_str()));
     AutocompleteInput input(cases[i].input, metrics::OmniboxEventProto::OTHER,

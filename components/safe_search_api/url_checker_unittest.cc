@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -68,7 +67,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
 
  protected:
   GURL GetNewURL() {
-    CHECK(next_url_ < base::size(kURLs));
+    CHECK(next_url_ < std::size(kURLs));
     return GURL(kURLs[next_url_++]);
   }
 

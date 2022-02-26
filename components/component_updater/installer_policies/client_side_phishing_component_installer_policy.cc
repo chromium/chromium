@@ -64,7 +64,7 @@ void ClientSidePhishingComponentInstallerPolicy::GetPublicHash(
     std::vector<uint8_t>* hash) {
   hash->assign(kClientSidePhishingPublicKeySHA256,
                kClientSidePhishingPublicKeySHA256 +
-                   base::size(kClientSidePhishingPublicKeySHA256));
+                   std::size(kClientSidePhishingPublicKeySHA256));
 }
 
 bool ClientSidePhishingComponentInstallerPolicy::

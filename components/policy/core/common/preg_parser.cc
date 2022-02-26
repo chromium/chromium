@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
@@ -258,7 +257,7 @@ void HandleRecord(const std::u16string& key_name,
 
   std::string data_utf8;
   std::string action_trigger(base::ToLowerASCII(
-      value_name.substr(base::size(kActionTriggerPrefix) - 1)));
+      value_name.substr(std::size(kActionTriggerPrefix) - 1)));
   if (action_trigger == kActionTriggerDeleteValues) {
     if (DecodePRegStringValue(data, &data_utf8)) {
       for (const std::string& value_str :
@@ -276,8 +275,8 @@ void HandleRecord(const std::u16string& key_name,
     }
   } else if (base::StartsWith(action_trigger, kActionTriggerDel,
                               base::CompareCase::SENSITIVE)) {
-    dict->RemoveValue(value_name.substr(base::size(kActionTriggerPrefix) - 1 +
-                                        base::size(kActionTriggerDel) - 1));
+    dict->RemoveValue(value_name.substr(std::size(kActionTriggerPrefix) - 1 +
+                                        std::size(kActionTriggerDel) - 1));
   } else if (base::StartsWith(action_trigger, kActionTriggerDelVals,
                               base::CompareCase::SENSITIVE)) {
     // Delete all values.
@@ -333,7 +332,7 @@ POLICY_EXPORT bool ReadDataInternal(const uint8_t* preg_data,
   }
 
   // Check the header.
-  const int kHeaderSize = base::size(kPRegFileHeader);
+  const int kHeaderSize = std::size(kPRegFileHeader);
   if (!preg_data || preg_data_size < kHeaderSize ||
       memcmp(kPRegFileHeader, preg_data, kHeaderSize) != 0) {
     LOG(ERROR) << "Bad PReg " << debug_name;

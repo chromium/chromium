@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -855,7 +854,7 @@ MultipleGoodTimeResponseHandler::ResponseHandler(
   net::test_server::BasicHttpResponse* response =
       new net::test_server::BasicHttpResponse();
 
-  if (next_time_index_ >= base::size(kGoodTimeResponseBody)) {
+  if (next_time_index_ >= std::size(kGoodTimeResponseBody)) {
     response->set_code(net::HTTP_BAD_REQUEST);
     return std::unique_ptr<net::test_server::HttpResponse>(response);
   }
@@ -870,7 +869,7 @@ MultipleGoodTimeResponseHandler::ResponseHandler(
 }
 
 base::Time MultipleGoodTimeResponseHandler::GetTimeAtIndex(unsigned int i) {
-  if (i >= base::size(kGoodTimeResponseHandlerJsTime))
+  if (i >= std::size(kGoodTimeResponseHandlerJsTime))
     return base::Time();
   return base::Time::FromJsTime(kGoodTimeResponseHandlerJsTime[i]);
 }

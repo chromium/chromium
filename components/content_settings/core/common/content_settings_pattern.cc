@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -38,7 +37,7 @@ const char* const kSchemeNames[] = {"wildcard",         "other",
                                     "chrome-search",    "chrome",
                                     "chrome-untrusted", "devtools"};
 
-static_assert(base::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
+static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");
 
 // Note: it is safe to return a base::StringPiece here as long as they are
@@ -555,7 +554,7 @@ ContentSettingsPattern::SchemeType ContentSettingsPattern::GetScheme() const {
   if (parts_.is_scheme_wildcard)
     return SCHEME_WILDCARD;
 
-  for (size_t i = 2; i < base::size(kSchemeNames); ++i) {
+  for (size_t i = 2; i < std::size(kSchemeNames); ++i) {
     if (parts_.scheme == kSchemeNames[i])
       return static_cast<SchemeType>(i);
   }

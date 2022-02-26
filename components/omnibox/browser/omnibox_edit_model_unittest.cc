@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -185,7 +184,7 @@ TEST_F(OmniboxEditModelTest, AdjustTextForCopy) {
        false, ""},
   };
 
-  for (size_t i = 0; i < base::size(input); ++i) {
+  for (size_t i = 0; i < std::size(input); ++i) {
     location_bar_model()->set_formatted_full_url(
         base::UTF8ToUTF16(input[i].url_for_editing));
     location_bar_model()->set_url_for_display(

@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -289,7 +288,7 @@ void ShortcutsProviderTest::SetUp() {
   provider_ = base::MakeRefCounted<ShortcutsProvider>(client_.get());
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
                                        shortcut_test_db,
-                                       base::size(shortcut_test_db));
+                                       std::size(shortcut_test_db));
 }
 
 void ShortcutsProviderTest::TearDown() {
@@ -636,7 +635,7 @@ TEST_F(ShortcutsProviderTest, DeleteMatch) {
   size_t original_shortcuts_count = backend->shortcuts_map().size();
 
   PopulateShortcutsBackendWithTestData(backend, shortcuts_to_test_delete,
-                                       base::size(shortcuts_to_test_delete));
+                                       std::size(shortcuts_to_test_delete));
 
   EXPECT_EQ(original_shortcuts_count + 4, backend->shortcuts_map().size());
   EXPECT_FALSE(backend->shortcuts_map().end() ==

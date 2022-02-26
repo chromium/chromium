@@ -7,14 +7,13 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace syncer {
 
 std::string GetPersonalizableDeviceNameInternal() {
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {0};
-  DWORD size = base::size(computer_name);
+  DWORD size = std::size(computer_name);
   if (::GetComputerNameW(computer_name, &size)) {
     std::string result;
     bool conversion_successful = base::WideToUTF8(computer_name, size, &result);

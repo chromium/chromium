@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/url_formatter/url_fixer.h"
+
 #include <stddef.h>
 #include <stdlib.h>
 
 #include <string>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/url_formatter/url_fixer.h"
 #include "net/base/filename_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -268,7 +268,7 @@ TEST(URLFixerTest, SegmentURL) {
   std::string result;
   url::Parsed parts;
 
-  for (size_t i = 0; i < base::size(segment_cases); ++i) {
+  for (size_t i = 0; i < std::size(segment_cases); ++i) {
     SegmentCase value = segment_cases[i];
     SCOPED_TRACE(testing::Message() << "test #" << i << ": " << value.input);
 

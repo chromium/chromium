@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -67,15 +66,15 @@ class FilesystemProxyTest : public testing::TestWithParam<bool> {
     CHECK(base::CreateDirectory(root.Append(kDir1).Append(kDir1Dir1)));
     CHECK(base::CreateDirectory(root.Append(kDir2)));
     CHECK(base::WriteFile(root.Append(kFile1), kFile1Contents,
-                          base::size(kFile1Contents) - 1));
+                          std::size(kFile1Contents) - 1));
     CHECK(base::WriteFile(root.Append(kFile2), kFile2Contents,
-                          base::size(kFile2Contents) - 1));
+                          std::size(kFile2Contents) - 1));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File1),
                           kDir1File1Contents,
-                          base::size(kDir1File1Contents) - 1));
+                          std::size(kDir1File1Contents) - 1));
     CHECK(base::WriteFile(root.Append(kDir1).Append(kDir1File2),
                           kDir1File2Contents,
-                          base::size(kDir1File2Contents) - 1));
+                          std::size(kDir1File2Contents) - 1));
 
     if (UseRestrictedFilesystem()) {
       // Run a remote FilesystemImpl on a background thread to exercise
@@ -371,7 +370,7 @@ TEST_P(FilesystemProxyTest, GetFileInfo) {
   absl::optional<base::File::Info> file1_info = proxy().GetFileInfo(kFile1);
   ASSERT_TRUE(file1_info.has_value());
   EXPECT_FALSE(file1_info->is_directory);
-  EXPECT_EQ(static_cast<int>(base::size(kFile1Contents) - 1), file1_info->size);
+  EXPECT_EQ(static_cast<int>(std::size(kFile1Contents) - 1), file1_info->size);
 
   absl::optional<base::File::Info> dir1_info = proxy().GetFileInfo(kDir1);
   ASSERT_TRUE(dir1_info.has_value());
@@ -381,7 +380,7 @@ TEST_P(FilesystemProxyTest, GetFileInfo) {
       proxy().GetFileInfo(kDir1.Append(kDir1File1));
   ASSERT_TRUE(dir1_file1_info.has_value());
   EXPECT_FALSE(dir1_file1_info->is_directory);
-  EXPECT_EQ(static_cast<int>(base::size(kDir1File1Contents) - 1),
+  EXPECT_EQ(static_cast<int>(std::size(kDir1File1Contents) - 1),
             dir1_file1_info->size);
 
   const base::FilePath kBadFilename{FILE_PATH_LITERAL("bad_file")};
@@ -445,7 +444,7 @@ TEST_P(FilesystemProxyTest, LockFile) {
 TEST_P(FilesystemProxyTest, ComputeDirectorySize) {
   // The file size does not include the null terminator, so subtract 1 per file.
   int64_t expected_size =
-      base::size(kDir1File1Contents) + base::size(kDir1File2Contents) - 2;
+      std::size(kDir1File1Contents) + std::size(kDir1File2Contents) - 2;
   EXPECT_EQ(proxy().ComputeDirectorySize(kDir1), expected_size);
 }
 
