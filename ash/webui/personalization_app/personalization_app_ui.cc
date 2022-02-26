@@ -171,8 +171,9 @@ PersonalizationAppUI::PersonalizationAppUI(
       wallpaper_provider_(std::move(wallpaper_provider)) {
   DCHECK(wallpaper_provider_);
 
-  std::unique_ptr<content::WebUIDataSource> source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIPersonalizationAppHost));
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIPersonalizationAppHost);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -189,12 +190,9 @@ PersonalizationAppUI::PersonalizationAppUI(
   // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();
 
-  AddResources(source.get());
-  AddStrings(source.get());
-  AddBooleans(source.get());
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source.release());
+  AddResources(source);
+  AddStrings(source);
+  AddBooleans(source);
 }
 
 PersonalizationAppUI::~PersonalizationAppUI() = default;

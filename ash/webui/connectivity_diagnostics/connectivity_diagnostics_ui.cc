@@ -104,8 +104,9 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   DCHECK(bind_network_diagnostics_service_callback_);
   DCHECK(bind_network_health_service_callback_);
   DCHECK(send_feedback_report_callback);
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIConnectivityDiagnosticsHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIConnectivityDiagnosticsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
@@ -134,9 +135,6 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
                              IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
   chromeos::network_diagnostics::AddResources(source);
   chromeos::network_health::AddResources(source);
-
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                source);
 }
 
 ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;

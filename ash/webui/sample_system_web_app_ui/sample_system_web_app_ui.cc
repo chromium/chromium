@@ -22,8 +22,10 @@ namespace ash {
 
 SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  auto trusted_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUISampleSystemWebAppHost));
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource* trusted_source =
+      content::WebUIDataSource::CreateAndAdd(browser_context,
+                                             kChromeUISampleSystemWebAppHost);
   trusted_source->AddResourcePath("", IDR_ASH_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
   trusted_source->AddResourcePaths(base::make_span(
       kAshSampleSystemWebAppResources, kAshSampleSystemWebAppResourcesSize));
@@ -48,9 +50,6 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
   trusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types lit-html worker-js-static;");
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, trusted_source.release());
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

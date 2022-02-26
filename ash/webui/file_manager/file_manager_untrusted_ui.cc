@@ -30,7 +30,9 @@ FileManagerUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 FileManagerUntrustedUI::FileManagerUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
   content::WebUIDataSource* untrusted_source =
-      content::WebUIDataSource::Create(kChromeUIFileManagerUntrustedURL);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIFileManagerUntrustedURL);
 
   untrusted_source->AddResourcePaths(base::make_span(
       kFileManagerUntrustedResources, kFileManagerUntrustedResourcesSize));
@@ -51,9 +53,6 @@ FileManagerUntrustedUI::FileManagerUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'unsafe-inline' 'self';");
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, untrusted_source);
 }
 
 FileManagerUntrustedUI::~FileManagerUntrustedUI() = default;

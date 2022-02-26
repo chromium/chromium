@@ -32,7 +32,9 @@ UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(kChromeUIEcheAppGuestURL);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIEcheAppGuestURL);
 
   html_source->AddResourcePath("untrusted_index.html",
                                IDR_ASH_ECHE_UNTRUSTED_INDEX_HTML);
@@ -58,9 +60,6 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
   // TODO(b/194964287): Audit and tighten CSP.
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "");
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source);
 }
 
 UntrustedEcheAppUI::~UntrustedEcheAppUI() = default;

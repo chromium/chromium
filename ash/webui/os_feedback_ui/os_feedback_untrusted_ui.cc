@@ -11,7 +11,6 @@
 #include "ash/webui/grit/ash_os_feedback_untrusted_resources_map.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/containers/span.h"
-#include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,8 +33,10 @@ OsFeedbackUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 
 OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
-  auto untrusted_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIOSFeedbackUntrustedUrl));
+  content::WebUIDataSource* untrusted_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIOSFeedbackUntrustedUrl);
 
   untrusted_source->AddResourcePaths(base::make_span(
       kAshOsFeedbackUntrustedResources, kAshOsFeedbackUntrustedResourcesSize));
@@ -65,9 +66,6 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' chrome-untrusted://resources;");
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, untrusted_source.release());
 }
 
 OsFeedbackUntrustedUI::~OsFeedbackUntrustedUI() = default;

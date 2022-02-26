@@ -40,8 +40,9 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  auto source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIShortcutCustomizationAppHost));
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIShortcutCustomizationAppHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
@@ -50,11 +51,8 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   const auto resources =
       base::make_span(kAshShortcutCustomizationAppResources,
                       kAshShortcutCustomizationAppResourcesSize);
-  SetUpWebUIDataSource(source.get(), resources,
+  SetUpWebUIDataSource(source, resources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source.release());
 
   provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
 }

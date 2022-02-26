@@ -48,12 +48,12 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
  public:
   explicit UntrustedPersonalizationAppUI(content::WebUI* web_ui)
       : ui::UntrustedWebUIController(web_ui) {
-    std::unique_ptr<content::WebUIDataSource> source =
-        base::WrapUnique(content::WebUIDataSource::Create(
-            kChromeUIUntrustedPersonalizationAppURL));
+    content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+        web_ui->GetWebContents()->GetBrowserContext(),
+        kChromeUIUntrustedPersonalizationAppURL);
 
-    AddStrings(source.get());
-    AddBooleans(source.get());
+    AddStrings(source);
+    AddBooleans(source);
 
     const auto resources = base::make_span(kAshPersonalizationAppResources,
                                            kAshPersonalizationAppResourcesSize);
@@ -90,9 +90,6 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     // TODO(crbug/1169829) set up trusted types properly to allow Polymer to
     // write html.
     source->DisableTrustedTypesCSP();
-
-    auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-    content::WebUIDataSource::Add(browser_context, source.release());
   }
 
   UntrustedPersonalizationAppUI(const UntrustedPersonalizationAppUI&) = delete;

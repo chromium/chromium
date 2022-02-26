@@ -15,15 +15,14 @@ namespace ash {
 
 ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  auto data_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIColorInternalsHost));
+  content::WebUIDataSource* data_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIColorInternalsHost);
 
   data_source->AddResourcePath("", IDR_ASH_COLOR_INTERNALS_INDEX_HTML);
   data_source->AddResourcePaths(base::make_span(
       kAshColorInternalsResources, kAshColorInternalsResourcesSize));
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, data_source.release());
 }
 
 ColorInternalsUI::~ColorInternalsUI() = default;

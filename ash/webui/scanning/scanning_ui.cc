@@ -19,7 +19,6 @@
 #include "ash/webui/scanning/url_constants.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -169,8 +168,10 @@ ScanningUI::ScanningUI(
     std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       bind_pending_receiver_callback_(std::move(callback)) {
-  auto html_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIScanningAppHost));
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIScanningAppHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
@@ -180,8 +181,7 @@ ScanningUI::ScanningUI(
 
   const auto resources =
       base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources,
-                       IDR_SCANNING_APP_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, resources, IDR_SCANNING_APP_INDEX_HTML);
 
   html_source->AddResourcePath("scanning.mojom-lite.js",
                                IDR_SCANNING_MOJO_LITE_JS);
@@ -190,9 +190,9 @@ ScanningUI::ScanningUI(
   html_source->AddResourcePath("accessibility_features.mojom-lite.js",
                                IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS);
 
-  AddFeatureFlags(html_source.get());
+  AddFeatureFlags(html_source);
 
-  AddScanningAppStrings(html_source.get());
+  AddScanningAppStrings(html_source);
 
   auto handler =
       std::make_unique<ScanningHandler>(std::move(scanning_app_delegate));
@@ -200,8 +200,6 @@ ScanningUI::ScanningUI(
 
   web_ui->AddMessageHandler(std::move(handler));
   web_ui->AddMessageHandler(std::make_unique<ScanningMetricsHandler>());
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source.release());
 }
 
 ScanningUI::~ScanningUI() = default;

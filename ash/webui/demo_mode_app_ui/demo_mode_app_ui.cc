@@ -18,7 +18,9 @@ namespace ash {
 DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(kChromeUIDemoModeAppHost);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIDemoModeAppHost);
 
   // Add required resources.
   for (size_t i = 0; i < kAshDemoModeAppResourcesSize; ++i) {
@@ -27,9 +29,6 @@ DemoModeAppUI::DemoModeAppUI(content::WebUI* web_ui)
   }
 
   html_source->SetDefaultResource(IDR_ASH_DEMO_MODE_APP_DEMO_MODE_APP_HTML);
-
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source);
 }
 
 DemoModeAppUI::~DemoModeAppUI() = default;

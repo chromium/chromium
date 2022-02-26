@@ -26,8 +26,9 @@ ProximityAuthUI::ProximityAuthUI(
     MultiDeviceSetupBinder multidevice_setup_binder)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
       multidevice_setup_binder_(std::move(multidevice_setup_binder)) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIProximityAuthHost);
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIProximityAuthHost);
   source->SetDefaultResource(IDR_MULTIDEVICE_DEBUG_INDEX_HTML);
   source->AddResourcePath("common.css", IDR_MULTIDEVICE_DEBUG_COMMON_CSS);
   source->AddResourcePath("webui.js", IDR_MULTIDEVICE_DEBUG_WEBUI_JS);
@@ -39,9 +40,6 @@ ProximityAuthUI::ProximityAuthUI(
   source->AddResourcePath("proximity_auth.js",
                           IDR_MULTIDEVICE_DEBUG_PROXIMITY_AUTH_JS);
 
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, source);
   web_ui->AddMessageHandler(
       std::make_unique<ProximityAuthWebUIHandler>(device_sync_client));
 }

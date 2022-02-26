@@ -30,8 +30,10 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
       bind_system_info_callback_(std::move(system_info_callback)),
       bind_generator_callback_(std::move(generator_callback)),
       bind_notification_callback_(std::move(notification_callback)) {
-  auto html_source =
-      base::WrapUnique(content::WebUIDataSource::Create(kChromeUIEcheAppHost));
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(browser_context,
+                                             kChromeUIEcheAppHost);
 
   html_source->AddResourcePath("", IDR_ASH_ECHE_INDEX_HTML);
   html_source->AddResourcePath("system_assets/app_icon_32.png",
@@ -66,8 +68,6 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
   std::string csp = std::string("frame-src ") + kChromeUIEcheAppGuestURL + ";";
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
-  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, html_source.release());
 
   // Add ability to request chrome-untrusted: URLs.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

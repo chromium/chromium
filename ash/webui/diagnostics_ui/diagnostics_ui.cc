@@ -26,7 +26,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -374,8 +373,10 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
     HoldingSpaceClient* holding_space_client,
     const base::FilePath& log_directory_path)
     : ui::MojoWebDialogUI(web_ui) {
-  auto html_source = base::WrapUnique(
-      content::WebUIDataSource::Create(kChromeUIDiagnosticsAppHost));
+  content::WebUIDataSource* html_source =
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          kChromeUIDiagnosticsAppHost);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://test 'self';");
@@ -383,8 +384,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
 
   const auto resources = base::make_span(kAshDiagnosticsAppResources,
                                          kAshDiagnosticsAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources,
-                       IDR_DIAGNOSTICS_APP_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, resources, IDR_DIAGNOSTICS_APP_INDEX_HTML);
 
   SetUpPluralStringHandler(web_ui);
 
@@ -394,12 +394,10 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
       session_log_handler.get(), web_ui);
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
-  AddDiagnosticsStrings(html_source.get());
+  AddDiagnosticsStrings(html_source);
   // Add localized strings required for network-icon.
-  ui::network_element::AddLocalizedStrings(html_source.get());
-  ui::network_element::AddOncLocalizedStrings(html_source.get());
-  content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
-                                html_source.release());
+  ui::network_element::AddLocalizedStrings(html_source);
+  ui::network_element::AddOncLocalizedStrings(html_source);
 
   // Configure SFUL metrics.
   diagnostics_metrics_ =
