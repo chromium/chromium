@@ -38,7 +38,7 @@ TestEntry kTestLogs[] = {
 };
 
 // Be sure to test the padding/alignment issues well here.
-const std::string kTestPaths[] = {
+const char* const kTestPaths[] = {
     "1", "123", "1234", "12345", "123456", "1234567",
 };
 
@@ -63,7 +63,7 @@ void VerifyBuffer(uint8_t* buffer, uint32_t buffer_size) {
     EXPECT_EQ(entry->time_date_stamp, kTestLogs[index].time_date_stamp);
 
     if (entry->path_len)
-      EXPECT_STREQ(entry->path, kTestPaths[index].c_str());
+      EXPECT_STREQ(entry->path, kTestPaths[index]);
 
     ++total_logs;
     tracker += GetLogEntrySize(entry->path_len);
