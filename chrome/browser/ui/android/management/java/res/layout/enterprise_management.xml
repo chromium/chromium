@@ -21,7 +21,7 @@
             android:layout_width="@dimen/cm_logo_width"
             android:layout_height="@dimen/cm_logo_height"
             android:src="@drawable/enterprise_icon"
-            android:importantForAccessibility="no" />
+            android:contentDescription="@string/product_logo_enterprise_alt_text" />
 
         <TextView
             android:id="@+id/title_text"

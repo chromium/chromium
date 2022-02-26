@@ -317,8 +317,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
           Chromium OS
         </message>
       </if>
-      <!-- Chrome enterprise logo won't be used in Chromium -->
-      <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chromium Enterprise logo image."/>
+      <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chromium Enterprise logo image." formatter_data="android_java">
+        Chromium Enterprise logo
+      </message>
       <if expr="is_win">
         <message name="IDS_SHORTCUT_NEW_WINDOW" desc="The text label of the New window shortcut context menu entry as of Windows 8">
           New window

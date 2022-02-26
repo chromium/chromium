@@ -335,7 +335,7 @@ chromium_strings.grd. -->
           </message>
         </if>
       </if>
-      <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chrome Enterprise logo image.">
+      <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chrome Enterprise logo image." formatter_data="android_java">
         Chrome Enterprise logo
       </message>
       <if expr="is_win">
