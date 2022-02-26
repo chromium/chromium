@@ -648,8 +648,7 @@ void FlatlandSysmemBufferCollection::InitializeImageCreateInfo(
   vk_image_info->usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                          VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                          VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage_ == gfx::BufferUsage::SCANOUT ||
-      usage_ == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE) {
+  if (usage_ == gfx::BufferUsage::SCANOUT) {
     vk_image_info->usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
   }
 
