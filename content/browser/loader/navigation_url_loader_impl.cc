@@ -732,10 +732,13 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
   DCHECK_NE(early_hints->ip_address_space,
             network::mojom::IPAddressSpace::kUnknown);
 
-  // Allow Early Hints preload only for the main frame. Calculating appropriate
-  // parameters to create URLLoaderFactory for subframes is complicated and not
-  // supported yet.
-  if (!resource_request_->is_main_frame)
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+
+  // Allow Early Hints preload only for outermost main frames. Calculating
+  // appropriate parameters to create URLLoaderFactory for subframes, fenced
+  // frames or portal are complicated and not supported yet.
+  if (frame_tree_node->GetParentOrOuterDocument())
     return;
 
   if (!early_hints_manager_) {
