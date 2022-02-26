@@ -376,18 +376,26 @@ gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
   switch (camera_preview_snap_position_) {
     case CameraPreviewSnapPosition::kTopLeft:
       origin = confine_bounds.origin();
+      origin.Offset(capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                    capture_mode::kSpaceBetweenCameraPreviewAndEdges);
       break;
     case CameraPreviewSnapPosition::kBottomLeft:
-      origin = gfx::Point(confine_bounds.x(),
-                          confine_bounds.bottom() - preview_size.height());
+      origin = gfx::Point(
+          confine_bounds.x() + capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+          confine_bounds.bottom() - preview_size.height() -
+              capture_mode::kSpaceBetweenCameraPreviewAndEdges);
       break;
     case CameraPreviewSnapPosition::kBottomRight:
-      origin = gfx::Point(confine_bounds.right() - preview_size.width(),
-                          confine_bounds.bottom() - preview_size.height());
+      origin = gfx::Point(confine_bounds.right() - preview_size.width() -
+                              capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                          confine_bounds.bottom() - preview_size.height() -
+                              capture_mode::kSpaceBetweenCameraPreviewAndEdges);
       break;
     case CameraPreviewSnapPosition::kTopRight:
-      origin = gfx::Point(confine_bounds.right() - preview_size.width(),
-                          confine_bounds.y());
+      origin = gfx::Point(confine_bounds.right() - preview_size.width() -
+                              capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                          confine_bounds.y() +
+                              capture_mode::kSpaceBetweenCameraPreviewAndEdges);
       break;
   }
   return gfx::Rect(origin, preview_size);

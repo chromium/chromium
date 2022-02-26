@@ -37,6 +37,10 @@ constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;
 
 constexpr gfx::Size kCameraPreviewSize{96, 96};
 
+// The space between the camera preview and edges of the bounds that will be
+// recorded.
+constexpr int kSpaceBetweenCameraPreviewAndEdges = 16;
+
 }  // namespace capture_mode
 
 }  // namespace ash

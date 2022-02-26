@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -166,6 +167,53 @@ class CaptureModeCameraTest : public AshTestBase {
                     .GetCaptureModeBarView()
                     ->settings_button(),
                 GetEventGenerator());
+  }
+
+  // Verifies that the camera preview is placed on the correct position based on
+  // current preview snap position and the given `confine_bounds_in_screen`.
+  void VerifyPreviewAlignment(const gfx::Rect& confine_bounds_in_screen) {
+    auto* camera_controller = GetCameraController();
+    const auto* preview_widget = camera_controller->camera_preview_widget();
+    DCHECK(preview_widget);
+    const gfx::Rect camera_preview_bounds =
+        preview_widget->GetWindowBoundsInScreen();
+
+    switch (camera_controller->camera_preview_snap_position()) {
+      case CameraPreviewSnapPosition::kTopLeft: {
+        gfx::Point expect_origin = confine_bounds_in_screen.origin();
+        expect_origin.Offset(capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                             capture_mode::kSpaceBetweenCameraPreviewAndEdges);
+        EXPECT_EQ(expect_origin, camera_preview_bounds.origin());
+        break;
+      }
+      case CameraPreviewSnapPosition::kBottomLeft: {
+        const gfx::Point expect_bottom_left =
+            gfx::Point(confine_bounds_in_screen.x() +
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                       confine_bounds_in_screen.bottom() -
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges);
+        EXPECT_EQ(expect_bottom_left, camera_preview_bounds.bottom_left());
+        break;
+      }
+      case CameraPreviewSnapPosition::kBottomRight: {
+        const gfx::Point expect_bottom_right =
+            gfx::Point(confine_bounds_in_screen.right() -
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                       confine_bounds_in_screen.bottom() -
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges);
+        EXPECT_EQ(expect_bottom_right, camera_preview_bounds.bottom_right());
+        break;
+      }
+      case CameraPreviewSnapPosition::kTopRight: {
+        const gfx::Point expect_top_right =
+            gfx::Point(confine_bounds_in_screen.right() -
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges,
+                       confine_bounds_in_screen.y() +
+                           capture_mode::kSpaceBetweenCameraPreviewAndEdges);
+        EXPECT_EQ(expect_top_right, camera_preview_bounds.top_right());
+        break;
+      }
+    }
   }
 
  private:
@@ -678,15 +726,14 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   const auto* preview_widget = camera_controller->camera_preview_widget();
   EXPECT_TRUE(preview_widget);
 
-  // When snap position is `kBottomRight` and capture source is `kFullscreen`,
-  // the preview should at the bottom right corner of screen.
+  // Verifies the camera preview's alignment with `kBottomRight` snap position
+  // and `kFullscreen` capture source.
   const auto* capture_mode_session = controller->capture_mode_session();
   const gfx::Rect work_area =
       display::Screen::GetScreen()
           ->GetDisplayNearestWindow(capture_mode_session->current_root())
           .work_area();
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            work_area.bottom_right());
+  VerifyPreviewAlignment(work_area);
 
   // Switching to `kRegion` without capture region set, the preview widget
   // should not be shown.
@@ -694,45 +741,48 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   EXPECT_TRUE(controller->user_capture_region().IsEmpty());
   EXPECT_FALSE(preview_widget->IsVisible());
 
-  // The preview should be shown at the bottom right corner of the capture
-  // region when it is set.
+  // Verifies the camera preview's alignment with `kBottomRight` snap position
+  // and `kRegion` capture source.
   const gfx::Rect capture_region(10, 20, 300, 200);
   controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            capture_region.bottom_right());
+  VerifyPreviewAlignment(capture_region);
 
-  // Switching back to `kFullscreen`, the preview should be shown at the bottom
-  // right of the screen again.
+  // Verifies the camera preview's alignment after switching back to
+  // `kFullscreen.`
   controller->SetSource(CaptureModeSource::kFullscreen);
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            work_area.bottom_right());
+  VerifyPreviewAlignment(work_area);
 
-  // Switching back to `kRegion`, the preview should be shown at the bottom
-  // right of the current capture region again.
+  // Verifies the camera preview's alignment with `kBottomLeft` snap position
+  // and `kRegion` capture source.
   controller->SetSource(CaptureModeSource::kRegion);
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_right(),
-            capture_region.bottom_right());
-
-  // Update the snap position should update the preview to the corresponding
-  // position.
   camera_controller->SetCameraPreviewSnapPosition(
       CameraPreviewSnapPosition::kBottomLeft);
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_left(),
-            capture_region.bottom_left());
+  VerifyPreviewAlignment(capture_region);
+
+  // Verifies the camera preview's alignment with `kTopLeft` snap position
+  // and `kRegion` capture source.
+  camera_controller->SetCameraPreviewSnapPosition(
+      CameraPreviewSnapPosition::kTopLeft);
+  VerifyPreviewAlignment(capture_region);
+
+  // Verifies the camera preview's alignment with `kTopRight` snap position
+  // and `kRegion` capture source.
+  camera_controller->SetCameraPreviewSnapPosition(
+      CameraPreviewSnapPosition::kTopRight);
+  VerifyPreviewAlignment(capture_region);
 
   // Set capture region to empty, the preview should be hidden again.
   controller->SetUserCaptureRegion(gfx::Rect(), /*by_user=*/true);
   EXPECT_FALSE(preview_widget->IsVisible());
 
-  // Switching to `kWindow` and start the video recording. The preview should
-  // stay at the bottom left corner of the recording window's bounds.
+  // Verifies the camera preview's alignment with `kTopRight` snap position and
+  // `kWindow` capture source.
   StartRecordingFromSource(CaptureModeSource::kWindow);
   const auto* window_being_recorded =
       controller->video_recording_watcher_for_testing()
           ->window_being_recorded();
   DCHECK(window_being_recorded);
-  EXPECT_EQ(preview_widget->GetWindowBoundsInScreen().bottom_left(),
-            window_being_recorded->GetBoundsInScreen().bottom_left());
+  VerifyPreviewAlignment(window_being_recorded->GetBoundsInScreen());
 }
 
 TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
