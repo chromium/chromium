@@ -524,7 +524,7 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
       {"http://nomatch.com", PageAccess::kWithheld, false, absl::nullopt},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));
 
     GURL url(cases[i].url);

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
@@ -84,7 +83,7 @@ TEST_F(ExtensionCreatorFilterTest, NormalCases) {
       {FILE_PATH_LITERAL("Thumbs.db"), false},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     base::FilePath input(cases[i].input);
     base::FilePath test_file(CreateTestFile(input));
     bool observed = filter_->ShouldPackageFile(test_file);
@@ -104,7 +103,7 @@ TEST_F(ExtensionCreatorFilterTest, MetadataFolderExcluded) {
   };
 
   // Create and test the filepaths.
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     base::FilePath test_file =
         CreateRelativeFilePath(base::FilePath(cases[i].input));
     bool observed = filter_->ShouldPackageFile(test_file);
@@ -122,7 +121,7 @@ TEST_F(ExtensionCreatorFilterTest, MetadataFolderExcluded) {
       {FILE_PATH_LITERAL("abc/_metadata"), true},
       {FILE_PATH_LITERAL("xyz"), true},
   };
-  for (size_t i = 0; i < base::size(directory_cases); ++i) {
+  for (size_t i = 0; i < std::size(directory_cases); ++i) {
     base::FilePath directory = extension_dir_.Append(directory_cases[i].input);
     bool observed = filter_->ShouldPackageFile(directory);
 
@@ -148,7 +147,7 @@ TEST_F(ExtensionCreatorFilterTest, IgnoreFilesInSpecialDir) {
       {FILE_PATH_LITERAL("index.js"), FILE_PATH_LITERAL("scripts"), true},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     base::FilePath test_file(
         CreateTestFileInDir(cases[i].file_name, cases[i].dir));
     bool observed = filter_->ShouldPackageFile(test_file);
@@ -174,7 +173,7 @@ TEST_F(ExtensionCreatorFilterTest, WindowsHiddenFiles) {
       {FILE_PATH_LITERAL("a-file-that-we-have-not-set-to-hidden"), false, true},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     base::FilePath input(cases[i].input_char);
     bool should_hide = cases[i].input_bool;
     base::FilePath test_file(CreateTestFile(input));

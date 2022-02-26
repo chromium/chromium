@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -332,7 +331,7 @@ RequestResult I18nHooksDelegate::HandleDetectLanguage(
     DCHECK(arguments[1]->IsFunction());
     JSRunner::Get(v8_context)
         ->RunJSFunction(arguments[1].As<v8::Function>(), v8_context,
-                        base::size(response_args), response_args);
+                        std::size(response_args), response_args);
   } else {
     DCHECK_EQ(binding::AsyncResponseType::kPromise, parse_result.async_type);
     auto promise_resolver =

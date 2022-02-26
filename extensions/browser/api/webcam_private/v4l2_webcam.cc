@@ -12,7 +12,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -93,7 +92,7 @@ const uvc_xu_control_mapping kLogitechCmdMapping = {
     V4L2_CTRL_TYPE_MENU,
     UVC_CTRL_DATA_TYPE_ENUM,
     const_cast<uvc_menu_info*>(&kLogitechCmdMenu[0]),
-    base::size(kLogitechCmdMenu),
+    std::size(kLogitechCmdMenu),
 };
 
 const uvc_xu_control_mapping kLogitechPanAbsoluteMapping = {
@@ -128,7 +127,7 @@ const uvc_xu_control_mapping kAverCmdMapping = {
     V4L2_CTRL_TYPE_MENU,
     UVC_CTRL_DATA_TYPE_ENUM,
     const_cast<uvc_menu_info*>(kAverPresetMenu),
-    base::size(kAverPresetMenu),
+    std::size(kAverPresetMenu),
 };
 
 }  // namespace

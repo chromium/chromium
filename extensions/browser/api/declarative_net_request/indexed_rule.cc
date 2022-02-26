@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -363,7 +362,7 @@ bool IsValidTransformScheme(const std::unique_ptr<std::string>& scheme) {
   if (!scheme)
     return true;
 
-  for (size_t i = 0; i < base::size(kAllowedTransformSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kAllowedTransformSchemes); ++i) {
     if (*scheme == kAllowedTransformSchemes[i])
       return true;
   }

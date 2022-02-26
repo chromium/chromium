@@ -4,6 +4,8 @@
 
 // This file tests the chrome.alarms extension API.
 
+#include "extensions/browser/api/alarms/alarms_api.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -11,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
-#include "extensions/browser/api/alarms/alarms_api.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
@@ -695,7 +695,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   };
 
   // Test once for unpacked and once for crx extension.
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     test_clock_.SetNow(base::Time::FromDoubleT(10));
 
     // Mimic retrieving an alarm from StateStore.

@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
@@ -612,7 +611,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     return;
   }
 
-  for (size_t i = 0; i < base::size(kGraylistedPaths); i++) {
+  for (size_t i = 0; i < std::size(kGraylistedPaths); i++) {
     base::FilePath graylisted_path;
     if (!base::PathService::Get(kGraylistedPaths[i], &graylisted_path))
       continue;

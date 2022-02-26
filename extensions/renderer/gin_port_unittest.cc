@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/api/messaging/message.h"
@@ -150,7 +149,7 @@ TEST_F(GinPortTest, TestDispatchMessage) {
   v8::Local<v8::Function> test_function =
       FunctionFromString(context, kTestFunction);
   v8::Local<v8::Value> args[] = {port_obj};
-  RunFunctionOnGlobal(test_function, context, base::size(args), args);
+  RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
   port->DispatchOnMessage(
       context, Message(R"({"foo":42})", SerializationFormat::kJson, false));
@@ -183,7 +182,7 @@ TEST_F(GinPortTest, TestPostMessage) {
     v8::Local<v8::Value> args[] = {port_obj};
 
     if (expected_port_id) {
-      RunFunction(v8_function, context, base::size(args), args);
+      RunFunction(v8_function, context, std::size(args), args);
       ASSERT_TRUE(delegate()->last_port_id());
       EXPECT_EQ(*expected_port_id, delegate()->last_port_id());
       ASSERT_TRUE(delegate()->last_message());
@@ -191,7 +190,7 @@ TEST_F(GinPortTest, TestPostMessage) {
       EXPECT_EQ(expected_message->user_gesture,
                 delegate()->last_message()->user_gesture);
     } else {
-      RunFunctionAndExpectError(v8_function, context, base::size(args), args,
+      RunFunctionAndExpectError(v8_function, context, std::size(args), args,
                                 "Uncaught Error: Could not serialize message.");
       EXPECT_FALSE(delegate()->last_port_id());
       EXPECT_FALSE(delegate()->last_message())
@@ -256,7 +255,7 @@ TEST_F(GinPortTest, TestPostMessage) {
     v8::Local<v8::Function> function = FunctionFromString(context, kFunction);
     v8::Local<v8::Value> args[] = {port_obj};
     RunFunctionAndExpectError(
-        function, context, base::size(args), args,
+        function, context, std::size(args), args,
         "Uncaught Error: Attempting to use a disconnected port object");
 
     EXPECT_FALSE(delegate()->last_port_id());
@@ -287,7 +286,7 @@ TEST_F(GinPortTest, TestNativeDisconnect) {
   v8::Local<v8::Function> test_function =
       FunctionFromString(context, kTestFunction);
   v8::Local<v8::Value> args[] = {port_obj};
-  RunFunctionOnGlobal(test_function, context, base::size(args), args);
+  RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
   port->DispatchOnDisconnect(context);
   EXPECT_EQ("true", GetStringPropertyFromObject(context->Global(), context,
@@ -311,7 +310,7 @@ TEST_F(GinPortTest, TestJSDisconnect) {
   const char kFunction[] = "(function(port) { port.disconnect(); })";
   v8::Local<v8::Function> function = FunctionFromString(context, kFunction);
   v8::Local<v8::Value> args[] = {port_obj};
-  RunFunction(function, context, base::size(args), args);
+  RunFunction(function, context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(delegate());
   EXPECT_TRUE(port->is_closed_for_testing());
 }
@@ -337,7 +336,7 @@ TEST_F(GinPortTest, JSDisconnectFromOnDisconnect) {
   v8::Local<v8::Function> test_function =
       FunctionFromString(context, kTestFunction);
   v8::Local<v8::Value> args[] = {port_obj};
-  RunFunctionOnGlobal(test_function, context, base::size(args), args);
+  RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
   port->DispatchOnDisconnect(context);
   EXPECT_TRUE(port->is_closed_for_testing());
@@ -368,7 +367,7 @@ TEST_F(GinPortTest, JSPostMessageFromOnDisconnect) {
   v8::Local<v8::Function> test_function =
       FunctionFromString(context, kTestFunction);
   v8::Local<v8::Value> args[] = {port_obj};
-  RunFunctionOnGlobal(test_function, context, base::size(args), args);
+  RunFunctionOnGlobal(test_function, context, std::size(args), args);
 
   port->DispatchOnDisconnect(context);
   EXPECT_EQ(
@@ -441,7 +440,7 @@ TEST_F(GinPortTest, TryUsingPortAfterInvalidation) {
         get_on_disconnect_function}) {
     SCOPED_TRACE(gin::V8ToString(isolate(),
                                  function->ToString(context).ToLocalChecked()));
-    RunFunctionAndExpectError(function, context, base::size(function_args),
+    RunFunctionAndExpectError(function, context, std::size(function_args),
                               function_args,
                               "Uncaught Error: Extension context invalidated.");
   }
@@ -462,7 +461,7 @@ TEST_F(GinPortTest, AlteringPortName) {
 
   v8::Local<v8::Value> args[] = {port_obj};
   v8::Local<v8::Value> result =
-      RunFunction(change_port_name, context, base::size(args), args);
+      RunFunction(change_port_name, context, std::size(args), args);
   EXPECT_EQ(R"("foo")", V8ToString(result, context));
 }
 

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -43,7 +42,7 @@ std::unique_ptr<base::DictionaryValue> LoadSchemaDictionary(
 
   // Tracking down http://crbug.com/121424
   char buf[128];
-  base::snprintf(buf, base::size(buf), "%s: (%d) '%s'", name.c_str(),
+  base::snprintf(buf, std::size(buf), "%s: (%d) '%s'", name.c_str(),
                  result.value ? static_cast<int>(result.value->type()) : -1,
                  result.error_message.c_str());
 
@@ -72,7 +71,7 @@ const base::DictionaryValue* GetSchemaChild(
     const base::DictionaryValue* schema_node,
     const std::string& child_name) {
   const base::DictionaryValue* child_node = NULL;
-  for (size_t i = 0; i < base::size(kChildKinds); ++i) {
+  for (size_t i = 0; i < std::size(kChildKinds); ++i) {
     const base::ListValue* list_node = NULL;
     if (!schema_node->GetList(kChildKinds[i], &list_node))
       continue;

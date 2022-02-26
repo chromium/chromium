@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/values.h"
@@ -292,7 +291,7 @@ void APIEventHandler::FireEventInContext(
 
     v8::Local<v8::Value> massager_args[] = {args_array, dispatch_event};
     JSRunner::Get(context)->RunJSFunction(
-        massager, context, base::size(massager_args), massager_args);
+        massager, context, std::size(massager_args), massager_args);
   }
 }
 

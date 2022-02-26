@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
@@ -444,7 +443,7 @@ TEST_P(EventRouterFilterTest, Basic) {
         absl::make_optional<ServiceWorkerIdentifier>(std::move(identifier));
   }
   std::vector<std::unique_ptr<DictionaryValue>> filters;
-  for (size_t i = 0; i < base::size(kHostSuffixes); ++i) {
+  for (size_t i = 0; i < std::size(kHostSuffixes); ++i) {
     std::unique_ptr<base::DictionaryValue> filter =
         CreateHostSuffixFilter(kHostSuffixes[i]);
     event_router()->AddFilteredEventListener(kEventName, render_process_host(),

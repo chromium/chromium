@@ -5,7 +5,6 @@
 #include "extensions/renderer/runtime_hooks_delegate.h"
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
@@ -87,7 +86,7 @@ void GetBackgroundPageCallback(
       ExtensionFrameHelper::GetV8BackgroundPageMainFrame(
           isolate, script_context->extension()->id());
   v8::Local<v8::Value> args[] = {background_page};
-  script_context->SafeCallFunction(info[0].As<v8::Function>(), base::size(args),
+  script_context->SafeCallFunction(info[0].As<v8::Function>(), std::size(args),
                                    args);
 }
 

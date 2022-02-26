@@ -8,7 +8,6 @@
 
 #include <ostream>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,7 +48,7 @@ const int kValidSchemeMasks[] = {
     URLPattern::SCHEME_URN,        URLPattern::SCHEME_UUID_IN_PACKAGE,
 };
 
-static_assert(base::size(kValidSchemes) == base::size(kValidSchemeMasks),
+static_assert(std::size(kValidSchemes) == std::size(kValidSchemeMasks),
               "must keep these arrays in sync");
 
 const char kParseSuccess[] = "Success.";
@@ -76,7 +75,7 @@ const char* const kParseResultMessages[] = {
 };
 
 static_assert(static_cast<int>(URLPattern::ParseResult::kNumParseResults) ==
-                  base::size(kParseResultMessages),
+                  std::size(kParseResultMessages),
               "must add message for each parse result");
 
 const char kPathSeparator[] = "/";
@@ -130,7 +129,7 @@ base::StringPiece CanonicalizeHostForMatching(base::StringPiece host_piece) {
 
 // static
 bool URLPattern::IsValidSchemeForExtensions(base::StringPiece scheme) {
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (scheme == kValidSchemes[i])
       return true;
   }
@@ -140,7 +139,7 @@ bool URLPattern::IsValidSchemeForExtensions(base::StringPiece scheme) {
 // static
 int URLPattern::GetValidSchemeMaskForExtensions() {
   int result = 0;
-  for (size_t i = 0; i < base::size(kValidSchemeMasks); ++i)
+  for (size_t i = 0; i < std::size(kValidSchemeMasks); ++i)
     result |= kValidSchemeMasks[i];
   return result;
 }
@@ -387,7 +386,7 @@ bool URLPattern::IsValidScheme(base::StringPiece scheme) const {
   if (valid_schemes_ == SCHEME_ALL)
     return true;
 
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (scheme == kValidSchemes[i] && (valid_schemes_ & kValidSchemeMasks[i]))
       return true;
   }
@@ -774,7 +773,7 @@ std::vector<std::string> URLPattern::GetExplicitSchemes() const {
     return result;
   }
 
-  for (size_t i = 0; i < base::size(kValidSchemes); ++i) {
+  for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
     if (MatchesScheme(kValidSchemes[i])) {
       result.push_back(kValidSchemes[i]);
     }

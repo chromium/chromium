@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -47,7 +46,7 @@ enum class MimeHandlerType {
 };
 
 static_assert(
-    base::size(kMIMETypeHandlersAllowlist) ==
+    std::size(kMIMETypeHandlersAllowlist) ==
         static_cast<size_t>(MimeHandlerType::kMaxValue) + 1,
     "MimeHandlerType enum is not in sync with kMIMETypeHandlersAllowlist.");
 

@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/exception_handler.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -104,7 +103,7 @@ void ExceptionHandler::HandleException(v8::Local<v8::Context> context,
     v8::TryCatch handler_try_catch(isolate);
     handler_try_catch.SetVerbose(true);
     JSRunner::Get(context)->RunJSFunction(handler, context,
-                                          base::size(arguments), arguments);
+                                          std::size(arguments), arguments);
   } else {
     add_console_error_.Run(context, full_message);
   }

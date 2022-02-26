@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -104,7 +103,7 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   // This CHECK is helping to track down https://crbug.com/819968, and should be
   // removed when that's fixed.
   CHECK(binding::IsContextValid(context));
-  JSRunner::Get(context)->RunJSFunction(function, context, base::size(args),
+  JSRunner::Get(context)->RunJSFunction(function, context, std::size(args),
                                         args);
 }
 

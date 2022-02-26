@@ -7,7 +7,6 @@
 #include <atomic>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -102,7 +101,7 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
   }
 
   void SetUpAllMockStorageDevices() {
-    for (size_t i = 0; i < base::size(kTestingData); ++i) {
+    for (size_t i = 0; i < std::size(kTestingData); ++i) {
       AttachRemovableStorage(kTestingData[i]);
     }
   }
@@ -122,7 +121,7 @@ class SystemStorageApiTest : public extensions::ShellApiTest {
 IN_PROC_BROWSER_TEST_F(SystemStorageApiTest, Storage) {
   SetUpAllMockStorageDevices();
   auto provider = base::MakeRefCounted<TestStorageInfoProvider>(
-      kTestingData, base::size(kTestingData));
+      kTestingData, std::size(kTestingData));
   extensions::StorageInfoProvider::InitializeForTesting(provider);
   std::vector<std::unique_ptr<ExtensionTestMessageListener>>
       device_ids_listeners;

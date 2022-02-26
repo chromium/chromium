@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -119,7 +118,7 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
        Feature::IS_AVAILABLE}};
 
   SimpleFeature feature;
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     const IsAvailableTestData& test = tests[i];
     EXPECT_EQ(test.expected_result,
               feature
@@ -547,7 +546,7 @@ TEST_F(SimpleFeatureTest, SessionType) {
        mojom::FeatureSessionType::kAutolaunchedKiosk,
        {mojom::FeatureSessionType::kKiosk}}};
 
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
         ScopedCurrentFeatureSessionType(kTestData[i].current_session_type));
 
@@ -789,13 +788,13 @@ TEST_F(SimpleFeatureTest, IsIdInArray) {
     // aaaabbbbccccddddeeeeffffgggghhhh
     "9A0417016F345C934A1A88F55CA17C05014EEEBA"
   };
-  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, base::size(kIdArray)));
+  EXPECT_FALSE(SimpleFeature::IsIdInArray("", kIdArray, std::size(kIdArray)));
   EXPECT_FALSE(SimpleFeature::IsIdInArray("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                                          kIdArray, base::size(kIdArray)));
+                                          kIdArray, std::size(kIdArray)));
   EXPECT_TRUE(SimpleFeature::IsIdInArray("bbbbccccdddddddddeeeeeeffffgghhh",
-                                         kIdArray, base::size(kIdArray)));
+                                         kIdArray, std::size(kIdArray)));
   EXPECT_TRUE(SimpleFeature::IsIdInArray("aaaabbbbccccddddeeeeffffgggghhhh",
-                                         kIdArray, base::size(kIdArray)));
+                                         kIdArray, std::size(kIdArray)));
 }
 
 // Tests that all combinations of feature channel and Chrome channel correctly

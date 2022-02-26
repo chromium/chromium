@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/serialization_format.h"
@@ -100,7 +99,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
       {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
     const auto& test_case = test_cases[i];
     std::string target;
@@ -135,7 +134,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
       {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
     const auto& test_case = test_cases[i];
     std::string target;

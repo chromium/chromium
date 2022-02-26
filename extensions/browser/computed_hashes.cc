@@ -309,7 +309,7 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
 
     std::string buffer;
     buffer.resize(crypto::kSHA256Length);
-    hash->Finish(base::data(buffer), buffer.size());
+    hash->Finish(std::data(buffer), buffer.size());
     hashes.push_back(std::move(buffer));
 
     // If |contents| is empty, then we want to just exit here.

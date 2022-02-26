@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
@@ -36,7 +35,7 @@ TEST_F(FileHandlersManifestTest, InvalidFileHandlers) {
       Testcase("file_handlers_invalid_verb.json",
                errors::kInvalidFileHandlerVerb),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(FileHandlersManifestTest, ValidFileHandlers) {

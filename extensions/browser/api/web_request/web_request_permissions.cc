@@ -4,7 +4,6 @@
 
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -200,8 +199,8 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   // PermissionsData::CanAccessPage into one function.
   static constexpr char kGoogleCom[] = "google.com";
   static constexpr char kClient[] = "clients";
-  constexpr size_t kGoogleComLength = base::size(kGoogleCom) - 1;
-  constexpr size_t kClientLength = base::size(kClient) - 1;
+  constexpr size_t kGoogleComLength = std::size(kGoogleCom) - 1;
+  constexpr size_t kClientLength = std::size(kClient) - 1;
 
   if (!url.DomainIs(kGoogleCom))
     return false;

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -80,7 +79,7 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
     v8::Local<v8::Function> listener_function =
         FunctionFromString(context, listener);
     v8::Local<v8::Value> args[] = {v8_event, listener_function};
-    RunFunction(add_listener_function, context, base::size(args), args);
+    RunFunction(add_listener_function, context, std::size(args), args);
   };
 
   const char kListener1[] =
@@ -119,7 +118,7 @@ TEST_F(EventEmitterUnittest, TestDispatchMethod) {
   TestJSRunner::AllowErrors allow_errors;
   v8::Local<v8::Value> dispatch_result =
       RunFunctionOnGlobal(FunctionFromString(context, kDispatch), context,
-                          base::size(dispatch_args), dispatch_args);
+                          std::size(dispatch_args), dispatch_args);
 
   const char kExpectedEventArgs[] = "[\"arg1\",2]";
   for (const char* property :
@@ -181,7 +180,7 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
                           v8::External::New(isolate(), &closure_data))
             .ToLocalChecked();
     v8::Local<v8::Value> args[] = {v8_event, listener};
-    RunFunction(add_listener_function, context, base::size(args), args);
+    RunFunction(add_listener_function, context, std::size(args), args);
   }
 
   EXPECT_EQ(kNumListeners, event->GetNumListeners());

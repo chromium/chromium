@@ -42,7 +42,7 @@ TEST(ContentHashTreeTest, HashTreeBasics) {
   std::unique_ptr<SecureHash> hash(SecureHash::Create(SecureHash::SHA256));
   hash->Update(node1.data(), node1.size());
   hash->Update(node2.data(), node2.size());
-  hash->Finish(base::data(expected), expected.size());
+  hash->Finish(std::data(expected), expected.size());
   EXPECT_EQ(expected, ComputeTreeHashRoot(nodes, 16));
 }
 

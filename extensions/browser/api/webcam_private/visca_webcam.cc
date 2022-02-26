@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 
 using content::BrowserThread;
 
@@ -113,7 +112,7 @@ const uint8_t kPTStopCommand[] = {0x81, 0x01, 0x06, 0x01, 0x03,
 
 #define CHAR_VECTOR_FROM_ARRAY(array)                     \
   std::vector<char>(reinterpret_cast<const char*>(array), \
-                    reinterpret_cast<const char*>(array + base::size(array)))
+                    reinterpret_cast<const char*>(array + std::size(array)))
 
 int ShiftResponseLowerBits(char c, size_t shift) {
   return static_cast<int>(c & 0x0F) << shift;

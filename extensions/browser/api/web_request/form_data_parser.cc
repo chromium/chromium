@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -30,7 +29,7 @@ namespace extensions {
 namespace {
 
 const char kContentDisposition[] = "content-disposition:";
-const size_t kContentDispositionLength = base::size(kContentDisposition) - 1;
+const size_t kContentDispositionLength = std::size(kContentDisposition) - 1;
 // kCharacterPattern is an allowed character in a URL encoding. Definition is
 // from RFC 1738, end of section 2.2.
 const char kCharacterPattern[] =

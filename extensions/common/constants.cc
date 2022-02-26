@@ -4,7 +4,6 @@
 
 #include "extensions/common/constants.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -105,7 +104,7 @@ const uint8_t kWebstoreSignaturesPublicKey[] = {
     0xcd, 0x02, 0x03, 0x01, 0x00, 0x01};
 
 const size_t kWebstoreSignaturesPublicKeySize =
-    base::size(kWebstoreSignaturesPublicKey);
+    std::size(kWebstoreSignaturesPublicKey);
 
 const char kUpdateURLData[] = "update_url_data";
 

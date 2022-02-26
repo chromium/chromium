@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -286,7 +285,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
       };
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
           !SimpleFeature::IsIdInArray(extension_id(), kAllowlist,
-                                      base::size(kAllowlist))) {
+                                      std::size(kAllowlist))) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }

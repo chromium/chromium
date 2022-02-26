@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
@@ -87,8 +86,8 @@ bool IsLocalHostSource(const std::string& source_lower) {
   constexpr char kLocalHostIP[] = "http://127.0.0.1";
 
   // Subtracting 1 to exclude the null terminator '\0'.
-  constexpr size_t kLocalHostLen = base::size(kLocalHost) - 1;
-  constexpr size_t kLocalHostIPLen = base::size(kLocalHostIP) - 1;
+  constexpr size_t kLocalHostLen = std::size(kLocalHost) - 1;
+  constexpr size_t kLocalHostIPLen = std::size(kLocalHostIP) - 1;
 
   if (base::StartsWith(source_lower, kLocalHost,
                        base::CompareCase::SENSITIVE)) {
@@ -531,7 +530,7 @@ bool ContentSecurityPolicyIsLegal(const std::string& policy) {
   // representing the content security policy as an HTTP header.
   const char kBadChars[] = {',', '\r', '\n', '\0'};
 
-  return policy.find_first_of(kBadChars, 0, base::size(kBadChars)) ==
+  return policy.find_first_of(kBadChars, 0, std::size(kBadChars)) ==
          std::string::npos;
 }
 

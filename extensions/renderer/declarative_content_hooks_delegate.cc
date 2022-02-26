@@ -5,7 +5,6 @@
 #include "extensions/renderer/declarative_content_hooks_delegate.h"
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/argument_spec.h"
@@ -182,7 +181,7 @@ void DeclarativeContentHooksDelegate::InitializeTemplate(
       {declarative_content_constants::kRequestContentScript,
        "RequestContentScript"},
   };
-  callbacks_.reserve(base::size(kTypes));
+  callbacks_.reserve(std::size(kTypes));
   for (const auto& type : kTypes) {
     const ArgumentSpec* spec = type_refs.GetSpec(type.full_name);
     DCHECK(spec);

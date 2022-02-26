@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
@@ -279,7 +278,7 @@ TEST_F(APIBindingJSUtilUnittest, TestSetExceptionHandler) {
       context,
       "(function(util, handler) { util.setExceptionHandler(handler); })");
   v8::Local<v8::Value> args[] = {v8_util, v8_handler};
-  RunFunction(add_handler, context, base::size(args), args);
+  RunFunction(add_handler, context, std::size(args), args);
 
   CallFunctionOnObject(context, v8_util, kHandleException);
   // The error should not have been reported to the console since we have a
@@ -302,10 +301,10 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateType) {
     v8::Local<v8::Function> v8_function = FunctionFromString(context, function);
     v8::Local<v8::Value> args[] = {v8_util};
     if (expected_error) {
-      RunFunctionAndExpectError(v8_function, context, base::size(args), args,
+      RunFunctionAndExpectError(v8_function, context, std::size(args), args,
                                 *expected_error);
     } else {
-      RunFunction(v8_function, context, base::size(args), args);
+      RunFunction(v8_function, context, std::size(args), args);
     }
   };
 
@@ -350,7 +349,7 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
     v8::Local<v8::Function> add_signature =
         FunctionFromString(context, kAddSignature);
     v8::Local<v8::Value> args[] = {v8_util};
-    RunFunction(add_signature, context, base::size(args), args);
+    RunFunction(add_signature, context, std::size(args), args);
   }
 
   EXPECT_TRUE(bindings_system()->type_reference_map()->GetCustomSignature(
@@ -363,10 +362,10 @@ TEST_F(APIBindingJSUtilUnittest, TestValidateCustomSignature) {
             FunctionFromString(context, function);
         v8::Local<v8::Value> args[] = {v8_util};
         if (expected_error) {
-          RunFunctionAndExpectError(v8_function, context, base::size(args),
-                                    args, *expected_error);
+          RunFunctionAndExpectError(v8_function, context, std::size(args), args,
+                                    *expected_error);
         } else {
-          RunFunction(v8_function, context, base::size(args), args);
+          RunFunction(v8_function, context, std::size(args), args);
         }
       };
 

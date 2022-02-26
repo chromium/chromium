@@ -769,7 +769,7 @@ TEST_F(RulesetMatcherTest, RegexRules_Metadata) {
     test_cases.push_back(std::move(test_case));
   }
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Case number-%" PRIuS " url-%s", i,
                                     test_cases[i].url));
 

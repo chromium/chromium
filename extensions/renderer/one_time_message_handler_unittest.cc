@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
@@ -421,13 +420,13 @@ TEST_F(OneTimeMessageHandlerTest, TryReplyingMultipleTimes) {
           port_id, Message("\"hi\"", SerializationFormat::kJson, false)));
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
-  RunFunction(reply.As<v8::Function>(), context, base::size(args), args);
+  RunFunction(reply.As<v8::Function>(), context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
 
   // Running the reply function a second time shouldn't do anything.
   // TODO(devlin): Add an error message.
-  RunFunction(reply.As<v8::Function>(), context, base::size(args), args);
+  RunFunction(reply.As<v8::Function>(), context, std::size(args), args);
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
 }
 

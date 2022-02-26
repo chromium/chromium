@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -382,7 +381,7 @@ TEST(MessageBundle, ReplaceMessagesInText) {
   messages.insert(std::make_pair("bad name", "Doesn't matter"));
   messages.insert(std::make_pair("d1g1ts_are_ok", "I are d1g1t"));
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::string text = test_cases[i].original;
     std::string error;
     EXPECT_EQ(test_cases[i].pass,

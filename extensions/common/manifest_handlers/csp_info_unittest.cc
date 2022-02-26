@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/common/manifest_handlers/csp_info.h"
-#include "base/cxx17_backports.h"
+
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
@@ -103,7 +103,7 @@ TEST_F(CSPInfoUnitTest, SandboxedPages) {
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP)),
       Testcase("sandboxed_pages_invalid_5.json",
                GetInvalidManifestKeyError(keys::kSandboxedPagesCSP))};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, CSPStringKey) {
@@ -169,7 +169,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'wasm-unsafe-eval'", "worker-src")),
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(CSPInfoUnitTest, AllowWasmInMV3) {
@@ -239,7 +239,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
       {"unsandboxed_csp.json",
        GetInvalidManifestKeyError(
            keys::kContentSecurityPolicy_SandboxedPagesPath)}};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 // Ensures that using a dictionary for the keys::kContentSecurityPolicy manifest

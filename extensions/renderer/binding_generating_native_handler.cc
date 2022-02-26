@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/binding_generating_native_handler.h"
 
-#include "base/cxx17_backports.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/data_object_builder.h"
@@ -87,7 +86,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
         v8_context->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     // TODO(devlin): We should not be using v8::Function::Call() directly here.
     // Instead, we should use JSRunner once it's used outside native bindings.
-    if (!create_binding->Call(v8_context, binding, base::size(argv), argv)
+    if (!create_binding->Call(v8_context, binding, std::size(argv), argv)
              .ToLocal(&binding_instance_value) ||
         !binding_instance_value->ToObject(v8_context)
              .ToLocal(&binding_instance)) {

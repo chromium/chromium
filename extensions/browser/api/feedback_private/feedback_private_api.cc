@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -71,7 +70,7 @@ std::string StripFakepath(const std::string& path) {
   constexpr char kFakePathStr[] = "C:\\fakepath\\";
   if (base::StartsWith(path, kFakePathStr,
                        base::CompareCase::INSENSITIVE_ASCII))
-    return path.substr(base::size(kFakePathStr) - 1);
+    return path.substr(std::size(kFakePathStr) - 1);
   return path;
 }
 

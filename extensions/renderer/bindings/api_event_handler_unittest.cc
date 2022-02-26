@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -46,7 +45,7 @@ void AddListener(v8::Local<v8::Context> context,
   v8::Local<v8::Function> add_listener =
       FunctionFromString(context, kAddListenerFunction);
   v8::Local<v8::Value> argv[] = {event, listener};
-  RunFunction(add_listener, context, base::size(argv), argv);
+  RunFunction(add_listener, context, std::size(argv), argv);
 }
 
 void RemoveListener(v8::Local<v8::Context> context,
@@ -55,7 +54,7 @@ void RemoveListener(v8::Local<v8::Context> context,
   v8::Local<v8::Function> remove_listener =
       FunctionFromString(context, kRemoveListenerFunction);
   v8::Local<v8::Value> argv[] = {event, listener};
-  RunFunction(remove_listener, context, base::size(argv), argv);
+  RunFunction(remove_listener, context, std::size(argv), argv);
 }
 
 class APIEventHandlerTest : public APIBindingTest {
@@ -130,7 +129,7 @@ TEST_F(APIEventHandlerTest, AddingRemovingAndQueryingEventListeners) {
   {
     v8::Local<v8::Value> argv[] = {event, listener_function};
     v8::Local<v8::Value> result =
-        RunFunction(has_listener_function, context, base::size(argv), argv);
+        RunFunction(has_listener_function, context, std::size(argv), argv);
     bool has_listener = false;
     EXPECT_TRUE(gin::Converter<bool>::FromV8(isolate(), result, &has_listener));
     EXPECT_TRUE(has_listener);
@@ -142,7 +141,7 @@ TEST_F(APIEventHandlerTest, AddingRemovingAndQueryingEventListeners) {
         FunctionFromString(context, "(function() {})");
     v8::Local<v8::Value> argv[] = {event, not_a_listener};
     v8::Local<v8::Value> result =
-        RunFunction(has_listener_function, context, base::size(argv), argv);
+        RunFunction(has_listener_function, context, std::size(argv), argv);
     bool has_listener = false;
     EXPECT_TRUE(gin::Converter<bool>::FromV8(isolate(), result, &has_listener));
     EXPECT_FALSE(has_listener);
@@ -156,7 +155,7 @@ TEST_F(APIEventHandlerTest, AddingRemovingAndQueryingEventListeners) {
   {
     v8::Local<v8::Value> argv[] = {event};
     v8::Local<v8::Value> result =
-        RunFunction(has_listeners_function, context, base::size(argv), argv);
+        RunFunction(has_listeners_function, context, std::size(argv), argv);
     bool has_listeners = false;
     EXPECT_TRUE(
         gin::Converter<bool>::FromV8(isolate(), result, &has_listeners));
@@ -169,7 +168,7 @@ TEST_F(APIEventHandlerTest, AddingRemovingAndQueryingEventListeners) {
   {
     v8::Local<v8::Value> argv[] = {event};
     v8::Local<v8::Value> result =
-        RunFunction(has_listeners_function, context, base::size(argv), argv);
+        RunFunction(has_listeners_function, context, std::size(argv), argv);
     bool has_listeners = false;
     EXPECT_TRUE(
         gin::Converter<bool>::FromV8(isolate(), result, &has_listeners));
@@ -433,7 +432,7 @@ TEST_F(APIEventHandlerTest, TestDispatchFromJs) {
           "(function(event) { event.dispatch(42, 'foo', {bar: 'baz'}); })");
   {
     v8::Local<v8::Value> argv[] = {event};
-    RunFunctionOnGlobal(fire_event_function, context, base::size(argv), argv);
+    RunFunctionOnGlobal(fire_event_function, context, std::size(argv), argv);
   }
 
   EXPECT_EQ("[42,\"foo\",{\"bar\":\"baz\"}]",
@@ -457,7 +456,7 @@ TEST_F(APIEventHandlerTest, RemovingListenersWhileHandlingEvent) {
             context,
            "(function(event) { this.testEvent = event; })");
     v8::Local<v8::Value> args[] = {event};
-    RunFunctionOnGlobal(set_event_on_global, context, base::size(args), args);
+    RunFunctionOnGlobal(set_event_on_global, context, std::size(args), args);
     EXPECT_EQ(event,
               GetPropertyFromObject(context->Global(), context, "testEvent"));
   }
@@ -767,7 +766,7 @@ TEST_F(APIEventHandlerTest, TestArgumentMassagersAsyncDispatch) {
       V8ValueFromScriptSource(context, "['primary', 'secondary']"),
   };
   RunFunction(dispatch_value.As<v8::Function>(), context,
-              base::size(dispatch_args), dispatch_args);
+              std::size(dispatch_args), dispatch_args);
 
   EXPECT_EQ(
       "[\"primary\",\"secondary\"]",
@@ -873,7 +872,7 @@ TEST_F(APIEventHandlerTest, TestCreateCustomEvent) {
       FunctionFromString(context, kDispatchEventFunction);
 
   v8::Local<v8::Value> dispatch_argv[] = {event};
-  RunFunction(dispatch_function, context, base::size(dispatch_argv),
+  RunFunction(dispatch_function, context, std::size(dispatch_argv),
               dispatch_argv);
 
   EXPECT_EQ("[1,2,3]", GetStringPropertyFromObject(context->Global(), context,
@@ -886,7 +885,7 @@ TEST_F(APIEventHandlerTest, TestCreateCustomEvent) {
 
   // Invalidate the event and try dispatching again. Nothing should happen.
   handler.InvalidateCustomEvent(context, event);
-  RunFunction(dispatch_function, context, base::size(dispatch_argv),
+  RunFunction(dispatch_function, context, std::size(dispatch_argv),
               dispatch_argv);
   EXPECT_EQ("undefined", GetStringPropertyFromObject(context->Global(), context,
                                                      "eventArgs"));
@@ -910,7 +909,7 @@ TEST_F(APIEventHandlerTest, TestCreateCustomEventWithCyclicDependency) {
       "})";
   v8::Local<v8::Value> add_listener_argv[] = {event};
   RunFunction(FunctionFromString(context, kLocalAddListenerFunction), context,
-              base::size(add_listener_argv), add_listener_argv);
+              std::size(add_listener_argv), add_listener_argv);
 
   DisposeContext(context);
 }
@@ -1136,7 +1135,7 @@ TEST_F(APIEventHandlerTest,
       v8::Local<v8::Value> argv[] = {event, listener1};
       // Note: Use JSRunner() so that script suspension is respected.
       JSRunner::Get(context)->RunJSFunction(remove_listener_function, context,
-                                            base::size(argv), argv);
+                                            std::size(argv), argv);
     }
 
     // Since script has been suspended, there should still be two listeners, and

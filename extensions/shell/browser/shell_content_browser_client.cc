@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -400,15 +399,14 @@ void ShellContentBrowserClient::AppendRendererSwitches(
       switches::kExtensionProcess,
   };
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kSwitchNames, base::size(kSwitchNames));
+                                 kSwitchNames, std::size(kSwitchNames));
 
 #if BUILDFLAG(ENABLE_NACL)
   static const char* const kNaclSwitchNames[] = {
       ::switches::kEnableNaClDebug,
   };
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kNaclSwitchNames,
-                                 base::size(kNaclSwitchNames));
+                                 kNaclSwitchNames, std::size(kNaclSwitchNames));
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
 

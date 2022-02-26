@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -16,7 +15,7 @@
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
-#include "extensions/renderer/bindings/api_bindings_system_unittest.h"
+#include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
 #include "extensions/renderer/bindings/test_interaction_provider.h"
 #include "gin/arguments.h"
@@ -304,7 +303,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
     v8::Local<v8::Function> function = FunctionFromString(context, kTestCall);
     v8::Local<v8::Value> args[] = {alpha_api};
     RunFunctionAndExpectError(
-        function, context, base::size(args), args,
+        function, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError(
                 "alpha.functionWithEnum", "alpha.enumRef e",
@@ -414,7 +413,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithCallback) {
   v8::Local<v8::Function> function =
       FunctionFromString(context, kCustomCallbackHook);
   v8::Local<v8::Value> args[] = {js_hooks};
-  RunFunctionOnGlobal(function, context, base::size(args), args);
+  RunFunctionOnGlobal(function, context, std::size(args), args);
 
   const char kTestCall[] = R"(
       obj.functionWithCallback('foo', function() {
@@ -460,7 +459,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_SuccessWithPromise) {
   v8::Local<v8::Function> function =
       FunctionFromString(context, kCustomCallbackHook);
   v8::Local<v8::Value> args[] = {js_hooks};
-  RunFunctionOnGlobal(function, context, base::size(args), args);
+  RunFunctionOnGlobal(function, context, std::size(args), args);
 
   const char kTestCall[] = R"(return obj.functionWithCallback('bar');)";
   v8::Local<v8::Value> result =
@@ -497,7 +496,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithCallback) {
   v8::Local<v8::Function> function =
       FunctionFromString(context, kCustomCallbackThrowHook);
   v8::Local<v8::Value> args[] = {js_hooks};
-  RunFunctionOnGlobal(function, context, base::size(args), args);
+  RunFunctionOnGlobal(function, context, std::size(args), args);
 
   const char kTestCall[] = R"(
       obj.functionWithCallback('baz', function() {
@@ -539,7 +538,7 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback_ErrorWithPromise) {
   v8::Local<v8::Function> function =
       FunctionFromString(context, kCustomCallbackThrowHook);
   v8::Local<v8::Value> args[] = {js_hooks};
-  RunFunctionOnGlobal(function, context, base::size(args), args);
+  RunFunctionOnGlobal(function, context, std::size(args), args);
 
   const char kTestCall[] = R"(return obj.functionWithCallback('boz');)";
   v8::Local<v8::Value> result =

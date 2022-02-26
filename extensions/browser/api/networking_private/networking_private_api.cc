@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -81,10 +80,10 @@ std::vector<std::string> FilterProperties(base::Value* properties,
   size_t filter_size = 0;
   if (type == PropertiesType::GET) {
     filter = kPrivatePropertyPathsForGet;
-    filter_size = base::size(kPrivatePropertyPathsForGet);
+    filter_size = std::size(kPrivatePropertyPathsForGet);
   } else {
     filter = kPrivatePropertyPathsForSet;
-    filter_size = base::size(kPrivatePropertyPathsForSet);
+    filter_size = std::size(kPrivatePropertyPathsForSet);
   }
 
   std::vector<std::string> removed_properties;

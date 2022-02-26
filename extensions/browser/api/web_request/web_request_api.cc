@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -216,7 +215,7 @@ ExtensionWebRequestEventRouter::EventTypes GetEventTypeFromEventName(
             ExtensionWebRequestEventRouter::kOnErrorOccurred},
            {keys::kOnCompleted, ExtensionWebRequestEventRouter::kOnCompleted}});
 
-  DCHECK_EQ(kRequestStageMap->size(), base::size(kWebRequestEvents));
+  DCHECK_EQ(kRequestStageMap->size(), std::size(kWebRequestEvents));
 
   static const size_t kWebRequestEventPrefixLen =
       strlen(kWebRequestEventPrefix);
@@ -395,7 +394,7 @@ events::HistogramValue GetEventHistogramValue(const std::string& event_name) {
       {events::WEB_REQUEST_ON_AUTH_REQUIRED, keys::kOnAuthRequiredEvent},
       {events::WEB_REQUEST_ON_RESPONSE_STARTED, keys::kOnResponseStartedEvent},
       {events::WEB_REQUEST_ON_HEADERS_RECEIVED, keys::kOnHeadersReceivedEvent}};
-  static_assert(base::size(kWebRequestEvents) == base::size(values_and_names),
+  static_assert(std::size(kWebRequestEvents) == std::size(values_and_names),
                 "kWebRequestEvents and values_and_names must be the same");
   for (const ValueAndName& value_and_name : values_and_names) {
     if (value_and_name.event_name == event_name)
@@ -629,7 +628,7 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
       proxies_(std::make_unique<ProxySet>()),
       may_have_proxies_(MayHaveProxies()) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  for (size_t i = 0; i < base::size(kWebRequestEvents); ++i) {
+  for (size_t i = 0; i < std::size(kWebRequestEvents); ++i) {
     // Observe the webRequest event.
     std::string event_name = kWebRequestEvents[i];
     event_router->RegisterObserver(this, event_name);

@@ -151,7 +151,7 @@ void PostMessageSupport::PostJavaScriptMessage(v8::Isolate* isolate,
       // should already know what is embedded.
       gin::StringToV8(isolate, "*")};
   delegate_->GetSourceFrame()->CallFunctionEvenIfScriptDisabled(
-      post_message.As<v8::Function>(), target_window_proxy, base::size(args),
+      post_message.As<v8::Function>(), target_window_proxy, std::size(args),
       args);
 }
 

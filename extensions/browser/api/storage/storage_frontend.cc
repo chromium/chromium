@@ -76,7 +76,7 @@ class DefaultObserver : public SettingsObserver {
     constexpr size_t kExtensionsIdLength = 32;
     char extension_id_str[kExtensionsIdLength + 1];
     base::strlcpy(extension_id_str, extension_id.c_str(),
-                  base::size(extension_id_str));
+                  std::size(extension_id_str));
     base::debug::Alias(extension_id_str);
 
     const std::string namespace_string = StorageAreaToString(storage_area);

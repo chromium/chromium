@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"
@@ -186,14 +185,14 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
     v8::Local<v8::Function> add_on_message_listener = FunctionFromString(
         context, base::StringPrintf(kOnMessageListenerTemplate, kPort1Message));
     v8::Local<v8::Value> args[] = {port1.ToV8()};
-    RunFunctionOnGlobal(add_on_message_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_message_listener, context, std::size(args),
                         args);
   }
   {
     v8::Local<v8::Function> add_on_message_listener = FunctionFromString(
         context, base::StringPrintf(kOnMessageListenerTemplate, kPort2Message));
     v8::Local<v8::Value> args[] = {port2.ToV8()};
-    RunFunctionOnGlobal(add_on_message_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_message_listener, context, std::size(args),
                         args);
   }
 
@@ -244,7 +243,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
         context,
         base::StringPrintf(kOnDisconnectListenerTemplate, kPort1Disconnect));
     v8::Local<v8::Value> args[] = {port1.ToV8()};
-    RunFunctionOnGlobal(add_on_disconnect_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_disconnect_listener, context, std::size(args),
                         args);
   }
   {
@@ -252,7 +251,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
         context,
         base::StringPrintf(kOnDisconnectListenerTemplate, kPort2Disconnect));
     v8::Local<v8::Value> args[] = {port2.ToV8()};
-    RunFunctionOnGlobal(add_on_disconnect_listener, context, base::size(args),
+    RunFunctionOnGlobal(add_on_disconnect_listener, context, std::size(args),
                         args);
   }
 
@@ -294,7 +293,7 @@ TEST_F(NativeRendererMessagingServiceTest, PostMessageFromJS) {
               SendPostMessageToPort(
                   port_id, Message(R"({"data":"hello"})",
                                    SerializationFormat::kJson, false)));
-  RunFunctionOnGlobal(post_message, context, base::size(args), args);
+  RunFunctionOnGlobal(post_message, context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
@@ -319,7 +318,7 @@ TEST_F(NativeRendererMessagingServiceTest, DisconnectFromJS) {
 
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
-  RunFunctionOnGlobal(post_message, context, base::size(args), args);
+  RunFunctionOnGlobal(post_message, context, std::size(args), args);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
