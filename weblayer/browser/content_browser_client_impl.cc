@@ -1052,7 +1052,7 @@ void ContentBrowserClientImpl::AppendExtraCommandLineSwitches(
         embedder_support::kOriginTrialPublicKey,
     };
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                   base::size(kSwitchNames));
+                                   std::size(kSwitchNames));
   }
 }
 
