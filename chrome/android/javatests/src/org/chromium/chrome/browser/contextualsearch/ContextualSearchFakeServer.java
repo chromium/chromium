@@ -270,7 +270,11 @@ class ContextualSearchFakeServer
             mDidStartResolution = false;
             mDidFinishResolution = false;
 
-            mTestHost.triggerResolve(getNodeId());
+            if (mPolicy.shouldPreviousGestureResolve()) {
+                mTestHost.triggerResolve(getNodeId());
+            } else {
+                mTestHost.triggerNonResolve(getNodeId());
+            }
             mTestHost.waitForSelectionToBe(getSearchTerm());
 
             if (mPolicy.shouldPreviousGestureResolve()) {

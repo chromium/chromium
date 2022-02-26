@@ -199,36 +199,20 @@ public class ContextualSearchManagerTest {
      */
 
     /** This represents the current fully-launched configuration. */
-    private static final ImmutableMap<String, Boolean> ENABLE_NONE =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
+    private static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
+
     /**
      * This represents the Translations addition to the Longpress with LiteralTap configuration.
      * This is likely the best launch candidate.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
     /** Feature maps that we use for individual tests. */
-    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES = ImmutableMap.of(
-            ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, false);
-    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_UI = ImmutableMap.of(
-            ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_BAR =
             ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
                     ChromeFeatureList.RELATED_SEARCHES_UI, true,
                     ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true);
-    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_PANEL =
-            ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
-                    ChromeFeatureList.RELATED_SEARCHES_UI, true,
-                    ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX, true);
-    private static final ImmutableMap<String, Boolean> DISABLE_FORCE_CAPTION =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
-    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
     private ActivityMonitor mActivityMonitor;
     private ContextualSearchFakeServer mFakeServer;
@@ -340,25 +324,16 @@ public class ContextualSearchManagerTest {
     private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
-            // TODO(donnd): remove support for the LiteralSearchTap Feature.
-            if (mPolicy.isLiteralSearchTapEnabled()) {
-                clickWordNode(nodeId);
-            } else if (!mPolicy.canResolveLongpress()) {
-                longPressNode(nodeId);
-            } else {
-                Assert.fail(
-                        "Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
-            }
+            boolean wasOptedIn = mPolicy.overrideDecidedStateForTesting(false);
+            clickWordNode(nodeId);
+            mPolicy.overrideDecidedStateForTesting(wasOptedIn);
         }
 
         @Override
         public void triggerResolve(String nodeId) throws TimeoutException {
-            if (mPolicy.canResolveLongpress()) {
-                longPressNode(nodeId);
-            } else {
-                // When tap can trigger a resolve, we use a tap (aka click).
-                clickWordNode(nodeId);
-            }
+            boolean wasOptedIn = mPolicy.overrideDecidedStateForTesting(true);
+            clickWordNode(nodeId);
+            mPolicy.overrideDecidedStateForTesting(wasOptedIn);
         }
 
         @Override
@@ -851,11 +826,7 @@ public class ContextualSearchManagerTest {
      * @param nodeId A string containing the node ID.
      */
     public void triggerNode(Tab tab, String nodeId) throws TimeoutException {
-        if (mPolicy.canResolveLongpress()) {
-            DOMUtils.longPressNode(tab.getWebContents(), nodeId);
-        } else {
-            DOMUtils.clickNode(tab.getWebContents(), nodeId);
-        }
+        DOMUtils.clickNode(tab.getWebContents(), nodeId);
     }
 
     /**
@@ -2734,7 +2705,8 @@ public class ContextualSearchManagerTest {
         mManager.setContextualSearchInternalStateController(internalStateControllerWrapper);
 
         // Simulate a resolving search to show the Bar.
-        simulateResolveSearch("search");
+        longPressNode(SIMPLE_SEARCH_NODE_ID);
+        fakeAResponse();
 
         Assert.assertEquals("Some states were started but never finished",
                 internalStateControllerWrapper.getStartedStates(),
@@ -2756,7 +2728,10 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
-    public void testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
+    @DisabledTest(
+            message = "TODO(donnd): reenable after unifying resolving and non-resolving longpress.")
+    public void
+    testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
         // Set up a tracking version of the Internal State Controller.

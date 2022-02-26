@@ -276,7 +276,6 @@ public class ContextualSearchInstrumentationBase {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.LONGPRESS).name("enableLongpress"),
                     new ParameterSet()
                             .value(EnabledFeature.TRANSLATIONS)
                             .name("enableTranslations"));
@@ -293,8 +292,7 @@ public class ContextualSearchInstrumentationBase {
     private static final int PANEL_INTERACTION_MAX_RETRIES = 3;
     private static final int PANEL_INTERACTION_RETRY_DELAY_MS = 200;
 
-    // TODO(donnd): get these from TemplateURL once the low-priority or Contextual Search API
-    // is fully supported.
+    // Search request URL paths and CGI parameters.
     private static final String LOW_PRIORITY_SEARCH_ENDPOINT = "/s?";
     private static final String NORMAL_PRIORITY_SEARCH_ENDPOINT = "/search?";
     private static final String LOW_PRIORITY_INVALID_SEARCH_ENDPOINT = "/s/invalid";
@@ -304,51 +302,34 @@ public class ContextualSearchInstrumentationBase {
     // Feature maps that we use for parameterized tests.
     //--------------------------------------------------------------------------------------------
 
-    /**
-     * This represents the current fully-launched configuration.
-     */
-    protected static final ImmutableMap<String, Boolean> ENABLE_NONE =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
-    /**
-     * This represents the Longpress with LiteralTap configurations, a good launch candidate.
-     */
-    private static final ImmutableMap<String, Boolean> ENABLE_LONGPRESS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
-    /**
-     * This represents the Translations addition to the Longpress with LiteralTap configuration.
-     */
+    /** This represents the current fully-launched configuration, with no other Features. */
+    protected static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
+
+    /** This is the Translations Feature addition. */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
-    /**
-     * This is the privacy-neutral-engagement feature set.
-     */
+    /** This is the privacy-neutral-engagement feature set. */
     private static final ImmutableMap<String, Boolean> ENABLE_PRIVACY_NEUTRAL =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE, true);
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
-    /**
-     * This is the privacy-neutral-engagement feature set that include Related Searches.
-     */
+    /** This is the privacy-neutral-engagement feature set, plus Related Searches. */
     private static final ImmutableMap<String, Boolean>
             ENABLE_PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES =
                     ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
-                            ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE, true,
                             ChromeFeatureList.RELATED_SEARCHES, true,
                             ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true,
                             ChromeFeatureList.RELATED_SEARCHES_UI, true);
 
-    /**
-     * This is the contextual triggers feature set that alters tap selection.
-     * Currently with two Features but a third is in development and should be added soon.
-     */
+    /** This is the contextual triggers feature set that alters tap to show selection handles. */
     private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS =
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true);
+
+    /**
+     * This is the contextual triggers feature set that alters tap to show handles and shows the
+     * context menu.
+     */
+    private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS_MENU =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_HANDLES, true,
                     ChromeFeatureList.CONTEXTUAL_TRIGGERS_SELECTION_MENU, true);
 
@@ -382,17 +363,17 @@ public class ContextualSearchInstrumentationBase {
     // State for an individual test.
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
-    @IntDef({EnabledFeature.NONE, EnabledFeature.LONGPRESS, EnabledFeature.TRANSLATIONS,
-            EnabledFeature.PRIVACY_NEUTRAL, EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES,
-            EnabledFeature.CONTEXTUAL_TRIGGERS})
+    @IntDef({EnabledFeature.NONE, EnabledFeature.TRANSLATIONS, EnabledFeature.PRIVACY_NEUTRAL,
+            EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES,
+            EnabledFeature.CONTEXTUAL_TRIGGERS, EnabledFeature.CONTEXTUAL_TRIGGERS_MENU})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
-        int LONGPRESS = 1;
-        int TRANSLATIONS = 2;
-        int PRIVACY_NEUTRAL = 3;
-        int PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES = 4;
-        int CONTEXTUAL_TRIGGERS = 5;
+        int TRANSLATIONS = 1;
+        int PRIVACY_NEUTRAL = 2;
+        int PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES = 3;
+        int CONTEXTUAL_TRIGGERS = 4;
+        int CONTEXTUAL_TRIGGERS_MENU = 5;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -463,9 +444,6 @@ public class ContextualSearchInstrumentationBase {
             case EnabledFeature.NONE:
                 whichFeature = ENABLE_NONE;
                 break;
-            case EnabledFeature.LONGPRESS:
-                whichFeature = ENABLE_LONGPRESS;
-                break;
             case EnabledFeature.TRANSLATIONS:
                 whichFeature = ENABLE_TRANSLATIONS;
                 break;
@@ -477,6 +455,9 @@ public class ContextualSearchInstrumentationBase {
                 break;
             case EnabledFeature.CONTEXTUAL_TRIGGERS:
                 whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;
+                break;
+            case EnabledFeature.CONTEXTUAL_TRIGGERS_MENU:
+                whichFeature = ENABLE_CONTEXTUAL_TRIGGERS_MENU;
                 break;
         }
         Assert.assertNotNull(
@@ -509,24 +490,16 @@ public class ContextualSearchInstrumentationBase {
     private class ContextualSearchInstrumentationTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
-            if (mPolicy.isLiteralSearchTapEnabled()) {
-                clickWordNode(nodeId);
-            } else if (!mPolicy.canResolveLongpress()) {
-                longPressNode(nodeId);
-            } else {
-                Assert.fail(
-                        "Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
-            }
+            boolean previousOptedInState = mPolicy.overrideDecidedStateForTesting(false);
+            clickWordNode(nodeId);
+            mPolicy.overrideDecidedStateForTesting(previousOptedInState);
         }
 
         @Override
         public void triggerResolve(String nodeId) throws TimeoutException {
-            if (mPolicy.canResolveLongpress()) {
-                longPressNode(nodeId);
-            } else {
-                // When tap can trigger a resolve, we use a tap (aka click).
-                clickWordNode(nodeId);
-            }
+            boolean previousOptedInState = mPolicy.overrideDecidedStateForTesting(true);
+            clickWordNode(nodeId);
+            mPolicy.overrideDecidedStateForTesting(previousOptedInState);
         }
 
         @Override

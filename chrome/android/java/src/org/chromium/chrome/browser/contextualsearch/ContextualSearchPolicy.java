@@ -666,12 +666,15 @@ class ContextualSearchPolicy {
 
     /**
      * Overrides the decided/undecided state for the user preference.
-     * @param decidedState Whether the user has decided or not.
+     * @param decidedState Whether the user has decided to opt-in to sending page content or not.
+     * @return whether the previous decided state was fully enabled or not.
      */
     @VisibleForTesting
-    void overrideDecidedStateForTesting(boolean decidedState) {
+    boolean overrideDecidedStateForTesting(boolean decidedState) {
+        boolean wasEnabled = mFullyEnabledForTesting;
         mDidOverrideFullyEnabledForTesting = true;
         mFullyEnabledForTesting = decidedState;
+        return wasEnabled;
     }
 
     /**

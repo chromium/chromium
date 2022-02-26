@@ -51,13 +51,15 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.LONGPRESS).name("enableLongpress"),
                     new ParameterSet()
                             .value(EnabledFeature.TRANSLATIONS)
                             .name("enableTranslations"),
                     new ParameterSet()
                             .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
                             .name("enableContextualTriggers"),
+                    new ParameterSet()
+                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS_MENU)
+                            .name("enableContextualTriggersMenu"),
                     new ParameterSet()
                             .value(EnabledFeature.PRIVACY_NEUTRAL)
                             .name("enablePrivacyNeutralEngagement"),
