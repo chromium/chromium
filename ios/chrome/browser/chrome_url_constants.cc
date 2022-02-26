@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "ios/components/webui/web_ui_url_constants.h"
 
 const char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";
@@ -77,7 +78,7 @@ const char* const kChromeHostURLs[] = {
     kChromeUIUserActionsHost,
     kChromeUIVersionHost,
 };
-const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
+const size_t kNumberOfChromeHostURLs = std::size(kChromeHostURLs);
 
 const char kSyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";

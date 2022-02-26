@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -44,7 +43,7 @@ const int kStringIDS[] = {
     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS};
 
 static_assert(
-    base::size(kStringIDS) ==
+    std::size(kStringIDS) ==
         static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST) + 1,
     "Strings have to match the enum values.");
 
@@ -158,7 +157,7 @@ static_assert(
   if (!prefs)
     return nil;
   int prefValue = prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod);
-  if (prefValue < 0 || static_cast<size_t>(prefValue) >= base::size(kStringIDS))
+  if (prefValue < 0 || static_cast<size_t>(prefValue) >= std::size(kStringIDS))
     return nil;
   return l10n_util::GetNSString(kStringIDS[prefValue]);
 }

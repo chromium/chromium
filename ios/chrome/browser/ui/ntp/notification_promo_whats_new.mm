@@ -5,12 +5,12 @@
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
@@ -56,7 +56,7 @@ const PromoStringToIdsMapEntry kPromoStringToIdsMap[] = {
 // Returns a localized version of |promo_text| if it has an entry in the
 // |kPromoStringToIdsMap|. If there is no entry, an empty string is returned.
 std::string GetLocalizedPromoText(const std::string& promo_text) {
-  for (size_t i = 0; i < base::size(kPromoStringToIdsMap); ++i) {
+  for (size_t i = 0; i < std::size(kPromoStringToIdsMap); ++i) {
     auto& entry = kPromoStringToIdsMap[i];
     if (entry.promo_text_str == promo_text) {
       return entry.nonlocalized_message

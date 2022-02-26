@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -149,19 +148,19 @@ const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches12[] = {
 const FeatureEntry::FeatureVariation
     kOmniboxUIMaxAutocompleteMatchesVariations[] = {
         {"3 matches", kOmniboxUIMaxAutocompleteMatches3,
-         base::size(kOmniboxUIMaxAutocompleteMatches3), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches3), nullptr},
         {"4 matches", kOmniboxUIMaxAutocompleteMatches4,
-         base::size(kOmniboxUIMaxAutocompleteMatches4), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches4), nullptr},
         {"5 matches", kOmniboxUIMaxAutocompleteMatches5,
-         base::size(kOmniboxUIMaxAutocompleteMatches5), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches5), nullptr},
         {"6 matches", kOmniboxUIMaxAutocompleteMatches6,
-         base::size(kOmniboxUIMaxAutocompleteMatches6), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches6), nullptr},
         {"8 matches", kOmniboxUIMaxAutocompleteMatches8,
-         base::size(kOmniboxUIMaxAutocompleteMatches8), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches8), nullptr},
         {"10 matches", kOmniboxUIMaxAutocompleteMatches10,
-         base::size(kOmniboxUIMaxAutocompleteMatches10), nullptr},
+         std::size(kOmniboxUIMaxAutocompleteMatches10), nullptr},
         {"12 matches", kOmniboxUIMaxAutocompleteMatches12,
-         base::size(kOmniboxUIMaxAutocompleteMatches12), nullptr}};
+         std::size(kOmniboxUIMaxAutocompleteMatches12), nullptr}};
 
 const FeatureEntry::FeatureParam
     kAutofillUseMobileLabelDisambiguationShowAll[] = {
@@ -177,9 +176,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation
     kAutofillUseMobileLabelDisambiguationVariations[] = {
         {"(show all)", kAutofillUseMobileLabelDisambiguationShowAll,
-         base::size(kAutofillUseMobileLabelDisambiguationShowAll), nullptr},
+         std::size(kAutofillUseMobileLabelDisambiguationShowAll), nullptr},
         {"(show one)", kAutofillUseMobileLabelDisambiguationShowOne,
-         base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
+         std::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 
 const FeatureEntry::FeatureParam
     kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
@@ -188,14 +187,14 @@ const FeatureEntry::FeatureVariation
     kDefaultBrowserFullscreenPromoExperimentVariations[] = {
         {"Remind me later",
          kDefaultBrowserFullscreenPromoExperimentRemindMeLater,
-         base::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
+         std::size(kDefaultBrowserFullscreenPromoExperimentRemindMeLater),
          nullptr}};
 
 const FeatureEntry::FeatureParam kDiscoverFeedInNtpEnableNativeUI[] = {
     {kDiscoverFeedIsNativeUIEnabled, "true"}};
 const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
     {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
-     base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
+     std::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
 
 const FeatureEntry::FeatureParam kDiscoverFeedSRSReconstructedTemplates[] = {
     {kDiscoverFeedSRSReconstructedTemplatesEnabled, "true"}};
@@ -204,9 +203,9 @@ const FeatureEntry::FeatureParam kDiscoverFeedSRSPreloadTemplates[] = {
 const FeatureEntry::FeatureVariation
     kEnableDiscoverFeedStaticResourceServingVariations[] = {
         {"Reconstruct Templates", kDiscoverFeedSRSReconstructedTemplates,
-         base::size(kDiscoverFeedSRSReconstructedTemplates), nullptr},
+         std::size(kDiscoverFeedSRSReconstructedTemplates), nullptr},
         {"Preload Templates", kDiscoverFeedSRSPreloadTemplates,
-         base::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
+         std::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
@@ -251,30 +250,29 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
     {"10s:Show Return to Recent Tab tile",
      kStartSurfaceTenSecondsReturnToRecentTab,
-     base::size(kStartSurfaceTenSecondsReturnToRecentTab), nullptr},
+     std::size(kStartSurfaceTenSecondsReturnToRecentTab), nullptr},
     {"10s:Shrink Logo", kStartSurfaceTenSecondsShrinkLogo,
-     base::size(kStartSurfaceTenSecondsShrinkLogo), nullptr},
+     std::size(kStartSurfaceTenSecondsShrinkLogo), nullptr},
     {"10s:Hide Shortcuts", kStartSurfaceTenSecondsHideShortcuts,
-     base::size(kStartSurfaceTenSecondsHideShortcuts), nullptr},
+     std::size(kStartSurfaceTenSecondsHideShortcuts), nullptr},
     {"10s:Shrink Logo and show Return to Recent Tab tile",
      kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab,
-     base::size(kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab), nullptr},
+     std::size(kStartSurfaceTenSecondsShrinkLogoReturnToRecentTab), nullptr},
     {"10s:Hide Shortcuts and show Return to Recent Tab tile",
      kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab,
-     base::size(kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab),
-     nullptr},
+     std::size(kStartSurfaceTenSecondsHideShortcutsReturnToRecentTab), nullptr},
     {"1h:Show Return to Recent Tab tile", kStartSurfaceOneHourReturnToRecentTab,
-     base::size(kStartSurfaceOneHourReturnToRecentTab), nullptr},
+     std::size(kStartSurfaceOneHourReturnToRecentTab), nullptr},
     {"1h:Shrink Logo", kStartSurfaceOneHourShrinkLogo,
-     base::size(kStartSurfaceOneHourShrinkLogo), nullptr},
+     std::size(kStartSurfaceOneHourShrinkLogo), nullptr},
     {"1h:Hide Shortcuts", kStartSurfaceOneHourHideShortcuts,
-     base::size(kStartSurfaceOneHourHideShortcuts), nullptr},
+     std::size(kStartSurfaceOneHourHideShortcuts), nullptr},
     {"1h:Shrink Logo and show Return to Recent Tab tile",
      kStartSurfaceOneHourShrinkLogoReturnToRecentTab,
-     base::size(kStartSurfaceOneHourShrinkLogoReturnToRecentTab), nullptr},
+     std::size(kStartSurfaceOneHourShrinkLogoReturnToRecentTab), nullptr},
     {"1h:Hide Shortcuts and show Return to Recent Tab tile",
      kStartSurfaceOneHourHideShortcutsReturnToRecentTab,
-     base::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
+     std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingDefaultDelay[] = {
@@ -286,12 +284,12 @@ const FeatureEntry::FeatureParam kFREDefaultPromoTestingShortDelay[] = {
 const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
     {"Wait 14 days after FRE default browser promo",
      kFREDefaultPromoTestingDefaultDelay,
-     base::size(kFREDefaultPromoTestingDefaultDelay), nullptr},
+     std::size(kFREDefaultPromoTestingDefaultDelay), nullptr},
     {"FRE default browser promo only", kFREDefaultPromoTestingOnly,
-     base::size(kFREDefaultPromoTestingOnly), nullptr},
+     std::size(kFREDefaultPromoTestingOnly), nullptr},
     {"Wait 3 days after FRE default browser promo",
      kFREDefaultPromoTestingShortDelay,
-     base::size(kFREDefaultPromoTestingShortDelay), nullptr},
+     std::size(kFREDefaultPromoTestingShortDelay), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kEnableFREUIModuleIOSVariations[] = {
@@ -1164,7 +1162,7 @@ namespace testing {
 
 base::span<const flags_ui::FeatureEntry> GetFeatureEntries() {
   return base::span<const flags_ui::FeatureEntry>(kFeatureEntries,
-                                                  base::size(kFeatureEntries));
+                                                  std::size(kFeatureEntries));
 }
 
 }  // namespace testing

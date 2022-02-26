@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -145,7 +144,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   std::string locale = GetApplicationContext()->GetApplicationLocale();
   [model addSectionWithIdentifier:SectionIdentifierFields];
-  for (size_t i = 0; i < base::size(kProfileFieldsToDisplay); ++i) {
+  for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
     const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
 
     if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&

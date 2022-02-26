@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/cxx17_backports.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -28,7 +27,7 @@ const char* kSchemeTestData[] = {
 using URLSchemeUtilTest = PlatformTest;
 
 TEST_F(URLSchemeUtilTest, NSURLHasDataScheme) {
-  for (unsigned int i = 0; i < base::size(kSchemeTestData); ++i) {
+  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
     const char* url = kSchemeTestData[i];
     bool nsurl_result = UrlHasDataScheme(
         [NSURL URLWithString:[NSString stringWithUTF8String:url]]);

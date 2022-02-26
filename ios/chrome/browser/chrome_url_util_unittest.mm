@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/chrome_url_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
@@ -40,7 +39,7 @@ const char* kSchemeTestData[] = {
 
 // Tests UrlHasChromeScheme with NSURL* parameter.
 TEST_F(ChromeURLUtilTest, NSURLHasChromeScheme) {
-  for (unsigned int i = 0; i < base::size(kSchemeTestData); ++i) {
+  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
     const char* url = kSchemeTestData[i];
     NSURL* nsurl = [NSURL URLWithString:base::SysUTF8ToNSString(url)];
     bool nsurl_result = UrlHasChromeScheme(nsurl);
@@ -51,7 +50,7 @@ TEST_F(ChromeURLUtilTest, NSURLHasChromeScheme) {
 
 // Tests UrlHasChromeScheme with const GURL& paramter.
 TEST_F(ChromeURLUtilTest, GURLHasChromeScheme) {
-  for (unsigned int i = 0; i < base::size(kSchemeTestData); ++i) {
+  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
     GURL gurl(kSchemeTestData[i]);
     bool result = UrlHasChromeScheme(gurl);
     EXPECT_EQ(gurl.SchemeIs(kChromeUIScheme), result)

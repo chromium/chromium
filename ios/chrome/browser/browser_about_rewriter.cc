@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "components/url_formatter/url_fixer.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -56,7 +55,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
   }
 
   std::string host(url->host());
-  for (size_t i = 0; i < base::size(kHostReplacements); ++i) {
+  for (size_t i = 0; i < std::size(kHostReplacements); ++i) {
     if (host != kHostReplacements[i].old_host_name)
       continue;
 

@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/sys_string_conversions.h"
@@ -1134,7 +1133,7 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
                          {"f2", 4, "u2", 5, "p2", 6}};
 
   // Send fill data to passwordController_.
-  for (size_t form_i = 0; form_i < base::size(kTestData); ++form_i) {
+  for (size_t form_i = 0; form_i < std::size(kTestData); ++form_i) {
     // Initialize |form_data| with test data and an indicator that autofill
     // should not be performed while the user is entering the username so that
     // we can test with an initially-empty username field.
@@ -1162,7 +1161,7 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
   }
 
   // Check that the right password form is filled on suggesion selection.
-  for (size_t form_i = 0; form_i < base::size(kTestData); ++form_i) {
+  for (size_t form_i = 0; form_i < std::size(kTestData); ++form_i) {
     const auto& test_data = kTestData[form_i];
     NSString* form_name = SysUTF8ToNSString(test_data.form_name);
     FormRendererId form_renderer_id =
@@ -1391,7 +1390,7 @@ TEST_F(PasswordControllerTest, TouchendAsSubmissionIndicator) {
       "</form>"
       "</body></html>"};
 
-  for (size_t i = 0; i < base::size(kHtml); ++i) {
+  for (size_t i = 0; i < std::size(kHtml); ++i) {
     LoadHtml(SysUTF8ToNSString(kHtml[i]));
     WaitForFormManagersCreation();
 

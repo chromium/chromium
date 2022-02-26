@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -32,7 +31,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 SyncSetupService::~SyncSetupService() {}
 
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
-  DCHECK(datatype < base::size(kDataTypes));
+  DCHECK(datatype < std::size(kDataTypes));
   return kDataTypes[datatype];
 }
 

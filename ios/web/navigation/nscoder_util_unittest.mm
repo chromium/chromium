@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/web/navigation/nscoder_util.h"
+
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
-#import "ios/web/navigation/nscoder_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -29,7 +29,7 @@ const char* testStrings[] = {
 };
 
 TEST_F(NSCoderStdStringTest, encodeDecode) {
-  for (size_t i = 0; i < base::size(testStrings); ++i) {
+  for (size_t i = 0; i < std::size(testStrings); ++i) {
     NSKeyedArchiver* archiver =
         [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
     nscoder_util::EncodeString(archiver, @"test", testStrings[i]);

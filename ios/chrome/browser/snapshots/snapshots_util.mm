@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
@@ -62,7 +61,7 @@ void GetSnapshotsPaths(std::vector<base::FilePath>* snapshots_paths) {
   } else if (scale == 3) {
     retina_suffix = "@3x";
   }
-  for (unsigned int i = 0; i < base::size(kOrientationDescriptions); i++) {
+  for (unsigned int i = 0; i < std::size(kOrientationDescriptions); i++) {
     std::string snapshot_filename =
         base::StringPrintf("UIApplicationAutomaticSnapshotDefault-%s%s.png",
                            kOrientationDescriptions[i], retina_suffix);

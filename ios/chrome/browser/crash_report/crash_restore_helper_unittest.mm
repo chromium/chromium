@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ios/chrome/browser/crash_report/crash_restore_helper.h"
+
 #import <Foundation/Foundation.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/crash_report/crash_restore_helper.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -51,7 +51,7 @@ class CrashRestoreHelperTest : public PlatformTest {
         off_the_record_chrome_browser_state_,
     };
     NSData* data = [NSData dataWithBytes:"hello" length:5];
-    for (size_t index = 0; index < base::size(browser_states); ++index) {
+    for (size_t index = 0; index < std::size(browser_states); ++index) {
       const base::FilePath& state_path = browser_states[index]->GetStatePath();
       NSString* backup_path =
           [CrashRestoreHelper backupPathForSessionID:session_id
@@ -83,7 +83,7 @@ class CrashRestoreHelperTest : public PlatformTest {
         off_the_record_chrome_browser_state_,
     };
 
-    for (size_t index = 0; index < base::size(browser_states); ++index) {
+    for (size_t index = 0; index < std::size(browser_states); ++index) {
       const base::FilePath& state_path = browser_states[index]->GetStatePath();
       NSString* session_path =
           [SessionServiceIOS sessionPathForSessionID:session_id

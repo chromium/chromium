@@ -1026,7 +1026,7 @@ TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
   std::vector<std::unique_ptr<NavigationItem>> items;
-  for (size_t index = 0; index < base::size(urls); ++index) {
+  for (size_t index = 0; index < std::size(urls); ++index) {
     items.push_back(NavigationItem::Create());
     items.back()->SetURL(urls[index]);
   }
@@ -1266,7 +1266,7 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
   std::vector<std::unique_ptr<NavigationItem>> items;
-  for (size_t index = 0; index < base::size(urls); ++index) {
+  for (size_t index = 0; index < std::size(urls); ++index) {
     items.push_back(NavigationItem::Create());
     items.back()->SetURL(urls[index]);
   }
@@ -1288,7 +1288,7 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures({features::kSynthesizedRestoreSession},
                                        {});
-  for (size_t index = 0; index < base::size(urls); ++index) {
+  for (size_t index = 0; index < std::size(urls); ++index) {
     items.push_back(NavigationItem::Create());
     items.back()->SetURL(urls[index]);
   }

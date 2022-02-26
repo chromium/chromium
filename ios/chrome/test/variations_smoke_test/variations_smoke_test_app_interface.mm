@@ -27,7 +27,7 @@ base::Time GetProcessStartTime() {
   struct kinfo_proc info;
   size_t length = sizeof(struct kinfo_proc);
   int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, (int)getpid()};
-  const int kr = sysctl(mib, base::size(mib), &info, &length, nullptr, 0);
+  const int kr = sysctl(mib, std::size(mib), &info, &length, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
   return base::Time::FromTimeVal(info.kp_proc.p_starttime);
 }

@@ -1581,7 +1581,7 @@ TEST_F(NavigationManagerTest, Restore) {
                             PageDisplayState()};
 
   std::vector<std::unique_ptr<NavigationItem>> items;
-  for (size_t index = 0; index < base::size(restore_information); ++index) {
+  for (size_t index = 0; index < std::size(restore_information); ++index) {
     items.push_back(NavigationItem::Create());
     items.back()->SetURL(restore_information[index].url);
     items.back()->SetVirtualURL(restore_information[index].virtual_url);
@@ -1631,7 +1631,7 @@ TEST_F(NavigationManagerTest, Restore) {
   EXPECT_EQ(restore_information[1].url,
             navigation_manager()->GetLastCommittedItem()->GetURL());
 
-  for (size_t i = 0; i < base::size(restore_information); ++i) {
+  for (size_t i = 0; i < std::size(restore_information); ++i) {
     NavigationItem* navigation_item = navigation_manager()->GetItemAtIndex(i);
     EXPECT_EQ(restore_information[i].url, navigation_item->GetURL());
 

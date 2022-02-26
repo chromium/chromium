@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -25,7 +24,7 @@ TEST_F(UIUtilTest, AlignToPixel) {
   // "integer" values within <1 of the original value in the scaled space.
   CGFloat test_values[] = {10.0, 55.5, 3.14159, 2.71828};
   const CGFloat kMaxAlignDelta = 0.9999;
-  size_t value_count = base::size(test_values);
+  size_t value_count = std::size(test_values);
   for (unsigned int i = 0; i < value_count; ++i) {
     CGFloat aligned = AlignValueToPixel(test_values[i]);
     EXPECT_FLOAT_EQ(aligned * scale, floor(aligned * scale));

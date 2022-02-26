@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -1083,7 +1082,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   void (^updates)(void) = ^{
     SectionIdentifier sections[] = {SectionIdentifierRead,
                                     SectionIdentifierUnread};
-    for (size_t i = 0; i < base::size(sections); ++i) {
+    for (size_t i = 0; i < std::size(sections); ++i) {
       SectionIdentifier section = sections[i];
 
       if ([model hasSectionForSectionIdentifier:section] &&

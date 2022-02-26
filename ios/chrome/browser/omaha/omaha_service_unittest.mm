@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
@@ -219,8 +218,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
       base::StringPrintf(kExpectedResultFormat, "" /* previous version */,
                          -1 /* install age */, 2 /* event type */);
   regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
-  int result =
-      regexec(&regex, content.c_str(), base::size(matches), matches, 0);
+  int result = regexec(&regex, content.c_str(), std::size(matches), matches, 0);
   regfree(&regex);
   EXPECT_EQ(0, result) << "Actual contents: " << content;
   EXPECT_FALSE(NeedUpdate());
@@ -234,7 +232,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   expected_result = base::StringPrintf(kExpectedResultFormat, kPreviousVersion,
                                        0 /* install age */, 3 /* event type */);
   regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
-  result = regexec(&regex, content.c_str(), base::size(matches), matches, 0);
+  result = regexec(&regex, content.c_str(), std::size(matches), matches, 0);
   regfree(&regex);
   EXPECT_EQ(0, result) << "Actual contents: " << content;
   EXPECT_FALSE(NeedUpdate());

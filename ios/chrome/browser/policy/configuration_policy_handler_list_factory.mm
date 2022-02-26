@@ -132,7 +132,7 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
     return handlers;
   }
 
-  for (size_t i = 0; i < base::size(kSimplePolicyMap); ++i) {
+  for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
         kSimplePolicyMap[i].policy_name, kSimplePolicyMap[i].preference_path,
         kSimplePolicyMap[i].value_type));

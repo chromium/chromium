@@ -509,7 +509,7 @@ bool TabUsageRecorderBrowserAgent::ShouldRecordPageLoadStartForNavigation(
       ui::PAGE_TRANSITION_KEYWORD_GENERATED,
   };
 
-  for (size_t i = 0; i < base::size(kRecordedPageTransitionTypes); ++i) {
+  for (size_t i = 0; i < std::size(kRecordedPageTransitionTypes); ++i) {
     const ui::PageTransition recorded_type = kRecordedPageTransitionTypes[i];
     if (ui::PageTransitionCoreTypeIs(transition, recorded_type)) {
       return true;

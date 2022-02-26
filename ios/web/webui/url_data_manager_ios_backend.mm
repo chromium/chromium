@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
@@ -373,7 +372,7 @@ int URLRequestChromeJob::ReadRawData(net::IOBuffer* buf, int buf_size) {
 int URLRequestChromeJob::CompleteRead(net::IOBuffer* buf, int buf_size) {
   // http://crbug.com/373841
   char url_buf[128];
-  base::strlcpy(url_buf, request_->url().spec().c_str(), base::size(url_buf));
+  base::strlcpy(url_buf, request_->url().spec().c_str(), std::size(url_buf));
   base::debug::Alias(url_buf);
 
   int remaining = data_->size() - data_offset_;
