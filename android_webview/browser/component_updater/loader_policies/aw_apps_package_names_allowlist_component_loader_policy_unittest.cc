@@ -12,7 +12,6 @@
 
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -77,7 +76,7 @@ class AwAppsPackageNamesAllowlistComponentLoaderPolicyTest
 
   void WritePackageNamesAllowListToFile() {
     auto filter = std::make_unique<optimization_guide::BloomFilter>(
-        kNumHash, kNumBitsPerEntry * base::size(kTestAllowlist));
+        kNumHash, kNumBitsPerEntry * std::size(kTestAllowlist));
     for (const auto& package : kTestAllowlist) {
       filter->Add(package);
     }

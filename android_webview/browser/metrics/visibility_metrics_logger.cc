@@ -5,7 +5,6 @@
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
 #include "android_webview/common/aw_features.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -166,7 +165,7 @@ void VisibilityMetricsLogger::UpdateDurations() {
   all_clients_tracker_.per_webview_untracked_duration_ +=
       delta * (client_visibility_.size() - all_clients_visible_count_);
 
-  for (size_t i = 0; i < base::size(per_scheme_visible_counts_); i++) {
+  for (size_t i = 0; i < std::size(per_scheme_visible_counts_); i++) {
     if (!per_scheme_visible_counts_[i])
       continue;
     per_scheme_trackers_[i].any_webview_tracked_duration_ += delta;
@@ -281,7 +280,7 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
 }
 
 void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
-  for (size_t i = 0; i < base::size(per_scheme_trackers_); i++) {
+  for (size_t i = 0; i < std::size(per_scheme_trackers_); i++) {
     Scheme scheme = static_cast<Scheme>(i);
     auto& tracker = per_scheme_trackers_[i];
 
@@ -304,7 +303,7 @@ void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
 void VisibilityMetricsLogger::RecordScreenPortionMetrics() {
   if (!base::FeatureList::IsEnabled(features::kWebViewMeasureScreenCoverage))
     return;
-  for (size_t i = 0; i < base::size(open_web_screen_portion_tracked_duration_);
+  for (size_t i = 0; i < std::size(open_web_screen_portion_tracked_duration_);
        i++) {
     int32_t elapsed_seconds =
         open_web_screen_portion_tracked_duration_[i].InSeconds();

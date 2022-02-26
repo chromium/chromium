@@ -31,7 +31,7 @@ constexpr flags_ui::FeatureEntry::FeatureParam
 // preferred variation if it is turned on.
 constexpr flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with selective image inversion", kForceDark_SelectiveImageInversion,
-     base::size(kForceDark_SelectiveImageInversion), nullptr}};
+     std::size(kForceDark_SelectiveImageInversion), nullptr}};
 
 // Not for display, set the descriptions to empty.
 constexpr flags_ui::FeatureEntry kForceDark = {

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "android_webview/common/aw_switches.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -44,7 +43,7 @@ TEST_F(AwPackageNamesAllowlistComponentInstallerPolicyTest, ComponentHash) {
   expected.assign(
       kWebViewAppsPackageNamesAllowlistPublicKeySHA256,
       kWebViewAppsPackageNamesAllowlistPublicKeySHA256 +
-          base::size(kWebViewAppsPackageNamesAllowlistPublicKeySHA256));
+          std::size(kWebViewAppsPackageNamesAllowlistPublicKeySHA256));
 
   std::vector<uint8_t> actual;
   policy->GetHash(&actual);

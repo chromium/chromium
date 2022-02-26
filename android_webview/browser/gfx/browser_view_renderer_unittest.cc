@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/gfx/browser_view_renderer.h"
+
 #include <map>
 #include <memory>
 #include <queue>
 #include <utility>
 
-#include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/test/rendering_test.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -493,7 +493,7 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
         {1u, viz::ResourceId(3u)},
         {1u, viz::ResourceId(4u)},
     };
-    if (frame_number >= static_cast<int>(base::size(infos))) {
+    if (frame_number >= static_cast<int>(std::size(infos))) {
       return nullptr;
     }
 

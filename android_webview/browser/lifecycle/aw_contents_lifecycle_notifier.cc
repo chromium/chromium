@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "android_webview/browser_jni_headers/AwContentsLifecycleNotifier_jni.h"
-#include "base/cxx17_backports.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::AttachCurrentThread;
@@ -153,7 +152,7 @@ std::vector<const AwContents*> AwContentsLifecycleNotifier::GetAllAwContents()
 
 size_t AwContentsLifecycleNotifier::ToIndex(AwContentsState state) const {
   size_t index = static_cast<size_t>(state);
-  DCHECK(index < base::size(state_count_));
+  DCHECK(index < std::size(state_count_));
   return index;
 }
 
@@ -195,7 +194,7 @@ void AwContentsLifecycleNotifier::UpdateAppState() {
 }
 
 bool AwContentsLifecycleNotifier::HasAwContentsInstance() const {
-  for (size_t i = 0; i < base::size(state_count_); i++) {
+  for (size_t i = 0; i < std::size(state_count_); i++) {
     if (state_count_[i] > 0)
       return true;
   }

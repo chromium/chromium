@@ -43,11 +43,11 @@ const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
 
 const flags_ui::FeatureEntry::FeatureVariation kForceDarkVariations[] = {
     {"with simple HSL-based inversion", kForceDark_SimpleHsl,
-     base::size(kForceDark_SimpleHsl), nullptr},
+     std::size(kForceDark_SimpleHsl), nullptr},
     {"with simple CIELAB-based inversion", kForceDark_SimpleCielab,
-     base::size(kForceDark_SimpleCielab), nullptr},
+     std::size(kForceDark_SimpleCielab), nullptr},
     {"with simple RGB-based inversion", kForceDark_SimpleRgb,
-     base::size(kForceDark_SimpleRgb), nullptr}};
+     std::size(kForceDark_SimpleRgb), nullptr}};
 
 // Not for display, set the descriptions to empty.
 flags_ui::FeatureEntry kForceDark = {

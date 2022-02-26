@@ -6,7 +6,6 @@
 
 #include "android_webview/browser_jni_headers/AwGLFunctor_jni.h"
 #include "android_webview/public/browser/draw_gl.h"
-#include "base/cxx17_backports.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -112,10 +111,10 @@ void AwGLFunctor::DrawGL(AwDrawGLInfo* draw_info) {
           draw_info->clip_left,   draw_info->clip_top, draw_info->clip_right,
           draw_info->clip_bottom, draw_info->width,    draw_info->height,
       };
-      static_assert(base::size(decltype(draw_info->transform){}) ==
-                        base::size(params.transform),
+      static_assert(std::size(decltype(draw_info->transform){}) ==
+                        std::size(params.transform),
                     "transform size mismatch");
-      for (unsigned int i = 0; i < base::size(params.transform); ++i) {
+      for (unsigned int i = 0; i < std::size(params.transform); ++i) {
         params.transform[i] = draw_info->transform[i];
       }
       render_thread_manager_.DrawOnRT(save_restore, params, OverlaysParams());
