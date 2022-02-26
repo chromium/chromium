@@ -75,7 +75,7 @@ class OutputProtectionImplTest : public testing::Test {
         display::DISPLAY_CONNECTION_TYPE_HDMI,
         display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT,
         display::DISPLAY_CONNECTION_TYPE_VGA};
-    for (size_t i = 0; i < base::size(kDisplayIds); ++i) {
+    for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
       displays_[i] = display::FakeDisplaySnapshot::Builder()
                          .SetId(kDisplayIds[i])
                          .SetType(conn_types[i])
@@ -90,7 +90,7 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   void UpdateDisplays(size_t count) {
-    ASSERT_LE(count, base::size(displays_));
+    ASSERT_LE(count, std::size(displays_));
 
     cached_displays_.clear();
     for (size_t i = 0; i < count; ++i)
@@ -133,7 +133,7 @@ class OutputProtectionImplTest : public testing::Test {
 
   mojo::Remote<OutputProtection> output_protection_mojo_;
   MockDisplaySystemDelegate* delegate_;  // Not owned.
-  std::unique_ptr<display::DisplaySnapshot> displays_[base::size(kDisplayIds)];
+  std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
   std::vector<display::DisplaySnapshot*> cached_displays_;
 
  private:
@@ -198,7 +198,7 @@ TEST_F(OutputProtectionImplTest, ApplyDoesNotAggregateTypes) {
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1,
       display::CONTENT_PROTECTION_METHOD_NONE};
 
-  for (size_t i = 0; i < base::size(applied_types); ++i) {
+  for (size_t i = 0; i < std::size(applied_types); ++i) {
     ExpectProtectionCall(kDisplayIds[0], expected_types[i], true);
 
     base::MockCallback<OutputProtection::EnableProtectionCallback>

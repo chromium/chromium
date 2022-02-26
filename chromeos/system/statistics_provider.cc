@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -508,7 +507,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   if (base::SysInfo::IsRunningOnChromeOS()) {
     // Parse all of the key/value pairs from the crossystem tool.
     if (!parser.ParseNameValuePairsFromTool(
-            base::size(kCrosSystemTool), kCrosSystemTool,
+            std::size(kCrosSystemTool), kCrosSystemTool,
             NameValuePairsFormat::kCrossystem)) {
       LOG(ERROR) << "Errors parsing output from: " << kCrosSystemTool;
     }

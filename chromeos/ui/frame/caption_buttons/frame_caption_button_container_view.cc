@@ -218,7 +218,7 @@ void FrameCaptionButtonContainerView::SetButtonImage(
 
   views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
                                           size_button_, close_button_};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     if (buttons[i]->GetIcon() == icon)
       buttons[i]->SetImage(icon, views::FrameCaptionButton::Animate::kNo,
                            icon_definition);
@@ -533,7 +533,7 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
                                           close_button_};
   int min_squared_distance = INT_MAX;
   views::FrameCaptionButton* closest_button = nullptr;
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
     if (!button || !button->GetVisible())
       continue;
@@ -557,7 +557,7 @@ void FrameCaptionButtonContainerView::SetHoveredAndPressedButtons(
   views::FrameCaptionButton* buttons[] = {custom_button_, menu_button_,
                                           minimize_button_, size_button_,
                                           close_button_};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     views::FrameCaptionButton* button = buttons[i];
     if (!button)
       continue;

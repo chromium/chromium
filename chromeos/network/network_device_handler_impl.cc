@@ -14,7 +14,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
@@ -140,7 +139,7 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
       // NetworkConfigurationUpdater.
       shill::kCellularPolicyAllowRoamingProperty};
 
-  for (size_t i = 0; i < base::size(blocked_properties); ++i) {
+  for (size_t i = 0; i < std::size(blocked_properties); ++i) {
     if (property_name == blocked_properties[i]) {
       InvokeErrorCallback(
           device_path, std::move(error_callback),

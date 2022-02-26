@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -209,7 +208,7 @@ void InstallAttributes::ReadAttributesIfReady(
         kAttrConsumerKioskEnabled,
     };
     std::map<std::string, std::string> attr_map;
-    for (size_t i = 0; i < base::size(kEnterpriseAttributes); ++i) {
+    for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
       std::string value;
       if (install_attributes_util::InstallAttributesGet(
               kEnterpriseAttributes[i], &value))

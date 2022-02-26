@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <cstdio>
 #include <iostream>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
@@ -63,13 +63,13 @@ void PrintHelp() {
           "  onc_validator [OPTION]... [TYPE] onc_file\n"
           "\n"
           "Valid TYPEs are:\n");
-  for (size_t i = 0; i < base::size(kTypes); ++i)
+  for (size_t i = 0; i < std::size(kTypes); ++i)
     fprintf(stderr, "  %s\n", kTypes[i]);
 
   fprintf(stderr,
           "\n"
           "Valid OPTIONs are:\n");
-  for (size_t i = 0; i < base::size(kSwitches); ++i)
+  for (size_t i = 0; i < std::size(kSwitches); ++i)
     fprintf(stderr, "  --%s\n", kSwitches[i]);
 
   fprintf(stderr,

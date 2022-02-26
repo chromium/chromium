@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -762,10 +761,10 @@ bool UpdateEngineClient::IsTargetChannelMoreStable(
     const std::string& target_channel) {
   const char** cix = std::find(
       kReleaseChannelsList,
-      kReleaseChannelsList + base::size(kReleaseChannelsList), current_channel);
+      kReleaseChannelsList + std::size(kReleaseChannelsList), current_channel);
   const char** tix = std::find(
       kReleaseChannelsList,
-      kReleaseChannelsList + base::size(kReleaseChannelsList), target_channel);
+      kReleaseChannelsList + std::size(kReleaseChannelsList), target_channel);
   return tix > cix;
 }
 

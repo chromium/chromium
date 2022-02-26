@@ -342,7 +342,7 @@ absl::optional<CryptAuthFeatureType> CryptAuthFeatureTypeFromString(
 std::string CryptAuthFeatureTypeToGcmHash(CryptAuthFeatureType feature_type) {
   std::string hash_8_bytes(8, 0);
   crypto::SHA256HashString(CryptAuthFeatureTypeToString(feature_type),
-                           base::data(hash_8_bytes), 8u);
+                           std::data(hash_8_bytes), 8u);
 
   std::string hash_base64url;
   base::Base64UrlEncode(hash_8_bytes, base::Base64UrlEncodePolicy::OMIT_PADDING,

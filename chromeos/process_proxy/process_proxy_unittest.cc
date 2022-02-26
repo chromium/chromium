@@ -11,7 +11,6 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
@@ -117,7 +116,7 @@ class RegistryTestRunner : public TestRunner {
 
  private:
   bool ProcessReceivedCharacter(char received, size_t stream) {
-    if (stream >= base::size(left_to_check_index_))
+    if (stream >= std::size(left_to_check_index_))
       return false;
     bool success = left_to_check_index_[stream] < expected_line_.length() &&
         expected_line_[left_to_check_index_[stream]] == received;

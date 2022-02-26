@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,7 +46,7 @@ TEST(TokenizedStringMatchTest, NotMatch) {
   };
 
   TokenizedStringMatch match;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text))
         << "Test case " << i << " : text=" << kTestCases[i].text
@@ -74,7 +73,7 @@ TEST(TokenizedStringMatchTest, Match) {
   };
 
   TokenizedStringMatch match;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
     EXPECT_EQ(kTestCases[i].expect, MatchHit(text, match));
@@ -106,7 +105,7 @@ TEST(TokenizedStringMatchTest, Relevance) {
 
   TokenizedStringMatch match_low;
   TokenizedStringMatch match_high;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(
         match_low.Calculate(base::UTF8ToUTF16(kTestCases[i].query_low), text));
@@ -140,7 +139,7 @@ TEST(TokenizedStringMatchTest, AbsoluteRelevance) {
   };
 
   TokenizedStringMatch match;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
     EXPECT_NEAR(match.relevance(), kTestCases[i].expected_score, kEpsilon)

@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/fake_shill_third_party_vpn_driver_client.h"
@@ -136,7 +135,7 @@ ShillThirdPartyVpnDriverClientImpl::HelperInfo::HelperInfo(
 ShillThirdPartyVpnDriverClientImpl::ShillThirdPartyVpnDriverClientImpl(
     dbus::Bus* bus)
     : bus_(bus) {
-  for (uint32_t i = 0; i < base::size(kSetParametersKeyList); ++i) {
+  for (uint32_t i = 0; i < std::size(kSetParametersKeyList); ++i) {
     valid_keys_.insert(kSetParametersKeyList[i]);
   }
 }

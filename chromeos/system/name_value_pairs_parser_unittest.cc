@@ -4,7 +4,6 @@
 
 #include "chromeos/system/name_value_pairs_parser.h"
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -157,7 +156,7 @@ TEST(NameValuePairsParser, TestParseNameValuePairsFromCrossystemTool) {
 
   NameValuePairsParser::NameValueMap map;
   NameValuePairsParser parser(&map);
-  parser.ParseNameValuePairsFromTool(base::size(command), command,
+  parser.ParseNameValuePairsFromTool(std::size(command), command,
                                      NameValuePairsFormat::kCrossystem);
   EXPECT_EQ(7u, map.size());
   EXPECT_EQ("x86", map["arch"]);

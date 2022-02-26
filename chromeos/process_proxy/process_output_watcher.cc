@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -58,7 +58,7 @@ ProcessOutputWatcher::ProcessOutputWatcher(
       on_read_callback_(callback) {
   CHECK_GE(out_fd, 0);
   // We want to be sure we will be able to add 0 at the end of the input, so -1.
-  read_buffer_capacity_ = base::size(read_buffer_) - 1;
+  read_buffer_capacity_ = std::size(read_buffer_) - 1;
 }
 
 ProcessOutputWatcher::~ProcessOutputWatcher() = default;

@@ -4,7 +4,6 @@
 
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -151,8 +150,8 @@ void FakeCryptohomeMiscClient::ReturnProtobufMethodCallback(
 // static
 std::vector<uint8_t> FakeCryptohomeMiscClient::GetStubSystemSalt() {
   const char kStubSystemSalt[] = "stub_system_salt";
-  return std::vector<uint8_t>(
-      kStubSystemSalt, kStubSystemSalt + base::size(kStubSystemSalt) - 1);
+  return std::vector<uint8_t>(kStubSystemSalt,
+                              kStubSystemSalt + std::size(kStubSystemSalt) - 1);
 }
 
 }  // namespace chromeos
