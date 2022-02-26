@@ -206315,6 +206315,19 @@
        {}
       ]
      ],
+     "backdrop-filter-plus-will-change-opacity.html": [
+      "250a13e0f4227f25bee728fcc3cce25872ce84c0",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/backdrop-filter-plus-will-change-opacity-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-reference-filter.html": [
       "60a51d674d6119e411a7600e3dc604e894832144",
       [
@@ -207845,6 +207858,19 @@
        [
         [
          "/css/filter-effects/reference/remove-filter-repaint-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "repaint-added-backdrop-filter.html": [
+      "6678ba4358d1f41e3a71215af374df8ca130c5c7",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/repaint-added-backdrop-filter-ref.html",
          "=="
         ]
        ],
@@ -278959,6 +278985,10 @@
       []
      ],
      "reference": {
+      "backdrop-filter-plus-will-change-opacity-ref.html": [
+       "56c6243809bef53423ff18d4b70a8597795cacec",
+       []
+      ],
       "backdrop-filters-grayscale-001-ref.html": [
        "ba01ac6bd07464a829817dbfc8e72438c7c97168",
        []
@@ -279125,6 +279155,10 @@
       ],
       "remove-filter-repaint-ref.html": [
        "bde2a93360b62fcf877c270815f252b5ea0c3191",
+       []
+      ],
+      "repaint-added-backdrop-filter-ref.html": [
+       "caaa3061edaffc443dd949605adb5ab546ade564",
        []
       ],
       "root-element-with-opacity-filter-001-ref.html": [
@@ -314742,6 +314776,18 @@
        ],
        "resource-timing-worker.js": [
         "fac0d8de2a7361aa2f55fdcde87b969a952b92d8",
+        []
+       ],
+       "samesite-iframe.html": [
+        "a28b61261e82aece0e394e91802e8b98bb6e94ee",
+        []
+       ],
+       "samesite-sw-helper.html": [
+        "51fdc9ec74bd0ab3ac7000db49ac07e82cf8a825",
+        []
+       ],
+       "samesite-worker.js": [
+        "f30e5ed274dd560b4c5a33ddab364221ef644a13",
         []
        ],
        "wait-for-activate-worker.js": [
@@ -505307,6 +505353,13 @@
         {
          "timeout": "long"
         }
+       ]
+      ],
+      "samesite-iframe.https.html": [
+       "633da9926a8cd26210bc8171b31c94653a46ebdd",
+       [
+        null,
+        {}
        ]
       ]
      },
