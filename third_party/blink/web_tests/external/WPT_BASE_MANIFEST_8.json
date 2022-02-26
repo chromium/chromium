@@ -1368,6 +1368,13 @@
         {}
        ]
       ],
+      "nested-multicol-and-float-with-tall-padding-before-float.html": [
+       "2a901d1f582f7a17864f9a0b0b0d6afc495dcd21",
+       [
+        null,
+        {}
+       ]
+      ],
       "nested-multicol-and-float-with-tall-padding.html": [
        "8eabef27f42df0178c01054bfa5644ce8cb52434",
        [
@@ -2448,6 +2455,13 @@
     "xslt": {
      "invalid-output-encoding-crash.html": [
       "d84bb5b3c33fabc7fc4a27a4b9ac66e83dd56da2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "strip-space-crash.xml": [
+      "61a906a5e74b9c88061c565615187f9970baff72",
       [
        null,
        {}
@@ -3798,15 +3812,6 @@
       ]
      ]
     }
-   },
-   "xslt": {
-    "strip-space-crash.xml": [
-     "61a906a5e74b9c88061c565615187f9970baff72",
-     [
-      null,
-      {}
-     ]
-    ]
    }
   },
   "manual": {
@@ -291679,7 +291684,7 @@
          []
         ],
         "path-objects.yaml": [
-         "e6ac79585eb76a61511e942df95f0a3e1786d798",
+         "bdabfd66cf92cef516ed406542c5fc42ff5d7436",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -292904,7 +292909,7 @@
       []
      ],
      "idlharness.worker-expected.txt": [
-      "0e04c9174c346bb33240b482245fab61e1eab32c",
+      "f241abe2fe769ff4b87e34e7761dc701e6fc315f",
       []
      ],
      "new-harness.js": [
@@ -433150,6 +433155,13 @@
        ],
        "2d.path.roundrect.radius.negative.html": [
         "c7c0bda6ff71befc9232dfeedbc5a9fe417557a0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.noarugment.html": [
+        "764f739710a46d584f93ce59b9c052b06e234132",
         [
          null,
          {}
