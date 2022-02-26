@@ -93,6 +93,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   std::unique_ptr<JSONObject> ToJSON() const;
 
+  void ForceDrawsContent() { draws_content_ = true; }
   bool DrawsContent() const { return draws_content_; }
 
   bool RequiresOwnLayer() const {

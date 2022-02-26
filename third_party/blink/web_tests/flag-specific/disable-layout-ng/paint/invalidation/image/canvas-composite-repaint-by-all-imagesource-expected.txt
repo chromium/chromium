@@ -61,6 +61,7 @@
       "name": "LayoutFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [150, 60],
       "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
     },
     {

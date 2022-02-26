@@ -96,6 +96,8 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
   if (const absl::optional<gfx::RectF>& visibility_limit =
           VisibilityLimit(property_tree_state_)) {
     bounds_.Intersect(*visibility_limit);
+    if (bounds_.IsEmpty())
+      draws_content_ = false;
   }
 
   if (IsCompositedScrollHitTest(first_chunk)) {
@@ -156,6 +158,7 @@ std::unique_ptr<JSONObject> PendingLayer::ToJSON() const {
     json_chunks->PushString(sb.ToString());
   }
   result->SetArray("paint_chunks", std::move(json_chunks));
+  result->SetBoolean("draws_content", DrawsContent());
   return result;
 }
 

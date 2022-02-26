@@ -492,7 +492,8 @@ bool PaintArtifactCompositor::DecompositeEffect(
 void PaintArtifactCompositor::LayerizeGroup(
     const PaintChunkSubset& chunks,
     const EffectPaintPropertyNode& current_group,
-    PaintChunkIterator& chunk_cursor) {
+    PaintChunkIterator& chunk_cursor,
+    bool force_draws_content) {
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
   // p = the number of paint chunks.
@@ -521,6 +522,9 @@ void PaintArtifactCompositor::LayerizeGroup(
     if (&chunk_effect == &current_group) {
       pending_layers_.emplace_back(chunks, chunk_cursor);
       ++chunk_cursor;
+      // force_draws_content doesn't apply to pending layers that require own
+      // layer, specifically scrollbar layers, foreign layers, scroll hit
+      // testing layers.
       if (pending_layers_.back().RequiresOwnLayer())
         continue;
     } else {
@@ -533,7 +537,8 @@ void PaintArtifactCompositor::LayerizeGroup(
       // Case C: The following chunks belong to a subgroup. Process them by
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
-      LayerizeGroup(chunks, *subgroup, chunk_cursor);
+      LayerizeGroup(chunks, *subgroup, chunk_cursor,
+                    force_draws_content || subgroup->DrawsContent());
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
       // generated 2 or more layer that we already know can't be merged
@@ -552,6 +557,8 @@ void PaintArtifactCompositor::LayerizeGroup(
     PendingLayer& new_layer = pending_layers_.back();
     DCHECK(!new_layer.RequiresOwnLayer());
     DCHECK_EQ(&current_group, &new_layer.GetPropertyTreeState().Effect());
+    if (force_draws_content)
+      new_layer.ForceDrawsContent();
     // This iterates pending_layers_[first_layer_in_current_group:-1] in
     // reverse.
     for (wtf_size_t candidate_index = pending_layers_.size() - 1;
@@ -575,7 +582,8 @@ void PaintArtifactCompositor::CollectPendingLayers(
   pending_layers_.Shrink(0);
   PaintChunkSubset subset(artifact);
   auto cursor = subset.begin();
-  LayerizeGroup(subset, EffectPaintPropertyNode::Root(), cursor);
+  LayerizeGroup(subset, EffectPaintPropertyNode::Root(), cursor,
+                /*force_draws_content*/ false);
   DCHECK(cursor == subset.end());
   pending_layers_.ShrinkToReasonableCapacity();
 }

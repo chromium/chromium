@@ -116,6 +116,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   // Here check layer_bounds because RasterInvalidator doesn't issue raster
   // invalidation when only layer_bounds changes.
   if (cc_display_item_list_ && layer_bounds == old_layer_bounds &&
+      cc_picture_layer_->draws_content() == pending_layer.DrawsContent() &&
       !raster_under_invalidation_params) {
     DCHECK_EQ(cc_picture_layer_->bounds(), layer_bounds);
     return cc_picture_layer_;
@@ -128,17 +129,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
 
   cc_picture_layer_->SetBounds(layer_bounds);
   cc_picture_layer_->SetHitTestable(true);
-  // TODO(wangxianzhu): Use SetIsDrawable(pending_layer.DrawsContent()) when
-  // it's accurate. For now it only covers a subset of drawing content
-  // conditions (i.e. the following DCHECK).
-  DCHECK(!pending_layer.DrawsContent() ||
-         cc_display_item_list_->TotalOpCount());
-  cc_picture_layer_->SetIsDrawable(
-      (!layer_bounds.IsEmpty() && cc_display_item_list_->TotalOpCount()) ||
-      // Backdrop effects and filters require the layer to be drawable even if
-      // the layer draws nothing.
-      layer_state.Effect().HasBackdropEffect() ||
-      !layer_state.Effect().Filter().IsEmpty());
+  cc_picture_layer_->SetIsDrawable(pending_layer.DrawsContent());
 
   return cc_picture_layer_;
 }

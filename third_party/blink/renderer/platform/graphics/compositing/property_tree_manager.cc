@@ -674,7 +674,7 @@ void PropertyTreeManager::CloseCcEffect() {
   // clip, thus the clip can't be shared with sibling layers, and must be
   // closed now.
   bool clear_synthetic_effects =
-      !IsCurrentCcEffectSynthetic() && current_.effect->HasBackdropEffect();
+      !IsCurrentCcEffectSynthetic() && current_.effect->MayHaveBackdropEffect();
 
   // We are about to close an effect that was synthesized for isolating
   // a clip mask. Now emit the actual clip mask that will be composited on
@@ -887,7 +887,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     const EffectPaintPropertyNode* next_effect) {
   int backdrop_effect_clip_id = cc::kInvalidPropertyNodeId;
   bool should_realize_backdrop_effect = false;
-  if (next_effect && next_effect->HasBackdropEffect()) {
+  if (next_effect && next_effect->MayHaveBackdropEffect()) {
     // Exit all synthetic effect node if the next child has backdrop effect
     // (exotic blending mode or backdrop filter) because it has to access the
     // backdrop of enclosing effect.
@@ -1180,7 +1180,7 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.opacity = effect.Opacity();
   const auto& transform = effect.LocalTransformSpace().Unalias();
   effect_node.transform_id = EnsureCompositorTransformNode(transform);
-  if (effect.HasBackdropEffect()) {
+  if (effect.MayHaveBackdropEffect()) {
     // We never have backdrop effect and filter on the same effect node.
     DCHECK(effect.Filter().IsEmpty());
     if (auto* backdrop_filter = effect.BackdropFilter()) {

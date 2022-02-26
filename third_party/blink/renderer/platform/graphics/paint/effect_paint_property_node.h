@@ -266,11 +266,36 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
            CompositingReason::kWillChangeBackdropFilter;
   }
 
+  // True if opacity is not 1.0, or could become non-1.0 without a compositing
+  // update via a compositor animation or direct update.
+  bool MayHaveOpacity() const {
+    return Opacity() != 1.0f || HasActiveOpacityAnimation() ||
+           RequiresCompositingForWillChangeOpacity();
+  }
+  // True if the filter is not empty, or could become non-empty without a
+  // compositing update via a compositor animation or direct update.
+  bool MayHaveFilter() const {
+    return !Filter().IsEmpty() || HasActiveFilterAnimation() ||
+           RequiresCompositingForWillChangeFilter();
+  }
+  // True if the backdrop filter is not empty, or could become non-empty
+  // without a compositing update via a compositor animation or direct update.
+  bool MayHaveBackdropFilter() const {
+    return BackdropFilter() || HasActiveBackdropFilterAnimation() ||
+           RequiresCompositingForWillChangeBackdropFilter();
+  }
+
   // Whether the effect node uses the backdrop as an input. This includes
   // exotic blending modes and backdrop filters.
-  bool HasBackdropEffect() const {
-    return BlendMode() != SkBlendMode::kSrcOver || BackdropFilter() ||
-           HasActiveBackdropFilterAnimation();
+  bool MayHaveBackdropEffect() const {
+    return BlendMode() != SkBlendMode::kSrcOver || MayHaveBackdropFilter();
+  }
+
+  // True if this effect can produce drawable content on its own. For example,
+  // a drop-shadow filter will draw a drop shadow even if the filtered content
+  // is entirely empty.
+  bool DrawsContent() const {
+    return MayHaveFilter() || MayHaveBackdropEffect();
   }
 
   CompositingReasons DirectCompositingReasonsForDebugging() const {

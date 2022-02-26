@@ -76,10 +76,11 @@ static String ToStringImpl(const PaintChunk& c, const String& id_string) {
   StringBuilder sb;
   sb.AppendFormat(
       "PaintChunk(begin=%u, end=%u, id=%s cacheable=%d props=(%s) bounds=%s "
-      "rect_known_to_be_opaque=%s effectively_invisible=%d",
+      "rect_known_to_be_opaque=%s effectively_invisible=%d drawscontent=%d",
       c.begin_index, c.end_index, id_string.Utf8().c_str(), c.is_cacheable,
       c.properties.ToString().Utf8().c_str(), c.bounds.ToString().c_str(),
-      c.rect_known_to_be_opaque.ToString().c_str(), c.effectively_invisible);
+      c.rect_known_to_be_opaque.ToString().c_str(), c.effectively_invisible,
+      c.DrawsContent());
   if (c.hit_test_data) {
     sb.Append(", hit_test_data=");
     sb.Append(c.hit_test_data->ToString());

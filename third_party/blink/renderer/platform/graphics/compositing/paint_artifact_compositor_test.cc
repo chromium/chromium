@@ -3482,10 +3482,10 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   auto c1 = CreateClip(c0(), t0(), rrect);
   auto c2 = CreateClip(*c1, t0(), FloatRoundedRect(60, 60, 200, 100));
 
-  auto e1 =
-      CreateOpacityEffect(e0(), t0(), c2.get(), 0.5, CompositingReason::kAll);
-  auto e2 =
-      CreateOpacityEffect(e0(), t0(), c1.get(), 0.75, CompositingReason::kAll);
+  auto e1 = CreateOpacityEffect(e0(), t0(), c2.get(), 0.5,
+                                CompositingReason::kWillChangeOpacity);
+  auto e2 = CreateOpacityEffect(e0(), t0(), c1.get(), 0.75,
+                                CompositingReason::kWillChangeOpacity);
 
   TestPaintArtifact artifact;
   artifact.Chunk(t0(), *c2, *e1)
