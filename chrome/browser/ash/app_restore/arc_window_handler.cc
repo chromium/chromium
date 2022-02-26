@@ -69,6 +69,9 @@ void ArcWindowHandler::OnDestroyed() {
     CloseWindow(session_id);
 
   session_id_to_pending_window_info_.clear();
+
+  auto* lifetime_manager = exo::WMHelper::GetInstance()->GetLifetimeManager();
+  lifetime_manager->RemoveObserver(this);
 }
 
 bool ArcWindowHandler::LaunchArcGhostWindow(
