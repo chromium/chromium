@@ -346,9 +346,8 @@ void DesktopSessionProxy::DetachFromDesktop() {
 
   // Generate fake responses to keep the video capturer in sync.
   while (pending_capture_frame_requests_) {
-    --pending_capture_frame_requests_;
-    video_capturer_->OnCaptureResult(
-        webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
+    OnCaptureResult(mojom::CaptureResult::NewCaptureError(
+        webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
   }
 
   if (client_session_events_) {
