@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/scenic/scenic_overlay_view.h"
 
 #include <lib/ui/scenic/cpp/commands.h>
-#include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
@@ -19,24 +18,13 @@ namespace {
 static const uint32_t kImagePipeBufferCollectionId = 1;
 static const std::string kSessionDebugName = "chromium scenic overlay";
 
-fuchsia::ui::views::ViewToken CreateViewToken(
-    fuchsia::ui::views::ViewHolderToken* holder_token) {
-  auto token_pair = scenic::ViewTokenPair::New();
-  *holder_token = std::move(token_pair.view_holder_token);
-  return std::move(token_pair.view_token);
-}
-
 }  // namespace
 
 ScenicOverlayView::ScenicOverlayView(
-    scenic::SessionPtrAndListenerRequest session_and_listener_request,
-    ScenicSurfaceFactory* scenic_surface_factory)
+    scenic::SessionPtrAndListenerRequest session_and_listener_request)
     : scenic_session_(std::move(session_and_listener_request)),
       safe_presenter_(&scenic_session_),
-      scenic_surface_factory_(scenic_surface_factory),
-      view_(&scenic_session_,
-            CreateViewToken(&view_holder_token_),
-            kSessionDebugName) {
+      image_material_(&scenic_session_) {
   scenic_session_.SetDebugName(kSessionDebugName);
   scenic_session_.set_error_handler(
       base::LogFidlErrorAndExitProcess(FROM_HERE, "ScenicSession"));
@@ -44,12 +32,6 @@ ScenicOverlayView::ScenicOverlayView(
 
 ScenicOverlayView::~ScenicOverlayView() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  ScenicSurface* surface = scenic_surface_factory_->GetSurface(widget_);
-  if (surface) {
-    surface->AssertBelongsToCurrentThread();
-    surface->RemoveOverlayView(buffer_collection_id_);
-  }
 
   // Releasing |image_pipe_| implicitly also enforces cleanup.
   image_pipe_->RemoveBufferCollection(kImagePipeBufferCollectionId);
@@ -66,15 +48,7 @@ void ScenicOverlayView::Initialize(
   image_pipe_.set_error_handler(
       base::LogFidlErrorAndExitProcess(FROM_HERE, "ImagePipe"));
 
-  image_material_ = std::make_unique<scenic::Material>(&scenic_session_);
-  image_material_->SetTexture(image_pipe_id);
-
-  scenic::ShapeNode shape(&scenic_session_);
-  shape.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
-  shape.SetMaterial(*image_material_);
-
-  view_.AddChild(shape);
-  scenic_session_.ReleaseResource(image_pipe_id);
+  image_material_.SetTexture(image_pipe_id);
   safe_presenter_.QueuePresent();
 
   // Since there is one ImagePipe for each BufferCollection, it is ok to use a
@@ -118,35 +92,22 @@ void ScenicOverlayView::SetBlendMode(bool enable_blend) {
   enable_blend_ = enable_blend;
   // Setting alpha as |255| marks the image as opaque and no content below would
   // be seen. Anything lower than 255 allows blending.
-  image_material_->SetColor(255, 255, 255, enable_blend ? 254 : 255);
+  image_material_.SetColor(255, 255, 255, enable_blend ? 254 : 255);
   safe_presenter_.QueuePresent();
 }
 
-bool ScenicOverlayView::CanAttachToAcceleratedWidget(
-    gfx::AcceleratedWidget widget) {
-  return view_holder_token_.value.is_valid() || (widget_ == widget);
-}
-
-bool ScenicOverlayView::AttachToScenicSurface(
-    gfx::AcceleratedWidget widget,
-    gfx::SysmemBufferCollectionId id) {
+void ScenicOverlayView::AttachToScenicSurface(
+    fuchsia::ui::views::ViewToken view_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (widget_ != gfx::kNullAcceleratedWidget && widget_ == widget)
-    return true;
+  view_.emplace(&scenic_session_, std::move(view_token), kSessionDebugName);
 
-  if (!view_holder_token_.value.is_valid()) {
-    DLOG(ERROR) << "ViewHolder is already attached.";
-    return false;
-  }
+  scenic::ShapeNode shape(&scenic_session_);
+  shape.SetShape(scenic::Rectangle(&scenic_session_, 1.f, 1.f));
+  shape.SetMaterial(image_material_);
 
-  buffer_collection_id_ = id;
-  widget_ = widget;
-
-  ScenicSurface* surface = scenic_surface_factory_->GetSurface(widget_);
-  DCHECK(surface);
-  return surface->PresentOverlayView(buffer_collection_id_,
-                                     std::move(view_holder_token_));
+  view_->AddChild(shape);
+  safe_presenter_.QueuePresent();
 }
 
 }  // namespace ui
