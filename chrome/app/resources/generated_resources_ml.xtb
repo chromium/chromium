@@ -2332,6 +2332,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> കിഴിവ്</translation>
 <translation id="3305389145870741612">ഫോർമാറ്റിംഗ് പ്രക്രിയയ്ക്ക് കുറച്ച് നിമിഷങ്ങളെടുക്കും. ദയവായി കാത്തിരിക്കുക.</translation>
 <translation id="3305661444342691068">PDF പ്രിവ്യുവിൽ തുറക്കുക</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> എന്നതിന് കിഴിവുകൾ നേടുക</translation>
 <translation id="3308116878371095290">കുക്കികള്‍‌ ക്രമീകരിക്കുന്നതില്‍‌ നിന്നും ഈ പേജിനെ തടഞ്ഞു.</translation>
 <translation id="3308134619352333507">മറയ്‌ക്കല്‍ ബട്ടണ്‍</translation>
 <translation id="3308852433423051161">Google അസിസ്‌റ്റന്റ് ലോഡുചെയ്യുന്നു...</translation>
@@ -2811,6 +2812,7 @@
 <translation id="3761556954875533505">ഫയലുകൾ എഡിറ്റ് ചെയ്യാൻ സൈറ്റിനെ അനുവദിക്കണോ?</translation>
 <translation id="3764314093345384080">വിശദമായ ബിൽഡ് വിവരം</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB ഉപകരണവുമായി ആശയവിനിമയം നടത്തുക}other{C # USBഉപകരണങ്ങളുമായി ആശയവിനിമയം നടത്തുക}}</translation>
+<translation id="3764753550716962406">ലഭ്യമായ കിഴിവുകൾ കണ്ടെത്തുന്നതിന് നിങ്ങളുടെ കാർട്ടുകൾ ഉപയോഗിക്കാൻ Google-നെ അനുവദിക്കണോ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കുന്നു}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കുന്നു}}</translation>
 <translation id="3765246971671567135">ഓഫ്‌ലൈൻ ഡെമോ മോഡ് നയം വായിക്കാനായില്ല.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3245,6 +3247,7 @@
 <translation id="4194570336751258953">'ക്ലിക്കിനായി ടാപ്പ് ചെയ്യുക' പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="4195814663415092787">നിങ്ങൾ അവസാനിപ്പിച്ചയിടത്ത് നിന്ന് തുടരുക</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> എന്നിവയ്ക്ക് കിഴിവുകൾ നേടുക</translation>
 <translation id="4198268995694216131">കൂടുതൽ സൈറ്റുകൾ</translation>
 <translation id="4200689466366162458">ഇഷ്‌ടാനുസൃത പദങ്ങൾ</translation>
 <translation id="4200983522494130825">പുതിയ &amp;ടാബ്</translation>
@@ -4622,6 +4625,7 @@
 <translation id="5632566673632479864">നിങ്ങളുടെ അക്കൗണ്ട് <ph name="EMAIL" />, ഇനി പ്രാഥമിക അക്കൗണ്ടായി അംഗീകരിക്കില്ല. <ph name="DOMAIN" /> ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നതിനാൽ, നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരവും ഈ ഉപകരണത്തിൽ നിന്ന് മായ്‌ക്കുന്നതാണ്.</translation>
 <translation id="5632592977009207922">ഡൗൺലോഡ് ചെയ്യുന്നു, <ph name="PERCENT_REMAINING" />% ശേഷിക്കുന്നു</translation>
 <translation id="563371367637259496">മൊബൈല്‍</translation>
+<translation id="5634446357546764049">നിങ്ങളുടെ സമീപകാല യാത്രകളുടെയും മറ്റും ഫോട്ടോകൾ കാണുക</translation>
 <translation id="5635312199252507107">നിർദ്ദിഷ്ട സൈറ്റുകളിൽ അനുവദിക്കുക</translation>
 <translation id="563535393368633106">ആക്‌സസ്സുചെയ്യുന്നതിന് മുമ്പ് ചോദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ഉപയോഗിക്കുന്നതിന് നിങ്ങൾ ആദ്യം <ph name="LINK_START" />നെറ്റ്‌വർക്കിന്റെ സൈൻ-ഇൻ പേജ് സന്ദർശിക്കേണ്ടതുണ്ട്<ph name="LINK_END" />, അത് കുറച്ച് സെക്കൻഡിനുള്ളിൽ സ്വയമേവ തുറക്കും. അങ്ങനെ സംഭവിച്ചില്ലെങ്കിൽ, നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല.</translation>
@@ -4719,6 +4723,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ഹാർഡ്‌വെയർ പിന്തുണയും സ്ഥിരതയും</translation>
 <translation id="574104302965107104">ഡിസ്പ്ലേ മിററിംഗ്</translation>
 <translation id="574209121243317957">പിച്ച്</translation>
+<translation id="5745316408658560138">നിങ്ങളുടെ കാർട്ടുകളിലെ ഇനങ്ങൾക്ക് വ്യക്തിപരമാക്കിയ കിഴിവുകൾ കണ്ടെത്താൻ Chrome-നെ അനുവദിക്കണോ?</translation>
 <translation id="5746169159649715125">PDF ആയി സംരക്ഷിക്കുക</translation>
 <translation id="5747552184818312860">കാലഹരണപ്പെടുന്നു</translation>
 <translation id="5747785204778348146">ഡെവലപ്പർ - അസ്ഥിരം</translation>
@@ -5347,6 +5352,7 @@
 <translation id="6370021412472292592">മാനിഫെസ്‌റ്റ് ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6374077068638737855">ഐസ്‌വീസൽ</translation>
 <translation id="6374469231428023295">വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="6374635887697228982">കിഴിവുകൾ നേടണോ?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' എന്നതിനായി ഒരു ഫലം</translation>
 <translation id="6380143666419481200">അംഗീകരിച്ച് തുടരുക</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> എന്നതിലെ ഡാറ്റ വായിക്കാനും അതിൽ മാറ്റം വരുത്താനും അനുമതിയുള്ളത്</translation>
@@ -6913,6 +6919,7 @@
 <translation id="7956373551960864128">നിങ്ങളുടെ സംരക്ഷിച്ച പ്രിന്ററുകൾ</translation>
 <translation id="7957074856830851026">സീരിയൽ നമ്പറോ അസറ്റ് ഐഡിയോ പോലുള്ള ഉപകരണ വിവരങ്ങൾ കാണുക</translation>
 <translation id="7957615753207896812">കീബോർഡ് ഉപകരണ ക്രമീകരണം തുറക്കുക</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> എന്നിവയ്ക്കും മറ്റും കിഴിവുകൾ നേടുക</translation>
 <translation id="7959074893852789871">ഫയലില്‍ ഒന്നിലധികം സാക്‍ഷ്യപ്ത്രങ്ങള്‍ അടങ്ങിയിരിക്കുന്നു, അവയില്‍ ചിലത് ഇറക്കുമതി ചെയ്തിട്ടില്ല:</translation>
 <translation id="7959665254555683862">പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>

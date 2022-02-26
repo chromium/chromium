@@ -2335,6 +2335,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3304212451103136496">Zľava <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Proces formátovania môže trvať niekoľko sekúnd. Čakajte prosím.</translation>
 <translation id="3305661444342691068">Otvárať súbory PDF v aplikácii Preview</translation>
+<translation id="3307176291962384345">Získať zľavy u obchodníka <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Tejto stránke bolo zabránené nastaviť súbory cookie.</translation>
 <translation id="3308134619352333507">Skryť tlačidlo</translation>
 <translation id="3308852433423051161">Načítava sa Asistent Google…</translation>
@@ -2814,6 +2815,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3761556954875533505">Chcete povoliť webu upravovať súbory?</translation>
 <translation id="3764314093345384080">Podrobné informácie o zostave</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komunikujte so zariadením USB}few{Komunikujte s # zariadeniami USB}many{Komunikujte s # zariadením USB}other{Komunikujte s # zariadeniami USB}}</translation>
+<translation id="3764753550716962406">Chcete povoliť Googlu vyhľadať dostupné zľavy pomocou košíka?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Odosielajú sa prílohy (<ph name="ATTACHMENTS" />) do zariadenia <ph name="DEVICE_NAME" />}few{Odosielajú sa prílohy (<ph name="ATTACHMENTS" />) do zariadenia <ph name="DEVICE_NAME" />}many{Odosielajú sa prílohy (<ph name="ATTACHMENTS" />) do zariadenia <ph name="DEVICE_NAME" />}other{Odosielajú sa prílohy (<ph name="ATTACHMENTS" />) do zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Pravidlo pre režim offline ukážky sa nepodarilo načítať.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3249,6 +3251,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4194570336751258953">Povoliť kliknutie klepnutím</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4195814663415092787">Pokračovať tam, kde ste prestali</translation>
+<translation id="4197917636330710075">Získať zľavy u obchodníkov <ph name="MERCHANT_NAME" /> a <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Ďalšie weby</translation>
 <translation id="4200689466366162458">Vlastné slová</translation>
 <translation id="4200983522494130825">Nová &amp;karta</translation>
@@ -4626,6 +4629,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5632566673632479864">Účet <ph name="EMAIL" /> už nemôžete použiť ako hlavný účet. Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia.</translation>
 <translation id="5632592977009207922">Sťahuje sa, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilná</translation>
+<translation id="5634446357546764049">Pozrite si spomienky z nedávnych ciest a viac</translation>
 <translation id="5635312199252507107">Povoliť na konkrétnych weboch</translation>
 <translation id="563535393368633106">Pred prístupom sa spýtať (odporúčané)</translation>
 <translation id="5636996382092289526">Pred použitím siete <ph name="NETWORK_ID" /> bude možno potrebné najprv <ph name="LINK_START" />prejsť na prihlasovaciu stránku siete<ph name="LINK_END" />, ktorá sa otvorí automaticky v priebehu niekoľkých sekúnd. Ak k tomu nedôjde, daná sieť sa nedá použiť.</translation>
@@ -4722,6 +4726,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5740709157181662145">Podpora a stabilita hardvéru systému <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Zrkadlenie obrazovky</translation>
 <translation id="574209121243317957">Výška hlasu</translation>
+<translation id="5745316408658560138">Chcete povoliť Googlu vyhľadať prispôsobené zľavy na obsah vašich košíkov?</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
 <translation id="5747552184818312860">Koniec platnosti</translation>
 <translation id="5747785204778348146">Vývojár – nestabilné</translation>
@@ -5349,6 +5354,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6370021412472292592">Manifest sa nepodarilo načítať.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
+<translation id="6374635887697228982">Chcete získať zľavy?</translation>
 <translation id="6377268785556383139">1 výsledok pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380143666419481200">Súhlasím, pokračovať</translation>
 <translation id="6382616130475191723">Rozšírenia, ktoré majú povolené čítať a meniť na <ph name="SITE_NAME" /></translation>
@@ -6915,6 +6921,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7956373551960864128">Vaše uložené tlačiarne</translation>
 <translation id="7957074856830851026">Zobrazte si informácie o zariadení, napríklad sériové číslo alebo identifikátor diela</translation>
 <translation id="7957615753207896812">Otvoriť nastavenia klávesnice</translation>
+<translation id="7958437133377816580">Získať zľavy u obchodníkov <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> a ďalších</translation>
 <translation id="7959074893852789871">Súbor obsahoval viacero certifikátov a niektoré z nich neboli importované:</translation>
 <translation id="7959665254555683862">Nová karta inkognito</translation>
 <translation id="7961015016161918242">Nikdy</translation>

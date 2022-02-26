@@ -2332,6 +2332,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> کی رعایت</translation>
 <translation id="3305389145870741612">فارمیٹنگ کی کارروائی میں کچھ سیکنڈ لگ سکتے ہیں۔ براہ کرم انتظار کریں۔</translation>
 <translation id="3305661444342691068">‏PDF کو پیش منظر میں کھولیں</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> کیلئے رعایتیں حاصل کریں</translation>
 <translation id="3308116878371095290">اس صفحہ کو کوکیز سیٹ کرنے سے روک دیا گیا تھا۔</translation>
 <translation id="3308134619352333507">چھپائیں بٹن</translation>
 <translation id="3308852433423051161">‏Google اسسٹنٹ لوڈ ہو رہا ہے...</translation>
@@ -2812,6 +2813,7 @@
 <translation id="3761556954875533505">سائٹ کو فائلز میں ترمیم کرنے دیں؟</translation>
 <translation id="3764314093345384080">تفصیلی بلڈ معلومات</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏USB آلہ کے ساتھ مواصلت کریں}other{‏‎# USB آلات کے ساتھ مواصلت کریں}}</translation>
+<translation id="3764753550716962406">‏دستیاب رعایتیں تلاش کرنے کے لیے Google کو آپ کی کارٹ استعمال کرنے دیں؟</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}other{<ph name="DEVICE_NAME" /> پر <ph name="ATTACHMENTS" /> بھیجے جا رہے ہیں}}</translation>
 <translation id="3765246971671567135">آف لائن ڈیمو موڈ کی پالیسی کو پڑھا نہیں جا سکا۔</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3247,6 +3249,7 @@
 <translation id="4194570336751258953">کلک کرنے کیلئے تھپتھپائیں کو فعال کریں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4195814663415092787">آپ نے جہاں چھوڑا تھا وہیں سے جاری رکھیں</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> اور <ph name="MERCHANT_NAME" /> کیلئے رعایتیں حاصل کریں</translation>
 <translation id="4198268995694216131">اضافی سائٹس</translation>
 <translation id="4200689466366162458">حسب ضرورت الفاظ</translation>
 <translation id="4200983522494130825">نیا &amp;ٹیب</translation>
@@ -4623,6 +4626,7 @@
 <translation id="5632566673632479864">آپ کا اکاؤنٹ <ph name="EMAIL" /> اب بنیادی اکاؤنٹ کے طور پر اجازت یافتہ نہیں ہے۔ چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے، لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔</translation>
 <translation id="5632592977009207922">ڈاؤن لوڈ ہو رہا ہے، <ph name="PERCENT_REMAINING" /> فیصد باقی ہے</translation>
 <translation id="563371367637259496">موبائل</translation>
+<translation id="5634446357546764049">اپنے حالیہ دوروں کی یادیں اور مزید دیکھیں</translation>
 <translation id="5635312199252507107">مخصوص سائٹس پر اجازت دیں</translation>
 <translation id="563535393368633106">رسائی حاصل کرنے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> کا استعمال کرنے کیلئے آپ کو سب سے پہلے <ph name="LINK_START" />نیٹ ورک کا سائن ان صفحہ ملاحظہ کرنے<ph name="LINK_END" /> کی ضرورت ہوگی، جو چند سیکنڈ میں خود بخود کھل جائے گا۔ اگر یہ نہیں کھلتا ہے تو نیٹ ورک استعمال نہیں کیا جا سکتا ہے۔</translation>
@@ -4719,6 +4723,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ہارڈویئر سپورٹ اور استحکام</translation>
 <translation id="574104302965107104">مررنگ ڈسپلے کریں</translation>
 <translation id="574209121243317957">پچ</translation>
+<translation id="5745316408658560138">‏Chrome کو آپ کی کارٹس میں ذاتی نوعیت کی رعایتیں تلاش کرنے دیں؟</translation>
 <translation id="5746169159649715125">‏PDF کے بطور محفوظ کریں</translation>
 <translation id="5747552184818312860">میعاد کا اختتام</translation>
 <translation id="5747785204778348146">ڈویلپر - ناپائیدار</translation>
@@ -5347,6 +5352,7 @@
 <translation id="6370021412472292592">‏manifest لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="6374077068638737855">آئیس ویزل</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
+<translation id="6374635887697228982">رعایتیں حاصل کریں؟</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی اجازت دی گئی</translation>
@@ -6913,6 +6919,7 @@
 <translation id="7956373551960864128">آپ کے محفوظ کردہ پرنٹرز</translation>
 <translation id="7957074856830851026">‏آلہ کی معلومات دیکھیں، جیسے اس کا نمبر شمار یا اثاثہ ID</translation>
 <translation id="7957615753207896812">کی بورڈ آلہ کی ترتیبات کو کھولیں</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />، <ph name="MERCHANT_NAME" /> اور مزید کیلئے رعایتیں حاصل کریں</translation>
 <translation id="7959074893852789871">فائل میں متعدد سرٹیفیکیٹس شامل ہیں، ان میں سے کچھ کو درآمد نہیں کیا گیا:</translation>
 <translation id="7959665254555683862">نیا پوشیدگی ٹیب</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>

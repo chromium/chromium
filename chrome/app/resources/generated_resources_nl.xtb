@@ -2332,6 +2332,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> korting</translation>
 <translation id="3305389145870741612">Het formatteren kan enkele seconden duren. Een ogenblik geduld.</translation>
 <translation id="3305661444342691068">Pdf openen in voorbeeldweergave</translation>
+<translation id="3307176291962384345">Kortingen zoeken voor <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Het instellen van cookies door deze pagina is geblokkeerd.</translation>
 <translation id="3308134619352333507">Knop verbergen</translation>
 <translation id="3308852433423051161">Google Assistent laden...</translation>
@@ -2811,6 +2812,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3761556954875533505">Toestaan dat site bestanden bewerkt?</translation>
 <translation id="3764314093345384080">Gedetailleerde build-gegevens</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communiceren met een USB-apparaat}other{Communiceren met # USB-apparaten}}</translation>
+<translation id="3764753550716962406">Google je winkelwagen laten gebruiken om beschikbare kortingen te vinden?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> sturen naar <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> sturen naar <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Kan beleid voor offline demomodus niet lezen.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3246,6 +3248,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4194570336751258953">Tikken-om-te-klikken aanzetten</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4195814663415092787">Doorgaan waar je gebleven was</translation>
+<translation id="4197917636330710075">Kortingen zoeken voor <ph name="MERCHANT_NAME" /> en <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Meer sites</translation>
 <translation id="4200689466366162458">Aangepaste woorden</translation>
 <translation id="4200983522494130825">Nieuw &amp;tabblad</translation>
@@ -4621,6 +4624,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5632566673632479864">Je account <ph name="EMAIL" /> is niet meer toegestaan als het primaire account. Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist op dit apparaat.</translation>
 <translation id="5632592977009207922">Downloaden, <ph name="PERCENT_REMAINING" />% resterend</translation>
 <translation id="563371367637259496">Mobiel</translation>
+<translation id="5634446357546764049">Herinneringen aan je recente reizen en meer bekijken</translation>
 <translation id="5635312199252507107">Toestaan op specifieke sites</translation>
 <translation id="563535393368633106">Vragen vóór toegang (aanbevolen)</translation>
 <translation id="5636996382092289526">Als je <ph name="NETWORK_ID" /> wilt gebruiken, moet je mogelijk eerst <ph name="LINK_START" />de inlogpagina van het netwerk bezoeken<ph name="LINK_END" />, die over enkele seconden automatisch wordt geopend. Als de pagina niet wordt geopend, kan het netwerk niet worden gebruikt.</translation>
@@ -4717,6 +4721,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5740709157181662145">Hardware-ondersteuning en stabiliteit van <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Scherm mirroren</translation>
 <translation id="574209121243317957">Toonhoogte</translation>
+<translation id="5745316408658560138">Chrome gepersonaliseerde kortingen laten vinden voor je winkelwagens?</translation>
 <translation id="5746169159649715125">Opslaan als pdf</translation>
 <translation id="5747552184818312860">Verloopt</translation>
 <translation id="5747785204778348146">Ontwikkelaar - instabiel</translation>
@@ -5344,6 +5349,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6370021412472292592">Kan manifest niet laden.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
+<translation id="6374635887697228982">Kortingen zoeken?</translation>
 <translation id="6377268785556383139">Eén resultaat voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Accepteren en doorgaan</translation>
 <translation id="6382616130475191723">Lezen en wijzigen van <ph name="SITE_NAME" /> toegestaan</translation>
@@ -6909,6 +6915,7 @@ Druk op een toegewezen schakelaar of toets om de toewijzing te verwijderen.</tra
 <translation id="7956373551960864128">Je opgeslagen printers</translation>
 <translation id="7957074856830851026">Apparaatgegevens bekijken, zoals serienummer of item-ID</translation>
 <translation id="7957615753207896812">Toetsenbordinstellingen van apparaat openen</translation>
+<translation id="7958437133377816580">Kortingen zoeken voor <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> en meer</translation>
 <translation id="7959074893852789871">Het bestand bevat meerdere certificaten. Sommige van deze certificaten zijn niet geïmporteerd:</translation>
 <translation id="7959665254555683862">Nieuw incognito&amp;tabblad</translation>
 <translation id="7961015016161918242">Nooit</translation>

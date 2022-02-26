@@ -6183,10 +6183,6 @@
 <translation id="8101381354936029836">政策原子组：</translation>
 <translation id="8102913158860568230">默认 mediastream 设置</translation>
 <translation id="8104962233214241919">自动选择这些网站的客户端证书</translation>
-<translation id="8111502498815410897">设置此政策会强制启用或停用快速配对功能。
-      快速配对是一种新的蓝牙配对流程，用于将已配对的外围设备与 GAIA 帐号关联起来。
-      这样便能让使用同一 GAIA 帐号登录的其他 Chrome 操作系统（和 Android）设备自动配对。
-      如果此政策未设置，快速配对功能将遵循 Chrome 操作系统的默认设置（处于启用状态）。</translation>
 <translation id="8114382167597081590">不强制启用 YouTube 受限模式</translation>
 <translation id="8117921351531866504">该政策让您能够设置是否允许网站检查用户有无已保存的付款方式。
 

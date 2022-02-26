@@ -2346,6 +2346,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> လျှော့ဈေး</translation>
 <translation id="3305389145870741612">ဖိုင်ပြန်လည်စီရန် စက္ကန့်အနည်းငယ် ကြာမည်။ ခဏ စောင့်ပါ။</translation>
 <translation id="3305661444342691068">PDF ကို အစမ်းကြည့်ထဲ ဖွင့်ရန်</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> အတွက် လျှော့ဈေး ရယူမလား</translation>
 <translation id="3308116878371095290">ကူကီးသတ်မှတ်ခြင်းကို ဤစာမျက်နှာတွင် ခွင့်မပြုပါ။</translation>
 <translation id="3308134619352333507">ခလုတ်ကို ဝှက်ထားရန်</translation>
 <translation id="3308852433423051161">Google Assistant ကို ဖွင့်နေသည်...</translation>
@@ -2825,6 +2826,7 @@
 <translation id="3761556954875533505">ဝဘ်ဆိုက်ကို ဖိုင်များ တည်းဖြတ်ခွင့်ပြုမလား။</translation>
 <translation id="3764314093345384080">ဖွဲ့စည်းမှုအချက်အလက်အသေးစိတ်</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB စက်ကိရိယာတစ်ခုဖြင့် ဆက်သွယ်ပြောဆိုရန်}other{USB စက်ကိရိယာ # ဖြင့် ဆက်သွယ်ပြောဆိုရန်}}</translation>
+<translation id="3764753550716962406">ရနိုင်သည့်လျှော့ဈေးများရှာရန် သင့်ဈေးခြင်းကို Google အား အသုံးပြုခွင့်ပေးမလား။</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ခုကို <ph name="DEVICE_NAME" /> သို့ ပို့နေသည်}other{<ph name="ATTACHMENTS" /> ခုကို <ph name="DEVICE_NAME" /> သို့ ပို့နေသည်}}</translation>
 <translation id="3765246971671567135">အော့ဖ်လိုင်းသရုပ်ပြမုဒ် မူဝါဒကို ဖတ်၍မရပါ။</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3259,6 +3261,7 @@
 <translation id="4194570336751258953">ကလစ်ရန် နှိပ်ခြင်း ဖွင့်</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4195814663415092787">သင်ချန်ထားသည့်နေရာမှ ဆက်မည်</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> နှင့် <ph name="MERCHANT_NAME" /> အတွက် လျှော့ဈေးများ ရယူမလား</translation>
 <translation id="4198268995694216131">နောက်ထပ် ဝဘ်ဆိုက်များ</translation>
 <translation id="4200689466366162458">မိမိကိုယ်ပိုင်စကားလုံး</translation>
 <translation id="4200983522494130825">တဘ် &amp; အသစ်</translation>
@@ -4638,6 +4641,7 @@
 <translation id="5632566673632479864">သင်၏ <ph name="EMAIL" /> အကောင့်ကို ပင်မအကောင့်အဖြစ် ခွင့်ပြုတော့မည် မဟုတ်ပါ။ ဤအကောင့်ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲထားသည့်အတွက် သင့်လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ဤစက်ပစ္စည်းမှ ရှင်းထုတ်သွားမည် ဖြစ်သည်။</translation>
 <translation id="5632592977009207922">ဒေါင်းလုဒ်လုပ်နေသည်၊ <ph name="PERCENT_REMAINING" />% ကျန်သည်</translation>
 <translation id="563371367637259496">မိုဘိုင်းလ်</translation>
+<translation id="5634446357546764049">မကြာသေးမီက သင့်ခရီးစဉ်များ၏ အမှတ်တရများကို ကြည့်ခြင်း စသည်</translation>
 <translation id="5635312199252507107">အချို့ဝဘ်ဆိုက်များတွင် ခွင့်ပြုရန်</translation>
 <translation id="563535393368633106">အသုံးမပြုမှီမေးပါ (အကြံပြုထား)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ကို အသုံးပြုရန် အတွက် သင်သည် စက္ကန့် အနည်းငယ် အတွင်းမှာ အလိုအလျောက် ပွင့်လာတော့မည့် <ph name="LINK_START" />ကွန်ရက်၏ လက်မှတ်ထိုး ဝင်ရေး စာမျက်နှာ <ph name="LINK_END" />ကို  ဦးစွာ ဝင်ရန်လိုပါသည်။ ထိုသို့ ပွင့်မလာလျှင်၊ ကွန်ရက်ကို သုံး၍ မရနိုင်ပါ။</translation>
@@ -4734,6 +4738,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ကွန်ပျူတာဆိုင်ရာ စက်ပစ္စည်း ပံ့ပိုးမှုနှင့် တည်ငြိမ်မှု</translation>
 <translation id="574104302965107104">ဖန်သားပြင်ပြသမှု စကရင်ပွားခြင်း</translation>
 <translation id="574209121243317957">အသံအနိမ့်အမြင့်</translation>
+<translation id="5745316408658560138">ဈေးခြင်းထဲရှိပစ္စည်းများအတွက် Chrome ကို ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများ ရှာခိုင်းမလား။</translation>
 <translation id="5746169159649715125">PDF အဖြစ်သိမ်း</translation>
 <translation id="5747552184818312860">သက်တမ်းကုန်ဆုံးချိန်</translation>
 <translation id="5747785204778348146">ပြုစုသူ - မတည်ငြိမ်</translation>
@@ -5360,6 +5365,7 @@
 <translation id="6370021412472292592">ကြေညာစာတမ်းကို တင် မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="6374077068638737855">အိုင်စ်ဝါဆယ်လ</translation>
 <translation id="6374469231428023295">ထပ်စမ်းကြည့်ပါ</translation>
+<translation id="6374635887697228982">လျှော့ဈေးများ ရယူမလား။</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် ၁ ခု</translation>
 <translation id="6380143666419481200">လက်ခံပြီး ဆက်လုပ်ရန်</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> ကိုဖတ်ပြီးပြောင်းရန် ခွင့်ပြုထားသည်</translation>
@@ -6925,6 +6931,7 @@
 <translation id="7956373551960864128">သင်သိမ်းဆည်းထားသည့် ပုံနှိပ်စက်များ</translation>
 <translation id="7957074856830851026">နံပါတ်စဉ် (သို့) ပိုင်ဆိုင်မှု ID ၏ အချက်အလက်များ ကြည့်ခြင်း</translation>
 <translation id="7957615753207896812">ကီးဘုတ်ကိရိယာ ဆက်တင်များကို ဖွင့်ပါ</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />၊ <ph name="MERCHANT_NAME" /> စသည်တို့အတွက် လျှော့ဈေးများ ရယူမလား</translation>
 <translation id="7959074893852789871">ဖိုင်ထဲမှာ လက်မှတ် အများအပြား ပါဝင်ပြီ အချို့ကို မတင်သွင်းခဲ့ပါ:</translation>
 <translation id="7959665254555683862">ရုပ်ဖျက်တဘ် အသစ်</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>

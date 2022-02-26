@@ -2334,6 +2334,7 @@
 <translation id="3304212451103136496">Скидка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3305661444342691068">Открыть PDF для просмотра</translation>
+<translation id="3307176291962384345">Получайте скидки в магазине "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Попытка сохранить файл cookie заблокирована.</translation>
 <translation id="3308134619352333507">Скрыть кнопку</translation>
 <translation id="3308852433423051161">Загрузка Google Ассистента…</translation>
@@ -2813,6 +2814,7 @@
 <translation id="3761556954875533505">Разрешить сайту изменять файлы?</translation>
 <translation id="3764314093345384080">Подробная информация о сборке</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
+<translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -3248,6 +3250,7 @@
 <translation id="4194570336751258953">Включить нажатие от прикосновения</translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
+<translation id="4197917636330710075">Получайте скидки в магазинах "<ph name="MERCHANT_NAME" />" и "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="4198268995694216131">Другие сайты</translation>
 <translation id="4200689466366162458">Специальные слова</translation>
 <translation id="4200983522494130825">Новая &amp;вкладка</translation>
@@ -4625,6 +4628,7 @@
 <translation id="5632566673632479864">Ваш аккаунт (<ph name="EMAIL" />) больше нельзя использовать в качестве основного. Поскольку этот аккаунт находится под управлением администраторов домена <ph name="DOMAIN" />, все закладки, пароли и настройки, а также история будут удалены с устройства.</translation>
 <translation id="5632592977009207922">Идет скачивание: осталось <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>
+<translation id="5634446357546764049">Просматривайте воспоминания о недавних путешествиях и не только</translation>
 <translation id="5635312199252507107">Разрешить на определенных сайтах</translation>
 <translation id="563535393368633106">Запрашивать разрешение на доступ (рекомендуется)</translation>
 <translation id="5636996382092289526">Чтобы подключиться к сети "<ph name="NETWORK_ID" />", <ph name="LINK_START" />перейдите на страницу входа<ph name="LINK_END" /> – она автоматически откроется через несколько секунд. Если этого не произойдет, значит использование сети невозможно.</translation>
@@ -4721,6 +4725,7 @@
 <translation id="5740709157181662145">Помогать нам повышать стабильность работы и улучшать поддержку аппаратного обеспечения в <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Дублирование экрана</translation>
 <translation id="574209121243317957">Высота звука</translation>
+<translation id="5745316408658560138">Разрешить Chrome искать персональные скидки на товары в корзине?</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5747552184818312860">Срок действия</translation>
 <translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
@@ -5348,6 +5353,7 @@
 <translation id="6370021412472292592">Не удалось загрузить манифест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Повторить</translation>
+<translation id="6374635887697228982">Разрешить Chrome искать скидки?</translation>
 <translation id="6377268785556383139">1 результат поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Принять условия и продолжить</translation>
 <translation id="6382616130475191723">Разрешено чтение и изменение данных сайта "<ph name="SITE_NAME" />"</translation>
@@ -6914,6 +6920,7 @@
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>
 <translation id="7957615753207896812">Открыть настройки клавиатуры</translation>
+<translation id="7958437133377816580">Получайте скидки в магазинах "<ph name="MERCHANT_NAME" />", "<ph name="MERCHANT_NAME" />" и др.</translation>
 <translation id="7959074893852789871">Файл содержал несколько сертификатов, некоторые из которых не были импортированы:</translation>
 <translation id="7959665254555683862">Новая вкладка инкогнито</translation>
 <translation id="7961015016161918242">Нет</translation>

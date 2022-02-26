@@ -2333,6 +2333,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descuento</translation>
 <translation id="3305389145870741612">El proceso de formateo puede tardar unos segundos. Espera...</translation>
 <translation id="3305661444342691068">Vista previa de PDF</translation>
+<translation id="3307176291962384345">Obtener descuentos para <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Se ha evitado el uso de cookies en esta página.</translation>
 <translation id="3308134619352333507">Ocultar botón</translation>
 <translation id="3308852433423051161">Cargando el Asistente de Google...</translation>
@@ -2812,6 +2813,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3761556954875533505">¿Quieres permitir que el sitio web edite archivos?</translation>
 <translation id="3764314093345384080">Información detallada de compilación</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
+<translation id="3764753550716962406">¿Permitir que Google use tu carrito para buscar descuentos disponibles?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}other{Enviando <ph name="ATTACHMENTS" /> a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">No se ha podido leer la política del modo demo sin conexión.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3246,6 +3248,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4194570336751258953">Habilitar la función Tocar para hacer clic</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Abrir todo como estaba antes de cerrar</translation>
+<translation id="4197917636330710075">Obtener descuentos para <ph name="MERCHANT_NAME" /> y <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Más sitios</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
 <translation id="4200983522494130825">Nueva pes&amp;taña</translation>
@@ -4623,6 +4626,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5632566673632479864">Tu cuenta <ph name="EMAIL" /> ya no puede ser tu cuenta principal. Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo.</translation>
 <translation id="5632592977009207922">Descargando, queda un <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Móvil</translation>
+<translation id="5634446357546764049">Ver recuerdos de tus viajes recientes y más</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="563535393368633106">Preguntar antes de acceder (recomendado)</translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero tengas que <ph name="LINK_START" />acceder a la página de inicio de sesión de la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar esa red.</translation>
@@ -4719,6 +4723,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5740709157181662145">Estabilidad y asistencia de hardware de <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Proyección de pantalla</translation>
 <translation id="574209121243317957">Tono</translation>
+<translation id="5745316408658560138">¿Permitir que Chrome busque descuentos personalizados para tus carritos?</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5747552184818312860">Caduca</translation>
 <translation id="5747785204778348146">Desarrollador: versión inestable</translation>
@@ -5346,6 +5351,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6370021412472292592">No se ha podido cargar el archivo de manifiesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Reintentar</translation>
+<translation id="6374635887697228982">¿Obtener descuentos?</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Aceptar y continuar</translation>
 <translation id="6382616130475191723">Se ha permitido que lea y modifique <ph name="SITE_NAME" /></translation>
@@ -6913,6 +6919,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7956373551960864128">Tus impresoras guardadas</translation>
 <translation id="7957074856830851026">Ver información del dispositivo, como el número de serie o el ID de recurso</translation>
 <translation id="7957615753207896812">Abrir la configuración del teclado</translation>
+<translation id="7958437133377816580">Obtener descuentos para <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> y más</translation>
 <translation id="7959074893852789871">El archivo contenía varios certificados, pero algunos de ellos no se han importado:</translation>
 <translation id="7959665254555683862">Nueva pestaña de incógnito</translation>
 <translation id="7961015016161918242">Nunca</translation>

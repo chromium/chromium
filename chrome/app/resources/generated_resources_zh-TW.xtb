@@ -2332,6 +2332,7 @@
 <translation id="3304212451103136496">現折 <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
 <translation id="3305661444342691068">在預覽中開啟 PDF</translation>
+<translation id="3307176291962384345">取得 <ph name="MERCHANT_NAME" /> 的折扣</translation>
 <translation id="3308116878371095290">無法為這個網頁設定 Cookie。</translation>
 <translation id="3308134619352333507">隱藏按鈕</translation>
 <translation id="3308852433423051161">正在載入 Google 助理…</translation>
@@ -2810,6 +2811,7 @@
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
 <translation id="3764314093345384080">詳細版本資訊</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
+<translation id="3764753550716962406">要讓 Google 根據購物車中的商品尋找可用折扣嗎？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}}</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3244,6 +3246,7 @@
 <translation id="4194570336751258953">啟用點按功能</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
+<translation id="4197917636330710075">取得 <ph name="MERCHANT_NAME" /> 和 <ph name="MERCHANT_NAME" /> 的折扣</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
 <translation id="4200983522494130825">新增分頁(&amp;T)</translation>
@@ -4621,6 +4624,7 @@
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5632592977009207922">下載中，還剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">行動網路</translation>
+<translation id="5634446357546764049">瀏覽近期旅行等活動的回憶集錦</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
 <translation id="563535393368633106">使用前詢問我 (建議)</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
@@ -4717,6 +4721,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 硬體支援和穩定性</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
+<translation id="5745316408658560138">要讓 Chrome 根據購物車中的商品尋找個人專屬折扣嗎？</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5747552184818312860">有效期限</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
@@ -5344,6 +5349,7 @@
 <translation id="6370021412472292592">無法載入資訊清單。</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試一次</translation>
+<translation id="6374635887697228982">要取得折扣嗎？</translation>
 <translation id="6377268785556383139">有 1 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
 <translation id="6382616130475191723">可以讀取及變更 <ph name="SITE_NAME" /></translation>
@@ -6910,6 +6916,7 @@
 <translation id="7956373551960864128">已儲存的印表機</translation>
 <translation id="7957074856830851026">查看裝置資訊，例如裝置序號或資產 ID</translation>
 <translation id="7957615753207896812">開啟鍵盤裝置設定</translation>
+<translation id="7958437133377816580">取得 <ph name="MERCHANT_NAME" />、<ph name="MERCHANT_NAME" /> 等商店的折扣</translation>
 <translation id="7959074893852789871">檔案含有多個憑證，但某些無法匯入：</translation>
 <translation id="7959665254555683862">新無痕分頁</translation>
 <translation id="7961015016161918242">一律不要</translation>

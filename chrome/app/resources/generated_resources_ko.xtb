@@ -2348,6 +2348,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> 할인</translation>
 <translation id="3305389145870741612">포맷하는 데 몇 초 정도 걸립니다. 잠시 기다려 주세요.</translation>
 <translation id="3305661444342691068">미리보기에서 PDF 열기</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" />에서 할인받기</translation>
 <translation id="3308116878371095290">이 페이지에서 쿠키를 설정할 수 없습니다.</translation>
 <translation id="3308134619352333507">버튼 숨기기</translation>
 <translation id="3308852433423051161">Google 어시스턴트 로드 중...</translation>
@@ -2827,6 +2828,7 @@
 <translation id="3761556954875533505">사이트에서 파일을 수정하도록 허용하시겠습니까?</translation>
 <translation id="3764314093345384080">자세한 빌드 정보</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB 기기 1개와 통신}other{USB 기기 #개와 통신}}</translation>
+<translation id="3764753550716962406">Google이 내 장바구니의 상품에 적용되는 할인을 찾도록 허용하시겠습니까?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}}</translation>
 <translation id="3765246971671567135">오프라인 데모 모드 정책을 읽을 수 없습니다.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" />Hz</translation>
@@ -3260,6 +3262,7 @@
 <translation id="4194570336751258953">탭하여 클릭 사용</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> 및 <ph name="MERCHANT_NAME" />에서 할인받기</translation>
 <translation id="4198268995694216131">추가 사이트</translation>
 <translation id="4200689466366162458">맞춤 단어</translation>
 <translation id="4200983522494130825">새 탭(&amp;T)</translation>
@@ -4637,6 +4640,7 @@
 <translation id="5632566673632479864"><ph name="EMAIL" /> 계정이 더 이상 기본 계정으로 허용되지 않습니다. 이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 기기에서 삭제됩니다.</translation>
 <translation id="5632592977009207922">다운로드 중, <ph name="PERCENT_REMAINING" />% 남음</translation>
 <translation id="563371367637259496">모바일</translation>
+<translation id="5634446357546764049">최근 여행에서 남긴 추억 등 보기</translation>
 <translation id="5635312199252507107">특정 사이트에서 허용</translation>
 <translation id="563535393368633106">액세스하기 전에 확인(권장)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
@@ -4733,6 +4737,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 하드웨어 지원 및 안정성</translation>
 <translation id="574104302965107104">화면 미러링</translation>
 <translation id="574209121243317957">높낮이</translation>
+<translation id="5745316408658560138">Chrome이 내 장바구니의 상품에 적용되는 맞춤 할인을 찾도록 허용하시겠습니까?</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
 <translation id="5747552184818312860">만료</translation>
 <translation id="5747785204778348146">개발자 - 불안정</translation>
@@ -5360,6 +5365,7 @@
 <translation id="6370021412472292592">매니페스트를 로드할 수 없습니다.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">다시 시도</translation>
+<translation id="6374635887697228982">할인을 받으시겠습니까?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> 사이트를 읽고 변경할 수 있도록 허용됨</translation>
@@ -6927,6 +6933,7 @@
 <translation id="7956373551960864128">저장한 프린터</translation>
 <translation id="7957074856830851026">일련번호 또는 기기 ID와 같은 기기 정보 보기</translation>
 <translation id="7957615753207896812">키보드 기기 설정 열기</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> 등에서 할인받기</translation>
 <translation id="7959074893852789871">파일에 여러 인증서가 있지만 그 중 일부를 가져올 수 없습니다.</translation>
 <translation id="7959665254555683862">새 시크릿 탭(&amp;T)</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>

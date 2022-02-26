@@ -2349,6 +2349,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуст</translation>
 <translation id="3305389145870741612">Процесот на форматирање може да потрае неколку секунди. Почекајте.</translation>
 <translation id="3305661444342691068">Отвори PDF во Преглед</translation>
+<translation id="3307176291962384345">Добијте попусти за <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Ја спречивме страницата да поставува колачиња.</translation>
 <translation id="3308134619352333507">Сокриј копче</translation>
 <translation id="3308852433423051161">Се вчитува „Помошникот на Google“…</translation>
@@ -2828,6 +2829,7 @@
 <translation id="3761556954875533505">Да се дозволи сајтот да изменува датотеки?</translation>
 <translation id="3764314093345384080">Детални информации за верзијата</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуницирај со USB-уред}one{Комуницирај со # USB-уред}other{Комуницирај со # USB-уреди}}</translation>
+<translation id="3764753550716962406">Да се дозволи Google да ја користи вашата кошничка за да наоѓа достапни попусти?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Се испраќа <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}one{Се испраќа <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}other{Се испраќаат <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />…}}</translation>
 <translation id="3765246971671567135">Не може да се вчита правилото за офлајн демо-режим.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3263,6 +3265,7 @@
 <translation id="4194570336751258953">Овозможи допри и кликни</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
+<translation id="4197917636330710075">Добијте попусти за <ph name="MERCHANT_NAME" /> и <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
 <translation id="4200689466366162458">Приспособени зборови</translation>
 <translation id="4200983522494130825">Нова &amp;картичка</translation>
@@ -4641,6 +4644,7 @@
 <translation id="5632566673632479864">Вашата сметка <ph name="EMAIL" /> веќе не е дозволена како примарна сметка. Бидејќи <ph name="DOMAIN" /> управува со сметкава, обележувачите, историјата, лозинките и другите поставки ќе се избришат од уредов.</translation>
 <translation id="5632592977009207922">Се презема, уште <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобилна</translation>
+<translation id="5634446357546764049">Погледнете спомени за вашите неодамнешни патувања и друго</translation>
 <translation id="5635312199252507107">Дозволи на конкретни сајтови</translation>
 <translation id="563535393368633106">Прашај пред да пристапиш (препорачано)</translation>
 <translation id="5636996382092289526">За да го користите <ph name="NETWORK_ID" />, можеби прво ќе треба да ја <ph name="LINK_START" />посетите страницата за пријавување преку мрежа<ph name="LINK_END" />, која автоматски ќе се отвори за неколку секунди. Доколку тоа не се случи, мрежата не може да се користи.</translation>
@@ -4737,6 +4741,7 @@
 <translation id="5740709157181662145">Хардверска поддршка и стабилност за <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Отсликување на екранот</translation>
 <translation id="574209121243317957">Висина</translation>
+<translation id="5745316408658560138">Да се дозволи Chrome да наоѓа персонализирани попусти во вашите кошнички?</translation>
 <translation id="5746169159649715125">Зачувај како ПДФ</translation>
 <translation id="5747552184818312860">Истекува на</translation>
 <translation id="5747785204778348146">Програмер - нестабилен</translation>
@@ -5364,6 +5369,7 @@
 <translation id="6370021412472292592">Не може да вчита манифест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Обидете се повторно</translation>
+<translation id="6374635887697228982">Дали сакате попусти?</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380143666419481200">Прифати и продолжи</translation>
 <translation id="6382616130475191723">Доби дозвола да го чита и менува <ph name="SITE_NAME" /></translation>
@@ -6931,6 +6937,7 @@
 <translation id="7956373551960864128">Вашите зачувани печатачи</translation>
 <translation id="7957074856830851026">Прегледување податоци за уредот, како што е неговиот сериски број и ID на средство</translation>
 <translation id="7957615753207896812">Отворете ги поставките на уредот за тастатурата</translation>
+<translation id="7958437133377816580">Добијте попусти за <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> и друго</translation>
 <translation id="7959074893852789871">Датотеката содржеше повеќе сертификати, од кои некои не беа увезени:</translation>
 <translation id="7959665254555683862">Нова кар&amp;тичка „Инкогнито“</translation>
 <translation id="7961015016161918242">Никогаш</translation>

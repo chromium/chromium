@@ -6237,10 +6237,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
-<translation id="8111502498815410897">Se questo criterio viene configurato, viene forzata l'attivazione o la disattivazione della funzionalità Accoppiamento rapido.
-      Accoppiamento rapido è un nuovo flusso di accoppiamento tramite Bluetooth che consente di collegare periferiche accoppiate a un account GAIA.
-      In questo modo possono essere accoppiati automaticamente altri dispositivi Chrome OS (e Android) su cui è stato eseguito l'accesso con lo stesso account GAIA.
-      Se il criterio non viene configurato, verrà usata l'impostazione predefinita di Chrome OS per l'Accoppiamento rapido, ossia funzionalità attiva.</translation>
 <translation id="8114382167597081590">Non imporre la Modalità con restrizioni su YouTube</translation>
 <translation id="8117921351531866504">Consente di stabilire se consentire o meno ai siti web di controllare se l'utente ha salvato dei metodi di pagamento.
 

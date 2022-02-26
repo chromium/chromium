@@ -2333,6 +2333,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />-იანი ფასდაკლება</translation>
 <translation id="3305389145870741612">ფორმატირების პროცესს, შესაძლოა, რამდენიმე წამი დასჭირდეს. დაელოდეთ.</translation>
 <translation id="3305661444342691068">PDF-ის გახსნა წინასწარ ხედში</translation>
+<translation id="3307176291962384345">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისთვის</translation>
 <translation id="3308116878371095290">ამ გვერდზე აიკრძალა ქუქი-ფაილების დაყენება.</translation>
 <translation id="3308134619352333507">დამალვის ღილაკი</translation>
 <translation id="3308852433423051161">იტვირთება Google ასისტენტი...</translation>
@@ -2812,6 +2813,7 @@
 <translation id="3761556954875533505">გსურთ საიტისთვის ფაილების რედაქტირების დაშვება?</translation>
 <translation id="3764314093345384080">დეტალური ინფორმაცია ანაწყობის შესახებ</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB მოწყობილობასთან დაკავშირება}other{# USB მოწყობილობასთან დაკავშირება}}</translation>
+<translation id="3764753550716962406">გსურთ, უფლება მისცეთ Google-ს, გამოიყენოს თქვენი კალათა ხელმისაწვდომი ფასდაკლებების საპოვნელად?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> იგზავნება <ph name="DEVICE_NAME" />-ზე}other{<ph name="ATTACHMENTS" /> იგზავნება <ph name="DEVICE_NAME" />-ზე}}</translation>
 <translation id="3765246971671567135">დემო-რეჟიმის ხაზგარეშე წესების წაკითხვა ვერ მოხერხდა.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> ჰც</translation>
@@ -3247,6 +3249,7 @@
 <translation id="4194570336751258953">ჩართე დაჭერა, რათა დააწკაპუნო</translation>
 <translation id="4195643157523330669">ახალ ჩანართში გახსნა</translation>
 <translation id="4195814663415092787">გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
+<translation id="4197917636330710075">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისა და <ph name="MERCHANT_NAME" />-ისთვის</translation>
 <translation id="4198268995694216131">დამატებითი საიტები</translation>
 <translation id="4200689466366162458">მორგებული სიტყვები</translation>
 <translation id="4200983522494130825">ახალი &amp;ჩანართი</translation>
@@ -4624,6 +4627,7 @@
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
 <translation id="5632592977009207922">მიმდინარეობს ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">მობილური</translation>
+<translation id="5634446357546764049">გაიხსენეთ თქვენი ბოლოდროინდელი მოგზაურობები და არა მხოლოდ</translation>
 <translation id="5635312199252507107">კონკრეტულ საიტებზე დაშვება</translation>
 <translation id="563535393368633106">შეკითხვა წვდომამდე (რეკომენდირებულია)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ის გამოსაყენებლად, შესაძლოა, ჯერ დაგჭირდეთ <ph name="LINK_START" />ქსელში შესვლის გვერდზე გადასვლა<ph name="LINK_END" />, რომელიც ავტომატურად გაიხსნება რამდენიმე წამში. თუ გვერდი არ იხსნება, ქსელის გამოყენება შეუძლებელია.</translation>
@@ -4720,6 +4724,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> აპარატურის მხარდაჭერა და სტაბილურობა</translation>
 <translation id="574104302965107104">ეკრანის გამოსახულების ასლი</translation>
 <translation id="574209121243317957">სიმაღლე</translation>
+<translation id="5745316408658560138">გსურთ, Chrome-მა პერსონალურად გიპოვოთ თქვენს კალათებთან დაკავშირებული ფასდაკლებები?</translation>
 <translation id="5746169159649715125">შენახვა PDF-ის სახით</translation>
 <translation id="5747552184818312860">ვადა</translation>
 <translation id="5747785204778348146">შემმუშავებელი - არასტაბილური</translation>
@@ -5347,6 +5352,7 @@
 <translation id="6370021412472292592">მანიფესტი ვერ ჩაიტვირთა.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ხელახლა ცდა</translation>
+<translation id="6374635887697228982">გსურთ ფასდაკლებების მიღება?</translation>
 <translation id="6377268785556383139">მოთხოვნაზე „<ph name="SEARCH_TEXT" />“ მოიძებნა 1 შედეგი</translation>
 <translation id="6380143666419481200">დათანხმება და გაგრძელება</translation>
 <translation id="6382616130475191723">დაშვებული აქვს, წაიკითხოს და შეცვალოს <ph name="SITE_NAME" /></translation>
@@ -6913,6 +6919,7 @@
 <translation id="7956373551960864128">თქვენი შენახული პრინტერები</translation>
 <translation id="7957074856830851026">მოწყობილობის ინფორმაციის (მაგ., მისი სერიული ნომრის ან აქტივის ID-ს) ნახვა</translation>
 <translation id="7957615753207896812">კლავიატურის პარამეტრების გახსნა</translation>
+<translation id="7958437133377816580">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისთვის, <ph name="MERCHANT_NAME" />-ისა და სხვა დაწესებულებებისთვის</translation>
 <translation id="7959074893852789871">ფაილი შეიცავდა რამოდენიმე სერტიფიკატს. რამოდენიმე სერტიფიკატი არ იქნა იმპორტირებული:</translation>
 <translation id="7959665254555683862">ახალი ინკოგნიტო ჩან&amp;ართი</translation>
 <translation id="7961015016161918242">არასოდეს</translation>

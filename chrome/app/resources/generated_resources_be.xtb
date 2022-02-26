@@ -2335,6 +2335,7 @@
 <translation id="3304212451103136496">Скідка <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Фармаціраванне можа заняць некалькі секунд. Пачакайце.</translation>
 <translation id="3305661444342691068">Адкрыць PDF у рэжыме перадпрагляду</translation>
+<translation id="3307176291962384345">Атрымлівайце скідкі ў краме "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="3308116878371095290">Быў прадухілены запіс файлаў cookie гэтай старонкай.</translation>
 <translation id="3308134619352333507">Кнопка "Схаваць"</translation>
 <translation id="3308852433423051161">Загрузка Памочніка Google...</translation>
@@ -2814,6 +2815,7 @@
 <translation id="3761556954875533505">Дазволіць сайту змяняць файлы?</translation>
 <translation id="3764314093345384080">Падрабязныя звесткі пра зборку</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Абмен данымі з прыладай USB}one{Абмен данымі з # прыладай USB}few{Абмен данымі з # прыладамі USB}many{Абмен данымі з # прыладамі USB}other{Абмен данымі з # прылады USB}}</translation>
+<translation id="3764753550716962406">Дазволіць Google выкарыстоўваць інфармацыю пра тавары ў вашым кошыку для пошуку даступных скідак?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}one{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}few{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}many{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}other{Ідзе адпраўка даных (<ph name="ATTACHMENTS" />) на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3765246971671567135">Не ўдалося прачытаць пазасеткавую палітыку дэманстрацыйнага рэжыму.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -3249,6 +3251,7 @@
 <translation id="4194570336751258953">Уключыць націсканне дотыкам</translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4195814663415092787">Працягнуць з месца, дзе вы спыніліся</translation>
+<translation id="4197917636330710075">Атрымлівайце скідкі ў крамах "<ph name="MERCHANT_NAME" />" і "<ph name="MERCHANT_NAME" />"</translation>
 <translation id="4198268995694216131">Дадатковыя сайты</translation>
 <translation id="4200689466366162458">Словы, дададзеныя карыстальнікам</translation>
 <translation id="4200983522494130825">Новая &amp;ўкладка</translation>
@@ -4624,6 +4627,7 @@
 <translation id="5632566673632479864">Уліковы запіс <ph name="EMAIL" /> больш не дазволена выкарыстоўваць як асноўны. Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады.</translation>
 <translation id="5632592977009207922">Ідзе спампоўванне, засталося <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мабільная сетка</translation>
+<translation id="5634446357546764049">Паказваць успаміны пра нядаўнія паездкі і не толькі</translation>
 <translation id="5635312199252507107">Дазволіць на канкрэтных сайтах</translation>
 <translation id="563535393368633106">Запытваць перад доступам (рэкамендуецца)</translation>
 <translation id="5636996382092289526">Каб выкарыстоўваць сетку "<ph name="NETWORK_ID" />", спачатку можа спатрэбіцца <ph name="LINK_START" />наведаць старонку ўваходу ў сетку<ph name="LINK_END" />, якая адкрыецца аўтаматычна праз некалькі секунд. Калі гэтага не адбылося, сетку выкарыстоўваць нельга.</translation>
@@ -4720,6 +4724,7 @@
 <translation id="5740709157181662145">Дапамагаць павышаць стабільнасць работы і паляпшаць падтрымку апаратнага забеспячэння ў <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Адлюстраванне дысплэя</translation>
 <translation id="574209121243317957">Вышыня голасу</translation>
+<translation id="5745316408658560138">Дазволіць Chrome шукаць персаналізаваныя скідкі на тавары ў вашых кошыках?</translation>
 <translation id="5746169159649715125">Захаваць як PDF</translation>
 <translation id="5747552184818312860">Тэрмін дзеяння:</translation>
 <translation id="5747785204778348146">Распрацоўшчык – нестабільны параметр</translation>
@@ -5347,6 +5352,7 @@
 <translation id="6370021412472292592">Не ўдалося загрузіць маніфест.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Паўтарыць спробу</translation>
+<translation id="6374635887697228982">Атрымліваць скідкі?</translation>
 <translation id="6377268785556383139">1 вынік па запыце "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Прыняць і працягнуць</translation>
 <translation id="6382616130475191723">Атрымалі дазвол на чытанне і змяненне сайта <ph name="SITE_NAME" /></translation>
@@ -6913,6 +6919,7 @@
 <translation id="7956373551960864128">Вашы захаваныя прынтары</translation>
 <translation id="7957074856830851026">Прагляд звестак пра прыладу (напрыклад, серыйнага нумара або ідэнтыфікатара аб'екта ўласнасці)</translation>
 <translation id="7957615753207896812">Адкрыць налады клавіятуры</translation>
+<translation id="7958437133377816580">Атрымлівайце скідкі ў крамах "<ph name="MERCHANT_NAME" />", "<ph name="MERCHANT_NAME" />" і не толькі</translation>
 <translation id="7959074893852789871">У файле было некалькі сертыфікатаў, некаторыя з якіх не імпартаваны:</translation>
 <translation id="7959665254555683862">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7961015016161918242">Ніколі</translation>

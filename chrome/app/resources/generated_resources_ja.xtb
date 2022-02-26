@@ -2330,6 +2330,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> オフ</translation>
 <translation id="3305389145870741612">フォーマット処理には数秒かかることがあります。しばらくお待ちください。</translation>
 <translation id="3305661444342691068">PDF をプレビュー</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> の割引情報を取得しますか？</translation>
 <translation id="3308116878371095290">このページの Cookie は設定されませんでした。</translation>
 <translation id="3308134619352333507">ボタンを非表示にする</translation>
 <translation id="3308852433423051161">Google アシスタントを読み込んでいます...</translation>
@@ -2809,6 +2810,7 @@
 <translation id="3761556954875533505">サイトにファイルの編集を許可しますか？</translation>
 <translation id="3764314093345384080">ビルド情報の詳細</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{1 台の USB デバイスと通信します}other{# 台の USB デバイスと通信します}}</translation>
+<translation id="3764753550716962406">カートの情報を使用した割引情報の検索を Google に許可しますか？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信しています}other{<ph name="DEVICE_NAME" /> に <ph name="ATTACHMENTS" />を送信しています}}</translation>
 <translation id="3765246971671567135">オフライン デモモード ポリシーを読み取ることができませんでした。</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3242,6 +3244,7 @@
 <translation id="4194570336751258953">タップによるクリックを有効にする</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> と <ph name="MERCHANT_NAME" /> の割引情報を取得しますか？</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
 <translation id="4200689466366162458">カスタムの単語</translation>
 <translation id="4200983522494130825">新しいタブ(&amp;T)</translation>
@@ -4613,6 +4616,7 @@
 <translation id="5632566673632479864">お使いのアカウント <ph name="EMAIL" /> は、メイン アカウントとして使用できなくなりました。このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから削除されます。</translation>
 <translation id="5632592977009207922">ダウンロードしています（残り <ph name="PERCENT_REMAINING" />%）</translation>
 <translation id="563371367637259496">モバイル</translation>
+<translation id="5634446357546764049">最近の旅行の思い出などを見る</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="563535393368633106">アクセスする前に確認する（推奨）</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
@@ -4709,6 +4713,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ハードウェアのサポートと安定性</translation>
 <translation id="574104302965107104">ディスプレイ ミラーリング</translation>
 <translation id="574209121243317957">高さ</translation>
+<translation id="5745316408658560138">カートに入れたアイテムの割引情報の検索を Chrome に許可しますか？</translation>
 <translation id="5746169159649715125">PDF に保存</translation>
 <translation id="5747552184818312860">有効期限</translation>
 <translation id="5747785204778348146">Dev - 不安定</translation>
@@ -5333,6 +5338,7 @@
 <translation id="6370021412472292592">マニフェストを読み込めませんでした。</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試行</translation>
+<translation id="6374635887697228982">割引情報を取得しますか？</translation>
 <translation id="6377268785556383139">「<ph name="SEARCH_TEXT" />」に対する 1 件の検索結果</translation>
 <translation id="6380143666419481200">同意して続行</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> の読み取りと変更を許可しました</translation>
@@ -6896,6 +6902,7 @@
 <translation id="7956373551960864128">保存されているプリンタ</translation>
 <translation id="7957074856830851026">シリアル番号やアセット ID などのデバイス情報を読み取る</translation>
 <translation id="7957615753207896812">キーボードのデバイス設定を開く</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />、<ph name="MERCHANT_NAME" /> などの割引情報を取得しますか？</translation>
 <translation id="7959074893852789871">ファイルに含まれる複数の証明書のうち、一部をインポートできませんでした:</translation>
 <translation id="7959665254555683862">新しいシークレット タブ(&amp;T)</translation>
 <translation id="7961015016161918242">使用しない</translation>

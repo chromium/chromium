@@ -2335,6 +2335,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de rabais</translation>
 <translation id="3305389145870741612">Le processus de formatage peut prendre quelques secondes. Veuillez patienter.</translation>
 <translation id="3305661444342691068">Ouvrir le PDF dans Aperçu</translation>
+<translation id="3307176291962384345">Obtenez des rabais pour <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Cette page a été empêchée d'enregistrer des témoins.</translation>
 <translation id="3308134619352333507">Bouton Masquer</translation>
 <translation id="3308852433423051161">Chargement de l'Assistant Google en cours…</translation>
@@ -2814,6 +2815,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3761556954875533505">Autoriser le site à modifier les fichiers?</translation>
 <translation id="3764314093345384080">Renseignements détaillés sur la version</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communique avec un appareil USB}one{Communique avec # appareil USB}other{Communique avec # appareils USB}}</translation>
+<translation id="3764753550716962406">Laisser Google accéder à votre panier pour trouver des rabais?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}one{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}other{Envoi de <ph name="ATTACHMENTS" /> à l'appareil <ph name="DEVICE_NAME" /> en cours…}}</translation>
 <translation id="3765246971671567135">Impossible de lire la politique du mode démo hors ligne.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3249,6 +3251,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4194570336751258953">Activer la fonction « Toucher l'écran pour cliquer »</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre vos activités en ligne là où vous vous étiez arrêté</translation>
+<translation id="4197917636330710075">Obtenez des rabais pour <ph name="MERCHANT_NAME" /> et <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Sites supplémentaires</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
@@ -4626,6 +4629,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5632566673632479864">Votre compte <ph name="EMAIL" /> n'est plus autorisé en tant que compte principal. Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et d'autres paramètres seront effacés de cet appareil.</translation>
 <translation id="5632592977009207922">Téléchargement en cours, il reste <ph name="PERCENT_REMAINING" /> %…</translation>
 <translation id="563371367637259496">Cellulaire</translation>
+<translation id="5634446357546764049">Découvrez des souvenirs de vos voyages récents et plus encore</translation>
 <translation id="5635312199252507107">Autoriser sur des sites particuliers</translation>
 <translation id="563535393368633106">Demander avant d'accéder (recommandé)</translation>
 <translation id="5636996382092289526">Pour utiliser <ph name="NETWORK_ID" />, vous devez d'abord <ph name="LINK_START" />accéder à la page de connexion du réseau<ph name="LINK_END" />, qui s'ouvrira automatiquement dans quelques secondes. Dans le cas contraire, ce réseau ne pourra pas être utilisé pour la connexion Internet.</translation>
@@ -4722,6 +4726,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5740709157181662145">prise en charge et stabilité du matériel de <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Duplication d'écran</translation>
 <translation id="574209121243317957">Timbre de la voix</translation>
+<translation id="5745316408658560138">Laisser Chrome trouver des rabais personnalisés dans vos paniers?</translation>
 <translation id="5746169159649715125">Enregistrer au format PDF</translation>
 <translation id="5747552184818312860">Date d'expiration</translation>
 <translation id="5747785204778348146">Développeur (instable)</translation>
@@ -5349,6 +5354,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6370021412472292592">Échec de chargement du fichier manifeste.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Réessayer</translation>
+<translation id="6374635887697228982">Obtenir des rabais?</translation>
 <translation id="6377268785556383139">1 résultat trouvé pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
 <translation id="6382616130475191723">Est autorisé à lire et à modifier <ph name="SITE_NAME" /></translation>
@@ -6916,6 +6922,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7956373551960864128">Vos imprimantes enregistrées</translation>
 <translation id="7957074856830851026">Consulter des renseignements sur l'appareil, comme son numéro de série ou son identifiant d'appareil</translation>
 <translation id="7957615753207896812">Ouvrir les paramètres du clavier de l'appareil</translation>
+<translation id="7958437133377816580">Obtenez des rabais pour <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> et plus encore</translation>
 <translation id="7959074893852789871">Le fichier contenait plusieurs certificats, dont certains n'ont pas été importés :</translation>
 <translation id="7959665254555683862">&amp;Nouvel onglet de navigation privée</translation>
 <translation id="7961015016161918242">Jamais</translation>

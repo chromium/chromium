@@ -6239,10 +6239,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="8101381354936029836">Politika atom grubu:</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
-<translation id="8111502498815410897">Bu politika ayarlandığında, Hızlı Eşleme'yi etkinleştirmeye veya devre dışı bırakmaya zorlar.
-      Hızlı Eşleme, eşlenmiş çevre birimlerini GAIA hesabıyla bağlayan yeni bir Bluetooth eşleme akışıdır.
-      Bu şekilde aynı GAIA hesabıyla oturum açmış diğer Chrome OS (ve Android) cihazlar otomatik olarak eşlenebilir.
-      Politika ayarlanmadan bırakılırsa Hızlı Eşleme, Chrome OS'in etkin olan varsayılanına uyacaktır.</translation>
 <translation id="8114382167597081590">YouTube'da Kısıtlı Mod'u zorunlu kılma</translation>
 <translation id="8117921351531866504">Web sitelerinin kullanıcının kaydettiği ödeme yöntemleri olup olmadığını kontrol etmesine izin verilip verilmeyeceğini ayarlamanıza olanak sağlar.
 

@@ -2348,6 +2348,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> арзандатуу</translation>
 <translation id="3305389145870741612">Форматто процессине бир нече секунд талап кылынышы мүмкүн. Күтө туруңуз.</translation>
 <translation id="3305661444342691068">PDF алдын ала карап көрүүдөн ачылсын</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> кызматында арзандатууларды алуу</translation>
 <translation id="3308116878371095290">Бул баракча кукилерди коё албайт.</translation>
 <translation id="3308134619352333507">Жашыруу баскычы</translation>
 <translation id="3308852433423051161">Google Жардамчы жүктөлүүдө…</translation>
@@ -2827,6 +2828,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3761556954875533505">Сайт файлдарды түзөтсүнбү?</translation>
 <translation id="3764314093345384080">Курама тууралуу толук маалымат</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB түзмөк менен байланышуу}other{# USB түзмөк менен байланышуу}}</translation>
+<translation id="3764753550716962406">Google себеттериңиздеги арзандатууларды тапсынбы?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнө жөнөтүлүүдө}}</translation>
 <translation id="3765246971671567135">Демо режимде оффлайнда колдонуу саясаты окулбай койду.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Герц</translation>
@@ -3262,6 +3264,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4194570336751258953">Таптап-чыкылдатууну иштетүү</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
 <translation id="4195814663415092787">Чыгып кеткен жерден улантыңыз</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> жана <ph name="MERCHANT_NAME" /> кызматында арзандатууларды алуу</translation>
 <translation id="4198268995694216131">Кошумча сайттар</translation>
 <translation id="4200689466366162458">Ыңгайлаштырылган сөздөр</translation>
 <translation id="4200983522494130825">Жаңы &amp;өтмөк</translation>
@@ -4640,6 +4643,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5632566673632479864"><ph name="EMAIL" /> аккаунтуңуз негизги аккаунт болбой калды. Бул аккаунт <ph name="DOMAIN" /> тарабынан башкарылгандыктан, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр бул түзмөктөн тазаланат.</translation>
 <translation id="5632592977009207922">Жүктөлүп алынууда, <ph name="PERCENT_REMAINING" />% калды</translation>
 <translation id="563371367637259496">Мобилдик</translation>
+<translation id="5634446357546764049">Акыркы сапарларыңыз жана башкалар жөнүндө эстен кеткис көз ирмемдерди көрүңүз</translation>
 <translation id="5635312199252507107">Айрым сайттарда уруксат берүү</translation>
 <translation id="563535393368633106">Кирүүдөн мурун суроо (сунушталат)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> колдонуу үчүн адегенде <ph name="LINK_START" />тармактын кирүү бетине өтүңүз<ph name="LINK_END" />, ал бир нече секунддун ичинде автоматтык түрдө ачылат. Эгер ачылбаса, тармакты колдоно албайсыз.</translation>
@@ -4736,6 +4740,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> түзмөгүнүн аппараттык камсыздоосу жана туруктуулугу жакшыртылды</translation>
 <translation id="574104302965107104">Дисплейди күзгүдөй чагылдыруу</translation>
 <translation id="574209121243317957">Тон</translation>
+<translation id="5745316408658560138">Chrome себеттериңиздеги жекелештирилген арзандатууларды тапсынбы?</translation>
 <translation id="5746169159649715125">PDF катары сактоо</translation>
 <translation id="5747552184818312860">Жарамдуулук мөөнөтү</translation>
 <translation id="5747785204778348146">Иштеп чыгуучу – туруктуу эмес</translation>
@@ -5363,6 +5368,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6370021412472292592">Менифест жүктөлгөн жок.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Кайталап көрүңүз</translation>
+<translation id="6374635887697228982">Арзандатууларды алгыңыз келеби?</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" сурамы боюнча 1 жыйынтык табылды</translation>
 <translation id="6380143666419481200">Кабыл алып улантуу</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> cайтын окуп жана өзгөртүүгө уруксат берилди</translation>
@@ -6930,6 +6936,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7956373551960864128">Сакталган принтерлериңиз</translation>
 <translation id="7957074856830851026">Сериялык номери же объекттин идентификатору сыяктуу түзмөктүн маалыматын көрүү</translation>
 <translation id="7957615753207896812">Түзмөктүн баскычтоп жөндөөлөрүн ачуу</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> жана башка кызматтарда арзандатууларды алуу</translation>
 <translation id="7959074893852789871">Файлда бир нече тастыктама камтылган, алардын айрымдары импорттолгон жок:</translation>
 <translation id="7959665254555683862">Жаңы жашыруун &amp;өтмөк</translation>
 <translation id="7961015016161918242">Эч качан</translation>

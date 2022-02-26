@@ -6279,10 +6279,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8101381354936029836">Grup atom kebijakan:</translation>
 <translation id="8102913158860568230">Setelan streaming media default</translation>
 <translation id="8104962233214241919">Memilih sertifikat klien untuk situs ini secara otomatis</translation>
-<translation id="8111502498815410897">Menyetel kebijakan ini akan memaksa pengaktifan atau penonaktifan Sambungan Cepat.
-      Sambungan Cepat adalah alur penyambungan Bluetooth baru yang menautkan periferal yang disambungkan dengan akun GAIA.
-      Penyambungan ini memungkinkan perangkat Chrome OS (dan Android) lain yang login dengan akun GAIA yang sama untuk disambungkan secara otomatis.
-      Jika tidak disetel, Sambungan Cepat akan mengikuti setelan default Chrome OS, yaitu diaktifkan.</translation>
 <translation id="8114382167597081590">Jangan terapkan Mode Terbatas di YouTube</translation>
 <translation id="8117921351531866504">Memungkinkan Anda menentukan situs diizinkan atau tidak untuk memeriksa apakah pengguna telah menyimpan metode pembayaran.
 

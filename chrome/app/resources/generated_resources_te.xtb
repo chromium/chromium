@@ -2347,6 +2347,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> తగ్గింపు</translation>
 <translation id="3305389145870741612">ఆకృతీకరణ విధానాన్ని కొన్ని సెకెన్ల సమయం పడుతుంది. దయచేసి వేచి ఉండండి.</translation>
 <translation id="3305661444342691068">PDFను ప్రివ్యూలో తెరువు</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> కోసం డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="3308116878371095290">కుక్కీలను సెట్ చేయడం నుండి ఈ పేజీ నిరోధించబడింది.</translation>
 <translation id="3308134619352333507">బటన్‌ను దాచు</translation>
 <translation id="3308852433423051161">Google సహాయకం లోడ్ అవుతోంది...</translation>
@@ -2826,6 +2827,7 @@
 <translation id="3761556954875533505">ఫైల్స్‌ను ఎడిట్ చేయడానికి సైట్‌ను అనుమతించాలనుకుంటున్నారా?</translation>
 <translation id="3764314093345384080">వివరణాత్మక బిల్డ్ సమాచారం</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB పరికరంతో కమ్యూనికేట్ చేయండి}other{# USB పరికరాలతో కమ్యూనికేట్ చేయండి}}</translation>
+<translation id="3764753550716962406">అందుబాటులో ఉన్న డిస్కౌంట్‌లను కనుగొనడానికి మీ కార్ట్‌ని ఉపయోగించడానికి Googleని అనుమతించాలా?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" /> పంపుతోంది}other{<ph name="DEVICE_NAME" />కి <ph name="ATTACHMENTS" /> పంపుతోంది}}</translation>
 <translation id="3765246971671567135">ఆఫ్‌లైన్ డెమో మోడ్ విధానాన్ని చదవడం సాధ్యపడలేదు.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3261,6 +3263,7 @@
 <translation id="4194570336751258953">క్లిక్ చేయ‌డానికి టాప్ చేయి ప్రారంభించు</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4195814663415092787">మీరు నిష్క్రమించిన చోటు నుండే కొనసాగించండి</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" />, మరిన్నిటి కోసం డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="4198268995694216131">అదనపు సైట్‌లు</translation>
 <translation id="4200689466366162458">అనుకూల పదాలు</translation>
 <translation id="4200983522494130825">కొత్త &amp;టాబ్</translation>
@@ -4639,6 +4642,7 @@
 <translation id="5632566673632479864">మీ ఖాతా <ph name="EMAIL" /> ఇకపై ప్రాథమిక ఖాతాగా అనుమతించబడదు. ఈ ఖాతా <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతోంది కాబట్టి, మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లు ఈ పరికరం నుండి తొలగించబడతాయి.</translation>
 <translation id="5632592977009207922">డౌన్‌లోడ్ చేస్తోంది, <ph name="PERCENT_REMAINING" />% మిగిలి ఉంది</translation>
 <translation id="563371367637259496">మొబైల్</translation>
+<translation id="5634446357546764049">మీ ఇటీవలి ట్రిప్‌ల జ్ఞాపకాలను, మరిన్నింటిని చూడండి</translation>
 <translation id="5635312199252507107">నిర్దిష్ట సైట్‌లలో అనుమతించండి</translation>
 <translation id="563535393368633106">యాక్సెస్‌ చేయడానికి ముందు అడుగుతుంది (సిఫార్సు చేయబడింది)</translation>
 <translation id="5636996382092289526">మీరు <ph name="NETWORK_ID" />ను ఉపయోగించడానికి మొదట కొన్నిసెకన్లలో ఆటోమేటిక్‌గా తెరవబడే <ph name="LINK_START" />నెట్‌వర్క్ సైన్ ఇన్ పేజీని సందర్శించాలి<ph name="LINK_END" />. ఇది జరగకపోతే, నెట్‌వర్క్‌ను ఉపయోగించలేరు.</translation>
@@ -4735,6 +4739,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> హార్డ్‌వేర్ సపోర్ట్, స్థిరత్వం</translation>
 <translation id="574104302965107104">డిస్‌ప్లే మిర్రరింగ్</translation>
 <translation id="574209121243317957">పిచ్</translation>
+<translation id="5745316408658560138">మీ కార్ట్‌లలో వ్యక్తిగతీకరించబడిన డిస్కౌంట్‌లను కనుగొనడానికి Chromeను అనుమతించాలా?</translation>
 <translation id="5746169159649715125">PDF లాగా సేవ్ చేయి</translation>
 <translation id="5747552184818312860">గడువు ముగింపు</translation>
 <translation id="5747785204778348146">డెవలపర్ - అస్థిరం</translation>
@@ -5362,6 +5367,7 @@
 <translation id="6370021412472292592">మానిఫెస్ట్‌ను లోడ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">మళ్లీ ప్రయత్నించు</translation>
+<translation id="6374635887697228982">డిస్కౌంట్‌లు కావాలా?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' అనే దానికి 1 ఫలితం మాత్రమే లభించింది</translation>
 <translation id="6380143666419481200">అంగీకరించి, కొనసాగండి</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" />లో చదవడానికి, మార్చడానికి అనుమతించబడింది</translation>
@@ -6928,6 +6934,7 @@
 <translation id="7956373551960864128">మీరు సేవ్ చేసిన ప్రింటర్‌లు</translation>
 <translation id="7957074856830851026">పరికరం క్రమ సంఖ్య లేదా అస్సెట్ ID వంటి పరికర సమాచారాన్ని చూడండి</translation>
 <translation id="7957615753207896812">కీబోర్డ్ పరికర సెట్టింగ్‌లను తెరవండి</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" />, మరిన్నిటి కోసం డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="7959074893852789871">ఫైల్ దిగుమతి చెయ్యని కొన్ని బహుళ ప్రమాణపత్రాలను కలిగి ఉంది:</translation>
 <translation id="7959665254555683862">కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="7961015016161918242">ఎప్పుడూ లేదు</translation>

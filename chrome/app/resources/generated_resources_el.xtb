@@ -2348,6 +2348,7 @@
 <translation id="3304212451103136496">Έκπτωση <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Η διαδικασία διαμόρφωσης ενδέχεται να διαρκέσει μερικά δευτερόλεπτα. Περιμένετε.</translation>
 <translation id="3305661444342691068">Άνοιγμα PDF σε προεπισκόπηση</translation>
+<translation id="3307176291962384345">Λήψη εκπτώσεων για <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Σε αυτήν τη σελίδα δεν έχει επιτραπεί ο ορισμός των cookie.</translation>
 <translation id="3308134619352333507">Απόκρυψη κουμπιού</translation>
 <translation id="3308852433423051161">Φόρτωση Βοηθού Google…</translation>
@@ -2827,6 +2828,7 @@
 <translation id="3761556954875533505">Να επιτρέπεται στον ιστότοπο η επεξεργασία των αρχείων;</translation>
 <translation id="3764314093345384080">Λεπτομερείς πληροφορίες έκδοσης</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Επικοινωνία με μια συσκευή USB}other{Επικοινωνία με # συσκευές USB}}</translation>
+<translation id="3764753550716962406">Να επιτρέπεται στο Google η χρήση του καλαθιού σας για εύρεση διαθέσιμων εκπτώσεων;</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Αποστέλλεται <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}other{Αποστέλλονται <ph name="ATTACHMENTS" /> στη συσκευή <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Δεν ήταν δυνατή η ανάγνωση της πολιτικής λειτουργίας επίδειξης εκτός σύνδεσης.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3262,6 +3264,7 @@
 <translation id="4194570336751258953">Ενεργοποίηση λειτουργίας χειρισμού με αφή</translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4195814663415092787">Συνέχεια από εκεί που σταματήσατε</translation>
+<translation id="4197917636330710075">Λήψη εκπτώσεων για <ph name="MERCHANT_NAME" /> και <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Επιπλέον ιστότοποι</translation>
 <translation id="4200689466366162458">Προσαρμοσμένες λέξεις</translation>
 <translation id="4200983522494130825">Νέα &amp;καρτέλα</translation>
@@ -4641,6 +4644,7 @@
 <translation id="5632566673632479864">Δεν είναι πλέον δυνατή η χρήση του λογαριασμού σας <ph name="EMAIL" /> ως κύριου λογαριασμού. Επειδή ο λογαριασμός είναι διαχειριζόμενος από τον τομέα <ph name="DOMAIN" />, οι σελιδοδείκτες, το ιστορικό, οι κωδικοί πρόσβασης και άλλες ρυθμίσεις σας θα διαγραφούν από αυτήν τη συσκευή.</translation>
 <translation id="5632592977009207922">Πραγματοποιείται λήψη, απομένει το <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Κινητό</translation>
+<translation id="5634446357546764049">Δείτε αναμνήσεις από πρόσφατα ταξίδια και άλλα</translation>
 <translation id="5635312199252507107">Να επιτρέπεται σε συγκεκριμένους ιστοτόπους</translation>
 <translation id="563535393368633106">Ερώτηση πριν από την πρόσβαση (συνιστάται)</translation>
 <translation id="5636996382092289526">Για να χρησιμοποιήσετε το <ph name="NETWORK_ID" /> ίσως χρειαστεί πρώτα να <ph name="LINK_START" />επισκεφτείτε τη σελίδα σύνδεσης του δικτύου<ph name="LINK_END" />, η οποία θα ανοίξει αυτόματα σε λίγα δευτερόλεπτα. Εάν αυτό δεν συμβεί, δεν είναι δυνατή η χρήση του δικτύου.</translation>
@@ -4737,6 +4741,7 @@
 <translation id="5740709157181662145">Υποστήριξη εξοπλισμού και σταθερότητα <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Κατοπτρισμός οθόνης</translation>
 <translation id="574209121243317957">Τόνος</translation>
+<translation id="5745316408658560138">Να επιτρέπεται στο Chrome να βρίσκει εξατομικευμένες εκπτώσεις στα καρότσια σας;</translation>
 <translation id="5746169159649715125">Αποθήκευση ως PDF</translation>
 <translation id="5747552184818312860">Λήγει</translation>
 <translation id="5747785204778348146">Προγραμματιστής - ασταθές</translation>
@@ -5364,6 +5369,7 @@
 <translation id="6370021412472292592">Δεν ήταν δυνατή η φόρτωση της δήλωσης.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Δοκιμάστε ξανά</translation>
+<translation id="6374635887697228982">Λήψη εκπτώσεων;</translation>
 <translation id="6377268785556383139">1 αποτέλεσμα για την αναζήτηση "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Αποδοχή και συνέχεια</translation>
 <translation id="6382616130475191723">Επιτράπηκε ανάγνωση και αλλαγή του <ph name="SITE_NAME" /></translation>
@@ -6931,6 +6937,7 @@
 <translation id="7956373551960864128">Οι αποθηκευμένοι εκτυπωτές σας</translation>
 <translation id="7957074856830851026">Προβολή πληροφοριών συσκευής, όπως του σειριακού αριθμού ή του αναγνωριστικού στοιχείου</translation>
 <translation id="7957615753207896812">Άνοιγμα των ρυθμίσεων πληκτρολογίου της συσκευής</translation>
+<translation id="7958437133377816580">Λήψη εκπτώσεων για <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> κ.ά.</translation>
 <translation id="7959074893852789871">Το αρχείο περιείχε πολλαπλά πιστοποιητικά, κάποια από τα οποία δεν εισάχθηκαν:</translation>
 <translation id="7959665254555683862">Νέα &amp;καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="7961015016161918242">Ποτέ</translation>

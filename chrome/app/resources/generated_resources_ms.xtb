@@ -2348,6 +2348,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3304212451103136496">Diskaun <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Proses memformat boleh mengambil masa beberapa saat. Sila tunggu.</translation>
 <translation id="3305661444342691068">Buka PDF dalam Pratonton</translation>
+<translation id="3307176291962384345">Dapatkan diskaun untuk <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Halaman ini dihalang daripada menetapkan kuki.</translation>
 <translation id="3308134619352333507">Sembunyikan Butang</translation>
 <translation id="3308852433423051161">Memuatkan Google Assistant...</translation>
@@ -2827,6 +2828,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3761556954875533505">Benarkan tapak mengedit fail?</translation>
 <translation id="3764314093345384080">Maklumat binaan terperinci</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Berkomunikasi dengan peranti USB}other{Berkomunikasi dengan # peranti USB}}</translation>
+<translation id="3764753550716962406">Benarkan Google menggunakan troli anda untuk mencari diskaun yang tersedia?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Menghantar <ph name="ATTACHMENTS" /> kepada <ph name="DEVICE_NAME" />}other{Menghantar <ph name="ATTACHMENTS" /> kepada <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Tidak dapat membaca dasar mod tunjuk cara luar talian.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3262,6 +3264,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4194570336751258953">Dayakan ketik untuk klik</translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4195814663415092787">Sambung semula dari tempat anda berhenti</translation>
+<translation id="4197917636330710075">Dapatkan diskaun untuk <ph name="MERCHANT_NAME" /> dan <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Laman tambahan</translation>
 <translation id="4200689466366162458">Perkataan tersuai</translation>
 <translation id="4200983522494130825">Tab &amp;baharu</translation>
@@ -4640,6 +4643,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5632566673632479864">Akaun <ph name="EMAIL" /> anda tidak dibenarkan menjadi akaun utama lagi. Oleh sebab akaun ini diurus oleh <ph name="DOMAIN" />, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan dipadamkan daripada peranti ini.</translation>
 <translation id="5632592977009207922">Memuat turun, tinggal <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mudah Alih</translation>
+<translation id="5634446357546764049">Lihat kenangan perjalanan anda baru-baru ini dan pelbagai lagi</translation>
 <translation id="5635312199252507107">Benarkan pada laman tertentu</translation>
 <translation id="563535393368633106">Tanya sebelum mengakses (disyorkan)</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" /> anda mungkin perlu <ph name="LINK_START" />melawat halaman log masuk rangkaian<ph name="LINK_END" /> terlebih dahulu, yang akan terbuka secara automatik dalam beberapa saat. Jika ini tidak berlaku, rangkaian tersebut tidak boleh digunakan.</translation>
@@ -4736,6 +4740,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> sokongan dan kestabilan perkakasan</translation>
 <translation id="574104302965107104">Pencerminan paparan</translation>
 <translation id="574209121243317957">Nada</translation>
+<translation id="5745316408658560138">Benarkan Chrome mencari diskaun yang diperibadikan untuk item dalam troli anda?</translation>
 <translation id="5746169159649715125">Simpan sebagai PDF</translation>
 <translation id="5747552184818312860">Tamat tempoh</translation>
 <translation id="5747785204778348146">Pembangun - tidak stabil</translation>
@@ -5363,6 +5368,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6370021412472292592">Tidak dapat memuatkan manifes.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
+<translation id="6374635887697228982">Dapatkan diskaun?</translation>
 <translation id="6377268785556383139">1 hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Terima dan teruskan</translation>
 <translation id="6382616130475191723">Dibenarkan membaca dan menukar <ph name="SITE_NAME" /></translation>
@@ -6930,6 +6936,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7956373551960864128">Pencetak yang disimpan</translation>
 <translation id="7957074856830851026">Lihat maklumat peranti, seperti nombor siri atau ID aset peranti</translation>
 <translation id="7957615753207896812">Buka tetapan peranti papan kekunci</translation>
+<translation id="7958437133377816580">Dapatkan diskaun untuk <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> dan pelbagai lagi</translation>
 <translation id="7959074893852789871">Fail mengandungi berbilang sijil, beberapa daripadanya tidak diimport:</translation>
 <translation id="7959665254555683862">&amp;Tab Inkognito Baharu</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>

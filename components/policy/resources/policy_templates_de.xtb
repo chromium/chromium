@@ -6214,10 +6214,6 @@ werden abgelehnt.</translation>
 <translation id="8101381354936029836">Atomische Richtlinien-Gruppe:</translation>
 <translation id="8102913158860568230">Standardeinstellung für MediaStream</translation>
 <translation id="8104962233214241919">Client-Zertifikate für diese Websites automatisch auswählen</translation>
-<translation id="8111502498815410897">Mit dieser Richtlinie kann eine Aktivierung oder Deaktivierung des schnellen Pairings erzwungen werden.
-      Schnelles Pairing ist ein neuer Bluetooth-Kopplungsprozess, bei dem gekoppelte Peripheriegeräte mit einem GAIA-Konto verknüpft werden.
-      Dies ermöglicht Geräten unter Chrome OS (und Android), die im selben GAIA-Konto angemeldet sind, sich automatisch zu koppeln.
-      Wenn diese Richtlinie nicht aktiviert ist, nimmt „Schnelles Pairing“ das Standardverhalten unter Chrome OS an und ist aktiviert.</translation>
 <translation id="8114382167597081590">Eingeschränkten Modus auf YouTube nicht erzwingen</translation>
 <translation id="8117921351531866504">Mit dieser Richtlinie können Sie Websites erlauben zu prüfen, ob ein Nutzer Zahlungsmethoden gespeichert hat.
 

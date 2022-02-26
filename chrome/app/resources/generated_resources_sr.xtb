@@ -2332,6 +2332,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуста</translation>
 <translation id="3305389145870741612">Процес форматирања може да потраје неколико секунди. Сачекајте.</translation>
 <translation id="3305661444342691068">Отвори PDF у прегледу</translation>
+<translation id="3307176291962384345">Остварите попусте за <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Овој страници је забрањено да поставља колачиће.</translation>
 <translation id="3308134619352333507">Сакриј дугме</translation>
 <translation id="3308852433423051161">Google помоћник се учитава...</translation>
@@ -2811,6 +2812,7 @@
 <translation id="3761556954875533505">Желите ли да дозволите сајту да мења датотеке?</translation>
 <translation id="3764314093345384080">Детаљне информације о верзији</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Комуникација са USB уређајем}one{Комуникација са # USB уређајем}few{Комуникација са # USB уређаја}other{Комуникација са # USB уређаја}}</translation>
+<translation id="3764753550716962406">Желите да дозволите да Google користи корпу за проналажење доступних попуста?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Шаље се <ph name="ATTACHMENTS" /> на <ph name="DEVICE_NAME" />}one{Шаље се <ph name="ATTACHMENTS" /> на <ph name="DEVICE_NAME" />}few{Шаљу се <ph name="ATTACHMENTS" /> на <ph name="DEVICE_NAME" />}other{Шаље се <ph name="ATTACHMENTS" /> на <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Читање офлајн смерница за режим демонстрације није успело.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3246,6 +3248,7 @@
 <translation id="4194570336751258953">Омогући функцију „додирни-за-клик“</translation>
 <translation id="4195643157523330669">Отвори на новој картици</translation>
 <translation id="4195814663415092787">Настави претходну сесију</translation>
+<translation id="4197917636330710075">Остварите попусте за <ph name="MERCHANT_NAME" /> и <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Додатни сајтови</translation>
 <translation id="4200689466366162458">Прилагођене речи</translation>
 <translation id="4200983522494130825">Нова &amp;картица</translation>
@@ -4623,6 +4626,7 @@
 <translation id="5632566673632479864">Налог <ph name="EMAIL" /> није више дозвољен као примарни налог. Пошто тим налогом управља <ph name="DOMAIN" />, обележивачи, историја, лозинке и друга подешавања биће обрисани са уређаја.</translation>
 <translation id="5632592977009207922">Преузима се, још <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Мобилна</translation>
+<translation id="5634446357546764049">Погледајте успомене са недавних путовања и друго</translation>
 <translation id="5635312199252507107">Дозволи на одређеним сајтовима</translation>
 <translation id="563535393368633106">Питај пре приступања (препоручује се)</translation>
 <translation id="5636996382092289526">Да бисте користили <ph name="NETWORK_ID" />, можда ћете прво морати да <ph name="LINK_START" />посетите страницу за пријављивање на мрежу<ph name="LINK_END" />, која ће се аутоматски отворити за неколико секунди. Ако се то не деси, мрежа не може да се користи.</translation>
@@ -4719,6 +4723,7 @@
 <translation id="5740709157181662145">Подршка и стабилност за <ph name="DEVICE_OS" /> хардвер</translation>
 <translation id="574104302965107104">Пресликавање екрана</translation>
 <translation id="574209121243317957">Ниво</translation>
+<translation id="5745316408658560138">Желите да дозволите Chrome-у да пронађе персонализоване попусте за ваше корпе?</translation>
 <translation id="5746169159649715125">Сачувај као PDF</translation>
 <translation id="5747552184818312860">Истиче</translation>
 <translation id="5747785204778348146">Програмер – нестабилно</translation>
@@ -5346,6 +5351,7 @@
 <translation id="6370021412472292592">Учитавање манифеста није могуће.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
+<translation id="6374635887697228982">Желите да остварите попусте?</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380143666419481200">Прихвати и настави</translation>
 <translation id="6382616130475191723">Дозвољено им је читање и мењање сајта <ph name="SITE_NAME" /></translation>
@@ -6912,6 +6918,7 @@
 <translation id="7956373551960864128">Сачувани штампачи</translation>
 <translation id="7957074856830851026">Преглед информација о уређају, као што је серијски број или ИД дела</translation>
 <translation id="7957615753207896812">Отвори подешавања уређаја за тастатуру</translation>
+<translation id="7958437133377816580">Остварите попусте за <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> и друго</translation>
 <translation id="7959074893852789871">Датотека садржи више сертификата, од којих неки нису увезени:</translation>
 <translation id="7959665254555683862">Нова картица без архивирања</translation>
 <translation id="7961015016161918242">Никад</translation>

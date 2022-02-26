@@ -2344,6 +2344,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> хямдралтай</translation>
 <translation id="3305389145870741612">Форматлах үйл ажиллагаанд тодорхой хугацаа шаардлагатай тул түр хүлээнэ үү.</translation>
 <translation id="3305661444342691068">PDF-ийг урьдчилан харах байдлаар нээх</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" />-н хөнгөлөлтүүдийг авах</translation>
 <translation id="3308116878371095290">Энэхүү хуудсыг cookies байршуулах тохиргооноос хамгаалсан байна.</translation>
 <translation id="3308134619352333507">Товчлуурыг нуух</translation>
 <translation id="3308852433423051161">Google туслахыг ачаалж байна...</translation>
@@ -2823,6 +2824,7 @@
 <translation id="3761556954875533505">Сайтад файл засахыг зөвшөөрөх үү?</translation>
 <translation id="3764314093345384080">Боловсруулах мэдээллийг дэлгэрүүлсэн</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ USB төхөөрөмжөөр харилцах}other{ # USB төхөөрөмжүүдээр харилцах}}</translation>
+<translation id="3764753550716962406">Google-д таны сагсыг боломжтой хөнгөлөлтүүд олоход ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж байна}other{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж байна}}</translation>
 <translation id="3765246971671567135">Офлайн демо горимын удирдамжийг уншиж чадсангүй.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -3257,6 +3259,7 @@
 <translation id="4194570336751258953">Tap-to-click үйлдлийг идэвхжүүлэх</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> болон <ph name="MERCHANT_NAME" />-н хөнгөлөлтүүдийг авах</translation>
 <translation id="4198268995694216131">Бусад сайт</translation>
 <translation id="4200689466366162458">Өөрчлөх үг</translation>
 <translation id="4200983522494130825">Шинэ &amp;цонх</translation>
@@ -4636,6 +4639,7 @@
 <translation id="5632566673632479864">Таны <ph name="EMAIL" /> бүртгэл цаашид үндсэн бүртгэлээр зөвшөөрөгдөхөө больсон байна. Энэ бүртгэлийг <ph name="DOMAIN" />-с удирддаг тул таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс устгах болно.</translation>
 <translation id="5632592977009207922">Татаж байна, <ph name="PERCENT_REMAINING" />% үлдсэн</translation>
 <translation id="563371367637259496">Мобайл</translation>
+<translation id="5634446357546764049">Саяхны аялал болон бусад зүйлийнхээ дурсамжийг хараарай</translation>
 <translation id="5635312199252507107">Тодорхой сайтууд дээр зөвшөөрөх</translation>
 <translation id="563535393368633106">Хандалт хийхээс өмнө асуух (зөвлөж байна)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ыг ашиглахын тулд та эхлээд <ph name="LINK_START" /> сүлжээний нэвтрэх хуудас <ph name="LINK_END" />  руу орох хэрэгтэй бөгөөд  энэ нь хэдхэн секундын дотор автоматаар нээгдэнэ. Хэрвээ энэ ажиллахгүй байвал сүлжээг ашиглах боломжгүй.</translation>
@@ -4732,6 +4736,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" />-н техник хангамжийн тусламж болон тогтвортой байдал</translation>
 <translation id="574104302965107104">Дэлгэцийн тусгал үүсгэх</translation>
 <translation id="574209121243317957">Авиа</translation>
+<translation id="5745316408658560138">Chrome-д таны сагсанд хувийн болгосон хямдрал олохыг зөвшөөрөх үү?</translation>
 <translation id="5746169159649715125">PDF хэлбэрээр хадгалах</translation>
 <translation id="5747552184818312860">Дуусах хугацаа</translation>
 <translation id="5747785204778348146">Хөгжүүлэгч - тогтворгүй</translation>
@@ -5358,6 +5363,7 @@
 <translation id="6370021412472292592">Мэдүүлгийг ачаалж чадсангүй.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Дахин оролдоно уу</translation>
+<translation id="6374635887697228982">Хөнгөлөлт авах уу?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />'-н 1 илэрц</translation>
 <translation id="6380143666419481200">Хүлээн аваад, үргэлжлүүл</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" />-г унших, өөрчлөхийг зөвшөөрсөн</translation>
@@ -6924,6 +6930,7 @@
 <translation id="7956373551960864128">Таны хадгалсан хэвлэгч</translation>
 <translation id="7957074856830851026">Серийн дугаар эсвэл өмчийн ID зэрэг төхөөрөмжийн мэдээллийг харах</translation>
 <translation id="7957615753207896812">Гарын төхөөрөмжийн тохиргоог нээх</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> болон бусад худалдаачны хөнгөлөлтүүдийг авах</translation>
 <translation id="7959074893852789871">Энэ файл нь хэд хэдэн сертификат агуулж байгаа бөгөөд зарим нь импортлогдоогүй байна.</translation>
 <translation id="7959665254555683862">Шинэ нууцлалтай &amp;таб</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>

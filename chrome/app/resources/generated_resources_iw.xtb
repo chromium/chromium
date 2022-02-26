@@ -2348,6 +2348,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> הנחה</translation>
 <translation id="3305389145870741612">תהליך הפרמוט עשוי להימשך מספר שניות. יש להמתין.</translation>
 <translation id="3305661444342691068">‏פתיחת PDF בתצוגה מקדימה</translation>
+<translation id="3307176291962384345">קבלת הנחות על מוצרי <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">‏לא ניתן להגדיר קובצי Cookie לדף זה.</translation>
 <translation id="3308134619352333507">לחצן 'הסתרה'</translation>
 <translation id="3308852433423051161">‏טעינת Google Assistant מתבצעת...</translation>
@@ -2827,6 +2828,7 @@
 <translation id="3761556954875533505">האם לאפשר לאתר לערוך קבצים?</translation>
 <translation id="3764314093345384080">מידע מפורט על הגרסה</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏תקשורת עם מכשיר USB אחד}two{‏תקשורת עם # מכשירי USB}many{‏תקשורת עם # מכשירי USB}other{‏תקשורת עם # מכשירי USB}}</translation>
+<translation id="3764753550716962406">‏לאפשר ל-Google להשתמש בעגלת הקניות שלך כדי למצוא הנחות זמינות?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}many{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">לא ניתן לקרוא מדיניות של מצב הדגמה לא מקוון.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> הרץ</translation>
@@ -3262,6 +3264,7 @@
 <translation id="4194570336751258953">הפעלת האפשרות 'נגיעה קלה'</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
+<translation id="4197917636330710075">קבלת הנחות על המוצרים של <ph name="MERCHANT_NAME" /> ו-<ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">אתרים נוספים</translation>
 <translation id="4200689466366162458">מילים מותאמות אישית</translation>
 <translation id="4200983522494130825">&amp;כרטיסייה חדשה</translation>
@@ -4640,6 +4643,7 @@
 <translation id="5632566673632479864">הסתיימה ההרשאה של החשבון שלך <ph name="EMAIL" /> כחשבון ראשי. החשבון הזה מנוהל על ידי <ph name="DOMAIN" />, ולכן הסימניות, ההיסטוריה, הסיסמאות והגדרות אחרות יימחקו מהמכשיר הזה.</translation>
 <translation id="5632592977009207922">‏מתבצעת הורדה, נשארו ‎<ph name="PERCENT_REMAINING" />%‎</translation>
 <translation id="563371367637259496">נייד</translation>
+<translation id="5634446357546764049">הצגת זכרונות מהנסיעות האחרונות שלך ועוד</translation>
 <translation id="5635312199252507107">להרשות באתרים ספציפיים</translation>
 <translation id="563535393368633106">יש לשאול לפני גישה (מומלץ)</translation>
 <translation id="5636996382092289526">כדי להשתמש ב-<ph name="NETWORK_ID" /> ייתכן שראשית יהיה עליך <ph name="LINK_START" />להיכנס לדף הכניסה של הרשת<ph name="LINK_END" />, שייפתח אוטומטית בעוד כמה שניות. אם הוא לא נפתח, לא ניתן יהיה להשתמש ברשת.</translation>
@@ -4736,6 +4740,7 @@
 <translation id="5740709157181662145">יציבות ותמיכה בחומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">שיקוף מסך</translation>
 <translation id="574209121243317957">גובה צליל</translation>
+<translation id="5745316408658560138">‏לאפשר ל-Chrome למצוא הנחות בהתאמה אישית בעגלות הקניות שלך?</translation>
 <translation id="5746169159649715125">‏שמירה כקובץ PDF</translation>
 <translation id="5747552184818312860">מועד תפוגה</translation>
 <translation id="5747785204778348146">מפתח - לא יציב</translation>
@@ -5363,6 +5368,7 @@
 <translation id="6370021412472292592">לא ניתן היה לטעון את המניפסט.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ניסיון נוסף</translation>
+<translation id="6374635887697228982">רוצה לקבל הנחות?</translation>
 <translation id="6377268785556383139">תוצאה אחת בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">בסדר, מקובל עליי</translation>
 <translation id="6382616130475191723">יש הרשאה לעיין ב-<ph name="SITE_NAME" /> ולבצע בו שינויים</translation>
@@ -6929,6 +6935,7 @@
 <translation id="7956373551960864128">מדפסות שמורות</translation>
 <translation id="7957074856830851026">הצגה של פרטי המכשיר, כמו המספר הסידורי או מזהה הנכס שלו</translation>
 <translation id="7957615753207896812">פתיחת הגדרות המכשיר של המקלדת</translation>
+<translation id="7958437133377816580">קבלת הנחות על המוצרים של <ph name="MERCHANT_NAME" />, ‏<ph name="MERCHANT_NAME" /> ועוד</translation>
 <translation id="7959074893852789871">הקובץ הכיל אישורים מרובים, חלקם לא יובאו:</translation>
 <translation id="7959665254555683862">&amp;כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="7961015016161918242">אף פעם</translation>

@@ -2340,6 +2340,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ರಿಯಾಯಿತಿ</translation>
 <translation id="3305389145870741612">ಸ್ವರೂಪಣೆಯ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವು ಸೆಕೆಂಡ್‌ಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ದಯವಿಟ್ಟು ನಿರೀಕ್ಷಿಸಿ.</translation>
 <translation id="3305661444342691068">PDF ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆಯಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> ಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="3308116878371095290">ಕುಕ್ಕಿಗಳನ್ನು ಹೊಂದಿಸದಂತೆ ಈ ಪುಟವನ್ನು ತಡೆಗಟ್ಟಲಾಗಿದೆ.</translation>
 <translation id="3308134619352333507">ಬಟನ್ ಅನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="3308852433423051161">Google ಅಸಿಸ್ಟೆಂಟ್ ಅನ್ನು ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -2820,6 +2821,7 @@
 <translation id="3761556954875533505">ಸೈಟ್ ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="3764314093345384080">ವಿವರವಾದ ಬಿಲ್ಡ್ ಮಾಹಿತಿ</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB ಸಾಧನದೊಂದಿಗೆ ಸಂವಹನ ಮಾಡಿ}one{# USB ಸಾಧನಗಳೊಂದಿಗೆ ಸಂವಹನ ಮಾಡಿ}other{# USB ಸಾಧನಗಳೊಂದಿಗೆ ಸಂವಹನ ಮಾಡಿ}}</translation>
+<translation id="3764753550716962406">ಲಭ್ಯವಿರುವ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕಲು Google ನಿಮ್ಮ ಕಾರ್ಟ್ ಅನ್ನು ಬಳಸಲು ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ}one{<ph name="ATTACHMENTS" /> ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ}other{<ph name="ATTACHMENTS" /> ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ}}</translation>
 <translation id="3765246971671567135">ಆಫ್‌ಲೈನ್ ಡೆಮೊ ಮೋಡ್ ಕಾರ್ಯನೀತಿಯನ್ನು ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3255,6 +3257,7 @@
 <translation id="4194570336751258953">ಕ್ಲಿಕ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4195814663415092787">ಎಲ್ಲಿ ಬಿಡಲಾಗಿದೆಯೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರೆ</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> ಮತ್ತು <ph name="MERCHANT_NAME" /> ಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4198268995694216131">ಹೆಚ್ಚುವರಿ ಸೈಟ್‌ಗಳು</translation>
 <translation id="4200689466366162458">ಕಸ್ಟಮ್ ಪದಗಳು</translation>
 <translation id="4200983522494130825">ಹೊಸ &amp;ಟ್ಯಾಬ್</translation>
@@ -4634,6 +4637,7 @@
 <translation id="5632566673632479864">ಪ್ರಾಥಮಿಕ ಖಾತೆಯಾಗಿ ನಿಮ್ಮ ಖಾತೆಯ <ph name="EMAIL" /> ಅನ್ನು ಇನ್ನು ಮುಂದೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ. ಈ ಖಾತೆಯನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿರುವ ಕಾರಣದಿಂದ, ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5632592977009207922">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ, <ph name="PERCENT_REMAINING" />% ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="563371367637259496">ಮೊಬೈಲ್</translation>
+<translation id="5634446357546764049">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಪ್ರಯಾಣಗಳ ನೆನಪುಗಳನ್ನು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ನೋಡಿ</translation>
 <translation id="5635312199252507107">ನಿರ್ದಿಷ್ಟ ಸೈಟ್‌ಗಳಲ್ಲಿ ಅನುಮತಿಸಿ</translation>
 <translation id="563535393368633106">ಪ್ರವೇಶಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ಅನ್ನು ಬಳಸಲು ನೀವು ಮೊದಲಿಗೆ ಕೆಲವು ಸೆಕೆಂಡುಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುವಂತಹ, <ph name="LINK_START" />ನೆಟ್‌ವರ್ಕ್‌ನ ಸೈನ್-ಇನ್ ಪುಟವನ್ನು ಭೇಟಿ ಮಾಡಬೇಕಾಗಿದೆ<ph name="LINK_END" />. ಇದು ಸಂಭವಿಸದಿದ್ದರೆ, ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
@@ -4730,6 +4734,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ಹಾರ್ಡ್‌ವೇರ್ ಬೆಂಬಲ ಮತ್ತು ಸ್ಥಿರತೆ</translation>
 <translation id="574104302965107104">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರತಿಬಿಂಬಿಸುವಿಕೆ</translation>
 <translation id="574209121243317957">ಪಿಚ್</translation>
+<translation id="5745316408658560138">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳಲ್ಲಿರುವ ಐಟಂಗಳಿಗೆ ಸಂಬಂಧಿಸಿದಂತೆ ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ರಿಯಾಯಿತಿಗಳನ್ನು ಹುಡುಕಲು Chrome ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="5746169159649715125">PDF ನಂತೆ ಉಳಿಸಿ</translation>
 <translation id="5747552184818312860">ಅವಧಿ ಮೀರುವುದು</translation>
 <translation id="5747785204778348146">ಡೆವಲಪರ್ - ಅಸ್ಥಿರ</translation>
@@ -5357,6 +5362,7 @@
 <translation id="6370021412472292592">ಮ್ಯಾನಿಫೆಸ್ಟ್ ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="6374635887697228982">ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯುವುದೇ?</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' ಗಾಗಿ 1 ಫಲಿತಾಂಶ</translation>
 <translation id="6380143666419481200">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> ಅನ್ನು ಓದಲು ಹಾಗೂ ಬದಲಾಯಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -6924,6 +6930,7 @@
 <translation id="7956373551960864128">ನೀವು ಉಳಿಸಿರುವ ಪ್ರಿಂಟರ್‌ಗಳು</translation>
 <translation id="7957074856830851026">ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ, ಉದಾಹರಣೆಗೆ ಅದರ ಕ್ರಮ ಸಂಖ್ಯೆ ಅಥವಾ ಸ್ವತ್ತು ಐಡಿ</translation>
 <translation id="7957615753207896812">ಕೀಬೋರ್ಡ್ ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗಾಗಿ ರಿಯಾಯಿತಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="7959074893852789871">ಫೈಲ್ ಬಹು ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಒಳಗೊಂಡಿದೆ, ಕೆಲವೊಂದನ್ನು ಆಮದು ಮಾಡಲಾಗಿಲ್ಲ:</translation>
 <translation id="7959665254555683862">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="7961015016161918242">ಎಂದಿಗೂ ಇಲ್ಲ</translation>

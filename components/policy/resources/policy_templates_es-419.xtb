@@ -6264,10 +6264,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Configuración de mediastream predeterminada</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de clientes para estos sitios</translation>
-<translation id="8111502498815410897">Si estableces esta política, se habilitará o inhabilitará de manera automática la Vinculación rápida.
-      Esta función consiste en un nuevo flujo de vinculación por Bluetooth que asocia dispositivos periféricos vinculados con una cuenta de GAIA.
-      Así, otros dispositivos con Chrome OS (y Android) que hayan accedido con la misma cuenta de GAIA se vinculan de manera automática.
-      Si no estableces esta política, la Vinculación rápida utilizará la configuración predeterminada de Chrome OS, la cual estará habilitada.</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Te permite establecer si los sitios web están autorizados a verificar que el usuario tenga formas de pago guardadas.
 

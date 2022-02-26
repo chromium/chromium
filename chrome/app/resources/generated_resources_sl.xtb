@@ -2351,6 +2351,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> popusta</translation>
 <translation id="3305389145870741612">Formatiranje lahko traja nekaj sekund. Počakajte.</translation>
 <translation id="3305661444342691068">Odpri PDF v predogledu</translation>
+<translation id="3307176291962384345">Prejemanje popustov za trgovca <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Tej strani je bilo preprečeno nastavljanje piškotkov.</translation>
 <translation id="3308134619352333507">Gumb »Skrij«</translation>
 <translation id="3308852433423051161">Nalaganje Pomočnika Google ...</translation>
@@ -2830,6 +2831,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3761556954875533505">Želite spletnemu mestu omogočiti, da ureja datoteke?</translation>
 <translation id="3764314093345384080">Podrobnejše informacije o gradnji</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komuniciranje z napravo USB}one{Komuniciranje z # napravo USB}two{Komuniciranje z # napravama USB}few{Komuniciranje z # napravami USB}other{Komuniciranje z # napravami USB}}</translation>
+<translation id="3764753550716962406">Želite omogočiti Googlu, da uporabi vaš voziček za iskanje razpoložljivih popustov?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Pošiljanje prilog (<ph name="ATTACHMENTS" />) v napravo <ph name="DEVICE_NAME" />}one{Pošiljanje prilog (<ph name="ATTACHMENTS" />) v napravo <ph name="DEVICE_NAME" />}two{Pošiljanje prilog (<ph name="ATTACHMENTS" />) v napravo <ph name="DEVICE_NAME" />}few{Pošiljanje prilog (<ph name="ATTACHMENTS" />) v napravo <ph name="DEVICE_NAME" />}other{Pošiljanje prilog (<ph name="ATTACHMENTS" />) v napravo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Pravilnika za predstavitveni način brez povezave ni bilo mogoče prebrati.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3265,6 +3267,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4194570336751258953">Omogoči klik z dotikom</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
+<translation id="4197917636330710075">Prejemanje popustov za trgovca <ph name="MERCHANT_NAME" /> in <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Dodatna spletna mesta</translation>
 <translation id="4200689466366162458">Besede po meri</translation>
 <translation id="4200983522494130825">Nov &amp;zavihek</translation>
@@ -4645,6 +4648,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5632566673632479864">Vaš račun <ph name="EMAIL" /> ni več dovoljen kot glavni račun. Ker ta račun upravlja domena <ph name="DOMAIN" />, bodo vaši zaznamki, zgodovina, gesla in druge nastavitve izbrisani iz te naprave.</translation>
 <translation id="5632592977009207922">Prenos, še <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilno omrežje</translation>
+<translation id="5634446357546764049">Ogled spominov o nedavnih potovanjih in drugem</translation>
 <translation id="5635312199252507107">Omogočanje na določenih spletnih mestih</translation>
 <translation id="563535393368633106">Vprašaj pred dostopom (priporočljivo)</translation>
 <translation id="5636996382092289526">Če želite uporabljati omrežje <ph name="NETWORK_ID" />, morate najprej <ph name="LINK_START" />obiskati stran za prijavo v omrežje<ph name="LINK_END" />, ki se bo samodejno odprla čez nekaj sekund. Če se ne odpre, omrežja ne morete uporabljati.</translation>
@@ -4741,6 +4745,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5740709157181662145">Podpora za strojno opremo in stabilnost za <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Zrcaljenje zaslona</translation>
 <translation id="574209121243317957">Višina tona</translation>
+<translation id="5745316408658560138">Želite omogočiti Chromu, da najde osebno prilagojene popuste za vsebino vaših vozičkov?</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>
 <translation id="5747552184818312860">Poteče</translation>
 <translation id="5747785204778348146">Razvijalska različica – ni stabilna</translation>
@@ -5368,6 +5373,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6370021412472292592">Manifesta ni bilo mogoče naložiti.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Vnovični poskus</translation>
+<translation id="6374635887697228982">Želite prejemati popuste?</translation>
 <translation id="6377268785556383139">1 rezultat za »<ph name="SEARCH_TEXT" />«</translation>
 <translation id="6380143666419481200">Sprejmite in nadaljujte</translation>
 <translation id="6382616130475191723">Dovoljeno branje in spreminjanje za <ph name="SITE_NAME" /></translation>
@@ -6935,6 +6941,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7956373551960864128">Shranjeni tiskalniki</translation>
 <translation id="7957074856830851026">Prikaz podatkov o napravi, denimo serijske številke ali ID-ja sredstva</translation>
 <translation id="7957615753207896812">Odpiranje nastavitev tipkovnice v napravi</translation>
+<translation id="7958437133377816580">Prejemanje popustov za trgovca <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> in druge</translation>
 <translation id="7959074893852789871">Datoteka je vsebovala več potrdil in nekatera niso bila uvožena:</translation>
 <translation id="7959665254555683862">Novi anonimni &amp;zavihek</translation>
 <translation id="7961015016161918242">Nikoli</translation>

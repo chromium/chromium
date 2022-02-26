@@ -2331,6 +2331,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> indirim</translation>
 <translation id="3305389145870741612">Biçimlendirme işlemi birkaç saniye sürebilir. Lütfen bekleyin.</translation>
 <translation id="3305661444342691068">PDF'yi Önizlemede Aç</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> satıcısından indirimli alışveriş yapın</translation>
 <translation id="3308116878371095290">Bu sayfanın çerezleri ayarlaması engellenmiştir.</translation>
 <translation id="3308134619352333507">Düğmeyi Gizle</translation>
 <translation id="3308852433423051161">Google Asistan yükleniyor...</translation>
@@ -2809,6 +2810,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3761556954875533505">Siteye dosyaları düzenleme izni verilsin mi?</translation>
 <translation id="3764314093345384080">Ayrıntılı derleme bilgileri</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Bir USB cihazla iletişim kurma}other{# USB cihazla iletişim kurma}}</translation>
+<translation id="3764753550716962406">Google'ın mevcut indirimleri bulmak için alışveriş sepetinizi kullanmasına izin verilsin mi?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderiliyor}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihaza gönderiliyor}}</translation>
 <translation id="3765246971671567135">Çevrimdışı demo modu politikası okunamadı.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3244,6 +3246,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4194570336751258953">Tıklamak için hafifçe vur'u etkinleştir</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4195814663415092787">Kaldığım yerden devam et</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> ve <ph name="MERCHANT_NAME" /> satıcılarından indirimli alışveriş yapın</translation>
 <translation id="4198268995694216131">Ek siteler</translation>
 <translation id="4200689466366162458">Özel kelimeler</translation>
 <translation id="4200983522494130825">Y&amp;eni sekme</translation>
@@ -4622,6 +4625,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> hesabınızın artık birincil hesap olmasına izin verilmiyor. Bu hesap <ph name="DOMAIN" /> tarafından yönetildiğinden yer işaretleri, geçmiş, şifreler ve diğer ayarlarınız bu cihazdan silinecektir.</translation>
 <translation id="5632592977009207922">İndiriliyor, %<ph name="PERCENT_REMAINING" /> kaldı</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634446357546764049">Son seyahatlerinizden anılarınızı ve daha fazlasını görün</translation>
 <translation id="5635312199252507107">Belirli sitelerde izin ver</translation>
 <translation id="563535393368633106">Erişmeden önce sor (önerilir)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> ağını kullanabilmek için öncelikle <ph name="LINK_START" />ağın oturum açma sayfasını ziyaret etmeniz<ph name="LINK_END" /> gerekebilir. Söz konusu sayfa birkaç saniye içinde otomatik olarak açılacaktır. Açılmazsa, ağ kullanılamaz.</translation>
@@ -4718,6 +4722,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> donanım desteği ve kararlılık</translation>
 <translation id="574104302965107104">Ekran yansıtma</translation>
 <translation id="574209121243317957">Ses Kalınlığı</translation>
+<translation id="5745316408658560138">Chrome'un alışveriş sepetlerinizde kişiselleştirilmiş indirimler bulmasına izin vermek istiyor musunuz?</translation>
 <translation id="5746169159649715125">PDF olarak kaydet</translation>
 <translation id="5747552184818312860">Süre sonu tarihi</translation>
 <translation id="5747785204778348146">Geliştirici - kararsız</translation>
@@ -5344,6 +5349,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6370021412472292592">Manifest yüklenemedi.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Tekrar Dene</translation>
+<translation id="6374635887697228982">İndirim alınsın mı?</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" için bulunan 1 sonuç gösteriliyor</translation>
 <translation id="6380143666419481200">Kabul et ve devam et</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> sitesini okuyup değiştirebilir</translation>
@@ -6910,6 +6916,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7956373551960864128">Kayıtlı yazıcılarınız</translation>
 <translation id="7957074856830851026">Seri numarası veya öğe kimliği gibi cihaz bilgilerini görüntüleyin</translation>
 <translation id="7957615753207896812">Klavye cihaz ayarlarını aç</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> ve diğer satıcılardan indirimli alışveriş yapın</translation>
 <translation id="7959074893852789871">Dosya birden çok sertifika içeriyordu, bunların bazıları içe aktarılmadı:</translation>
 <translation id="7959665254555683862">Yeni Gizli Sekme</translation>
 <translation id="7961015016161918242">Hiçbir Zaman</translation>

@@ -2335,6 +2335,7 @@ Pretende pará-lo?</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
 <translation id="3305389145870741612">O processo de formatação pode demorar alguns segundos. Aguarde.</translation>
 <translation id="3305661444342691068">Abrir PDF na Pré-visualização</translation>
+<translation id="3307176291962384345">Obtenha descontos para <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Esta página foi impedida de definir cookies.</translation>
 <translation id="3308134619352333507">Ocultar Botão</translation>
 <translation id="3308852433423051161">A carregar o Assistente Google...</translation>
@@ -2814,6 +2815,7 @@ Pretende pará-lo?</translation>
 <translation id="3761556954875533505">Permitir que o site edite ficheiros?</translation>
 <translation id="3764314093345384080">Informações de compilação detalhadas</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicar com um dispositivo USB}one{Communicate with # USB devices}other{Comunicar com # dispositivos USB}}</translation>
+<translation id="3764753550716962406">Permitir que a Google utilize o seu carrinho para encontrar descontos disponíveis?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{A enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />…}one{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{A enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />…}}</translation>
 <translation id="3765246971671567135">Não foi possível ler a política do modo de demonstração offline.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3249,6 +3251,7 @@ Pretende pará-lo?</translation>
 <translation id="4194570336751258953">Ativar tocar para clicar</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
+<translation id="4197917636330710075">Obtenha descontos para <ph name="MERCHANT_NAME" /> e <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Sites adicionais</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
 <translation id="4200983522494130825">Novo &amp;separador</translation>
@@ -4627,6 +4630,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5632566673632479864">A sua conta <ph name="EMAIL" /> já não é permitida como a conta principal. Como esta conta é gerida por <ph name="DOMAIN" />, os marcadores, o histórico, as palavras-passe e outras definições serão apagados deste dispositivo.</translation>
 <translation id="5632592977009207922">A transferir, resta(m) <ph name="PERCENT_REMAINING" />%…</translation>
 <translation id="563371367637259496">Móvel</translation>
+<translation id="5634446357546764049">Veja memórias das suas viagens recentes e muito mais</translation>
 <translation id="5635312199252507107">Permitir em sites específicos</translation>
 <translation id="563535393368633106">Perguntar antes de aceder (recomendado)</translation>
 <translation id="5636996382092289526">Para utilizar <ph name="NETWORK_ID" /> poderá ter primeiro de <ph name="LINK_START" />visitar a página de início de sessão da rede<ph name="LINK_END" />, que será aberta automaticamente dentro de alguns segundos. Se isso não acontecer, a rede não pode ser utilizada.</translation>
@@ -4723,6 +4727,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5740709157181662145">Estabilidade e suporte de hardware <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Espelhamento do ecrã</translation>
 <translation id="574209121243317957">Tonalidade</translation>
+<translation id="5745316408658560138">Permitir que o Chrome encontre descontos personalizados nos seus carrinhos?</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5747552184818312860">Expira</translation>
 <translation id="5747785204778348146">Programador – instável</translation>
@@ -5350,6 +5355,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6370021412472292592">Não foi possível carregar manifesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
+<translation id="6374635887697228982">Obter descontos?</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6382616130475191723">Com autorização para ler e alterar <ph name="SITE_NAME" /></translation>
@@ -6917,6 +6923,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
 <translation id="7957615753207896812">Abrir definições do dispositivo do teclado</translation>
+<translation id="7958437133377816580">Obtenha descontos para <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> e muito mais</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
 <translation id="7961015016161918242">Nunca</translation>

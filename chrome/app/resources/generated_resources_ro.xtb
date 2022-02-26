@@ -2334,6 +2334,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3304212451103136496">Reducere de <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">Procesul de formatare poate dura câteva secunde. Așteptați.</translation>
 <translation id="3305661444342691068">Deschideți PDF în Previzualizare</translation>
+<translation id="3307176291962384345">Primește reduceri pentru <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Această pagină a fost împiedicată să stocheze cookie-uri.</translation>
 <translation id="3308134619352333507">Butonul Ascundeți</translation>
 <translation id="3308852433423051161">Se încarcă Asistentul Google...</translation>
@@ -2813,6 +2814,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3761556954875533505">Permiți ca site-ul să editeze fișierele?</translation>
 <translation id="3764314093345384080">Informații detaliate privind versiunea</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunică cu un dispozitiv USB}few{Comunică cu # dispozitive USB}other{Comunică cu # de dispozitive USB}}</translation>
+<translation id="3764753550716962406">Permiți ca Google să utilizeze coșul tău de cumpărături pentru a găsi reducerile disponibile?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Se trimite <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}few{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}other{Se trimit <ph name="ATTACHMENTS" /> la <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Nu s-a putut citi politica offline privind modul demo.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3248,6 +3250,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4194570336751258953">Activează funcția „atinge pentru clic”</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4195814663415092787">Continuați de unde ați rămas</translation>
+<translation id="4197917636330710075">Primește reduceri pentru <ph name="MERCHANT_NAME" /> și <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Site-uri suplimentare</translation>
 <translation id="4200689466366162458">Cuvinte personalizate</translation>
 <translation id="4200983522494130825">Filă &amp;nouă</translation>
@@ -4625,6 +4628,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mobilă</translation>
+<translation id="5634446357546764049">Vezi amintiri cu călătoriile recente și altele</translation>
 <translation id="5635312199252507107">Permite pe anumite site-uri</translation>
 <translation id="563535393368633106">Solicită permisiunea înainte de accesare (recomandat)</translation>
 <translation id="5636996382092289526">Pentru a utiliza <ph name="NETWORK_ID" /> ar putea fi necesar să <ph name="LINK_START" />accesați mai întâi pagina de conectare a rețelei<ph name="LINK_END" />, care se va deschide automat în câteva secunde. Dacă acest lucru nu se întâmplă, rețeaua nu poate fi utilizată.</translation>
@@ -4721,6 +4725,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5740709157181662145">Compatibilitatea și stabilitatea hardware-ului <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Oglindirea ecranului</translation>
 <translation id="574209121243317957">Tonalitatea</translation>
+<translation id="5745316408658560138">Permiți ca Chrome să găsească reduceri personalizate pentru coșul tău de cumpărături?</translation>
 <translation id="5746169159649715125">Salvați ca PDF</translation>
 <translation id="5747552184818312860">Expiră</translation>
 <translation id="5747785204778348146">Canal pentru dezvoltatori – instabil</translation>
@@ -5348,6 +5353,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6370021412472292592">Manifestul nu a putut fi încărcat.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Încearcă din nou</translation>
+<translation id="6374635887697228982">Dorești să primești reduceri?</translation>
 <translation id="6377268785556383139">Un rezultat pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380143666419481200">Acceptați și continuați</translation>
 <translation id="6382616130475191723">Pot să citească și să schimbe <ph name="SITE_NAME" /></translation>
@@ -6914,6 +6920,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7956373551960864128">Imprimante salvate</translation>
 <translation id="7957074856830851026">Vezi informații despre dispozitiv, cum ar fi numărul de serie sau ID-ul de material</translation>
 <translation id="7957615753207896812">Deschide setările dispozitivului privind tastatura</translation>
+<translation id="7958437133377816580">Primește reduceri pentru <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> și alți comercianți</translation>
 <translation id="7959074893852789871">Fișierul a conținut mai multe certificate, unele dintre acestea nefiind importate:</translation>
 <translation id="7959665254555683862">Filă incognito &amp;nouă</translation>
 <translation id="7961015016161918242">Niciodată</translation>

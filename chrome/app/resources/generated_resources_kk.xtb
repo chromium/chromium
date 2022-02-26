@@ -2329,6 +2329,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> жеңілдік</translation>
 <translation id="3305389145870741612">Пішімдеу процесі бір-екі секундты алуы мүмкін. Күтіңіз.</translation>
 <translation id="3305661444342691068">PDF файлын алдын ала қарау қолданбасында ашу</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> жеңілдігін алу</translation>
 <translation id="3308116878371095290">Бұл бетке cookie файлдарын орнатуға тыйым салынды.</translation>
 <translation id="3308134619352333507">Түймені жасыру</translation>
 <translation id="3308852433423051161">Google Assistant жүктелуде…</translation>
@@ -2808,6 +2809,7 @@
 <translation id="3761556954875533505">Сайтқа файлдарды өзгертуге рұқсат етілсін бе?</translation>
 <translation id="3764314093345384080">Жинақ туралы егжей-тегжейлі ақпарат</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB құрылғысы арқылы байланысу}other{# USB құрылғысы арқылы байланысу}}</translation>
+<translation id="3764753550716962406">Жеңілдіктер бар-жоғын тексеру үшін Google себетті пайдалансын ба?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысына <ph name="ATTACHMENTS" /> жіберілуде.}other{<ph name="DEVICE_NAME" /> құрылғысына <ph name="ATTACHMENTS" /> жіберілуде.}}</translation>
 <translation id="3765246971671567135">Офлайн демо режиміндегі саясат оқылмады.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Гц</translation>
@@ -3243,6 +3245,7 @@
 <translation id="4194570336751258953">Tap-to-click мүмкіндігін қосу</translation>
 <translation id="4195643157523330669">Жаңа қойындыда ашу</translation>
 <translation id="4195814663415092787">Тоқтаған жерден жалғастыру</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> және <ph name="MERCHANT_NAME" /> жеңілдіктерін алу</translation>
 <translation id="4198268995694216131">Қосымша сайттар</translation>
 <translation id="4200689466366162458">Арнаулы сөздер</translation>
 <translation id="4200983522494130825">Жаңа &amp;қойынды</translation>
@@ -4620,6 +4623,7 @@
 <translation id="5632566673632479864"><ph name="EMAIL" /> енді негізгі аккаунтыңыз емес. Аккаунтыңызды <ph name="DOMAIN" /> домені басқаратындықтан, бетбелгілер, тарих, құпия сөздер және басқа параметрлер құрылғыңыздан өшіріледі.</translation>
 <translation id="5632592977009207922">Жүктеп алынуда, <ph name="PERCENT_REMAINING" />% қалды</translation>
 <translation id="563371367637259496">Мобильдік</translation>
+<translation id="5634446357546764049">Соңғы сапарларыңызды және басқа да естеліктеріңізді қараңыз</translation>
 <translation id="5635312199252507107">Арнайы сайттарда рұқсат ету</translation>
 <translation id="563535393368633106">Кіруден бұрын сұрау (ұсынылған)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> пайдалану үшін алдымен бірнеше секундта автоматты түрде ашылатын <ph name="LINK_START" />желінің кіру бетіне кіріңіз<ph name="LINK_END" />. Олай болмаса, желіні пайдалану мүмкін емес.</translation>
@@ -4716,6 +4720,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> жабдығына қолдау көрсету және тұрақтылық</translation>
 <translation id="574104302965107104">Дисплейдің экран көшірмесін көрсету</translation>
 <translation id="574209121243317957">Дыбыс биіктігі</translation>
+<translation id="5745316408658560138">Chrome-ның себеттегі тауарларға жекелендірілген жеңілдіктер іздеуіне рұқсат берілсін бе?</translation>
 <translation id="5746169159649715125">PDF ретінде сақтау</translation>
 <translation id="5747552184818312860">Мерзімі бітеді</translation>
 <translation id="5747785204778348146">Әзірлеуші – тұрақсыз</translation>
@@ -5343,6 +5348,7 @@
 <translation id="6370021412472292592">Манифестті жүктеу мүмкін болмады.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Әрекетті қайталау</translation>
+<translation id="6374635887697228982">Жеңілдіктер алу керек пе?</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" сұрауы бойынша 1 нәтиже шықты</translation>
 <translation id="6380143666419481200">Қабылдау және жалғастыру</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> деректерін оқуға және өзгертуге рұқсат етілді</translation>
@@ -6909,6 +6915,7 @@
 <translation id="7956373551960864128">Сақталған принтерлер</translation>
 <translation id="7957074856830851026">Сериялық нөмір және актив идентификаторы сияқты құрылғы ақпаратын көру</translation>
 <translation id="7957615753207896812">Пернетақта құрылғысының параметрлерін ашу</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> және басқа дүкен жеңілдіктерін алу</translation>
 <translation id="7959074893852789871">Файлда кейбіреулері импортталмаған көптеген сертификаттар бар:</translation>
 <translation id="7959665254555683862">Жаңа инкогнито қойындысы</translation>
 <translation id="7961015016161918242">Ешқашан</translation>

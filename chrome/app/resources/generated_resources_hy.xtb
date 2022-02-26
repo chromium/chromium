@@ -2334,6 +2334,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> զեղչ</translation>
 <translation id="3305389145870741612">Ձևաչափման գործընթացը կարող է մի քանի վայրկյան տևել: Սպասեք:</translation>
 <translation id="3305661444342691068">Բացել PDF-ը նախադիտման ռեժիմում</translation>
+<translation id="3307176291962384345">Ստացեք զեղչեր <ph name="MERCHANT_NAME" /> խանութում</translation>
 <translation id="3308116878371095290">Կանխվել է այս էջի կողմից քուքիները պահելու փորձը:</translation>
 <translation id="3308134619352333507">Թաքցնել կոճակը</translation>
 <translation id="3308852433423051161">Google Օգնականի բեռնում...</translation>
@@ -2813,6 +2814,7 @@
 <translation id="3761556954875533505">Թույլատրե՞լ կայքին փոփոխել ֆայլեր</translation>
 <translation id="3764314093345384080">Կառուցվածքի մասին մանրամասն տվյալներ</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Կապակցվել USB սարքի հետ}one{Կապակցվել # USB սարքի հետ}other{Կապակցվել # USB սարքի հետ}}</translation>
+<translation id="3764753550716962406">Թույլատրե՞լ Google-ին օգտագործել զամբյուղը՝ հասանելի զեղչեր որոնելու համար։</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}one{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}other{<ph name="ATTACHMENTS" /> ուղարկվում է <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="3765246971671567135">Չհաջողվեց կարդալ անցանց դեմո ռեժիմում աշխատանքի քաղաքականությունը։</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Հց</translation>
@@ -3248,6 +3250,7 @@
 <translation id="4194570336751258953">Միացնել tap-to-click գործառույթը</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4195814663415092787">Շարունակել աշխատանքը նույն տեղից</translation>
+<translation id="4197917636330710075">Ստացեք զեղչեր <ph name="MERCHANT_NAME" /> և <ph name="MERCHANT_NAME" /> խանութներում</translation>
 <translation id="4198268995694216131">Լրացուցիչ կայքեր</translation>
 <translation id="4200689466366162458">Հատուկ բառեր</translation>
 <translation id="4200983522494130825">Նոր &amp;ներդիր</translation>
@@ -4628,6 +4631,7 @@
 <translation id="5632566673632479864">Ձեր <ph name="EMAIL" /> հաշիվն այլևս չի կարող օգտագործվել որպես հիմնական հաշիվ: Քանի որ այս հաշիվը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից, ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումները կջնջվեն այս սարքից:</translation>
 <translation id="5632592977009207922">Ներբեռնվում է, մնացել է <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Բջջային</translation>
+<translation id="5634446357546764049">Դիտեք վերջին ուղևորությունների մասին հիշողությունները և ավելին</translation>
 <translation id="5635312199252507107">Թույլատրել որոշակի կայքերում</translation>
 <translation id="563535393368633106">Հարցնել՝ մինչ օգտագործելը (խորհուրդ է տրվում)</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />-ն օգտագործելու համար դուք նախ պետք է <ph name="LINK_START" />այցելեք ցանցի մուտքի էջ<ph name="LINK_END" />, որը կբացվի ավտոմատ մի քանի վայրկյանից: Եթե դա տեղի չունենա, ապա ցանցի օգտագործումն անհնար է:</translation>
@@ -4724,6 +4728,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> սարքակազմի աջակցում և կայունություն</translation>
 <translation id="574104302965107104">Էկրանի հայելապատճենում</translation>
 <translation id="574209121243317957">Ձայնի մակարդակը</translation>
+<translation id="5745316408658560138">Թույլատրե՞լ Chrome-ին անհատականացված զեղչեր որոնել ձեր զամբյուղներում։</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
 <translation id="5747552184818312860">Սպառվում է</translation>
 <translation id="5747785204778348146">Մշակողների վարկած - անկայուն</translation>
@@ -5351,6 +5356,7 @@
 <translation id="6370021412472292592">Չհաջողվեց բեռնել մանիֆեստը:</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Փորձել կրկին</translation>
+<translation id="6374635887697228982">Ստանա՞լ զեղչեր</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6380143666419481200">Ընդունել և շարունակել</translation>
 <translation id="6382616130475191723">Թույլատրված է կարդալ և փոփոխել <ph name="SITE_NAME" /> կայքը</translation>
@@ -6916,6 +6922,7 @@
 <translation id="7956373551960864128">Ձեր պահված տպիչները</translation>
 <translation id="7957074856830851026">Տեսնել սարքի մասին տեղեկություններ, օրինակ՝ սերիական համարը և օբյեկտի ID-ն</translation>
 <translation id="7957615753207896812">Բացել ստեղնաշարի կարգավորումները</translation>
+<translation id="7958437133377816580">Ստացեք զեղչեր <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> և այլ խանութներում</translation>
 <translation id="7959074893852789871">Ֆայլը մի քանի վկայագիր ունի, որոնցից մի քանիսը չեն ներմուծվել՝</translation>
 <translation id="7959665254555683862">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="7961015016161918242">Երբեք</translation>

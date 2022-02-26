@@ -2345,6 +2345,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> ৰেহাই</translation>
 <translation id="3305389145870741612">ফর্মেট প্ৰক্ৰিয়া সম্পূর্ণ হ'বলৈ কিছু সময়ৰ প্ৰয়োজন হ'ব। অনুগ্ৰহ কৰি অপেক্ষা কৰক।</translation>
 <translation id="3305661444342691068">Preview এপত PDFটো খোলক</translation>
+<translation id="3307176291962384345"><ph name="MERCHANT_NAME" />ৰ বাবে ৰেহাই পাওক</translation>
 <translation id="3308116878371095290">এই পৃষ্ঠাটোক কুকী ছেট কৰা বাধা দিয়া হৈছে।</translation>
 <translation id="3308134619352333507">লুকুৱাবলৈ ব্যৱহাৰ কৰা বুটাম</translation>
 <translation id="3308852433423051161">Google Assistant ল'ড কৰি থকা হৈছে...</translation>
@@ -2824,6 +2825,7 @@
 <translation id="3761556954875533505">ছাইটটোক ফাইলসমূহ সম্পাদনা কৰিবলৈ দিবনে?</translation>
 <translation id="3764314093345384080">বিল্ডৰ সবিশেষ তথ্য</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB ডিভাইচটোৰ সৈতে যোগাযোগ কৰক}one{#টা USB ডিভাইচৰ সৈতে যোগাযোগ কৰক}other{#টা USB ডিভাইচৰ সৈতে যোগাযোগ কৰক}}</translation>
+<translation id="3764753550716962406">উপলব্ধ ৰেহাইসমূহ বিচাৰি পাবলৈ Googleক আপোনাৰ কার্টখন ব্যৱহাৰ কৰিবলৈ দিবনে?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}one{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}other{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}}</translation>
 <translation id="3765246971671567135">অফলাইন ডেম’ ম’ডৰ নীতি পঢ়িব নোৱাৰিলে।</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> হাৰ্টজ</translation>
@@ -3258,6 +3260,7 @@
 <translation id="4194570336751258953">ক্লিক কৰিবলৈ টিপা সুবিধাটো সক্ষম কৰক</translation>
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
+<translation id="4197917636330710075"><ph name="MERCHANT_NAME" /> আৰু <ph name="MERCHANT_NAME" />ৰ বাবে ৰেহাই পাওক</translation>
 <translation id="4198268995694216131">অতিৰিক্ত ছাইট</translation>
 <translation id="4200689466366162458">কাষ্টম শব্দ</translation>
 <translation id="4200983522494130825">নতুন &amp;টেব</translation>
@@ -4636,6 +4639,7 @@
 <translation id="5632566673632479864">আপোনাৰ একাউণ্ট <ph name="EMAIL" />ক প্ৰাথমিক একাউণ্ট হিচাপে আৰু ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়া নহয়। কাৰণ এই একাউণ্টটো <ph name="DOMAIN" />এ পৰিচালনা কৰে, আপোনাৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ এই ডিভাইচৰ পৰা মচা হ’ব।</translation>
 <translation id="5632592977009207922">ডাউনল’ড কৰি থকা হৈছে, <ph name="PERCENT_REMAINING" />% বাকী আছে</translation>
 <translation id="563371367637259496">ম’বাইল</translation>
+<translation id="5634446357546764049">আপোনাৰ শেহতীয়া যাত্ৰাসমূহৰ স্মৃতি আৰু অধিক চাওক</translation>
 <translation id="5635312199252507107">নিৰ্দিষ্ট ছাইটসমূহত অনুমতি দিয়ক</translation>
 <translation id="563535393368633106">এক্সেছ কৰাৰ পূর্বে অনুমতি বিচাৰক (চুপাৰিছ কৰা হৈছে)</translation>
 <translation id="5636996382092289526">আপুনি <ph name="NETWORK_ID" /> ব্যৱহাৰ কৰিবলৈ প্ৰথমে <ph name="LINK_START" />নেটৱর্কৰ ছাইন ইন কৰা পৃষ্ঠালৈ যাব লগীয়া হ'ব পাৰে<ph name="LINK_END" />, যি পৃষ্ঠা কেই ছেকেণ্ডমানৰ ভিতৰত স্বয়ংক্ৰিয়ভাৱে খোল খাব। এনে নহ'লে নেটৱর্ক ব্যৱহাৰ কৰিব পৰা নাযায়।</translation>
@@ -4732,6 +4736,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" />ৰ হাৰ্ডৱেৰ সম্পৰ্কীয় সহায়তা আৰু স্থিৰতা</translation>
 <translation id="574104302965107104">প্ৰতিবিম্বকৰণ দেখুৱাওক</translation>
 <translation id="574209121243317957">পিচ্চ</translation>
+<translation id="5745316408658560138">Chromeক আপোনাৰ কাৰ্টসমূহত ব্যক্তিগতকৃত ৰেহাই মূল্য সন্ধান কৰিবলৈ দিবনে?</translation>
 <translation id="5746169159649715125">PDF হিচাপে ছেভ কৰক</translation>
 <translation id="5747552184818312860">এই সময়ত ম্যাদ উকলিব</translation>
 <translation id="5747785204778348146">বিকাশকৰ্তা - বিকাশ সম্পূৰ্ণ হোৱা নাই</translation>
@@ -5359,6 +5364,7 @@
 <translation id="6370021412472292592">মেনিফেষ্ট ল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="6374077068638737855">আইচৱিজল</translation>
 <translation id="6374469231428023295">আকৌ চেষ্টা কৰক</translation>
+<translation id="6374635887697228982">ৰেহাই পাব বিচাৰেনে?</translation>
 <translation id="6377268785556383139">’<ph name="SEARCH_TEXT" />’ৰ বাবে পোৱা ১টা ফলাফল</translation>
 <translation id="6380143666419481200">গ্ৰহণ কৰি অব্যাহত ৰাখক</translation>
 <translation id="6382616130475191723"><ph name="SITE_NAME" /> পঢ়িবলৈ আৰু সলনি কৰিবলৈ অনুমতি দিয়া হৈছে</translation>
@@ -6925,6 +6931,7 @@
 <translation id="7956373551960864128">আপুনি ছেভ কৰি থোৱা প্ৰিণ্টাৰবোৰ</translation>
 <translation id="7957074856830851026">ক্ৰমিক নম্বৰ অথবা সম্পদৰ আইডিৰ দৰে ডিভাইচৰ তথ্য চাওক</translation>
 <translation id="7957615753207896812">কীব’র্ড ডিভাইচৰ ছেটিংসমূহ খোলক</translation>
+<translation id="7958437133377816580"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> আৰু অধিকৰ বাবে ৰেহাই পাওক</translation>
 <translation id="7959074893852789871">ফাইলটোত একাধিক প্ৰমাণপত্ৰ আছে আৰু তাৰে কেইখনমান আমদানি কৰা হোৱা নাই:</translation>
 <translation id="7959665254555683862">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>

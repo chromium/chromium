@@ -6287,10 +6287,6 @@ De forma predeterminada, una extensión o aplicación Android no puede utilizar 
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
-<translation id="8111502498815410897">Si se establece esta política, se forzará a que se habilite o se inhabilite Emparejamiento rápido.
-      Emparejamiento rápido es un nuevo flujo de emparejamiento por Bluetooth que vincula periféricos emparejados con una cuenta de GAIA.
-      Esto permite que otros dispositivos Chrome OS (o Android) que hayan iniciado sesión con la misma cuenta de GAIA se emparejen automáticamente.
-      Si no se establece esta política, se aplicará la configuración predeterminada de Chrome OS a Emparejamiento rápido y, por tanto, se habilitará.</translation>
 <translation id="8114382167597081590">No aplicar el modo restringido en YouTube</translation>
 <translation id="8117921351531866504">Permite establecer si los sitios web pueden comprobar si el usuario tiene algún método de pago guardado.
 

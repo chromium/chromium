@@ -2327,6 +2327,7 @@
 <translation id="3304212451103136496">直降 <ph name="DISCOUNT_AMOUNT" /></translation>
 <translation id="3305389145870741612">格式化过程可能需要几秒钟的时间，请稍候。</translation>
 <translation id="3305661444342691068">使用预览程序打开 PDF</translation>
+<translation id="3307176291962384345">获取<ph name="MERCHANT_NAME" />的折扣</translation>
 <translation id="3308116878371095290">系统已禁止设置此网页的 Cookie。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
 <translation id="3308852433423051161">正在加载 Google 助理…</translation>
@@ -2806,6 +2807,7 @@
 <translation id="3761556954875533505">允许此网站修改文件？</translation>
 <translation id="3764314093345384080">详细版本信息</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{可与 1 部 USB 设备通信}other{可与 # 部 USB 设备通信}}</translation>
+<translation id="3764753550716962406">要让 Google 根据购物车中的商品查找可用折扣吗？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{正在将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
 <translation id="3765246971671567135">无法读取离线演示模式政策。</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> 赫兹</translation>
@@ -3240,6 +3242,7 @@
 <translation id="4194570336751258953">启用点按单击</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
+<translation id="4197917636330710075">获取<ph name="MERCHANT_NAME" />和<ph name="MERCHANT_NAME" />的折扣</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
@@ -4617,6 +4620,7 @@
 <translation id="5632566673632479864">您的帐号 <ph name="EMAIL" /> 已无法再用作主帐号。该帐号由 <ph name="DOMAIN" /> 管理，因此您的书签、历史记录、密码及其他设置将从此设备中清除。</translation>
 <translation id="5632592977009207922">正在下载，还剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">移动网络</translation>
+<translation id="5634446357546764049">查看近期旅行等活动的回忆集锦</translation>
 <translation id="5635312199252507107">在特定网站上允许</translation>
 <translation id="563535393368633106">使用前先询问（推荐）</translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
@@ -4713,6 +4717,7 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 硬件支持和稳定性</translation>
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
+<translation id="5745316408658560138">让 Chome 查找您购物车中商品的个性化折扣信息？</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5747552184818312860">到期时间</translation>
 <translation id="5747785204778348146">开发者版本 - 不稳定</translation>
@@ -5340,6 +5345,7 @@
 <translation id="6370021412472292592">无法加载清单。</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">重试</translation>
+<translation id="6374635887697228982">要获取折扣吗？</translation>
 <translation id="6377268785556383139">1 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6380143666419481200">接受并继续</translation>
 <translation id="6382616130475191723">已获准读取和更改“<ph name="SITE_NAME" />”</translation>
@@ -6906,6 +6912,7 @@
 <translation id="7956373551960864128">已保存的打印机</translation>
 <translation id="7957074856830851026">查看设备信息，例如设备的序列号或资产 ID</translation>
 <translation id="7957615753207896812">打开键盘设备设置</translation>
+<translation id="7958437133377816580">获取<ph name="MERCHANT_NAME" />和<ph name="MERCHANT_NAME" />等商家的折扣</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
 <translation id="7959665254555683862">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="7961015016161918242">一律不</translation>

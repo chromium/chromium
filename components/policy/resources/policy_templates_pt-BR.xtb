@@ -6256,10 +6256,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
 <translation id="8104962233214241919">Selecionar certificados de cliente automaticamente para estes sites</translation>
-<translation id="8111502498815410897">A definição desta política forçará a ativação ou desativação do Pareamento rápido.
-      O Pareamento rápido é um novo fluxo de pareamento por Bluetooth que vincula periféricos pareados com uma conta do GAIA.
-      Isso permite que outros dispositivos do Chrome OS (e Android) conectados à mesma conta do GAIA sejam pareados automaticamente.
-      Se esta política não for definida, o Pareamento rápido seguirá o padrão do Chrome OS, que é a ativação.</translation>
 <translation id="8114382167597081590">Não aplicar o Modo restrito no YouTube</translation>
 <translation id="8117921351531866504">Permite que você defina se os sites têm permissão de verificar se os usuários salvaram formas de pagamento.
 

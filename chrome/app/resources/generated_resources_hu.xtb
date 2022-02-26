@@ -2346,6 +2346,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> kedvezmény</translation>
 <translation id="3305389145870741612">A formázási folyamat eltarthat néhány másodpercig. Kérjük, várjon.</translation>
 <translation id="3305661444342691068">PDF megnyitása előnézetben</translation>
+<translation id="3307176291962384345">Kedvezményeket kaphat a következőnél: <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Ezen az oldalon le van tiltva a cookie-k mentése.</translation>
 <translation id="3308134619352333507">Elrejtés gomb</translation>
 <translation id="3308852433423051161">A Google Segéd betöltése…</translation>
@@ -2825,6 +2826,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3761556954875533505">Engedélyezi a webhelynek a fájlok szerkesztését?</translation>
 <translation id="3764314093345384080">Részletes buildinformáció</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommunikáció egy USB-eszközzel}other{Kommunikáció # USB-eszközzel}}</translation>
+<translation id="3764753550716962406">Használhatja a Google az Ön bevásárlókosarát rendelkezésre álló kedvezmények kereséséhez?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> küldése a következőre: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> küldése a következőre: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Nem sikerült a demó mód offline házirendjének olvasása.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3259,6 +3261,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4194570336751258953">A kattintás érintéssel engedélyezése</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4195814663415092787">Folytatás ott, ahol abbahagyta</translation>
+<translation id="4197917636330710075">Kedvezményeket kaphat a következőknél: <ph name="MERCHANT_NAME" /> és <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">További webhelyek</translation>
 <translation id="4200689466366162458">Egyéni szavak</translation>
 <translation id="4200983522494130825">Új &amp;lap</translation>
@@ -4639,6 +4642,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5632566673632479864">Fiókja (<ph name="EMAIL" />) többé nincs elsődleges fiókként engedélyezve. Mivel ezt a fiókot a(z) <ph name="DOMAIN" /> domain kezeli, könyvjelzői, előzményei, jelszavai és más beállításai törlődnek erről az eszközről.</translation>
 <translation id="5632592977009207922">Letöltés, <ph name="PERCENT_REMAINING" />% van hátra</translation>
 <translation id="563371367637259496">Mobil</translation>
+<translation id="5634446357546764049">Megtekintheti legutóbbi utazásaihoz és egyebekhez fűződő emlékeit</translation>
 <translation id="5635312199252507107">Engedélyezés bizonyos webhelyeken</translation>
 <translation id="563535393368633106">Kérdezzen rá hozzáférés előtt (ajánlott)</translation>
 <translation id="5636996382092289526">A(z) <ph name="NETWORK_ID" /> használatához először <ph name="LINK_START" />fel kell keresnie a hálózat bejelentkezési oldalát<ph name="LINK_END" />, amely automatikusan megnyílik néhány másodpercen belül. Ha ez nem történik meg, akkor a hálózat nem használható.</translation>
@@ -4735,6 +4739,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> – hardveres támogatás és stabilitás</translation>
 <translation id="574104302965107104">Kijelző tükrözése</translation>
 <translation id="574209121243317957">Hangmagasság</translation>
+<translation id="5745316408658560138">Kereshet a Chrome személyre szabott kedvezményeket az Ön bevásárlókosaraira vonatkozóan?</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
 <translation id="5747552184818312860">Lejár</translation>
 <translation id="5747785204778348146">Fejlesztői – nem stabil</translation>
@@ -5362,6 +5367,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6370021412472292592">Nem sikerült a jegyzék betöltése.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Próbálja újra</translation>
+<translation id="6374635887697228982">Szeretne igénybe venni kedvezményeket?</translation>
 <translation id="6377268785556383139">1 találat a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380143666419481200">Elfogadás és folytatás</translation>
 <translation id="6382616130475191723">A következő olvasása és módosítása engedélyezve: <ph name="SITE_NAME" /></translation>
@@ -6928,6 +6934,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7956373551960864128">Mentett nyomtatók</translation>
 <translation id="7957074856830851026">Eszközadatok megtekintése, például az eszköz sorozatszáma vagy tartalomazonosítója</translation>
 <translation id="7957615753207896812">A billentyűzet eszközbeállításainak megnyitása</translation>
+<translation id="7958437133377816580">Kedvezményeket kaphat a következőknél: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> stb.</translation>
 <translation id="7959074893852789871">A fájl több tanúsítványt tartalmazott, amelyek közül néhány nincs importálva:</translation>
 <translation id="7959665254555683862">Új inkognitó lap</translation>
 <translation id="7961015016161918242">Soha</translation>
