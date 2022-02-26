@@ -20,6 +20,7 @@ import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess}
 export interface CertificateProvisioningDetailsDialogElement {
   $: {
     dialog: CrDialogElement,
+    refresh: HTMLElement,
   };
 }
 

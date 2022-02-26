@@ -122,5 +122,11 @@ export class CertificateProvisioningListElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-provisioning-list': CertificateProvisioningListElement;
+  }
+}
+
 customElements.define(
     CertificateProvisioningListElement.is, CertificateProvisioningListElement);

@@ -60,7 +60,7 @@ GEN('#if BUILDFLAG(USE_NSS_CERTS)');
 var CrComponentsCertificateManagerTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_test.js';
+    return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_test.js&host=webui-test';
   }
 };
 
@@ -82,7 +82,7 @@ var CrComponentsCertificateManagerProvisioningTest =
     class extends CrComponentsCertificateManagerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_provisioning_test.js';
+    return 'chrome://settings/test_loader.html?module=cr_components/certificate_manager_provisioning_test.js&host=webui-test';
   }
 };
 

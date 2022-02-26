@@ -277,4 +277,10 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-manager': CertificateManagerElement;
+  }
+}
+
 customElements.define(CertificateManagerElement.is, CertificateManagerElement);

@@ -13,6 +13,7 @@ import './certificate_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CrButtonElement} from '../../cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {I18nMixin} from '../../js/i18n_mixin.js';
 
@@ -21,6 +22,7 @@ import {CertificatesBrowserProxyImpl} from './certificates_browser_proxy.js';
 export interface CertificatePasswordDecryptionDialogElement {
   $: {
     dialog: CrDialogElement,
+    ok: CrButtonElement,
   };
 }
 
@@ -72,6 +74,13 @@ export class CertificatePasswordDecryptionDialogElement extends
                 detail: {error: error, anchor: null},
               }));
             });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-password-decryption-dialog':
+        CertificatePasswordDecryptionDialogElement;
   }
 }
 

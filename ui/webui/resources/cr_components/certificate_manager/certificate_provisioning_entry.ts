@@ -70,6 +70,12 @@ export class CertificateProvisioningEntryElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-provisioning-entry': CertificateProvisioningEntryElement;
+  }
+}
+
 customElements.define(
     CertificateProvisioningEntryElement.is,
     CertificateProvisioningEntryElement);

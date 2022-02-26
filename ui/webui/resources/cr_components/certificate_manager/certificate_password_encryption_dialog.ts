@@ -42,8 +42,6 @@ export class CertificatePasswordEncryptionDialogElement extends
 
   static get properties() {
     return {
-      model: Object,
-
       password_: {
         type: String,
         value: '',
@@ -89,6 +87,13 @@ export class CertificatePasswordEncryptionDialogElement extends
     const isValid =
         this.password_ !== '' && this.password_ === this.confirmPassword_;
     this.$.ok.disabled = !isValid;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-password-encryption-dialog':
+        CertificatePasswordEncryptionDialogElement;
   }
 }
 

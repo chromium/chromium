@@ -22,6 +22,7 @@ import {CertificatesBrowserProxyImpl, CertificateSubnode, CertificateType} from 
 export interface CertificateDeleteConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
+    ok: HTMLElement,
   };
 }
 
@@ -106,6 +107,13 @@ export class CertificateDeleteConfirmationDialogElement extends
                 detail: {error: error, anchor: null},
               }));
             });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-delete-confirmation-dialog':
+        CertificateDeleteConfirmationDialogElement;
   }
 }
 

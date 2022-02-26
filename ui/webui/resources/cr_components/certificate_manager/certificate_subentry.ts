@@ -156,5 +156,11 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'certificate-subentry': CertificateSubentryElement;
+  }
+}
+
 customElements.define(
     CertificateSubentryElement.is, CertificateSubentryElement);

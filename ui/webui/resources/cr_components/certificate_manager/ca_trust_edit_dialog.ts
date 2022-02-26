@@ -27,10 +27,11 @@ import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, Cer
 export interface CaTrustEditDialogElement {
   $: {
     dialog: CrDialogElement,
-    ssl: CrCheckboxElement,
     email: CrCheckboxElement,
     objSign: CrCheckboxElement,
+    ok: HTMLElement,
     spinner: PaperSpinnerLiteElement,
+    ssl: CrCheckboxElement,
   };
 }
 
@@ -110,6 +111,12 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
             detail: {error: error, anchor: null},
           }));
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ca-trust-edit-dialog': CaTrustEditDialogElement;
   }
 }
 
