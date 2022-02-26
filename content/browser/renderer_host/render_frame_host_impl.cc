@@ -1481,6 +1481,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
+  CHECK_EQ(check_if_deleted_request_count_, 0);
+
   // The lifetime of this object has ended, so remove it from the id map before
   // calling any delegates/observers, so that any calls to |FromID| no longer
   // return |this|.
@@ -13128,6 +13130,24 @@ RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
 std::ostream& operator<<(std::ostream& o,
                          const RenderFrameHostImpl::LifecycleStateImpl& s) {
   return o << RenderFrameHostImpl::LifecycleStateImplToString(s);
+}
+
+std::unique_ptr<RenderFrameHostImpl::CheckOnDeleteRef>
+RenderFrameHostImpl::EnableCheckIfDeleted() {
+  // Uses WrapUnique() as constructor is private.
+  return base::WrapUnique(new CheckOnDeleteRef(this));
+}
+
+RenderFrameHostImpl::CheckOnDeleteRef::~CheckOnDeleteRef() {
+  --(host_->check_if_deleted_request_count_);
+  CHECK_GE(host_->check_if_deleted_request_count_, 0);
+}
+
+RenderFrameHostImpl::CheckOnDeleteRef::CheckOnDeleteRef(
+    RenderFrameHostImpl* host)
+    : host_(host) {
+  ++(host_->check_if_deleted_request_count_);
+  CHECK_GT(host_->check_if_deleted_request_count_, 0);
 }
 
 }  // namespace content
