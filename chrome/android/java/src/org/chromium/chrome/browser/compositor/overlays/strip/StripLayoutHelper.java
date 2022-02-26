@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -84,6 +83,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     // Visibility Constants
     private static final float TAB_STACK_WIDTH_DP = 4.f;
     private static final float TAB_OVERLAP_WIDTH_DP = 24.f;
+    private static final float MIN_TAB_WIDTH_DP = 190.f;
     private static final float MAX_TAB_WIDTH_DP = 265.f;
     private static final float REORDER_MOVE_START_THRESHOLD_DP = 50.f;
     private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
@@ -172,8 +172,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         mRightMargin = LocalizationUtils.isLayoutRtl() ? 0 : mNewTabButtonWidth;
         mLeftMargin = LocalizationUtils.isLayoutRtl() ? mNewTabButtonWidth : 0;
-        mMinTabWidth = TabUiFeatureUtilities.getTabMinWidth();
-
+        mMinTabWidth = MIN_TAB_WIDTH_DP;
         mMaxTabWidth = MAX_TAB_WIDTH_DP;
         mReorderMoveStartThreshold = REORDER_MOVE_START_THRESHOLD_DP;
         mUpdateHost = updateHost;
