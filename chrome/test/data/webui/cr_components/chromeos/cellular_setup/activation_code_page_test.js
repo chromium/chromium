@@ -10,7 +10,7 @@
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeMediaDevices} from './fake_media_devices.m.js';
 // #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
+// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {
@@ -52,6 +52,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     mediaDevices = new cellular_setup.FakeMediaDevices();
     mediaDevices.addDevice();
     activationCodePage.setMediaDevices(mediaDevices);
+    mediaDevices.resolveEnumerateDevices();
+    await waitAfterNextRender(activationCodePage);
     Polymer.dom.flush();
   });
 
@@ -99,7 +101,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Click the start scanning button.
     startScanningButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     // The video should be visible and start scanning UI hidden.
     assertFalse(video.hidden);
@@ -145,7 +148,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Mock, no media devices present
     mediaDevices.removeDevice();
-    await flushAsync();
+    mediaDevices.resolveEnumerateDevices();
+    await waitAfterNextRender(activationCodePage);
 
     // When no camera device is present qrCodeDetector container should
     // not be shown
@@ -154,8 +158,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(!!qrCodeDetectorContainer);
   });
 
-  // TODO(b/217936048) Disable flaky test. Renable when test is fixed.
-  test.skip('Switch camera button states', async function() {
+  test('Switch camera button states', async function() {
     await flushAsync();
     const video = activationCodePage.$$('#video');
     const startScanningButton = activationCodePage.$$('#startScanningButton');
@@ -171,7 +174,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Click the start scanning button.
     startScanningButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     // The video should be visible and switch camera button hidden.
     assertFalse(video.hidden);
@@ -180,14 +184,16 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Add a new video device.
     mediaDevices.addDevice();
-    await flushAsync();
+    mediaDevices.resolveEnumerateDevices();
+    await waitAfterNextRender(activationCodePage);
 
     // The switch camera button should now be visible.
     assertFalse(switchCameraButton.hidden);
     assertTrue(mediaDevices.isStreamingUserFacingCamera);
 
     switchCameraButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     // The second device should now be streaming.
     assertFalse(mediaDevices.isStreamingUserFacingCamera);
@@ -195,7 +201,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Switch back.
     switchCameraButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     // The first device should be streaming again.
     assertTrue(mediaDevices.isStreamingUserFacingCamera);
@@ -203,14 +210,16 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Switch to the second device again.
     switchCameraButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     assertFalse(mediaDevices.isStreamingUserFacingCamera);
     assertFalse(switchCameraButton.hidden);
 
     // Disconnect the second device.
     mediaDevices.removeDevice();
-    await flushAsync();
+    mediaDevices.resolveEnumerateDevices();
+    await waitAfterNextRender(activationCodePage);
 
     // The first device should now be streaming and the switch camera button
     // hidden.
@@ -338,7 +347,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
         // Click the start scanning button.
         startScanningButton.click();
-        await flushAsync();
+        mediaDevices.resolveGetUserMedia();
+        await waitAfterNextRender(activationCodePage);
 
         // Mock camera scanning a code.
         await intervalFunction();
@@ -379,7 +389,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Click the start scanning button.
     startScanningButton.click();
-    await flushAsync();
+    mediaDevices.resolveGetUserMedia();
+    await waitAfterNextRender(activationCodePage);
 
     assertFalse(getVideo().hidden);
 
@@ -409,7 +420,8 @@ suite('CrComponentsActivationCodePageTest', function() {
 
         // Click the start scanning button.
         startScanningButton.click();
-        await flushAsync();
+        mediaDevices.resolveGetUserMedia();
+        await waitAfterNextRender(activationCodePage);
 
         assertFalse(getVideo().hidden);
         assertTrue(!!activationCodePage.getQrCodeDetectorTimerForTest());

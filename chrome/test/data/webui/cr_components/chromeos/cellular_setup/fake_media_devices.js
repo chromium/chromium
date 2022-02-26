@@ -10,6 +10,12 @@ cr.define('cellular_setup', function() {
     constructor() {
       this.isStreamingUserFacingCamera = true;
       this.devices_ = [];
+
+      /** @private {?function()} */
+      this.enumerateDevicesResolver_ = null;
+
+      /** @private {?function()} */
+      this.getMediaDevicesResolver_ = null;
     }
 
     /** @override */
@@ -20,8 +26,17 @@ cr.define('cellular_setup', function() {
     /** @override */
     enumerateDevices() {
       return new Promise((res, rej) => {
-        res(this.devices_);
+        this.enumerateDevicesResolver_ = res;
       });
+    }
+
+    /**
+     * Resolves promise returned from enumerateDevices().
+     */
+    resolveEnumerateDevices() {
+      assertTrue(
+          !!this.enumerateDevicesResolver_, 'enumerateDevices was not called');
+      this.enumerateDevicesResolver_(this.devices_);
     }
 
     /** @override */
@@ -41,8 +56,17 @@ cr.define('cellular_setup', function() {
       this.isStreamingUserFacingCamera =
           constraints.video.facingMode === 'user';
       return new Promise((res, rej) => {
-        res(new MediaStream());
+        this.getMediaDevicesResolver_ = res;
       });
+    }
+
+    /**
+     * Resolves promise returned from getUserMedia().
+     */
+    resolveGetUserMedia() {
+      assertTrue(
+          !!this.getMediaDevicesResolver_, 'getUserMedia was not called');
+      this.getMediaDevicesResolver_(new MediaStream);
     }
 
     /** @override */
