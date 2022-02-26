@@ -1009,7 +1009,9 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
 
   base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache =
       nullptr;
-  if (entry) {
+  if (entry && !frame_tree_node->navigator()
+                    .GetDelegate()
+                    ->IsActivationNavigationDisallowedForBug1234857()) {
     BackForwardCacheImpl::Entry* restored_entry =
         frame_tree_node->navigator()
             .controller()
@@ -1726,16 +1728,7 @@ void NavigationRequest::RegisterCommitDeferringConditionForTesting(
 }
 
 bool NavigationRequest::IsCommitDeferringConditionDeferredForTesting() {
-  if (!commit_deferrer_)
-    return false;
-  return commit_deferrer_->GetDeferringConditionForTesting();  // IN-TEST
-}
-
-CommitDeferringCondition*
-NavigationRequest::GetCommitDeferringConditionForTesting() {
-  if (!commit_deferrer_)
-    return nullptr;
-  return commit_deferrer_->GetDeferringConditionForTesting();  // IN-TEST
+  return commit_deferrer_->is_deferred_for_testing();  // IN-TEST
 }
 
 void NavigationRequest::BeginNavigation() {
@@ -1785,6 +1778,9 @@ void NavigationRequest::BeginNavigation() {
 
 bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   if (!blink::features::IsPrerender2Enabled())
+    return false;
+
+  if (GetDelegate()->IsActivationNavigationDisallowedForBug1234857())
     return false;
 
   // Find an available prerendered page for this request. If it's found, this

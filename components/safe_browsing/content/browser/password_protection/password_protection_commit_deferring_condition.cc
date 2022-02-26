@@ -30,9 +30,6 @@ PasswordProtectionCommitDeferringCondition::
 content::CommitDeferringCondition::Result
 PasswordProtectionCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
-  if (invoke_callback_for_testing_)
-    std::move(invoke_callback_for_testing_).Run();
-
   // The request may have asked for a resumption before this condition was
   // executed. In that case, proceed without deferring.
   if (navigation_was_resumed_)

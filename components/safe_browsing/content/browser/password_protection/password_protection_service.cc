@@ -122,22 +122,43 @@ void PasswordProtectionService::StartRequest(
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
 
+  // TODO(bokan): Now that the throttle has been changed to a
+  // CommitDeferringCondition, a followup CL will remove this and make
+  // activations defer like other navigations. https://crbug.com/1234857
+  //
+  // PasswordProtectionService defers all navigations in the WebContents while
+  // there is a pending request triggered by a password reuse. However it does
+  // this via NavigationThrottles, which are not able to throttle navigations
+  // that activate a prerendered page or a back/forward cached page. As a
+  // temporary workaround, disable activations within this WebContents whenever
+  // this event occurs.
+  //
+  // This code only disallows for PASSWORD_REUSE_EVENT because of the following
+  // observations:
+  // 1) A |warning_request| has to start out as a |pending_request|.
+  // 2) Only trigger type PASSWORD_REUSE_EVENT requests can become
+  // |warning_request|.
+  //
+  // This holds because |warning_requests_| insertion only happens at code that
+  // moves a request from |pending_requests_| to |warning_requests_|, which only
+  // does so if is_modal_warning_showing() is true. is_modal_warning_showing()
+  // can only be set to true if ShouldShowModalWarning() is true, which is
+  // always false if trigger_type != PASSWORD_REUSE_EVENT.
+  //
+  // If we were to disallow for other trigger types, we may disable prerendering
+  // more than required.
+  if (request->trigger_type() ==
+      safe_browsing::LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
+    web_contents->DisallowActivationNavigationsForBug1234857();
+  }
+
   pending_requests_.insert(std::move(request));
 }
 
 std::unique_ptr<PasswordProtectionCommitDeferringCondition>
 PasswordProtectionService::MaybeCreateCommitDeferringCondition(
     content::NavigationHandle& navigation_handle) {
-  // Don't defer navigations that the user started themselves. This won't
-  // matter if the dialog is showing, since it's modal, but if a password reuse
-  // ping is in progress we shouldn't block the user from navigating.
   if (!navigation_handle.IsRendererInitiated())
-    return nullptr;
-
-  // The goal of the deferral is to ensure the correct URL is in the omnibox
-  // while the warning modal is showing. Only the primary main frame affects
-  // the omnibox.
-  if (!navigation_handle.IsInPrimaryMainFrame())
     return nullptr;
 
   content::WebContents* web_contents = navigation_handle.GetWebContents();

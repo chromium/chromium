@@ -3387,10 +3387,6 @@ void TestActivationManager::WaitForNavigationFinished() {
 void TestActivationManager::ResumeActivation() {
   TRACE_EVENT("test", "TestActivationManager::ResumeActivation");
   DCHECK(is_paused());
-
-  // Set desired_state_ to kFinished so the navigation can proceed to finish
-  // unless it yields somewhere and/or the caller calls another WaitFor method.
-  desired_state_ = ActivationState::kFinished;
   std::move(resume_callback_).Run();
 }
 

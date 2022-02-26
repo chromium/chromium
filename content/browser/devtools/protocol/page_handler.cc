@@ -1413,6 +1413,9 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
           CacheControlNoStoreHTTPOnlyCookieModified;
     case Reason::kNoResponseHead:
       return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
+    case Reason::kActivationNavigationsDisallowedForBug1234857:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          ActivationNavigationsDisallowedForBug1234857;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1698,6 +1701,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
     case Reason::kUnknown:
+    case Reason::kActivationNavigationsDisallowedForBug1234857:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case Reason::kBlocklistedFeatures:
       NOTREACHED();
