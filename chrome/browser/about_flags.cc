@@ -2815,6 +2815,21 @@ const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabStripImprovementsTabWidthShort[] = {
+    {"min_tab_width", "108"}};
+const FeatureEntry::FeatureParam kTabStripImprovementsTabWidthMedium[] = {
+    {"min_tab_width", "156"}};
+
+const FeatureEntry::FeatureVariation kTabStripImprovementsTabWidthVariations[] =
+    {
+        {"Short Tab Width", kTabStripImprovementsTabWidthShort,
+         base::size(kTabStripImprovementsTabWidthShort), nullptr},
+        {"Medium Tab Width", kTabStripImprovementsTabWidthMedium,
+         base::size(kTabStripImprovementsTabWidthMedium), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5524,7 +5539,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-strip-improvements",
      flag_descriptions::kTabStripImprovementsAndroidName,
      flag_descriptions::kTabStripImprovementsAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripImprovements)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStripImprovements,
+                                    kTabStripImprovementsTabWidthVariations,
+                                    "TabStripImprovementsAndroid")},
 
     {"enable-conditional-tabstrip",
      flag_descriptions::kConditionalTabStripAndroidName,
