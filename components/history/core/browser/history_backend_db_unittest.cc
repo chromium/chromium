@@ -2415,7 +2415,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 46);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 47);
 
   // After the migration, the entities should be empty.
   {
@@ -2427,7 +2427,7 @@ TEST_F(HistoryBackendDBTest, MigrateContentAnnotationsWithoutEntitiesColumn) {
 
 TEST_F(HistoryBackendDBTest,
        MigrateContentAnnotationsAddRelatedSearchesColumn) {
-  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(46));
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(47));
 
   const VisitID visit_id1 = 1;
 
@@ -2457,7 +2457,7 @@ TEST_F(HistoryBackendDBTest,
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 46);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 48);
 
   // After the migration, the related searches should be empty.
   {
@@ -2469,7 +2469,7 @@ TEST_F(HistoryBackendDBTest,
 
 TEST_F(HistoryBackendDBTest,
        MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn) {
-  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(47));
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(48));
 
   const VisitID visit_id1 = 1;
 
@@ -2494,7 +2494,7 @@ TEST_F(HistoryBackendDBTest,
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 48);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 49);
 
   // After the migration, the opener visit should be 0.
   {
@@ -2506,7 +2506,7 @@ TEST_F(HistoryBackendDBTest,
 
 TEST_F(HistoryBackendDBTest,
        MigrateContextAnnotationsAddTotalForegroundDurationColumn) {
-  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(49));
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(50));
 
   const VisitID visit_id = 1;
 
@@ -2534,7 +2534,7 @@ TEST_F(HistoryBackendDBTest,
   CreateBackendAndDatabase();
 
   // The version should have been updated.
-  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 50);
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 51);
 
   // After the migration, the total foreground duration should have a default of
   // -1.
