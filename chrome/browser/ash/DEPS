@@ -31,6 +31,7 @@ include_rules = [
   "+services/network",
   "+services/tracing/public",
   "+services/viz/public/mojom",
+  "+third_party/securemessage",
 ]
 
 specific_include_rules = {

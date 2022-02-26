@@ -123,7 +123,12 @@ void FakeAttestationClient::Decrypt(
 
 void FakeAttestationClient::Sign(const ::attestation::SignRequest& request,
                                  SignCallback callback) {
-  NOTIMPLEMENTED();
+  ::attestation::SignReply reply;
+  reply.set_status(sign_status_);
+  if (reply.status() == ::attestation::STATUS_SUCCESS) {
+    reply.set_signature(kSignatureSuffix);
+  }
+  PostProtoResponse(std::move(callback), reply);
 }
 
 void FakeAttestationClient::RegisterKeyWithChapsToken(
@@ -457,6 +462,11 @@ bool FakeAttestationClient::VerifySimpleChallengeResponse(
 void FakeAttestationClient::set_sign_simple_challenge_status(
     ::attestation::AttestationStatus status) {
   sign_simple_challenge_status_ = status;
+}
+
+void FakeAttestationClient::set_sign_status(
+    ::attestation::AttestationStatus status) {
+  sign_status_ = status;
 }
 
 void FakeAttestationClient::AllowlistSignSimpleChallengeKey(

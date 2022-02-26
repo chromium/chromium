@@ -123,6 +123,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
       ::attestation::AttestationStatus status) override;
   void AllowlistSignSimpleChallengeKey(const std::string& username,
                                        const std::string& label) override;
+  void set_sign_status(::attestation::AttestationStatus status) override;
   void set_register_key_status(
       ::attestation::AttestationStatus status) override;
   void AllowlistRegisterKey(const std::string& username,
@@ -202,6 +203,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ATTESTATION) FakeAttestationClient
   // The status returned by `SignSimpleChallenge()`.
   ::attestation::AttestationStatus sign_simple_challenge_status_ =
       ::attestation::STATUS_SUCCESS;
+  // The status returned by `Sign()`.
+  ::attestation::AttestationStatus sign_status_ = ::attestation::STATUS_SUCCESS;
   // The table of username-label pairs of which keys can perform simple sign
   // challenge.
   std::set<std::pair<std::string, std::string>>
