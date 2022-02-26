@@ -35,7 +35,11 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
       const std::vector<OverlaySurfaceCandidate>& candidates,
       gfx::AcceleratedWidget widget) override;
 
-  void SetClearCacheCallbackIfNecessary();
+  void GetHardwareCapabilities(
+      gfx::AcceleratedWidget widget,
+      HardwareCapabilitiesCallback& receive_callback) override;
+
+  void SetDisplaysConfiguredCallbackIfNecessary();
 
   void ReceiveOverlayValidationResponse(
       gfx::AcceleratedWidget widget,
@@ -44,7 +48,7 @@ class DrmOverlayManagerGpu : public DrmOverlayManager {
 
   DrmThreadProxy* const drm_thread_proxy_;
 
-  bool has_set_clear_cache_callback_ = false;
+  bool has_set_displays_configured_callback_ = false;
 
   base::WeakPtrFactory<DrmOverlayManagerGpu> weak_ptr_factory_{this};
 };

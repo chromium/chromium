@@ -12,6 +12,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 
@@ -35,14 +36,25 @@ class DrmOverlayManager : public OverlayManagerOzone {
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
 
+  // Called when notified by the DRM thread of a display configuration change.
   // Resets the cache of OverlaySurfaceCandidates and if they can be displayed
-  // as an overlay. For use when display configuration changes.
-  void ResetCache();
+  // as an overlay. Requests an updated HardwareCapabilities for any observing
+  // OverlayProcessors.
+  void DisplaysConfigured();
 
   // Checks if overlay candidates can be displayed as overlays. Modifies
   // |candidates| to indicate if they can.
   void CheckOverlaySupport(std::vector<OverlaySurfaceCandidate>* candidates,
                            gfx::AcceleratedWidget widget);
+
+  void StartObservingHardwareCapabilities(
+      gfx::AcceleratedWidget widget,
+      HardwareCapabilitiesCallback receive_callback);
+  void StopObservingHardwareCapabilities(gfx::AcceleratedWidget widget);
+
+  virtual void GetHardwareCapabilities(
+      gfx::AcceleratedWidget widget,
+      HardwareCapabilitiesCallback& receive_callback) = 0;
 
   // Should be called by the overlay processor to indicate if a widget has a
   // candidate that requires an overlay. This is to prioritize which display
@@ -97,6 +109,9 @@ class DrmOverlayManager : public OverlayManagerOzone {
       widget_cache_map_;
 
   base::flat_set<gfx::AcceleratedWidget> widgets_with_required_overlays_;
+
+  std::map<gfx::AcceleratedWidget, HardwareCapabilitiesCallback>
+      hardware_capabilities_callbacks_;
 
   THREAD_CHECKER(thread_checker_);
 };

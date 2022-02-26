@@ -54,10 +54,26 @@ DrmOverlayManager::CreateOverlayCandidates(gfx::AcceleratedWidget widget) {
   return std::make_unique<DrmOverlayCandidates>(this, widget);
 }
 
-void DrmOverlayManager::ResetCache() {
-  TRACE_EVENT0("hwoverlays", "DrmOverlayManager::ResetCache");
+void DrmOverlayManager::DisplaysConfigured() {
+  TRACE_EVENT0("hwoverlays", "DrmOverlayManager::DisplaysConfigured");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   widget_cache_map_.clear();
+
+  for (auto& entry : hardware_capabilities_callbacks_) {
+    GetHardwareCapabilities(entry.first, entry.second);
+  }
+}
+
+void DrmOverlayManager::StartObservingHardwareCapabilities(
+    gfx::AcceleratedWidget widget,
+    HardwareCapabilitiesCallback receive_callback) {
+  GetHardwareCapabilities(widget, receive_callback);
+  hardware_capabilities_callbacks_.emplace(widget, std::move(receive_callback));
+}
+
+void DrmOverlayManager::StopObservingHardwareCapabilities(
+    gfx::AcceleratedWidget widget) {
+  hardware_capabilities_callbacks_.erase(widget);
 }
 
 void DrmOverlayManager::CheckOverlaySupport(

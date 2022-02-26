@@ -16,11 +16,18 @@ DrmOverlayCandidates::DrmOverlayCandidates(DrmOverlayManager* manager,
 
 DrmOverlayCandidates::~DrmOverlayCandidates() {
   overlay_manager_->RegisterOverlayRequirement(widget_, false);
+  overlay_manager_->StopObservingHardwareCapabilities(widget_);
 }
 
 void DrmOverlayCandidates::CheckOverlaySupport(
     std::vector<OverlaySurfaceCandidate>* candidates) {
   overlay_manager_->CheckOverlaySupport(candidates, widget_);
+}
+
+void DrmOverlayCandidates::ObserveHardwareCapabilities(
+    HardwareCapabilitiesCallback receive_callback) {
+  overlay_manager_->StartObservingHardwareCapabilities(
+      widget_, std::move(receive_callback));
 }
 
 void DrmOverlayCandidates::RegisterOverlayRequirement(bool requires_overlay) {

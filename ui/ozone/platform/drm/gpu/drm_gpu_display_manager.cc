@@ -107,9 +107,9 @@ DrmGpuDisplayManager::DrmGpuDisplayManager(ScreenManager* screen_manager,
 
 DrmGpuDisplayManager::~DrmGpuDisplayManager() = default;
 
-void DrmGpuDisplayManager::SetClearOverlayCacheCallback(
+void DrmGpuDisplayManager::SetDisplaysConfiguredCallback(
     base::RepeatingClosure callback) {
-  clear_overlay_cache_callback_ = std::move(callback);
+  displays_configured_callback_ = std::move(callback);
 }
 
 MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
@@ -236,11 +236,12 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     controllers_to_configure.push_back(std::move(params));
   }
 
-  if (clear_overlay_cache_callback_)
-    clear_overlay_cache_callback_.Run();
-
   bool config_success =
       screen_manager_->ConfigureDisplayControllers(controllers_to_configure);
+
+  if (displays_configured_callback_) {
+    displays_configured_callback_.Run();
+  }
 
   for (const auto& controller : controllers_to_configure) {
     if (config_success) {

@@ -520,4 +520,16 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
   crtc_state.modeset_framebuffers.clear();
 }
 
+ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
+    uint32_t crtc_id) {
+  ui::HardwareCapabilities hc;
+  hc.num_overlay_capable_planes = std::count_if(
+      planes_.begin(), planes_.end(),
+      [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
+        return plane->type() != DRM_PLANE_TYPE_CURSOR &&
+               plane->CanUseForCrtcId(crtc_id);
+      });
+  return hc;
+}
+
 }  // namespace ui

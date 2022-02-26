@@ -28,7 +28,7 @@ void DrmOverlayManagerGpu::SendOverlayValidationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest",
       TRACE_ID_LOCAL(this));
-  SetClearCacheCallbackIfNecessary();
+  SetDisplaysConfiguredCallbackIfNecessary();
   drm_thread_proxy_->CheckOverlayCapabilities(
       widget, candidates,
       base::BindOnce(&DrmOverlayManagerGpu::ReceiveOverlayValidationResponse,
@@ -41,21 +41,30 @@ DrmOverlayManagerGpu::SendOverlayValidationRequestSync(
     gfx::AcceleratedWidget widget) {
   TRACE_EVENT0("hwoverlays",
                "DrmOverlayManagerGpu::SendOverlayValidationRequestSync");
-  SetClearCacheCallbackIfNecessary();
+  SetDisplaysConfiguredCallbackIfNecessary();
   return drm_thread_proxy_->CheckOverlayCapabilitiesSync(widget, candidates);
 }
 
-void DrmOverlayManagerGpu::SetClearCacheCallbackIfNecessary() {
+void DrmOverlayManagerGpu::GetHardwareCapabilities(
+    gfx::AcceleratedWidget widget,
+    HardwareCapabilitiesCallback& receive_callback) {
+  TRACE_EVENT0("hwoverlays",
+               "DrmOverlayManagerGpu::SendMaxOverlaysRequestSync");
+  SetDisplaysConfiguredCallbackIfNecessary();
+  drm_thread_proxy_->GetHardwareCapabilities(widget, receive_callback);
+}
+
+void DrmOverlayManagerGpu::SetDisplaysConfiguredCallbackIfNecessary() {
   // Adds a callback for the DRM thread to let us know when display
-  // configuration has changed and to reset cache of valid overlay
-  // configurations. This happens in SendOverlayValidationRequest() because the
-  // DrmThread has been started by this point *and* we are on the thread the
-  // callback should run on. Those two conditions are not necessarily true in
-  // the constructor.
-  if (!has_set_clear_cache_callback_) {
-    has_set_clear_cache_callback_ = true;
-    drm_thread_proxy_->SetClearOverlayCacheCallback(base::BindRepeating(
-        &DrmOverlayManagerGpu::ResetCache, weak_ptr_factory_.GetWeakPtr()));
+  // configuration may have changed.
+  // This happens in SendOverlayValidationRequest() because the DrmThread has
+  // been started by this point *and* we are on the thread the callback should
+  // run on. Those two conditions are not necessarily true in the constructor.
+  if (!has_set_displays_configured_callback_) {
+    has_set_displays_configured_callback_ = true;
+    drm_thread_proxy_->SetDisplaysConfiguredCallback(
+        base::BindRepeating(&DrmOverlayManagerGpu::DisplaysConfigured,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

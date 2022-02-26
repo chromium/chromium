@@ -1180,6 +1180,51 @@ TEST_P(HardwareDisplayPlaneManagerTest, ForceOpaqueFormatsForAddFramebuffer) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerTest, GetHardwareCapabilities) {
+  InitializeDrmState(/*crtc_count=*/4, /*planes_per_crtc=*/7);
+  fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                             plane_properties_, property_names_, use_atomic_);
+
+  for (int i = 0; i < 4; ++i) {
+    // Legacy doesn't support OVERLAY planes.
+    int expected_planes = use_atomic_ ? 7 : 1;
+    EXPECT_EQ(fake_drm_->plane_manager()
+                  ->GetHardwareCapabilities(kCrtcIdBase + i)
+                  .num_overlay_capable_planes,
+              expected_planes);
+  }
+
+  {
+    // Change the last (CURSOR) plane into a PRIMARY plane that is available to
+    // only the first two CRTCs.
+    auto& last_props = plane_properties_[plane_properties_.size() - 1];
+    last_props.crtc_mask = (1 << 0) | (1 << 1);
+    // Find the type property and change it to PRIMARY.
+    for (auto& property : last_props.properties) {
+      if (property.id == kTypePropId) {
+        property.value = DRM_PLANE_TYPE_PRIMARY;
+        break;
+      }
+    }
+
+    fake_drm_->InitializeState(crtc_properties_, connector_properties_,
+                               plane_properties_, property_names_, use_atomic_);
+  }
+
+  for (int i = 0; i < 4; ++i) {
+    // Legacy doesn't support OVERLAY planes.
+    int expected_planes = use_atomic_ ? 7 : 1;
+    // First two CRTCs have the newly added plane available.
+    if (i == 0 || i == 1) {
+      expected_planes++;
+    }
+    EXPECT_EQ(fake_drm_->plane_manager()
+                  ->GetHardwareCapabilities(kCrtcIdBase + i)
+                  .num_overlay_capable_planes,
+              expected_planes);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          HardwareDisplayPlaneManagerTest,
                          testing::Values(false, true));

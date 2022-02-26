@@ -43,8 +43,8 @@ class DrmGpuDisplayManager {
   ~DrmGpuDisplayManager();
 
   // Sets a callback that will be notified when display configuration may have
-  // changed to clear the overlay configuration cache.
-  void SetClearOverlayCacheCallback(base::RepeatingClosure callback);
+  // changed, so we should update state for managing overlays.
+  void SetDisplaysConfiguredCallback(base::RepeatingClosure callback);
 
   // Returns a list of the connected displays. When this is called the list of
   // displays is refreshed.
@@ -87,7 +87,7 @@ class DrmGpuDisplayManager {
 
   std::vector<std::unique_ptr<DrmDisplay>> displays_;
 
-  base::RepeatingClosure clear_overlay_cache_callback_;
+  base::RepeatingClosure displays_configured_callback_;
 };
 
 }  // namespace ui

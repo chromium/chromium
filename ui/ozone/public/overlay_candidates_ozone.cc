@@ -13,6 +13,9 @@ void OverlayCandidatesOzone::CheckOverlaySupport(
   NOTREACHED();
 }
 
-OverlayCandidatesOzone::~OverlayCandidatesOzone() {}
+void OverlayCandidatesOzone::ObserveHardwareCapabilities(
+    ui::HardwareCapabilitiesCallback receive_callback) {}
+
+OverlayCandidatesOzone::~OverlayCandidatesOzone() = default;
 
 }  // namespace ui

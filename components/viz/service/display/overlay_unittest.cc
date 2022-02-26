@@ -214,6 +214,8 @@ class MultiOverlayProcessorBase : public TestOverlayProcessor {
     prioritization_config_.changing_threshold = false;
     prioritization_config_.damage_rate_threshold = false;
     prioritization_config_.power_gain_sort = false;
+    // Don't wait for hardware support in these tests.
+    max_overlays_considered_ = max_overlays_config_;
   }
 
   void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,

@@ -26,6 +26,7 @@
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
+#include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
@@ -214,8 +215,8 @@ void DrmThread::CreateBufferFromHandle(
   *out_framebuffer = std::move(framebuffer);
 }
 
-void DrmThread::SetClearOverlayCacheCallback(base::RepeatingClosure callback) {
-  display_manager_->SetClearOverlayCacheCallback(std::move(callback));
+void DrmThread::SetDisplaysConfiguredCallback(base::RepeatingClosure callback) {
+  display_manager_->SetDisplaysConfiguredCallback(std::move(callback));
 }
 
 void DrmThread::SchedulePageFlip(
@@ -335,6 +336,41 @@ void DrmThread::CheckOverlayCapabilitiesSync(
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.Display.DrmThread.CheckOverlayCapabilitiesSyncUs", time,
       kMinTime, kMaxTime, kTimeBuckets);
+}
+
+void DrmThread::GetHardwareCapabilities(
+    gfx::AcceleratedWidget widget,
+    ui::HardwareCapabilitiesCallback receive_callback) {
+  TRACE_EVENT0("drm,hwoverlays", "DrmThread::GetHardwareCapabilities");
+  DCHECK(screen_manager_->GetWindow(widget));
+  DCHECK(device_manager_->GetDrmDevice(widget));
+  HardwareDisplayController* hdc =
+      screen_manager_->GetWindow(widget)->GetController();
+  HardwareDisplayPlaneManager* plane_manager =
+      device_manager_->GetDrmDevice(widget)->plane_manager();
+
+  if (!hdc || !plane_manager) {
+    // Assume only the primary plane exists.
+    ui::HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.num_overlay_capable_planes = 1;
+    std::move(receive_callback).Run(hardware_capabilities);
+    return;
+  }
+
+  const auto& crtc_controllers = hdc->crtc_controllers();
+  // We almost always expect only one CRTC. Multiple CRTCs for one widget was
+  // the old way mirror mode was supported.
+  if (crtc_controllers.size() == 1) {
+    std::move(receive_callback)
+        .Run(plane_manager->GetHardwareCapabilities(
+            crtc_controllers[0]->crtc()));
+  } else {
+    // If there are multiple CRTCs for this widget, we shouldn't rely on
+    // overlays working, so we'll say only the primary plane exists.
+    ui::HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.num_overlay_capable_planes = 1;
+    std::move(receive_callback).Run(hardware_capabilities);
+  }
 }
 
 void DrmThread::GetDeviceCursor(

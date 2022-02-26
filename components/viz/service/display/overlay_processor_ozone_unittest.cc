@@ -4,8 +4,12 @@
 
 #include "components/viz/service/display/overlay_processor_ozone.h"
 
+#include <utility>
+
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/features.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,6 +17,7 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/ozone/public/hardware_capabilities.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -36,6 +41,19 @@ class FakeOverlayCandidatesOzone : public ui::OverlayCandidatesOzone {
       candidate.overlay_handled = !candidate.buffer_size.IsEmpty();
     }
   }
+
+  // Capture the callback so we can call it at will in tests.
+  void ObserveHardwareCapabilities(
+      ui::HardwareCapabilitiesCallback receive_callback) override {
+    receive_callback_ = std::move(receive_callback);
+  }
+
+  ui::HardwareCapabilitiesCallback& receive_callback() {
+    return receive_callback_;
+  }
+
+ private:
+  ui::HardwareCapabilitiesCallback receive_callback_;
 };
 
 class FakeNativePixmap : public gfx::NativePixmap {
@@ -229,6 +247,71 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   processor.CheckOverlaySupport(&primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 }
-#endif
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+// Exposing max_overlays_considered_ saves us from retesting a lot of logic
+// that's already tested in overlay_unittest.cc.
+class TestOverlayProcessorOzone : public OverlayProcessorOzone {
+ public:
+  using OverlayProcessorOzone::OverlayProcessorOzone;
+
+  int MaxOverlaysConsidered() { return max_overlays_considered_; }
+};
+
+TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
+  // Enable 4 overlays
+  const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+      feature_and_params_list = {{features::kEnableOverlayPrioritization, {}},
+                                 {features::kUseMultipleOverlays,
+                                  {{features::kMaxOverlaysParam, "4"}}}};
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(feature_and_params_list, {});
+
+  auto fake_candidates_unique = std::make_unique<FakeOverlayCandidatesOzone>();
+  auto* fake_candidates = fake_candidates_unique.get();
+
+  // No receive_callback yet.
+  EXPECT_TRUE(fake_candidates->receive_callback().is_null());
+
+  TestOverlayProcessorOzone processor(std::move(fake_candidates_unique), {},
+                                      nullptr);
+
+  // Receive callback is set.
+  EXPECT_FALSE(fake_candidates->receive_callback().is_null());
+  // Max overlays is still 1.
+  EXPECT_EQ(processor.MaxOverlaysConsidered(), 1);
+
+  ui::HardwareCapabilities hc;
+  hc.num_overlay_capable_planes = 6;
+  fake_candidates->receive_callback().Run(hc);
+
+  // Uses max_overlays_config_ = 4.
+  EXPECT_EQ(processor.MaxOverlaysConsidered(), 4);
+
+  hc.num_overlay_capable_planes = 4;
+  fake_candidates->receive_callback().Run(hc);
+
+  // Uses (num_overlay_capable_planes - 1) = 3.
+  EXPECT_EQ(processor.MaxOverlaysConsidered(), 3);
+}
+
+TEST(OverlayProcessorOzoneTest, NoObserveHardwareCapabilites) {
+  // Multiple overlays disabled.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kUseMultipleOverlays);
+
+  auto fake_candidates_unique = std::make_unique<FakeOverlayCandidatesOzone>();
+  auto* fake_candidates = fake_candidates_unique.get();
+
+  // No receive_callback yet.
+  EXPECT_TRUE(fake_candidates->receive_callback().is_null());
+
+  TestOverlayProcessorOzone processor(std::move(fake_candidates_unique), {},
+                                      nullptr);
+
+  // Receive callback is still unset because multiple overlays is disabled.
+  EXPECT_TRUE(fake_candidates->receive_callback().is_null());
+}
 
 }  // namespace viz

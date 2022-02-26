@@ -93,7 +93,7 @@ OverlayProcessorUsingStrategy::ToProposeKey(
 }
 
 OverlayProcessorUsingStrategy::OverlayProcessorUsingStrategy()
-    : max_overlays_considered_(features::MaxOverlaysConsidered()) {}
+    : max_overlays_config_(features::MaxOverlaysConsidered()) {}
 
 OverlayProcessorUsingStrategy::~OverlayProcessorUsingStrategy() = default;
 

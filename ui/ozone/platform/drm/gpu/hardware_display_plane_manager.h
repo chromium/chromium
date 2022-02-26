@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <xf86drmMode.h>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "ui/ozone/platform/drm/gpu/crtc_commit_request.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
+#include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
 namespace gfx {
@@ -203,6 +205,11 @@ class HardwareDisplayPlaneManager {
   // HardwareDisplayPlaneManager and which should be taken care of by the
   // caller.
   void ResetModesetStateForCrtc(uint32_t crtc_id);
+
+  // Gets `HardwareCapabilities` based on planes available to the specified
+  // CRTC. num_overlay_capable_planes counts both `DRM_PLANE_TYPE_PRIMARY` and
+  // `DRM_PLANE_TYPE_OVERLAY` planes.
+  ui::HardwareCapabilities GetHardwareCapabilities(uint32_t crtc_id);
 
  protected:
   struct ConnectorProperties {

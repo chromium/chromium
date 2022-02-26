@@ -118,6 +118,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   OverlayPrioritizationConfig prioritization_config_;
   OverlayCandidateTemporalTracker::Config tracker_config_;
 
+  // This is controlled by the "UseMultipleOverlays" feature's "max_overlays"
+  // param.
+  const int max_overlays_config_;
+  // This will remain 1 until hardware support for more than one overlay is
+  // confirmed in `OverlayProcessorOzone::ReceiveHardwareCapabilities`.
+  int max_overlays_considered_ = 1;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  protected:
   // TODO(b/181974042):  Remove when color space is plumbed.
@@ -273,8 +280,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
 
   static ProposedCandidateKey ToProposeKey(
       const OverlayProposedCandidate& proposed);
-
-  const int max_overlays_considered_;
 
   std::unordered_map<ProposedCandidateKey,
                      OverlayCandidateTemporalTracker,

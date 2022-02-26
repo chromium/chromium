@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
 namespace ui {
@@ -29,6 +30,8 @@ class DrmOverlayCandidates : public OverlayCandidatesOzone {
   // OverlayCandidatesOzone:
   void CheckOverlaySupport(
       std::vector<OverlaySurfaceCandidate>* candidates) override;
+  void ObserveHardwareCapabilities(
+      HardwareCapabilitiesCallback receive_callback) override;
   void RegisterOverlayRequirement(bool requires_overlay) override;
 
  private:

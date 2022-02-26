@@ -38,6 +38,16 @@ class TestDrmOverlayManager : public DrmOverlayManager {
       gfx::AcceleratedWidget widget) override {
     return {};
   }
+  void GetHardwareCapabilities(
+      gfx::AcceleratedWidget widget,
+      ui::HardwareCapabilitiesCallback& receive_callback) override {
+    ui::HardwareCapabilities hardware_capabilities;
+    hardware_capabilities.num_overlay_capable_planes = num_planes_response_;
+    // Immediately respond to the callback.
+    receive_callback.Run(hardware_capabilities);
+  }
+
+  int num_planes_response_ = 0;
 
  private:
   std::vector<std::vector<OverlaySurfaceCandidate>> requests_;
@@ -306,6 +316,52 @@ TEST(DrmOverlayManagerTest, RequiredOverlayMultiDisplay) {
   for (int i = 0; i < 4; ++i)
     manager.CheckOverlaySupport(&candidates2, kSecondaryWidget);
   EXPECT_EQ(manager.requests().size(), 1u);
+}
+
+TEST(DrmOverlayManagerTest, ObservingHardwareCapabilities) {
+  TestDrmOverlayManager manager;
+  manager.num_planes_response_ = 2;
+
+  int primary_calls = 0;
+  HardwareCapabilitiesCallback primary_callback = base::BindRepeating(
+      [](int* calls, HardwareCapabilities hc) {
+        (*calls)++;
+        EXPECT_EQ(hc.num_overlay_capable_planes, 2);
+      },
+      &primary_calls);
+  manager.StartObservingHardwareCapabilities(kPrimaryWidget, primary_callback);
+  EXPECT_EQ(primary_calls, 1);
+
+  manager.DisplaysConfigured();
+
+  EXPECT_EQ(primary_calls, 2);
+
+  int secondary_calls = 0;
+  HardwareCapabilitiesCallback secondary_callback = base::BindRepeating(
+      [](int* calls, HardwareCapabilities hc) {
+        (*calls)++;
+        EXPECT_EQ(hc.num_overlay_capable_planes, 2);
+      },
+      &secondary_calls);
+  manager.StartObservingHardwareCapabilities(kSecondaryWidget,
+                                             secondary_callback);
+  // Only the secondary callback should be called.
+  EXPECT_EQ(primary_calls, 2);
+  EXPECT_EQ(secondary_calls, 1);
+
+  manager.DisplaysConfigured();
+
+  // Both callbacks are called.
+  EXPECT_EQ(primary_calls, 3);
+  EXPECT_EQ(secondary_calls, 2);
+
+  manager.StopObservingHardwareCapabilities(kPrimaryWidget);
+  manager.DisplaysConfigured();
+  manager.DisplaysConfigured();
+
+  // The primary callback won't be called anymore.
+  EXPECT_EQ(primary_calls, 3);
+  EXPECT_EQ(secondary_calls, 4);
 }
 
 }  // namespace ui
