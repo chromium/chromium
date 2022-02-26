@@ -137,6 +137,14 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // Called when the hide animation ends or aborts.
   void OnHideAnimationEnded(const gfx::Rect& layer_bounds);
 
+  // Hides the folder view if it's currently shown. It can be called if the
+  // folder is not currently shown.
+  // `animate` - Whether the folder view should be hidden using an animation.
+  // `hide_for_reparent` - Whether the folder view is being hidden to initiate
+  // item reparent user action (e.g. when dragging folder item out of the folder
+  // view bounds).
+  void HideFolderView(bool animate, bool hide_for_reparent);
+
   AppListViewDelegate* const view_delegate_;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;

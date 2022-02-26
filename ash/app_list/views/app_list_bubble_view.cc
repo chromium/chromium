@@ -619,18 +619,8 @@ void AppListBubbleView::ShowApps(AppListItemView* folder_item_view,
   if (folder_view_->IsAnimationRunning())
     return;
 
-  showing_folder_ = false;
-  Layout();
-  folder_background_view_->SetVisible(false);
-  apps_page_->scrollable_apps_grid_view()->ResetForShowApps();
-  folder_view_->ResetItemsGridForClose();
-  if (folder_item_view) {
-    folder_view_->ScheduleShowHideAnimation(/*show=*/false,
-                                            /*hide_for_reparent=*/false);
-  } else {
-    folder_view_->HideViewImmediately();
-  }
-  DisableFocusForShowingActiveFolder(false);
+  HideFolderView(/*animate=*/folder_item_view, /*hide_for_reparent=*/false);
+
   if (folder_item_view && select_folder)
     folder_item_view->RequestFocus();
   else
@@ -643,12 +633,7 @@ void AppListBubbleView::ReparentFolderItemTransit(
   if (folder_view_->IsAnimationRunning())
     return;
 
-  showing_folder_ = false;
-  Layout();
-  folder_background_view_->SetVisible(false);
-  folder_view_->ScheduleShowHideAnimation(/*show=*/false,
-                                          /*hide_for_reparent=*/true);
-  DisableFocusForShowingActiveFolder(false);
+  HideFolderView(/*animate=*/true, /*hide_for_reparent=*/true);
 }
 
 void AppListBubbleView::ReparentDragEnded() {
@@ -680,8 +665,8 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
 
   search_box_view_->ClearSearch();
 
-  // Hide any open folder by showing the apps page.
-  ShowApps(/*folder_item_view=*/nullptr, /*select_folder=*/false);
+  // Hide any open folder.
+  HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
 
   // Reset pages to default visibility.
   current_page_ = AppListBubblePage::kNone;
@@ -691,6 +676,22 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
 
   if (on_hide_animation_ended_)
     std::move(on_hide_animation_ended_).Run();
+}
+
+void AppListBubbleView::HideFolderView(bool animate, bool hide_for_reparent) {
+  showing_folder_ = false;
+  Layout();
+  folder_background_view_->SetVisible(false);
+  if (!hide_for_reparent) {
+    apps_page_->scrollable_apps_grid_view()->ResetForShowApps();
+    folder_view_->ResetItemsGridForClose();
+  }
+  if (animate) {
+    folder_view_->ScheduleShowHideAnimation(/*show=*/false, hide_for_reparent);
+  } else {
+    folder_view_->HideViewImmediately();
+  }
+  DisableFocusForShowingActiveFolder(false);
 }
 
 }  // namespace ash

@@ -204,6 +204,25 @@ TEST_F(AppListBubblePresenterTest, ShowAfterDisconnectingDisplay) {
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
 }
 
+TEST_F(AppListBubblePresenterTest, ToggleByFocusingWindowOnSecondaryDisplay) {
+  UpdateDisplay("1600x1200,1366x768");
+
+  std::unique_ptr<views::Widget> primary_display_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> secondary_display_widget = CreateTestWidget();
+  secondary_display_widget->SetBounds(
+      gfx::Rect(gfx::Point(1600, 0), gfx::Size(1366, 768)));
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Activate the window in secondary display, and verify the app list bubble
+  // gets hidden.
+  secondary_display_widget->Activate();
+
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(secondary_display_widget->IsActive());
+}
+
 TEST_F(AppListBubblePresenterTest, DismissHidesWidget) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
