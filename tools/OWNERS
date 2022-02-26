@@ -10,6 +10,9 @@ brucedawson@chromium.org
 scottmg@chromium.org
 thakis@chromium.org
 
+per-file add_header*.py=dcheng@chromium.org
+per-file add_header*.py=xhwang@chromium.org
+
 per-file autotest.py=mthiesse@chromium.org
 
 per-file bisect*.py=anantha@chromium.org

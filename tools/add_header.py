@@ -333,9 +333,6 @@ def MarkPrimaryInclude(includes, filename):
 def SerializeIncludes(includes):
   """Turns includes back into the corresponding C++ source text.
 
-  This function assumes that the list of input Include objects is already sorted
-  according to Google style.
-
   Args:
     includes: a list of Include objects.
 
@@ -343,6 +340,56 @@ def SerializeIncludes(includes):
     A list of strings representing C++ source text.
   """
   source = []
+
+  special_headers = [
+      # Must be included before ws2tcpip.h.
+      # Doesn't need to be included before <windows.h> with
+      # WIN32_LEAN_AND_MEAN but why chance it?
+      '<winsock2.h>',
+      # Must be before lots of things, e.g. shellapi.h, winbase.h,
+      # versionhelpers.h, memoryapi.h, hidclass.h, ncrypt.h., ...
+      '<windows.h>',
+      # Must be before iphlpapi.h.
+      '<ws2tcpip.h>',
+      # Must be before propkey.h.
+      '<shobjidl.h>',
+      # Must be before atlapp.h.
+      '<atlbase.h>',
+      # Must be before intshcut.h.
+      '<ole2.h>',
+      # Must be before intshcut.h.
+      '<unknwn.h>',
+      # Must be before uiautomation.h.
+      '<objbase.h>',
+      # Must be before tpcshrd.h.
+      '<tchar.h>',
+  ]
+
+  # Ensure that headers are sorted as follows:
+  #
+  # 1. The primary header, if any, appears first.
+  # 2. All headers of the same type (e.g. C system, C++ system headers, et
+  #    cetera) are grouped contiguously.
+  # 3. Any special sorting rules needed within each group for satisfying
+  #    platform header idiosyncrasies. In practice, this only applies to C
+  #    system headers.
+  # 4. The remaining headers without special sorting rules are sorted
+  #    lexicographically.
+  #
+  # The for loop below that outputs the actual source text depends on #2 above
+  # to insert newlines between different groups of headers.
+  def SortKey(include):
+    def SpecialSortKey(include):
+      lower_name = include.decorated_name.lower()
+      for i in range(len(special_headers)):
+        if special_headers[i] == lower_name:
+          return i
+      return len(special_headers)
+
+    return (not include.is_primary_header, include.header_type,
+            SpecialSortKey(include), include.decorated_name)
+
+  includes.sort(key=SortKey)
 
   # Assume there's always at least one include.
   previous_include = None
@@ -399,13 +446,6 @@ def AddHeaderToSource(filename, source, decorated_name, remove=False):
 
   MarkPrimaryInclude(includes, filename)
 
-  # TODO(dcheng): It may be worth considering adding special sorting heuristics
-  # for windows.h, et cetera.
-  def SortKey(include):
-    return (not include.is_primary_header, include.header_type,
-            include.decorated_name)
-
-  includes.sort(key=SortKey)
   lines[begin:end] = SerializeIncludes(includes)
   lines.append('')  # To avoid eating the newline at the end of the file.
   return '\n'.join(lines)
