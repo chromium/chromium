@@ -20,6 +20,7 @@ import {NetworkListenerBehavior} from '//resources/cr_components/chromeos/networ
 import {OncMojo} from '//resources/cr_components/chromeos/network/onc_mojo.m.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
@@ -37,6 +38,7 @@ Polymer({
     NetworkListenerBehavior,
     CrPolicyNetworkBehaviorMojo,
     RouteObserverBehavior,
+    I18nBehavior,
   ],
 
   properties: {
@@ -214,6 +216,17 @@ Polymer({
    */
   getNetworkDisplayName_(networkState) {
     return OncMojo.getNetworkStateDisplayName(networkState);
+  },
+
+  /**
+   * @param {!OncMojo.NetworkStateProperties} networkState
+   * @return {string}
+   * @private
+   */
+  getEnterpriseIconAriaLabel_(networkState) {
+    return this.i18n(
+        'networkA11yManagedByAdministrator',
+        this.getNetworkDisplayName_(networkState));
   },
 
   /**

@@ -28,7 +28,8 @@
           deep-link-focus-id$="[[Setting.kForgetWifiNetwork]]">
         <template is="dom-if" if="[[isPolicySource(item.source))]]">
           <cr-policy-indicator on-click="doNothing_"
-              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]"
+              icon-aria-label="[[getEnterpriseIconAriaLabel_(item)]]">
           </cr-policy-indicator>
         </template>
       </cr-link-row>
@@ -55,7 +56,8 @@
               [[Setting.kForgetWifiNetwork]]">
         <template is="dom-if" if="[[isPolicySource(item.source))]]">
           <cr-policy-indicator on-click="doNothing_"
-              indicator-type="[[getIndicatorTypeForSource(item.source)]]">
+              indicator-type="[[getIndicatorTypeForSource(item.source)]]"
+              icon-aria-label="[[getEnterpriseIconAriaLabel_(item)]]">
           </cr-policy-indicator>
         </template>
       </cr-link-row>

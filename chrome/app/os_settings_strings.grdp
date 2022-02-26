@@ -2863,6 +2863,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED" desc="Settings > Internet > Network details: Text to show when a network configuration is controlled by the primary user.">
     Network configuration is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
   </message>
+  <message name="IDS_SETTINGS_INTERNET_A11Y_MANAGED_BY_ADMINISTRATOR" desc="Settings > Internet > Network details: A11Y label for managed by administrator icon, indicating which network settings is being managed by an administrator">
+    <ph name="NETWORK_NAME">$1<ex>Google-A</ex></ph> is managed by your administrator
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_ADVANCED" desc="Settings > Internet > Network details: Advanced section label.">
     Advanced
   </message>

@@ -693,6 +693,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkPrefer", IDS_SETTINGS_INTERNET_NETWORK_PREFER},
       {"networkPrimaryUserControlled",
        IDS_SETTINGS_INTERNET_NETWORK_PRIMARY_USER_CONTROLLED},
+      {"networkA11yManagedByAdministrator",
+       IDS_SETTINGS_INTERNET_A11Y_MANAGED_BY_ADMINISTRATOR},
       {"networkDetailMenuRemoveESim",
        IDS_SETTINGS_INTERNET_NETWORK_MENU_REMOVE},
       {"networkDetailMenuRenameESim",

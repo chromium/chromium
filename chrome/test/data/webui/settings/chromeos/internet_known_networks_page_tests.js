@@ -107,5 +107,54 @@ suite('InternetKnownNetworksPage', function() {
           deepLinkElement, getDeepActiveElement(),
           'Preferred list elem should be focused for settingId=7.');
     });
+
+    test('Known networks policy icon a11y label', async () => {
+      const mojom = chromeos.networkConfig.mojom;
+      internetKnownNetworksPage.networkType = mojom.NetworkType.kWiFi;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
+      const preferredWifi =
+          OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi2');
+      preferredWifi.priority = 1;
+      preferredWifi.source = mojom.OncSource.kDevicePolicy;
+      const notPreferredWifi =
+          OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1');
+      notPreferredWifi.source = mojom.OncSource.kDevicePolicy;
+      setNetworksForTest(mojom.NetworkType.kWiFi, [
+        notPreferredWifi,
+        preferredWifi,
+      ]);
+
+      const params = new URLSearchParams;
+      params.append('settingId', '7');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.KNOWN_NETWORKS, params);
+
+      await flushAsync();
+
+      assertEquals(2, internetKnownNetworksPage.networkStateList_.length);
+      const preferredList =
+          internetKnownNetworksPage.$$('#preferredNetworkList');
+      assertTrue(!!preferredList);
+
+      const preferredPolicyIcon =
+          preferredList.querySelector('cr-policy-indicator');
+      assertTrue(!!preferredPolicyIcon);
+      assertEquals(
+          preferredPolicyIcon.iconAriaLabel,
+          internetKnownNetworksPage.i18n(
+              'networkA11yManagedByAdministrator', 'wifi2'));
+
+      const notPreferredList =
+          internetKnownNetworksPage.$$('#notPreferredNetworkList');
+      assertTrue(!!notPreferredList);
+
+      const notPreferredPolicyIcon =
+          notPreferredList.querySelector('cr-policy-indicator');
+      assertTrue(!!notPreferredPolicyIcon);
+      assertEquals(
+          notPreferredPolicyIcon.iconAriaLabel,
+          internetKnownNetworksPage.i18n(
+              'networkA11yManagedByAdministrator', 'wifi1'));
+    });
   });
 });
