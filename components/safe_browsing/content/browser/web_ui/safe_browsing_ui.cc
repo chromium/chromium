@@ -2032,15 +2032,14 @@ void SafeBrowsingUIHandler::OnJavascriptDisallowed() {
   WebUIInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
 }
 
-void SafeBrowsingUIHandler::GetExperiments(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetExperiments(const base::Value::List& args) {
   AllowJavascript();
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), GetFeatureStatusList());
 }
 
-void SafeBrowsingUIHandler::GetPrefs(const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetPrefs(const base::Value::List& args) {
   AllowJavascript();
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
@@ -2049,7 +2048,7 @@ void SafeBrowsingUIHandler::GetPrefs(const base::Value::ConstListView args) {
                                 user_prefs::UserPrefs::Get(browser_context_)));
 }
 
-void SafeBrowsingUIHandler::GetPolicies(const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetPolicies(const base::Value::List& args) {
   AllowJavascript();
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
@@ -2058,7 +2057,7 @@ void SafeBrowsingUIHandler::GetPolicies(const base::Value::ConstListView args) {
                                 user_prefs::UserPrefs::Get(browser_context_)));
 }
 
-void SafeBrowsingUIHandler::GetCookie(const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetCookie(const base::Value::List& args) {
   DCHECK(!args.empty());
   std::string callback_id = args[0].GetString();
 
@@ -2090,8 +2089,7 @@ void SafeBrowsingUIHandler::OnGetCookie(
                             base::Value(std::move(response)));
 }
 
-void SafeBrowsingUIHandler::GetSavedPasswords(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetSavedPasswords(const base::Value::List& args) {
   password_manager::HashPasswordManager hash_manager(
       user_prefs::UserPrefs::Get(browser_context_));
 
@@ -2109,7 +2107,7 @@ void SafeBrowsingUIHandler::GetSavedPasswords(
 }
 
 void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   base::ListValue database_manager_info;
 
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
@@ -2211,7 +2209,7 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
 }
 
 void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::vector<std::pair<std::vector<GURL>, DownloadCheckResult>>&
       urls_checked = WebUIInfoSingleton::GetInstance()->download_urls_checked();
 
@@ -2229,7 +2227,7 @@ void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
 }
 
 void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& cdrs =
       WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
 
@@ -2246,7 +2244,7 @@ void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
 }
 
 void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientDownloadResponse>>& cdrs =
       WebUIInfoSingleton::GetInstance()->client_download_responses_received();
 
@@ -2263,7 +2261,7 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
 }
 
 void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::vector<ClientPhishingRequestAndToken>& cprs =
       WebUIInfoSingleton::GetInstance()->client_phishing_requests_sent();
 
@@ -2280,7 +2278,7 @@ void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
 }
 
 void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientPhishingResponse>>& cprs =
       WebUIInfoSingleton::GetInstance()->client_phishing_responses_received();
 
@@ -2296,8 +2294,7 @@ void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
   ResolveJavascriptCallback(base::Value(callback_id), cprs_received);
 }
 
-void SafeBrowsingUIHandler::GetSentCSBRRs(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetSentCSBRRs(const base::Value::List& args) {
   const std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>>& reports =
       WebUIInfoSingleton::GetInstance()->csbrrs_sent();
 
@@ -2313,7 +2310,7 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(
   ResolveJavascriptCallback(base::Value(callback_id), sent_reports);
 }
 
-void SafeBrowsingUIHandler::GetPGEvents(const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetPGEvents(const base::Value::List& args) {
   const std::vector<sync_pb::UserEventSpecifics>& events =
       WebUIInfoSingleton::GetInstance()->pg_event_log();
 
@@ -2328,8 +2325,7 @@ void SafeBrowsingUIHandler::GetPGEvents(const base::Value::ConstListView args) {
   ResolveJavascriptCallback(base::Value(callback_id), events_sent);
 }
 
-void SafeBrowsingUIHandler::GetSecurityEvents(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetSecurityEvents(const base::Value::List& args) {
   const std::vector<sync_pb::GaiaPasswordReuse>& events =
       WebUIInfoSingleton::GetInstance()->security_event_log();
 
@@ -2344,7 +2340,7 @@ void SafeBrowsingUIHandler::GetSecurityEvents(
   ResolveJavascriptCallback(base::Value(callback_id), events_sent);
 }
 
-void SafeBrowsingUIHandler::GetPGPings(const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetPGPings(const base::Value::List& args) {
   const std::vector<LoginReputationClientRequestAndToken> requests =
       WebUIInfoSingleton::GetInstance()->pg_pings();
 
@@ -2363,8 +2359,7 @@ void SafeBrowsingUIHandler::GetPGPings(const base::Value::ConstListView args) {
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
-void SafeBrowsingUIHandler::GetPGResponses(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetPGResponses(const base::Value::List& args) {
   const std::map<int, LoginReputationClientResponse> responses =
       WebUIInfoSingleton::GetInstance()->pg_responses();
 
@@ -2383,8 +2378,7 @@ void SafeBrowsingUIHandler::GetPGResponses(
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetRTLookupPings(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetRTLookupPings(const base::Value::List& args) {
   const std::vector<RTLookupRequestAndToken> requests =
       WebUIInfoSingleton::GetInstance()->rt_lookup_pings();
 
@@ -2405,7 +2399,7 @@ void SafeBrowsingUIHandler::GetRTLookupPings(
 }
 
 void SafeBrowsingUIHandler::GetRTLookupResponses(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::map<int, RTLookupResponse> responses =
       WebUIInfoSingleton::GetInstance()->rt_lookup_responses();
 
@@ -2424,8 +2418,7 @@ void SafeBrowsingUIHandler::GetRTLookupResponses(
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
-void SafeBrowsingUIHandler::GetReferrerChain(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
   DCHECK_GE(args.size(), 2U);
   std::string url_string = args[1].GetString();
 
@@ -2461,8 +2454,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(
                             base::Value(referrer_chain_serialized));
 }
 
-void SafeBrowsingUIHandler::GetReferringAppInfo(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   base::Value referring_app_value;
 #if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo info =
@@ -2482,8 +2474,7 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(
                             base::Value(referring_app_serialized));
 }
 
-void SafeBrowsingUIHandler::GetReportingEvents(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
   base::ListValue reporting_events;
   for (const auto& reporting_event :
        WebUIInfoSingleton::GetInstance()->reporting_events()) {
@@ -2496,8 +2487,7 @@ void SafeBrowsingUIHandler::GetReportingEvents(
   ResolveJavascriptCallback(base::Value(callback_id), reporting_events);
 }
 
-void SafeBrowsingUIHandler::GetLogMessages(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetLogMessages(const base::Value::List& args) {
   const std::vector<std::pair<base::Time, std::string>>& log_messages =
       WebUIInfoSingleton::GetInstance()->log_messages();
 
@@ -2513,8 +2503,7 @@ void SafeBrowsingUIHandler::GetLogMessages(
   ResolveJavascriptCallback(base::Value(callback_id), messages_received);
 }
 
-void SafeBrowsingUIHandler::GetDeepScans(
-    const base::Value::ConstListView args) {
+void SafeBrowsingUIHandler::GetDeepScans(const base::Value::List& args) {
   base::ListValue pings_sent;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   for (const auto& token_and_data :
@@ -2657,92 +2646,92 @@ void SafeBrowsingUIHandler::NotifyDeepScanJsListener(
 #endif
 
 void SafeBrowsingUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getExperiments",
       base::BindRepeating(&SafeBrowsingUIHandler::GetExperiments,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPolicies", base::BindRepeating(&SafeBrowsingUIHandler::GetPolicies,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPrefs", base::BindRepeating(&SafeBrowsingUIHandler::GetPrefs,
                                       base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getCookie", base::BindRepeating(&SafeBrowsingUIHandler::GetCookie,
                                        base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSavedPasswords",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSavedPasswords,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getDatabaseManagerInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetDatabaseManagerInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getDownloadUrlsChecked",
       base::BindRepeating(&SafeBrowsingUIHandler::GetDownloadUrlsChecked,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSentClientDownloadRequests",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentClientDownloadRequests,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getReceivedClientDownloadResponses",
       base::BindRepeating(
           &SafeBrowsingUIHandler::GetReceivedClientDownloadResponses,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSentClientPhishingRequests",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentClientPhishingRequests,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getReceivedClientPhishingResponses",
       base::BindRepeating(
           &SafeBrowsingUIHandler::GetReceivedClientPhishingResponses,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSentCSBRRs",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSentCSBRRs,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPGEvents", base::BindRepeating(&SafeBrowsingUIHandler::GetPGEvents,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSecurityEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetSecurityEvents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPGPings", base::BindRepeating(&SafeBrowsingUIHandler::GetPGPings,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPGResponses",
       base::BindRepeating(&SafeBrowsingUIHandler::GetPGResponses,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getRTLookupPings",
       base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupPings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getRTLookupResponses",
       base::BindRepeating(&SafeBrowsingUIHandler::GetRTLookupResponses,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getLogMessages",
       base::BindRepeating(&SafeBrowsingUIHandler::GetLogMessages,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getReferrerChain",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferrerChain,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getReferringAppInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferringAppInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getReportingEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReportingEvents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getDeepScans", base::BindRepeating(&SafeBrowsingUIHandler::GetDeepScans,
                                           base::Unretained(this)));
 }
