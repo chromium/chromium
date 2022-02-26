@@ -306,6 +306,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _mode = mode;
   // TODO(crbug.com/1300369): Enable dragging items from search results.
   self.collectionView.dragInteractionEnabled = (_mode != TabGridModeSearch);
+  self.emptyStateView.tabGridMode = _mode;
 
   if (IsTabsSearchRegularResultsSuggestedActionsEnabled()) {
     if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
