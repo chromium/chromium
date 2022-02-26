@@ -419,9 +419,9 @@ To enable Incremental Install, add the gn args:
 incremental_install = true
 ```
 
-Some APKs (e.g. WebView) do not work with incremental install, and are
-blacklisted from being built as such (via `never_incremental = true`), so are
-build as normal APKs even when `incremental_install = true`.
+Some APKs (e.g. WebView) do not work with `incremental install = true` and are
+always built as normal APKs. This behavior is controlled via
+`never_incremental = true`.
 
 ## Installing and Running Chromium on an Emulator
 
