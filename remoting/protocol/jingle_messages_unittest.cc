@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "remoting/protocol/content_description.h"
 #include "remoting/signaling/xmpp_constants.h"
@@ -480,7 +479,7 @@ TEST(JingleMessageReplyTest, ToXml) {
        kTestIncomingMessage2},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::unique_ptr<XmlElement> incoming_message(
         XmlElement::ForStr(tests[i].incoming_message));
     ASSERT_TRUE(incoming_message.get());

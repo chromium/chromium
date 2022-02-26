@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -75,7 +74,7 @@ void SecurityKeySocket::SendResponse(const std::string& response_data) {
 void SecurityKeySocket::SendSshError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  SendResponse(std::string(kSshError, base::size(kSshError)));
+  SendResponse(std::string(kSshError, std::size(kSshError)));
 }
 
 void SecurityKeySocket::StartReadingRequest(

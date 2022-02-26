@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -371,7 +370,7 @@ It2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
 
     std::string message_json(length, '\0');
     read_result =
-        output_read_file_.ReadAtCurrentPos(base::data(message_json), length);
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
     if (read_result != static_cast<int>(length)) {
       LOG(ERROR) << "Message size (" << read_result
                  << ") doesn't match the header (" << length << ").";

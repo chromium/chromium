@@ -8,7 +8,6 @@
 
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -384,7 +383,7 @@ void DaemonControllerDelegateWin::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
     DaemonController::CompletionCallback done) {
   // Check for bad keys.
-  for (size_t i = 0; i < base::size(kReadonlyKeys); ++i) {
+  for (size_t i = 0; i < std::size(kReadonlyKeys); ++i) {
     if (config->HasKey(kReadonlyKeys[i])) {
       LOG(ERROR) << "Cannot update config: '" << kReadonlyKeys[i]
                  << "' is read only.";

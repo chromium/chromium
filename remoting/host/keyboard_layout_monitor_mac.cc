@@ -189,7 +189,7 @@ void KeyboardLayoutMonitorMac::QueryLayoutOnMainLoop(
                          CFDataGetBytePtr(layout_data)),
                      keycode, kUCKeyActionDown, modifier_state >> 8,
                      keyboard_type, kUCKeyTranslateNoDeadKeysMask,
-                     &deadkey_state, base::size(result_array), &result_length,
+                     &deadkey_state, std::size(result_array), &result_length,
                      result_array);
 
       if (result_length == 0) {

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/base/capabilities.h"
+
 #include <stddef.h>
 
 #include <algorithm>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "remoting/base/capabilities.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -65,7 +65,7 @@ TEST(CapabilitiesTest, HasCapability) {
 
   // Verify that HasCapability(|capabilities|, |key|) returns |result|.
   // |result|.
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::vector<base::StringPiece> caps =
         base::SplitStringPiece(data[i].capabilities, " ", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
@@ -97,7 +97,7 @@ TEST(CapabilitiesTest, Intersect) {
 
   // Verify that intersection of |right| with all permutations of |left| yields
   // |result|.
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     std::vector<base::StringPiece> caps = base::SplitStringPiece(
         data[i].left, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     do {

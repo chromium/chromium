@@ -4,7 +4,6 @@
 
 #include "remoting/base/weighted_samples.h"
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -18,7 +17,7 @@ TEST(WeightedSamplesTest, CalculateWeightedAverage) {
     2.6312881651642916,
   };
   WeightedSamples samples(kWeightFactor);
-  for (size_t i = 0; i < base::size(kExpected); i++) {
+  for (size_t i = 0; i < std::size(kExpected); i++) {
     samples.Record(i + 1);
     EXPECT_DOUBLE_EQ(kExpected[i], samples.WeightedAverage());
   }

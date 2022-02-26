@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
@@ -335,7 +334,7 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const uint8_t* buffer =
-      reinterpret_cast<const uint8_t*>(base::data(frame.data));
+      reinterpret_cast<const uint8_t*>(std::data(frame.data));
   size_t buffer_size = frame.data.size();
 
   // TODO(crbug.com/1208215): Avoid copying/allocating frame data here, by

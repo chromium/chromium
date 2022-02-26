@@ -11,7 +11,6 @@
 #include <ios>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
@@ -32,7 +31,7 @@ namespace {
 std::wstring GetLaunchBrowserCommand(const std::wstring& browser_prog_id,
                                      const GURL& url) {
   wchar_t open_cmd_buf[MAX_PATH];
-  DWORD open_cmd_buf_len = base::size(open_cmd_buf);
+  DWORD open_cmd_buf_len = std::size(open_cmd_buf);
   HRESULT hr =
       AssocQueryString(ASSOCF_NONE, ASSOCSTR_COMMAND, browser_prog_id.c_str(),
                        L"open", open_cmd_buf, &open_cmd_buf_len);

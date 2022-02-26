@@ -14,24 +14,22 @@
 //                   running as root, not allowed when running as a normal user.
 //   SCRIPT_ARGS   - Arguments following -- are passed to the script verbatim.
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <fcntl.h>
 #include <grp.h>
 #include <limits.h>
 #include <pwd.h>
-#include <signal.h>
-#include <unistd.h>
-
 #include <security/pam_appl.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-
 #include <map>
 #include <memory>
 #include <string>
@@ -39,7 +37,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -289,7 +286,7 @@ class PamHandle {
 // executable. Should be called at program start.
 void DetermineExecutablePath() {
   ssize_t path_size =
-      readlink(kExeSymlink, gExecutablePath, base::size(gExecutablePath));
+      readlink(kExeSymlink, gExecutablePath, std::size(gExecutablePath));
   PCHECK(path_size >= 0) << "Failed to determine executable location";
   CHECK(path_size < PATH_MAX) << "Executable path too long";
   gExecutablePath[path_size] = '\0';
@@ -603,7 +600,7 @@ void HandleInterrupt(int signal) {
       "Interrupted. The daemon is still running in the background.\n";
   // Use write since fputs isn't async-signal-handler safe.
   std::ignore = write(STDERR_FILENO, kInterruptedMessage,
-                      base::size(kInterruptedMessage) - 1);
+                      std::size(kInterruptedMessage) - 1);
   raise(signal);
 }
 
@@ -614,7 +611,7 @@ void HandleAlarm(int) {
       "be running in the background.\n";
   // Use write since fputs isn't async-signal-handler safe.
   std::ignore =
-      write(STDERR_FILENO, kTimeoutMessage, base::size(kTimeoutMessage) - 1);
+      write(STDERR_FILENO, kTimeoutMessage, std::size(kTimeoutMessage) - 1);
   // A slow system or directory replication delay may cause the host to take
   // longer than expected to start. Since it may still succeed, optimistically
   // return success to prevent the host from being automatically unregistered.

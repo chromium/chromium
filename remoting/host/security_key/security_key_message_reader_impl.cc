@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
@@ -77,7 +76,7 @@ void SecurityKeyMessageReaderImpl::ReadMessage() {
     }
 
     std::string message_data(message_length_bytes, '\0');
-    if (!ReadFromStream(base::data(message_data), message_data.size())) {
+    if (!ReadFromStream(std::data(message_data), message_data.size())) {
       NotifyError();
       return;
     }

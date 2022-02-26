@@ -4,7 +4,7 @@
 
 #include "remoting/host/it2me/it2me_native_messaging_host_allowed_origins.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace remoting {
 
@@ -15,7 +15,7 @@ const char* const kIt2MeOrigins[] = {
     "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
     "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"};
 
-const size_t kIt2MeOriginsSize = base::size(kIt2MeOrigins);
+const size_t kIt2MeOriginsSize = std::size(kIt2MeOrigins);
 
 const char kIt2MeNativeMessageHostName[] =
     "com.google.chrome.remote_assistance";

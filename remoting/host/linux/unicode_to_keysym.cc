@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace remoting {
@@ -811,7 +810,7 @@ std::vector<uint32_t> GetKeySymsForUnicode(uint32_t unicode) {
     keysyms.push_back(unicode);
   }
 
-  const CodePair* map_end = kKeySymUnicodeMap + base::size(kKeySymUnicodeMap);
+  const CodePair* map_end = kKeySymUnicodeMap + std::size(kKeySymUnicodeMap);
   const CodePair* pair =
       std::lower_bound(kKeySymUnicodeMap, map_end, unicode, &CompareCodePair);
   while (pair != map_end && pair->unicode == unicode) {

@@ -681,7 +681,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeDesktop);
   // Copy the command line switches enabling verbose logging.
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                           kCopiedSwitchNames, base::size(kCopiedSwitchNames));
+                           kCopiedSwitchNames, std::size(kCopiedSwitchNames));
 
   // Create a delegate capable of launching a process in a different session.
   std::unique_ptr<WtsSessionProcessDelegate> delegate(

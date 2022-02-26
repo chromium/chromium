@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -19,7 +18,7 @@ namespace remoting {
 
 static uint8_t* GetPacketOutputBuffer(VideoPacket* packet, size_t size) {
   packet->mutable_data()->resize(size);
-  return reinterpret_cast<uint8_t*>(base::data(*packet->mutable_data()));
+  return reinterpret_cast<uint8_t*>(std::data(*packet->mutable_data()));
 }
 
 VideoEncoderVerbatim::VideoEncoderVerbatim() = default;

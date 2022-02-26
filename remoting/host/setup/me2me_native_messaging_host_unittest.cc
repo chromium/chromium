@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -428,7 +427,7 @@ Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
 
     std::string message_json(length, '\0');
     read_result =
-        output_read_file_.ReadAtCurrentPos(base::data(message_json), length);
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
     if (read_result != static_cast<int>(length)) {
       return nullptr;
     }
@@ -553,7 +552,7 @@ TEST_F(Me2MeNativeMessagingHostTest, All) {
       &VerifyStartDaemonResponse,
       &VerifyGetCredentialsFromAuthCodeResponse,
   };
-  ASSERT_EQ(base::size(verify_routines), static_cast<size_t>(next_id));
+  ASSERT_EQ(std::size(verify_routines), static_cast<size_t>(next_id));
 
   // Read all responses from output pipe, and verify them.
   for (int i = 0; i < next_id; ++i) {

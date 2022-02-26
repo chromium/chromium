@@ -4,7 +4,6 @@
 
 #include "remoting/client/audio/audio_player_android.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -82,7 +81,7 @@ bool AudioPlayerAndroid::ResetAudioPlayer(
   const SLboolean reqs[] = {SL_BOOLEAN_TRUE};
 
   if ((*engine_)->CreateAudioPlayer(engine_, &player_object_, &source, &sink,
-                                    base::size(ids), ids,
+                                    std::size(ids), ids,
                                     reqs) != SL_RESULT_SUCCESS ||
       (*player_object_)->Realize(player_object_, SL_BOOLEAN_FALSE) !=
           SL_RESULT_SUCCESS ||

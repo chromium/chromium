@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -53,7 +52,7 @@ void XServerClipboard::Init(x11::Connection* connection,
   static const char* const kAtomNames[] = {"CLIPBOARD",        "INCR",
                                            "SELECTION_STRING", "TARGETS",
                                            "TIMESTAMP",        "UTF8_STRING"};
-  static const int kNumAtomNames = base::size(kAtomNames);
+  static const int kNumAtomNames = std::size(kAtomNames);
 
   x11::Future<x11::InternAtomReply> futures[kNumAtomNames];
   for (size_t i = 0; i < kNumAtomNames; i++)
@@ -257,7 +256,7 @@ void XServerClipboard::SendTargetsResponse(x11::Window requestor,
       .property = property,
       .type = x11::Atom::ATOM,
       .format = CHAR_BIT * sizeof(x11::Atom),
-      .data_len = base::size(targets),
+      .data_len = std::size(targets),
       .data = base::MakeRefCounted<base::RefCountedStaticMemory>(
           &targets[0], sizeof(targets)),
   });

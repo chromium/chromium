@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/util.h"
@@ -228,8 +227,8 @@ void TestVideoEncoder(VideoEncoder* encoder, bool strict) {
 
   VideoEncoderTester tester;
 
-  for (size_t xi = 0; xi < base::size(kSizes); ++xi) {
-    for (size_t yi = 0; yi < base::size(kSizes); ++yi) {
+  for (size_t xi = 0; xi < std::size(kSizes); ++xi) {
+    for (size_t yi = 0; yi < std::size(kSizes); ++yi) {
       DesktopSize size(kSizes[xi], kSizes[yi]);
       std::unique_ptr<DesktopFrame> frame = PrepareFrame(size);
       for (const DesktopRegion& region : MakeTestRegionLists(size)) {

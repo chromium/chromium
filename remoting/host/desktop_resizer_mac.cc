@@ -7,7 +7,6 @@
 #include <Carbon/Carbon.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -158,7 +157,7 @@ bool DesktopResizerMac::GetSoleDisplayId(CGDirectDisplayID* display) {
   CGDirectDisplayID displays[2];
   uint32_t num_displays;
   CGError err =
-      CGGetActiveDisplayList(base::size(displays), displays, &num_displays);
+      CGGetActiveDisplayList(std::size(displays), displays, &num_displays);
   if (err != kCGErrorSuccess || num_displays != 1) {
     return false;
   }

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -75,7 +74,7 @@ HWND FindWindowRecursively(HWND parent, const std::wstring& class_name) {
     while (child != nullptr) {
       // See if the window class name matches |class_name|.
       WCHAR name[kMaxWindowClassLength];
-      int length = GetClassName(child, name, base::size(name));
+      int length = GetClassName(child, name, std::size(name));
       if (std::wstring(name, length) == class_name)
         return child;
 

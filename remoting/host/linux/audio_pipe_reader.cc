@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -158,7 +157,7 @@ void AudioPipeReader::DoCapture() {
 
   while (pos < data.size()) {
     int read_result =
-        pipe_.ReadAtCurrentPos(base::data(data) + pos, data.size() - pos);
+        pipe_.ReadAtCurrentPos(std::data(data) + pos, data.size() - pos);
     if (read_result > 0) {
       pos += read_result;
     } else {

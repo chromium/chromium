@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -172,7 +171,7 @@ TEST_F(AudioPumpTest, DownmixAudioPacket) {
     AudioPacket::CHANNELS_MONO,
   };
 
-  for (size_t i = 0; i < base::size(kChannels); i++) {
+  for (size_t i = 0; i < std::size(kChannels); i++) {
     source_->callback().Run(MakeAudioPacket(kChannels[i]));
     // Run message loop to let the pump processes the audio packet and send it
     // to the encoder.
@@ -184,7 +183,7 @@ TEST_F(AudioPumpTest, DownmixAudioPacket) {
     base::RunLoop().RunUntilIdle();
   }
 
-  ASSERT_EQ(sent_packets_.size(), base::size(kChannels));
+  ASSERT_EQ(sent_packets_.size(), std::size(kChannels));
 }
 
 }  // namespace protocol
