@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
+#include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 
 #include <fuchsia/media/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "media/audio/audio_device_description.h"
 #include "media/base/channel_layout.h"
 #include "media/fuchsia/audio/fake_audio_capturer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +21,7 @@ namespace {
 
 constexpr size_t kFramesPerPacket = 480;
 
-class TestCaptureCallback final : public AudioCapturerSource::CaptureCallback {
+class TestCaptureCallback final : public AudioInputStream::AudioInputCallback {
  public:
   TestCaptureCallback() = default;
   ~TestCaptureCallback() override = default;
@@ -28,7 +29,6 @@ class TestCaptureCallback final : public AudioCapturerSource::CaptureCallback {
   TestCaptureCallback(const TestCaptureCallback&) = delete;
   TestCaptureCallback& operator=(const TestCaptureCallback&) = delete;
 
-  bool is_started() const { return is_started_; }
   bool have_error() const { return have_error_; }
 
   const std::vector<std::unique_ptr<AudioBus>>& packets() const {
@@ -36,67 +36,67 @@ class TestCaptureCallback final : public AudioCapturerSource::CaptureCallback {
   }
 
   // AudioCapturerSource::CaptureCallback implementation.
-  void OnCaptureStarted() override { is_started_ = true; }
-
-  void Capture(const AudioBus* audio_source,
-               base::TimeTicks audio_capture_time,
-               double volume,
-               bool key_pressed) override {
-    EXPECT_TRUE(is_started_);
-    auto bus =
-        AudioBus::Create(audio_source->channels(), audio_source->frames());
-    audio_source->CopyTo(bus.get());
+  void OnData(const AudioBus* source,
+              base::TimeTicks capture_time,
+              double volume) override {
+    auto bus = AudioBus::Create(source->channels(), source->frames());
+    source->CopyTo(bus.get());
     packets_.push_back(std::move(bus));
   }
 
-  void OnCaptureError(AudioCapturerSource::ErrorCode code,
-                      const std::string& message) override {
+  void OnError() override {
     EXPECT_FALSE(have_error_);
     have_error_ = true;
   }
 
-  void OnCaptureMuted(bool is_muted) override { FAIL(); }
-
-  void OnCaptureProcessorCreated(AudioProcessorControls* controls) override {
-    FAIL();
-  }
-
  private:
   std::vector<std::unique_ptr<AudioBus>> packets_;
-  bool is_started_ = false;
   bool have_error_ = false;
 };
 
 }  // namespace
 
-class FuchsiaAudioCapturerSourceTest : public testing::Test {
+class AudioInputStreamFuchsiaTest : public testing::Test {
  public:
-  FuchsiaAudioCapturerSourceTest() {
-    fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer_handle;
-    test_capturer_ = std::make_unique<FakeAudioCapturer>(
-        capturer_handle.NewRequest(),
-        FakeAudioCapturer::DataGeneration::MANUAL);
-    capturer_source_ = base::MakeRefCounted<FuchsiaAudioCapturerSource>(
-        std::move(capturer_handle), base::ThreadTaskRunnerHandle::Get());
-  }
+  AudioInputStreamFuchsiaTest() {}
 
-  ~FuchsiaAudioCapturerSourceTest() override {
-    capturer_source_->Stop();
-    capturer_source_ = nullptr;
+  ~AudioInputStreamFuchsiaTest() override {
+    if (input_stream_) {
+      input_stream_->Stop();
+      input_stream_.reset();
+    }
 
     base::RunLoop().RunUntilIdle();
   }
 
   void InitializeCapturer(ChannelLayout layout) {
-    capturer_source_->Initialize(
+    base::TestComponentContextForProcess test_context;
+    FakeAudioCapturerFactory audio_capturer_factory(
+        test_context.additional_services());
+
+    input_stream_ = std::make_unique<AudioInputStreamFuchsia>(
+        /*manager=*/nullptr,
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, layout,
                         /*sample_rate=*/48000, kFramesPerPacket),
-        &callback_);
+        AudioDeviceDescription::kDefaultDeviceId);
+
+    AudioInputStream::OpenOutcome result = input_stream_->Open();
+    EXPECT_EQ(result, AudioInputStream::OpenOutcome::kSuccess);
+
+    base::RunLoop().RunUntilIdle();
+
+    test_capturer_ = audio_capturer_factory.TakeCapturer();
+    ASSERT_TRUE(test_capturer_);
+    test_capturer_->SetDataGeneration(
+        FakeAudioCapturer::DataGeneration::MANUAL);
+
+    // Verify no other capturers were created.
+    ASSERT_FALSE(audio_capturer_factory.TakeCapturer());
   }
 
   void TestCapture(ChannelLayout layout) {
     InitializeCapturer(layout);
-    capturer_source_->Start();
+    input_stream_->Start(&callback_);
     base::RunLoop().RunUntilIdle();
 
     size_t num_channels = ChannelLayoutToChannelCount(layout);
@@ -127,37 +127,36 @@ class FuchsiaAudioCapturerSourceTest : public testing::Test {
 
   std::unique_ptr<FakeAudioCapturer> test_capturer_;
   TestCaptureCallback callback_;
-  scoped_refptr<FuchsiaAudioCapturerSource> capturer_source_;
+  std::unique_ptr<AudioInputStreamFuchsia> input_stream_;
 };
 
-TEST_F(FuchsiaAudioCapturerSourceTest, CreateAndDestroy) {}
+TEST_F(AudioInputStreamFuchsiaTest, CreateAndDestroy) {}
 
-TEST_F(FuchsiaAudioCapturerSourceTest, InitializeAndDestroy) {
+TEST_F(AudioInputStreamFuchsiaTest, InitializeAndDestroy) {
   InitializeCapturer(CHANNEL_LAYOUT_MONO);
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, InitializeAndStart) {
+TEST_F(AudioInputStreamFuchsiaTest, InitializeAndStart) {
   const auto kLayout = CHANNEL_LAYOUT_MONO;
   const auto kNumChannels = ChannelLayoutToChannelCount(kLayout);
 
   InitializeCapturer(kLayout);
-  capturer_source_->Start();
+  input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_capturer_->is_active());
   EXPECT_EQ(test_capturer_->GetPacketSize(),
             sizeof(float) * kFramesPerPacket * kNumChannels);
 
-  EXPECT_TRUE(callback_.is_started());
   EXPECT_TRUE(callback_.packets().empty());
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, InitializeStereo) {
+TEST_F(AudioInputStreamFuchsiaTest, InitializeStereo) {
   const auto kLayout = CHANNEL_LAYOUT_STEREO;
   const auto kNumChannels = ChannelLayoutToChannelCount(kLayout);
 
   InitializeCapturer(kLayout);
-  capturer_source_->Start();
+  input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_capturer_->is_active());
@@ -165,28 +164,28 @@ TEST_F(FuchsiaAudioCapturerSourceTest, InitializeStereo) {
             sizeof(float) * kNumChannels * kFramesPerPacket);
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, StartAndStop) {
+TEST_F(AudioInputStreamFuchsiaTest, StartAndStop) {
   InitializeCapturer(CHANNEL_LAYOUT_MONO);
-  capturer_source_->Start();
+  input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(test_capturer_->is_active());
 
-  capturer_source_->Stop();
+  input_stream_->Stop();
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, CaptureMono) {
+TEST_F(AudioInputStreamFuchsiaTest, CaptureMono) {
   TestCapture(CHANNEL_LAYOUT_MONO);
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, CaptureStereo) {
+TEST_F(AudioInputStreamFuchsiaTest, CaptureStereo) {
   TestCapture(CHANNEL_LAYOUT_STEREO);
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, CaptureTwoPackets) {
+TEST_F(AudioInputStreamFuchsiaTest, CaptureTwoPackets) {
   InitializeCapturer(CHANNEL_LAYOUT_MONO);
-  capturer_source_->Start();
+  input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
 
   // Produce two packets.
@@ -214,11 +213,11 @@ TEST_F(FuchsiaAudioCapturerSourceTest, CaptureTwoPackets) {
   }
 }
 
-TEST_F(FuchsiaAudioCapturerSourceTest, CaptureAfterStop) {
+TEST_F(AudioInputStreamFuchsiaTest, CaptureAfterStop) {
   InitializeCapturer(CHANNEL_LAYOUT_MONO);
-  capturer_source_->Start();
+  input_stream_->Start(&callback_);
   base::RunLoop().RunUntilIdle();
-  capturer_source_->Stop();
+  input_stream_->Stop();
 
   std::vector<float> samples(kFramesPerPacket);
   base::TimeTicks ts = base::TimeTicks::FromZxTime(100);

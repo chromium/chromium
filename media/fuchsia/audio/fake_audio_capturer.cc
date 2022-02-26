@@ -11,30 +11,43 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 
 FakeAudioCapturer::FakeAudioCapturer(
-    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request,
-    DataGeneration data_generation)
-    : data_generation_(data_generation), binding_(this, std::move(request)) {}
+    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request)
+    : binding_(this) {
+  if (request)
+    Bind(std::move(request));
+}
 
 FakeAudioCapturer::~FakeAudioCapturer() = default;
+
+void FakeAudioCapturer::Bind(
+    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) {
+  binding_.Bind(std::move(request));
+}
 
 size_t FakeAudioCapturer::GetPacketSize() const {
   return frames_per_packet_ * stream_type_->channels * sizeof(float);
 }
 
+void FakeAudioCapturer::SetDataGeneration(DataGeneration data_generation) {
+  EXPECT_TRUE(!is_active());
+  data_generation_ = data_generation;
+}
+
 void FakeAudioCapturer::SendData(base::TimeTicks timestamp, void* data) {
-  CHECK(buffer_vmo_);
-  CHECK(is_active_);
+  EXPECT_TRUE(buffer_vmo_);
+  EXPECT_TRUE(is_active_);
 
   // Find unused packet.
   auto it = std::find(packets_usage_.begin(), packets_usage_.end(), false);
 
   // Currently tests don't try to send more than 2 packets and the buffer
   // always will have space for at least 2 packets.
-  CHECK(it != packets_usage_.end());
+  EXPECT_TRUE(it != packets_usage_.end());
 
   size_t buffer_index = it - packets_usage_.begin();
   size_t buffer_pos = buffer_index * GetPacketSize();
@@ -57,16 +70,17 @@ void FakeAudioCapturer::SendData(base::TimeTicks timestamp, void* data) {
 // fuchsia::media::AudioCapturer implementation.
 void FakeAudioCapturer::SetPcmStreamType(
     fuchsia::media::AudioStreamType stream_type) {
-  CHECK(!stream_type_.has_value());
-  CHECK_EQ(stream_type.sample_format, fuchsia::media::AudioSampleFormat::FLOAT);
+  EXPECT_TRUE(!stream_type_.has_value());
+  EXPECT_EQ(stream_type.sample_format,
+            fuchsia::media::AudioSampleFormat::FLOAT);
 
   stream_type_ = std::move(stream_type);
 }
 
 void FakeAudioCapturer::AddPayloadBuffer(uint32_t id, zx::vmo payload_buffer) {
-  CHECK_EQ(id, kBufferId);
-  CHECK(!buffer_vmo_);
-  CHECK(stream_type_.has_value());
+  EXPECT_EQ(id, kBufferId);
+  EXPECT_TRUE(!buffer_vmo_);
+  EXPECT_TRUE(stream_type_.has_value());
 
   buffer_vmo_ = std::move(payload_buffer);
   zx_status_t status = buffer_vmo_.get_size(&buffer_size_);
@@ -74,16 +88,16 @@ void FakeAudioCapturer::AddPayloadBuffer(uint32_t id, zx::vmo payload_buffer) {
 }
 
 void FakeAudioCapturer::StartAsyncCapture(uint32_t frames_per_packet) {
-  CHECK(buffer_vmo_);
-  CHECK(!is_active_);
+  EXPECT_TRUE(buffer_vmo_);
+  EXPECT_TRUE(!is_active_);
 
   is_active_ = true;
   frames_per_packet_ = frames_per_packet;
   size_t num_packets = buffer_size_ / GetPacketSize();
 
   // AudioCapturer protocol requires that we can fit at least 2 packets in the
-  // buffer in async mode.
-  CHECK_GE(num_packets, 2U);
+  // buffer in async data_generation.
+  EXPECT_GE(num_packets, 2U);
 
   packets_usage_.clear();
   packets_usage_.resize(num_packets, false);
@@ -94,18 +108,22 @@ void FakeAudioCapturer::StartAsyncCapture(uint32_t frames_per_packet) {
   }
 }
 
+void FakeAudioCapturer::StopAsyncCaptureNoReply() {
+  is_active_ = false;
+  timer_.Stop();
+}
+
 void FakeAudioCapturer::ReleasePacket(fuchsia::media::StreamPacket packet) {
-  CHECK_EQ(packet.payload_buffer_id, kBufferId);
-  CHECK_EQ(packet.payload_offset % GetPacketSize(), 0U);
+  EXPECT_EQ(packet.payload_buffer_id, kBufferId);
+  EXPECT_EQ(packet.payload_offset % GetPacketSize(), 0U);
   size_t buffer_index = packet.payload_offset / GetPacketSize();
-  CHECK_LT(buffer_index, packets_usage_.size());
-  CHECK(packets_usage_[buffer_index]);
+  EXPECT_LT(buffer_index, packets_usage_.size());
+  EXPECT_TRUE(packets_usage_[buffer_index]);
   packets_usage_[buffer_index] = false;
 }
 
-// No other methods are expected to be called.
 void FakeAudioCapturer::NotImplemented_(const std::string& name) {
-  NOTREACHED();
+  ADD_FAILURE() << "Unexpected FakeAudioCapturer call: " << name;
 }
 
 void FakeAudioCapturer::ProducePackets() {
@@ -125,6 +143,31 @@ void FakeAudioCapturer::ProducePackets() {
                        stream_type_->frames_per_second -
                    base::TimeTicks::Now(),
                this, &FakeAudioCapturer::ProducePackets);
+}
+
+FakeAudioCapturerFactory::FakeAudioCapturerFactory(
+    sys::OutgoingDirectory* outgoing_directory)
+    : binding_(outgoing_directory, this) {}
+
+FakeAudioCapturerFactory::~FakeAudioCapturerFactory() = default;
+
+std::unique_ptr<FakeAudioCapturer> FakeAudioCapturerFactory::TakeCapturer() {
+  if (capturers_.empty())
+    return nullptr;
+  auto result = std::move(capturers_.front());
+  capturers_.pop_front();
+  return result;
+}
+
+void FakeAudioCapturerFactory::CreateAudioCapturer(
+    fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request,
+    bool loopback) {
+  capturers_.push_back(std::make_unique<FakeAudioCapturer>());
+  capturers_.back()->Bind(std::move(request));
+}
+
+void FakeAudioCapturerFactory::NotImplemented_(const std::string& name) {
+  ADD_FAILURE() << "Unexpected FakeAudioCapturerFactory call: " << name;
 }
 
 }  // namespace media

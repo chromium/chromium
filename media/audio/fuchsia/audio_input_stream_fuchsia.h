@@ -5,20 +5,24 @@
 #ifndef MEDIA_AUDIO_FUCHSIA_AUDIO_INPUT_STREAM_FUCHSIA_H_
 #define MEDIA_AUDIO_FUCHSIA_AUDIO_INPUT_STREAM_FUCHSIA_H_
 
+#include <fuchsia/media/cpp/fidl.h>
+
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
-#include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
+#include "media/base/media_export.h"
+#include "media/fuchsia/common/vmo_buffer.h"
 
 namespace media {
 
 class AudioManagerFuchsia;
 
-class AudioInputStreamFuchsia : public AudioInputStream {
+class MEDIA_EXPORT AudioInputStreamFuchsia : public AudioInputStream {
  public:
   // Caller must ensure that manager outlives the stream.
   AudioInputStreamFuchsia(AudioManagerFuchsia* manager,
                           const AudioParameters& parameters,
                           std::string device_id);
+  ~AudioInputStreamFuchsia() override;
 
   OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
@@ -33,17 +37,28 @@ class AudioInputStreamFuchsia : public AudioInputStream {
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
  private:
-  class CaptureCallbackAdapter;
+  // OnPacketProduced event handler for the |capturer_|.
+  void OnPacketProduced(fuchsia::media::StreamPacket packet);
 
-  ~AudioInputStreamFuchsia() override;
+  // Reports an error to |callback_| and disconnects |capturer_|.
+  void ReportError();
 
   AudioManagerFuchsia* const manager_;
   AudioParameters parameters_;
   std::string device_id_;
-  std::unique_ptr<CaptureCallbackAdapter> callback_adapter_;
-  scoped_refptr<FuchsiaAudioCapturerSource> capturer_source_;
-  double volume_ = 1.0;
-  bool automatic_gain_control_ = false;
+
+  fuchsia::media::AudioCapturerPtr capturer_;
+
+  // VMO with the AudioCapturer in order to pass the captured data.
+  VmoBuffer capture_buffer_;
+
+  // Indicates that async capture mode has been activated for |capturer_|, i.e.
+  // StartAsyncCapture() has been called.
+  bool is_capturer_started_ = false;
+
+  std::unique_ptr<AudioBus> audio_bus_;
+
+  AudioInputCallback* callback_ = nullptr;
 };
 
 }  // namespace media

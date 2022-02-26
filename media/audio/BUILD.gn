@@ -323,6 +323,7 @@ source_set("audio") {
     ]
     deps += [
       "//media/fuchsia/audio",
+      "//media/fuchsia/common",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
@@ -479,6 +480,7 @@ source_set("unit_tests") {
   }
 
   if (is_fuchsia) {
+    sources += [ "fuchsia/audio_input_stream_fuchsia_test.cc" ]
     deps += [ "//media/fuchsia/audio:test_support" ]
   }
 

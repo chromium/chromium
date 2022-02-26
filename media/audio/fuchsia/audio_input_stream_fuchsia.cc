@@ -5,7 +5,9 @@
 #include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 
 #include <lib/sys/cpp/component_context.h>
+#include <lib/zx/vmo.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
 #include "media/audio/audio_device_description.h"
@@ -13,28 +15,15 @@
 
 namespace media {
 
-class AudioInputStreamFuchsia::CaptureCallbackAdapter
-    : public AudioCapturerSource::CaptureCallback {
- public:
-  CaptureCallbackAdapter(AudioInputCallback* callback) : callback_(callback) {}
+namespace {
 
-  void Capture(const AudioBus* audio_source,
-               base::TimeTicks audio_capture_time,
-               double volume,
-               bool key_pressed) override {
-    callback_->OnData(audio_source, audio_capture_time, volume);
-  }
+// Currently AudioCapturer supports only one payload buffer with id=0.
+constexpr uint32_t kBufferId = 0;
 
-  void OnCaptureError(AudioCapturerSource::ErrorCode code,
-                      const std::string& message) override {
-    callback_->OnError();
-  }
+// Number of audio packets that should fit in the capture buffer.
+constexpr size_t kBufferPacketCapacity = 10;
 
-  void OnCaptureMuted(bool is_muted) override {}
-
- private:
-  AudioInputCallback* callback_;
-};
+}  // namespace
 
 AudioInputStreamFuchsia::AudioInputStreamFuchsia(
     AudioManagerFuchsia* manager,
@@ -47,41 +36,90 @@ AudioInputStreamFuchsia::AudioInputStreamFuchsia(
          device_id_ == AudioDeviceDescription::kLoopbackInputDeviceId ||
          device_id_ == AudioDeviceDescription::kDefaultDeviceId)
       << "AudioInput from " << device_id_ << " not implemented!";
+  DCHECK(parameters_.format() == AudioParameters::AUDIO_PCM_LOW_LATENCY ||
+         parameters_.format() == AudioParameters::AUDIO_PCM_LINEAR);
 }
 
 AudioInputStreamFuchsia::~AudioInputStreamFuchsia() = default;
 
 AudioInputStream::OpenOutcome AudioInputStreamFuchsia::Open() {
-  return OpenOutcome::kSuccess;
-}
+  // Open() can be called only once.
+  DCHECK(!capturer_);
 
-void AudioInputStreamFuchsia::Start(AudioInputCallback* callback) {
-  fidl::InterfaceHandle<fuchsia::media::AudioCapturer> capturer;
   auto factory = base::ComponentContextForProcess()
                      ->svc()
                      ->Connect<fuchsia::media::Audio>();
   bool is_loopback =
       device_id_ == AudioDeviceDescription::kLoopbackInputDeviceId;
-  factory->CreateAudioCapturer(capturer.NewRequest(), is_loopback);
+  factory->CreateAudioCapturer(capturer_.NewRequest(), is_loopback);
+  capturer_.set_error_handler([this](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "AudioCapturer disconnected";
+    ReportError();
+  });
 
-  capturer_source_ = base::MakeRefCounted<FuchsiaAudioCapturerSource>(
-      std::move(capturer), manager_->GetTaskRunner());
-  callback_adapter_ = std::make_unique<CaptureCallbackAdapter>(callback);
-  capturer_source_->Initialize(parameters_, callback_adapter_.get());
-  capturer_source_->SetAutomaticGainControl(automatic_gain_control_);
-  capturer_source_->Start();
+  // Bind the event for incoming packets.
+  capturer_.events().OnPacketProduced =
+      fit::bind_member(this, &AudioInputStreamFuchsia::OnPacketProduced);
+
+  // Configure stream format.
+  fuchsia::media::AudioStreamType stream_type;
+  stream_type.sample_format = fuchsia::media::AudioSampleFormat::FLOAT;
+  stream_type.channels = parameters_.channels();
+  stream_type.frames_per_second = parameters_.sample_rate();
+  capturer_->SetPcmStreamType(std::move(stream_type));
+
+  // Allocate shared buffer.
+  size_t capture_buffer_size =
+      parameters_.GetBytesPerBuffer(kSampleFormatF32) * kBufferPacketCapacity;
+
+  zx::vmo buffer_vmo;
+  zx_status_t status = zx::vmo::create(capture_buffer_size, 0, &buffer_vmo);
+  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
+
+  constexpr char kName[] = "cr-audio-capturer";
+  status = buffer_vmo.set_property(ZX_PROP_NAME, kName, base::size(kName) - 1);
+  ZX_DCHECK(status == ZX_OK, status);
+
+  bool mapped =
+      capture_buffer_.Initialize(std::move(buffer_vmo), /*writable=*/false,
+                                 /*offset=*/0, /*size=*/capture_buffer_size,
+                                 fuchsia::sysmem::CoherencyDomain::CPU);
+
+  if (!mapped)
+    return OpenOutcome::kFailed;
+
+  // Pass the buffer to the capturer.
+  capturer_->AddPayloadBuffer(kBufferId,
+                              capture_buffer_.Duplicate(/*writable=*/true));
+
+  return OpenOutcome::kSuccess;
+}
+
+void AudioInputStreamFuchsia::Start(AudioInputCallback* callback) {
+  if (!capturer_) {
+    callback->OnError();
+    return;
+  }
+
+  callback_ = callback;
+
+  if (!is_capturer_started_) {
+    is_capturer_started_ = true;
+    capturer_->StartAsyncCapture(parameters_.frames_per_buffer());
+  }
 }
 
 void AudioInputStreamFuchsia::Stop() {
-  if (capturer_source_) {
-    capturer_source_->Stop();
-    capturer_source_ = nullptr;
-  }
+  // Normally Close() is called immediately after Stop(), so there is no need to
+  // stop the capturer. Just release the |callback_| to ensure it's not called
+  // again.
+  callback_ = nullptr;
 }
 
 void AudioInputStreamFuchsia::Close() {
   Stop();
-  manager_->ReleaseInputStream(this);
+  if (manager_)
+    manager_->ReleaseInputStream(this);
 }
 
 double AudioInputStreamFuchsia::GetMaxVolume() {
@@ -89,32 +127,63 @@ double AudioInputStreamFuchsia::GetMaxVolume() {
 }
 
 void AudioInputStreamFuchsia::SetVolume(double volume) {
-  capturer_source_->SetVolume(volume);
-  volume_ = volume;
+  NOTIMPLEMENTED();
 }
 
 double AudioInputStreamFuchsia::GetVolume() {
-  return volume_;
+  return 1.0;
 }
 
 bool AudioInputStreamFuchsia::SetAutomaticGainControl(bool enabled) {
-  automatic_gain_control_ = enabled;
-  if (capturer_source_)
-    capturer_source_->SetAutomaticGainControl(automatic_gain_control_);
-  return true;
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool AudioInputStreamFuchsia::GetAutomaticGainControl() {
-  return automatic_gain_control_;
+  return false;
 }
 
 bool AudioInputStreamFuchsia::IsMuted() {
-  return volume_ == 0.0;
+  return false;
 }
 
 void AudioInputStreamFuchsia::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  capturer_source_->SetOutputDeviceForAec(output_device_id);
+  NOTIMPLEMENTED();
+}
+
+void AudioInputStreamFuchsia::OnPacketProduced(
+    fuchsia::media::StreamPacket packet) {
+  size_t bytes_per_frame = parameters_.GetBytesPerFrame(kSampleFormatF32);
+
+  if (packet.payload_buffer_id != kBufferId ||
+      packet.payload_offset + packet.payload_size > capture_buffer_.size() ||
+      packet.payload_size % bytes_per_frame != 0 ||
+      packet.payload_size < bytes_per_frame) {
+    LOG(ERROR) << "Received invalid packet from AudioCapturer.";
+    ReportError();
+    return;
+  }
+
+  if (callback_) {
+    int num_frames = packet.payload_size / bytes_per_frame;
+    if (!audio_bus_ || num_frames != audio_bus_->frames())
+      audio_bus_ = AudioBus::Create(parameters_.channels(), num_frames);
+    audio_bus_->FromInterleaved<Float32SampleTypeTraits>(
+        reinterpret_cast<const float*>(capture_buffer_.GetMemory().data() +
+                                       packet.payload_offset),
+        num_frames);
+    callback_->OnData(audio_bus_.get(), base::TimeTicks::FromZxTime(packet.pts),
+                      /*volume=*/1.0);
+  }
+
+  capturer_->ReleasePacket(std::move(packet));
+}
+
+void AudioInputStreamFuchsia::ReportError() {
+  capturer_.Unbind();
+  if (callback_)
+    callback_->OnError();
 }
 
 }  // namespace media
