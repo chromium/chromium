@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "build/branding_buildflags.h"
@@ -73,8 +72,8 @@ void InitializePrepopulatedPageList(
   PrefService* pref_service = profile->GetPrefs();
   bool hide_web_store_icon = pref_service->GetBoolean(prefs::kHideWebStoreIcon);
 
-  prepopulated_pages->reserve(base::size(kRawPrepopulatedPages));
-  for (size_t i = 0; i < base::size(kRawPrepopulatedPages); ++i) {
+  prepopulated_pages->reserve(std::size(kRawPrepopulatedPages));
+  for (size_t i = 0; i < std::size(kRawPrepopulatedPages); ++i) {
     const RawPrepopulatedPage& page = kRawPrepopulatedPages[i];
     if (hide_web_store_icon && page.url_id == IDS_WEBSTORE_URL)
       continue;

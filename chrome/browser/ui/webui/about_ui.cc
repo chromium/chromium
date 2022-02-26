@@ -132,15 +132,15 @@ typedef std::map<std::string, std::string> CountryRegionMap;
 // Returns country to region map with EU, EMEA and APAC countries.
 CountryRegionMap CreateCountryRegionMap() {
   CountryRegionMap region_map;
-  for (size_t i = 0; i < base::size(kApacCountries); ++i) {
+  for (size_t i = 0; i < std::size(kApacCountries); ++i) {
     region_map.emplace(kApacCountries[i], kApac);
   }
 
-  for (size_t i = 0; i < base::size(kEmeaCountries); ++i) {
+  for (size_t i = 0; i < std::size(kEmeaCountries); ++i) {
     region_map.emplace(kEmeaCountries[i], kEmea);
   }
 
-  for (size_t i = 0; i < base::size(kEuCountries); ++i) {
+  for (size_t i = 0; i < std::size(kEuCountries); ++i) {
     region_map.emplace(kEuCountries[i], kEu);
   }
   return region_map;

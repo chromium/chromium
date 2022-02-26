@@ -4,7 +4,6 @@
 
 #include "chrome/common/webui_url_constants.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -713,7 +712,7 @@ const char* const kChromeHostURLs[] = {
     kCfmNetworkSettingsHost,
 #endif  // BUILDFLAG(PLATFORM_CFM)
 };
-const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
+const size_t kNumberOfChromeHostURLs = std::size(kChromeHostURLs);
 
 // Add chrome://internals/* subpages here to be included in chrome://chrome-urls
 // (about:about).
@@ -726,7 +725,7 @@ const char* const kChromeInternalsPathURLs[] = {
 #endif
 };
 const size_t kNumberOfChromeInternalsPathURLs =
-    base::size(kChromeInternalsPathURLs);
+    std::size(kChromeInternalsPathURLs);
 
 const char* const kChromeDebugURLs[] = {
     blink::kChromeUIBadCastCrashURL,
@@ -755,6 +754,6 @@ const char* const kChromeDebugURLs[] = {
 #endif
     kChromeUIQuitURL,
     kChromeUIRestartURL};
-const size_t kNumberOfChromeDebugURLs = base::size(kChromeDebugURLs);
+const size_t kNumberOfChromeDebugURLs = std::size(kChromeDebugURLs);
 
 }  // namespace chrome

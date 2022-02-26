@@ -7,7 +7,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Foundation/Foundation.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -68,8 +67,7 @@ OSStatus WriteKeychainItem(const std::string& service_name,
        const_cast<char*>(service_name.data())},
       {kSecAccountItemAttr, static_cast<UInt32>(account_name.length()),
        const_cast<char*>(account_name.data())}};
-  SecKeychainAttributeList attribute_list = {base::size(attributes),
-                                             attributes};
+  SecKeychainAttributeList attribute_list = {std::size(attributes), attributes};
 
   base::ScopedCFTypeRef<SecAccessRef> access_ref;
   OSStatus status = CreateTargetAccess(base::SysUTF8ToNSString(service_name),

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -223,7 +222,7 @@ TEST_F(GoogleUpdateSettingsTest, UpdateGoogleUpdateApKey) {
                          installer::INSTALL_FAILED};
   const wchar_t* const plain[] = {L"", L"1.1", L"1.1-dev"};
   const wchar_t* const full[] = {L"-full", L"1.1-full", L"1.1-dev-full"};
-  static_assert(base::size(full) == base::size(plain), "bad full array size");
+  static_assert(std::size(full) == std::size(plain), "bad full array size");
   const wchar_t* const* input_arrays[] = {plain, full};
   for (const installer::ArchiveType archive_type : archive_types) {
     SCOPED_TRACE(::testing::Message()
@@ -259,7 +258,7 @@ TEST_F(GoogleUpdateSettingsTest, UpdateGoogleUpdateApKey) {
           else
             outputs = plain;
         }
-        for (size_t input_idx = 0; input_idx < base::size(plain); ++input_idx) {
+        for (size_t input_idx = 0; input_idx < std::size(plain); ++input_idx) {
           const wchar_t* input = inputs[input_idx];
           const wchar_t* output = outputs[input_idx];
           SCOPED_TRACE(::testing::Message() << "input=\"" << input << "\"");

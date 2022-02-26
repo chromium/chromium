@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
@@ -58,9 +57,9 @@ bool RegisterUninstallationViaOsSettings(
   uninstall_reg_entry_key.WriteValue(L"ApplicationVersion", L"1.0");
 
   static constexpr wchar_t kDateFormat[] = L"yyyyyMMdd";
-  wchar_t date_str[base::size(kDateFormat)] = {};
+  wchar_t date_str[std::size(kDateFormat)] = {};
   int len = ::GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat,
-                             date_str, base::size(date_str));
+                             date_str, std::size(date_str));
   if (len)
     uninstall_reg_entry_key.WriteValue(L"InstallDate", date_str);
 

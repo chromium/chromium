@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstring>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -124,19 +123,19 @@ PluginUMAReporter::PluginType PluginUMAReporter::SrcToPluginType(
   std::string file_extension;
   ExtractFileExtension(src, &file_extension);
   if (CStringArrayContainsCString(kWindowsMediaPlayerExtensions,
-                                  base::size(kWindowsMediaPlayerExtensions),
+                                  std::size(kWindowsMediaPlayerExtensions),
                                   file_extension.c_str())) {
     return WINDOWS_MEDIA_PLAYER;
   }
 
   if (CStringArrayContainsCString(kQuickTimeExtensions,
-                                  base::size(kQuickTimeExtensions),
+                                  std::size(kQuickTimeExtensions),
                                   file_extension.c_str())) {
     return QUICKTIME;
   }
 
   if (CStringArrayContainsCString(kRealPlayerExtensions,
-                                  base::size(kRealPlayerExtensions),
+                                  std::size(kRealPlayerExtensions),
                                   file_extension.c_str())) {
     return REALPLAYER;
   }

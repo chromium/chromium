@@ -12,7 +12,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -153,7 +152,7 @@ bool FindChrome(base::FilePath* browser_exe) {
   LOG_IF(ERROR, browser_exes_array[0].empty()) << "Unsupported platform.";
 
   std::vector<base::FilePath> browser_exes(
-      browser_exes_array, browser_exes_array + base::size(browser_exes_array));
+      browser_exes_array, browser_exes_array + std::size(browser_exes_array));
   base::FilePath module_dir;
 #if BUILDFLAG(IS_FUCHSIA)
   // Use -1 to allow this to compile.

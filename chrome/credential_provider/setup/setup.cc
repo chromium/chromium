@@ -53,7 +53,7 @@ namespace {
 bool IsPerUserInstallFromGoogleUpdate() {
   wchar_t value[2];
   DWORD length = ::GetEnvironmentVariable(L"GoogleUpdateIsMachine", value,
-                                          base::size(value));
+                                          std::size(value));
 
   return length == 1 && value[0] == L'0';
 }
@@ -147,10 +147,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 
   wchar_t time_string[64];
   if (::GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, nullptr, nullptr,
-                        time_string, base::size(time_string)) == 0) {
+                        time_string, std::size(time_string)) == 0) {
     HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetTimeFormatEx(start) hr=" << putHR(last_error_hr);
-    wcscpy_s(time_string, base::size(time_string), L"Unknown");
+    wcscpy_s(time_string, std::size(time_string), L"Unknown");
   }
 
   LOGFN(INFO) << "Start: " << time_string;
@@ -218,10 +218,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   // process.
   if (!(is_uninstall && path.empty())) {
     if (::GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, nullptr, nullptr,
-                          time_string, base::size(time_string)) == 0) {
+                          time_string, std::size(time_string)) == 0) {
       HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "GetTimeFormatEx(end) hr=" << putHR(last_error_hr);
-      wcscpy_s(time_string, base::size(time_string), L"Unknown");
+      wcscpy_s(time_string, std::size(time_string), L"Unknown");
     }
 
     LOGFN(INFO) << (SUCCEEDED(hr) ? "Setup completed successfully"

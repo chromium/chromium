@@ -433,7 +433,7 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfileByAccountId) {
       {"path_4", "name_4", AccountId::FromUserEmailGaiaId("email4", "444444"),
        false}};
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ProfileAttributesInitParams params;
     params.profile_path = GetProfilePath(kTestCases[i].profile_path);
     params.profile_name = base::ASCIIToUTF16(kTestCases[i].profile_name);
@@ -513,7 +513,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
       {"path.test2", "name_2"},
       {"path_test3", "name_3"},
   };
-  const size_t kNumProfiles = base::size(kTestCases);
+  const size_t kNumProfiles = std::size(kTestCases);
 
   for (auto test_case : kTestCases) {
     base::FilePath profile_path = GetProfilePath(test_case.profile_path);
@@ -1873,7 +1873,7 @@ TEST_F(ProfileAttributesStorageTest,
       {"path_7", "Person 3", true},        {"path_8", "Person 1", true},
       {"path_9", "Person 2", true},        {"path_10", "Person 1", true},
       {"path_11", "Smith", false},         {"path_12", "Person 2", true}};
-  const size_t kNumProfiles = base::size(kTestCases);
+  const size_t kNumProfiles = std::size(kTestCases);
 
   ProfileAttributesEntry* entry = nullptr;
   for (size_t i = 0; i < kNumProfiles; ++i) {
@@ -1937,7 +1937,7 @@ TEST_F(ProfileAttributesStorageTest,
                     {"path_2", "First user"},
                     {"path_3", "Lemonade"},
                     {"path_4", "Batman"}};
-  const size_t kNumProfiles = base::size(kTestCases);
+  const size_t kNumProfiles = std::size(kTestCases);
 
   for (size_t i = 0; i < kNumProfiles; ++i) {
     base::FilePath profile_path = GetProfilePath(kTestCases[i].profile_path);

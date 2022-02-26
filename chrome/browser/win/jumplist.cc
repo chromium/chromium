@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
@@ -106,7 +105,7 @@ void AppendCommonSwitches(const base::FilePath& cmd_line_profile_dir,
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   shell_link->GetCommandLine()->CopySwitchesFrom(command_line, kSwitchNames,
-                                                 base::size(kSwitchNames));
+                                                 std::size(kSwitchNames));
   if (!cmd_line_profile_dir.empty()) {
     shell_link->GetCommandLine()->AppendSwitchPath(switches::kProfileDirectory,
                                                    cmd_line_profile_dir);

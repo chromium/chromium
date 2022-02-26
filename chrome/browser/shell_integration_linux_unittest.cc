@@ -310,7 +310,7 @@ TEST(ShellIntegrationTest, GetWebShortcutFilename) {
     { "http___foo_.desktop", "http://foo/bar/././../baz/././../" },
     { "http___.._.desktop", "http://../../../../" },
   };
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     EXPECT_EQ(std::string(chrome::kBrowserProcessExecutableName) + "-" +
               test_cases[i].path,
               GetWebShortcutFilename(GURL(test_cases[i].url)).value()) <<
@@ -453,7 +453,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"}};
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(
         test_cases[i].expected_output,
@@ -532,7 +532,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
        "action%%205\n"},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(
         test_cases[i].expected_output,
@@ -576,7 +576,7 @@ TEST(ShellIntegrationTest, GetDirectoryFileContents) {
       },
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
     EXPECT_EQ(test_cases[i].expected_output,
               GetDirectoryFileContents(base::ASCIIToUTF16(test_cases[i].title),

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -57,8 +56,8 @@ const char* ConvertDwordToString(DWORD value) {
   // characters long. Leave space for a NULL terminator character.
   static char buffer[11] = {};
 
-  _snprintf(buffer, base::size(buffer), "%u", value);
-  buffer[base::size(buffer) - 1] = '\0';
+  _snprintf(buffer, std::size(buffer), "%u", value);
+  buffer[std::size(buffer) - 1] = '\0';
   return buffer;
 }
 
@@ -73,8 +72,8 @@ const char* ConvertSizeTToString(SIZE_T value) {
   // terminator character.
   static char buffer[21] = {};
 
-  _snprintf(buffer, base::size(buffer), "%Iu", value);
-  buffer[base::size(buffer) - 1] = '\0';
+  _snprintf(buffer, std::size(buffer), "%Iu", value);
+  buffer[std::size(buffer) - 1] = '\0';
   return buffer;
 }
 

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -168,7 +167,7 @@ void ChangePictureHandler::HandlePhotoTaken(base::Value::ConstListView args) {
   std::string raw_data;
   base::StringPiece url(image_url);
   const char kDataUrlPrefix[] = "data:image/png;base64,";
-  const size_t kDataUrlPrefixLength = base::size(kDataUrlPrefix) - 1;
+  const size_t kDataUrlPrefixLength = std::size(kDataUrlPrefix) - 1;
   if (!base::StartsWith(url, kDataUrlPrefix) ||
       !base::Base64Decode(url.substr(kDataUrlPrefixLength), &raw_data)) {
     LOG(WARNING) << "Invalid image URL";

@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -102,7 +101,7 @@ class FakeWebContentsObserver : public content::WebContentsObserver {
 };
 
 TEST_F(BrowserInstantControllerTest, DefaultSearchProviderChanged) {
-  size_t num_tests = base::size(kTabReloadTestCasesFinalProviderNotGoogle);
+  size_t num_tests = std::size(kTabReloadTestCasesFinalProviderNotGoogle);
   std::vector<std::unique_ptr<FakeWebContentsObserver>> observers;
   for (size_t i = 0; i < num_tests; ++i) {
     const TabReloadTestCase& test =

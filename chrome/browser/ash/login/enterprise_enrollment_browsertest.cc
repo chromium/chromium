@@ -4,7 +4,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -560,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
       authpolicy::KerberosEncryptionTypes::ENC_TYPES_STRONG,
       std::vector<std::string>(
           kAdOrganizationalUnit,
-          kAdOrganizationalUnit + base::size(kAdOrganizationalUnit)),
+          kAdOrganizationalUnit + std::size(kAdOrganizationalUnit)),
       kAdTestUser, kDMToken);
   SubmitActiveDirectoryCredentials("machine_name", kAdMachineDomainDN,
                                    "" /* encryption_types */, kAdTestUser,

@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
@@ -17,7 +16,7 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   CGWindowID ids[1];
   ids[0] = id.id;
   base::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
-      nullptr, reinterpret_cast<const void**>(&ids), base::size(ids), nullptr));
+      nullptr, reinterpret_cast<const void**>(&ids), std::size(ids), nullptr));
   base::ScopedCFTypeRef<CFArrayRef> window_array(
       CGWindowListCreateDescriptionFromArray(window_id_array));
   if (!window_array || 0 == CFArrayGetCount(window_array)) {

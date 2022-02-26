@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -198,7 +197,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   void AddLogEntry(int extension_index) {
     ASSERT_GE(extension_index, 0);
-    ASSERT_LT(extension_index, static_cast<int>(base::size(kExtensionIds)));
+    ASSERT_LT(extension_index, static_cast<int>(std::size(kExtensionIds)));
     const extensions::ExtensionId extension_id = kExtensionIds[extension_index];
     events_[extension_id].push_back(event_);
     manager_->Add({kExtensionIds[extension_index]}, event_);
@@ -520,7 +519,7 @@ TEST_F(ExtensionInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   FastForwardTo(offset);
   int i = 0;
   while (i <= kTotalSizeExpeditedUploadThreshold) {
-    for (int j = 0; j < static_cast<int>(base::size(kExtensionIds)); ++i, ++j) {
+    for (int j = 0; j < static_cast<int>(std::size(kExtensionIds)); ++i, ++j) {
       AddLogEntry(j /* extension_index */);
     }
   }
@@ -556,7 +555,7 @@ TEST_F(ExtensionInstallEventLogManagerTest,
   const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kTotalSizeExpeditedUploadThreshold;
-       i += base::size(kExtensionIds)) {
+       i += std::size(kExtensionIds)) {
     AddLogEntryForAllExtensions();
   }
 

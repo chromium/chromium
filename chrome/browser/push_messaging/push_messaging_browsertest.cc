@@ -121,7 +121,7 @@ std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   } else {
     application_server_key =
         std::string(kApplicationServerKey,
-                    kApplicationServerKey + base::size(kApplicationServerKey));
+                    kApplicationServerKey + std::size(kApplicationServerKey));
   }
 
   return application_server_key;

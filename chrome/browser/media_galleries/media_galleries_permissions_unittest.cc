@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
@@ -120,7 +119,7 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
                                   {&extension2_id_, &extension2_expectation_},
                                   {&extension3_id_, &extension3_expectation_},
                                   {&extension4_id_, &extension4_expectation_}};
-    for (size_t i = 0; i < base::size(test_data); i++) {
+    for (size_t i = 0; i < std::size(test_data); i++) {
       std::vector<MediaGalleryPermission> actual =
           gallery_prefs_->GetGalleryPermissionsFromPrefs(*test_data[i].id);
       EXPECT_EQ(test_data[i].expectation->size(), actual.size());

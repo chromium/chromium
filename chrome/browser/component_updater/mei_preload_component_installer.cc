@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
@@ -115,7 +114,7 @@ void MediaEngagementPreloadComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kMeiPreloadPublicKeySHA256,
-      kMeiPreloadPublicKeySHA256 + base::size(kMeiPreloadPublicKeySHA256));
+      kMeiPreloadPublicKeySHA256 + std::size(kMeiPreloadPublicKeySHA256));
 }
 
 std::string MediaEngagementPreloadComponentInstallerPolicy::GetName() const {

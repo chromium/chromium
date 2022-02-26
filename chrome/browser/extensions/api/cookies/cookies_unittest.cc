@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
@@ -172,7 +171,7 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
       {".bar.com", ".foo.bar.com", true}, {".bar.com", "baz.foo.bar.com", true},
       {"foo.bar.com", ".bar.com", false}};
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     // Build up the Params struct.
     std::vector<base::Value> args;
     base::Value dict(base::Value::Type::DICTIONARY);

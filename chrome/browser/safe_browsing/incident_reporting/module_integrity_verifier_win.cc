@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -322,8 +321,8 @@ bool VerifyModule(
 
   WCHAR module_path[MAX_PATH] = {};
   DWORD length =
-      GetModuleFileName(module_handle, module_path, base::size(module_path));
-  if (!length || length == base::size(module_path))
+      GetModuleFileName(module_handle, module_path, std::size(module_path));
+  if (!length || length == std::size(module_path))
     return false;
 
   base::MemoryMappedFile mapped_module;

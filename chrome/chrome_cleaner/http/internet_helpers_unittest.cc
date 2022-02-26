@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/chrome_cleaner/http/internet_unittest_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +42,7 @@ TEST(InternetHelpersTest, ParseContentType) {
       {L"text/html; boundary=WebKit-ada-df-dsf-adsfadsfs", L"text/html", L"",
        false, L"WebKit-ada-df-dsf-adsfadsfs"},
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::wstring mime_type;
     std::wstring charset;
     bool had_charset = false;
@@ -71,7 +70,7 @@ TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
       {L"https://example.com:9999/", L"https", L"example.com", 9999, L"/"},
       {L"http://example.com/a/b/c", L"http", L"example.com", 80, L"/a/b/c"},
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::wstring scheme, host, path;
     uint16_t port = 0;
     EXPECT_TRUE(DecomposeUrl(tests[i].url, &scheme, &host, &port, &path))
@@ -90,7 +89,7 @@ TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
       L"/foo/bar", L"example.com:80",    L"http://",
       L"http:",    L"http:/example.com", L"http:example.com"};
 
-  for (size_t i = 0; i < base::size(invalid_urls); ++i) {
+  for (size_t i = 0; i < std::size(invalid_urls); ++i) {
     std::wstring scheme, host, path;
     uint16_t port = 0;
     EXPECT_FALSE(DecomposeUrl(invalid_urls[i], &scheme, &host, &port, &path))

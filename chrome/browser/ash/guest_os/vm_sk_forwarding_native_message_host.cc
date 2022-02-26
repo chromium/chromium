@@ -48,7 +48,7 @@ const char* const
 
 // static
 const size_t VmSKForwardingNativeMessageHost::kOriginCount =
-    base::size(kOrigins);
+    std::size(kOrigins);
 
 // static
 std::unique_ptr<extensions::NativeMessageHost>

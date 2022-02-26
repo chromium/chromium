@@ -4,11 +4,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -271,7 +271,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
-  MoveTest("a.txt", std::string(kValidImage, base::size(kValidImage)), false);
+  MoveTest("a.txt", std::string(kValidImage, std::size(kValidImage)), false);
 }
 
 // TODO(crbug.com/1169640): Re-enable. Flaky on Linux.
@@ -281,19 +281,17 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
 #define MAYBE_ValidImage ValidImage
 #endif
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, MAYBE_ValidImage) {
-  MoveTest("a.webp", std::string(kValidImage, base::size(kValidImage)), true);
+  MoveTest("a.webp", std::string(kValidImage, std::size(kValidImage)), true);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, InvalidImage) {
   MoveTest("a.webp",
-           std::string(kInvalidMediaFile, base::size(kInvalidMediaFile)),
-           false);
+           std::string(kInvalidMediaFile, std::size(kInvalidMediaFile)), false);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, InvalidAudio) {
   MoveTest("a.ogg",
-           std::string(kInvalidMediaFile, base::size(kInvalidMediaFile)),
-           false);
+           std::string(kInvalidMediaFile, std::size(kInvalidMediaFile)), false);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidAudio) {

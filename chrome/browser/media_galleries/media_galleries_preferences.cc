@@ -512,7 +512,7 @@ void MediaGalleriesPreferences::AddDefaultGalleries() {
     {chrome::DIR_USER_VIDEOS, MediaGalleryPrefInfo::kVideosDefault},
   };
 
-  for (size_t i = 0; i < base::size(kDirectories); ++i) {
+  for (size_t i = 0; i < std::size(kDirectories); ++i) {
     base::FilePath path;
     if (!base::PathService::Get(kDirectories[i].directory_key, &path))
       continue;

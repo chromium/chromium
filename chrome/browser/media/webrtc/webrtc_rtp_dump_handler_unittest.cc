@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -99,8 +98,8 @@ class WebRtcRtpDumpHandlerTest : public testing::Test {
     *incoming_dump = dir.AppendASCII("recv");
     *outgoing_dump = dir.AppendASCII("send");
     const char dummy[] = "dummy";
-    EXPECT_GT(base::WriteFile(*incoming_dump, dummy, base::size(dummy)), 0);
-    EXPECT_GT(base::WriteFile(*outgoing_dump, dummy, base::size(dummy)), 0);
+    EXPECT_GT(base::WriteFile(*incoming_dump, dummy, std::size(dummy)), 0);
+    EXPECT_GT(base::WriteFile(*outgoing_dump, dummy, std::size(dummy)), 0);
   }
 
   void FlushTaskRunners() {
@@ -126,7 +125,7 @@ TEST_F(WebRtcRtpDumpHandlerTest, StateTransition) {
   types[1] = RTP_DUMP_OUTGOING;
   types[2] = RTP_DUMP_BOTH;
 
-  for (size_t i = 0; i < base::size(types); ++i) {
+  for (size_t i = 0; i < std::size(types); ++i) {
     DVLOG(2) << "Verifying state transition: type = " << types[i];
 
     // Only StartDump is allowed in STATE_NONE.
@@ -216,10 +215,10 @@ TEST_F(WebRtcRtpDumpHandlerTest, CannotStartMoreThanFiveDumps) {
 
   std::unique_ptr<WebRtcRtpDumpHandler> handlers[6];
 
-  for (size_t i = 0; i < base::size(handlers); ++i) {
+  for (size_t i = 0; i < std::size(handlers); ++i) {
     handlers[i] = std::make_unique<WebRtcRtpDumpHandler>(base::FilePath());
 
-    if (i < base::size(handlers) - 1) {
+    if (i < std::size(handlers) - 1) {
       EXPECT_TRUE(handlers[i]->StartDump(RTP_DUMP_INCOMING, &error));
     } else {
       EXPECT_FALSE(handlers[i]->StartDump(RTP_DUMP_INCOMING, &error));

@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -38,16 +37,16 @@ std::vector<base::FilePath> GetCriticalBinariesPath() {
     NOTREACHED();
 
   std::vector<base::FilePath> critical_binaries;
-  critical_binaries.reserve(base::size(kUnversionedFiles) +
-                            base::size(kVersionedFiles));
+  critical_binaries.reserve(std::size(kUnversionedFiles) +
+                            std::size(kVersionedFiles));
 
-  for (size_t i = 0; i < base::size(kUnversionedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kUnversionedFiles); ++i) {
     critical_binaries.push_back(chrome_exe_dir.Append(kUnversionedFiles[i]));
   }
 
   base::FilePath version_dir(
       chrome_exe_dir.AppendASCII(CHROME_VERSION_STRING));
-  for (size_t i = 0; i < base::size(kVersionedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kVersionedFiles); ++i) {
     critical_binaries.push_back(version_dir.Append(kVersionedFiles[i]));
   }
 

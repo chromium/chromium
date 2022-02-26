@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/gcm/gcm_api.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -12,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -72,10 +72,10 @@ const char* GcmResultToError(gcm::GCMClient::Result result) {
 bool IsMessageKeyValid(const std::string& key) {
   std::string lower = base::ToLowerASCII(key);
   return !key.empty() &&
-         key.compare(0, base::size(kCollapseKey) - 1, kCollapseKey) != 0 &&
-         lower.compare(0, base::size(kGoogleRestrictedPrefix) - 1,
+         key.compare(0, std::size(kCollapseKey) - 1, kCollapseKey) != 0 &&
+         lower.compare(0, std::size(kGoogleRestrictedPrefix) - 1,
                        kGoogleRestrictedPrefix) != 0 &&
-         lower.compare(0, base::size(kGoogDotRestrictedPrefix),
+         lower.compare(0, std::size(kGoogDotRestrictedPrefix),
                        kGoogDotRestrictedPrefix) != 0;
 }
 

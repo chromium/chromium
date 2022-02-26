@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -73,7 +72,7 @@ const TestPageData kTestPages[] = {
     },
 };
 
-const size_t kTestPagesLength = base::size(kTestPages);
+const size_t kTestPagesLength = std::size(kTestPages);
 
 // Blocks till the current page uses a specific icon URL.
 class FaviconWaiter : public favicon::FaviconDriverObserver {

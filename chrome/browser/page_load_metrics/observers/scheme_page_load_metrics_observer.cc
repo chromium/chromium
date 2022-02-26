@@ -4,7 +4,6 @@
 
 #include "chrome/browser/page_load_metrics/observers/scheme_page_load_metrics_observer.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -122,7 +121,7 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   // Record understat metrics for the time to first contentful paint.
   static constexpr const int kUnderStatRecordingIntervalsSeconds[] = {1, 2, 5,
                                                                       8, 10};
-  static_assert(base::size(kUnderStatRecordingIntervalsSeconds) ==
+  static_assert(std::size(kUnderStatRecordingIntervalsSeconds) ==
                     static_cast<int>(PageLoadTimingUnderStat::kMaxValue),
                 " mismatch in  array length and enum size");
 
@@ -140,8 +139,8 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         PageLoadTimingUnderStat::kTotal);
   }
 
-  for (size_t index = 0;
-       index < base::size(kUnderStatRecordingIntervalsSeconds); ++index) {
+  for (size_t index = 0; index < std::size(kUnderStatRecordingIntervalsSeconds);
+       ++index) {
     base::TimeDelta threshold(
         base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
     if (fcp <= threshold) {

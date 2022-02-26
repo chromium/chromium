@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -167,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestEnabled, Simple) {
       {"http://foo.com/", true},
       {"http://example.org/pumpkins.html", true},
   };
-  CheckExpectations(expectations, base::size(expectations));
+  CheckExpectations(expectations, std::size(expectations));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
@@ -178,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy1.example.org/pumpkins.html", true},
       {"http://policy2.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations, base::size(expectations));
+  CheckIsolatedOriginExpectations(expectations, std::size(expectations));
 
   // Simulate updating the policy at "browser runtime".
   policy::PolicyMap values;
@@ -202,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy3.example.org/pumpkins.html", true},
       {"http://policy4.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations2, base::size(expectations2));
+  CheckIsolatedOriginExpectations(expectations2, std::size(expectations2));
 }
 
 IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
@@ -210,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
       {"https://foo.com/noodles.html", true},
       {"http://example.org/pumpkins.html", true},
   };
-  CheckExpectations(expectations, base::size(expectations));
+  CheckExpectations(expectations, std::size(expectations));
 }
 
 // After https://crbug.com/910273 was fixed, enterprise policy can only be used
@@ -258,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
       {"https://foo.com/noodles.html", false},
       {"http://example.org/pumpkins.html", false},
   };
-  CheckExpectations(expectations, base::size(expectations));
+  CheckExpectations(expectations, std::size(expectations));
 }
 #endif
 

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,7 +27,7 @@ const char* const NativeMessageEchoHost::kOrigins[] = {
     "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"};
 
 // static
-const size_t NativeMessageEchoHost::kOriginCount = base::size(kOrigins);
+const size_t NativeMessageEchoHost::kOriginCount = std::size(kOrigins);
 
 // static
 std::unique_ptr<NativeMessageHost> NativeMessageEchoHost::Create(

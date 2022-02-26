@@ -4,7 +4,6 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_local.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -239,11 +238,11 @@ base::FilePath WebRtcLocalEventLogManager::GetFilePath(
   // [user_defined]_[date]_[time]_[render_process_id]_[lid].[extension]
   char stamp[100];
   int written =
-      base::snprintf(stamp, base::size(stamp), "%04d%02d%02d_%02d%02d_%d_%d",
+      base::snprintf(stamp, std::size(stamp), "%04d%02d%02d_%02d%02d_%d_%d",
                      now.year, now.month, now.day_of_month, now.hour,
                      now.minute, key.render_process_id, key.lid);
   CHECK_GT(written, 0);
-  CHECK_LT(static_cast<size_t>(written), base::size(stamp));
+  CHECK_LT(static_cast<size_t>(written), std::size(stamp));
 
   return base_path.InsertBeforeExtension(FILE_PATH_LITERAL("_"))
       .AddExtension(log_file_writer_factory_.Extension())

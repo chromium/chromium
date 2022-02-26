@@ -12,7 +12,6 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -148,9 +147,9 @@ class WebRtcRtpDumpWriterTest : public testing::Test {
     size_t dump_pos = 0;
 
     // Verifies the first line.
-    EXPECT_EQ(memcmp(&dump[0], kFirstLine, base::size(kFirstLine) - 1), 0);
+    EXPECT_EQ(memcmp(&dump[0], kFirstLine, std::size(kFirstLine) - 1), 0);
 
-    dump_pos += base::size(kFirstLine) - 1;
+    dump_pos += std::size(kFirstLine) - 1;
     EXPECT_GT(dump.size(), dump_pos);
 
     // Skips the file header.

@@ -514,7 +514,7 @@ static const char* kServerLanguageList[] = {
 // Test the fetching of languages from the translate server
 TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
   std::vector<std::string> server_languages;
-  for (size_t i = 0; i < base::size(kServerLanguageList); ++i)
+  for (size_t i = 0; i < std::size(kServerLanguageList); ++i)
     server_languages.push_back(kServerLanguageList[i]);
 
   // First, get the default languages list. Note that calling

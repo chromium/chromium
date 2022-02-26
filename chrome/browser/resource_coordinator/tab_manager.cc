@@ -284,7 +284,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
       chrome::kChromeUINewTabURL, chrome::kChromeUISettingsURL};
   // Prefix-match against the table above. Use strncmp to avoid allocating
   // memory to convert the URL prefix constants into std::strings.
-  for (size_t i = 0; i < base::size(kInternalPagePrefixes); ++i) {
+  for (size_t i = 0; i < std::size(kInternalPagePrefixes); ++i) {
     if (!strncmp(url.spec().c_str(), kInternalPagePrefixes[i],
                  strlen(kInternalPagePrefixes[i])))
       return true;

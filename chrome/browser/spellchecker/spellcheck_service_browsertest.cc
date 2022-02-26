@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -579,8 +578,8 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     size_t actual = base::WriteFile(
         bdict_path, reinterpret_cast<const char*>(kCorruptedBDICT),
-        base::size(kCorruptedBDICT));
-    EXPECT_EQ(base::size(kCorruptedBDICT), actual);
+        std::size(kCorruptedBDICT));
+    EXPECT_EQ(std::size(kCorruptedBDICT), actual);
   }
 
   // Attach an event to the SpellcheckService object so we can receive its

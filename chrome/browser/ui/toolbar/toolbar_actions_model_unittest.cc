@@ -563,7 +563,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
 
   extensions::TestExtensionDir* dirs[] = {&dir1, &dir2};
   const extensions::Extension* extensions[] = {nullptr, nullptr};
-  for (size_t i = 0; i < base::size(dirs); ++i) {
+  for (size_t i = 0; i < std::size(dirs); ++i) {
     // The extension id will be calculated from the file path; we need this to
     // wait for the extension to load.
     base::FilePath path_for_id =

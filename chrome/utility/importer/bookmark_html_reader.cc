@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,7 +98,7 @@ static std::string stripDt(const std::string& lineDt) {
   static const char kDtTag[] = "<DT>";
   if (base::StartsWith(line, kDtTag,
                        base::CompareCase::INSENSITIVE_ASCII)) {
-    line.erase(0, base::size(kDtTag) - 1);
+    line.erase(0, std::size(kDtTag) - 1);
     base::TrimString(line, " ", &line);
   }
   return line;
@@ -140,7 +139,7 @@ void ImportBookmarksFile(
     static const char kHrTag[] = "<HR>";
     while (base::StartsWith(line, kHrTag,
                             base::CompareCase::INSENSITIVE_ASCII)) {
-      line.erase(0, base::size(kHrTag) - 1);
+      line.erase(0, std::size(kHrTag) - 1);
       base::TrimString(line, " ", &line);
     }
 
@@ -340,15 +339,15 @@ bool ParseFolderNameFromLine(const std::string& lineDt,
   size_t end = line.find(kFolderClose);
   size_t tag_end = line.rfind('>', end) + 1;
   // If no end tag or start tag is broken, we skip to find the folder name.
-  if (end == std::string::npos || tag_end < base::size(kFolderOpen))
+  if (end == std::string::npos || tag_end < std::size(kFolderOpen))
     return false;
 
   base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),
                         base::OnStringConversionError::SKIP, folder_name);
   *folder_name = net::UnescapeForHTML(*folder_name);
 
-  std::string attribute_list = line.substr(
-      base::size(kFolderOpen), tag_end - base::size(kFolderOpen) - 1);
+  std::string attribute_list =
+      line.substr(std::size(kFolderOpen), tag_end - std::size(kFolderOpen) - 1);
   std::string value;
 
   // Add date
@@ -399,11 +398,11 @@ bool ParseBookmarkFromLine(const std::string& lineDt,
 
   size_t end = line.find(kItemClose);
   size_t tag_end = line.rfind('>', end) + 1;
-  if (end == std::string::npos || tag_end < base::size(kItemOpen))
+  if (end == std::string::npos || tag_end < std::size(kItemOpen))
     return false;  // No end tag or start tag is broken.
 
   std::string attribute_list =
-      line.substr(base::size(kItemOpen), tag_end - base::size(kItemOpen) - 1);
+      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1);
 
   // We don't import Live Bookmark folders, which is Firefox's RSS reading
   // feature, since the user never necessarily bookmarked them and we don't
@@ -477,11 +476,11 @@ bool ParseMinimumBookmarkFromLine(const std::string& lineDt,
   // Find any close tag.
   size_t end = line.find(kItemClose);
   size_t tag_end = line.rfind('>', end) + 1;
-  if (end == std::string::npos || tag_end < base::size(kItemOpen))
+  if (end == std::string::npos || tag_end < std::size(kItemOpen))
     return false;  // No end tag or start tag is broken.
 
   std::string attribute_list =
-      line.substr(base::size(kItemOpen), tag_end - base::size(kItemOpen) - 1);
+      line.substr(std::size(kItemOpen), tag_end - std::size(kItemOpen) - 1);
 
   // Title
   base::CodepageToUTF16(line.substr(tag_end, end - tag_end), charset.c_str(),

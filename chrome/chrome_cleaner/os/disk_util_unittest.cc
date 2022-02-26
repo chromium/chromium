@@ -671,7 +671,7 @@ TEST(DiskUtilTests, ComputeSHA256DigestOfPathOnBigFile) {
       {10000,
        "5B92F844F0ED521B75688F4B6FF58E127711709613589EB6EC88FDFBBDC7DC63"}};
 
-  for (size_t offset = 0; offset < base::size(digests); ++offset) {
+  for (size_t offset = 0; offset < std::size(digests); ++offset) {
     DigestInfo* info = &digests[offset];
     DCHECK(info);
 

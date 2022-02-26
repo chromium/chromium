@@ -11,7 +11,6 @@
 
 #include "ash/public/cpp/default_user_image.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -218,7 +217,7 @@ constexpr bool ValidateCurrentImageIndexes() {
     if (info.eligibility == Eligibility::kEligible)
       num_eligible_images++;
   }
-  if (num_eligible_images != base::size(kCurrentImageIndexes))
+  if (num_eligible_images != std::size(kCurrentImageIndexes))
     return false;
 
   for (const int index : kCurrentImageIndexes) {
@@ -298,7 +297,7 @@ bool IsDefaultImageString(const std::string& s,
 
 }  // namespace
 
-const int kDefaultImagesCount = base::size(kDefaultImageInfo);
+const int kDefaultImagesCount = std::size(kDefaultImageInfo);
 
 const int kFirstDefaultImageIndex = 48;
 
@@ -385,7 +384,7 @@ std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue() {
 }
 
 absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(size_t index) {
-  if (index >= base::size(kDefaultImageSourceInfo))
+  if (index >= std::size(kDefaultImageSourceInfo))
     return absl::nullopt;
 
   return kDefaultImageSourceInfo[index];

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/browser/shortcuts_provider.h"
-
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/browser/shortcuts_provider.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
@@ -83,7 +81,7 @@ void ShortcutsProviderExtensionTest::SetUp() {
   provider_ = new ShortcutsProvider(client_.get());
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
                                        shortcut_test_db,
-                                       base::size(shortcut_test_db));
+                                       std::size(shortcut_test_db));
 }
 
 void ShortcutsProviderExtensionTest::TearDown() {

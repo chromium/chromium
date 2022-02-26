@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -168,7 +167,7 @@ namespace prefs {
 std::vector<const char*> GetIncognitoPersistentPrefsAllowlist() {
   std::vector<const char*> allowlist;
   allowlist.insert(allowlist.end(), kPersistentPrefNames,
-                   kPersistentPrefNames + base::size(kPersistentPrefNames));
+                   kPersistentPrefNames + std::size(kPersistentPrefNames));
   return allowlist;
 }
 

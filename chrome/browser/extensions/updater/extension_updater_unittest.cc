@@ -2150,8 +2150,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // rollcall and active pings.
     int ping_cases[] = { ManifestFetchData::kNeverPinged, 0, 1, 5 };
 
-    for (size_t i = 0; i < base::size(ping_cases); i++) {
-      for (size_t j = 0; j < base::size(ping_cases); j++) {
+    for (size_t i = 0; i < std::size(ping_cases); i++) {
+      for (size_t j = 0; j < std::size(ping_cases); j++) {
         for (size_t k = 0; k < 2; k++) {
           int rollcall_ping_days = ping_cases[i];
           int active_ping_days = ping_cases[j];

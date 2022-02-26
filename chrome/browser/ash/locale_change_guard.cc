@@ -249,7 +249,7 @@ LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting() {
 
 // static
 size_t LocaleChangeGuard::GetSkipShowNotificationLanguagesSizeForTesting() {
-  return base::size(kSkipShowNotificationLanguages);
+  return std::size(kSkipShowNotificationLanguages);
 }
 
 }  // namespace ash

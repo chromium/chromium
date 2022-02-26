@@ -855,7 +855,7 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
     auto guid_string = base::win::WStringFromGUID(CLSID_GaiaCredentialProvider);
 
     wchar_t guid_in_registry[64];
-    ULONG length = base::size(guid_in_registry);
+    ULONG length = std::size(guid_in_registry);
     EXPECT_EQ(S_OK, GetMachineRegString(kLogonUiUserTileRegKey, sid,
                                         guid_in_registry, &length));
     EXPECT_EQ(guid_string, std::wstring(guid_in_registry));

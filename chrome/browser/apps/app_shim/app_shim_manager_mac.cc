@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -237,7 +236,7 @@ bool IsAcceptablyCodeSignedInternal(pid_t app_shim_pid) {
   const void* app_shim_attribute_values[] = {app_shim_pid_cf};
   base::ScopedCFTypeRef<CFDictionaryRef> app_shim_attributes(CFDictionaryCreate(
       nullptr, app_shim_attribute_keys, app_shim_attribute_values,
-      base::size(app_shim_attribute_keys), &kCFTypeDictionaryKeyCallBacks,
+      std::size(app_shim_attribute_keys), &kCFTypeDictionaryKeyCallBacks,
       &kCFTypeDictionaryValueCallBacks));
   base::ScopedCFTypeRef<SecCodeRef> app_shim_code;
   OSStatus status = SecCodeCopyGuestWithAttributes(

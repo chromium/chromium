@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -127,7 +126,7 @@ ReadResult ReadModuleBlocklistCache(
 
   base::MD5Digest read_md5_digest;
   if (!SafeRead(&file, reinterpret_cast<char*>(&read_md5_digest.a),
-                base::size(read_md5_digest.a))) {
+                std::size(read_md5_digest.a))) {
     return ReadResult::kFailReadMD5;
   }
 
@@ -268,10 +267,10 @@ void RemoveAllowlistedEntries(
         return module_list_filter.IsAllowlisted(
             base::StringPiece(
                 reinterpret_cast<const char*>(&module.basename_hash[0]),
-                base::size(module.basename_hash)),
+                std::size(module.basename_hash)),
             base::StringPiece(
                 reinterpret_cast<const char*>(&module.code_id_hash[0]),
-                base::size(module.code_id_hash)));
+                std::size(module.code_id_hash)));
       });
 }
 

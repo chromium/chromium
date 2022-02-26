@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -105,7 +104,7 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_short_name_type.json", errors::kInvalidShortName),
   };
 
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValid) {
@@ -167,7 +166,7 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
     Testcase("init_valid_permissions_unknown.json")
   };
 
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_SUCCESS);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValidNameInRTL) {

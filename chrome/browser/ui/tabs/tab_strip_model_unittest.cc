@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -2731,7 +2730,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
       {7, 4, "2 3 4", 3, "0p 1p 2p 3p 5 4 6"},
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     TestTabStripModelDelegate delegate;
     TabStripModel strip(&delegate, profile());
     ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(

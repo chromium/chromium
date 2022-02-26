@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -80,7 +79,7 @@ TEST_F(SafariImporterTest, BookmarkImport) {
   std::vector<ImportedBookmarkEntry> bookmarks;
   importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
-  ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
+  ASSERT_EQ(std::size(kImportedBookmarksData), num_bookmarks);
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     ImportedBookmarkEntry& entry = bookmarks[i];
@@ -122,7 +121,7 @@ TEST_F(SafariImporterTest, BookmarkImportWithEmptyBookmarksMenu) {
   std::vector<ImportedBookmarkEntry> bookmarks;
   importer->ParseBookmarks(u"Toolbar", &bookmarks);
   size_t num_bookmarks = bookmarks.size();
-  ASSERT_EQ(base::size(kImportedBookmarksData), num_bookmarks);
+  ASSERT_EQ(std::size(kImportedBookmarksData), num_bookmarks);
 
   for (size_t i = 0; i < num_bookmarks; ++i) {
     ImportedBookmarkEntry& entry = bookmarks[i];

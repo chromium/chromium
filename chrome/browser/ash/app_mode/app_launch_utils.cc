@@ -101,7 +101,7 @@ void ResetEphemeralKioskPreferences(PrefService* prefs) {
         user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
   for (size_t pref_id = 0;
        pref_id < (test_prefs_to_reset ? test_prefs_to_reset->size()
-                                      : base::size(kPrefsToReset));
+                                      : std::size(kPrefsToReset));
        pref_id++) {
     const std::string branch_path = test_prefs_to_reset
                                         ? (*test_prefs_to_reset)[pref_id]

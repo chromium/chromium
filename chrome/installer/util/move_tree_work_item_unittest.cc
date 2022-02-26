@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_util.h"
@@ -46,7 +45,7 @@ std::wstring ReadTextFile(const base::FilePath& path) {
   std::wifstream file;
   file.open(base::WideToASCII(path.value()).c_str());
   EXPECT_TRUE(file.is_open());
-  file.getline(contents, base::size(contents));
+  file.getline(contents, std::size(contents));
   file.close();
   return std::wstring(contents);
 }

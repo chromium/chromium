@@ -26,7 +26,7 @@
 
 namespace {
 
-constexpr size_t kColorsCount = base::size(chrome_colors::kGeneratedColorsInfo);
+constexpr size_t kColorsCount = std::size(chrome_colors::kGeneratedColorsInfo);
 
 size_t ReturnNth(size_t n, size_t size) {
   DCHECK_LT(n, size);

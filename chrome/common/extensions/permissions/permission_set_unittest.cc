@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -689,7 +688,7 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
       {"sockets3", true},           // tcp:a.com:80 -> tcp:*:*
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     scoped_refptr<Extension> old_extension(
         LoadManifest("allow_silent_upgrade",
                      std::string(kTests[i].base_name) + "_old.json"));
@@ -1673,7 +1672,7 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
        false},
   };
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     URLPatternSet explicit_hosts1;
     URLPatternSet explicit_hosts2;
     const auto& test_case = test_cases[i];

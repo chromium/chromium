@@ -46,7 +46,6 @@
 #include <stddef.h>
 #include <unicode/uidna.h>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
@@ -842,7 +841,7 @@ std::string ProcessCrlDistPoints(SECItem* extension_data) {
     if (point->reasons.len) {
       rv += ' ';
       comma = false;
-      for (size_t i = 0; i < base::size(reason_string_map); ++i) {
+      for (size_t i = 0; i < std::size(reason_string_map); ++i) {
         if (point->reasons.data[0] & reason_string_map[i].reason) {
           if (comma)
             rv += ',';
@@ -970,7 +969,7 @@ std::string ProcessNSCertTypeExtension(SECItem* extension_data) {
     {NS_CERT_TYPE_OBJECT_SIGNING_CA, IDS_CERT_USAGE_OBJECT_SIGNER},
   };
   return ProcessBitStringExtension(extension_data, usage_string_map,
-                                   base::size(usage_string_map), '\n');
+                                   std::size(usage_string_map), '\n');
 }
 
 static const MaskIdPair key_usage_string_map[] = {
@@ -988,12 +987,12 @@ static const MaskIdPair key_usage_string_map[] = {
 
 std::string ProcessKeyUsageBitString(SECItem* bitstring, char sep) {
   return ProcessBitField(bitstring, key_usage_string_map,
-                         base::size(key_usage_string_map), sep);
+                         std::size(key_usage_string_map), sep);
 }
 
 std::string ProcessKeyUsageExtension(SECItem* extension_data) {
   return ProcessBitStringExtension(extension_data, key_usage_string_map,
-                                   base::size(key_usage_string_map), '\n');
+                                   std::size(key_usage_string_map), '\n');
 }
 
 std::string ProcessExtKeyUsage(SECItem* extension_data) {

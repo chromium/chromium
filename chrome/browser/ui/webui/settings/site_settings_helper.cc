@@ -169,7 +169,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::REQUEST_DESKTOP_SITE, nullptr},
 };
 
-static_assert(base::size(kContentSettingsTypeGroupNames) ==
+static_assert(std::size(kContentSettingsTypeGroupNames) ==
                   // ContentSettingsType starts at -1, so add 1 here.
                   static_cast<int32_t>(ContentSettingsType::NUM_TYPES) + 1,
               "kContentSettingsTypeGroupNames should have "
@@ -192,7 +192,7 @@ const SiteSettingSourceStringMapping kSiteSettingSourceStringMapping[] = {
     {SiteSettingSource::kPolicy, "policy"},
     {SiteSettingSource::kPreference, "preference"},
 };
-static_assert(base::size(kSiteSettingSourceStringMapping) ==
+static_assert(std::size(kSiteSettingSourceStringMapping) ==
                   static_cast<int>(SiteSettingSource::kNumSources),
               "kSiteSettingSourceStringMapping should have "
               "SiteSettingSource::kNumSources elements");
@@ -214,7 +214,7 @@ const PolicyIndicatorTypeStringMapping kPolicyIndicatorTypeStringMapping[] = {
     {PolicyIndicatorType::kParent, "parent"},
     {PolicyIndicatorType::kChildRestriction, "childRestriction"},
 };
-static_assert(base::size(kPolicyIndicatorTypeStringMapping) ==
+static_assert(std::size(kPolicyIndicatorTypeStringMapping) ==
                   static_cast<int>(PolicyIndicatorType::kNumIndicators),
               "kPolicyIndicatorStringMapping should have "
               "PolicyIndicatorType::kNumIndicators elements");
@@ -381,7 +381,7 @@ const ChooserTypeNameEntry kChooserTypeGroupNames[] = {
 }  // namespace
 
 bool HasRegisteredGroupName(ContentSettingsType type) {
-  for (size_t i = 0; i < base::size(kContentSettingsTypeGroupNames); ++i) {
+  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
     if (type == kContentSettingsTypeGroupNames[i].type &&
         kContentSettingsTypeGroupNames[i].name) {
       return true;
@@ -391,7 +391,7 @@ bool HasRegisteredGroupName(ContentSettingsType type) {
 }
 
 ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
-  for (size_t i = 0; i < base::size(kContentSettingsTypeGroupNames); ++i) {
+  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
     if (name == kContentSettingsTypeGroupNames[i].name)
       return kContentSettingsTypeGroupNames[i].type;
   }
@@ -401,7 +401,7 @@ ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
 }
 
 base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
-  for (size_t i = 0; i < base::size(kContentSettingsTypeGroupNames); ++i) {
+  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
     if (type == kContentSettingsTypeGroupNames[i].type) {
       const char* name = kContentSettingsTypeGroupNames[i].name;
       if (name)

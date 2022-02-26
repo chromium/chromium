@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,7 +44,7 @@ char kInterruptReasonCounter[] = {
 #include "components/download/public/common/download_interrupt_reason_values.h"
 #undef INTERRUPT_REASON
 };
-const size_t kInterruptReasonCount = base::size(kInterruptReasonCounter);
+const size_t kInterruptReasonCount = std::size(kInterruptReasonCounter);
 
 // Default target path for a mock download item in DownloadItemModelTest.
 const base::FilePath::CharType kDefaultTargetFilePath[] =
@@ -204,7 +203,7 @@ TEST_F(DownloadItemModelTest, InterruptedStatus) {
       {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "%s - Shutdown"},
       {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "%s - Crash"},
   };
-  static_assert(kInterruptReasonCount == base::size(kTestCases),
+  static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");
 
   SetupDownloadItemDefaults();
@@ -307,7 +306,7 @@ TEST_F(DownloadItemModelTest, InterruptTooltip) {
       {download::DOWNLOAD_INTERRUPT_REASON_USER_SHUTDOWN, "foo.bar\nShutdown"},
       {download::DOWNLOAD_INTERRUPT_REASON_CRASH, "foo.bar\nCrash"},
   };
-  static_assert(kInterruptReasonCount == base::size(kTestCases),
+  static_assert(kInterruptReasonCount == std::size(kTestCases),
                 "interrupt reason mismatch");
 
   SetupDownloadItemDefaults();

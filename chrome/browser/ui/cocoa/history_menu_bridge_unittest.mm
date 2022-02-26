@@ -204,7 +204,7 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
   // Make sure the items belong to both original and incognito mode are visible.
   NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
-  for (size_t i = 0; i < base::size(always_visible_items); i++) {
+  for (size_t i = 0; i < std::size(always_visible_items); i++) {
     // Create a fake item with tag.
     base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
     item.get().tag = always_visible_items[i];
@@ -220,7 +220,7 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
       HistoryMenuBridge::kVisitedTitle,
       HistoryMenuBridge::kShowFullSeparator,
       IDC_SHOW_HISTORY};
-  for (size_t i = 0; i < base::size(regular_visible_items); i++) {
+  for (size_t i = 0; i < std::size(regular_visible_items); i++) {
     // Create a fake item with tag.
     base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
     item.get().tag = regular_visible_items[i];

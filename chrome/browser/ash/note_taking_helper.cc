@@ -23,7 +23,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
@@ -528,7 +527,7 @@ NoteTakingHelper::NoteTakingHelper()
   }
   allowed_app_ids_.insert(
       allowed_app_ids_.end(), kDefaultAllowedAppIds,
-      kDefaultAllowedAppIds + base::size(kDefaultAllowedAppIds));
+      kDefaultAllowedAppIds + std::size(kDefaultAllowedAppIds));
 
   // Track profiles so we can observe their app registries.
   g_browser_process->profile_manager()->AddObserver(this);

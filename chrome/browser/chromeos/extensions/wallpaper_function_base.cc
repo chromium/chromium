@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/extensions/wallpaper_function_base.h"
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/atomic_flag.h"
@@ -32,7 +31,7 @@ const char* const kWallpaperLayoutArrays[] = {
   "TILE"
 };
 
-const int kWallpaperLayoutCount = base::size(kWallpaperLayoutArrays);
+const int kWallpaperLayoutCount = std::size(kWallpaperLayoutArrays);
 
 base::LazyThreadPoolSequencedTaskRunner g_blocking_task_runner =
     LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(

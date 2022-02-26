@@ -334,7 +334,7 @@ BOOL CALLBACK ChromeWindowEnumProc(HWND hwnd, LPARAM lparam) {
   SetWindowPosParams* params = reinterpret_cast<SetWindowPosParams*>(lparam);
 
   if (!params->shunted_hwnds.count(hwnd) &&
-      ::GetClassName(hwnd, window_class, base::size(window_class)) &&
+      ::GetClassName(hwnd, window_class, std::size(window_class)) &&
       base::StartsWith(window_class, kChromeWindowClassPrefix,
                        base::CompareCase::INSENSITIVE_ASCII) &&
       ::SetWindowPos(hwnd, params->window_insert_after, params->x, params->y,

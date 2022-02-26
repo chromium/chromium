@@ -274,7 +274,7 @@ base::android::ScopedJavaLocalRef<jstring> GetShippingAddressLabel(
       autofill::ServerFieldType::ADDRESS_HOME_SORTING_CODE,
       autofill::ServerFieldType::ADDRESS_HOME_COUNTRY,
   };
-  size_t fields_size = base::size(kLabelFields);
+  size_t fields_size = std::size(kLabelFields);
 
   // For the case where country is omitted, do not use the last field.
   if (!with_country) {

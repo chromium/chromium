@@ -74,7 +74,7 @@ const wchar_t kMasterPreferencesFileName[] = L"master_preferences";
 void GetForcelistPoliciesForAccessMask(
     REGSAM access_mask,
     std::vector<ExtensionPolicyRegistryEntry>* policies) {
-  for (size_t i = 0; i < base::size(extension_forcelist_keys); ++i) {
+  for (size_t i = 0; i < std::size(extension_forcelist_keys); ++i) {
     base::win::RegistryValueIterator forcelist_it(
         extension_forcelist_keys[i].hkey, extension_forcelist_keys[i].path,
         access_mask);
@@ -142,7 +142,7 @@ void GetExtensionSettingsPoliciesForAccessMask(
     JsonParserAPI* json_parser,
     std::vector<ExtensionPolicyRegistryEntry>* policies,
     scoped_refptr<ParseTasksRemainingCounter> counter) {
-  for (size_t i = 0; i < base::size(extension_settings_keys); ++i) {
+  for (size_t i = 0; i < std::size(extension_settings_keys); ++i) {
     RegKeyPath key(extension_settings_keys[i].hkey,
                    extension_settings_keys[i].path, access_mask);
     std::wstring extension_settings;

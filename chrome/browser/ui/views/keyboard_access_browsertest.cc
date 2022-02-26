@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -259,7 +258,7 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
     wchar_t class_name[MAX_PATH] = {0};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
-                 base::size(class_name));
+                 std::size(class_name));
     if (base::LowerCaseEqualsASCII(class_name, "#32768")) {
       // Select the New Tab option and then send the enter key to execute it.
       ::PostMessage(reinterpret_cast<HWND>(w_param), WM_CHAR, 'T', 0);
@@ -311,7 +310,7 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
     wchar_t class_name[MAX_PATH] = {0};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
-                 base::size(class_name));
+                 std::size(class_name));
     if (base::LowerCaseEqualsASCII(class_name, "#32768")) {
       // Send 'E' for the Reopen closed tab option.
       ::PostMessage(reinterpret_cast<HWND>(w_param), WM_CHAR, 'E', 0);

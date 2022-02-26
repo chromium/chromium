@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -322,7 +321,7 @@ Status ParseProxy(bool w3c_compliant,
     const std::string kSocksProxy = "socksProxy";
     const base::Value* option_value = nullptr;
     std::string proxy_servers;
-    for (size_t i = 0; i < base::size(proxy_servers_options); ++i) {
+    for (size_t i = 0; i < std::size(proxy_servers_options); ++i) {
       option_value = proxy_dict->FindPath(proxy_servers_options[i][0]);
       if (option_value == nullptr || option_value->is_none()) {
         continue;

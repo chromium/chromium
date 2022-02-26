@@ -3446,7 +3446,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, TabIdFiltering) {
       {third_tab_id, "rule3.com"},
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));
     // Navigate the i'th tab to `new_url`.
     tab_strip_model->ActivateTabAt(static_cast<int>(i));

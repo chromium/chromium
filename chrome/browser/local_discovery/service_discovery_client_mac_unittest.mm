@@ -146,7 +146,7 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseServiceRecord) {
   const uint8_t record_bytes[] = {2, 'a', 'b', 3, 'd', '=', 'e'};
   base::scoped_nsobject<TestNSNetService> test_service([[TestNSNetService alloc]
       initWithData:[NSData dataWithBytes:record_bytes
-                                  length:base::size(record_bytes)]]);
+                                  length:std::size(record_bytes)]]);
 
   const std::string kIp = "2001:4860:4860::8844";
   const uint16_t kPort = 4321;
@@ -184,7 +184,7 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseInvalidUnicodeRecord) {
   };
   base::scoped_nsobject<TestNSNetService> test_service([[TestNSNetService alloc]
       initWithData:[NSData dataWithBytes:record_bytes
-                                  length:base::size(record_bytes)]]);
+                                  length:std::size(record_bytes)]]);
 
   const std::string kIp = "2001:4860:4860::8844";
   const uint16_t kPort = 4321;

@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner.h"
@@ -384,6 +383,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     OobeLocalizationTest,
     testing::Range(&oobe_localization_test_parameters[0],
-                   &oobe_localization_test_parameters[base::size(
+                   &oobe_localization_test_parameters[std::size(
                        oobe_localization_test_parameters)]));
 }  // namespace ash

@@ -229,7 +229,7 @@ HRESULT GetGCPWDmTokenInternal(const std::wstring& sid,
   } else {
     wchar_t dm_token_lsa_data[1024];
     HRESULT hr = policy->RetrievePrivateData(
-        store_key.c_str(), dm_token_lsa_data, base::size(dm_token_lsa_data));
+        store_key.c_str(), dm_token_lsa_data, std::size(dm_token_lsa_data));
     if (FAILED(hr)) {
       LOGFN(ERROR) << "ScopedLsaPolicy::RetrievePrivateData hr=" << putHR(hr);
       return hr;
@@ -436,7 +436,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
 
   for (bool is_done = false; !is_done;) {
     char buffer[80];
-    DWORD length = base::size(buffer) - 1;
+    DWORD length = std::size(buffer) - 1;
     HRESULT hr = S_OK;
 
     const DWORD kThreeMinutesInMs = 3 * 60 * 1000;
@@ -678,9 +678,9 @@ HRESULT InitializeStdHandles(CommDirection direction,
 HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
                                base::FilePath* path_to_dll) {
   wchar_t path[MAX_PATH];
-  DWORD length = base::size(path);
+  DWORD length = std::size(path);
   length = ::GetModuleFileName(dll_handle, path, length);
-  if (length == 0 || length >= base::size(path)) {
+  if (length == 0 || length >= std::size(path)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetModuleFileNameW hr=" << putHR(hr);
     return hr;
@@ -709,10 +709,10 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
     return hr;
 
   wchar_t short_path[MAX_PATH];
-  DWORD short_length = base::size(short_path);
+  DWORD short_length = std::size(short_path);
   short_length =
       ::GetShortPathName(path_to_dll.value().c_str(), short_path, short_length);
-  if (short_length >= base::size(short_path)) {
+  if (short_length >= std::size(short_path)) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetShortPathNameW hr=" << putHR(hr);
     return hr;
@@ -771,7 +771,7 @@ HRESULT GetLocalizedNameBuiltinAdministratorAccount(
         PolicyHandle, PolicyAccountDomainInformation, (void**)&ppadi);
     if (status >= 0) {
       BYTE well_known_sid[SECURITY_MAX_SID_SIZE];
-      DWORD size_local_users_group_sid = base::size(well_known_sid);
+      DWORD size_local_users_group_sid = std::size(well_known_sid);
       if (CreateWellKnownSid(::WinAccountAdministratorSid, ppadi->DomainSid,
                              well_known_sid, &size_local_users_group_sid)) {
         return LookupLocalizedNameBySid(well_known_sid,
@@ -829,7 +829,7 @@ HRESULT LookupLocalizedNameBySid(PSID sid, std::wstring* localized_name) {
 HRESULT LookupLocalizedNameForWellKnownSid(WELL_KNOWN_SID_TYPE sid_type,
                                            std::wstring* localized_name) {
   BYTE well_known_sid[SECURITY_MAX_SID_SIZE];
-  DWORD size_local_users_group_sid = base::size(well_known_sid);
+  DWORD size_local_users_group_sid = std::size(well_known_sid);
 
   // Get the sid for the well known local users group.
   if (!::CreateWellKnownSid(sid_type, nullptr, well_known_sid,
@@ -1040,7 +1040,7 @@ base::FilePath::StringType GetInstallParentDirectoryName() {
 
 std::wstring GetWindowsVersion() {
   wchar_t release_id[32];
-  ULONG length = base::size(release_id);
+  ULONG length = std::size(release_id);
   HRESULT hr =
       GetMachineRegString(L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
                           L"ReleaseId", release_id, &length);
@@ -1159,7 +1159,7 @@ void GetOsVersion(std::string* version) {
   DWORD major;
   DWORD minor;
   wchar_t build[32];
-  ULONG length = base::size(build);
+  ULONG length = std::size(build);
 
   HRESULT hr1 = GetMachineRegDWORD(kOsRegistryPath, kOsMajorName, &major);
   HRESULT hr2 = GetMachineRegDWORD(kOsRegistryPath, kOsMinorName, &minor);
@@ -1218,7 +1218,7 @@ HRESULT SetGaiaEndpointCommandLineIfNeeded(const wchar_t* override_registry_key,
                                            base::CommandLine* command_line) {
   // Registry specified endpoint.
   wchar_t endpoint_url_setting[256];
-  ULONG endpoint_url_length = base::size(endpoint_url_setting);
+  ULONG endpoint_url_length = std::size(endpoint_url_setting);
   HRESULT hr = GetGlobalFlag(override_registry_key, endpoint_url_setting,
                              &endpoint_url_length);
   if (SUCCEEDED(hr) && endpoint_url_setting[0]) {
@@ -1254,7 +1254,7 @@ base::FilePath GetChromePath() {
   base::FilePath gls_path = GetSystemChromePath();
 
   wchar_t custom_gls_path_value[MAX_PATH];
-  ULONG path_len = base::size(custom_gls_path_value);
+  ULONG path_len = std::size(custom_gls_path_value);
   HRESULT hr = GetGlobalFlag(kRegGlsPath, custom_gls_path_value, &path_len);
   if (SUCCEEDED(hr)) {
     base::FilePath custom_gls_path(custom_gls_path_value);
@@ -1354,7 +1354,7 @@ std::unique_ptr<base::File> GetOpenedFileForUser(
 base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
                                            const std::wstring& flag) {
   wchar_t last_fetch_millis[512];
-  ULONG last_fetch_size = base::size(last_fetch_millis);
+  ULONG last_fetch_size = std::size(last_fetch_millis);
   HRESULT hr = GetUserProperty(sid, flag, last_fetch_millis, &last_fetch_size);
 
   if (FAILED(hr)) {

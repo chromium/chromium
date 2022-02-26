@@ -20,7 +20,6 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -2648,7 +2647,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatusUpToDate) {
 
   const char* kRequiredPlatformVersions[] = {"1234", "1234.0", "1234.0.0"};
 
-  for (size_t i = 0; i < base::size(kRequiredPlatformVersions); ++i) {
+  for (size_t i = 0; i < std::size(kRequiredPlatformVersions); ++i) {
     MockAutoLaunchKioskAppWithRequiredPlatformVersion(
         fake_kiosk_device_local_account_, kRequiredPlatformVersions[i]);
 
@@ -2700,7 +2699,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus) {
       update_engine::Operation::FINALIZING,
   };
 
-  for (size_t i = 0; i < base::size(kUpdateEngineOps); ++i) {
+  for (size_t i = 0; i < std::size(kUpdateEngineOps); ++i) {
     update_status.set_current_operation(kUpdateEngineOps[i]);
     update_status.set_new_version("1235.1.2");
     update_engine_client_->PushLastStatus(update_status);
@@ -2749,7 +2748,7 @@ TEST_F(DeviceStatusCollectorTest, ReportOsUpdateStatus_NonKiosk) {
       update_engine::Operation::FINALIZING,
   };
 
-  for (size_t i = 0; i < base::size(kUpdateEngineOps); ++i) {
+  for (size_t i = 0; i < std::size(kUpdateEngineOps); ++i) {
     update_status.set_current_operation(kUpdateEngineOps[i]);
     update_status.set_new_version("1235.1.2");
     update_engine_client_->PushLastStatus(update_status);
@@ -2801,7 +2800,7 @@ TEST_F(DeviceStatusCollectorTest, ReportLastCheckedTimestamp) {
   // change accordingly.
   const int64 kLastCheckedTimes[] = {10, 20, 30};
 
-  for (size_t i = 0; i < base::size(kLastCheckedTimes); ++i) {
+  for (size_t i = 0; i < std::size(kLastCheckedTimes); ++i) {
     update_engine::StatusResult update_status;
     update_status.set_new_version(kDefaultPlatformVersion);
     update_status.set_last_checked_time(kLastCheckedTimes[i]);
@@ -4007,7 +4006,7 @@ class DeviceStatusCollectorNetworkTest : public DeviceStatusCollectorTest {
         false,  // visible_only,
         0,      // no limit to number of results
         &state_list);
-    ASSERT_EQ(base::size(kFakeNetworks), state_list.size());
+    ASSERT_EQ(std::size(kFakeNetworks), state_list.size());
   }
 
   void TearDown() override { DeviceStatusCollectorTest::TearDown(); }
@@ -4058,7 +4057,7 @@ class DeviceStatusCollectorNetworkInterfacesTest
             (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
              base::ranges::equal(iface->eids().begin(), iface->eids().end(),
                                  kFakeSimSlots,
-                                 kFakeSimSlots + base::size(kFakeSimSlots),
+                                 kFakeSimSlots + std::size(kFakeSimSlots),
                                  base::ranges::equal_to(), base::identity(),
                                  &FakeSimSlotInfo::eid))) {
           found_match = true;
@@ -4200,7 +4199,7 @@ class DeviceStatusCollectorNetworkStateTest
     : public DeviceStatusCollectorNetworkTest {
  protected:
   void VerifyReporting() override {
-    EXPECT_EQ(base::size(kFakeNetworks),
+    EXPECT_EQ(std::size(kFakeNetworks),
               static_cast<size_t>(device_status_.network_states_size()));
     for (const FakeNetworkState& state : kFakeNetworks) {
       bool found_match = false;

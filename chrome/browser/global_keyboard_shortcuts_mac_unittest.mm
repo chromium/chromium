@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/global_keyboard_shortcuts_mac.h"
+
 #include <AppKit/NSEvent.h>
 #include <Carbon/Carbon.h>
 #include <stddef.h>
 
 #include <initializer_list>
 
-#include "chrome/browser/global_keyboard_shortcuts_mac.h"
-
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
@@ -143,7 +142,7 @@ TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
   // We only consider unshifted keys. A shifted numpad key gives a different
   // keyEquivalent than a shifted number key.
   const ShiftKeyState shift = ShiftKeyState::kUp;
-  for (unsigned int i = 0; i < base::size(equivalents); ++i) {
+  for (unsigned int i = 0; i < std::size(equivalents); ++i) {
     for (CommandKeyState command :
          {CommandKeyState::kUp, CommandKeyState::kDown}) {
       for (OptionKeyState option :

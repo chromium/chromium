@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/browser.h"
@@ -361,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
 
   int tab_index = browser()->tab_strip_model()->active_index();
-  for (size_t i = 0; i < base::size(kTestNoInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestNoInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestNoInput[i]))
         << "kTestNoInput[" << i << "] failed:\n"
         << GetTestDataDescription(kTestNoInput[i]);
@@ -369,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
 
   // Input in normal text box.
   ASSERT_NO_FATAL_FAILURE(SetFocusedElement(tab_index, L"A"));
-  for (size_t i = 0; i < base::size(kTestWithInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestWithInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestWithInput[i]))
         << "kTestWithInput[" << i << "] in text box failed:\n"
         << GetTestDataDescription(kTestWithInput[i]);
@@ -378,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, NormalKeyEvents) {
 
   // Input in password box.
   ASSERT_NO_FATAL_FAILURE(SetFocusedElement(tab_index, L"B"));
-  for (size_t i = 0; i < base::size(kTestWithInput); ++i) {
+  for (size_t i = 0; i < std::size(kTestWithInput); ++i) {
     EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestWithInput[i]))
         << "kTestWithInput[" << i << "] in password box failed:\n"
         << GetTestDataDescription(kTestWithInput[i]);

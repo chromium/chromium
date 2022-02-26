@@ -25,7 +25,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -265,7 +264,7 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
       L"%SystemRoot%\\System32\\rundll32.exe";
   wchar_t rundll32[MAX_PATH];
   DWORD size =
-      ExpandEnvironmentStrings(kRunDll32Path, rundll32, base::size(rundll32));
+      ExpandEnvironmentStrings(kRunDll32Path, rundll32, std::size(rundll32));
   if (!size || size >= MAX_PATH)
     return false;
 
@@ -359,7 +358,7 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
       "app-host",
       "app-launcher",
   };
-  for (size_t i = 0; i < base::size(kLegacySwitches); ++i) {
+  for (size_t i = 0; i < std::size(kLegacySwitches); ++i) {
     if (cmd_line.HasSwitch(kLegacySwitches[i]))
       return true;
   }

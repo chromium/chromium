@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -187,7 +186,7 @@ ui::ImageModel DeviceChooserContentView::GetIcon(int row) {
       IDR_SIGNAL_4_BAR};
   DCHECK_GE(level, 0);
   DCHECK_LT(static_cast<size_t>(level),
-            base::size(kSignalStrengthLevelImageIds));
+            std::size(kSignalStrengthLevelImageIds));
   return ui::ImageModel::FromImageSkia(
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           kSignalStrengthLevelImageIds[level]));

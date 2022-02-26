@@ -48,7 +48,7 @@ constexpr uint8_t kSodaPublicKeySHA256[32] = {
     0x8e, 0xd0, 0x0c, 0xef, 0xa5, 0xc0, 0x97, 0x00, 0x84, 0x1c, 0x21,
     0xa6, 0xae, 0xc8, 0x1b, 0x87, 0xfb, 0x12, 0x27, 0x28, 0xb1};
 
-static_assert(base::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
+static_assert(std::size(kSodaPublicKeySHA256) == crypto::kSHA256Length,
               "Wrong hash length");
 
 constexpr char kSodaManifestName[] = "SODA Library";
@@ -121,7 +121,7 @@ SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       reinterpret_cast<LPTSTR>(users_sid->GetPSID());
 
   PACL acl_ptr = nullptr;
-  if (::SetEntriesInAcl(base::size(explicit_access), explicit_access, nullptr,
+  if (::SetEntriesInAcl(std::size(explicit_access), explicit_access, nullptr,
                         &acl_ptr) != ERROR_SUCCESS) {
     return update_client::CrxInstaller::Result(
         update_client::InstallError::SET_PERMISSIONS_FAILED);
@@ -199,7 +199,7 @@ base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void SodaComponentInstallerPolicy::GetHash(std::vector<uint8_t>* hash) const {
   hash->assign(kSodaPublicKeySHA256,
-               kSodaPublicKeySHA256 + base::size(kSodaPublicKeySHA256));
+               kSodaPublicKeySHA256 + std::size(kSodaPublicKeySHA256));
 }
 
 std::string SodaComponentInstallerPolicy::GetName() const {

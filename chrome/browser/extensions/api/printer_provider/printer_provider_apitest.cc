@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
@@ -135,7 +134,7 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     job.content_type = "application/pdf";
     const unsigned char kDocumentBytes[] = {'b', 'y', 't', 'e', 's'};
     job.document_bytes =
-        new base::RefCountedBytes(kDocumentBytes, base::size(kDocumentBytes));
+        new base::RefCountedBytes(kDocumentBytes, std::size(kDocumentBytes));
 
     PrinterProviderAPIFactory::GetInstance()
         ->GetForBrowserContext(profile())

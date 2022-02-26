@@ -5,9 +5,9 @@
 #include "chrome/browser/sessions/session_restore_delegate.h"
 
 #include <stddef.h>
+
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "chrome/browser/sessions/session_restore_stats_collector.h"
 #include "chrome/browser/sessions/tab_loader.h"
@@ -32,7 +32,7 @@ bool IsInternalPage(const GURL& url) {
   };
   // Prefix-match against the table above. Use strncmp to avoid allocating
   // memory to convert the URL prefix constants into std::strings.
-  for (size_t i = 0; i < base::size(kReloadableUrlPrefixes); ++i) {
+  for (size_t i = 0; i < std::size(kReloadableUrlPrefixes); ++i) {
     if (!strncmp(url.spec().c_str(), kReloadableUrlPrefixes[i],
                  strlen(kReloadableUrlPrefixes[i])))
       return true;

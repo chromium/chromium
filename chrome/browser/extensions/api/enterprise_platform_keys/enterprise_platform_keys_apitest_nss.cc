@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
@@ -235,7 +234,7 @@ class EnterprisePlatformKeysTest
     // In order to use a prepared certificate, import a private key to the
     // user's token for which the Javscript test will import the certificate.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
-                                base::size(privateKeyPkcs8User),
+                                std::size(privateKeyPkcs8User),
                                 cert_db->GetPrivateSlot().get());
     std::move(done_callback).Run();
   }
@@ -255,7 +254,7 @@ class EnterprisePlatformKeysTest
     // Import a private key to the system slot.  The Javascript part of this
     // test has a prepared certificate for this key.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8System,
-                                base::size(privateKeyPkcs8System),
+                                std::size(privateKeyPkcs8System),
                                 system_slot->slot());
   }
 

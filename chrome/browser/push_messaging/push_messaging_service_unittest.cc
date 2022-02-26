@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/push_messaging_service.h"
-
 #include <stdint.h>
 
 #include <string>
@@ -11,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -34,6 +31,7 @@
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/permissions/permission_manager.h"
+#include "content/public/browser/push_messaging_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -317,7 +315,7 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
   PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
   ASSERT_TRUE(push_service);
 
-  std::string p256dh(kTestP256Key, kTestP256Key + base::size(kTestP256Key));
+  std::string p256dh(kTestP256Key, kTestP256Key + std::size(kTestP256Key));
   ASSERT_EQ(65u, p256dh.size());
 
   // NIST P-256 public keys in uncompressed format will be encoded using the

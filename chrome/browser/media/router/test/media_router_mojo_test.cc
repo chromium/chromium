@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 
 using testing::_;
@@ -263,12 +262,12 @@ void MediaRouterMojoTest::TestSendRouteMessage() {
 void MediaRouterMojoTest::TestSendRouteBinaryMessage() {
   ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
   auto expected_binary_data = std::make_unique<std::vector<uint8_t>>(
-      kBinaryMessage, kBinaryMessage + base::size(kBinaryMessage));
+      kBinaryMessage, kBinaryMessage + std::size(kBinaryMessage));
   EXPECT_CALL(mock_cast_provider_, SendRouteBinaryMessage(kRouteId, _))
       .WillOnce([](const MediaRoute::Id& route_id,
                    const std::vector<uint8_t>& data) {
         EXPECT_EQ(
-            0, memcmp(kBinaryMessage, &(data[0]), base::size(kBinaryMessage)));
+            0, memcmp(kBinaryMessage, &(data[0]), std::size(kBinaryMessage)));
       });
 
   router()->SendRouteBinaryMessage(kRouteId, std::move(expected_binary_data));

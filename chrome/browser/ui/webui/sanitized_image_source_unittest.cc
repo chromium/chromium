@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
@@ -185,7 +184,7 @@ TEST_F(SanitizedImageSourceTest, CookiesInclusion) {
 
   // Encode a URL so that it can be used as a param value.
   url::RawCanonOutputT<char> encoded_url;
-  url::EncodeURIComponent(kImageUrl, base::size(kImageUrl), &encoded_url);
+  url::EncodeURIComponent(kImageUrl, std::size(kImageUrl), &encoded_url);
   EXPECT_GT(encoded_url.length(), 0);
   auto encoded_url_str =
       base::StringPiece(encoded_url.data(), encoded_url.length());

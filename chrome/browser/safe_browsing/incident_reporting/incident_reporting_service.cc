@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
@@ -103,7 +102,7 @@ void LogIncidentDataType(IncidentDisposition disposition,
       "SBIRS.DiscardedIncident",
       "SBIRS.NoDownloadIncident",
   };
-  static_assert(base::size(kHistogramNames) == NUM_DISPOSITIONS,
+  static_assert(std::size(kHistogramNames) == NUM_DISPOSITIONS,
                 "Keep kHistogramNames in sync with enum IncidentDisposition.");
   DCHECK_GE(disposition, 0);
   DCHECK_LT(disposition, NUM_DISPOSITIONS);

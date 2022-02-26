@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -50,7 +49,7 @@ const char* const FullStreamUIPolicy::kTableFieldTypes[] = {
   "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR", "LONGVARCHAR"
 };
 const int FullStreamUIPolicy::kTableFieldCount =
-    base::size(FullStreamUIPolicy::kTableContentFields);
+    std::size(FullStreamUIPolicy::kTableContentFields);
 
 FullStreamUIPolicy::FullStreamUIPolicy(Profile* profile)
     : ActivityLogDatabasePolicy(
@@ -63,7 +62,7 @@ bool FullStreamUIPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
   return ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
                                            kTableFieldTypes,
-                                           base::size(kTableContentFields));
+                                           std::size(kTableContentFields));
 }
 
 bool FullStreamUIPolicy::FlushDatabase(sql::Database* db) {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -69,11 +68,11 @@ uint32_t DrainLog(uint8_t* buffer,
 
   // Each entry shares the module path for convenience.
   static constexpr char kModulePath[] = "C:\\foo\\bar\\module.dll";
-  static constexpr uint32_t kModulePathLength = base::size(kModulePath) - 1;
+  static constexpr uint32_t kModulePathLength = std::size(kModulePath) - 1;
 
   if (log_remaining) {
     *log_remaining = third_party_dlls::GetLogEntrySize(kModulePathLength) *
-                     base::size(kTestLogEntries);
+                     std::size(kTestLogEntries);
   }
 
   uint8_t* tracker = buffer;

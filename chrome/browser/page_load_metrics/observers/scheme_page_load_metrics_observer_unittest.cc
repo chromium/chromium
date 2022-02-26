@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
@@ -135,7 +134,7 @@ class SchemePageLoadMetricsObserverTest
         base::Milliseconds(GetRecordedMetricValue(fcp_histogram_name));
 
     for (size_t index = 0;
-         index < base::size(kUnderStatRecordingIntervalsSeconds); ++index) {
+         index < std::size(kUnderStatRecordingIntervalsSeconds); ++index) {
       base::TimeDelta threshold(
           base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
       if (recorded_fcp_value <= threshold) {
@@ -153,7 +152,7 @@ class SchemePageLoadMetricsObserverTest
     // of the same name in scheme_page_load_metrics_observer.cc.
     tester()->histogram_tester().ExpectBucketCount(
         fcp_understat_histogram_name,
-        base::size(kUnderStatRecordingIntervalsSeconds) + 1, 0);
+        std::size(kUnderStatRecordingIntervalsSeconds) + 1, 0);
   }
 
   raw_ptr<SchemePageLoadMetricsObserver> observer_;

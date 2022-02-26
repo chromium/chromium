@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -150,7 +149,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
 
     ProfilePrefStoreManager::RegisterProfilePrefs(profile_pref_registry_.get());
     for (const prefs::TrackedPreferenceMetadata* it = kConfiguration;
-         it != kConfiguration + base::size(kConfiguration); ++it) {
+         it != kConfiguration + std::size(kConfiguration); ++it) {
       if (it->strategy == PrefTrackingStrategy::ATOMIC) {
         profile_pref_registry_->RegisterStringPref(it->name, std::string());
       } else {

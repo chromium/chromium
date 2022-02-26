@@ -10,7 +10,6 @@
 
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,17 +36,17 @@ const unsigned char kWrappedSecret[] = {
 
 std::string GetSecret() {
   return std::string(reinterpret_cast<const char*>(kSecret),
-                     base::size(kSecret));
+                     std::size(kSecret));
 }
 
 std::string GetWrappedSecret() {
   return std::string(reinterpret_cast<const char*>(kWrappedSecret),
-                     base::size(kWrappedSecret));
+                     std::size(kWrappedSecret));
 }
 
 std::string GetSessionKey() {
   return std::string(reinterpret_cast<const char*>(kSessionKey),
-                     base::size(kSessionKey));
+                     std::size(kSessionKey));
 }
 
 // Fake lock handler to be used in these tests.

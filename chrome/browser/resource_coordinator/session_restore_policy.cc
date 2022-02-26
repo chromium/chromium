@@ -49,14 +49,14 @@ bool IsApp(content::WebContents* contents) {
   static constexpr char kInternalUrlPrefix[] = "chrome-extension://";
   const GURL& url = contents->GetLastCommittedURL();
   return strncmp(url.spec().c_str(), kInternalUrlPrefix,
-                 base::size(kInternalUrlPrefix));
+                 std::size(kInternalUrlPrefix));
 }
 
 bool IsInternalPage(content::WebContents* contents) {
   static constexpr char kInternalUrlPrefix[] = "chrome://";
   const GURL& url = contents->GetLastCommittedURL();
   return strncmp(url.spec().c_str(), kInternalUrlPrefix,
-                 base::size(kInternalUrlPrefix));
+                 std::size(kInternalUrlPrefix));
 }
 
 class SysInfoDelegate : public SessionRestorePolicy::Delegate {

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
@@ -47,7 +46,7 @@ const char* const kWilcoDtcSupportdHostOrigins[] = {
 
 // Size of |kWilcoDtcSupportdHostOrigins| array.
 const size_t kWilcoDtcSupportdHostOriginsSize =
-    base::size(kWilcoDtcSupportdHostOrigins);
+    std::size(kWilcoDtcSupportdHostOrigins);
 
 // Native application name that is used for passing UI messages between the
 // wilco_dtc daemon and extensions.

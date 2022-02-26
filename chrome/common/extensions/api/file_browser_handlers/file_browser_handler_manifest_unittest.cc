@@ -5,7 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -96,7 +95,7 @@ TEST_F(FileBrowserHandlerManifestTest, InvalidFileBrowserHandlers) {
       Testcase("filebrowser_invalid_file_filters_url.json",
                extensions::ErrorUtils::FormatErrorMessage(
                    errors::kInvalidURLPatternError, "http:*.html"))};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
   RunTestcase(Testcase("filebrowser_missing_permission.json",
                        errors::kInvalidFileBrowserHandlerMissingPermission),
               EXPECT_TYPE_WARNING);

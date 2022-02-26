@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
@@ -129,7 +128,7 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
       return testing::AssertionFailure()
              << "window dictionary does not contain a tabs list entry";
     }
-    EXPECT_EQ(base::size(kTabIDs), tabs->GetListDeprecated().size());
+    EXPECT_EQ(std::size(kTabIDs), tabs->GetListDeprecated().size());
     for (size_t j = 0; j < tabs->GetListDeprecated().size(); ++j) {
       const base::Value::DictStorage tab =
           utils::ToDictionary(tabs->GetListDeprecated()[j]);
@@ -228,12 +227,12 @@ void ExtensionSessionsTest::CreateSessionModels() {
 
   const base::Time time_now = base::Time::Now();
   syncer::SyncDataList initial_data;
-  for (size_t index = 0; index < base::size(kSessionTags); ++index) {
+  for (size_t index = 0; index < std::size(kSessionTags); ++index) {
     // Fill an instance of session specifics with a foreign session's data.
     sync_pb::EntitySpecifics header_entity;
     BuildSessionSpecifics(kSessionTags[index], header_entity.mutable_session());
     std::vector<SessionID::id_type> tab_list(kTabIDs,
-                                             kTabIDs + base::size(kTabIDs));
+                                             kTabIDs + std::size(kTabIDs));
     BuildWindowSpecifics(index, tab_list, header_entity.mutable_session());
     std::vector<sync_pb::SessionSpecifics> tabs(tab_list.size());
     for (size_t i = 0; i < tab_list.size(); ++i) {

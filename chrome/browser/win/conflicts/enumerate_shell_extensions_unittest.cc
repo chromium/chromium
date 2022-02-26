@@ -133,7 +133,7 @@ TEST_F(EnumerateShellExtensionsTest, EnumerateApprovedShellExtensionPaths) {
                           base::Unretained(&shell_extension_paths)));
 
   ASSERT_EQ(3u, shell_extension_paths.size());
-  for (size_t i = 0; i < base::size(kTestCases); i++) {
+  for (size_t i = 0; i < std::size(kTestCases); i++) {
     // The inefficiency is fine as long as the number of test cases stays small.
     EXPECT_TRUE(base::Contains(shell_extension_paths,
                                base::FilePath(kTestCases[i].path)));
@@ -192,7 +192,7 @@ TEST_F(EnumerateShellExtensionsTest, EnumerateShellExtensionPaths) {
                           base::Unretained(&shell_extension_paths)));
 
   ASSERT_EQ(5u, shell_extension_paths.size());
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     // The inefficiency is fine as long as the number of test cases stays small.
     EXPECT_TRUE(base::Contains(shell_extension_paths,
                                base::FilePath(kTestCases[i].path)));

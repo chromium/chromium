@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -494,9 +493,9 @@ void InstallUtil::AppendModeAndChannelSwitches(
 // static
 std::wstring InstallUtil::GetCurrentDate() {
   static const wchar_t kDateFormat[] = L"yyyyMMdd";
-  wchar_t date_str[base::size(kDateFormat)] = {0};
+  wchar_t date_str[std::size(kDateFormat)] = {0};
   int len = GetDateFormatW(LOCALE_INVARIANT, 0, nullptr, kDateFormat, date_str,
-                           base::size(date_str));
+                           std::size(date_str));
   if (len) {
     --len;  // Subtract terminating \0.
   } else {

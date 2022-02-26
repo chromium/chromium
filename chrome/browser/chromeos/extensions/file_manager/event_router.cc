@@ -106,7 +106,7 @@ bool IsRecoveryToolRunning(Profile* profile) {
       "jndclpdbaamdhonoechobihbbiimdgai"   // Recovery tool prod
   };
 
-  for (size_t i = 0; i < base::size(kRecoveryToolIds); ++i) {
+  for (size_t i = 0; i < std::size(kRecoveryToolIds); ++i) {
     const std::string extension_id = kRecoveryToolIds[i];
     if (extension_prefs->IsExtensionRunning(extension_id))
       return true;

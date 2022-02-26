@@ -8,7 +8,6 @@
 
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
@@ -64,7 +63,7 @@ class SigninPrepareUserListTest : public testing::Test,
         this, TestingBrowserProcess::GetGlobal()->local_state());
     fake_user_manager_->set_multi_profile_user_controller(controller_.get());
 
-    for (size_t i = 0; i < base::size(kUsersPublic); ++i)
+    for (size_t i = 0; i < std::size(kUsersPublic); ++i)
       fake_user_manager_->AddPublicAccountUser(
           AccountId::FromUserEmail(kUsersPublic[i]));
 

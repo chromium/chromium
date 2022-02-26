@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -146,7 +145,7 @@ TEST(ConvertDictTest, English) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
+  for (size_t i = 0; i < std::size(kWords); ++i) {
     word_list.insert(std::make_pair<std::u16string, bool>(
         base::WideToUTF16(kWords[i]), true));
   }
@@ -169,7 +168,7 @@ TEST(ConvertDictTest, Russian) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
+  for (size_t i = 0; i < std::size(kWords); ++i) {
     word_list.insert(std::make_pair<std::u16string, bool>(
         base::WideToUTF16(kWords[i]), true));
   }
@@ -194,7 +193,7 @@ TEST(ConvertDictTest, Hungarian) {
   };
 
   std::map<std::u16string, bool> word_list;
-  for (size_t i = 0; i < base::size(kWords); ++i) {
+  for (size_t i = 0; i < std::size(kWords); ++i) {
     word_list.insert(std::make_pair<std::u16string, bool>(
         base::WideToUTF16(kWords[i]), true));
   }

@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/location.h"
@@ -134,9 +133,9 @@ class BrowserFocusTest : public InProcessBrowserTest {
                                                     false, false));
       }
 
-      for (size_t j = 0; j < base::size(kExpectedIDs); ++j) {
+      for (size_t j = 0; j < std::size(kExpectedIDs); ++j) {
         SCOPED_TRACE(base::StringPrintf("focus inner loop %" PRIuS, j));
-        const size_t index = reverse ? base::size(kExpectedIDs) - 1 - j : j;
+        const size_t index = reverse ? std::size(kExpectedIDs) - 1 - j : j;
         // The details are the node's editable state, i.e. true for "textEdit".
         bool is_editable_node = index == 0;
 

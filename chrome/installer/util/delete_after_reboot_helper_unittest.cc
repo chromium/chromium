@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -117,7 +116,7 @@ TEST_F(DeleteAfterRebootHelperTest, TestStringListToMultiSZConversions) {
       {L"deletes", L"foo\0\0bar\0\0bizz\0\0", 16 * sizeof(wchar_t), 3},
   };
 
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     std::vector<PendingMove> string_list;
     EXPECT_TRUE(SUCCEEDED(
         MultiSZBytesToStringArray(reinterpret_cast<const char*>(tests[i].str),
@@ -137,7 +136,7 @@ TEST_F(DeleteAfterRebootHelperTest, TestStringListToMultiSZConversions) {
       {L"malformed", reinterpret_cast<const wchar_t*>("oddnumb\0\0"), 9, 1},
   };
 
-  for (size_t i = 0; i < base::size(failures); i++) {
+  for (size_t i = 0; i < std::size(failures); i++) {
     std::vector<PendingMove> string_list;
     EXPECT_FALSE(SUCCEEDED(MultiSZBytesToStringArray(
         reinterpret_cast<const char*>(failures[i].str), failures[i].length,
@@ -174,7 +173,7 @@ TEST_F(DeleteAfterRebootHelperTest, TestFileDeleteScheduleAndUnschedule) {
   // Check that each of the deletes we expect are there in order.
   base::FilePath expected_paths[] = {temp_file_, temp_subdir_file_,
                                      temp_subdir_, temp_dir_};
-  for (size_t i = 0; i < base::size(expected_paths); ++i) {
+  for (size_t i = 0; i < std::size(expected_paths); ++i) {
     EXPECT_FALSE(iter == pending_moves.end());
     if (iter != pending_moves.end()) {
       base::FilePath short_path_name(GetShortPathName(expected_paths[i]));
@@ -228,7 +227,7 @@ TEST_F(DeleteAfterRebootHelperTest, TestFileDeleteSchedulingWithActualDeletes) {
   // Check that each of the deletes we expect are there in order.
   base::FilePath expected_paths[] = {temp_file_, temp_subdir_file_,
                                      temp_subdir_, temp_dir_};
-  for (size_t i = 0; i < base::size(expected_paths); ++i) {
+  for (size_t i = 0; i < std::size(expected_paths); ++i) {
     EXPECT_FALSE(iter == pending_moves.end());
     if (iter != pending_moves.end()) {
       base::FilePath short_path_name(GetShortPathName(expected_paths[i]));

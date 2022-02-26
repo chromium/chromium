@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -187,7 +186,7 @@ class PlatformUtilTest : public PlatformUtilTestBase {
     ASSERT_NO_FATAL_FAILURE(PlatformUtilTestBase::SetUp());
 
     static const char kTestFileData[] = "Cow says moo!";
-    const int kTestFileDataLength = base::size(kTestFileData) - 1;
+    const int kTestFileDataLength = std::size(kTestFileData) - 1;
 
     // This prevents platform_util from invoking any shell or external APIs
     // during tests. Doing so may result in external applications being launched

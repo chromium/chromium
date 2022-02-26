@@ -15,7 +15,6 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -73,8 +72,7 @@ void ShowItemInFolderOnWorkerThread(const base::FilePath& full_path) {
   if (!platform_util::internal::AreShellOperationsAllowed())
     return;
 
-  hr =
-      SHOpenFolderAndSelectItems(dir_item, base::size(highlight), highlight, 0);
+  hr = SHOpenFolderAndSelectItems(dir_item, std::size(highlight), highlight, 0);
   if (FAILED(hr)) {
     // On some systems, the above call mysteriously fails with "file not
     // found" even though the file is there.  In these cases, ShellExecute()

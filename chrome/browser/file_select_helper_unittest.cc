@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/file_select_helper.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -9,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -17,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
-#include "chrome/browser/file_select_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/file_select_listener.h"
@@ -131,7 +131,7 @@ TEST_F(FileSelectHelperTest, ZipPackage) {
   const char* files_to_verify[] = {"Contents/Info.plist",
                                    "Contents/MacOS/Calculator",
                                    "Contents/_CodeSignature/CodeResources"};
-  size_t file_count = base::size(files_to_verify);
+  size_t file_count = std::size(files_to_verify);
   for (size_t i = 0; i < file_count; i++) {
     const char* relative_path = files_to_verify[i];
     base::FilePath orig_file = src.Append(relative_path);

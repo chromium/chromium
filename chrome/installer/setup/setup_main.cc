@@ -19,7 +19,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -225,7 +224,7 @@ void DelayedOverwriteDisplayVersions(const base::FilePath& setup_exe,
   constexpr DWORD kWaitForStartTimeoutMs = 30 * 1000;
   const HANDLE handles[] = {start_event.Get(), writer.Handle()};
   auto wait_result =
-      ::WaitForMultipleObjects(base::size(handles), &handles[0],
+      ::WaitForMultipleObjects(std::size(handles), &handles[0],
                                /*bWaitAll=*/FALSE, kWaitForStartTimeoutMs);
   if (wait_result == WAIT_OBJECT_0) {
     VLOG(1) << "Proceeding after waiting for DisplayVersion overwrite child.";
@@ -364,7 +363,7 @@ std::wstring FindMsiProductId(const InstallerState& installer_state) {
     std::wstring value_name(value_iter.Name());
     if (base::StartsWith(value_name, kMsiProductIdPrefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
-      return value_name.substr(base::size(kMsiProductIdPrefix) - 1);
+      return value_name.substr(std::size(kMsiProductIdPrefix) - 1);
     }
   }
   return std::wstring();

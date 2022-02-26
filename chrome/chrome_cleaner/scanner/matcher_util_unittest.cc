@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -102,15 +101,15 @@ TEST(MatcherUtilTest, IsKnownFileByDigest) {
   // Hash: BD283E41A3672B6BDAA574F8BD7176F8BCA95BD81383CDE32AA6D78B1DB0E371.
   EXPECT_TRUE(IsKnownFileByDigest(file_path1, signature_matcher.get(),
                                   kKnownContentDigests,
-                                  base::size(kKnownContentDigests)));
+                                  std::size(kKnownContentDigests)));
   // Hash: not present.
   EXPECT_FALSE(IsKnownFileByDigest(file_path2, signature_matcher.get(),
                                    kKnownContentDigests,
-                                   base::size(kKnownContentDigests)));
+                                   std::size(kKnownContentDigests)));
   // The file doesn't exist.
   EXPECT_FALSE(IsKnownFileByDigest(file_path3, signature_matcher.get(),
                                    kKnownContentDigests,
-                                   base::size(kKnownContentDigests)));
+                                   std::size(kKnownContentDigests)));
 }
 
 TEST(MatcherUtilTest, IsKnownFileByDigestInfo) {
@@ -131,11 +130,11 @@ TEST(MatcherUtilTest, IsKnownFileByDigestInfo) {
   // Search BD283E41A3672B6BDAA574F8BD7176F8BCA95BD81383CDE32AA6D78B1DB0E371.
   EXPECT_TRUE(IsKnownFileByDigestInfo(file_path1, signature_matcher.get(),
                                       kFileContentDigestInfos,
-                                      base::size(kFileContentDigestInfos)));
+                                      std::size(kFileContentDigestInfos)));
   // Search 82E0B92772BC0DA59AAB0B9231AA006FB37B4F99EC3E853C5A62786A1C7215BD.
   EXPECT_TRUE(IsKnownFileByDigestInfo(file_path2, signature_matcher.get(),
                                       kFileContentDigestInfos,
-                                      base::size(kFileContentDigestInfos)));
+                                      std::size(kFileContentDigestInfos)));
 
   // Replace the content of file_path2 with a content of the same size, it
   // must no longer match.
@@ -143,16 +142,16 @@ TEST(MatcherUtilTest, IsKnownFileByDigestInfo) {
   CreateFileWithContent(file_path2, kFileContent4, sizeof(kFileContent4));
   EXPECT_FALSE(IsKnownFileByDigestInfo(file_path2, signature_matcher.get(),
                                        kFileContentDigestInfos,
-                                       base::size(kFileContentDigestInfos)));
+                                       std::size(kFileContentDigestInfos)));
 
   // The digest of |file_path3| is not in the array.
   EXPECT_FALSE(IsKnownFileByDigestInfo(file_path3, signature_matcher.get(),
                                        kFileContentDigestInfos,
-                                       base::size(kFileContentDigestInfos)));
+                                       std::size(kFileContentDigestInfos)));
   // The |file_path4| doesn't exist.
   EXPECT_FALSE(IsKnownFileByDigestInfo(file_path4, signature_matcher.get(),
                                        kFileContentDigestInfos,
-                                       base::size(kFileContentDigestInfos)));
+                                       std::size(kFileContentDigestInfos)));
 }
 
 TEST(MatcherUtilTest, IsKnownFileByOriginalFilename) {
@@ -169,14 +168,14 @@ TEST(MatcherUtilTest, IsKnownFileByOriginalFilename) {
       normalized_temp_dir_path.Append(kFileName1));
   EXPECT_FALSE(IsKnownFileByOriginalFilename(
       nonexistent_file_path, &signature_matcher, kKnownOriginalFilenames,
-      base::size(kKnownOriginalFilenames)));
+      std::size(kKnownOriginalFilenames)));
 
   // An existing file without version information should not be recognized.
   base::FilePath file_path2(normalized_temp_dir_path.Append(kFileName2));
   CreateFileWithContent(file_path2, kFileContent, sizeof(kFileContent));
   EXPECT_FALSE(IsKnownFileByOriginalFilename(
       file_path2, &signature_matcher, kKnownOriginalFilenames,
-      base::size(kKnownOriginalFilenames)));
+      std::size(kKnownOriginalFilenames)));
 
   // A file with version information but not in the array should not be
   // recognized.
@@ -189,7 +188,7 @@ TEST(MatcherUtilTest, IsKnownFileByOriginalFilename) {
   CreateFileWithContent(file_path3, kFileContent, sizeof(kFileContent));
   EXPECT_FALSE(IsKnownFileByOriginalFilename(
       file_path3, &signature_matcher, kKnownOriginalFilenames,
-      base::size(kKnownOriginalFilenames)));
+      std::size(kKnownOriginalFilenames)));
 
   // A file with version information present in the array should be recognized.
   base::FilePath file_path4(normalized_temp_dir_path.Append(kFileName4));
@@ -201,7 +200,7 @@ TEST(MatcherUtilTest, IsKnownFileByOriginalFilename) {
   CreateFileWithContent(file_path4, kFileContent, sizeof(kFileContent));
   EXPECT_TRUE(IsKnownFileByOriginalFilename(
       file_path4, &signature_matcher, kKnownOriginalFilenames,
-      base::size(kKnownOriginalFilenames)));
+      std::size(kKnownOriginalFilenames)));
 }
 
 TEST(MatcherUtilTest, IsKnownFileByCompanyName) {
@@ -218,14 +217,14 @@ TEST(MatcherUtilTest, IsKnownFileByCompanyName) {
       normalized_temp_dir_path.Append(kFileName1));
   EXPECT_FALSE(IsKnownFileByCompanyName(nonexistent_file_path,
                                         &signature_matcher, kKnownCompanyNames,
-                                        base::size(kKnownCompanyNames)));
+                                        std::size(kKnownCompanyNames)));
 
   // An existing file without version information should not be recognized.
   base::FilePath file_path2(normalized_temp_dir_path.Append(kFileName2));
   CreateFileWithContent(file_path2, kFileContent, sizeof(kFileContent));
   EXPECT_FALSE(IsKnownFileByCompanyName(file_path2, &signature_matcher,
                                         kKnownCompanyNames,
-                                        base::size(kKnownCompanyNames)));
+                                        std::size(kKnownCompanyNames)));
 
   // A file with version information but not in the array should not be
   // recognized.
@@ -238,7 +237,7 @@ TEST(MatcherUtilTest, IsKnownFileByCompanyName) {
   CreateFileWithContent(file_path3, kFileContent, sizeof(kFileContent));
   EXPECT_FALSE(IsKnownFileByCompanyName(file_path3, &signature_matcher,
                                         kKnownCompanyNames,
-                                        base::size(kKnownCompanyNames)));
+                                        std::size(kKnownCompanyNames)));
 
   // A file with version information present in the array should be recognized.
   base::FilePath file_path4(normalized_temp_dir_path.Append(kFileName4));
@@ -250,7 +249,7 @@ TEST(MatcherUtilTest, IsKnownFileByCompanyName) {
   CreateFileWithContent(file_path4, kFileContent, sizeof(kFileContent));
   EXPECT_TRUE(IsKnownFileByCompanyName(file_path4, &signature_matcher,
                                        kKnownCompanyNames,
-                                       base::size(kKnownCompanyNames)));
+                                       std::size(kKnownCompanyNames)));
 }
 
 }  // namespace chrome_cleaner

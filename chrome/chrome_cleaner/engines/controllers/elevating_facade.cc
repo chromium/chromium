@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,16 +45,16 @@ bool IsChromeWindow(HWND window) {
 
   // Ask for just enough of the class name to determine if it begins with
   // |kChromeWindowClassPrefix|.
-  wchar_t window_class_prefix[base::size(kChromeWindowClassPrefix)];
+  wchar_t window_class_prefix[std::size(kChromeWindowClassPrefix)];
   int class_name_length = ::GetClassName(window, window_class_prefix,
-                                         base::size(window_class_prefix));
+                                         std::size(window_class_prefix));
   if (class_name_length == 0)
     return false;
 
   return base::EqualsCaseInsensitiveASCII(
       base::WStringPiece(window_class_prefix, class_name_length),
       base::WStringPiece(kChromeWindowClassPrefix,
-                         base::size(kChromeWindowClassPrefix) - 1));
+                         std::size(kChromeWindowClassPrefix) - 1));
 }
 
 // Returns a handle to the foreground window if it is a Chrome window, otherwise

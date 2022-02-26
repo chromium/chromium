@@ -11,7 +11,6 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -177,7 +176,7 @@ void CheckHistograms(const base::HistogramTester& histograms,
 
   // All other PrintPreview.PrintSettings buckets should be empty.
   histograms.ExpectTotalCount("PrintPreview.PrintSettings",
-                              base::size(kPopulatedPrintSettingsBuckets));
+                              std::size(kPopulatedPrintSettingsBuckets));
 
   const UserActionBuckets user_action = GetUserActionForPrinterType(type);
   histograms.ExpectBucketCount("PrintPreview.UserAction", user_action, 1);
@@ -1079,7 +1078,7 @@ TEST_F(PrintPreviewHandlerTest, GetPrinters) {
   Initialize();
 
   // Check all three printer types that implement
-  for (size_t i = 0; i < base::size(kFetchableTypes); i++) {
+  for (size_t i = 0; i < std::size(kFetchableTypes); i++) {
     mojom::PrinterType type = kFetchableTypes[i];
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
@@ -1115,7 +1114,7 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinters) {
   Initialize();
 
   size_t expected_callbacks = 1;
-  for (size_t i = 0; i < base::size(kFetchableTypes); i++) {
+  for (size_t i = 0; i < std::size(kFetchableTypes); i++) {
     mojom::PrinterType type = kFetchableTypes[i];
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
@@ -1151,7 +1150,7 @@ TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilities) {
 
   // Check all four printer types that implement
   // PrinterHandler::StartGetCapability().
-  for (size_t i = 0; i < base::size(kAllSupportedTypes); i++) {
+  for (size_t i = 0; i < std::size(kAllSupportedTypes); i++) {
     mojom::PrinterType type = kAllSupportedTypes[i];
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
@@ -1168,19 +1167,19 @@ TEST_F(PrintPreviewHandlerTest, GetPrinterCapabilities) {
 
   // Run through the loop again, this time with a printer that has no
   // capabilities.
-  for (size_t i = 0; i < base::size(kAllSupportedTypes); i++) {
+  for (size_t i = 0; i < std::size(kAllSupportedTypes); i++) {
     mojom::PrinterType type = kAllSupportedTypes[i];
     std::string callback_id_in =
         "test-callback-id-" +
-        base::NumberToString(i + base::size(kAllSupportedTypes) + 1);
+        base::NumberToString(i + std::size(kAllSupportedTypes) + 1);
     handler()->reset_calls();
     SendGetPrinterCapabilities(type, callback_id_in, kEmptyPrinterName);
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings plus
-    // base::size(kAllSupportedTypes) from first loop, then add 1 more for each
+    // std::size(kAllSupportedTypes) from first loop, then add 1 more for each
     // loop iteration.
-    ASSERT_EQ(1u + base::size(kAllSupportedTypes) + (i + 1),
+    ASSERT_EQ(1u + std::size(kAllSupportedTypes) + (i + 1),
               web_ui()->call_data().size());
 
     ValidatePrinterCapabilities(callback_id_in, /*expect_resolved=*/false);
@@ -1205,7 +1204,7 @@ TEST_F(PrintPreviewHandlerTest, GetNoDenyListPrinterCapabilities) {
 
   // Check all four printer types that implement
   // PrinterHandler::StartGetCapability().
-  for (size_t i = 0; i < base::size(kAllSupportedTypes); i++) {
+  for (size_t i = 0; i < std::size(kAllSupportedTypes); i++) {
     mojom::PrinterType type = kAllSupportedTypes[i];
     std::string callback_id_in =
         "test-callback-id-" + base::NumberToString(i + 1);
@@ -1227,7 +1226,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
   Initialize();
 
   // All printer types can print.
-  for (size_t i = 0; i < base::size(kAllTypes); i++) {
+  for (size_t i = 0; i < std::size(kAllTypes); i++) {
     base::HistogramTester histograms;
     handler()->reset_calls();
 
@@ -1426,7 +1425,7 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
 
   // Check all four printer types that implement
   // PrinterHandler::StartGetCapability().
-  for (size_t i = 0; i < base::size(kAllSupportedTypes); i++) {
+  for (size_t i = 0; i < std::size(kAllSupportedTypes); i++) {
     mojom::PrinterType type = kAllSupportedTypes[i];
     handler()->reset_calls();
     base::Value args(base::Value::Type::LIST);

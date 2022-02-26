@@ -18,7 +18,6 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -513,7 +512,7 @@ void UninstallActiveSetupEntries(const InstallerState& installer_state) {
   // but doesn't seem to do so when manually deleting the user-level keys it
   // created.
   std::wstring alternate_active_setup_path(active_setup_path);
-  alternate_active_setup_path.insert(base::size("Software\\") - 1,
+  alternate_active_setup_path.insert(std::size("Software\\") - 1,
                                      L"Wow6432Node\\");
 
   VLOG(1) << "Uninstall per-user Active Setup keys.";
@@ -741,7 +740,7 @@ void RemoveChromeLegacyRegistryKeys(const base::FilePath& chrome_exe) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
 
   HKEY roots[] = {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER};
-  for (size_t i = 0; i < base::size(roots); ++i) {
+  for (size_t i = 0; i < std::size(roots); ++i) {
     std::wstring suffix;
     if (roots[i] == HKEY_LOCAL_MACHINE)
       suffix = ShellUtil::GetCurrentInstallationSuffix(chrome_exe);

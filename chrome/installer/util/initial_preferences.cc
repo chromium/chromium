@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -140,7 +139,7 @@ void InitialPreferences::InitializeFromCommandLine(
   };
 
   std::string name(installer::initial_preferences::kDistroDict);
-  for (size_t i = 0; i < base::size(translate_switches); ++i) {
+  for (size_t i = 0; i < std::size(translate_switches); ++i) {
     if (cmd_line.HasSwitch(translate_switches[i].cmd_line_switch)) {
       name.assign(installer::initial_preferences::kDistroDict);
       name.append(".").append(translate_switches[i].distribution_switch);

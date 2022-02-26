@@ -235,8 +235,8 @@ bool InitializeCOMSecurity() {
                                       SECURITY_DESCRIPTOR_REVISION))
     return false;
 
-  DCHECK_EQ(kSidCount, base::size(sids));
-  DCHECK_EQ(kSidCount, base::size(sid_types));
+  DCHECK_EQ(kSidCount, std::size(sids));
+  DCHECK_EQ(kSidCount, std::size(sid_types));
   for (size_t i = 0; i < kSidCount; ++i) {
     DWORD sid_bytes = sizeof(sids[i]);
     if (!::CreateWellKnownSid(sid_types[i], nullptr, sids[i], &sid_bytes))
@@ -247,8 +247,8 @@ bool InitializeCOMSecurity() {
   // the access permissions for your application. COM_RIGHTS_EXECUTE and
   // COM_RIGHTS_EXECUTE_LOCAL are the minimum access rights required.
   EXPLICIT_ACCESS explicit_access[kSidCount] = {};
-  DCHECK_EQ(kSidCount, base::size(sids));
-  DCHECK_EQ(kSidCount, base::size(explicit_access));
+  DCHECK_EQ(kSidCount, std::size(sids));
+  DCHECK_EQ(kSidCount, std::size(explicit_access));
   for (size_t i = 0; i < kSidCount; ++i) {
     explicit_access[i].grfAccessPermissions =
         COM_RIGHTS_EXECUTE | COM_RIGHTS_EXECUTE_LOCAL;
@@ -264,7 +264,7 @@ bool InitializeCOMSecurity() {
   // Create an access control list (ACL) using this ACE list, if this succeeds
   // make sure to ::LocalFree(acl).
   ACL* acl = nullptr;
-  DWORD acl_result = ::SetEntriesInAcl(base::size(explicit_access),
+  DWORD acl_result = ::SetEntriesInAcl(std::size(explicit_access),
                                        explicit_access, nullptr, &acl);
   if (acl_result != ERROR_SUCCESS || acl == nullptr)
     return false;
@@ -329,7 +329,7 @@ HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
 
   wchar_t event_name[MAX_PATH] = {0};
   if (!::GetEnvironmentVariable(var_name.c_str(), event_name,
-                                base::size(event_name))) {
+                                std::size(event_name))) {
     return HRESULTFromLastError();
   }
 

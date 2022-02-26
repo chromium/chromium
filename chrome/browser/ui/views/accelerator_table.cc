@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -268,7 +267,7 @@ const int kRepeatableCommandIds[] = {
   IDC_SELECT_NEXT_TAB,
   IDC_SELECT_PREVIOUS_TAB,
 };
-const size_t kRepeatableCommandIdsLength = base::size(kRepeatableCommandIds);
+const size_t kRepeatableCommandIdsLength = std::size(kRepeatableCommandIds);
 
 } // namespace
 

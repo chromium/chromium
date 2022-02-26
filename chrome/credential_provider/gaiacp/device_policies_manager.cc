@@ -176,8 +176,8 @@ void DevicePoliciesManager::GetDevicePolicies(DevicePolicies* device_policies) {
 
     // Check if this account with this sid exists on device.
     HRESULT hr = OSUserManager::Get()->FindUserBySidWithFallback(
-        sid.c_str(), found_username, base::size(found_username), found_domain,
-        base::size(found_domain));
+        sid.c_str(), found_username, std::size(found_username), found_domain,
+        std::size(found_domain));
     if (hr != S_OK) {
       if (hr != HRESULT_FROM_WIN32(ERROR_NONE_MAPPED)) {
         LOGFN(ERROR) << "FindUserBySidWithRegistryFallback hr=" << putHR(hr);

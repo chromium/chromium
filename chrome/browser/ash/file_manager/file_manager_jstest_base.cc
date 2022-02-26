@@ -89,7 +89,7 @@ class TestFilesDataSource : public content::URLDataSource {
     if (url_pos != std::string::npos) {
       std::string new_path =
           "ui/webui/resources" +
-          path.substr(url_pos + base::size(kResourcesUrl) - 1);
+          path.substr(url_pos + std::size(kResourcesUrl) - 1);
       src_file_path =
           source_root_.Append(base::FilePath::FromUTF8Unsafe(new_path));
       gen_file_path =

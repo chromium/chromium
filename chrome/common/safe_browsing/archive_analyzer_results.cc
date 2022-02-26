@@ -7,7 +7,6 @@
 
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/logging.h"
@@ -65,8 +64,8 @@ void SetLengthAndDigestForContainedFile(
   }
 
   uint8_t digest[crypto::kSHA256Length];
-  hasher->Finish(digest, base::size(digest));
-  archived_binary->mutable_digests()->set_sha256(digest, base::size(digest));
+  hasher->Finish(digest, std::size(digest));
+  archived_binary->mutable_digests()->set_sha256(digest, std::size(digest));
 }
 
 void AnalyzeContainedBinary(

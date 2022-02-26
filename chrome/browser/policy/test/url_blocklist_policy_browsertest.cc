@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklist) {
   FlushBlocklistPolicy();
   // All bbb.com URLs are blocked, and "aaa.com" is still unblocked.
   CheckCanOpenURL(browser(), kURLS[0]);
-  for (size_t i = 1; i < base::size(kURLS); ++i)
+  for (size_t i = 1; i < std::size(kURLS); ++i)
     CheckURLIsBlocked(browser(), kURLS[i]);
 
   // Allowlist some sites of bbb.com.
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
   FlushBlocklistPolicy();
   // All bbb.com URLs are blocked, and "aaa.com" is still unblocked.
   CheckCanOpenURL(incognito_browser, kURLS[0]);
-  for (size_t i = 1; i < base::size(kURLS); ++i)
+  for (size_t i = 1; i < std::size(kURLS); ++i)
     CheckURLIsBlocked(incognito_browser, kURLS[i]);
 
   // Allowlist some sites of bbb.com.

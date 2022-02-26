@@ -36,7 +36,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -146,20 +145,19 @@ class ChromeVersion {
 
 std::wstring ChromeVersion::ToString() const {
   wchar_t buffer[24];
-  int string_len =
-      swprintf_s(&buffer[0], base::size(buffer), L"%hu.%hu.%hu.%hu", major(),
-                 minor(), build(), patch());
+  int string_len = swprintf_s(&buffer[0], std::size(buffer), L"%hu.%hu.%hu.%hu",
+                              major(), minor(), build(), patch());
   DCHECK_NE(-1, string_len);
-  DCHECK_GT(static_cast<int>(base::size(buffer)), string_len);
+  DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
   return std::wstring(&buffer[0], string_len);
 }
 
 std::string ChromeVersion::ToASCII() const {
   char buffer[24];
-  int string_len = sprintf_s(&buffer[0], base::size(buffer), "%hu.%hu.%hu.%hu",
+  int string_len = sprintf_s(&buffer[0], std::size(buffer), "%hu.%hu.%hu.%hu",
                              major(), minor(), build(), patch());
   DCHECK_NE(-1, string_len);
-  DCHECK_GT(static_cast<int>(base::size(buffer)), string_len);
+  DCHECK_GT(static_cast<int>(std::size(buffer)), string_len);
   return std::string(&buffer[0], string_len);
 }
 

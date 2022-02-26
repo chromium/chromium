@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/first_run/upgrade_util.h"
+#include "chrome/browser/first_run/upgrade_util_win.h"
 
 // Must be first.
 #include <windows.h>
@@ -18,7 +18,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -34,7 +33,7 @@
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/first_run/upgrade_util_win.h"
+#include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -220,7 +219,7 @@ bool IsRunningOldChrome() {
 
   if (!::GetMappedFileName(::GetCurrentProcess(),
                            reinterpret_cast<void*>(::GetModuleHandle(NULL)),
-                           mapped_file_name, base::size(mapped_file_name))) {
+                           mapped_file_name, std::size(mapped_file_name))) {
     return false;
   }
 

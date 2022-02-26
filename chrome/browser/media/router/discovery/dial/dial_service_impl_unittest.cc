@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
@@ -138,7 +137,7 @@ TEST_F(DialServiceImplTest, TestNotifyOnError) {
 
 TEST_F(DialServiceImplTest, TestOnDeviceDiscovered) {
   dial_service_.discovery_active_ = true;
-  int response_size = base::size(kValidResponse) - 1;
+  int response_size = std::size(kValidResponse) - 1;
   dial_socket_->recv_buffer_ =
       base::MakeRefCounted<net::IOBufferWithSize>(response_size);
   strncpy(dial_socket_->recv_buffer_->data(), kValidResponse, response_size);

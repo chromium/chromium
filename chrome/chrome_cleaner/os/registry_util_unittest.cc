@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/chrome_cleaner/os/system_util.h"
@@ -576,7 +575,7 @@ TEST(RegistryUtilTests, ReadRegistryValueWithExtraNullCharacter) {
 }
 
 TEST(RegistryUtilTests, GetRegistryValueAsStringRegularString) {
-  std::wstring input_value(kUnicodeValue, base::size(kUnicodeValue) - 1);
+  std::wstring input_value(kUnicodeValue, std::size(kUnicodeValue) - 1);
   std::wstring output_value;
 
   GetRegistryValueAsString(input_value.c_str(),
@@ -609,7 +608,7 @@ TEST(RegistryUtilTests, GetRegistryValueAsStringRealBinary) {
   std::wstring output_value;
 
   GetRegistryValueAsString(reinterpret_cast<const wchar_t*>(kBytesValue),
-                           base::size(kBytesValue), REG_BINARY, &output_value);
+                           std::size(kBytesValue), REG_BINARY, &output_value);
 
   EXPECT_EQ(kConvertedBytesValue, output_value);
 }

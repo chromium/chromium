@@ -32,7 +32,7 @@ std::set<int> TestSizesToGenerate() {
       icon_size::k128,
   };
   return std::set<int>(kIconSizesToGenerate,
-                       kIconSizesToGenerate + base::size(kIconSizesToGenerate));
+                       kIconSizesToGenerate + std::size(kIconSizesToGenerate));
 }
 
 void ValidateAllIconsWithURLsArePresent(

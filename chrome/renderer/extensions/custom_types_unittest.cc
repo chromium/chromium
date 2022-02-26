@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/renderer/storage_area.h"
-
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/test/values_test_util.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_builder.h"
@@ -18,6 +15,7 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/storage_area.h"
 
 namespace extensions {
 
@@ -65,12 +63,12 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
     v8::Local<v8::Function> use_api =
         FunctionFromString(context, use_api_script);
     v8::Local<v8::Value> args[] = {api_object};
-    RunFunction(use_api, context, base::size(args), args);
+    RunFunction(use_api, context, std::size(args), args);
 
     DisposeContext(context);
 
     EXPECT_FALSE(binding::IsContextValid(context));
-    RunFunctionAndExpectError(use_api, context, base::size(args), args,
+    RunFunctionAndExpectError(use_api, context, std::size(args), args,
                               "Uncaught Error: Extension context invalidated.");
   }
 
@@ -135,7 +133,7 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
         FunctionFromString(context, kRunGetContentSetting);
     v8::Local<v8::Value> args[] = {settings};
     v8::Local<v8::Value> return_value = RunFunctionOnGlobal(
-        run_get_content_setting, context, base::size(args), args);
+        run_get_content_setting, context, std::size(args), args);
 
     ASSERT_TRUE(return_value->IsPromise());
     v8::Local<v8::Promise> promise = return_value.As<v8::Promise>();
@@ -169,7 +167,7 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
         FunctionFromString(context, kRunSetContentSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_set_content_setting, context, base::size(args), args,
+        run_set_content_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError(
                 "contentSettings.ContentSetting.set",
@@ -207,7 +205,7 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
         FunctionFromString(context, kRunGetContentSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_get_content_setting, context, base::size(args), args,
+        run_get_content_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError("contentSettings.ContentSetting.get",
                                         "object details, function callback",
@@ -223,7 +221,7 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
         FunctionFromString(context, kRunSetContentSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_set_content_setting, context, base::size(args), args,
+        run_set_content_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError(
                 "contentSettings.ContentSetting.set",
@@ -263,7 +261,7 @@ TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
         FunctionFromString(context, kRunGetChromeSetting);
     v8::Local<v8::Value> args[] = {settings};
     v8::Local<v8::Value> return_value = RunFunctionOnGlobal(
-        run_get_chrome_setting, context, base::size(args), args);
+        run_get_chrome_setting, context, std::size(args), args);
 
     ASSERT_TRUE(return_value->IsPromise());
     v8::Local<v8::Promise> promise = return_value.As<v8::Promise>();
@@ -296,7 +294,7 @@ TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
         FunctionFromString(context, kRunSetChromeSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_set_chrome_setting, context, base::size(args), args,
+        run_set_chrome_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError(
                 "types.ChromeSetting.set",
@@ -333,7 +331,7 @@ TEST_F(CustomTypesTest, ChromeSettingInvalidInvocationForManifestV2) {
         FunctionFromString(context, kRunGetChromeSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_get_chrome_setting, context, base::size(args), args,
+        run_get_chrome_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError("types.ChromeSetting.get",
                                         "object details, function callback",
@@ -349,7 +347,7 @@ TEST_F(CustomTypesTest, ChromeSettingInvalidInvocationForManifestV2) {
         FunctionFromString(context, kRunSetChromeSetting);
     v8::Local<v8::Value> args[] = {settings};
     RunFunctionAndExpectError(
-        run_set_chrome_setting, context, base::size(args), args,
+        run_set_chrome_setting, context, std::size(args), args,
         "Uncaught TypeError: " +
             api_errors::InvocationError(
                 "types.ChromeSetting.set",

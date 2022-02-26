@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -262,7 +261,7 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
 
   static void RetrieveActions_ArgUrlApiCalls(
       std::unique_ptr<std::vector<scoped_refptr<Action>>> actions) {
-    size_t api_calls_size = base::size(kUrlApiCalls);
+    size_t api_calls_size = std::size(kUrlApiCalls);
     const base::DictionaryValue* other = NULL;
 
     ASSERT_EQ(api_calls_size, actions->size());
@@ -443,7 +442,7 @@ TEST_F(ActivityLogTest, UninstalledExtension) {
 TEST_F(ActivityLogTest, ArgUrlApiCalls) {
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   base::Time now = base::Time::Now();
-  int api_calls_size = base::size(kUrlApiCalls);
+  int api_calls_size = std::size(kUrlApiCalls);
   scoped_refptr<Action> action;
 
   for (int i = 0; i < api_calls_size; i++) {

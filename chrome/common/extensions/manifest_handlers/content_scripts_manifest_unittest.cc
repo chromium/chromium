@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -43,7 +42,7 @@ TEST_F(ContentScriptsManifestTest, MatchPattern) {
                "Error at key 'content_scripts'. Parsing array failed at index "
                "0: Error at key 'matches': Parsing array failed at index 0: "
                "expected string, got integer")};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 
   LoadAndExpectSuccess("ports_in_content_scripts.json");
 }

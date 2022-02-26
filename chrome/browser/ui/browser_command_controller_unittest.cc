@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -392,7 +391,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
       blink::WebInputEvent::Type::kUndefined, 0,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Defaults for a tabbed browser.
-  for (size_t i = 0; i < base::size(commands); i++) {
+  for (size_t i = 0; i < std::size(commands); i++) {
     SCOPED_TRACE(commands[i].command_id);
     EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
               commands[i].enabled_in_tab);
@@ -409,7 +408,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   // By default, in fullscreen mode, the toolbar should be hidden; and all
   // platforms behave similarly.
   EXPECT_FALSE(window()->IsToolbarShowing());
-  for (size_t i = 0; i < base::size(commands); i++) {
+  for (size_t i = 0; i < std::size(commands); i++) {
     SCOPED_TRACE(commands[i].command_id);
     EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
               commands[i].enabled_in_fullscreen);
@@ -425,7 +424,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
       true);
   EXPECT_TRUE(browser()->command_controller()->IsReservedCommandOrKey(
       IDC_FULLSCREEN, key_event));
-  for (size_t i = 0; i < base::size(commands); i++) {
+  for (size_t i = 0; i < std::size(commands); i++) {
     if (commands[i].command_id != IDC_FULLSCREEN) {
       SCOPED_TRACE(commands[i].command_id);
       EXPECT_EQ(browser()->command_controller()->IsReservedCommandOrKey(
@@ -443,7 +442,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   browser()->command_controller()->FullscreenStateChanged();
 
-  for (size_t i = 0; i < base::size(commands); i++) {
+  for (size_t i = 0; i < std::size(commands); i++) {
     SCOPED_TRACE(commands[i].command_id);
     EXPECT_EQ(chrome::IsCommandEnabled(browser(), commands[i].command_id),
               commands[i].enabled_in_tab);

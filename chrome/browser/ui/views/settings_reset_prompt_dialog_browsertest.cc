@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/settings_reset_prompt_dialog.h"
+
 #include <algorithm>
 #include <initializer_list>
 #include <map>
@@ -12,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/settings_reset_prompt_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,12 +71,12 @@ class MockSettingsResetPromptModel
             profile,
             std::make_unique<NiceMock<MockSettingsResetPromptConfig>>(),
             std::make_unique<NiceMock<MockProfileResetter>>(profile)) {
-    EXPECT_LE(params.startup_pages, base::size(kStartupUrls));
+    EXPECT_LE(params.startup_pages, std::size(kStartupUrls));
 
     // Set up startup URLs to be returned by member functions based on the
     // constructor arguments.
     for (size_t i = 0;
-         i < std::min(base::size(kStartupUrls), params.startup_pages); ++i) {
+         i < std::min(std::size(kStartupUrls), params.startup_pages); ++i) {
       startup_urls_.push_back(GURL(kStartupUrls[i]));
     }
 

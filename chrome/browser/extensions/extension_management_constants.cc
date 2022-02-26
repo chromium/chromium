@@ -4,8 +4,6 @@
 
 #include "chrome/browser/extensions/extension_management_constants.h"
 
-#include "base/cxx17_backports.h"
-
 namespace extensions {
 namespace schema_constants {
 
@@ -56,7 +54,7 @@ const AllowedTypesMapEntry kAllowedTypesMap[] = {
     // ExtensionAllowedTypes policy.
 };
 
-const size_t kAllowedTypesMapSize = base::size(kAllowedTypesMap);
+const size_t kAllowedTypesMapSize = std::size(kAllowedTypesMap);
 
 Manifest::Type GetManifestType(const std::string& name) {
   for (size_t index = 0; index < kAllowedTypesMapSize; ++index) {

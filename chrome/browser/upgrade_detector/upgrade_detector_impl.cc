@@ -13,7 +13,6 @@
 #include "base/build_time.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -395,8 +394,8 @@ UpgradeDetectorImpl::StageIndexToAnnoyanceLevel(size_t index) {
       UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED,
       UpgradeDetector::UPGRADE_ANNOYANCE_LOW,
       UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW};
-  static_assert(base::size(kIndexToLevel) == kNumStages, "mismatch");
-  DCHECK_LT(index, base::size(kIndexToLevel));
+  static_assert(std::size(kIndexToLevel) == kNumStages, "mismatch");
+  DCHECK_LT(index, std::size(kIndexToLevel));
   return kIndexToLevel[index];
 }
 

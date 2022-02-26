@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -1211,7 +1210,7 @@ class MultiProfileDownloadNotificationTest
   // This is used for preparing all accounts in PRE_ test setup, and for testing
   // actual login behavior.
   void AddAllUsers() {
-    for (size_t i = 0; i < base::size(kTestAccounts); ++i) {
+    for (size_t i = 0; i < std::size(kTestAccounts); ++i) {
       // The primary account was already set up in SetUpOnMainThread, so skip it
       // here.
       if (i == PRIMARY_ACCOUNT_INDEX)

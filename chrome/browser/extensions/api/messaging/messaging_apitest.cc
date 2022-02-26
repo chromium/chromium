@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -319,7 +318,7 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
 
     // Turn the array into a JS array, which effectively gets eval()ed.
     std::string as_js_array;
-    for (size_t i = 0; i < base::size(non_messaging_apis); ++i) {
+    for (size_t i = 0; i < std::size(non_messaging_apis); ++i) {
       as_js_array += as_js_array.empty() ? "[" : ",";
       as_js_array += base::StringPrintf("'%s'", non_messaging_apis[i]);
     }

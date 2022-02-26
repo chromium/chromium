@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -624,7 +623,7 @@ int GetDefaultAvatarIconResourceIDAtIndex(size_t index) {
 
 #if BUILDFLAG(IS_WIN)
 int GetOldDefaultAvatar2xIconResourceIDAtIndex(size_t index) {
-  DCHECK_LT(index, base::size(kProfileAvatarIconResources2x));
+  DCHECK_LT(index, std::size(kProfileAvatarIconResources2x));
   return kProfileAvatarIconResources2x[index];
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -67,7 +67,7 @@ const uint8_t kApplicationServerKey[kApplicationServerKeyLength] = {
 std::string GetTestApplicationServerKey() {
   std::string application_server_key(
       kApplicationServerKey,
-      kApplicationServerKey + base::size(kApplicationServerKey));
+      kApplicationServerKey + std::size(kApplicationServerKey));
 
   return application_server_key;
 }

@@ -4,7 +4,8 @@
 
 #include "chrome/common/pref_names.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -262,7 +263,7 @@ const char* const kWebKitScriptsForFontFamilyMaps[] = {
 };
 
 const size_t kWebKitScriptsForFontFamilyMapsLength =
-    base::size(kWebKitScriptsForFontFamilyMaps);
+    std::size(kWebKitScriptsForFontFamilyMaps);
 
 // Strings for WebKit font family preferences. If these change, the pref prefix
 // in pref_names_util.cc and the pref format in font_settings_api.cc must also

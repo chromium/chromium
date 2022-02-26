@@ -12,7 +12,6 @@
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -252,7 +251,7 @@ bool FileSystemBackend::IsAccessAllowed(
 
   const std::string& extension_id = origin.host();
   if (url.type() == storage::kFileSystemTypeRestrictedLocal) {
-    for (size_t i = 0; i < base::size(kOemAccessibleExtensions); ++i) {
+    for (size_t i = 0; i < std::size(kOemAccessibleExtensions); ++i) {
       if (extension_id == kOemAccessibleExtensions[i])
         return true;
     }

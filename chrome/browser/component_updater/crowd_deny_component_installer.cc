@@ -100,7 +100,7 @@ void CrowdDenyComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kCrowdDenyPublicKeySHA256,
-      kCrowdDenyPublicKeySHA256 + base::size(kCrowdDenyPublicKeySHA256));
+      kCrowdDenyPublicKeySHA256 + std::size(kCrowdDenyPublicKeySHA256));
 }
 
 std::string CrowdDenyComponentInstallerPolicy::GetName() const {

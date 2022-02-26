@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -53,7 +52,7 @@ class CandidateViewTest : public views::ViewsTestBase {
     container_ = init_params.delegate->GetContentsView();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    for (size_t i = 0; i < base::size(kDummyCandidates); ++i) {
+    for (size_t i = 0; i < std::size(kDummyCandidates); ++i) {
       CandidateView* candidate = new CandidateView(
           views::Button::PressedCallback(), ui::CandidateWindow::VERTICAL);
       ui::CandidateWindow::Entry entry;

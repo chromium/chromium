@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -27,7 +26,7 @@ TEST_F(UpdateURLManifestTest, UpdateUrls) {
                Extension::NO_FLAGS),
       Testcase("update_url_valid_4.json", ManifestLocation::kInternal,
                Extension::NO_FLAGS)};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_SUCCESS);
 
   // Test some invalid update urls
   Testcase testcases2[] = {
@@ -37,5 +36,5 @@ TEST_F(UpdateURLManifestTest, UpdateUrls) {
                ManifestLocation::kInternal, Extension::NO_FLAGS),
       Testcase("update_url_invalid_3.json", errors::kInvalidUpdateURL,
                ManifestLocation::kInternal, Extension::NO_FLAGS)};
-  RunTestcases(testcases2, base::size(testcases2), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases2, std::size(testcases2), EXPECT_TYPE_ERROR);
 }

@@ -6,13 +6,13 @@
 
 #include <shlobj.h>
 #include <windows.h>
+
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -106,7 +106,7 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
 
   wchar_t cmd_path[MAX_PATH] = {0};
   DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\cmd.exe",
-                                        cmd_path, base::size(cmd_path));
+                                        cmd_path, std::size(cmd_path));
   if (!size || size >= MAX_PATH)
     return kErrorPathTooLong;
 

@@ -251,7 +251,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
 
   // Verify that the registry entry for the user was created.
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   wchar_t* sidstr = nullptr;
   ::ConvertSidToStringSid(sid, &sidstr);
   ::LocalFree(sid);
@@ -1213,7 +1213,7 @@ TEST_F(GcpGaiaCredentialBaseTest,
       OLE2W(first_sid)));
 
   wchar_t latest_token_valid_millis[512];
-  ULONG latest_token_valid_size = base::size(latest_token_valid_millis);
+  ULONG latest_token_valid_size = std::size(latest_token_valid_millis);
   ASSERT_EQ(S_OK, GetUserProperty(
                       OLE2W(first_sid), base::UTF8ToWide(kKeyLastTokenValid),
                       latest_token_valid_millis, &latest_token_valid_size));
@@ -1436,7 +1436,7 @@ TEST_P(GcpGaiaCredentialBaseCloudMappingTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -1470,7 +1470,7 @@ TEST_P(GcpGaiaCredentialBaseCloudMappingTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -1536,7 +1536,7 @@ TEST_P(GcpGaiaCredentialBaseCloudMappingTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -1624,7 +1624,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -1680,7 +1680,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -1753,7 +1753,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
   // Verify that the registry entry for the user was created.
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   std::wstring sid_str(ad_sid, SysStringLen(ad_sid));
   ::SysFreeString(ad_sid);
 
@@ -1770,7 +1770,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
   // Verify that the registry entry for the domain name was created.
   wchar_t domain_reg[256];
-  ULONG domain_reg_length = base::size(domain_reg);
+  ULONG domain_reg_length = std::size(domain_reg);
   ASSERT_TRUE(
       SUCCEEDED(GetUserProperty(sid_str.c_str(), base::UTF8ToWide(kKeyDomain),
                                 domain_reg, &domain_reg_length)));
@@ -1779,7 +1779,7 @@ TEST_F(GcpGaiaCredentialBaseAdScenariosTest,
 
   // Verify that the registry entry for the username was created.
   wchar_t username_reg[256];
-  ULONG username_reg_length = base::size(username_reg);
+  ULONG username_reg_length = std::size(username_reg);
   ASSERT_TRUE(
       SUCCEEDED(GetUserProperty(sid_str.c_str(), base::UTF8ToWide(kKeyUsername),
                                 username_reg, &username_reg_length)));
@@ -1859,7 +1859,7 @@ TEST_F(GcpGaiaCredentialBaseAdOfflineScenariosTest,
 
   ASSERT_EQ(S_OK, StartLogonProcessAndWait());
 
-  ASSERT_TRUE(base::size(test->GetFinalEmail()) == 0);
+  ASSERT_TRUE(std::size(test->GetFinalEmail()) == 0);
 
   // Make sure no user was created and the login attempt failed.
   PSID sid = nullptr;
@@ -2146,7 +2146,7 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest, MultipleLocalAccountInfo) {
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2220,7 +2220,7 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2292,7 +2292,7 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2363,7 +2363,7 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest, OnlyOneValidUserMapping) {
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2437,7 +2437,7 @@ TEST_F(GcpGaiaCredentialBaseCloudLocalAccountTest,
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2567,7 +2567,7 @@ TEST_P(GaiaCredentialBaseCloudLocalAccountSuccessTest, SerialNumber) {
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -2635,7 +2635,7 @@ TEST_P(GaiaCredentialBaseCDUsernameSuccessTest, AnyUsername) {
   std::wstring sid_str(local_sid, SysStringLen(local_sid));
 
   wchar_t gaia_id[256];
-  ULONG length = base::size(gaia_id);
+  ULONG length = std::size(gaia_id);
   HRESULT gaia_id_hr =
       GetUserProperty(sid_str.c_str(), kUserId, gaia_id, &length);
   ASSERT_EQ(S_OK, gaia_id_hr);
@@ -3503,7 +3503,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
     ASSERT_EQ(0UL, device_upload_failures);
 
     wchar_t resource_id[512];
-    ULONG resource_id_size = base::size(resource_id);
+    ULONG resource_id_size = std::size(resource_id);
     hr = GetUserProperty(sid.Copy(), kRegUserDeviceResourceId, resource_id,
                          &resource_id_size);
     ASSERT_TRUE(SUCCEEDED(hr));

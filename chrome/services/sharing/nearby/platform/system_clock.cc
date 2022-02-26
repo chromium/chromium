@@ -45,7 +45,7 @@ absl::Time SystemClock::ElapsedRealtime() {
   struct timeval boottime;
   int mib[2] = {CTL_KERN, KERN_BOOTTIME};
   size_t size = sizeof(boottime);
-  int kr = sysctl(mib, base::size(mib), &boottime, &size, nullptr, 0);
+  int kr = sysctl(mib, std::size(mib), &boottime, &size, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
   base::TimeDelta time_difference =
       base::Time::FromCFAbsoluteTime(CFAbsoluteTimeGetCurrent()) -

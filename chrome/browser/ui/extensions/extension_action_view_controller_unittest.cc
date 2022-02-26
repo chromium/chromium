@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -469,7 +468,7 @@ void ExtensionActionViewControllerGrayscaleTest::RunGrayscaleTest(
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(
         base::StringPrintf("Running test case %d", static_cast<int>(i)));
     const auto& test_case = test_cases[i];

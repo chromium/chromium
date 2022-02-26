@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -110,7 +109,7 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kRequireEula,
   };
 
-  for (size_t i = 0; i < base::size(expected_true); ++i) {
+  for (size_t i = 0; i < std::size(expected_true); ++i) {
     bool value = false;
     EXPECT_TRUE(prefs.GetBool(expected_true[i], &value));
     EXPECT_TRUE(value) << expected_true[i];
@@ -151,7 +150,7 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
   };
 
   bool value = false;
-  for (size_t i = 0; i < base::size(expected_bool); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool); ++i) {
     EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
     EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
   }
@@ -162,7 +161,7 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
       installer::initial_preferences::kMakeChromeDefaultForUser,
   };
 
-  for (size_t i = 0; i < base::size(missing_bools); ++i) {
+  for (size_t i = 0; i < std::size(missing_bools); ++i) {
     EXPECT_FALSE(prefs.GetBool(missing_bools[i], &value)) << missing_bools[i];
   }
 
@@ -264,7 +263,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
 
   // Now check that prefs got merged correctly.
   bool value = false;
-  for (size_t i = 0; i < base::size(expected_bool); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool); ++i) {
     EXPECT_TRUE(prefs.GetBool(expected_bool[i].name, &value));
     EXPECT_EQ(value, expected_bool[i].expected_value) << expected_bool[i].name;
   }
@@ -281,7 +280,7 @@ TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
       {installer::initial_preferences::kDoNotLaunchChrome, true},
   };
 
-  for (size_t i = 0; i < base::size(expected_bool2); ++i) {
+  for (size_t i = 0; i < std::size(expected_bool2); ++i) {
     EXPECT_TRUE(prefs2.GetBool(expected_bool2[i].name, &value));
     EXPECT_EQ(value, expected_bool2[i].expected_value)
         << expected_bool2[i].name;

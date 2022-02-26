@@ -101,7 +101,7 @@ SettingValue GetWinOSFirewall() {
   // The most restrictive active profile takes precedence.
   constexpr NET_FW_PROFILE_TYPE2 kProfileTypes[] = {
       NET_FW_PROFILE2_PUBLIC, NET_FW_PROFILE2_PRIVATE, NET_FW_PROFILE2_DOMAIN};
-  for (size_t i = 0; i < base::size(kProfileTypes); ++i) {
+  for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
     if ((profile_types & kProfileTypes[i]) != 0) {
       VARIANT_BOOL enabled = VARIANT_TRUE;
       hr = firewall_policy->get_FirewallEnabled(kProfileTypes[i], &enabled);

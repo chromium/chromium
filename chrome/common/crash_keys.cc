@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -100,7 +99,7 @@ bool IsBoringSwitch(const std::string& flag) {
     return false;
   size_t end = flag.find("=");
   size_t len = (end == std::string::npos) ? flag.length() - 2 : end - 2;
-  for (size_t i = 0; i < base::size(kIgnoreSwitches); ++i) {
+  for (size_t i = 0; i < std::size(kIgnoreSwitches); ++i) {
     if (flag.compare(2, len, kIgnoreSwitches[i]) == 0)
       return true;
   }
@@ -135,7 +134,7 @@ void SetActiveExtensions(const std::set<std::string>& extensions) {
   };
 
   auto it = extensions.begin();
-  for (size_t i = 0; i < base::size(extension_ids); ++i) {
+  for (size_t i = 0; i < std::size(extension_ids); ++i) {
     if (it == extensions.end()) {
       extension_ids[i].Clear();
     } else {

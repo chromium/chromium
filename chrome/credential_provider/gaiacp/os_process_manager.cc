@@ -5,29 +5,26 @@
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 
 #include <Windows.h>
-#include <Winternl.h>
 
 #include <MDMRegistration.h>
 #include <Shellapi.h>  // For CommandLineToArgvW()
 #include <Shlobj.h>
+#include <Winternl.h>
 #include <aclapi.h>
-#include <dpapi.h>
-#include <sddl.h>
-#include <security.h>
-#include <userenv.h>
-#include <wincred.h>
-
 #include <atlconv.h>
-
+#include <dpapi.h>
 #include <malloc.h>
 #include <memory.h>
+#include <sddl.h>
+#include <security.h>
 #include <stdlib.h>
+#include <userenv.h>
+#include <wincred.h>
 
 #include <iomanip>
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
@@ -58,7 +55,7 @@ HRESULT GetTokenLogonSID(const base::win::ScopedHandle& token, PSID* sid) {
   char buffer[256];
   DWORD returned_length;
   if (!::GetTokenInformation(token.Get(), TokenLogonSid, &buffer,
-                             base::size(buffer), &returned_length)) {
+                             std::size(buffer), &returned_length)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetTokenInformation hr=" << putHR(hr);
     return hr;
@@ -196,9 +193,9 @@ HRESULT AllowLogonSIDOnLocalBasedNamedObjects(PSID sid) {
   UNICODE_STRING name;
   wchar_t name_buffer[64];
   if (session_id == 0) {
-    _snwprintf_s(name_buffer, base::size(name_buffer), L"\\BaseNamedObjects");
+    _snwprintf_s(name_buffer, std::size(name_buffer), L"\\BaseNamedObjects");
   } else {
-    _snwprintf_s(name_buffer, base::size(name_buffer),
+    _snwprintf_s(name_buffer, std::size(name_buffer),
                  L"\\Sessions\\%d\\BaseNamedObjects", session_id);
   }
   InitWindowsStringWithString(name_buffer, &name);

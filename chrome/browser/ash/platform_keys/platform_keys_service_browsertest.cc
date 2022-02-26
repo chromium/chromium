@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -13,7 +15,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -116,7 +116,7 @@ std::string PrependSHA256DigestInfo(base::StringPiece hash) {
       0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
   const base::StringPiece kDigestInfoSha256Der(
       reinterpret_cast<const char*>(kDigestInfoSha256DerData),
-      base::size(kDigestInfoSha256DerData));
+      std::size(kDigestInfoSha256DerData));
 
   return base::StrCat({kDigestInfoSha256Der, hash});
 }

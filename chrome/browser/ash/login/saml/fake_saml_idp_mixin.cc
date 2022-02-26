@@ -53,7 +53,7 @@ constexpr char kTpmChallenge[] = {0,   1,   2,      'c',    'h',
                                   'a', 'l', '\xFD', '\xFE', '\xFF'};
 
 std::string GetTpmChallenge() {
-  return std::string(kTpmChallenge, base::size(kTpmChallenge));
+  return std::string(kTpmChallenge, std::size(kTpmChallenge));
 }
 
 std::string GetTpmChallengeBase64() {

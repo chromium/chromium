@@ -167,8 +167,8 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
   wchar_t found_domain[kWindowsDomainBufferLength] = {};
 
   status = OSUserManager::Get()->FindUserBySidWithFallback(
-      context.user_sid.c_str(), found_username, base::size(found_username),
-      found_domain, base::size(found_domain));
+      context.user_sid.c_str(), found_username, std::size(found_username),
+      found_domain, std::size(found_domain));
   if (FAILED(status)) {
     LOGFN(ERROR) << "Could not get username and domain from sid "
                  << context.user_sid;

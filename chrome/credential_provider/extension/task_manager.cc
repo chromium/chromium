@@ -53,7 +53,7 @@ const net::BackoffEntry::Policy kRetryLaterPolicy = {
 base::TimeDelta GetTimeDeltaSinceLastPeriodicSync(
     const std::wstring& task_reg_name) {
   wchar_t last_sync_millis[512];
-  ULONG last_sync_size = base::size(last_sync_millis);
+  ULONG last_sync_size = std::size(last_sync_millis);
   HRESULT hr = GetGlobalFlag(task_reg_name, last_sync_millis, &last_sync_size);
 
   if (FAILED(hr)) {

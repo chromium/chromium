@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <windows.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
@@ -99,7 +98,7 @@ void SystemRestorePointComponent::PreCleanup() {
   restore_point_spec.dwRestorePtType = APPLICATION_INSTALL;
   restore_point_spec.llSequenceNumber = 0;
   wcsncpy(restore_point_spec.szDescription, product_fullname_.c_str(),
-          base::size(restore_point_spec.szDescription));
+          std::size(restore_point_spec.szDescription));
 
   if (set_restore_point_info_fn_(&restore_point_spec, &state_manager_status)) {
     sequence_number_ = state_manager_status.llSequenceNumber;

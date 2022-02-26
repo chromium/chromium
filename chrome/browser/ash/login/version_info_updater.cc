@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,7 +95,7 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   // Watch for changes to the reporting flags.
   auto callback = base::BindRepeating(&VersionInfoUpdater::UpdateEnterpriseInfo,
                                       base::Unretained(this));
-  for (unsigned int i = 0; i < base::size(kReportingFlags); ++i) {
+  for (unsigned int i = 0; i < std::size(kReportingFlags); ++i) {
     subscriptions_.push_back(
         cros_settings_->AddSettingsObserver(kReportingFlags[i], callback));
   }

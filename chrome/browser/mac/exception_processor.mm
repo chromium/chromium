@@ -4,15 +4,14 @@
 
 #import "chrome/browser/mac/exception_processor.h"
 
-#include <dlfcn.h>
 #import <Foundation/Foundation.h>
+#include <dlfcn.h>
 #include <libunwind.h>
 #include <objc/objc-exception.h>
 
 #include <type_traits>
 
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
@@ -58,11 +57,11 @@ size_t BinForException(NSException* exception) {
   };
 
   // Make sure our array hasn't outgrown our abilities to track it.
-  static_assert(base::size(kKnownNSExceptionNames) < kKnownNSExceptionCount,
+  static_assert(std::size(kKnownNSExceptionNames) < kKnownNSExceptionCount,
                 "Cannot track more exceptions");
 
   NSString* name = [exception name];
-  for (size_t i = 0; i < base::size(kKnownNSExceptionNames); ++i) {
+  for (size_t i = 0; i < std::size(kKnownNSExceptionNames); ++i) {
     if (name == kKnownNSExceptionNames[i]) {
       return i;
     }

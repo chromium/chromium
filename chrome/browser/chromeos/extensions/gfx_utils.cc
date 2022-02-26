@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -107,7 +106,7 @@ class AppDualBadgeMap {
   using ExtensionToArcAppMap = std::unordered_map<std::string, std::string>;
 
   AppDualBadgeMap() {
-    for (size_t i = 0; i < base::size(kDualBadgeMap); ++i) {
+    for (size_t i = 0; i < std::size(kDualBadgeMap); ++i) {
       arc_app_to_extensions_map_[kDualBadgeMap[i].arc_package_name].push_back(
           kDualBadgeMap[i].extension_id);
       extension_to_arc_app_map_[kDualBadgeMap[i].extension_id] =

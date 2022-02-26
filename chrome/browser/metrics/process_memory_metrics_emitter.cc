@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -828,7 +827,7 @@ void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
                              &Memory_Experimental::SetGpuMemory};
 
   uint64_t total = 0;
-  for (size_t i = 0; i < base::size(gpu_categories); ++i) {
+  for (size_t i = 0; i < std::size(gpu_categories); ++i) {
     total +=
         pmd.GetMetric(gpu_categories[i], synthetic_metric.metric).value_or(0);
   }

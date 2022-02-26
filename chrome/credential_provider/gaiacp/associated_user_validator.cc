@@ -134,7 +134,7 @@ HRESULT ModifyUserAccess(const std::unique_ptr<ScopedLsaPolicy>& policy,
   wchar_t domain[kWindowsDomainBufferLength];
 
   HRESULT hr = manager->FindUserBySID(
-      sid.c_str(), username, base::size(username), domain, base::size(domain));
+      sid.c_str(), username, std::size(username), domain, std::size(domain));
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "FindUserBySID sid=" << sid << " hr=" << putHR(hr);
@@ -219,7 +219,7 @@ AssociatedUserValidator::~AssociatedUserValidator() = default;
 bool AssociatedUserValidator::IsOnlineLoginStale(
     const std::wstring& sid) const {
   wchar_t last_token_valid_millis[512];
-  ULONG last_token_valid_size = base::size(last_token_valid_millis);
+  ULONG last_token_valid_size = std::size(last_token_valid_millis);
   HRESULT hr = GetUserProperty(sid, base::UTF8ToWide(kKeyLastTokenValid),
                                last_token_valid_millis, &last_token_valid_size);
 

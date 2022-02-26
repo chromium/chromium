@@ -57,7 +57,7 @@ namespace crostini {
 
 namespace {
 constexpr char kSettingPrefix[] = "/hterm/profiles/default/";
-const size_t kSettingPrefixSize = base::size(kSettingPrefix) - 1;
+const size_t kSettingPrefixSize = std::size(kSettingPrefix) - 1;
 
 constexpr char kSettingBackgroundColor[] =
     "/hterm/profiles/default/background-color";

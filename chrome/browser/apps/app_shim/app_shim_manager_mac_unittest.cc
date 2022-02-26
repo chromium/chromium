@@ -1401,13 +1401,13 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
       {u"dock_menu_item_a_2", GURL("/settings")},
       {u"dock_menu_item_a_3", GURL("https://anothersite.com")},
   };
-  const size_t kNumMenuItemsForProfileA = base::size(menu_items_profile_a);
+  const size_t kNumMenuItemsForProfileA = std::size(menu_items_profile_a);
 
   DockMenuItems menu_items_profile_b[] = {
       {u"dock_menu_item_b_1", GURL("/about")},
       {u"dock_menu_item_b_2", GURL("/another-link")},
   };
-  const size_t kNumMenuItemsForProfileB = base::size(menu_items_profile_b);
+  const size_t kNumMenuItemsForProfileB = std::size(menu_items_profile_b);
 
   // Lambda to help with creation of application dock menu items.
   auto MakeDockMenuItems = [](DockMenuItems* menu_items,

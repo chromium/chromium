@@ -12,7 +12,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -413,7 +412,7 @@ TEST_F(InstallUtilTest, ProgramCompare) {
   // Tests where the expected file exists.
   static const char data[] = "data";
   ASSERT_TRUE(base::CreateDirectory(some_long_dir));
-  ASSERT_NE(-1, base::WriteFile(expect, data, base::size(data) - 1));
+  ASSERT_NE(-1, base::WriteFile(expect, data, std::size(data) - 1));
   // Paths don't match.
   EXPECT_FALSE(InstallUtil::ProgramCompare(expect).Evaluate(
       L"\"" + other.value() + L"\""));

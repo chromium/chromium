@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_unittest_util_win.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace safe_browsing {
 
@@ -13,7 +13,7 @@ const wchar_t* const kTestDllNames[] = {
     L"verifier_test_dll_2.dll",
 };
 
-const size_t kTestDllNamesCount = base::size(kTestDllNames);
+const size_t kTestDllNamesCount = std::size(kTestDllNames);
 
 const char kTestExportName[] = "DummyExport";
 

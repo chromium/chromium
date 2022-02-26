@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -61,7 +60,7 @@ SystemPrivateGetIncognitoModeAvailabilityFunction::Run() {
   int value = prefs->GetInteger(prefs::kIncognitoModeAvailability);
   EXTENSION_FUNCTION_VALIDATE(
       value >= 0 &&
-      value < static_cast<int>(base::size(kIncognitoModeAvailabilityStrings)));
+      value < static_cast<int>(std::size(kIncognitoModeAvailabilityStrings)));
   return RespondNow(
       OneArgument(base::Value(kIncognitoModeAvailabilityStrings[value])));
 }

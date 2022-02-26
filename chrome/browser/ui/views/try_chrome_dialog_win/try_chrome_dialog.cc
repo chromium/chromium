@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -773,7 +772,7 @@ void TryChromeDialog::Context::TaskbarCalculator::OnWidgetBoundsChanged(
   POINT polygon[7];
   properties_->region_creator(window_size, dialog_bounds, arrow_bounds,
                               arrow_border_insets, &polygon[0]);
-  HRGN region = ::CreatePolygonRgn(&polygon[0], base::size(polygon), WINDING);
+  HRGN region = ::CreatePolygonRgn(&polygon[0], std::size(polygon), WINDING);
   ::SetWindowRgn(hwnd, region, FALSE);
 }
 
@@ -992,7 +991,7 @@ void TryChromeDialog::ModalShowDelegate::InteractionComplete() {
 TryChromeDialog::Result TryChromeDialog::Show(
     size_t group,
     ActiveModalDialogListener listener) {
-  if (group >= base::size(kExperiments)) {
+  if (group >= std::size(kExperiments)) {
     // Exit immediately given bogus values; see TryChromeDialogBrowserTest test.
     return NOT_NOW;
   }
@@ -1018,7 +1017,7 @@ TryChromeDialog::TryChromeDialog(size_t group, Delegate* delegate)
     : group_(group),
       delegate_(delegate),
       context_(std::make_unique<Context>()) {
-  DCHECK_LT(group, base::size(kExperiments));
+  DCHECK_LT(group, std::size(kExperiments));
   DCHECK(delegate);
 }
 

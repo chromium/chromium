@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -65,7 +64,7 @@ TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
                  errors::kInvalidLaunchValue,
                  keys::kLaunchHeight))
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(AppLaunchManifestTest, AppLaunchURL) {
@@ -103,7 +102,7 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
                  errors::kInvalidLaunchValue,
                  keys::kLaunchWebURL))
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 
   scoped_refptr<Extension> extension =
       LoadAndExpectSuccess("launch_local_path.json");

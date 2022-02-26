@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 #include <Security/Authorization.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/authorization_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_authorizationref.h"
@@ -26,7 +25,7 @@ bool AuthenticateUser(password_manager::ReauthPurpose purpose) {
   // kAuthorizationRuleAuthenticateAsSessionUser, to ensure that the session
   // user password, as opposed to an admin's password, is required.
   AuthorizationItem right_items[] = {{"system.login.screensaver", 0, NULL, 0}};
-  AuthorizationRights rights = {base::size(right_items), right_items};
+  AuthorizationRights rights = {std::size(right_items), right_items};
 
   NSString* prompt;
   switch (purpose) {

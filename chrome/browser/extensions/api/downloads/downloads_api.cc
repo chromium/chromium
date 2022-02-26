@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -204,7 +204,7 @@ const char* const kDangerStrings[] = {kDangerSafe,
                                       kDangerPromptForScanning,
                                       kDangerUnsupportedFileType,
                                       kDangerousAccountCompromise};
-static_assert(base::size(kDangerStrings) == download::DOWNLOAD_DANGER_TYPE_MAX,
+static_assert(std::size(kDangerStrings) == download::DOWNLOAD_DANGER_TYPE_MAX,
               "kDangerStrings should have DOWNLOAD_DANGER_TYPE_MAX elements");
 
 const char* const kStateStrings[] = {
@@ -213,22 +213,22 @@ const char* const kStateStrings[] = {
     kStateInterrupted,
     kStateInterrupted,
 };
-static_assert(base::size(kStateStrings) ==
+static_assert(std::size(kStateStrings) ==
                   download::DownloadItem::MAX_DOWNLOAD_STATE,
               "kStateStrings should have MAX_DOWNLOAD_STATE elements");
 
 const char* DangerString(download::DownloadDangerType danger) {
   DCHECK(danger >= 0);
   DCHECK(danger <
-         static_cast<download::DownloadDangerType>(base::size(kDangerStrings)));
+         static_cast<download::DownloadDangerType>(std::size(kDangerStrings)));
   if (danger < 0 || danger >= static_cast<download::DownloadDangerType>(
-                                  base::size(kDangerStrings)))
+                                  std::size(kDangerStrings)))
     return "";
   return kDangerStrings[danger];
 }
 
 download::DownloadDangerType DangerEnumFromString(const std::string& danger) {
-  for (size_t i = 0; i < base::size(kDangerStrings); ++i) {
+  for (size_t i = 0; i < std::size(kDangerStrings); ++i) {
     if (danger == kDangerStrings[i])
       return static_cast<download::DownloadDangerType>(i);
   }
@@ -238,16 +238,16 @@ download::DownloadDangerType DangerEnumFromString(const std::string& danger) {
 const char* StateString(download::DownloadItem::DownloadState state) {
   DCHECK(state >= 0);
   DCHECK(state < static_cast<download::DownloadItem::DownloadState>(
-                     base::size(kStateStrings)));
+                     std::size(kStateStrings)));
   if (state < 0 || state >= static_cast<download::DownloadItem::DownloadState>(
-                                base::size(kStateStrings)))
+                                std::size(kStateStrings)))
     return "";
   return kStateStrings[state];
 }
 
 download::DownloadItem::DownloadState StateEnumFromString(
     const std::string& state) {
-  for (size_t i = 0; i < base::size(kStateStrings); ++i) {
+  for (size_t i = 0; i < std::size(kStateStrings); ++i) {
     if ((kStateStrings[i] != NULL) && (state == kStateStrings[i]))
       return static_cast<DownloadItem::DownloadState>(i);
   }

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/spellcheck/browser/spelling_service_client.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -11,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
+#include "components/spellcheck/browser/spelling_service_client.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/load_flags.h"
@@ -115,7 +113,7 @@ class SpellingServiceClientTest
     } kCountries[] = {
         {"af", "ZAF"}, {"en", "USA"},
     };
-    for (size_t i = 0; i < base::size(kCountries); ++i) {
+    for (size_t i = 0; i < std::size(kCountries); ++i) {
       if (!language.compare(kCountries[i].language)) {
         country->assign(kCountries[i].country);
         return true;
@@ -372,7 +370,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   };
   // If spellcheck is allowed, then suggest is not since spellcheck is a
   // superset of suggest.
-  for (size_t i = 0; i < base::size(kSupported); ++i) {
+  for (size_t i = 0; i < std::size(kSupported); ++i) {
     base::ListValue dictionary;
     dictionary.Append(kSupported[i]);
     pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
@@ -389,7 +387,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
       "lv-LV", "nb-NO", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "ru-RU",
       "sk-SK", "sl-SI", "sh",    "sr",    "sv-SE", "tr-TR", "uk-UA", "vi-VN",
   };
-  for (size_t i = 0; i < base::size(kUnsupported); ++i) {
+  for (size_t i = 0; i < std::size(kUnsupported); ++i) {
     SCOPED_TRACE(std::string("Expected language ") + kUnsupported[i]);
     base::ListValue dictionary;
     dictionary.Append(kUnsupported[i]);

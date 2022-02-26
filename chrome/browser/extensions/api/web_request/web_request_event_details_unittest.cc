@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/web_request/web_request_event_details.h"
-
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
+#include "extensions/browser/api/web_request/web_request_event_details.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/http/http_response_headers.h"
@@ -68,7 +66,7 @@ TEST(WebRequestEventDetailsTest, AllowlistedCopyForPublicSession) {
   EXPECT_EQ("http://www.foo.bar/", url);
 
   // Extras are filtered out (+1 for url).
-  EXPECT_EQ(base::size(safe_attributes) + 1, copy->dict_.DictSize());
+  EXPECT_EQ(std::size(safe_attributes) + 1, copy->dict_.DictSize());
 }
 
 TEST(WebRequestEventDetailsTest, SetResponseHeaders) {

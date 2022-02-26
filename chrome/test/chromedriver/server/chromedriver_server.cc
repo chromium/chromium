@@ -344,7 +344,7 @@ int main(int argc, char *argv[]) {
       "(add this switch if seeing errors related to shared memory)",
 #endif
     };
-    for (size_t i = 0; i < base::size(kOptionAndDescriptions) - 1; i += 2) {
+    for (size_t i = 0; i < std::size(kOptionAndDescriptions) - 1; i += 2) {
       options += base::StringPrintf(
           "  --%-30s%s\n",
           kOptionAndDescriptions[i], kOptionAndDescriptions[i + 1]);

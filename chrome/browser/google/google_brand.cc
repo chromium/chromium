@@ -119,7 +119,7 @@ bool IsOrganic(const std::string& brand) {
       "CHOU", "CHOX", "CHOY", "CHOZ", "CHPD", "CHPE", "CHPF", "CHPG", "ECBA",
       "ECBB", "ECDA", "ECDB", "ECSA", "ECSB", "ECVA", "ECVB", "ECWA", "ECWB",
       "ECWC", "ECWD", "ECWE", "ECWF", "EUBB", "EUBC", "GGLA", "GGLS"};
-  const char* const* end = &kOrganicBrands[base::size(kOrganicBrands)];
+  const char* const* end = &kOrganicBrands[std::size(kOrganicBrands)];
   if (std::binary_search(&kOrganicBrands[0], end, brand))
     return true;
 

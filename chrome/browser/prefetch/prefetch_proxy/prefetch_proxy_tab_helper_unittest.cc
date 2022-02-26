@@ -793,7 +793,7 @@ TEST_F(PrefetchProxyTabHelperTest, CookiesChangedAfterInitialCheck) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -833,7 +833,7 @@ TEST_F(PrefetchProxyTabHelperTest, 2XXOnly) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -991,7 +991,7 @@ TEST_F(PrefetchProxyTabHelperTest, IgnoreSameDocNavigations) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1042,7 +1042,7 @@ TEST_F(PrefetchProxyTabHelperTest, SuccessCase) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1081,7 +1081,7 @@ TEST_F(PrefetchProxyTabHelperTest, AfterSRPLinkNotOnSRP) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1162,7 +1162,7 @@ TEST_F(PrefetchProxyTabHelperTest, NumberOfPrefetches_UnlimitedByCmdLine) {
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
 
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 2);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
@@ -1227,7 +1227,7 @@ TEST_F(PrefetchProxyTabHelperTest, PrefetchingPausedWhenInvisible) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1644,7 +1644,7 @@ TEST_F(PrefetchProxyTabHelperUnlimitedPrefetchesTest,
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
 
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 2);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
@@ -1705,7 +1705,7 @@ TEST_F(PrefetchProxyTabHelperConcurrentPrefetchesTest, ConcurrentPrefetches) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 2);
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 2);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 2);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 2);
   histogram_tester.ExpectUniqueSample(
@@ -1770,7 +1770,7 @@ TEST_F(PrefetchProxyTabHelperLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
 
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", base::size(kHTMLBody), 1);
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);

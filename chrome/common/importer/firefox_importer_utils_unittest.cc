@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
@@ -101,7 +100,7 @@ struct GetFirefoxImporterNameCase {
 }  // anonymous namespace
 
 TEST(FirefoxImporterUtilsTest, GetPrefsJsValue) {
-  for (size_t i = 0; i < base::size(GetPrefsJsValueCases); ++i) {
+  for (size_t i = 0; i < std::size(GetPrefsJsValueCases); ++i) {
     EXPECT_EQ(
       GetPrefsJsValueCases[i].pref_value,
       GetPrefsJsValue(GetPrefsJsValueCases[i].prefs_content,
@@ -114,7 +113,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxImporterName) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath app_ini_file(
       temp_dir.GetPath().AppendASCII("application.ini"));
-  for (size_t i = 0; i < base::size(GetFirefoxImporterNameCases); ++i) {
+  for (size_t i = 0; i < std::size(GetFirefoxImporterNameCases); ++i) {
     base::WriteFile(app_ini_file,
                     GetFirefoxImporterNameCases[i].app_ini_content.c_str(),
                     GetFirefoxImporterNameCases[i].app_ini_content.size());

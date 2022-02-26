@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/always_on_top_window_killer_win.h"
-#include "base/memory/raw_ptr.h"
 
 #include <Windows.h>
 
@@ -11,9 +10,9 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/process_lineage_win.h"
 #include "chrome/test/base/save_desktop_snapshot_win.h"
 #include "ui/display/win/screen_win.h"
@@ -121,9 +120,9 @@ bool WindowEnumerator::IsTopmostWindow(HWND hwnd) {
 // static
 std::wstring WindowEnumerator::GetWindowClass(HWND hwnd) {
   wchar_t buffer[257];  // Max is 256.
-  buffer[base::size(buffer) - 1] = L'\0';
-  int name_len = ::GetClassName(hwnd, &buffer[0], base::size(buffer));
-  if (name_len <= 0 || static_cast<size_t>(name_len) >= base::size(buffer))
+  buffer[std::size(buffer) - 1] = L'\0';
+  int name_len = ::GetClassName(hwnd, &buffer[0], std::size(buffer));
+  if (name_len <= 0 || static_cast<size_t>(name_len) >= std::size(buffer))
     return std::wstring();
   return std::wstring(&buffer[0], name_len);
 }

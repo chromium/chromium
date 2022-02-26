@@ -17,7 +17,6 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -2311,7 +2310,7 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 
   // All log files must be created in their own context's directory.
-  for (size_t i = 0; i < base::size(browser_contexts); ++i) {
+  for (size_t i = 0; i < std::size(browser_contexts); ++i) {
     ASSERT_TRUE(file_paths[i]);
     EXPECT_TRUE(browser_contexts[i]->GetPath().IsParent(*file_paths[i]));
   }
@@ -2564,9 +2563,9 @@ TEST_F(WebRtcEventLogManagerTest,
 
 TEST_F(WebRtcEventLogManagerTest, DifferentRemoteLogsMayHaveDifferentMaximums) {
   const std::string logs[2] = {"abra", "cadabra"};
-  std::vector<absl::optional<base::FilePath>> file_paths(base::size(logs));
+  std::vector<absl::optional<base::FilePath>> file_paths(std::size(logs));
   std::vector<PeerConnectionKey> keys;
-  for (size_t i = 0; i < base::size(logs); ++i) {
+  for (size_t i = 0; i < std::size(logs); ++i) {
     keys.push_back(GetPeerConnectionKey(rph_.get(), i));
     ON_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_paths[i])));
@@ -2878,7 +2877,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
   base::FilePath::StringPieceType extensions[] = {
       kWebRtcEventLogUncompressedExtension, kWebRtcEventLogGzippedExtension};
-  ASSERT_LE(base::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
+  ASSERT_LE(std::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
       << "Lacking test coverage.";
 
   // Avoid arbitrary ordering due to files being created in the same second.
@@ -2891,7 +2890,7 @@ TEST_F(WebRtcEventLogManagerTest,
     time += base::Seconds(1);
 
     const auto& extension = extensions[ext];
-    ext = (ext + 1) % base::size(extensions);
+    ext = (ext + 1) % std::size(extensions);
 
     base::FilePath file_path;
     base::File file;

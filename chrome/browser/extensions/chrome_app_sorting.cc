@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -693,7 +692,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
       extensions::kWebStoreAppId,
   };
   const std::vector<const char*> app_ids(
-      kDefaultAppOrder, kDefaultAppOrder + base::size(kDefaultAppOrder));
+      kDefaultAppOrder, kDefaultAppOrder + std::size(kDefaultAppOrder));
 #endif
 
   syncer::StringOrdinal page_ordinal = CreateFirstAppPageOrdinal();

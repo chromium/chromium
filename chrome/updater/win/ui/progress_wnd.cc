@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
@@ -53,13 +52,13 @@ constexpr CompletionCodes kCompletionCodesActionPriority[] = {
 // CompletionCodes. The enumeration value starts from 1 so the array size
 // should match the last value in the enumeration.
 static_assert(
-    base::size(kCompletionCodesActionPriority) ==
+    std::size(kCompletionCodesActionPriority) ==
         static_cast<size_t>(
             CompletionCodes::COMPLETION_CODE_INSTALL_FINISHED_BEFORE_CANCEL),
     "completion code is missing");
 
 int GetPriority(CompletionCodes code) {
-  for (size_t i = 0; i < base::size(kCompletionCodesActionPriority); ++i) {
+  for (size_t i = 0; i < std::size(kCompletionCodesActionPriority); ++i) {
     if (kCompletionCodesActionPriority[i] == code)
       return i;
   }

@@ -5,6 +5,7 @@
 #include "chrome/app/chrome_exe_main_win.h"
 
 #include <windows.h>
+
 #include <malloc.h>
 #include <stddef.h>
 #include <tchar.h>
@@ -17,7 +18,6 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -118,11 +118,11 @@ bool HasValidWindowsPrefetchArgument(const base::CommandLine& command_line) {
   const wchar_t kPrefetchArgumentPrefix[] = L"/prefetch:";
 
   for (const auto& arg : command_line.argv()) {
-    if (arg.size() == base::size(kPrefetchArgumentPrefix) &&
+    if (arg.size() == std::size(kPrefetchArgumentPrefix) &&
         base::StartsWith(arg, kPrefetchArgumentPrefix,
                          base::CompareCase::SENSITIVE)) {
-      return arg[base::size(kPrefetchArgumentPrefix) - 1] >= L'1' &&
-             arg[base::size(kPrefetchArgumentPrefix) - 1] <= L'8';
+      return arg[std::size(kPrefetchArgumentPrefix) - 1] >= L'1' &&
+             arg[std::size(kPrefetchArgumentPrefix) - 1] <= L'8';
     }
   }
   return false;
@@ -176,7 +176,7 @@ int RunFallbackCrashHandler(const base::CommandLine& cmd_line) {
   // Retrieve the product & version details we need to report the crash
   // correctly.
   wchar_t exe_file[MAX_PATH] = {};
-  CHECK(::GetModuleFileName(nullptr, exe_file, base::size(exe_file)));
+  CHECK(::GetModuleFileName(nullptr, exe_file, std::size(exe_file)));
 
   std::wstring product_name, version, channel_name, special_build;
   install_static::GetExecutableVersionDetails(exe_file, &product_name, &version,

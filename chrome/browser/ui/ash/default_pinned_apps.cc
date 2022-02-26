@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/ash/default_pinned_apps.h"
 
 #include "ash/constants/ash_switches.h"
-#include "base/cxx17_backports.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -38,7 +37,7 @@ base::span<StaticAppId> GetDefaultPinnedApps() {
       arc::kGooglePhotosAppId,
   };
   return base::span<StaticAppId>(kDefaultPinnedApps,
-                                 base::size(kDefaultPinnedApps));
+                                 std::size(kDefaultPinnedApps));
 }
 
 base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
@@ -53,9 +52,8 @@ base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps() {
 
       arc::kGooglePhotosAppId,
   };
-  return base::span<StaticAppId>(
-      kTabletFormFactorDefaultPinnedApps,
-      base::size(kTabletFormFactorDefaultPinnedApps));
+  return base::span<StaticAppId>(kTabletFormFactorDefaultPinnedApps,
+                                 std::size(kTabletFormFactorDefaultPinnedApps));
 }
 
 }  // namespace

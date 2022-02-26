@@ -284,8 +284,8 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   std::string tab_titles[] = {"", "Sample title", "Sample title"};
 
   // Add 3 web contentses to the browser.
-  content::WebContents* web_contentses[base::size(tab_urls)];
-  for (size_t i = 0; i < base::size(tab_urls); ++i) {
+  content::WebContents* web_contentses[std::size(tab_urls)];
+  for (size_t i = 0; i < std::size(tab_urls); ++i) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     content::WebContents* raw_web_contents = web_contents.get();
@@ -345,8 +345,8 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
   std::string tab_titles[] = {"", "Sample title", "Sample title"};
 
   // Add 3 web contentses to the browser.
-  content::WebContents* web_contentses[base::size(tab_urls)];
-  for (size_t i = 0; i < base::size(tab_urls); ++i) {
+  content::WebContents* web_contentses[std::size(tab_urls)];
+  for (size_t i = 0; i < std::size(tab_urls); ++i) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     content::WebContents* raw_web_contents = web_contents.get();

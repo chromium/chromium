@@ -657,11 +657,11 @@ TEST_F(WebRequestRulesRegistryTest, GetMatchesDifferentUrls) {
   };
   // Which rules should match in subsequent test iterations.
   const char* const matchingRuleIds[] = { kRuleId1, kRuleId2 };
-  static_assert(base::size(urls) == base::size(matchingRuleIds),
+  static_assert(std::size(urls) == std::size(matchingRuleIds),
                 "urls and matchingRuleIds must have the same number "
                 "of elements");
 
-  for (size_t i = 0; i < base::size(matchingRuleIds); ++i) {
+  for (size_t i = 0; i < std::size(matchingRuleIds); ++i) {
     // Construct the inputs.
     WebRequestInfoInitParams params = CreateRequestParams(urls[i]);
     WebRequestInfo http_request_info(std::move(params));

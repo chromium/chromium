@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/customization/customization_document.h"
+
 #include <stddef.h>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -78,7 +78,7 @@ const struct {
 std::string GetExpectedLanguage(const std::string& required) {
   std::string expected = required;
 
-  for (size_t i = 0; i < base::size(locale_aliases); ++i) {
+  for (size_t i = 0; i < std::size(locale_aliases); ++i) {
     if (required != locale_aliases[i].locale_alias)
       continue;
 

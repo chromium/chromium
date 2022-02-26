@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -1899,7 +1898,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeInSyncTemplateURL) {
       {NEITHER, SYNC, NEITHER, BOTH, false, 2},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Case #" << i << std::endl);
 
     // Assert all the valid states of ExpectedTemplateURLs.

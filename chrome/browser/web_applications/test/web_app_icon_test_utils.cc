@@ -122,7 +122,7 @@ bool ReadBitmap(FileUtilsWrapper* utils,
 }
 
 base::span<const int> GetIconSizes() {
-  return base::span<const int>(kIconSizes, base::size(kIconSizes));
+  return base::span<const int>(kIconSizes, std::size(kIconSizes));
 }
 
 bool ContainsOneIconOfEachSize(

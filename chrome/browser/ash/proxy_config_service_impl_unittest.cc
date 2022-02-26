@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/proxy/proxy_config_service_impl.h"
-
 #include <stddef.h>
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -25,6 +22,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
+#include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -389,7 +387,7 @@ TEST_F(ProxyConfigServiceImplTest, NetworkProxy) {
   SetUpPrivateWiFi();
   // Create a ProxyConfigServiceImpl like for the system request context.
   SetUpProxyConfigService(nullptr /* no profile prefs */);
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
 
@@ -435,7 +433,7 @@ TEST_F(ProxyConfigServiceImplTest, DynamicPrefsOverride) {
     { 7, 6, 8, },
       // clang-format on
   };
-  for (size_t i = 0; i < base::size(proxies); ++i) {
+  for (size_t i = 0; i < std::size(proxies); ++i) {
     const TestParams& managed_params = tests[proxies[i][0]];
     const TestParams& recommended_params = tests[proxies[i][1]];
     const TestParams& network_params = tests[proxies[i][2]];

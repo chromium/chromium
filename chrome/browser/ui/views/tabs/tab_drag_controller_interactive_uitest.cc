@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -4191,7 +4190,7 @@ constexpr float kDeviceScaleFactorExpectations[] = {
 };
 
 static_assert(
-    base::size(kDragPoints) == base::size(kDeviceScaleFactorExpectations),
+    std::size(kDragPoints) == std::size(kDeviceScaleFactorExpectations),
     "kDragPoints and kDeviceScaleFactorExpectations must have the same "
     "number of elements");
 
@@ -4211,7 +4210,7 @@ void CursorDeviceScaleFactorStep(
               test->GetCursorDeviceScaleFactor());
   }
 
-  if (index < base::size(kDragPoints)) {
+  if (index < std::size(kDragPoints)) {
     ASSERT_TRUE(test->DragInputToNotifyWhenDone(
         kDragPoints[index], base::BindOnce(&CursorDeviceScaleFactorStep, test,
                                            not_attached_tab_strip, index + 1)));

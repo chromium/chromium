@@ -339,8 +339,8 @@ class PrefMapping {
       event_mapping_[pref.browser_pref] =
           PrefMapData(event_name, pref.read_permission, pref.write_permission);
     }
-    DCHECK_EQ(base::size(kPrefMapping), mapping_.size());
-    DCHECK_EQ(base::size(kPrefMapping), event_mapping_.size());
+    DCHECK_EQ(std::size(kPrefMapping), mapping_.size());
+    DCHECK_EQ(std::size(kPrefMapping), event_mapping_.size());
     RegisterPrefTransformer(proxy_config::prefs::kProxy,
                             std::make_unique<ProxyPrefTransformer>());
     RegisterPrefTransformer(prefs::kCookieControlsMode,

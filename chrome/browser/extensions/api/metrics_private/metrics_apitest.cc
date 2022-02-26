@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
@@ -84,7 +83,7 @@ void ValidateUserActions(const base::UserActionTester& user_action_tester,
 void ValidateSparseHistogramSamples(
     const std::string& name,
     const base::HistogramSamples& samples) {
-  for (unsigned int i = 0; i < base::size(g_sparse_histograms); ++i) {
+  for (unsigned int i = 0; i < std::size(g_sparse_histograms); ++i) {
     const SparseHistogram& sparse_histogram = g_sparse_histograms[i];
     if (std::string(name) == sparse_histogram.name) {
       for (int j = 0; j < sparse_histogram.bucket_count; ++j) {
@@ -163,8 +162,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionMetricsApiTest, Metrics) {
       << message_;
 
   ValidateUserActions(user_action_tester, g_user_actions,
-                      base::size(g_user_actions));
-  ValidateHistograms(g_histograms, base::size(g_histograms));
+                      std::size(g_user_actions));
+  ValidateHistograms(g_histograms, std::size(g_histograms));
 }
 
 }  // namespace extensions

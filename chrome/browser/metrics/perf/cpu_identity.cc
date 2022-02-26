@@ -4,11 +4,11 @@
 
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 
-#include <algorithm>  // for std::lower_bound()
 #include <string.h>
 
+#include <algorithm>  // for std::lower_bound()
+
 #include "base/cpu.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -69,7 +69,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
 };
 
 const CpuUarchTableEntry* kCpuUarchTableEnd =
-    kCpuUarchTable + base::size(kCpuUarchTable);
+    kCpuUarchTable + std::size(kCpuUarchTable);
 
 bool CpuUarchTableCmp(const CpuUarchTableEntry& a,
                       const CpuUarchTableEntry& b) {

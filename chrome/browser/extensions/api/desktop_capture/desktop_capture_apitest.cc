@@ -5,7 +5,6 @@
 #include <array>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
      .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId)},
   };
-  picker_factory_.SetTestFlags(test_flags, base::size(test_flags));
+  picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
   ASSERT_TRUE(RunExtensionTest("desktop_capture")) << message_;
 }
 
@@ -214,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
            DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId),
        .cancelled = true},
   };
-  picker_factory_.SetTestFlags(test_flags, base::size(test_flags));
+  picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
 
   bool result;
 

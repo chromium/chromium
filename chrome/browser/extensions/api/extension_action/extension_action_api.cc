@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -533,7 +533,7 @@ ExtensionActionSetBadgeBackgroundColorFunction::RunExtensionAction() {
     EXTENSION_FUNCTION_VALIDATE(list.size() == 4);
 
     int color_array[4] = {0};
-    for (size_t i = 0; i < base::size(color_array); ++i) {
+    for (size_t i = 0; i < std::size(color_array); ++i) {
       EXTENSION_FUNCTION_VALIDATE(list[i].is_int());
       color_array[i] = list[i].GetInt();
     }

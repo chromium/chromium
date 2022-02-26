@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -172,7 +171,7 @@ bool IsModifierKey(char16_t key) {
 bool KeyCodeFromSpecialWebDriverKey(char16_t key, ui::KeyboardCode* key_code) {
   int index = static_cast<int>(key) - 0xE000U;
   bool is_special_key =
-      index >= 0 && index < static_cast<int>(base::size(kSpecialWebDriverKeys));
+      index >= 0 && index < static_cast<int>(std::size(kSpecialWebDriverKeys));
   if (is_special_key)
     *key_code = kSpecialWebDriverKeys[index];
   return is_special_key;
@@ -578,7 +577,7 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     }
 
     // Create the key events.
-    int number_modifiers = base::size(kModifiers);
+    int number_modifiers = std::size(kModifiers);
     bool necessary_modifiers[number_modifiers];
     for (int j = 0; j < number_modifiers; ++j) {
       necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&
@@ -630,7 +629,7 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
 
   std::string key;
   if (code_point >= kNormalisedKeyValueBase &&
-      code_point < kNormalisedKeyValueBase + base::size(kNormalisedKeyValue)) {
+      code_point < kNormalisedKeyValueBase + std::size(kNormalisedKeyValue)) {
     key = kNormalisedKeyValue[code_point - kNormalisedKeyValueBase];
   }
   if (key.size() == 0)

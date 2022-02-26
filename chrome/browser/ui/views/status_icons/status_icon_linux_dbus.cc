@@ -319,11 +319,11 @@ void StatusIconLinuxDbus::OnOwnership(const std::string& service_name,
       {kMethodSecondaryActivate, &StatusIconLinuxDbus::OnSecondaryActivate},
   };
 
-  // The barrier requires base::size(methods) + 2 calls.  base::size(methods)
+  // The barrier requires std::size(methods) + 2 calls.  std::size(methods)
   // for each method exported, 1 for |properties_| initialization, and 1 for
   // |menu_| initialization.
   barrier_ =
-      SuccessBarrierCallback(base::size(methods) + 2,
+      SuccessBarrierCallback(std::size(methods) + 2,
                              base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
                                             weak_factory_.GetWeakPtr()));
 

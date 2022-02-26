@@ -7,7 +7,6 @@
 #include <cctype>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -928,7 +927,7 @@ base::FilePath WebRtcEventLogPath(
 bool IsValidRemoteBoundLogFilename(const std::string& filename) {
   // The -1 is because of the implict \0.
   const size_t kPrefixLength =
-      base::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
+      std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
 
   // [prefix]_[web_app_id]_[log_id]
   const size_t expected_length =
@@ -1008,7 +1007,7 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
 
   // The -1 is because of the implict \0.
   const size_t kPrefixLength =
-      base::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
+      std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
 
   // The +1 is for the underscore between the prefix and the web-app ID.
   // Length verified by above call to IsValidRemoteBoundLogFilename().

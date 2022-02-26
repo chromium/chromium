@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -254,11 +253,11 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       {ContentSettingsType::SENSORS, IDS_ALLOWED_SENSORS_TITLE},
   };
   const ContentSettingsTypeIdEntry* title_ids = kBlockedTitleIDs;
-  size_t num_title_ids = base::size(kBlockedTitleIDs);
+  size_t num_title_ids = std::size(kBlockedTitleIDs);
   if (content_settings->IsContentAllowed(content_type()) &&
       !content_settings->IsContentBlocked(content_type())) {
     title_ids = kAccessedTitleIDs;
-    num_title_ids = base::size(kAccessedTitleIDs);
+    num_title_ids = std::size(kAccessedTitleIDs);
   }
   int title_id = GetIdForContentType(title_ids, num_title_ids, content_type());
   if (title_id)
@@ -300,11 +299,11 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
            : IDS_ALLOWED_MOTION_SENSORS_MESSAGE},
   };
   const ContentSettingsTypeIdEntry* message_ids = kBlockedMessageIDs;
-  size_t num_message_ids = base::size(kBlockedMessageIDs);
+  size_t num_message_ids = std::size(kBlockedMessageIDs);
   if (content_settings->IsContentAllowed(content_type()) &&
       !content_settings->IsContentBlocked(content_type())) {
     message_ids = kAccessedMessageIDs;
-    num_message_ids = base::size(kAccessedMessageIDs);
+    num_message_ids = std::size(kAccessedMessageIDs);
   }
   int message_id =
       GetIdForContentType(message_ids, num_message_ids, content_type());
@@ -332,7 +331,7 @@ void ContentSettingSimpleBubbleModel::SetCustomLink() {
       {ContentSettingsType::MIXEDSCRIPT, IDS_ALLOW_INSECURE_CONTENT_BUTTON},
   };
   int custom_link_id =
-      GetIdForContentType(kCustomIDs, base::size(kCustomIDs), content_type());
+      GetIdForContentType(kCustomIDs, std::size(kCustomIDs), content_type());
   if (custom_link_id)
     set_custom_link(l10n_util::GetStringUTF16(custom_link_id));
 }
@@ -608,11 +607,11 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   std::u16string radio_allow_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
-        kAllowedAllowIDs, base::size(kAllowedAllowIDs), content_type());
+        kAllowedAllowIDs, std::size(kAllowedAllowIDs), content_type());
     radio_allow_label = l10n_util::GetStringUTF16(resource_id);
   } else {
     radio_allow_label = l10n_util::GetStringFUTF16(
-        GetIdForContentType(kBlockedAllowIDs, base::size(kBlockedAllowIDs),
+        GetIdForContentType(kBlockedAllowIDs, std::size(kBlockedAllowIDs),
                             content_type()),
         display_host);
   }
@@ -640,11 +639,11 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   std::u16string radio_block_label;
   if (allowed) {
     int resource_id = GetIdForContentType(
-        kAllowedBlockIDs, base::size(kAllowedBlockIDs), content_type());
+        kAllowedBlockIDs, std::size(kAllowedBlockIDs), content_type());
     radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_host);
   } else {
     radio_block_label = l10n_util::GetStringUTF16(GetIdForContentType(
-        kBlockedBlockIDs, base::size(kBlockedBlockIDs), content_type()));
+        kBlockedBlockIDs, std::size(kBlockedBlockIDs), content_type()));
   }
 
   radio_group.radio_items = {radio_allow_label, radio_block_label};

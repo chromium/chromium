@@ -731,7 +731,7 @@ class ProfileMenuClickTest : public ProfileMenuClickTestBase,
                                                                           \
   INSTANTIATE_TEST_SUITE_P(                                               \
       , test_case_name,                                                   \
-      ::testing::Range(size_t(0), base::size(actionable_item_list)));     \
+      ::testing::Range(size_t(0), std::size(actionable_item_list)));      \
                                                                           \
   IN_PROC_BROWSER_TEST_P(test_case_name, test_case_name)
 

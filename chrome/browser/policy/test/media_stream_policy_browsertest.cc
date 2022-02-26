@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       nullptr,
   };
 
-  for (size_t i = 0; i < base::size(allow_pattern); ++i) {
+  for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;
     ConfigurePolicyMap(&policies, key::kAudioCaptureAllowed,
                        key::kAudioCaptureAllowedUrls, allow_pattern[i]);
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(MediaStreamDevicesControllerBrowserTest,
       nullptr,
   };
 
-  for (size_t i = 0; i < base::size(allow_pattern); ++i) {
+  for (size_t i = 0; i < std::size(allow_pattern); ++i) {
     PolicyMap policies;
     ConfigurePolicyMap(&policies, key::kVideoCaptureAllowed,
                        key::kVideoCaptureAllowedUrls, allow_pattern[i]);

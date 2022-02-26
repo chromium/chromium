@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -111,7 +110,7 @@ void DesktopSharingHubComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kDesktopSharingHubPublicKeySHA256,
                kDesktopSharingHubPublicKeySHA256 +
-                   base::size(kDesktopSharingHubPublicKeySHA256));
+                   std::size(kDesktopSharingHubPublicKeySHA256));
 }
 
 std::string DesktopSharingHubComponentInstallerPolicy::GetName() const {

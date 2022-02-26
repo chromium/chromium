@@ -11,11 +11,10 @@
 
 #include "chrome/notification_helper/com_server_module.h"
 
-#include <type_traits>
-
 #include <wrl/module.h>
 
-#include "base/cxx17_backports.h"
+#include <type_traits>
+
 #include "base/metrics/histogram_macros.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/notification_helper/notification_activator.h"
@@ -102,12 +101,11 @@ HRESULT ComServerModule::RegisterClassObjects() {
 
   // All pointers in this array are unowned. Do not release them.
   IClassFactory* class_factories[] = {class_factory.Get()};
-  static_assert(
-      std::extent<decltype(cookies_)>() == base::size(class_factories),
-      "Arrays cookies_ and class_factories must be the same size.");
+  static_assert(std::extent<decltype(cookies_)>() == std::size(class_factories),
+                "Arrays cookies_ and class_factories must be the same size.");
 
   IID class_ids[] = {install_static::GetToastActivatorClsid()};
-  static_assert(std::extent<decltype(cookies_)>() == base::size(class_ids),
+  static_assert(std::extent<decltype(cookies_)>() == std::size(class_ids),
                 "Arrays cookies_ and class_ids must be the same size.");
 
   hr = module.RegisterCOMObject(nullptr, class_ids, class_factories, cookies_,

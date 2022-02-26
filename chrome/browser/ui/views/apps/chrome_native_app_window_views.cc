@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 #include <stddef.h>
+
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -74,17 +74,17 @@ const std::map<ui::Accelerator, int>& GetAcceleratorTable() {
   if (!chrome::IsRunningInForcedAppMode()) {
     static base::NoDestructor<std::map<ui::Accelerator, int>> accelerators(
         AcceleratorsFromMapping(kAppWindowAcceleratorMap,
-                                base::size(kAppWindowAcceleratorMap)));
+                                std::size(kAppWindowAcceleratorMap)));
     return *accelerators;
   }
 
   static base::NoDestructor<std::map<ui::Accelerator, int>>
       app_mode_accelerators([]() {
         std::map<ui::Accelerator, int> mapping = AcceleratorsFromMapping(
-            kAppWindowAcceleratorMap, base::size(kAppWindowAcceleratorMap));
+            kAppWindowAcceleratorMap, std::size(kAppWindowAcceleratorMap));
         std::map<ui::Accelerator, int> kiosk_mapping = AcceleratorsFromMapping(
             kAppWindowKioskAppModeAcceleratorMap,
-            base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowKioskAppModeAcceleratorMap));
         mapping.insert(std::begin(kiosk_mapping), std::end(kiosk_mapping));
         return mapping;
       }());
@@ -182,8 +182,8 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   // registered. This CHECK catches the case.
   CHECK(!is_kiosk_app_mode ||
         accelerator_table.size() ==
-            base::size(kAppWindowAcceleratorMap) +
-                base::size(kAppWindowKioskAppModeAcceleratorMap));
+            std::size(kAppWindowAcceleratorMap) +
+                std::size(kAppWindowKioskAppModeAcceleratorMap));
 
   // Ensure there is a ZoomController in kiosk mode, otherwise the processing
   // of the accelerators will cause a crash. Note CHECK here because DCHECK

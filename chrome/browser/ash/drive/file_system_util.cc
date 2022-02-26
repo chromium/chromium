@@ -55,7 +55,7 @@ bool IsUnderDriveMountPoint(const base::FilePath& path) {
     return false;
   static const base::FilePath::CharType kPrefix[] =
       FILE_PATH_LITERAL("drivefs");
-  if (components[3].compare(0, base::size(kPrefix) - 1, kPrefix) != 0)
+  if (components[3].compare(0, std::size(kPrefix) - 1, kPrefix) != 0)
     return false;
 
   return true;

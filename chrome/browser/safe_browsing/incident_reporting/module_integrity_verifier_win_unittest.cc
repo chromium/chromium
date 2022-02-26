@@ -13,7 +13,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
@@ -113,8 +112,8 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
 
     WCHAR module_path[MAX_PATH] = {};
     DWORD length =
-        GetModuleFileName(module_handle, module_path, base::size(module_path));
-    ASSERT_NE(base::size(module_path), length);
+        GetModuleFileName(module_handle, module_path, std::size(module_path));
+    ASSERT_NE(std::size(module_path), length);
     ASSERT_TRUE(disk_dll_handle_.Initialize(base::FilePath(module_path)));
   }
 

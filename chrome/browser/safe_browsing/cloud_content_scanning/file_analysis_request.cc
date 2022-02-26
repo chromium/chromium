@@ -113,7 +113,7 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
   }
 
   file_data.hash.resize(crypto::kSHA256Length);
-  secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
+  secure_hash->Finish(std::data(file_data.hash), crypto::kSHA256Length);
   file_data.hash =
       base::HexEncode(base::as_bytes(base::make_span(file_data.hash)));
 

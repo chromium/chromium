@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
@@ -45,7 +44,7 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #endif
   };
 
-  for (size_t i = 0; i < base::size(kAllowed); ++i) {
+  for (size_t i = 0; i < std::size(kAllowed); ++i) {
     if (extension_id == kAllowed[i])
       return true;
   }
@@ -111,7 +110,7 @@ bool IsComponentExtensionAllowlistedForSignInProfile(
       extension_misc::kSwitchAccessExtensionId,
   };
 
-  for (size_t i = 0; i < base::size(kAllowed); ++i) {
+  for (size_t i = 0; i < std::size(kAllowed); ++i) {
     if (extension_id == kAllowed[i])
       return true;
   }

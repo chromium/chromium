@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "chrome/browser/resource_coordinator/intervention_policy_database.h"
@@ -96,7 +95,7 @@ void InterventionPolicyDatabaseComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kInterventionPolicyDatabasePublicKeySHA256,
                kInterventionPolicyDatabasePublicKeySHA256 +
-                   base::size(kInterventionPolicyDatabasePublicKeySHA256));
+                   std::size(kInterventionPolicyDatabasePublicKeySHA256));
 }
 
 std::string InterventionPolicyDatabaseComponentInstallerPolicy::GetName()

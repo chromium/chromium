@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/elements/scrollable_element.h"
 
-#include "base/cxx17_backports.h"
 #include "chrome/browser/vr/input_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -41,7 +40,7 @@ TEST(ScrollableElement, VerticalOnScrollUpdate) {
       {1000.0f, 1000.0f, -0.5f}, {-1000.0f, -1000.0f, 0.5f},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});
@@ -67,7 +66,7 @@ TEST(ScrollableElement, VerticalTopOnScrollUpdate) {
     float expected;
   } test_cases[] = {{-1000.0f, -1000.0f, 0.5f}, {1000.0f, 1000.0f, -0.5f}};
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});
@@ -94,7 +93,7 @@ TEST(ScrollableElement, HorizontalScrollUpdate) {
       {1000.0f, 1000.0f, -0.5f}, {-1000.0f, -1000.0f, 0.5f},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     element->OnScrollUpdate(
         CreateScrollUpdate(test_cases[i].delta_x, test_cases[i].delta_y), {});

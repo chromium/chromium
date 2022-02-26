@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/common/extension_api.h"
-
 #include <stddef.h>
 
 #include <memory>
@@ -11,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +24,7 @@
 #include "chrome/common/extensions/extension_features_unittest.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/features/simple_feature.h"
@@ -100,7 +98,7 @@ TEST(ExtensionAPITest, Creation) {
     { &empty_instance, false }
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     EXPECT_EQ(test_data[i].expect_populated,
               test_data[i].api->GetSchema("bookmarks.create") != nullptr);
   }
@@ -118,7 +116,7 @@ TEST(ExtensionAPITest, SplitDependencyName) {
                    {"foo:bar", "foo", "bar"},
                    {"foo:bar.baz", "foo", "bar.baz"}};
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     std::string feature_type;
     std::string feature_name;
     ExtensionAPI::SplitDependencyName(
@@ -225,7 +223,7 @@ TEST(ExtensionAPITest, APIFeatures) {
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     TestExtensionAPI api;
     api.RegisterDependencyProvider("api", &api_feature_provider);
     for (auto* key : kTestFeatures)
@@ -363,7 +361,7 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     TestExtensionAPI api;
     api.RegisterDependencyProvider("api", &api_feature_provider);
     for (auto* key : kTestFeatures)
@@ -804,7 +802,7 @@ TEST(ExtensionAPITest, GetAPINameFromFullName) {
 
   std::unique_ptr<ExtensionAPI> api(
       ExtensionAPI::CreateWithDefaultConfiguration());
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     std::string child_name;
     std::string api_name = api->GetAPINameFromFullName(test_data[i].input,
                                                        &child_name);
@@ -828,7 +826,7 @@ TEST(ExtensionAPITest, DefaultConfigurationFeatures) {
     // TODO(aa): More stuff to test over time.
   } test_data[] = {{browser_action}, {browser_action_set_title}};
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     const SimpleFeature* feature = test_data[i].feature;
     ASSERT_TRUE(feature) << i;
 
@@ -982,7 +980,7 @@ TEST(ExtensionAPITest, NoPermissions) {
       ExtensionAPI::CreateWithDefaultConfiguration());
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     EXPECT_EQ(
         kTests[i].expect_success,
         extension_api

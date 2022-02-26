@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -67,7 +66,7 @@ PepperIsolatedFileSystemMessageFilter::PepperIsolatedFileSystemMessageFilter(
     : render_process_id_(render_process_id),
       profile_directory_(profile_directory),
       document_url_(document_url) {
-  for (size_t i = 0; i < base::size(kPredefinedAllowedCrxFsOrigins); ++i)
+  for (size_t i = 0; i < std::size(kPredefinedAllowedCrxFsOrigins); ++i)
     allowed_crxfs_origins_.insert(kPredefinedAllowedCrxFsOrigins[i]);
 }
 

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -349,7 +348,7 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
                             {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
                             {views::style::CONTEXT_BUTTON_MD, 0, 1}};
 
-  for (size_t i = 0; i < base::size(kExpectedIncreases); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedIncreases); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
     const auto& increase = kExpectedIncreases[i];
     const gfx::FontList& font = views::style::GetFont(increase.context, kStyle);
@@ -384,7 +383,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
       {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
       {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}};
 
-  for (size_t i = 0; i < base::size(kHarmonyHeights); ++i) {
+  for (size_t i = 0; i < std::size(kHarmonyHeights); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
     EXPECT_EQ(kHarmonyHeights[i].line_height,
               views::style::GetLineHeight(kHarmonyHeights[i].context, kStyle));

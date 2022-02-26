@@ -104,7 +104,7 @@ ChromeComponentExtensionResourceManager::Data::Data() {
   AddComponentResourceEntries(kComponentExtensionResources,
                               kComponentExtensionResourcesSize);
   AddComponentResourceEntries(kExtraComponentExtensionResources,
-                              base::size(kExtraComponentExtensionResources));
+                              std::size(kExtraComponentExtensionResources));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Add Files app JS modules resources.

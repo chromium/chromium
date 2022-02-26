@@ -669,7 +669,7 @@ ArcSystemStatCollector::ReadSystemStatOnBackgroundThread(
        false},
   };
 
-  for (size_t i = 0; i < base::size(one_value_readers); ++i) {
+  for (size_t i = 0; i < std::size(one_value_readers); ++i) {
     if (!context->system_readers[one_value_readers[i].reader].is_valid() ||
         !ParseStatFile(
             context->system_readers[one_value_readers[i].reader].get(),

@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -328,7 +328,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         BrowsingDataType::CACHE,          BrowsingDataType::COOKIES,
         BrowsingDataType::FORM_DATA,      BrowsingDataType::HOSTED_APPS_DATA,
     };
-    static size_t num_other_types = base::size(other_types);
+    static size_t num_other_types = std::size(other_types);
     int checked_other_types =
         std::count_if(other_types, other_types + num_other_types,
                       [&data_types](BrowsingDataType type) {

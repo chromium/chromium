@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
-
 #include <stddef.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/ref_counted.h"
@@ -21,6 +18,7 @@
 #include "chrome/common/extensions/extension_test_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
+#include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition.h"
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
@@ -563,7 +561,7 @@ TEST(WebRequestActionTest, GetName) {
     "declarativeWebRequest.IgnoreRules",
   };
   std::unique_ptr<WebRequestActionSet> action_set(CreateSetOfActions(kActions));
-  ASSERT_EQ(base::size(kExpectedNames), action_set->actions().size());
+  ASSERT_EQ(std::size(kExpectedNames), action_set->actions().size());
   size_t index = 0;
   for (auto it = action_set->actions().cbegin();
        it != action_set->actions().cend(); ++it) {

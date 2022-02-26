@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
@@ -154,7 +153,7 @@ class RestoreOnStartupPolicyTest : public UrlBlockingPolicyTest,
   // Check if |kRestoredURLs| are opened on the current browser.
   bool AreRestoredURLsOpened() const {
     TabStripModel* model = browser()->tab_strip_model();
-    if (model->count() != base::size(kRestoredURLs))
+    if (model->count() != std::size(kRestoredURLs))
       return false;
     for (int i = 0; i < model->count(); ++i) {
       if (model->GetWebContentsAt(i)->GetVisibleURL() != kRestoredURLs[i])
@@ -188,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
   // Most policy settings override this, except kPrefValueLast and
   // kPrefValueLastAndURLs which enforce a restore.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kRestoredURLs[0])));
-  for (size_t i = 1; i < base::size(kRestoredURLs); ++i) {
+  for (size_t i = 1; i < std::size(kRestoredURLs); ++i) {
     content::WindowedNotificationObserver observer(
         content::NOTIFICATION_LOAD_STOP,
         content::NotificationService::AllSources());

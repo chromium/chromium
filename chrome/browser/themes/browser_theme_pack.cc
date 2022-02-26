@@ -219,7 +219,7 @@ const StringToIntTable kTintTable[] = {
     // /!\ If you make any changes here, you must also increment
     // kThemePackVersion above, or else themes will display incorrectly.
 };
-const size_t kTintTableLength = base::size(kTintTable);
+const size_t kTintTableLength = std::size(kTintTable);
 
 // Strings used by themes to identify colors in the JSON.
 constexpr StringToIntTable kOverwritableColorTable[] = {
@@ -258,7 +258,7 @@ constexpr StringToIntTable kOverwritableColorTable[] = {
     // kThemePackVersion above, or else themes will display incorrectly.
 };
 constexpr size_t kOverwritableColorTableLength =
-    base::size(kOverwritableColorTable);
+    std::size(kOverwritableColorTable);
 
 // Colors generated based on the theme, but not overwritable in the theme file.
 constexpr int kNonOverwritableColorTable[] = {
@@ -279,7 +279,7 @@ constexpr int kNonOverwritableColorTable[] = {
     // kThemePackVersion above, or else themes will display incorrectly.
 };
 constexpr size_t kNonOverwritableColorTableLength =
-    base::size(kNonOverwritableColorTable);
+    std::size(kNonOverwritableColorTable);
 
 // The maximum number of colors we may need to store (includes ones that can be
 // specified by the theme, and ones that we calculate but can't be specified).
@@ -295,7 +295,7 @@ const StringToIntTable kDisplayProperties[] = {
     // /!\ If you make any changes here, you must also increment
     // kThemePackVersion above, or else themes will display incorrectly.
 };
-const size_t kDisplayPropertiesSize = base::size(kDisplayProperties);
+const size_t kDisplayPropertiesSize = std::size(kDisplayProperties);
 
 int GetIntForString(const std::string& key,
                     const StringToIntTable* table,
@@ -1180,7 +1180,7 @@ void BrowserThemePack::AdjustThemePack() {
 
   // Generate raw images (for new-tab-page attribution and background) for
   // any missing scale from an available scale image.
-  for (size_t i = 0; i < base::size(kPreloadIDs); ++i) {
+  for (size_t i = 0; i < std::size(kPreloadIDs); ++i) {
     GenerateRawImageForAllSupportedScales(kPreloadIDs[i]);
   }
 

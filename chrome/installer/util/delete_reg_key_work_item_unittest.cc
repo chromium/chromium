@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/registry_test_data.h"
@@ -38,7 +37,7 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
       std::wstring(test_data_.base_path() + L"\\NoKeyHere"),
       std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")};
   RegKey key;
-  for (size_t i = 0; i < base::size(key_paths); ++i) {
+  for (size_t i = 0; i < std::size(key_paths); ++i) {
     const std::wstring& key_path = key_paths[i];
     std::unique_ptr<DeleteRegKeyWorkItem> item(
         WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,

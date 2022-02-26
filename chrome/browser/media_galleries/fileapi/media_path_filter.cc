@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
@@ -172,16 +171,13 @@ void MediaPathFilter::EnsureInitialized() {
   AddExtensionsToMediaFileExtensionMap(GetMediaExtensionList("video/*"),
                                        MEDIA_GALLERY_FILE_TYPE_VIDEO);
   AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedImageExtensions,
-      base::size(kExtraSupportedImageExtensions),
+      kExtraSupportedImageExtensions, std::size(kExtraSupportedImageExtensions),
       MEDIA_GALLERY_FILE_TYPE_IMAGE);
   AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedAudioExtensions,
-      base::size(kExtraSupportedAudioExtensions),
+      kExtraSupportedAudioExtensions, std::size(kExtraSupportedAudioExtensions),
       MEDIA_GALLERY_FILE_TYPE_AUDIO);
   AddAdditionalExtensionsToMediaFileExtensionMap(
-      kExtraSupportedVideoExtensions,
-      base::size(kExtraSupportedVideoExtensions),
+      kExtraSupportedVideoExtensions, std::size(kExtraSupportedVideoExtensions),
       MEDIA_GALLERY_FILE_TYPE_VIDEO);
 
   initialized_ = true;

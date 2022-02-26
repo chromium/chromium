@@ -42,6 +42,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stddef.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -55,13 +56,10 @@
 #include <string>
 #include <type_traits>
 
-#include <stddef.h>
-
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -144,7 +142,7 @@ const char kACKToken[] = "ACK";
 const char kShutdownToken[] = "SHUTDOWN";
 const char kTokenDelimiter = '\0';
 const int kMaxMessageLength = 32 * 1024;
-const int kMaxACKMessageLength = base::size(kShutdownToken) - 1;
+const int kMaxACKMessageLength = std::size(kShutdownToken) - 1;
 
 bool g_disable_prompt = false;
 bool g_skip_is_chrome_process_check = false;
@@ -259,7 +257,7 @@ bool SetupSockAddr(const std::string& path,
   // maximally-sized paths on a platform where the singleton socket path is
   // already long. 11.5 xnu-7195.141.2/bsd/kern/uipc_usrreq.c unp_bind,
   // unp_connect.
-  if (path.length() > base::size(addr->sun_path))
+  if (path.length() > std::size(addr->sun_path))
     return false;
 
   // On input to the kernel, sun_len is ignored and overwritten by the value of
@@ -279,10 +277,10 @@ bool SetupSockAddr(const std::string& path,
 #else
   // The portable version: NUL-terminate sun_path and don’t touch sun_len (which
   // may not even exist).
-  if (path.length() >= base::size(addr->sun_path))
+  if (path.length() >= std::size(addr->sun_path))
     return false;
   *socklen = sizeof(*addr);
-  base::strlcpy(addr->sun_path, path.c_str(), base::size(addr->sun_path));
+  base::strlcpy(addr->sun_path, path.c_str(), std::size(addr->sun_path));
 #endif
   return true;
 }
@@ -653,13 +651,13 @@ void ProcessSingleton::LinuxWatcher::HandleMessage(
   if (parent_->notification_callback_.Run(base::CommandLine(argv),
                                           base::FilePath(current_dir))) {
     // Send back "ACK" message to prevent the client process from starting up.
-    reader->FinishWithACK(kACKToken, base::size(kACKToken) - 1);
+    reader->FinishWithACK(kACKToken, std::size(kACKToken) - 1);
   } else {
     LOG(WARNING) << "Not handling interprocess notification as browser"
                     " is shutting down";
     // Send back "SHUTDOWN" message, so that the client process can start up
     // without killing this process.
-    reader->FinishWithACK(kShutdownToken, base::size(kShutdownToken) - 1);
+    reader->FinishWithACK(kShutdownToken, std::size(kShutdownToken) - 1);
     return;
   }
 }
@@ -700,7 +698,7 @@ void ProcessSingleton::LinuxWatcher::SocketReader::
   }
 
   // Validate the message.  The shortest message is kStartToken\0x\0x
-  const size_t kMinMessageLength = base::size(kStartToken) + 4;
+  const size_t kMinMessageLength = std::size(kStartToken) + 4;
   if (bytes_read_ < kMinMessageLength) {
     buf_[bytes_read_] = 0;
     LOG(ERROR) << "Invalid socket message (wrong length):" << buf_;
@@ -919,12 +917,12 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   }
 
   buf[len] = '\0';
-  if (strncmp(buf, kShutdownToken, base::size(kShutdownToken) - 1) == 0) {
+  if (strncmp(buf, kShutdownToken, std::size(kShutdownToken) - 1) == 0) {
     // The other process is shutting down, it's safe to start a new process.
     internal::SendRemoteProcessInteractionResultHistogram(
         REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
-  } else if (strncmp(buf, kACKToken, base::size(kACKToken) - 1) == 0) {
+  } else if (strncmp(buf, kACKToken, std::size(kACKToken) - 1) == 0) {
 #if defined(TOOLKIT_VIEWS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Likely NULL in unit tests.

@@ -13,7 +13,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -44,7 +43,7 @@ struct UDIFChecksum {
 static void ConvertBigEndian(UDIFChecksum* checksum) {
   ConvertBigEndian(&checksum->type);
   ConvertBigEndian(&checksum->size);
-  for (size_t i = 0; i < base::size(checksum->data); ++i) {
+  for (size_t i = 0; i < std::size(checksum->data); ++i) {
     ConvertBigEndian(&checksum->data[i]);
   }
 }

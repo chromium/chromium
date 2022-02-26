@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -149,7 +148,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
     return false;
 
   const std::string domain_prefix = domain.substr(
-      0, domain.size() - base::size(kDeviceLocalAccountDomainSuffix) + 1);
+      0, domain.size() - std::size(kDeviceLocalAccountDomainSuffix) + 1);
 
   if (domain_prefix == kPublicAccountDomainPrefix) {
     if (type)

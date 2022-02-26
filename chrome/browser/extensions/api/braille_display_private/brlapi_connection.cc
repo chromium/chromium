@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -118,7 +117,7 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
   };
   if (libbrlapi_loader_->brlapi__acceptKeys(handle_.get(),
                                             brlapi_rangeType_command, extraKeys,
-                                            base::size(extraKeys)) < 0) {
+                                            std::size(extraKeys)) < 0) {
     LOG(ERROR) << "Couldn't acceptKeys: " << BrlapiStrError();
     Disconnect();
     return CONNECT_ERROR_RETRY;

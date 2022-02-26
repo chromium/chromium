@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "cc/animation/keyframe_model.h"
 #include "chrome/browser/vr/databinding/binding.h"
 #include "chrome/browser/vr/test/animation_utils.h"
@@ -343,7 +342,7 @@ TEST(UiElement, HitTest) {
       {gfx::PointF(-0.1f, -0.1f), false, false, false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(test_cases[i].expected_rect,
               rect.LocalHitTest(test_cases[i].location));
@@ -379,7 +378,7 @@ TEST(UiElement, HitTestWithClip) {
       {{kAlmostOne, 0.5f}, true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(test_cases[i].expected,
               rect.LocalHitTest(test_cases[i].location));

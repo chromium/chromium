@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -71,7 +70,7 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow window) {
     // Emit some diagnostic information about the foreground window and its
     // owning process.
     wchar_t window_title[256];
-    GetWindowText(foreground_window, window_title, base::size(window_title));
+    GetWindowText(foreground_window, window_title, std::size(window_title));
 
     std::wstring lineage_str;
     std::wstring window_contents;

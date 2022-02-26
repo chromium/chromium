@@ -810,7 +810,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
 
   // Create kFile1 and populate it with kTestFileData0.
   EXPECT_EQ(base::File::FILE_OK, file_system.CreateFile(kFile1));
-  EXPECT_EQ(static_cast<int64_t>(base::size(kTestFileData0) - 1),
+  EXPECT_EQ(static_cast<int64_t>(std::size(kTestFileData0) - 1),
             file_system.WriteString(kFile1, kTestFileData0));
 
   // kFile2 and kDir are not there yet.
@@ -830,12 +830,12 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   const base::FilePath kFilePath1(temp_dir.GetPath().Append(FPL("file1")));
   const base::FilePath kFilePath2(temp_dir.GetPath().Append(FPL("file2")));
 
-  ASSERT_EQ(static_cast<int>(base::size(kTestFileData1) - 1),
+  ASSERT_EQ(static_cast<int>(std::size(kTestFileData1) - 1),
             base::WriteFile(kFilePath1, kTestFileData1,
-                            base::size(kTestFileData1) - 1));
-  ASSERT_EQ(static_cast<int>(base::size(kTestFileData2) - 1),
+                            std::size(kTestFileData1) - 1));
+  ASSERT_EQ(static_cast<int>(std::size(kTestFileData2) - 1),
             base::WriteFile(kFilePath2, kTestFileData2,
-                            base::size(kTestFileData2) - 1));
+                            std::size(kTestFileData2) - 1));
 
   // Record the usage.
   int64_t usage = -1, new_usage = -1;
@@ -866,7 +866,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
 
   // Check if the usage has been increased by (kTestFileData1 - kTestFileData0).
   const int updated_size =
-      base::size(kTestFileData1) - base::size(kTestFileData0);
+      std::size(kTestFileData1) - std::size(kTestFileData0);
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             file_system.GetUsageAndQuota(&new_usage, &quota));
   EXPECT_EQ(updated_size, new_usage - usage);
@@ -917,7 +917,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk,
             file_system.GetUsageAndQuota(&new_usage, &quota));
   EXPECT_GT(new_usage,
-            static_cast<int64_t>(usage + base::size(kTestFileData2) - 1));
+            static_cast<int64_t>(usage + std::size(kTestFileData2) - 1));
 
   // The changes applied by ApplyRemoteChange should not be recorded in
   // the change tracker.
@@ -962,8 +962,8 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate_NoParent) {
   // Prepare a temporary file which represents remote file data.
   const base::FilePath kFilePath(temp_dir.GetPath().Append(FPL("file")));
   ASSERT_EQ(
-      static_cast<int>(base::size(kTestFileData) - 1),
-      base::WriteFile(kFilePath, kTestFileData, base::size(kTestFileData) - 1));
+      static_cast<int>(std::size(kTestFileData) - 1),
+      base::WriteFile(kFilePath, kTestFileData, std::size(kTestFileData) - 1));
 
   // Calling ApplyChange's with kFilePath should create
   // kFile along with kDir.

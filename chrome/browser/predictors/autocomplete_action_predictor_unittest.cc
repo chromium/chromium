@@ -160,7 +160,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   }
 
   void AddAllRows() {
-    for (size_t i = 0; i < base::size(TestUrlDb()); ++i)
+    for (size_t i = 0; i < std::size(TestUrlDb()); ++i)
       AddRow(TestUrlDb()[i]);
   }
 
@@ -185,12 +185,12 @@ class AutocompleteActionPredictorTest : public testing::Test {
   void OnURLsDeletedTest(bool expired) {
     ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
-    EXPECT_EQ(base::size(TestUrlDb()), db_cache()->size());
-    EXPECT_EQ(base::size(TestUrlDb()), db_id_cache()->size());
+    EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
+    EXPECT_EQ(std::size(TestUrlDb()), db_id_cache()->size());
 
     std::vector<size_t> expected;
     history::URLRows rows;
-    for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+    for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
       bool expect_deleted = false;
 
       if (i < 2) {
@@ -225,7 +225,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
     EXPECT_EQ(expected.size(), db_cache()->size());
     EXPECT_EQ(expected.size(), db_id_cache()->size());
 
-    for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+    for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
       DBCacheKey key = {TestUrlDb()[i].user_text, TestUrlDb()[i].url};
 
       bool deleted = !base::Contains(expected, i);
@@ -313,8 +313,8 @@ TEST_F(AutocompleteActionPredictorTest, AddRow) {
 TEST_F(AutocompleteActionPredictorTest, UpdateRow) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
-  EXPECT_EQ(base::size(TestUrlDb()), db_cache()->size());
-  EXPECT_EQ(base::size(TestUrlDb()), db_id_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_id_cache()->size());
 
   // Get the data back out of the cache.
   const DBCacheKey key = {TestUrlDb()[0].user_text, TestUrlDb()[0].url};
@@ -349,8 +349,8 @@ TEST_F(AutocompleteActionPredictorTest, UpdateRow) {
 TEST_F(AutocompleteActionPredictorTest, DeleteAllRows) {
   ASSERT_NO_FATAL_FAILURE(AddAllRows());
 
-  EXPECT_EQ(base::size(TestUrlDb()), db_cache()->size());
-  EXPECT_EQ(base::size(TestUrlDb()), db_id_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_id_cache()->size());
 
   DeleteAllRows();
 
@@ -361,7 +361,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteAllRows) {
 TEST_F(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> all_ids;
   history::URLRows rows;
-  for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     std::string row_id = AddRow(TestUrlDb()[i]);
     all_ids.push_back(row_id);
 
@@ -369,17 +369,17 @@ TEST_F(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
       rows.push_back(history::URLRow(TestUrlDb()[i].url));
   }
 
-  EXPECT_EQ(base::size(TestUrlDb()), all_ids.size());
-  EXPECT_EQ(base::size(TestUrlDb()), db_cache()->size());
-  EXPECT_EQ(base::size(TestUrlDb()), db_id_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), all_ids.size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()), db_id_cache()->size());
 
   std::vector<AutocompleteActionPredictorTable::Row::Id> id_list;
   DeleteRowsFromCaches(rows, &id_list);
 
-  EXPECT_EQ(base::size(TestUrlDb()) - 2, db_cache()->size());
-  EXPECT_EQ(base::size(TestUrlDb()) - 2, db_id_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()) - 2, db_cache()->size());
+  EXPECT_EQ(std::size(TestUrlDb()) - 2, db_id_cache()->size());
 
-  for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     DBCacheKey key = {TestUrlDb()[i].user_text, TestUrlDb()[i].url};
 
     bool deleted = (i < 2);
@@ -393,7 +393,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
   std::vector<AutocompleteActionPredictorTable::Row::Id> expected;
   std::vector<AutocompleteActionPredictorTable::Row::Id> all_ids;
 
-  for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     std::string row_id = AddRow(TestUrlDb()[i]);
     all_ids.push_back(row_id);
 
@@ -430,7 +430,7 @@ TEST_F(AutocompleteActionPredictorTest,
   std::vector<AutocompleteActionPredictorTable::Row::Id> id_list;
   std::vector<AutocompleteActionPredictorTable::Row::Id> expected;
 
-  for (size_t i = 0; i < base::size(TestUrlConfidenceDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlConfidenceDb()); ++i) {
     DeleteLowestConfidenceRowsFromCaches(1, &id_list);
     expected.push_back(test_url_ids[i]);
     EXPECT_THAT(id_list, ::testing::UnorderedElementsAreArray(expected));
@@ -452,7 +452,7 @@ TEST_F(AutocompleteActionPredictorTest,
   std::vector<AutocompleteActionPredictorTable::Row::Id> expected;
 
   const size_t count_to_remove = 4;
-  CHECK_LT(count_to_remove, base::size(TestUrlConfidenceDb()));
+  CHECK_LT(count_to_remove, std::size(TestUrlConfidenceDb()));
 
   for (size_t i = 0; i < count_to_remove; ++i)
     expected.push_back(test_url_ids[i]);
@@ -482,7 +482,7 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionURL) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::HISTORY_URL;
 
-  for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     match.destination_url = GURL(TestUrlDb()[i].url);
     EXPECT_EQ(TestUrlDb()[i].expected_action,
               predictor()->RecommendAction(TestUrlDb()[i].user_text, match))
@@ -496,7 +496,7 @@ TEST_F(AutocompleteActionPredictorTest, RecommendActionSearch) {
   AutocompleteMatch match;
   match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
 
-  for (size_t i = 0; i < base::size(TestUrlDb()); ++i) {
+  for (size_t i = 0; i < std::size(TestUrlDb()); ++i) {
     match.destination_url = GURL(TestUrlDb()[i].url);
     AutocompleteActionPredictor::Action expected_action =
         (TestUrlDb()[i].expected_action ==

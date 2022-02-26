@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/string_compare.h"
@@ -564,7 +563,7 @@ bool ProfileAttributesStorage::IsDefaultProfileName(
     return true;
 
   // Check if it's one of the old-style profile names.
-  for (size_t i = 0; i < base::size(kDefaultNames); ++i) {
+  for (size_t i = 0; i < std::size(kDefaultNames); ++i) {
     if (name == l10n_util::GetStringUTF16(kDefaultNames[i]))
       return true;
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -12,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -189,7 +189,7 @@ class ApiInfoDatabase {
 
  private:
   ApiInfoDatabase() {
-    for (size_t i = 0; i < base::size(kApiInfoTable); i++) {
+    for (size_t i = 0; i < std::size(kApiInfoTable); i++) {
       const ApiInfo* info = &kApiInfoTable[i];
       api_database_[info->api_name] = info;
     }

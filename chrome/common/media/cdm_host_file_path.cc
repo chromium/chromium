@@ -5,7 +5,6 @@
 #include "chrome/common/media/cdm_host_file_path.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -58,11 +57,11 @@ void AddCdmHostFilePaths(
     NOTREACHED();
   base::FilePath version_dir(chrome_exe_dir.AppendASCII(CHROME_VERSION_STRING));
 
-  cdm_host_file_paths->reserve(base::size(kUnversionedFiles) +
-                               base::size(kVersionedFiles));
+  cdm_host_file_paths->reserve(std::size(kUnversionedFiles) +
+                               std::size(kVersionedFiles));
 
   // Signature files are always in the version directory.
-  for (size_t i = 0; i < base::size(kUnversionedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kUnversionedFiles); ++i) {
     base::FilePath file_path = chrome_exe_dir.Append(kUnversionedFiles[i]);
     base::FilePath sig_path =
         GetSigFilePath(version_dir.Append(kUnversionedFiles[i]));
@@ -71,7 +70,7 @@ void AddCdmHostFilePaths(
     cdm_host_file_paths->emplace_back(file_path, sig_path);
   }
 
-  for (size_t i = 0; i < base::size(kVersionedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kVersionedFiles); ++i) {
     base::FilePath file_path = version_dir.Append(kVersionedFiles[i]);
     DVLOG(2) << __func__ << ": versioned file " << i << " at "
              << file_path.value();

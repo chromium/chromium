@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
@@ -154,7 +153,7 @@ base::FunctionAddressRange CallThroughV8(
                 .ToLocalChecked());
     v8::Local<v8::Value> argv[] = {CreatePointerHolder(nullptr)};
     js_compile_wait_for_sample
-        ->Call(context, v8::Undefined(isolate), base::size(argv), argv)
+        ->Call(context, v8::Undefined(isolate), std::size(argv), argv)
         .ToLocalChecked();
 
     // Run waitForSample() with the real closure pointer.
@@ -164,7 +163,7 @@ base::FunctionAddressRange CallThroughV8(
             ->Get(context, ToV8String("waitForSample"))
             .ToLocalChecked());
     js_wait_for_sample
-        ->Call(context, v8::Undefined(isolate), base::size(argv), argv)
+        ->Call(context, v8::Undefined(isolate), std::size(argv), argv)
         .ToLocalChecked();
   }
 

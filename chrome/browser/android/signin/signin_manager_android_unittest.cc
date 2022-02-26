@@ -143,7 +143,7 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
   for (const TestCase& test_case : kTestCases)
     helper->Add(url::Origin::Create(GURL(test_case.worker_url)));
 
-  ASSERT_EQ(base::size(kTestCases), helper->GetCount());
+  ASSERT_EQ(std::size(kTestCases), helper->GetCount());
 
   // Delete service workers and wait for completion.
   base::RunLoop run_loop;

@@ -7,8 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_registrar.h"
 #include "base/android/jni_utils.h"
-#include "base/cxx17_backports.h"
-
 #include "third_party/gvr-android-sdk/display_synchronizer_jni.h"
 #include "third_party/gvr-android-sdk/gvr_api_jni.h"
 #include "third_party/gvr-android-sdk/native_callbacks_jni.h"
@@ -27,7 +25,7 @@ static const base::android::RegistrationMethod kGvrRegisteredMethods[] = {
 bool RegisterGvrJni(JNIEnv* env) {
   if (!base::android::IsSelectiveJniRegistrationEnabled(env) &&
       !RegisterNativeMethods(env, kGvrRegisteredMethods,
-                             base::size(kGvrRegisteredMethods))) {
+                             std::size(kGvrRegisteredMethods))) {
     return false;
   }
   return true;

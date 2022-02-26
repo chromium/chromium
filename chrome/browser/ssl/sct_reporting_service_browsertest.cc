@@ -185,19 +185,19 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
         "signature1", base::Time::Now(),
         std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
-                    base::size(kTestGoogleLogId)),
+                    std::size(kTestGoogleLogId)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
     MakeTestSCTAndStatus(
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
         "signature2", base::Time::Now(),
         std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
-                    base::size(kTestNonGoogleLogId1)),
+                    std::size(kTestNonGoogleLogId1)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
     MakeTestSCTAndStatus(
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
         "signature3", base::Time::Now(),
         std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
-                    base::size(kTestNonGoogleLogId2)),
+                    std::size(kTestNonGoogleLogId2)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
 
     // Set up two test hosts as using publicly-issued certificates for testing.
@@ -575,19 +575,19 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
       "signature1", base::Time::Now(),
       std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
-                  base::size(kTestGoogleLogId)),
+                  std::size(kTestGoogleLogId)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions2",
       "signature2", base::Time::Now(),
       std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId1),
-                  base::size(kTestNonGoogleLogId1)),
+                  std::size(kTestNonGoogleLogId1)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   MakeTestSCTAndStatus(
       net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions3",
       "signature3", base::Time::Now(),
       std::string(reinterpret_cast<const char*>(kTestNonGoogleLogId2),
-                  base::size(kTestNonGoogleLogId2)),
+                  std::size(kTestNonGoogleLogId2)),
       net::ct::SCT_STATUS_OK, &verify_result.scts);
   mock_cert_verifier()->AddResultForCertAndHost(
       https_server()->GetCertificate().get(), "a.test", verify_result, net::OK);
@@ -879,7 +879,7 @@ class SCTHashdanceBrowserTest : public SCTReportingServiceBrowserTest {
         net::ct::SignedCertificateTimestamp::SCT_EMBEDDED, "extensions1",
         "signature1", base::Time::UnixEpoch(),
         std::string(reinterpret_cast<const char*>(kTestGoogleLogId),
-                    base::size(kTestGoogleLogId)),
+                    std::size(kTestGoogleLogId)),
         net::ct::SCT_STATUS_OK, &verify_result.scts);
     mock_cert_verifier()->AddResultForCertAndHost(
         https_server()->GetCertificate().get(), "hashdance.test", verify_result,

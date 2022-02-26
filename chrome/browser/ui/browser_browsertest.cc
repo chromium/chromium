@@ -10,25 +10,20 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/bind.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
-#include "chrome/browser/resource_coordinator/tab_manager.h"
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -39,6 +34,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/defaults.h"
@@ -52,6 +48,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -1626,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
       Browser::CreateParams::CreateForDevTools(browser()->profile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
                                                browser()->profile(), true)};
-  for (size_t i = 0; i < base::size(params); ++i) {
+  for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MAXIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
   }
@@ -1643,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
       Browser::CreateParams::CreateForDevTools(browser()->profile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
                                                browser()->profile(), true)};
-  for (size_t i = 0; i < base::size(params); ++i) {
+  for (size_t i = 0; i < std::size(params); ++i) {
     params[i].initial_show_state = ui::SHOW_STATE_MINIMIZED;
     AddBlankTabAndShow(Browser::Create(params[i]));
   }

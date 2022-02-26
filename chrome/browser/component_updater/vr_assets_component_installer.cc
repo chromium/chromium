@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -173,7 +172,7 @@ base::FilePath VrAssetsComponentInstallerPolicy::GetRelativeInstallDir() const {
 void VrAssetsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kVrAssetsPublicKeySHA256,
-               kVrAssetsPublicKeySHA256 + base::size(kVrAssetsPublicKeySHA256));
+               kVrAssetsPublicKeySHA256 + std::size(kVrAssetsPublicKeySHA256));
 }
 
 std::string VrAssetsComponentInstallerPolicy::GetName() const {

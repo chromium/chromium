@@ -8,7 +8,6 @@
 #include <delayimp.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/strings/string_util.h"
 
@@ -20,7 +19,7 @@ namespace {
 extern "C" FARPROC WINAPI DelayLoadFailureHook(unsigned reason,
                                                DelayLoadInfo* dll_info) {
   char dll_name[MAX_PATH];
-  base::strlcpy(dll_name, dll_info->szDll, base::size(dll_name));
+  base::strlcpy(dll_name, dll_info->szDll, std::size(dll_name));
   // It's not an error if "bthprops.cpl" fails to be loaded, there's a custom
   // exception handler in 'device/bluetooth/bluetooth_init_win.cc" that will
   // intercept the exception triggered by the delay load runtime. Returning 0

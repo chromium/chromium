@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 
 namespace app_list {
 
@@ -17,8 +16,7 @@ const char* const kDefaultPageBreakAppIds[] = {
     kDefaultPageBreak1,
 };
 
-const size_t kDefaultPageBreakAppIdsLength =
-    base::size(kDefaultPageBreakAppIds);
+const size_t kDefaultPageBreakAppIdsLength = std::size(kDefaultPageBreakAppIds);
 
 // Returns true if |item_id| is of a default-installed page break item.
 bool IsDefaultPageBreakItem(const std::string& item_id) {

@@ -227,7 +227,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
 constexpr bool HasDuplicatedUuid() {
   // We assume the number of entries are small enough so that simple
   // O(N^2) check works.
-  const size_t size = base::size(kInterfaceVersionEntries);
+  const size_t size = std::size(kInterfaceVersionEntries);
   for (size_t i = 0; i < size; ++i) {
     for (size_t j = i + 1; j < size; ++j) {
       if (kInterfaceVersionEntries[i].uuid == kInterfaceVersionEntries[j].uuid)

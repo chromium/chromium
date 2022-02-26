@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -64,7 +63,7 @@ class LinuxKeyRotationCommandTest : public testing::Test {
   static base::CommandLine GetMojoCommandLine(base::CommandLine command_line) {
     auto test_command_line = base::GetMultiProcessTestChildBaseCommandLine();
     test_command_line.CopySwitchesFrom(command_line, kSwitches,
-                                       base::size(kSwitches));
+                                       std::size(kSwitches));
     return test_command_line;
   }
 

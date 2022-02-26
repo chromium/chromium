@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -202,7 +201,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
 
   void AddLogEntry(int app_index) {
     ASSERT_GE(app_index, 0);
-    ASSERT_LT(app_index, static_cast<int>(base::size(kPackageNames)));
+    ASSERT_LT(app_index, static_cast<int>(std::size(kPackageNames)));
     const std::string package_name = kPackageNames[app_index];
     events_[package_name].push_back(event_);
     manager_->Add({kPackageNames[app_index]}, event_);
@@ -512,7 +511,7 @@ TEST_F(ArcAppInstallEventLogManagerTest, AddToTriggerTotalSizeExpedited) {
   FastForwardTo(offset);
   int i = 0;
   while (i <= kTotalSizeExpeditedUploadThreshold) {
-    for (int j = 0; j < static_cast<int>(base::size(kPackageNames)); ++i, ++j) {
+    for (int j = 0; j < static_cast<int>(std::size(kPackageNames)); ++i, ++j) {
       AddLogEntry(j /* app_index */);
     }
   }
@@ -548,7 +547,7 @@ TEST_F(ArcAppInstallEventLogManagerTest,
   const base::TimeDelta offset = base::Minutes(20);
   FastForwardTo(offset);
   for (int i = 0; i <= kTotalSizeExpeditedUploadThreshold;
-       i += base::size(kPackageNames)) {
+       i += std::size(kPackageNames)) {
     AddLogEntryForAllApps();
   }
 

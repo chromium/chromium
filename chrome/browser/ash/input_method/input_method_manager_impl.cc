@@ -69,7 +69,7 @@ const char* const kNonPositionalLayouts[] = {
     "us(dvorak)", "us(dvp)",    "us(workman)", "us(workman-intl)",
 };
 
-const size_t kNonPositionalLayoutsLength = base::size(kNonPositionalLayouts);
+const size_t kNonPositionalLayoutsLength = std::size(kNonPositionalLayouts);
 
 enum InputMethodCategory {
   INPUT_METHOD_CATEGORY_UNKNOWN = 0,

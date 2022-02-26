@@ -57,7 +57,7 @@ size_t GetNumDesiredIconSizesForShortcut() {
 #if BUILDFLAG(IS_WIN)
   return IconUtil::kNumIconDimensions;
 #else
-  return base::size(kDesiredIconSizesForShortcut);
+  return std::size(kDesiredIconSizesForShortcut);
 #endif
 }
 

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -180,7 +179,7 @@ void FirstPartySetsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kFirstPartySetsPublicKeySHA256,
                kFirstPartySetsPublicKeySHA256 +
-                   base::size(kFirstPartySetsPublicKeySHA256));
+                   std::size(kFirstPartySetsPublicKeySHA256));
 }
 
 std::string FirstPartySetsComponentInstallerPolicy::GetName() const {

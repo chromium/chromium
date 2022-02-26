@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
@@ -89,7 +88,7 @@ TEST_F(OptionsPageManifestTest, OptionsPageInApps) {
       Testcase(
           "packaged_app_absolute_options.json",
           extensions::manifest_errors::kInvalidOptionsPageExpectUrlInPackage)};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 // Tests for the options_ui.page manifest field.
@@ -110,7 +109,7 @@ TEST_F(OptionsPageManifestTest, OptionsUIPage) {
 
   Testcase testcases[] = {Testcase("options_ui_page_bad_url.json",
                                    "'page': expected page, got null")};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_WARNING);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_WARNING);
 }
 
 // Runs TestOptionsUIChromeStyleAndOpenInTab with and without the

@@ -112,7 +112,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
          true /* expect_tabs */, false /* expect_current_tab */,
          request_audio /* expect_audio */,
          fake_desktop_media_id_response /* selected_source */}};
-    picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
+    picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
     blink::mojom::MediaStreamType audio_type =
         request_audio ? blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE
                       : blink::mojom::MediaStreamType::NO_SERVICE;
@@ -217,7 +217,7 @@ TEST_F(DesktopCaptureAccessHandlerTest,
        true /* expect_tabs */, false /* expect_current_tab */,
        false /* expect_audio */, content::DesktopMediaID(),
        true /* cancelled */}};
-  picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
+  picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id, GURL(kOrigin), false,
       blink::MEDIA_DEVICE_UPDATE, std::string(), std::string(),
@@ -249,7 +249,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceWebContentsDestroyed) {
        true /* expect_tabs */, false /* expect_current_tab */,
        false /* expect_audio */, content::DesktopMediaID(),
        true /* cancelled */}};
-  picker_factory_->SetTestFlags(test_flags, base::size(test_flags));
+  picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
   content::MediaStreamRequest request(
       0, 0, 0, GURL(kOrigin), false, blink::MEDIA_DEVICE_UPDATE, std::string(),
       std::string(), blink::mojom::MediaStreamType::NO_SERVICE,

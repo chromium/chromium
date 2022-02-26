@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "chrome/updater/win/ui/ui.h"
 #include "chrome/updater/win/ui/ui_constants.h"
@@ -208,7 +207,7 @@ void SplashScreen::SwitchToState(WindowState new_state) {
     case WindowState::STATE_INITIALIZED:
       break;
     case WindowState::STATE_SHOW_NORMAL:
-      alpha_index_ = base::size(kAlphaScales) - 1;
+      alpha_index_ = std::size(kAlphaScales) - 1;
       break;
     case WindowState::STATE_FADING:
       DCHECK(IsWindow());

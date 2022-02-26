@@ -3,19 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/installer/util/install_service_work_item.h"
-#include "chrome/installer/util/install_service_work_item_impl.h"
 
 #include <memory>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "chrome/installer/util/install_service_work_item_impl.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -182,7 +181,7 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   std::vector<wchar_t> vec =
       InstallServiceWorkItemImpl::MultiSzToVector(kZeroMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kZeroMultiSz, sizeof(kZeroMultiSz)));
-  EXPECT_EQ(vec.size(), base::size(kZeroMultiSz));
+  EXPECT_EQ(vec.size(), std::size(kZeroMultiSz));
 
   vec = InstallServiceWorkItemImpl::MultiSzToVector(nullptr);
   EXPECT_TRUE(vec.empty());
@@ -190,12 +189,12 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
   constexpr wchar_t kRpcMultiSz[] = L"RPCSS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kRpcMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kRpcMultiSz, sizeof(kRpcMultiSz)));
-  EXPECT_EQ(vec.size(), base::size(kRpcMultiSz));
+  EXPECT_EQ(vec.size(), std::size(kRpcMultiSz));
 
   constexpr wchar_t kMultiSz[] = L"RPCSS\0LSASS\0";
   vec = InstallServiceWorkItemImpl::MultiSzToVector(kMultiSz);
   EXPECT_TRUE(!memcmp(vec.data(), &kMultiSz, sizeof(kMultiSz)));
-  EXPECT_EQ(vec.size(), base::size(kMultiSz));
+  EXPECT_EQ(vec.size(), std::size(kMultiSz));
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {

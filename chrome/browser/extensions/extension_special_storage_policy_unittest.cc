@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
+
 #include <stddef.h>
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -370,8 +370,8 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
     SpecialStoragePolicy::STORAGE_UNLIMITED,
   };
 
-  ASSERT_EQ(base::size(apps), base::size(change_flags));
-  for (size_t i = 0; i < base::size(apps); ++i) {
+  ASSERT_EQ(std::size(apps), std::size(change_flags));
+  for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     observer.ExpectGrant(apps[i]->id(), change_flags[i]);
     policy_->GrantRightsForExtension(apps[i].get());
@@ -379,14 +379,14 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
     EXPECT_TRUE(observer.IsCompleted());
   }
 
-  for (size_t i = 0; i < base::size(apps); ++i) {
+  for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     policy_->GrantRightsForExtension(apps[i].get());
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(observer.IsCompleted());
   }
 
-  for (size_t i = 0; i < base::size(apps); ++i) {
+  for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     observer.ExpectRevoke(apps[i]->id(), change_flags[i]);
     policy_->RevokeRightsForExtension(apps[i].get());
@@ -394,7 +394,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, NotificationTest) {
     EXPECT_TRUE(observer.IsCompleted());
   }
 
-  for (size_t i = 0; i < base::size(apps); ++i) {
+  for (size_t i = 0; i < std::size(apps); ++i) {
     SCOPED_TRACE(testing::Message() << "i: " << i);
     policy_->RevokeRightsForExtension(apps[i].get());
     base::RunLoop().RunUntilIdle();

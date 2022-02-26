@@ -20,7 +20,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -114,12 +113,12 @@ const uint8_t kOwnerPublicKey[] = {
 
 std::vector<uint8_t> GetOwnerPublicKey() {
   return std::vector<uint8_t>(kOwnerPublicKey,
-                              kOwnerPublicKey + base::size(kOwnerPublicKey));
+                              kOwnerPublicKey + std::size(kOwnerPublicKey));
 }
 
 bool CreateOwnerKeyInSlot(PK11SlotInfo* slot) {
   const std::vector<uint8_t> key(
-      kOwnerPrivateKey, kOwnerPrivateKey + base::size(kOwnerPrivateKey));
+      kOwnerPrivateKey, kOwnerPrivateKey + std::size(kOwnerPrivateKey));
   return crypto::ImportNSSKeyFromPrivateKeyInfo(
              slot, key, true /* permanent */) != nullptr;
 }

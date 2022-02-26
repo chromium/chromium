@@ -34,7 +34,7 @@ const unsigned char* StringAsConstOpenSSLBuffer(const std::string& s) {
 }
 
 unsigned char* StringAsOpenSSLBuffer(std::string* s) {
-  return reinterpret_cast<unsigned char*>(base::data(*s));
+  return reinterpret_cast<unsigned char*>(std::data(*s));
 }
 
 }  // namespace

@@ -2136,7 +2136,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
         new_contents->GetMainFrame()->GetLastCommittedOrigin().opaque();
     EXPECT_EQ(test_case.expected_origin_str == "null", is_opaque_origin);
   };
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(
         base::StringPrintf("#%" PRIuS " %s", i, test_case.url.c_str()));

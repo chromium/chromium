@@ -4,9 +4,10 @@
 
 #include "chrome/browser/shell_integration_win.h"
 
-#include <windows.h>
-#include <objbase.h>
 #include <shobjidl.h>
+#include <windows.h>
+
+#include <objbase.h>
 #include <propkey.h>  // Needs to come after shobjidl.h.
 #include <stddef.h>
 #include <stdint.h>
@@ -19,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
@@ -176,7 +176,7 @@ std::u16string GetAppForProtocolUsingAssocQuery(const GURL& url) {
   // populate the external protocol dialog box the user sees when invoking
   // an unknown external protocol.
   wchar_t out_buffer[1024];
-  DWORD buffer_size = base::size(out_buffer);
+  DWORD buffer_size = std::size(out_buffer);
   HRESULT hr =
       AssocQueryString(ASSOCF_IS_PROTOCOL, ASSOCSTR_FRIENDLYAPPNAME,
                        url_scheme.c_str(), NULL, out_buffer, &buffer_size);

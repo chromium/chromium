@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -49,13 +48,13 @@ class HFSIteratorTest : public testing::Test {
 
     const std::u16string dmg_name = u"SafeBrowsingDMG/";
 
-    for (size_t i = 0; i < base::size(kBaseFiles); ++i)
+    for (size_t i = 0; i < std::size(kBaseFiles); ++i)
       files->insert(dmg_name + kBaseFiles[i]);
 
     files->insert(dmg_name + u"first/second/" + u"Tĕsẗ 🐐 ");
 
     dirs->insert(dmg_name.substr(0, dmg_name.size() - 1));
-    for (size_t i = 0; i < base::size(kBaseDirs); ++i)
+    for (size_t i = 0; i < std::size(kBaseDirs); ++i)
       dirs->insert(dmg_name + kBaseDirs[i]);
 
     if (case_sensitive) {

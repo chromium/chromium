@@ -15,7 +15,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -64,7 +63,7 @@ const uint8_t kRecoverySha2Hash[] = {
     0xdf, 0x39, 0x9a, 0x9b, 0x28, 0x3a, 0x9b, 0x0c, 0xbc, 0xc3, 0x4b,
     0x29, 0x12, 0xf3, 0x9e, 0x2c, 0x19, 0x7a, 0x71, 0x4b, 0x0a, 0x7c,
     0x80, 0x1c, 0xf6, 0x29, 0x7c, 0x0a, 0x5f, 0xea, 0x67, 0xb7};
-static_assert(base::size(kRecoverySha2Hash) == crypto::kSHA256Length,
+static_assert(std::size(kRecoverySha2Hash) == crypto::kSHA256Length,
               "Wrong hash length");
 
 // File name of the recovery binary on different platforms.

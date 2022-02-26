@@ -38,7 +38,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -172,7 +171,7 @@ CountingPolicy::CountingPolicy(Profile* profile)
       string_table_("string_ids"),
       url_table_("url_ids"),
       retention_time_(base::Hours(60)) {
-  for (size_t i = 0; i < base::size(kAlwaysLog); i++) {
+  for (size_t i = 0; i < std::size(kAlwaysLog); i++) {
     api_arg_allowlist_.insert(
         std::make_pair(kAlwaysLog[i].type, kAlwaysLog[i].name));
   }
@@ -189,7 +188,7 @@ bool CountingPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
   if (!ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
                                          kTableFieldTypes,
-                                         base::size(kTableContentFields)))
+                                         std::size(kTableContentFields)))
     return false;
 
   // Create a view for easily accessing the uncompressed form of the data, and
@@ -271,14 +270,14 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       " SET count = count + ?, time = max(?, time)"
       " WHERE rowid = ?";
 
-  for (size_t i = 0; i < base::size(matched_columns); i++) {
+  for (size_t i = 0; i < std::size(matched_columns); i++) {
     locate_str = base::StringPrintf(
         "%s AND %s IS ?", locate_str.c_str(), matched_columns[i]);
     insert_str =
         base::StringPrintf("%s, %s", insert_str.c_str(), matched_columns[i]);
   }
   insert_str += ") VALUES (?, ?";
-  for (size_t i = 0; i < base::size(matched_columns); i++) {
+  for (size_t i = 0; i < std::size(matched_columns); i++) {
     insert_str += ", ?";
   }
   locate_str += " ORDER BY time DESC LIMIT 1";

@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -31,7 +30,7 @@ const char kUploadIdLinePrefix[] = "Upload ID: ";
 // No need to use \r\n for Windows; better have a consistent file format
 // between platforms.
 const char kEOL[] = "\n";
-static_assert(base::size(kEOL) == 1 + 1 /* +1 for the implicit \0. */,
+static_assert(std::size(kEOL) == 1 + 1 /* +1 for the implicit \0. */,
               "SplitString relies on this being a single character.");
 
 // |time| must *not* be earlier than UNIX epoch start. If it is, the empty

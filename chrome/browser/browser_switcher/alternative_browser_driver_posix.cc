@@ -93,7 +93,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
   size_t start = 0;
   bool matched = false;
   while (re->Match(*arg, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
-                   submatch, base::size(submatch))) {
+                   submatch, std::size(submatch))) {
     out.append(*arg, start, submatch[0].data() - (arg->data() + start));
     if (submatch[0] == kUrlVarName) {
       // Don't treat '${url}' as an environment variable, leave it as is.

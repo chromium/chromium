@@ -77,7 +77,7 @@ const char* kAndroidSupportedMediaExtensions[] = {
     ".xmf",    // FILE_TYPE_MID, audio/midi
 };
 const int kAndroidSupportedMediaExtensionsSize =
-    base::size(kAndroidSupportedMediaExtensions);
+    std::size(kAndroidSupportedMediaExtensions);
 
 bool AppendRelativePathForRemovableMedia(const base::FilePath& cros_path,
                                          base::FilePath* android_path) {

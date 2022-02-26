@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -134,7 +133,7 @@ const struct {
 
 // Test for GetSavePasswordDialogTitleText().
 TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText) {
-  for (size_t i = 0; i < base::size(kDomainsTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kDomainsTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "user_visible_url = "
                                     << kDomainsTestCases[i].user_visible_url
                                     << ", form_origin_url = "
@@ -187,7 +186,7 @@ TEST(ManagePasswordsViewUtilTest, GetSavePasswordDialogTitleText_EmptyStrings) {
 }
 
 TEST(ManagePasswordsViewUtilTest, GetManagePasswordsDialogTitleText) {
-  for (size_t i = 0; i < base::size(kDomainsTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kDomainsTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "user_visible_url = "
                                     << kDomainsTestCases[i].user_visible_url
                                     << ", password_origin_url = "

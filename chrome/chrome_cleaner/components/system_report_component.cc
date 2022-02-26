@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -333,15 +332,15 @@ void ReportAppInitDllsTargets(REGSAM access_mask) {
 
 void ReportRegistry(REGSAM access_mask) {
   // Report on startup keys/values.
-  ReportRegistryKeys(startup_registry_keys, base::size(startup_registry_keys),
+  ReportRegistryKeys(startup_registry_keys, std::size(startup_registry_keys),
                      access_mask, kHasFileInformation);
-  ReportRegistryValues(system_path_values, base::size(system_path_values),
+  ReportRegistryValues(system_path_values, std::size(system_path_values),
                        access_mask, kHasFileInformation);
-  ReportRegistryValues(system_values, base::size(system_values), access_mask,
+  ReportRegistryValues(system_values, std::size(system_values), access_mask,
                        kNoFileInformation);
 
   // Report on extension policy keys.
-  ReportRegistryKeys(extension_policy_keys, base::size(extension_policy_keys),
+  ReportRegistryKeys(extension_policy_keys, std::size(extension_policy_keys),
                      access_mask, kNoFileInformation);
   ReportAppInitDllsTargets(access_mask);
   ReportNameServer(access_mask);
@@ -369,7 +368,7 @@ void ReportInstalledPrograms() {
       base::DIR_LOCAL_APP_DATA,    base::DIR_COMMON_APP_DATA,
   };
   std::set<base::FilePath> path_processed;
-  for (size_t path = 0; path < base::size(install_paths); ++path) {
+  for (size_t path = 0; path < std::size(install_paths); ++path) {
     base::FilePath install_path;
     bool success = base::PathService::Get(install_paths[path], &install_path);
     if (!success) {
@@ -438,13 +437,13 @@ bool RetrieveExecutablePathFromServiceName(const std::wstring& service_name,
                               base::CompareCase::INSENSITIVE_ASCII)) {
     // Remove the prefix "\??\" in front of the path.
     file_path = base::FilePath(
-        file_path.value().substr(base::size(kAbsolutePrefix) - 1));
+        file_path.value().substr(std::size(kAbsolutePrefix) - 1));
   } else if (base::StartsWith(file_path.value(), kSystemRootPrefix,
                               base::CompareCase::INSENSITIVE_ASCII)) {
     // Remove the prefix "\systemroot\" in front of the path. The path
     // will be resolved from the system folder.
     file_path = base::FilePath(
-        file_path.value().substr(base::size(kSystemRootPrefix) - 1));
+        file_path.value().substr(std::size(kSystemRootPrefix) - 1));
   }
 
   // For relative path, resolve them from %systemroot%.

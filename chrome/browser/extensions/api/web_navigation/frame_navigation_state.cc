@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/render_frame_host.h"
@@ -40,7 +39,7 @@ FrameNavigationState::~FrameNavigationState() = default;
 
 // static
 bool FrameNavigationState::IsValidUrl(const GURL& url) {
-  for (unsigned i = 0; i < base::size(kValidSchemes); ++i) {
+  for (unsigned i = 0; i < std::size(kValidSchemes); ++i) {
     if (url.scheme() == kValidSchemes[i])
       return true;
   }

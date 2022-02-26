@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -196,7 +195,7 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
 
 // One more than the last tracked preferences ID above.
 const size_t kTrackedPrefsReportingIDsCount =
-    kTrackedPrefs[base::size(kTrackedPrefs) - 1].reporting_id + 1;
+    kTrackedPrefs[std::size(kTrackedPrefs) - 1].reporting_id + 1;
 
 // Each group enforces a superset of the protection provided by the previous
 // one.
@@ -244,7 +243,7 @@ GetTrackingConfiguration() {
       GetSettingsEnforcementGroup();
 
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> result;
-  for (size_t i = 0; i < base::size(kTrackedPrefs); ++i) {
+  for (size_t i = 0; i < std::size(kTrackedPrefs); ++i) {
     prefs::mojom::TrackedPreferenceMetadataPtr data =
         prefs::ConstructTrackedMetadata(kTrackedPrefs[i]);
 

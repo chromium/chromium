@@ -122,7 +122,7 @@ DWORD CredentialBufferValidator::IsValid(ULONG auth_package,
   LUID luid;
   HANDLE token = INVALID_HANDLE_VALUE;
 
-  strcpy_s(source.SourceName, base::size(source.SourceName), "Chrome");
+  strcpy_s(source.SourceName, std::size(source.SourceName), "Chrome");
   if (!AllocateLocallyUniqueId(&source.SourceIdentifier))
     return GetLastError();
 
@@ -274,7 +274,7 @@ bool AuthenticateUser(gfx::NativeWindow window,
                       password_manager::ReauthPurpose purpose) {
   bool retval = false;
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
-  DWORD cur_username_length = base::size(cur_username);
+  DWORD cur_username_length = std::size(cur_username);
 
   // If this is a standlone workstation, it's possible the current user has no
   // password, so check here and allow it.

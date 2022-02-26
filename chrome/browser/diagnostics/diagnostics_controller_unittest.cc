@@ -8,7 +8,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -78,7 +77,7 @@ class DiagnosticsControllerTest : public testing::Test {
     // Just write some random characters into the file tInvaludUsero "corrupt"
     // it.
     const char bogus_data[] = "wwZ2uNYNuyUVzFbDm3DL";
-    base::WriteFile(path, bogus_data, base::size(bogus_data));
+    base::WriteFile(path, bogus_data, std::size(bogus_data));
   }
 
   std::unique_ptr<DiagnosticsModel> model_;

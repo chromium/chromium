@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/credential_provider/gaiacp/stdafx.h"
-
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +17,7 @@
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "chrome/credential_provider/gaiacp/stdafx.h"
 #include "chrome/credential_provider/test/gcp_fakes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,7 +141,7 @@ TEST_F(AssociatedUserValidatorTest, CleanupStaleUsers) {
             SetUserProperty((BSTR)sid_no_token_handle, kUserTokenHandle, L""));
 
   wchar_t token_handle[256];
-  DWORD length = base::size(token_handle);
+  DWORD length = std::size(token_handle);
   EXPECT_NE(S_OK, GetUserProperty((BSTR)sid_no_token_handle, kUserTokenHandle,
                                   token_handle, &length));
 
@@ -171,7 +169,7 @@ TEST_F(AssociatedUserValidatorTest, CleanupStaleUsers) {
 
   // Expect user with no token handle to still not have a token handle set in
   // the registry.
-  length = base::size(token_handle);
+  length = std::size(token_handle);
   EXPECT_NE(S_OK, GetUserProperty((BSTR)sid_no_token_handle, kUserTokenHandle,
                                   token_handle, &length));
 }

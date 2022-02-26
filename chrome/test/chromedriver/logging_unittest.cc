@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/logging.h"
+
 #include <stddef.h>
 
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -16,7 +17,6 @@
 #include "chrome/test/chromedriver/chrome/log.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/command_listener.h"
-#include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +30,7 @@ const char* const kAllWdLevels[] = {
 
 TEST(Logging, NameLevelConversionHappy) {
   // All names map to a valid enum value.
-  for (int i = 0; static_cast<size_t>(i) < base::size(kAllWdLevels); ++i) {
+  for (int i = 0; static_cast<size_t>(i) < std::size(kAllWdLevels); ++i) {
     Log::Level level = static_cast<Log::Level>(-1);
     EXPECT_TRUE(WebDriverLog::NameToLevel(kAllWdLevels[i], &level));
     EXPECT_LE(Log::kAll, level);

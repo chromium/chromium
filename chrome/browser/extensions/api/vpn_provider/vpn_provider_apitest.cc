@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -285,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   EXPECT_EQ(1, test_client_->send_packet_counter_);
   EXPECT_EQ(api_vpn::VPN_CONNECTION_STATE_CONNECTED,
             test_client_->update_connection_state_counter_);
-  for (size_t i = 0; i < base::size(kParameterValues); ++i) {
+  for (size_t i = 0; i < std::size(kParameterValues); ++i) {
     const std::string* value =
         test_client_->parameters_.FindStringKey(kParameterKeys[i]);
     ASSERT_TRUE(value);

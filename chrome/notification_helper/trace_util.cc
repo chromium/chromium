@@ -9,8 +9,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
-
 #if !defined(NDEBUG)
 // Sends string |format| to the debugger for display.
 //
@@ -23,7 +21,7 @@ void TraceImpl(const wchar_t* format, ...) {
   va_list args = {};
 
   va_start(args, format);
-  if (vswprintf(buffer, base::size(buffer), format, args) > 0) {
+  if (vswprintf(buffer, std::size(buffer), format, args) > 0) {
     OutputDebugString(buffer);
   } else {
     std::wstring error_string(L"Format error for string: ");

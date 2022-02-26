@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/installer/util/self_cleaning_temp_dir.h"
+
 #include <windows.h>
 #include <stdint.h>
 #include <wincrypt.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -25,11 +25,11 @@ std::string GetRandomFilename() {
   // seen the latter trivially repeat.
   EXPECT_NE(FALSE, CryptAcquireContext(&crypt_ctx, nullptr, nullptr,
                                        PROV_RSA_FULL, CRYPT_VERIFYCONTEXT));
-  EXPECT_NE(FALSE, CryptGenRandom(crypt_ctx, base::size(data), &data[0]));
+  EXPECT_NE(FALSE, CryptGenRandom(crypt_ctx, std::size(data), &data[0]));
   EXPECT_NE(FALSE, CryptReleaseContext(crypt_ctx, 0));
 
   // Hexify the value.
-  std::string result(base::HexEncode(&data[0], base::size(data)));
+  std::string result(base::HexEncode(&data[0], std::size(data)));
   EXPECT_EQ(8u, result.size());
 
   // Replace the first digit with the letter 'R' (for "random", get it?).
@@ -164,9 +164,9 @@ TEST_F(SelfCleaningTempDirTest, LeaveUsedOnDestroy) {
     EXPECT_EQ(parent_temp_dir.Append(L"Three"), temp_dir.path());
     EXPECT_TRUE(base::DirectoryExists(temp_dir.path()));
     // Drop a file somewhere.
-    EXPECT_EQ(static_cast<int>(base::size(kHiHon) - 1),
+    EXPECT_EQ(static_cast<int>(std::size(kHiHon) - 1),
               base::WriteFile(parent_temp_dir.AppendASCII(GetRandomFilename()),
-                              kHiHon, base::size(kHiHon) - 1));
+                              kHiHon, std::size(kHiHon) - 1));
   }
   EXPECT_FALSE(base::DirectoryExists(parent_temp_dir.Append(L"Three")));
   EXPECT_TRUE(base::DirectoryExists(parent_temp_dir));

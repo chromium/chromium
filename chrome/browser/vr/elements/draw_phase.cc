@@ -4,8 +4,6 @@
 
 #include "chrome/browser/vr/elements/draw_phase.h"
 
-#include "base/cxx17_backports.h"
-
 namespace vr {
 
 namespace {
@@ -16,7 +14,7 @@ static const char* g_draw_phase_strings[] = {
 };
 
 static_assert(
-    kNumDrawPhases + 1 == base::size(g_draw_phase_strings),
+    kNumDrawPhases + 1 == std::size(g_draw_phase_strings),
     "Mismatch between the DrawPhase enum and the corresponding strings");
 
 }  // namespace

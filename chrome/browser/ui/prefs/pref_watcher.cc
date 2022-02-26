@@ -68,7 +68,7 @@ const char* const kWebPrefsToObserve[] = {
 #endif
 };
 
-const int kWebPrefsToObserveLength = base::size(kWebPrefsToObserve);
+const int kWebPrefsToObserveLength = std::size(kWebPrefsToObserve);
 
 }  // namespace
 

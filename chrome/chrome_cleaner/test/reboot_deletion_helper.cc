@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
@@ -290,7 +289,7 @@ bool SetPendingMoves(const PendingMoveVector& pending_moves) {
 
   // The pending moves format needs a null entry at the end which consists of
   // two MULTISZ empty string.
-  std::wstring last_entry(kDoubleNullEntry, base::size(kDoubleNullEntry) - 1);
+  std::wstring last_entry(kDoubleNullEntry, std::size(kDoubleNullEntry) - 1);
   buffer = buffer + last_entry;
 
   // Write back the serialized values into the registry key.

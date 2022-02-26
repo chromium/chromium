@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "chrome/common/chrome_constants.h"
@@ -57,7 +56,7 @@ class SiteDataSizeCollectorTest : public testing::Test {
             profile_.get());
 
     base::WriteFile(profile_->GetPath().Append(chrome::kCookieFilename),
-                    kCookieFileData, base::size(kCookieFileData));
+                    kCookieFileData, std::size(kCookieFileData));
 
     fetched_size_ = -1;
   }
@@ -116,7 +115,7 @@ TEST_F(SiteDataSizeCollectorTest, FetchCookie) {
   mock_browsing_data_cookie_helper_->Notify();
   // Wait until reading files on blocking pool finishes.
   run_loop.Run();
-  EXPECT_EQ(static_cast<int64_t>(base::size(kCookieFileData)), fetched_size_);
+  EXPECT_EQ(static_cast<int64_t>(std::size(kCookieFileData)), fetched_size_);
 }
 
 TEST_F(SiteDataSizeCollectorTest, FetchCookieWithoutEntry) {

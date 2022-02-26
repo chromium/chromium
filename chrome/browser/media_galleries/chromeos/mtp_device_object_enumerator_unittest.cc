@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/media_galleries/chromeos/mtp_device_object_enumerator.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
-#include "chrome/browser/media_galleries/chromeos/mtp_device_object_enumerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -49,7 +49,7 @@ TEST_F(MTPDeviceObjectEnumeratorTest, Empty) {
 
 TEST_F(MTPDeviceObjectEnumeratorTest, Traversal) {
   std::vector<device::mojom::MtpFileEntryPtr> entries;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     auto entry = device::mojom::MtpFileEntry::New();
     entry->file_name = kTestCases[i].name;
     entry->file_size = kTestCases[i].size;
@@ -63,7 +63,7 @@ TEST_F(MTPDeviceObjectEnumeratorTest, Traversal) {
   MTPDeviceObjectEnumerator enumerator(std::move(entries));
   TestEnumeratorIsEmpty(&enumerator);
   TestEnumeratorIsEmpty(&enumerator);
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     EXPECT_EQ(kTestCases[i].name, enumerator.Next().value());
     EXPECT_EQ(kTestCases[i].size, enumerator.Size());
     EXPECT_EQ(kTestCases[i].is_directory, enumerator.IsDirectory());

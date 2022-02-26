@@ -6,22 +6,18 @@
 
 #include <windows.h>
 
-#include <lm.h>
-
-#include <sddl.h>      // For ConvertSidToStringSid()
-#include <userenv.h>   // For GetUserProfileDirectory()
-#include <wincrypt.h>  // For CryptXXX()
-
 #include <atlconv.h>
-
+#include <lm.h>
 #include <malloc.h>
 #include <memory.h>
+#include <sddl.h>  // For ConvertSidToStringSid()
 #include <stdlib.h>
+#include <userenv.h>   // For GetUserProfileDirectory()
+#include <wincrypt.h>  // For CryptXXX()
 
 #include <iomanip>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/scoped_native_library.h"
@@ -82,7 +78,7 @@ bool OSUserManager::IsDeviceDomainJoined() {
 std::wstring OSUserManager::GetLocalDomain() {
   // If the domain is the current computer, then there is no domain controller.
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1];
-  DWORD length = base::size(computer_name);
+  DWORD length = std::size(computer_name);
   if (!::GetComputerNameW(computer_name, &length))
     return std::wstring();
 
@@ -145,8 +141,7 @@ HRESULT OSUserManager::GenerateRandomPassword(wchar_t* password, int length) {
         return hr;
       }
 
-      wchar_t c =
-          kValidPasswordChars[r % (base::size(kValidPasswordChars) - 1)];
+      wchar_t c = kValidPasswordChars[r % (std::size(kValidPasswordChars) - 1)];
       *p++ = c;
       ++cur_length;
       --remaining_length;
@@ -541,9 +536,9 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
   DCHECK(sid);
 
   char sid_buffer[256];
-  DWORD sid_length = base::size(sid_buffer);
+  DWORD sid_length = std::size(sid_buffer);
   wchar_t user_domain_buffer[kWindowsDomainBufferLength];
-  DWORD domain_length = base::size(user_domain_buffer);
+  DWORD domain_length = std::size(user_domain_buffer);
   SID_NAME_USE use;
   std::wstring username_with_domain = std::wstring(domain) + L"\\" + username;
 
@@ -556,7 +551,7 @@ HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
 
     wchar_t sid_buffer_temp[256];
     if (FAILED(GetSidFromDomainAccountInfo(domain, username, sid_buffer_temp,
-                                           base::size(sid_buffer_temp)))) {
+                                           std::size(sid_buffer_temp)))) {
       LOGFN(ERROR) << "GetSidFromDomainAccountInfo failed";
 
       return hr;
@@ -596,7 +591,7 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
   HRESULT hr = S_OK;
   DWORD name_length = username ? username_size : 0;
   wchar_t local_domain_buffer[kWindowsDomainBufferLength];
-  DWORD domain_length = base::size(local_domain_buffer);
+  DWORD domain_length = std::size(local_domain_buffer);
   SID_NAME_USE use;
   if (!::LookupAccountSid(nullptr, psid, username, &name_length,
                           local_domain_buffer, &domain_length, &use)) {
@@ -651,7 +646,7 @@ bool OSUserManager::IsUserDomainJoined(const std::wstring& sid) {
   wchar_t domain[kWindowsDomainBufferLength];
 
   HRESULT hr = FindUserBySidWithFallback(
-      sid.c_str(), username, base::size(username), domain, base::size(domain));
+      sid.c_str(), username, std::size(username), domain, std::size(domain));
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "IsUserDomainJoined sid=" << sid << " hr=" << putHR(hr);
@@ -683,7 +678,7 @@ HRESULT OSUserManager::RemoveUser(const wchar_t* username,
 
   if (SUCCEEDED(hr)) {
     // Get the gaia user's profile directory so that it can be deleted.
-    DWORD length = base::size(profiledir) - 1;
+    DWORD length = std::size(profiledir) - 1;
     if (!::GetUserProfileDirectory(token.Get(), profiledir, &length)) {
       hr = HRESULT_FROM_WIN32(::GetLastError());
       if (hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))

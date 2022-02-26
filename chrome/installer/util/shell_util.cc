@@ -25,7 +25,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -166,7 +165,7 @@ UserSpecificRegistrySuffix::UserSpecificRegistrySuffix() {
   base::MD5Sum(user_sid_ascii.c_str(), user_sid_ascii.length(), &md5_digest);
   std::string base32_md5 = base32::Base32Encode(
       base::StringPiece(reinterpret_cast<char*>(md5_digest.a),
-                        base::size(md5_digest.a)),
+                        std::size(md5_digest.a)),
       base32::Base32EncodePolicy::OMIT_PADDING);
   // The value returned by the base32 algorithm above must never change.
   DCHECK_EQ(base32_md5.length(), 26U);
@@ -1368,7 +1367,7 @@ bool ShortcutOpListOrRemoveUnknownArgs(
   };
   base::CommandLine desired_args(base::CommandLine::NO_PROGRAM);
   desired_args.CopySwitchesFrom(current_args, kept_switches,
-                                base::size(kept_switches));
+                                std::size(kept_switches));
   if (desired_args.argv().size() == current_args.argv().size())
     return true;
   if (shortcuts)
@@ -2153,7 +2152,7 @@ ShellUtil::DefaultState ShellUtil::GetChromeDefaultStateFromPath(
   // to show up in Add/Remove programs for us.
   static const wchar_t* const kChromeProtocols[] = {L"http", L"https"};
   DefaultState default_state = ProbeProtocolHandlers(
-      chrome_exe, kChromeProtocols, base::size(kChromeProtocols));
+      chrome_exe, kChromeProtocols, std::size(kChromeProtocols));
   UpdateDefaultBrowserBeaconWithState(default_state);
   return default_state;
 }
@@ -2170,7 +2169,7 @@ ShellUtil::DefaultState ShellUtil::GetChromeDefaultProtocolClientState(
   }
 
   const wchar_t* const protocols[] = {protocol.c_str()};
-  return ProbeProtocolHandlers(chrome_exe, protocols, base::size(protocols));
+  return ProbeProtocolHandlers(chrome_exe, protocols, std::size(protocols));
 }
 
 // static
@@ -2614,7 +2613,7 @@ bool ShellUtil::GetUserSpecificRegistrySuffix(std::wstring* suffix) {
 
 bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
   wchar_t user_name[256];
-  DWORD size = base::size(user_name);
+  DWORD size = std::size(user_name);
   if (::GetUserName(user_name, &size) == 0 || size < 1) {
     NOTREACHED();
     return false;

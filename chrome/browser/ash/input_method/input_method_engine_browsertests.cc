@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -475,7 +474,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
       {ui::VKEY_F10, "F10", "AudioVolumeUp"},
   };
 
-  for (size_t i = 0; i < base::size(kMediaKeyCases); ++i) {
+  for (size_t i = 0; i < std::size(kMediaKeyCases); ++i) {
     SCOPED_TRACE(std::string("KeyDown, ") + kMediaKeyCases[i].code);
     KeyEventDoneCallback callback(false);
     const std::string expected_value = base::StringPrintf(

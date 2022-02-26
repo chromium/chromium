@@ -193,10 +193,10 @@ class FakeModuleListFilter : public ModuleListFilter {
     allowlisted_modules_.emplace(
         base::StringPiece(
             reinterpret_cast<const char*>(&module.basename_hash[0]),
-            base::size(module.basename_hash)),
+            std::size(module.basename_hash)),
         base::StringPiece(
             reinterpret_cast<const char*>(&module.code_id_hash[0]),
-            base::size(module.basename_hash)));
+            std::size(module.basename_hash)));
   }
 
   // ModuleListFilter:

@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/chrome_signin_client.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -423,7 +423,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::
         IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
 };
-static_assert(base::size(kSignoutSources) ==
+static_assert(std::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
               "kSignoutSources should enumerate all ProfileSignout values");
 

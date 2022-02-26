@@ -14,7 +14,6 @@
 #include <map>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,7 +71,7 @@ std::string GetDiskUuid() {
 
   // Look for first device name matching an entry of |kDeviceNames|.
   std::string result;
-  for (size_t i = 0; i < base::size(kDeviceNames); i++) {
+  for (size_t i = 0; i < std::size(kDeviceNames); i++) {
     DiskEntries::iterator it = disk_uuids.find(base::FilePath(kDeviceNames[i]));
     if (it != disk_uuids.end()) {
       DVLOG(1) << "Returning uuid: \"" << it->second.value()
@@ -163,7 +162,7 @@ std::string GetMacAddress(IsValidMacAddressCallback is_valid_mac_address) {
   MacAddressProcessor processor(std::move(is_valid_mac_address));
   for (struct ifaddrs* ifa = ifaddrs; ifa; ifa = ifa->ifa_next) {
     bool keep_going = processor.ProcessInterface(
-        ifa, kNetDeviceNamePrefixes, base::size(kNetDeviceNamePrefixes));
+        ifa, kNetDeviceNamePrefixes, std::size(kNetDeviceNamePrefixes));
     if (!keep_going)
       break;
   }

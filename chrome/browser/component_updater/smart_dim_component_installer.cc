@@ -169,7 +169,7 @@ void SmartDimComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   DCHECK(hash);
   hash->assign(kSmartDimPublicKeySHA256,
-               kSmartDimPublicKeySHA256 + base::size(kSmartDimPublicKeySHA256));
+               kSmartDimPublicKeySHA256 + std::size(kSmartDimPublicKeySHA256));
 }
 
 std::string SmartDimComponentInstallerPolicy::GetName() const {

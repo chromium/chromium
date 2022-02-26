@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
@@ -60,7 +59,7 @@ void IdentityClearAllCachedAuthTokensFunction::OnCookiesDeleted(
     uint32_t num_deleted) {
   ++cleaned_partitions_;
 
-  if (cleaned_partitions_ < base::size(kPartitionsToClean))
+  if (cleaned_partitions_ < std::size(kPartitionsToClean))
     return;
 
   // Post a task to ensure Respond() is not synchronously called from Run(). The

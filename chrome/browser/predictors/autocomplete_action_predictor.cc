@@ -43,7 +43,7 @@ const float kConfidenceCutoff[] = {
   0.5f
 };
 
-static_assert(base::size(kConfidenceCutoff) ==
+static_assert(std::size(kConfidenceCutoff) ==
                   predictors::AutocompleteActionPredictor::LAST_PREDICT_ACTION,
               "kConfidenceCutoff count should match LAST_PREDICT_ACTION");
 

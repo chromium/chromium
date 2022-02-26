@@ -660,7 +660,7 @@ void GvrGraphicsDelegate::GetContentQuadDrawParams(Transform* uv_transform,
                                                    float* border_x,
                                                    float* border_y) {
   std::copy(kContentUvTransform,
-            kContentUvTransform + base::size(kContentUvTransform),
+            kContentUvTransform + std::size(kContentUvTransform),
             *uv_transform);
   DCHECK(!content_tex_buffer_size_.IsEmpty());
   *border_x = kContentBorderPixels / content_tex_buffer_size_.width();
@@ -676,14 +676,14 @@ void GvrGraphicsDelegate::GetWebXrDrawParams(int* texture_id,
     *texture_id = buffer->local_texture;
     // Use an identity UV transform, the image is already oriented correctly.
     std::copy(kWebVrIdentityUvTransform,
-              kWebVrIdentityUvTransform + base::size(kWebVrIdentityUvTransform),
+              kWebVrIdentityUvTransform + std::size(kWebVrIdentityUvTransform),
               *uv_transform);
   } else {
     *texture_id = webvr_texture_id_;
     // Apply the UV transform from the SurfaceTexture, that's usually a Y flip.
     std::copy(webvr_surface_texture_uv_transform_,
               webvr_surface_texture_uv_transform_ +
-                  base::size(webvr_surface_texture_uv_transform_),
+                  std::size(webvr_surface_texture_uv_transform_),
               *uv_transform);
   }
 }

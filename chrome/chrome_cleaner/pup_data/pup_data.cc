@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
@@ -30,10 +29,10 @@ const wchar_t kUserPolicyFolder[] = L"User";
 // static
 const wchar_t PUPData::kCommaDelimiter[] = L",";
 const size_t PUPData::kCommaDelimiterLength =
-    base::size(PUPData::kCommaDelimiter) - 1;
+    std::size(PUPData::kCommaDelimiter) - 1;
 const wchar_t PUPData::kCommonDelimiters[] = L" ,\0";
 const size_t PUPData::kCommonDelimitersLength =
-    base::size(PUPData::kCommonDelimiters) - 1;
+    std::size(PUPData::kCommonDelimiters) - 1;
 
 // The escape character used for registry key name and value is an unused
 // unicode character (see: http://en.wikipedia.org/wiki/Private_Use_Areas).

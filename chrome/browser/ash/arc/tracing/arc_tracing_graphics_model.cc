@@ -532,7 +532,7 @@ class AndroidInputEvent {
     // Has following structure
     // InputEvent: source timestamps sequence_id|0|
     const std::string body =
-        event->GetName().substr(base::size(kInputEventPrefix) - 1);
+        event->GetName().substr(std::size(kInputEventPrefix) - 1);
     base::StringTokenizer tokenizer(body, " ");
     std::vector<std::string> tokens;
     while (tokenizer.GetNext())
@@ -1118,7 +1118,7 @@ void ScanForCustomEvents(
     out_custom_events->emplace_back(
         ArcTracingGraphicsModel::BufferEventType::kCustomEvent,
         event->GetTimestamp(),
-        event->GetName().substr(base::size(kCustomTracePrefix) - 1));
+        event->GetName().substr(std::size(kCustomTracePrefix) - 1));
   }
   for (const auto& child : event->children())
     ScanForCustomEvents(child.get(), out_custom_events);

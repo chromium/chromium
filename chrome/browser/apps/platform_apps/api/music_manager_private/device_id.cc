@@ -5,11 +5,11 @@
 #include "chrome/browser/apps/platform_apps/api/music_manager_private/device_id.h"
 
 #include <stdint.h>
+
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -166,7 +166,7 @@ bool IsValidMacAddressImpl(const void* bytes, size_t size) {
     return false;
   }
 
-  for (size_t i = 0; i < base::size(invalidAddresses); ++i) {
+  for (size_t i = 0; i < std::size(invalidAddresses); ++i) {
     size_t count = invalidAddresses[i].size;
     if (memcmp(invalidAddresses[i].address, bytes, count) == 0) {
       return false;

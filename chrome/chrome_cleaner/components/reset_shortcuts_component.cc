@@ -4,9 +4,8 @@
 
 #include "chrome/chrome_cleaner/components/reset_shortcuts_component.h"
 
-#include <windows.h>
-
 #include <stdint.h>
+#include <windows.h>
 
 #include <memory>
 #include <set>
@@ -17,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -100,7 +98,7 @@ void ResetShortcuts(std::vector<ShortcutInformation> shortcuts,
     };
     base::CommandLine desired_args(base::CommandLine::NO_PROGRAM);
     desired_args.CopySwitchesFrom(current_args, kept_switches,
-                                  base::size(kept_switches));
+                                  std::size(kept_switches));
     updated_properties.set_arguments(desired_args.GetArgumentsString());
     bool success = base::win::CreateOrUpdateShortcutLink(
         shortcut_path, updated_properties,

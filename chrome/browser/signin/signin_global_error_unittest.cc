@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -134,8 +133,8 @@ TEST_F(SigninGlobalErrorTest, AuthStatusEnumerateAllErrors) {
       {GoogleServiceAuthError::SERVICE_ERROR, true},
   };
   static_assert(
-      base::size(table) == GoogleServiceAuthError::NUM_STATES -
-                               GoogleServiceAuthError::kDeprecatedStateCount,
+      std::size(table) == GoogleServiceAuthError::NUM_STATES -
+                              GoogleServiceAuthError::kDeprecatedStateCount,
       "table size should match number of auth error types");
 
   // Mark the profile with an active timestamp so profile_metrics logs it.

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -136,7 +135,7 @@ void ProfileResetter::Reset(
   };
 
   ResettableFlags reset_triggered_for_flags = 0;
-  for (size_t i = 0; i < base::size(flagToMethod); ++i) {
+  for (size_t i = 0; i < std::size(flagToMethod); ++i) {
     if (resettable_flags & flagToMethod[i].flag) {
       reset_triggered_for_flags |= flagToMethod[i].flag;
       (this->*flagToMethod[i].method)();

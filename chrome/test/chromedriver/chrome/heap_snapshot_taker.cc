@@ -5,9 +5,9 @@
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
 
 #include <stddef.h>
+
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -46,7 +46,7 @@ Status HeapSnapshotTaker::TakeSnapshotInternal() {
       "HeapProfiler.collectGarbage",
       "HeapProfiler.takeHeapSnapshot"
   };
-  for (size_t i = 0; i < base::size(kMethods); ++i) {
+  for (size_t i = 0; i < std::size(kMethods); ++i) {
     Status status = client_->SendCommand(kMethods[i], params);
     if (status.IsError())
       return status;

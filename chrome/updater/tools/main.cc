@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -150,7 +149,7 @@ int CertificateTagMain(int argc, char** argv) {
     if (base::StartsWith(args.set_superfluous_cert_tag, kPrefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       const auto hex_chars = base::MakeStringPiece(
-          std::begin(args.set_superfluous_cert_tag) + base::size(kPrefix) - 1,
+          std::begin(args.set_superfluous_cert_tag) + std::size(kPrefix) - 1,
           std::end(args.set_superfluous_cert_tag));
       if (!base::HexStringToBytes(hex_chars, &tag_contents)) {
         std::cerr << "Failed to parse tag contents from command line."

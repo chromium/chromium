@@ -7,7 +7,6 @@
 #include <Carbon/Carbon.h>
 #include <QuartzCore/QuartzCore.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/mac_util.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller.h"
 #include "ui/base/cocoa/appkit_utils.h"
@@ -86,7 +85,7 @@ OSStatus MenuBarRevealHandler(EventHandlerCallRef handler,
     eventSpecs[2].eventKind = kEventMenuBarHidden;
 
     InstallApplicationEventHandler(NewEventHandlerUPP(&MenuBarRevealHandler),
-                                   base::size(eventSpecs), eventSpecs, self,
+                                   std::size(eventSpecs), eventSpecs, self,
                                    &_menubarTrackingHandler);
 
     // Register for Active Space change notifications.

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -28,12 +27,12 @@ const TableColumnData kColumns[] = {
     {IDS_TASK_MANAGER_PROFILE_NAME_COLUMN, ui::TableColumn::LEFT, -1, 0, 60,
      200, true, true, false},
     {IDS_TASK_MANAGER_MEM_FOOTPRINT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("800 MiB") * kCharWidth,
-     base::size("Memory Footprint") * kCharWidth * 3 / 2, true, false, true},
+     std::size("800 MiB") * kCharWidth,
+     std::size("Memory Footprint") * kCharWidth * 3 / 2, true, false, true},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {IDS_TASK_MANAGER_SWAPPED_MEM_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("800 MiB") * kCharWidth, -1, true, false, false},
+     std::size("800 MiB") * kCharWidth, -1, true, false, false},
 #endif
 
 // Make the CPU column min width a bit wider on macOS. When you click a column
@@ -42,22 +41,22 @@ const TableColumnData kColumns[] = {
 // caret in by tail-truncating the label, which looks terrible.
 #if BUILDFLAG(IS_MAC)
     {IDS_TASK_MANAGER_CPU_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("0099.9") * kCharWidth, -1, true, false, true},
+     std::size("0099.9") * kCharWidth, -1, true, false, true},
 #else
     {IDS_TASK_MANAGER_CPU_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("99.9") * kCharWidth, -1, true, false, true},
+     std::size("99.9") * kCharWidth, -1, true, false, true},
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
     {IDS_TASK_MANAGER_CPU_TIME_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("1234h 42m 30s") * kCharWidth, -1, true, false, false},
+     std::size("1234h 42m 30s") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_START_TIME_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("12/13/14 11:44:30 PM") * kCharWidth, -1, true, true, false},
+     std::size("12/13/14 11:44:30 PM") * kCharWidth, -1, true, true, false},
 #endif
     {IDS_TASK_MANAGER_NET_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("150 kiB/s") * kCharWidth, -1, true, false, true},
+     std::size("150 kiB/s") * kCharWidth, -1, true, false, true},
     {IDS_TASK_MANAGER_PROCESS_ID_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("73099  ") * kCharWidth, -1, true, true, true},
+     std::size("73099  ") * kCharWidth, -1, true, true, true},
 
 #if BUILDFLAG(IS_WIN)
     {IDS_TASK_MANAGER_GDI_HANDLES_COLUMN, ui::TableColumn::RIGHT, -1, 0, 0, 0,
@@ -67,44 +66,44 @@ const TableColumnData kColumns[] = {
 #endif
 
     {IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
+     std::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_WEBCORE_SCRIPTS_CACHE_COLUMN, ui::TableColumn::RIGHT, -1,
-     0, base::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false,
+     0, std::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false,
      false},
     {IDS_TASK_MANAGER_WEBCORE_CSS_CACHE_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
+     std::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("2000.0K") * kCharWidth, -1, true, false, false},
+     std::size("2000.0K") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("800 kB") * kCharWidth, -1, true, false, false},
+     std::size("800 kB") * kCharWidth, -1, true, false, false},
 
 #if BUILDFLAG(ENABLE_NACL)
     {IDS_TASK_MANAGER_NACL_DEBUG_STUB_PORT_COLUMN, ui::TableColumn::RIGHT, -1,
-     0, base::size("32767") * kCharWidth, -1, true, true, false},
+     0, std::size("32767") * kCharWidth, -1, true, true, false},
 #endif  // BUILDFLAG(ENABLE_NACL)
 
     {IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN,
      ui::TableColumn::RIGHT, -1, 0,
-     base::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
+     std::size("2000.0K (2000.0 live)") * kCharWidth, -1, true, false, false},
     {IDS_TASK_MANAGER_IDLE_WAKEUPS_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("idlewakeups") * kCharWidth, -1, true, false, false},
+     std::size("idlewakeups") * kCharWidth, -1, true, false, false},
 
 #if BUILDFLAG(IS_WIN)
     {IDS_TASK_MANAGER_HARD_FAULTS_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("100000") * kCharWidth, -1, true, false, false},
+     std::size("100000") * kCharWidth, -1, true, false, false},
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     {IDS_TASK_MANAGER_OPEN_FD_COUNT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("999") * kCharWidth, -1, true, false, false},
+     std::size("999") * kCharWidth, -1, true, false, false},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     {IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN, ui::TableColumn::LEFT, -1, 0,
-     base::size("background") * kCharWidth, -1, true, true, false},
+     std::size("background") * kCharWidth, -1, true, true, false},
     {IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN, ui::TableColumn::RIGHT, -1, 0,
-     base::size("999") * kCharWidth, -1, false, false, false},
+     std::size("999") * kCharWidth, -1, false, false, false},
 };
 
-const size_t kColumnsSize = base::size(kColumns);
+const size_t kColumnsSize = std::size(kColumns);
 
 const char kSortColumnIdKey[] = "sort_column_id";
 const char kSortIsAscendingKey[] = "sort_is_ascending";
