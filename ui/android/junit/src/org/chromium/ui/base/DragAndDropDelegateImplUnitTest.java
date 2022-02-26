@@ -6,11 +6,14 @@ package org.chromium.ui.base;
 
 import static org.mockito.Mockito.doReturn;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Pair;
 import android.view.DragEvent;
 import android.view.View;
+import android.view.View.DragShadowBuilder;
+import android.view.accessibility.AccessibilityManager;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -21,8 +24,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowDisplay;
 
+import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.DragAndDropDelegateImpl.DragTargetType;
@@ -36,6 +44,16 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(shadows = {ShadowDisplay.class, ShadowRecordHistogram.class},
         qualifiers = "w1000dp-h2000dp-mdpi")
 public class DragAndDropDelegateImplUnitTest {
+    /** Helper shadow class to make sure #startDragAndDrop is accepted by Android. */
+    @Implements(ApiHelperForN.class)
+    static class ShadowApiHelperForN {
+        @Implementation
+        public static boolean startDragAndDrop(View view, ClipData data,
+                DragShadowBuilder shadowBuilder, Object myLocalState, int flags) {
+            return true;
+        }
+    }
+
     private Context mContext;
     private DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
@@ -120,6 +138,26 @@ public class DragAndDropDelegateImplUnitTest {
                 "Drag link is not supported.", 0, mDragAndDropDelegateImpl.getDragShadowHeight());
         Assert.assertFalse("Drag Link is not supported.", mDragAndDropDelegateImpl.isDragStarted());
         assertDragTypeNotRecorded("Drag didn't started.");
+    }
+
+    @Test
+    @Config(shadows = {ShadowApiHelperForN.class, ShadowAccessibilityManager.class})
+    public void testStartDragAndDrop_NotSupportedForA11y() {
+        final View containerView = new View(mContext);
+        final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
+        final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null);
+
+        Assert.assertTrue("Drag and drop should start.",
+                mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, dropData));
+
+        AccessibilityManager a11yManager =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        ShadowAccessibilityManager shadowA11yManager = Shadow.extract(a11yManager);
+        shadowA11yManager.setEnabled(true);
+        shadowA11yManager.setTouchExplorationEnabled(true);
+
+        Assert.assertFalse("Drag and drop should not start when isTouchExplorationEnabled=true.",
+                mDragAndDropDelegateImpl.startDragAndDrop(containerView, shadowImage, dropData));
     }
 
     @Test
