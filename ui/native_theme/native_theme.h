@@ -546,10 +546,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
   mutable std::map<SystemThemeColor, SkColor> system_colors_;
 
  private:
-  ColorProviderManager::Key GetColorProviderKeyForColorScheme(
-      scoped_refptr<ColorProviderManager::InitializerSupplier> custom_theme,
-      ColorScheme color_scheme) const;
-
   // Observers to notify when the native theme changes.
   base::ObserverList<NativeThemeObserver>::Unchecked native_theme_observers_;
 
