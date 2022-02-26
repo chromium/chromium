@@ -358,6 +358,10 @@ bool ColorSpace::IsHDR() const {
          transfer_ == TransferID::PIECEWISE_HDR;
 }
 
+bool ColorSpace::IsPQOrHLG() const {
+  return transfer_ == TransferID::PQ || transfer_ == TransferID::HLG;
+}
+
 bool ColorSpace::FullRangeEncodedValues() const {
   return transfer_ == TransferID::LINEAR_HDR ||
          transfer_ == TransferID::SRGB_HDR ||

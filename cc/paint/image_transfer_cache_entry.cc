@@ -528,7 +528,6 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         return false;
       }
 
-      DCHECK(!target_color_params);
       sk_sp<SkImage> plane = SkImage::MakeFromRaster(pixmap, nullptr, nullptr);
       if (!plane) {
         DLOG(ERROR) << "Failed to create image from plane pixmap";

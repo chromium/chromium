@@ -3128,7 +3128,13 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     EXPECT_TRUE(decoded_draw_image.image());
     EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
 
-    if (decodes_to_yuv) {
+    // If `draw_image` is tone mapped, then it will be converted to RGBA
+    // during tone mapping.
+    bool color_converted_to_rgba = use_transfer_cache_ &&
+                                   target_cs.IsPQOrHLG() &&
+                                   cache->SupportsColorSpaceConversion();
+
+    if (decodes_to_yuv && !color_converted_to_rgba) {
       // Skia will flatten a YUV SkImage upon calling makeTextureImage. Thus, we
       // must separately request mips for each plane and compare to the original
       // uploaded planes.

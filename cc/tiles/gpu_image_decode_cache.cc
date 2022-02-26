@@ -2115,7 +2115,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   DCHECK_GT(image_data->decode.ref_count, 0u);
   DCHECK_GT(image_data->upload.ref_count, 0u);
 
-  sk_sp<SkColorSpace> color_space =
+  sk_sp<SkColorSpace> target_color_space =
       SupportsColorSpaceConversion() &&
               draw_image.target_color_space().IsValid()
           ? draw_image.target_color_space().ToSkColorSpace()
@@ -2126,12 +2126,17 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // have happened at decode time.
   sk_sp<SkColorSpace> decoded_target_colorspace =
       ColorSpaceForImageDecode(draw_image, image_data->mode);
-  if (color_space && SkColorSpace::Equals(color_space.get(),
-                                          decoded_target_colorspace.get())) {
-    color_space = nullptr;
+  if (target_color_space &&
+      SkColorSpace::Equals(target_color_space.get(),
+                           decoded_target_colorspace.get())) {
+    target_color_space = nullptr;
   }
 
   absl::optional<TargetColorParams> target_color_params;
+  if (target_color_space) {
+    target_color_params = draw_image.target_color_params();
+    target_color_params->color_space = gfx::ColorSpace(*target_color_space);
+  }
 
   // Will be nullptr for non-HDR images or when we're using the default level.
   const bool needs_adjusted_color_space =
@@ -2143,16 +2148,15 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     DCHECK(use_transfer_cache_);
     if (image_data->decode.do_hardware_accelerated_decode()) {
       UploadImageIfNecessary_TransferCache_HardwareDecode(
-          draw_image, image_data, color_space);
+          draw_image, image_data, target_color_space);
     } else if (image_data->yuva_pixmap_info.has_value()) {
+      const bool needs_tone_mapping =
+          decoded_target_colorspace &&
+          gfx::ColorSpace(*decoded_target_colorspace).IsPQOrHLG();
       UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
           draw_image, image_data, decoded_target_colorspace,
-          target_color_params);
+          needs_tone_mapping ? target_color_params : absl::nullopt);
     } else {
-      if (color_space) {
-        target_color_params = draw_image.target_color_params();
-        target_color_params->color_space = gfx::ColorSpace(*color_space);
-      }
       UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
           draw_image, image_data, needs_adjusted_color_space,
           decoded_target_colorspace, target_color_params);
@@ -2167,11 +2171,12 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     if (image_data->yuva_pixmap_info.has_value()) {
       UploadImageIfNecessary_GpuCpu_YUVA(
           draw_image, image_data, uploaded_image, image_needs_mips,
-          decoded_target_colorspace, color_space);
+          decoded_target_colorspace, target_color_space);
     } else {
       UploadImageIfNecessary_GpuCpu_RGBA(
           draw_image, image_data, uploaded_image, image_needs_mips,
-          needs_adjusted_color_space, decoded_target_colorspace, color_space);
+          needs_adjusted_color_space, decoded_target_colorspace,
+          target_color_space);
     }
   }
 }

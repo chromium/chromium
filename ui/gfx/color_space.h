@@ -276,6 +276,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Returns true if the transfer function is an HDR one (SMPTE 2084, HLG, etc).
   bool IsHDR() const;
 
+  // Returns true if the transfer function is PQ or HLG.
+  bool IsPQOrHLG() const;
+
   // Returns true if the encoded values can be outside of the 0.0-1.0 range.
   bool FullRangeEncodedValues() const;
 
