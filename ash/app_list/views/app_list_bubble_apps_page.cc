@@ -66,10 +66,14 @@ constexpr int kVerticalPaddingBetweenSections = 16;
 
 // The horizontal interior margin for the apps page container - i.e. the margin
 // between the apps page bounds and the page content.
-constexpr int kHorizontalInteriorMargin = 20;
+constexpr int kHorizontalInteriorMargin = 16;
+
+// Insets for the continue section. These insets are required to make the
+// suggestion icons visually align with the icons in the apps grid.
+constexpr gfx::Insets kContinueSectionInsets(0, 4);
 
 // Insets for the separator between the continue section and apps.
-constexpr gfx::Insets kSeparatorInsets(0, 12);
+constexpr gfx::Insets kSeparatorInsets(0, 16);
 
 // A slide animation's tween type.
 constexpr gfx::Tween::Type kSlideAnimationTweenType =
@@ -145,6 +149,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_ =
       scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
           view_delegate, kContinueColumnCount, /*tablet_mode=*/false));
+  continue_section_->SetBorder(
+      views::CreateEmptyBorder(kContinueSectionInsets));
   continue_section_->SetNudgeController(app_list_nudge_controller_.get());
 
   // Observe changes in continue section visibility, to keep separator

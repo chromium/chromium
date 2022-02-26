@@ -269,7 +269,7 @@ TEST_F(AppListConfigProviderTest, CreateConfigByDisplayWorkArea) {
     AppListConfigType config_type;
   } test_cases[] = {
       {gfx::Size(900, 500), gfx::Size(788, 321), AppListConfigType::kDense},
-      {gfx::Size(500, 900), gfx::Size(388, 704), AppListConfigType::kDense},
+      {gfx::Size(540, 900), gfx::Size(428, 704), AppListConfigType::kDense},
       {gfx::Size(960, 600), gfx::Size(848, 412), AppListConfigType::kDense},
       {gfx::Size(1100, 700), gfx::Size(988, 504), AppListConfigType::kRegular},
       {gfx::Size(600, 960), gfx::Size(488, 764), AppListConfigType::kDense},

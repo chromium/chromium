@@ -3473,7 +3473,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DenseLandscapeScreen) {
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3507,7 +3507,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3543,7 +3543,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3573,7 +3573,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DensePortraitScreen) {
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3607,7 +3607,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3636,14 +3636,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
           /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/8) -
       8;
   EXPECT_EQ(640, window_height);
-  const gfx::Size window_size = gfx::Size(500, window_height);
+  const gfx::Size window_size = gfx::Size(540, window_height);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3677,7 +3677,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3713,7 +3713,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
@@ -3739,14 +3739,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseAppsGridPaddingScaledDownToMakeRoomForPageSwitcher) {
   // Select window width so using non-zero horizontal padding would result in
   // lack of space for the page switcher.
-  const gfx::Size window_size = gfx::Size(472, 800);
+  const gfx::Size window_size = gfx::Size(512, 800);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
   VerifyAppsContainerLayoutForProductivityLauncher(
       window_size, /*row_count=*/5, expected_horizontal_margin,
@@ -3774,7 +3774,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseAppsGridWithMaxHorizontalItemMargins) {
   // Select window width that results in apps grid layout with max allowed
-  // horizontal margin (128): 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 72
+  // horizontal margin (128): 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 80
   const gfx::Size window_size = gfx::Size(984, 600);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
@@ -3782,7 +3782,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
   VerifyAppsContainerLayoutForProductivityLauncher(
       window_size, /*row_count=*/4, expected_horizontal_margin,
@@ -3793,14 +3793,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        DenseAppsGridHorizontalItemMarginsBounded) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128), i.e. larger than
-  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 72
-  const gfx::Size window_size = gfx::Size(1000, 600);
+  // 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 80
+  const gfx::Size window_size = gfx::Size(1040, 600);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
   const int expected_horizontal_margin = 64;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
   VerifyAppsContainerLayoutForProductivityLauncher(
       window_size, /*row_count=*/4, expected_horizontal_margin,
@@ -3811,7 +3811,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularAppsGridWithMaxHorizontalItemMargins) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128):
-  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 96
+  // 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 96
   const gfx::Size window_size = gfx::Size(1104, 1200);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
@@ -3830,7 +3830,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
        RegularAppsGridHorizontalItemMarginsBounded) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128), i.e. larger than
-  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 96
+  // 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 96
   const gfx::Size window_size = gfx::Size(1116, 1200);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
@@ -3852,7 +3852,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, LayoutAfterConfigChange) {
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
   VerifyAppsContainerLayoutForProductivityLauncher(
       window_size, /*row_count=*/5, expected_horizontal_margin,
@@ -3880,7 +3880,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const int expected_horizontal_margin =
       kMinProductivityLauncherGridHorizontalMargin;
-  const gfx::Size expected_item_size(72, 88);
+  const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
   VerifyAppsContainerLayoutForProductivityLauncher(
       window_size, /*row_count=*/4, expected_horizontal_margin,

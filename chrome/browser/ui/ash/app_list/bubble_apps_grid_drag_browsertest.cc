@@ -172,23 +172,23 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
 
   // Move the dragged item in two steps to ensure that the reordering animation
   // in the top level apps grid is triggered:
-  // Step 1: move the dragged item upon a top level item then fire the
-  // reparenting timer.
+  // Step 1: move the dragged item upon a top level item (that is not occluded
+  // by the folder view) then fire the reparenting timer.
   // Step 2: move the dragged item to the right of a top level item.
   event_generator_->MoveMouseTo(
-      root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/1)
+      root_apps_grid_test_api_->GetViewAtVisualIndex(/*page=*/0, /*slot=*/2)
           ->GetBoundsInScreen()
           .CenterPoint());
   folder_apps_grid_test_api.FireFolderItemReparentTimer();
   event_generator_->MoveMouseTo(
-      CalculatePositionBetweenAdjacentTopLevelItems(/*prev_item_index=*/1));
+      CalculatePositionBetweenAdjacentTopLevelItems(/*prev_item_index=*/2));
   root_apps_grid_test_api_->FireReorderTimerAndWaitForAnimationDone();
   event_generator_->ReleaseLeftButton();
 
   // Calculate the expected top level item ids after moving `dragged_view` out
-  // of the parent folder. `dragged_view` should be inserted at the third slot.
+  // of the parent folder. `dragged_view` should be inserted at the fourth slot.
   std::vector<std::string> expected_top_level_ids = top_level_ids_after_merging;
-  expected_top_level_ids.insert(expected_top_level_ids.begin() + 2,
+  expected_top_level_ids.insert(expected_top_level_ids.begin() + 3,
                                 dragged_app_id);
 
   const std::vector<std::string> final_top_level_ids =

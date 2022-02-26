@@ -49,7 +49,7 @@ int GridTileWidthForType(ash::AppListConfigType type) {
     case ash::AppListConfigType::kRegular:
       return 96;
     case ash::AppListConfigType::kDense:
-      return 72;
+      return 80;
   }
 }
 
