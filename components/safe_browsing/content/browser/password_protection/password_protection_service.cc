@@ -172,7 +172,7 @@ PasswordProtectionService::MaybeCreateCommitDeferringCondition(
             GetPasswordProtectionReusedPasswordAccountType(
                 request->password_type(), username_for_last_shown_warning()))) {
       return std::make_unique<PasswordProtectionCommitDeferringCondition>(
-          navigation_handle, request_content);
+          navigation_handle, *request_content);
     }
   }
 
@@ -181,7 +181,7 @@ PasswordProtectionService::MaybeCreateCommitDeferringCondition(
         static_cast<PasswordProtectionRequestContent*>(request.get());
     if (request_content->web_contents() == web_contents) {
       return std::make_unique<PasswordProtectionCommitDeferringCondition>(
-          navigation_handle, request_content);
+          navigation_handle, *request_content);
     }
   }
   return nullptr;

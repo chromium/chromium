@@ -340,7 +340,7 @@ TEST_F(PasswordProtectionServiceTest,
   request_->Start();
   content::MockNavigationHandle mock_handle;
   auto condition = std::make_unique<PasswordProtectionCommitDeferringCondition>(
-      mock_handle, request_);
+      mock_handle, *request_.get());
   EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
   request_->Cancel(/*timed_out=*/true);
   EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
@@ -351,7 +351,7 @@ TEST_F(PasswordProtectionServiceTest,
   request_->Start();
   content::MockNavigationHandle mock_handle;
   auto condition = std::make_unique<PasswordProtectionCommitDeferringCondition>(
-      mock_handle, request_);
+      mock_handle, *request_.get());
   EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
   request_->Cancel(/*timed_out=*/false);
   EXPECT_EQ(0U, GetNumberOfDeferredNavigations());

@@ -45,17 +45,16 @@ class PasswordProtectionCommitDeferringConditionTest
     std::vector<password_manager::MatchingReusedCredential> credentials = {
         {"http://example.test"}, {"http://2.example.com"}};
 
-    scoped_refptr<PasswordProtectionRequestContent> request =
-        new PasswordProtectionRequestContent(
-            RenderViewHostTestHarness::web_contents(), GURL(), GURL(), GURL(),
-            RenderViewHostTestHarness::web_contents()->GetContentsMimeType(),
-            "username", PasswordType::PASSWORD_TYPE_UNKNOWN, credentials,
-            LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
-            /* password_field_exists*/ true, &service_,
-            /*request_timeout_in_ms=*/0);
+    request_ = new PasswordProtectionRequestContent(
+        RenderViewHostTestHarness::web_contents(), GURL(), GURL(), GURL(),
+        RenderViewHostTestHarness::web_contents()->GetContentsMimeType(),
+        "username", PasswordType::PASSWORD_TYPE_UNKNOWN, credentials,
+        LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+        /* password_field_exists*/ true, &service_,
+        /*request_timeout_in_ms=*/0);
 
     condition_ = std::make_unique<PasswordProtectionCommitDeferringCondition>(
-        mock_navigation_, request);
+        mock_navigation_, *request_.get());
   }
 
   void TearDown() override {
@@ -64,6 +63,7 @@ class PasswordProtectionCommitDeferringConditionTest
   }
 
  protected:
+  scoped_refptr<PasswordProtectionRequestContent> request_;
   std::unique_ptr<PasswordProtectionCommitDeferringCondition> condition_;
 
   MockNavigationHandle mock_navigation_;

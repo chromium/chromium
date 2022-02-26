@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_COMMIT_DEFERRING_CONDITION_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_PASSWORD_PROTECTION_PASSWORD_PROTECTION_COMMIT_DEFERRING_CONDITION_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/commit_deferring_condition.h"
 
 namespace content {
@@ -31,7 +31,7 @@ class PasswordProtectionCommitDeferringCondition
  public:
   PasswordProtectionCommitDeferringCondition(
       content::NavigationHandle& navigation_handle,
-      scoped_refptr<PasswordProtectionRequestContent> request);
+      PasswordProtectionRequestContent& request);
 
   PasswordProtectionCommitDeferringCondition(
       const PasswordProtectionCommitDeferringCondition&) = delete;
@@ -63,8 +63,7 @@ class PasswordProtectionCommitDeferringCondition
  private:
   // A pointer to the PasswordProtectionRequestContent on whose behalf this
   // condition is deferring navigations.
-  // TODO(bokan): Replace with a WeakPtr.
-  scoped_refptr<PasswordProtectionRequestContent> request_;
+  base::WeakPtr<PasswordProtectionRequestContent> request_;
 
   // The resume closure used to resume the navigation past this
   // CommitDeferringCondition.

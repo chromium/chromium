@@ -128,8 +128,13 @@ void PasswordProtectionRequestContent::Cancel(bool timed_out) {
 }
 
 void PasswordProtectionRequestContent::ResumeDeferredNavigations() {
-  for (PasswordProtectionCommitDeferringCondition* condition :
-       deferred_navigations_) {
+  for (auto itr = deferred_navigations_.begin();
+       itr != deferred_navigations_.end();) {
+    // ResumeNavigation will lead to the condition being destroyed which may
+    // remove it from deferred_navigations_. Make sure we move the iterator
+    // before calling it.
+    PasswordProtectionCommitDeferringCondition* condition = *itr;
+    itr++;
     condition->ResumeNavigation();
   }
 
