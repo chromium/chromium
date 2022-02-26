@@ -704,8 +704,8 @@ static_library("test_support") {
   }
 }
 
-# Fuchsia gpu integration tests use web_engine and a browser like shell
-# instead of an actual browser, so Fuchsia needs a separate target.
+# Fuchsia gpu integration tests on smart displays use web_engine and a browser
+# like shell instead of an actual browser, so Fuchsia needs a separate target.
 if (is_fuchsia) {
   group("fuchsia_telemetry_gpu_integration_test") {
     testonly = true
@@ -731,6 +731,7 @@ if (is_fuchsia) {
     testonly = true
     data = [ "//content/test/gpu/fuchsia_util.py" ]
     data_deps = [
+      "//chrome/app:chrome_fuchsia",
       "//fuchsia/engine:web_engine_shell",
       "//fuchsia/engine:web_engine_with_webui_installer",
     ]
