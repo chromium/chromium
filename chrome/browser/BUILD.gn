@@ -7592,12 +7592,15 @@ source_set("unexpire_flags") {
 }
 
 # Use a static library here because many test binaries depend on this but don't
-# require many files from it.This makes linking more efficient.
+# require many files from it. This makes linking more efficient.
 static_library("test_support") {
   testonly = true
 
   # Always include this via the main test support target.
-  visibility = [ "//chrome/test:test_support" ]
+  visibility = [
+    "//chrome/browser/extensions:test_support",
+    "//chrome/test:test_support",
+  ]
 
   sources = [
     "autofill/mock_autofill_popup_controller.cc",
@@ -7852,52 +7855,18 @@ static_library("test_support") {
 
   if (enable_extensions) {
     sources += [
-      "extensions/chrome_extension_test_notification_observer.cc",
-      "extensions/chrome_extension_test_notification_observer.h",
-      "extensions/chrome_test_extension_loader.cc",
-      "extensions/chrome_test_extension_loader.h",
-      "extensions/extension_action_test_util.cc",
-      "extensions/extension_action_test_util.h",
-      "extensions/load_error_waiter.cc",
-      "extensions/load_error_waiter.h",
-      "extensions/mock_extension_special_storage_policy.cc",
-      "extensions/mock_extension_special_storage_policy.h",
-      "extensions/test_blocklist.cc",
-      "extensions/test_blocklist.h",
-      "extensions/test_blocklist_state_fetcher.cc",
-      "extensions/test_blocklist_state_fetcher.h",
-      "extensions/test_extension_message_bubble_delegate.cc",
-      "extensions/test_extension_message_bubble_delegate.h",
-      "extensions/test_extension_service.cc",
-      "extensions/test_extension_service.h",
-      "extensions/test_extension_system.cc",
-      "extensions/test_extension_system.h",
       "media_galleries/media_galleries_test_util.cc",
       "media_galleries/media_galleries_test_util.h",
     ]
     deps += [
       "//components/crx_file",
-      "//components/drive:test_support",
-      "//components/safe_browsing/core/browser/db:v4_test_util",
-      "//components/services/unzip:in_process",
-      "//components/storage_monitor:test_support",
-      "//components/value_store:test_support",
-      "//extensions:test_support",
       "//extensions/browser",
-      "//extensions/browser:test_support",
-      "//extensions/common:mojom",
-      "//google_apis:test_support",
-      "//services/data_decoder/public/cpp:test_support",
     ]
-    if (!is_fuchsia) {
-      # Native Messaging is not available under Fuchsia.
-      sources += [
-        "extensions/api/messaging/native_messaging_test_util.cc",
-        "extensions/api/messaging/native_messaging_test_util.h",
-      ]
-    }
     if (is_chromeos_ash) {
-      deps += [ "//chrome/browser/chromeos" ]
+      deps += [
+        "//chrome/browser/chromeos",
+        "//extensions:test_support",
+      ]
     }
   }
 

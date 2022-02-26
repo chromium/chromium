@@ -352,6 +352,7 @@ static_library("test_support") {
 
     if (enable_extensions) {
       public_deps += [
+        "//chrome/browser/extensions:test_support",
         "//extensions/browser:test_support",
         "//extensions/common:test_support",
       ]
@@ -8538,8 +8539,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/extensions/api/tabs/tabs_interactive_test.cc",
       "../browser/extensions/api/tabs/window_open_interactive_apitest.cc",
       "../browser/extensions/app_window_uitest.cc",
-      "../browser/extensions/chrome_extension_test_notification_observer.cc",
-      "../browser/extensions/chrome_extension_test_notification_observer.h",
       "../browser/extensions/extension_apitest.cc",
       "../browser/extensions/extension_browsertest.cc",
       "../browser/extensions/extension_commands_global_registry_apitest.cc",

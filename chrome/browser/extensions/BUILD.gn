@@ -1351,21 +1351,65 @@ static_library("test_support") {
   sources = [
     "api/passwords_private/test_passwords_private_delegate.cc",
     "api/passwords_private/test_passwords_private_delegate.h",
+    "chrome_extension_test_notification_observer.cc",
+    "chrome_extension_test_notification_observer.h",
+    "chrome_test_extension_loader.cc",
+    "chrome_test_extension_loader.h",
+    "extension_action_test_util.cc",
+    "extension_action_test_util.h",
     "extension_management_test_util.cc",
     "extension_management_test_util.h",
     "external_testing_loader.cc",
     "external_testing_loader.h",
+    "load_error_waiter.cc",
+    "load_error_waiter.h",
     "menu_manager_test_observer.cc",
     "menu_manager_test_observer.h",
+    "mock_extension_special_storage_policy.cc",
+    "mock_extension_special_storage_policy.h",
+    "test_blocklist.cc",
+    "test_blocklist.h",
+    "test_blocklist_state_fetcher.cc",
+    "test_blocklist_state_fetcher.h",
+    "test_extension_message_bubble_delegate.cc",
+    "test_extension_message_bubble_delegate.h",
+    "test_extension_service.cc",
+    "test_extension_service.h",
+    "test_extension_system.cc",
+    "test_extension_system.h",
   ]
 
   deps = [
     ":extensions",
     "//base",
+    "//chrome/browser",
+    "//chrome/browser:test_support",
     "//chrome/browser/profiles:profile",
-    "//components/crx_file:crx_file",
+    "//chrome/browser/ui",
+    "//components/crx_file",
     "//components/policy/core/common:test_support",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/content",
+    "//components/sessions",
+    "//components/value_store:test_support",
     "//content/public/browser",
-    "//extensions/browser:browser",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//services/data_decoder/public/cpp:test_support",
   ]
+
+  if (!is_fuchsia) {
+    # Native Messaging is not available under Fuchsia.
+    sources += [
+      "api/messaging/native_messaging_test_util.cc",
+      "api/messaging/native_messaging_test_util.h",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//components/user_manager:test_support" ]
+  }
 }
