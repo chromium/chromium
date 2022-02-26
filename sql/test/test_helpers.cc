@@ -15,12 +15,15 @@
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/sqlite/sqlite3.h"
 
 namespace sql::test {
@@ -36,25 +39,53 @@ size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
   return s.ColumnInt(0);
 }
 
-// Get page size for the database.
-bool GetPageSize(sql::Database* db, int* page_size) {
-  sql::Statement s(db->GetUniqueStatement("PRAGMA page_size"));
-  if (!s.Step())
-    return false;
-  *page_size = s.ColumnInt(0);
-  return true;
+// Read a database's page size. Returns nullopt in case of error.
+absl::optional<int> ReadPageSize(const base::FilePath& db_path) {
+  // See https://www.sqlite.org/fileformat2.html#page_size
+  constexpr size_t kPageSizeOffset = 16;
+  uint8_t raw_page_size_bytes[2];
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid())
+    return absl::nullopt;
+  if (!file.ReadAndCheck(kPageSizeOffset, raw_page_size_bytes))
+    return absl::nullopt;
+
+  uint16_t raw_page_size;
+  base::ReadBigEndian(raw_page_size_bytes, &raw_page_size);
+  // The SQLite database format initially allocated a 16 bits for storing the
+  // page size. This worked out until SQLite wanted to support 64kb pages,
+  // because 65536 (64kb) doesn't fit in a 16-bit unsigned integer.
+  //
+  // Currently, the page_size field value of 1 is a special case for 64kb pages.
+  // The documentation hints at the path for future expansion -- the page_size
+  // field may become a litte-endian number that indicates the database page
+  // size divided by 256. This happens to work out because the smallest
+  // supported page size is 512.
+  const int page_size = (raw_page_size == 1) ? 65536 : raw_page_size;
+  // Sanity-check that the page size is valid.
+  constexpr uint16_t kMinPageSize = 512;
+  if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
+    return absl::nullopt;
+
+  return page_size;
 }
 
-// Get |name|'s root page number in the database.
-bool GetRootPage(sql::Database* db, const char* name, int* page_number) {
-  static const char kPageSql[] =
-      "SELECT rootpage FROM sqlite_schema WHERE name = ?";
-  sql::Statement s(db->GetUniqueStatement(kPageSql));
-  s.BindString(0, name);
-  if (!s.Step())
-    return false;
-  *page_number = s.ColumnInt(0);
-  return true;
+// Read the number of the root page of a B-tree (index/table).
+//
+// Returns a 0-indexed page number, not the raw SQLite page number.
+absl::optional<int> GetRootPage(sql::Database& db,
+                                base::StringPiece tree_name) {
+  sql::Statement select(
+      db.GetUniqueStatement("SELECT rootpage FROM sqlite_schema WHERE name=?"));
+  select.BindString(0, tree_name);
+  if (!select.Step())
+    return absl::nullopt;
+
+  int sqlite_page_number = select.ColumnInt(0);
+  if (!sqlite_page_number)
+    return absl::nullopt;
+
+  return sqlite_page_number - 1;
 }
 
 [[nodiscard]] bool IsWalDatabase(const base::FilePath& db_path) {
@@ -176,68 +207,29 @@ bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
   return CorruptSizeInHeader(db_path);
 }
 
-bool CorruptTableOrIndex(const base::FilePath& db_path,
-                         const char* tree_name,
-                         const char* update_sql) {
+bool CorruptIndexRootPage(const base::FilePath& db_path,
+                          base::StringPiece index_name) {
+  absl::optional<int> page_size = ReadPageSize(db_path);
+  if (!page_size.has_value())
+    return false;
+
   sql::Database db;
   if (!db.Open(db_path))
     return false;
 
-  int page_size = db.page_size();
-  if (!GetPageSize(&db, &page_size))
-    return false;
-
-  int page_number = 0;
-  if (!GetRootPage(&db, tree_name, &page_number))
-    return false;
-
-  // SQLite uses 1-based page numbering.
-  const long int page_ofs = (page_number - 1) * page_size;
-  std::unique_ptr<char[]> page_buf(new char[page_size]);
-
-  // Get the page into page_buf.
-  base::ScopedFILE file(base::OpenFile(db_path, "rb+"));
-  if (!file.get())
-    return false;
-  if (0 != fseek(file.get(), page_ofs, SEEK_SET))
-    return false;
-  if (1u != fread(page_buf.get(), page_size, 1, file.get()))
-    return false;
-
-  // Require the page to be a leaf node.  A multilevel tree would be
-  // very hard to restore correctly.
-  if (page_buf[0] != 0xD && page_buf[0] != 0xA)
-    return false;
-
-  // The update has to work, and make changes.
-  if (!db.Execute(update_sql))
-    return false;
-  if (db.GetLastChangeCount() == 0)
-    return false;
-
-  // Ensure that the database is fully flushed.
+  absl::optional<int> page_number = GetRootPage(db, index_name);
   db.Close();
-
-  // Check that the stored page actually changed.  This catches usage
-  // errors where |update_sql| is not related to |tree_name|.
-  std::unique_ptr<char[]> check_page_buf(new char[page_size]);
-  // The on-disk data should have changed.
-  if (0 != fflush(file.get()))
-    return false;
-  if (0 != fseek(file.get(), page_ofs, SEEK_SET))
-    return false;
-  if (1u != fread(check_page_buf.get(), page_size, 1, file.get()))
-    return false;
-  if (!memcmp(check_page_buf.get(), page_buf.get(), page_size))
+  if (!page_number.has_value())
     return false;
 
-  // Put the original page back.
-  if (0 != fseek(file.get(), page_ofs, SEEK_SET))
-    return false;
-  if (1u != fwrite(page_buf.get(), page_size, 1, file.get()))
-    return false;
+  std::vector<uint8_t> page_buffer(page_size.value());
+  const int64_t page_offset = int64_t{page_number.value()} * page_size.value();
 
-  return true;
+  base::File file(db_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WRITE);
+  if (!file.IsValid())
+    return false;
+  return file.WriteAndCheck(page_offset, page_buffer);
 }
 
 size_t CountSQLTables(sql::Database* db) {

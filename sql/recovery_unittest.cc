@@ -15,7 +15,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -216,169 +218,207 @@ TEST_F(SQLRecoveryTest, VirtualTable) {
             ExecuteWithResults(&db_, kXSql, "|", "\n"));
 }
 
-void RecoveryCallback(Database* db,
-                      const base::FilePath& db_path,
-                      const char* create_table,
-                      const char* create_index,
-                      int* record_error,
-                      int error,
-                      Statement* stmt) {
-  *record_error = error;
+// Our corruption handling assumes that a corrupt index doesn't impact
+// SQL statements that only operate on the associated table. This test verifies
+// the assumption.
+TEST_F(SQLRecoveryTest, TableIndependentFromCorruptIndex) {
+  static const char kCreateTable[] =
+      "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL)";
+  ASSERT_TRUE(db_.Execute(kCreateTable));
+  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX rows_index ON rows(indexed)"));
 
-  // Clear the error callback to prevent reentrancy.
-  db->reset_error_callback();
+  // Populate the table with powers of two. These numbers make it easy to see if
+  // SUM() missed a row.
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(1, 1)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(2, 2)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(4, 4)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
-  std::unique_ptr<Recovery> recovery = Recovery::Begin(db, db_path);
-  ASSERT_TRUE(recovery.get());
+  // SQL statement that performs a table scan. SUM(unindexed) heavily nudges
+  // SQLite to use the table instead of the index.
+  static const char kUnindexedCountSql[] = "SELECT SUM(unindexed) FROM rows";
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "No SQL statement should fail before corruption";
 
-  ASSERT_TRUE(recovery->db()->Execute(create_table));
-  ASSERT_TRUE(recovery->db()->Execute(create_index));
+  // SQL statement that performs an index scan.
+  static const char kIndexedCountSql[] =
+      "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kIndexedCountSql))
+      << "Table scan should not fail due to corrupt index";
 
-  size_t rows = 0;
-  ASSERT_TRUE(recovery->AutoRecoverTable("x", &rows));
+  db_.Close();
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
+  ASSERT_TRUE(Reopen());
 
-  ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    EXPECT_FALSE(db_.Execute(kIndexedCountSql))
+        << "Index scan on corrupt index should fail";
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Index scan on corrupt index should fail";
+  }
+
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "Table scan should not fail due to corrupt index";
 }
 
-// Build a database, corrupt it by making an index reference to
-// deleted row, then recover when a query selects that row.
 TEST_F(SQLRecoveryTest, RecoverCorruptIndex) {
-  static const char kCreateTable[] = "CREATE TABLE x (id INTEGER, v INTEGER)";
-  static const char kCreateIndex[] = "CREATE UNIQUE INDEX x_id ON x (id)";
+  static const char kCreateTable[] =
+      "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL)";
   ASSERT_TRUE(db_.Execute(kCreateTable));
+
+  static const char kCreateIndex[] =
+      "CREATE UNIQUE INDEX rows_index ON rows(indexed)";
   ASSERT_TRUE(db_.Execute(kCreateIndex));
 
-  // Insert a bit of data.
-  {
-    ASSERT_TRUE(db_.BeginTransaction());
+  // Populate the table with powers of two. These numbers make it easy to see if
+  // SUM() missed a row.
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(1, 1)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(2, 2)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(4, 4)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
 
-    static const char kInsertSql[] = "INSERT INTO x (id, v) VALUES (?, ?)";
-    Statement s(db_.GetUniqueStatement(kInsertSql));
-    for (int i = 0; i < 10; ++i) {
-      s.Reset(true);
-      s.BindInt(0, i);
-      s.BindInt(1, i);
-      EXPECT_FALSE(s.Step());
-      EXPECT_TRUE(s.Succeeded());
-    }
-
-    ASSERT_TRUE(db_.CommitTransaction());
-  }
   db_.Close();
-
-  // Delete a row from the table, while leaving the index entry which
-  // references it.
-  static const char kDeleteSql[] = "DELETE FROM x WHERE id = 0";
-  ASSERT_TRUE(sql::test::CorruptTableOrIndex(db_path_, "x_id", kDeleteSql));
-
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
   int error = SQLITE_OK;
-  db_.set_error_callback(base::BindRepeating(
-      &RecoveryCallback, &db_, db_path_, kCreateTable, kCreateIndex, &error));
+  db_.set_error_callback(
+      base::BindLambdaForTesting([&](int sqlite_error, Statement* statement) {
+        error = sqlite_error;
 
-  // This works before the callback is called.
-  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
-  EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
+        // Recovery::Begin() does not support a pre-existing error callback.
+        db_.reset_error_callback();
+        std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
+        ASSERT_TRUE(recovery.get());
 
-  // TODO(shess): Could this be delete?  Anything which fails should work.
-  static const char kSelectSql[] = "SELECT v FROM x WHERE id = 0";
-  ASSERT_FALSE(db_.Execute(kSelectSql));
-  EXPECT_EQ(SQLITE_CORRUPT, error);
+        ASSERT_TRUE(recovery->db()->Execute(kCreateTable));
+        ASSERT_TRUE(recovery->db()->Execute(kCreateIndex));
 
-  // Database handle has been poisoned.
-  EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
+        size_t rows = 0;
+        ASSERT_TRUE(recovery->AutoRecoverTable("rows", &rows));
+        ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
+      }));
 
-  ASSERT_TRUE(Reopen());
+  // SUM(unindexed) heavily nudges SQLite to use the table instead of the index.
+  static const char kUnindexedCountSql[] = "SELECT SUM(unindexed) FROM rows";
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "Table scan should not fail due to corrupt index";
+  EXPECT_EQ(SQLITE_OK, error)
+      << "Successful statement execution should not invoke the error callback";
 
-  // The recovered table should reflect the deletion.
-  static const char kSelectAllSql[] = "SELECT v FROM x ORDER BY id";
-  EXPECT_EQ("1,2,3,4,5,6,7,8,9",
-            ExecuteWithResults(&db_, kSelectAllSql, "|", ","));
+  static const char kIndexedCountSql[] =
+      "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
+  EXPECT_EQ("", ExecuteWithResult(&db_, kIndexedCountSql))
+      << "Index scan on corrupt index should fail";
+  EXPECT_EQ(SQLITE_CORRUPT, error)
+      << "Error callback should be called during scan on corrupt index";
 
-  // The failing statement should now succeed, with no results.
-  EXPECT_EQ("", ExecuteWithResults(&db_, kSelectSql, "|", ","));
-}
-
-// Build a database, corrupt it by making a table contain a row not
-// referenced by the index, then recover the database.
-TEST_F(SQLRecoveryTest, RecoverCorruptTable) {
-  static const char kCreateTable[] = "CREATE TABLE x (id INTEGER, v INTEGER)";
-  static const char kCreateIndex[] = "CREATE UNIQUE INDEX x_id ON x (id)";
-  ASSERT_TRUE(db_.Execute(kCreateTable));
-  ASSERT_TRUE(db_.Execute(kCreateIndex));
-
-  // Insert a bit of data.
-  {
-    ASSERT_TRUE(db_.BeginTransaction());
-
-    static const char kInsertSql[] = "INSERT INTO x (id, v) VALUES (?, ?)";
-    Statement s(db_.GetUniqueStatement(kInsertSql));
-    for (int i = 0; i < 10; ++i) {
-      s.Reset(true);
-      s.BindInt(0, i);
-      s.BindInt(1, i);
-      EXPECT_FALSE(s.Step());
-      EXPECT_TRUE(s.Succeeded());
-    }
-
-    ASSERT_TRUE(db_.CommitTransaction());
-  }
-  db_.Close();
-
-  // Delete a row from the index while leaving a table entry.
-  static const char kDeleteSql[] = "DELETE FROM x WHERE id = 0";
-  ASSERT_TRUE(sql::test::CorruptTableOrIndex(db_path_, "x", kDeleteSql));
-
-  ASSERT_TRUE(Reopen());
-
-  int error = SQLITE_OK;
-  db_.set_error_callback(base::BindRepeating(
-      &RecoveryCallback, &db_, db_path_, kCreateTable, kCreateIndex, &error));
-
-  // Index shows one less than originally inserted.
-  static const char kCountSql[] = "SELECT COUNT (*) FROM x";
-  EXPECT_EQ("9", ExecuteWithResult(&db_, kCountSql));
-
-  // A full table scan shows all of the original data.  Using column [v] to
-  // force use of the table rather than the index.
-  static const char kDistinctSql[] = "SELECT DISTINCT COUNT (v) FROM x";
-  EXPECT_EQ("10", ExecuteWithResult(&db_, kDistinctSql));
-
-  // Insert id 0 again.  Since it is not in the index, the insert
-  // succeeds, but results in a duplicate value in the table.
-  static const char kInsertSql[] = "INSERT INTO x (id, v) VALUES (0, 100)";
-  ASSERT_TRUE(db_.Execute(kInsertSql));
-
-  // Duplication is visible.
-  EXPECT_EQ("10", ExecuteWithResult(&db_, kCountSql));
-  EXPECT_EQ("11", ExecuteWithResult(&db_, kDistinctSql));
-
-  // This works before the callback is called.
-  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_schema";
-  EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
-
-  // TODO(shess): Figure out a statement which causes SQLite to notice the
-  // corruption.  SELECT doesn't see errors because missing index values aren't
-  // visible.  UPDATE or DELETE against v=0 don't see errors, even though the
-  // index item is missing.  I suspect SQLite only deletes the key in these
-  // cases, but doesn't verify that one or more keys were deleted.
-  ASSERT_FALSE(db_.Execute("INSERT INTO x (id, v) VALUES (0, 101)"));
-  EXPECT_EQ(SQLITE_CONSTRAINT_UNIQUE, error);
-
-  // Database handle has been poisoned.
-  EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
+  EXPECT_EQ("", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "Table scan should not succeed anymore on a poisoned database";
 
   ASSERT_TRUE(Reopen());
 
   // The recovered table has consistency between the index and the table.
-  EXPECT_EQ("10", ExecuteWithResult(&db_, kCountSql));
-  EXPECT_EQ("10", ExecuteWithResult(&db_, kDistinctSql));
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "Table should survive database recovery";
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kIndexedCountSql))
+      << "Index should be reconstructed during database recovery";
+}
 
-  // Only one of the values is retained.
-  static const char kSelectSql[] = "SELECT v FROM x WHERE id = 0";
-  const std::string results = ExecuteWithResult(&db_, kSelectSql);
-  EXPECT_TRUE(results=="100" || results=="0") << "Actual results: " << results;
+TEST_F(SQLRecoveryTest, RecoverCorruptTable) {
+  // The `filler` column is used to cause a record to overflow multiple pages.
+  static const char kCreateTable[] =
+      // clang-format off
+      "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL,"
+      "filler BLOB NOT NULL)";
+  // clang-format on
+  ASSERT_TRUE(db_.Execute(kCreateTable));
+
+  static const char kCreateIndex[] =
+      "CREATE UNIQUE INDEX rows_index ON rows(indexed)";
+  ASSERT_TRUE(db_.Execute(kCreateIndex));
+
+  // Populate the table with powers of two. These numbers make it easy to see if
+  // SUM() missed a row.
+  ASSERT_TRUE(db_.Execute(
+      "INSERT INTO rows(indexed, unindexed, filler) VALUES(1, 1, x'31')"));
+  ASSERT_TRUE(db_.Execute(
+      "INSERT INTO rows(indexed, unindexed, filler) VALUES(2, 2, x'32')"));
+  ASSERT_TRUE(db_.Execute(
+      "INSERT INTO rows(indexed, unindexed, filler) VALUES(4, 4, x'34')"));
+
+  constexpr int kDbPageSize = 4096;
+  {
+    // Insert a record that will overflow the page.
+    std::vector<uint8_t> large_buffer;
+    ASSERT_EQ(db_.page_size(), kDbPageSize)
+        << "Page overflow relies on specific size";
+    large_buffer.resize(kDbPageSize * 2);
+    base::ranges::fill(large_buffer, '8');
+    sql::Statement insert(db_.GetUniqueStatement(
+        "INSERT INTO rows(indexed,unindexed,filler) VALUES(8,8,?)"));
+    insert.BindBlob(0, large_buffer);
+    ASSERT_TRUE(insert.Run());
+  }
+
+  db_.Close();
+  {
+    // Zero out the last page of the database. This should be the overflow page
+    // allocated for the last inserted row. So, deleting it should corrupt the
+    // rows table.
+    base::File db_file(db_path_, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WRITE);
+    ASSERT_TRUE(db_file.IsValid());
+    int64_t db_size = db_file.GetLength();
+    ASSERT_GT(db_size, kDbPageSize)
+        << "The database should have multiple pages";
+    ASSERT_TRUE(db_file.SetLength(db_size - kDbPageSize));
+  }
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    ASSERT_TRUE(Reopen());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+    // PRAGMAs executed inside Database::Open() will error out.
+  }
+
+  int error = SQLITE_OK;
+  db_.set_error_callback(
+      base::BindLambdaForTesting([&](int sqlite_error, Statement* statement) {
+        error = sqlite_error;
+
+        // Recovery::Begin() does not support a pre-existing error callback.
+        db_.reset_error_callback();
+        std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
+        ASSERT_TRUE(recovery.get());
+
+        ASSERT_TRUE(recovery->db()->Execute(kCreateTable));
+        ASSERT_TRUE(recovery->db()->Execute(kCreateIndex));
+
+        size_t rows = 0;
+        ASSERT_TRUE(recovery->AutoRecoverTable("rows", &rows));
+        ASSERT_TRUE(Recovery::Recovered(std::move(recovery)));
+      }));
+
+  // SUM(unindexed) heavily nudges SQLite to use the table instead of the index.
+  static const char kUnindexedCountSql[] = "SELECT SUM(unindexed) FROM rows";
+  EXPECT_FALSE(db_.Execute(kUnindexedCountSql))
+      << "Table scan on corrupt table should fail";
+  EXPECT_EQ(SQLITE_CORRUPT, error)
+      << "Error callback should be called during scan on corrupt index";
+
+  ASSERT_TRUE(Reopen());
+
+  // All rows should be recovered. Only the BLOB in the last row was damaged.
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kUnindexedCountSql))
+      << "Table should survive database recovery";
+  static const char kIndexedCountSql[] =
+      "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kIndexedCountSql))
+      << "Index should be reconstructed during database recovery";
 }
 
 TEST_F(SQLRecoveryTest, Meta) {
@@ -886,26 +926,22 @@ TEST_F(SQLRecoveryTest, RecoverDatabaseDelete) {
 
 // Allow callers to validate the database between recovery and commit.
 TEST_F(SQLRecoveryTest, BeginRecoverDatabase) {
-  // Create a table with a broken index.
-  ASSERT_TRUE(db_.Execute("CREATE TABLE t (id INTEGER PRIMARY KEY, c TEXT)"));
-  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX t_id ON t (id)"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO t VALUES (1, 'hello world')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO t VALUES (2, 'testing')"));
-  ASSERT_TRUE(db_.Execute("INSERT INTO t VALUES (3, 'nope')"));
+  static const char kCreateTable[] =
+      "CREATE TABLE rows(indexed INTEGER NOT NULL, unindexed INTEGER NOT NULL)";
+  ASSERT_TRUE(db_.Execute(kCreateTable));
 
-  // Inject corruption into the index.
+  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX rows_index ON rows(indexed)"));
+
+  // Populate the table with powers of two. These numbers make it easy to see if
+  // SUM() missed a row.
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(1, 1)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(2, 2)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(4, 4)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(indexed, unindexed) VALUES(8, 8)"));
+
   db_.Close();
-  static const char kDeleteSql[] = "DELETE FROM t WHERE id = 3";
-  ASSERT_TRUE(sql::test::CorruptTableOrIndex(db_path_, "t_id", kDeleteSql));
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
-
-  // id as read from index.
-  static const char kSelectIndexIdSql[] = "SELECT id FROM t INDEXED BY t_id";
-  EXPECT_EQ("1,2,3", ExecuteWithResults(&db_, kSelectIndexIdSql, "|", ","));
-
-  // id as read from table.
-  static const char kSelectTableIdSql[] = "SELECT id FROM t NOT INDEXED";
-  EXPECT_EQ("1,2", ExecuteWithResults(&db_, kSelectTableIdSql, "|", ","));
 
   // Run recovery code, then rollback.  Database remains the same.
   {
@@ -916,10 +952,19 @@ TEST_F(SQLRecoveryTest, BeginRecoverDatabase) {
   }
   db_.Close();
   ASSERT_TRUE(Reopen());
-  EXPECT_EQ("1,2,3", ExecuteWithResults(&db_, kSelectIndexIdSql, "|", ","));
-  EXPECT_EQ("1,2", ExecuteWithResults(&db_, kSelectTableIdSql, "|", ","));
 
-  // Run recovery code, then commit.  The failing row is dropped.
+  static const char kIndexedCountSql[] =
+      "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_CORRUPT);
+    EXPECT_EQ("", ExecuteWithResult(&db_, kIndexedCountSql))
+        << "Index should still be corrupted after recovery rollback";
+    EXPECT_TRUE(expecter.SawExpectedErrors())
+        << "Index should still be corrupted after recovery rollback";
+  }
+
+  // Run recovery code, then commit.  The index is recovered.
   {
     std::unique_ptr<Recovery> recovery =
         Recovery::BeginRecoverDatabase(&db_, db_path_);
@@ -928,8 +973,9 @@ TEST_F(SQLRecoveryTest, BeginRecoverDatabase) {
   }
   db_.Close();
   ASSERT_TRUE(Reopen());
-  EXPECT_EQ("1,2", ExecuteWithResults(&db_, kSelectIndexIdSql, "|", ","));
-  EXPECT_EQ("1,2", ExecuteWithResults(&db_, kSelectTableIdSql, "|", ","));
+
+  EXPECT_EQ("15", ExecuteWithResult(&db_, kIndexedCountSql))
+      << "Index should be reconstructed after database recovery";
 }
 
 TEST_F(SQLRecoveryTest, AttachFailure) {

@@ -49,8 +49,10 @@ class TopSitesDatabase {
   FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Version4);
   FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery1);
   FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery2);
-  FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery3);
-  FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery4);
+  FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery3to4_CorruptIndex);
+  FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest, Recovery4_CorruptIndex);
+  FRIEND_TEST_ALL_PREFIXES(TopSitesDatabaseTest,
+                           Recovery4_CorruptIndexAndLostRow);
 
   // Rank used to indicate that a URL is not stored in the database.
   static const int kRankOfNonExistingURL;

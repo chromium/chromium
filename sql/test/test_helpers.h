@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
+#include "base/strings/string_piece_forward.h"
 
 // Collection of test-only convenience functions.
 
@@ -22,8 +22,7 @@ namespace sql {
 class Database;
 }
 
-namespace sql {
-namespace test {
+namespace sql::test {
 
 // SQLite stores the database size in the header, and if the actual
 // OS-derived size is smaller, the database is considered corrupt.
@@ -44,25 +43,14 @@ namespace test {
 // already open elsewhere.  Blocks until a write lock can be acquired.
 [[nodiscard]] bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path);
 
-// Frequently corruption is a result of failure to atomically update
-// pages in different structures.  For instance, if an index update
-// takes effect but the corresponding table update does not.  This
-// helper restores the prior version of a b-tree root after running an
-// update which changed that b-tree.  The named b-tree must exist and
-// must be a leaf node (either index or table).  Returns true if the
-// on-disk file is successfully modified, and the restored page
-// differs from the updated page.
+// Simulates total index corruption by zeroing the root page of an index B-tree.
 //
-// The resulting database should be possible to open, and many
-// statements should work.  SQLITE_CORRUPT will be thrown if a query
-// through the index finds the row missing in the table.
-//
-// TODO(shess): It would be very helpful to allow a parameter to the
-// sql statement.  Perhaps a version with a string parameter would be
-// sufficient, given affinity rules?
-[[nodiscard]] bool CorruptTableOrIndex(const base::FilePath& db_path,
-                                       const char* tree_name,
-                                       const char* update_sql);
+// The corrupted database will still open successfully. SELECTs on the table
+// associated with the index will work, as long as they don't access the index.
+// However, any query that accesses the index will fail with SQLITE_CORRUPT.
+// DROPping the table or the index will fail.
+[[nodiscard]] bool CorruptIndexRootPage(const base::FilePath& db_path,
+                                        base::StringPiece index_name);
 
 // Return the number of tables in sqlite_schema.
 [[nodiscard]] size_t CountSQLTables(sql::Database* db);
@@ -144,7 +132,6 @@ struct ColumnInfo {
   bool is_auto_incremented;
 };
 
-}  // namespace test
-}  // namespace sql
+}  // namespace sql::test
 
 #endif  // SQL_TEST_TEST_HELPERS_H_
