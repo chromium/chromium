@@ -4,14 +4,12 @@
 
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <fuchsia/mem/cpp/fidl.h>
+#include <lib/zx/vmo.h>
 #include <zircon/rights.h>
 #include <zircon/types.h>
 
 #include <string>
 
-#include <lib/zx/vmo.h>
-
-#include "base/cxx17_backports.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
@@ -110,7 +108,7 @@ class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
 
     // Ensure the field was actually populated.
     EXPECT_GT(expected_ua.length(),
-              base::size(kDefaultUserAgentStringWithVersionPlaceholder));
+              std::size(kDefaultUserAgentStringWithVersionPlaceholder));
     EXPECT_NE(expected_ua.find(version_info::GetVersionNumber()),
               std::string::npos);
 

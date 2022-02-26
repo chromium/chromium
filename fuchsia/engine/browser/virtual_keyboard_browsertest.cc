@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
   testing::InSequence s;
   virtualkeyboard::TextType previous_text_type =
       virtualkeyboard::TextType::ALPHANUMERIC;
-  std::vector<base::RunLoop> set_type_loops(base::size(kInputTypeMappings));
-  for (size_t i = 0; i < base::size(kInputTypeMappings); ++i) {
+  std::vector<base::RunLoop> set_type_loops(std::size(kInputTypeMappings));
+  for (size_t i = 0; i < std::size(kInputTypeMappings); ++i) {
     const auto& field_type_pair = kInputTypeMappings[i];
     DCHECK_NE(field_type_pair.second, previous_text_type);
 
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
 
   controller_->AwaitWatchAndRespondWith(false);
 
-  for (size_t i = 0; i < base::size(kInputTypeMappings); ++i) {
+  for (size_t i = 0; i < std::size(kInputTypeMappings); ++i) {
     content::SimulateTapAt(
         web_contents_, GetCoordinatesOfInputField(kInputTypeMappings[i].first));
 
