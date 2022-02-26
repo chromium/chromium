@@ -51,17 +51,9 @@ LINKER_DRIVER_ARG_PREFIX = '-Wcrl,'
 # -Wcrl,strippath,<strip_path>
 #    Sets the path to the strip to run with -Wcrl,strip, in which case
 #    `xcrun` is not used to invoke it.
-#
-# -Wcrl,pad_linkedit,<size>
-#    Pads the total size of the linker's output to the specified size in bytes,
-#    after running the linker and `strip`. Padding is added to the __LINKEDIT
-#    segment by the pad_linkedit.py script located in the same directory as this
-#    script. It is an error to attempt to reduce the size of the linked image
-#    using this option.
 
 
 class LinkerDriver(object):
-
     def __init__(self, args):
         """Creates a new linker driver.
 
@@ -82,7 +74,6 @@ class LinkerDriver(object):
             ('unstripped,', self.run_save_unstripped),
             ('strippath,', self.set_strip_path),
             ('strip,', self.run_strip),
-            ('pad_linkedit,', self.run_pad_linkedit),
         ]
 
         # Linker driver actions can modify the these values.
@@ -285,21 +276,6 @@ class LinkerDriver(object):
             No output - this step is run purely for its side-effect.
         """
         self._strip_cmd = [strip_path]
-        return []
-
-    def run_pad_linkedit(self, size_string):
-        """Linker driver action for -Wcrl,pad_linkedit,<size>.
-
-        Args:
-            size_string: string, the size to pass to pad_linkedit.py.
-
-        Returns:
-            list of string, Build step outputs.
-        """
-        pad_linkedit_command = (os.path.join(os.path.dirname(__file__),
-                                             'pad_linkedit.py'),
-                                self._get_linker_output(), size_string)
-        subprocess.check_call(pad_linkedit_command)
         return []
 
 
