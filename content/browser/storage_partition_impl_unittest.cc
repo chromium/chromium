@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/storage_partition_impl.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,7 +18,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -50,7 +51,6 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/generated_code_cache_settings.h"
@@ -392,8 +392,8 @@ class RemoveLocalStorageTester {
     std::vector<uint8_t> serialized_origin(origin_str.begin(),
                                            origin_str.end());
     std::vector<uint8_t> key;
-    key.reserve(base::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix, kMetaPrefix + base::size(kMetaPrefix));
+    key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
+    key.insert(key.end(), kMetaPrefix, kMetaPrefix + std::size(kMetaPrefix));
     key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
     return key;
   }

@@ -167,7 +167,7 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
 #if BUILDFLAG(IS_WIN)
   std::wstring file_part = base::FilePath(suggested_path).BaseName().value();
   wchar_t file_name[MAX_PATH];
-  base::wcslcpy(file_name, file_part.c_str(), base::size(file_name));
+  base::wcslcpy(file_name, file_part.c_str(), std::size(file_name));
   OPENFILENAME save_as;
   ZeroMemory(&save_as, sizeof(save_as));
   save_as.lStructSize = sizeof(OPENFILENAME);
@@ -178,7 +178,7 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
   save_as.hwndOwner =
       web_contents->GetNativeView()->GetHost()->GetAcceleratedWidget();
   save_as.lpstrFile = file_name;
-  save_as.nMaxFile = base::size(file_name);
+  save_as.nMaxFile = std::size(file_name);
 
   std::wstring directory;
   if (!suggested_path.empty())

@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ppapi/c/dev/ppb_truetype_font_dev.h"
 #include "ppapi/proxy/serialized_structs.h"
@@ -30,7 +29,7 @@ const PP_TrueTypeFontWeight_Dev kPepperFontWeights[] = {
     PP_TRUETYPEFONTWEIGHT_ULTRABOLD,
     PP_TRUETYPEFONTWEIGHT_HEAVY,
 };
-const NSInteger kPepperFontWeightsLength = base::size(kPepperFontWeights);
+const NSInteger kPepperFontWeightsLength = std::size(kPepperFontWeights);
 
 }  // namespace
 

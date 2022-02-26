@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/download/save_package.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -15,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/download/save_file_manager.h"
-#include "content/browser/download/save_package.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "content/test/test_render_view_host.h"
@@ -187,7 +187,7 @@ static const struct {
 };
 
 TEST_F(SavePackageTest, TestSuccessfullyGenerateSavePackageFilename) {
-  for (size_t i = 0; i < base::size(kGeneratedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kGeneratedFiles); ++i) {
     base::FilePath::StringType file_name;
     bool ok = GetGeneratedFilename(true,
                                    kGeneratedFiles[i].disposition,
@@ -200,7 +200,7 @@ TEST_F(SavePackageTest, TestSuccessfullyGenerateSavePackageFilename) {
 }
 
 TEST_F(SavePackageTest, TestUnSuccessfullyGenerateSavePackageFilename) {
-  for (size_t i = 0; i < base::size(kGeneratedFiles); ++i) {
+  for (size_t i = 0; i < std::size(kGeneratedFiles); ++i) {
     base::FilePath::StringType file_name;
     bool ok = GetGeneratedFilename(false,
                                    kGeneratedFiles[i].disposition,

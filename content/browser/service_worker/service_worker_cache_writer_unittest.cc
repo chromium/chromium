@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
@@ -169,7 +168,7 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
     auto response_head = network::mojom::URLResponseHead::New();
     const char data[] = "HTTP/1.1 200 OK\0\0";
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-        std::string(data, base::size(data)));
+        std::string(data, std::size(data)));
     response_head->content_length = len;
     net::Error error = cache_writer_->MaybeWriteHeaders(
         std::move(response_head), CreateWriteCallback());

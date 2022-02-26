@@ -398,14 +398,14 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
   node.GetString("role", &role_value);
   WriteAttribute(true, role_value, &line);
 
-  for (unsigned i = 0; i < base::size(kBoolAttributes); i++) {
+  for (unsigned i = 0; i < std::size(kBoolAttributes); i++) {
     const char* bool_attribute = kBoolAttributes[i];
     absl::optional<bool> value = node.FindBoolPath(bool_attribute);
     if (value && *value)
       WriteAttribute(/*include_by_default=*/true, bool_attribute, &line);
   }
 
-  for (unsigned i = 0; i < base::size(kStringAttributes); i++) {
+  for (unsigned i = 0; i < std::size(kStringAttributes); i++) {
     const char* string_attribute = kStringAttributes[i];
     std::string value;
     if (!node.GetString(string_attribute, &value) || value.empty())
@@ -416,7 +416,7 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
         base::StringPrintf("%s='%s'", string_attribute, value.c_str()), &line);
   }
 
-  for (unsigned i = 0; i < base::size(kIntAttributes); i++) {
+  for (unsigned i = 0; i < std::size(kIntAttributes); i++) {
     const char* attribute_name = kIntAttributes[i];
     int value = node.FindIntKey(attribute_name).value_or(0);
     if (value == 0)
@@ -425,7 +425,7 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
                    &line);
   }
 
-  for (unsigned i = 0; i < base::size(kDoubleAttributes); i++) {
+  for (unsigned i = 0; i < std::size(kDoubleAttributes); i++) {
     const char* attribute_name = kDoubleAttributes[i];
     int value = node.FindIntKey(attribute_name).value_or(0);
     if (value == 0)

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -303,7 +302,7 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
       switches::kVModule,
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches,
-                             base::size(kForwardSwitches));
+                             std::size(kForwardSwitches));
 
   // All processes should have a non-empty metrics name.
   if (data_.metrics_name.empty())

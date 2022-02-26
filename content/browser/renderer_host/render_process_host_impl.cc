@@ -3501,7 +3501,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #endif
   };
   renderer_cmd->CopySwitchesFrom(browser_cmd, kSwitchNames,
-                                 base::size(kSwitchNames));
+                                 std::size(kSwitchNames));
 
   // |switches::kGaiaConfig| can be set via browser command-line arguments,
   // usually by developers working on signin code. The switch, however, cannot

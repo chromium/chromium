@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -38,7 +37,7 @@ TEST_F(JavaTypeTest, ScalarTypes) {
      "Ljava/lang/Object;"},
     {"my.nested.Type$Foo", JavaType::TypeObject, "my/nested/Type$Foo",
      "Lmy/nested/Type$Foo;"}};
-  for (size_t i = 0; i < base::size(scalar_types); ++i) {
+  for (size_t i = 0; i < std::size(scalar_types); ++i) {
     JavaType jt = JavaType::CreateFromBinaryName(scalar_types[i].binary_type);
     EXPECT_EQ(scalar_types[i].java_type, jt.type);
     EXPECT_FALSE(jt.inner_type);

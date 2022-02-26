@@ -221,8 +221,8 @@ const GpuFeatureData GetGpuFeatureData(
     {"direct_rendering_display_compositor", gpu::kGpuFeatureStatusEnabled,
      !features::IsDrDcEnabled(), DisableInfo::NotProblem(), false},
   };
-  DCHECK(index < base::size(kGpuFeatureData));
-  *eof = (index == base::size(kGpuFeatureData) - 1);
+  DCHECK(index < std::size(kGpuFeatureData));
+  *eof = (index == std::size(kGpuFeatureData) - 1);
   return kGpuFeatureData[index];
 }
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -1266,13 +1265,12 @@ TEST_F(AuctionV8HelperTest, CompileWasm) {
 
   v8::Local<v8::WasmModuleObject> wasm_module;
   absl::optional<std::string> compile_error;
-  ASSERT_TRUE(
-      helper_
-          ->CompileWasm(std::string(kMinimalWasmModuleBytes,
-                                    base::size(kMinimalWasmModuleBytes)),
-                        GURL("https://foo.test/"),
-                        /*debug_id=*/nullptr, compile_error)
-          .ToLocal(&wasm_module));
+  ASSERT_TRUE(helper_
+                  ->CompileWasm(std::string(kMinimalWasmModuleBytes,
+                                            std::size(kMinimalWasmModuleBytes)),
+                                GURL("https://foo.test/"),
+                                /*debug_id=*/nullptr, compile_error)
+                  .ToLocal(&wasm_module));
   EXPECT_FALSE(compile_error.has_value());
 }
 
@@ -1317,7 +1315,7 @@ TEST_F(AuctionV8HelperTest, CompileWasmDebug) {
   absl::optional<std::string> error_out;
   EXPECT_TRUE(CompileWasmOnV8ThreadAndWait(
       id, GURL("https://example.com"),
-      std::string(kMinimalWasmModuleBytes, base::size(kMinimalWasmModuleBytes)),
+      std::string(kMinimalWasmModuleBytes, std::size(kMinimalWasmModuleBytes)),
       &error_out));
   TestDevToolsAgentClient::Event script_parsed =
       debug_client.WaitForMethodNotification("Debugger.scriptParsed");
@@ -1348,13 +1346,12 @@ TEST_F(AuctionV8HelperTest, CloneWasmModule) {
   // Compile the WASM module...
   v8::Local<v8::WasmModuleObject> wasm_module;
   absl::optional<std::string> error_msg;
-  ASSERT_TRUE(
-      helper_
-          ->CompileWasm(std::string(kMinimalWasmModuleBytes,
-                                    base::size(kMinimalWasmModuleBytes)),
-                        GURL("https://foo.test/"),
-                        /*debug_id=*/nullptr, error_msg)
-          .ToLocal(&wasm_module));
+  ASSERT_TRUE(helper_
+                  ->CompileWasm(std::string(kMinimalWasmModuleBytes,
+                                            std::size(kMinimalWasmModuleBytes)),
+                                GURL("https://foo.test/"),
+                                /*debug_id=*/nullptr, error_msg)
+                  .ToLocal(&wasm_module));
   EXPECT_FALSE(error_msg.has_value());
 
   // And the test script.

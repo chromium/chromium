@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1007,7 +1006,7 @@ TEST_F(InputRouterImplTest, MAYBE_GestureTypesIgnoringAck) {
       WebInputEvent::Type::kGesturePinchUpdate,
       WebInputEvent::Type::kGesturePinchEnd,
       WebInputEvent::Type::kGestureScrollEnd};
-  for (size_t i = 0; i < base::size(eventTypes); ++i) {
+  for (size_t i = 0; i < std::size(eventTypes); ++i) {
     WebInputEvent::Type type = eventTypes[i];
     if (type == WebInputEvent::Type::kGestureFlingStart ||
         type == WebInputEvent::Type::kGestureFlingCancel) {
@@ -1105,7 +1104,7 @@ TEST_F(InputRouterImplTest, RequiredEventAckTypes) {
       WebInputEvent::Type::kGestureScrollUpdate,
       WebInputEvent::Type::kTouchStart,
       WebInputEvent::Type::kTouchMove};
-  for (size_t i = 0; i < base::size(kRequiredEventAckTypes); ++i) {
+  for (size_t i = 0; i < std::size(kRequiredEventAckTypes); ++i) {
     const WebInputEvent::Type required_ack_type = kRequiredEventAckTypes[i];
     ASSERT_TRUE(ShouldBlockEventStream(GetEventWithType(required_ack_type)))
         << WebInputEvent::GetName(required_ack_type);

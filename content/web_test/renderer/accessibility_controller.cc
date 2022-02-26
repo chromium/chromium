@@ -4,7 +4,6 @@
 
 #include "content/web_test/renderer/accessibility_controller.h"
 
-#include "base/cxx17_backports.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -235,7 +234,7 @@ void AccessibilityController::PostNotification(
   };
   local_frame->CallFunctionEvenIfScriptDisabled(
       v8::Local<v8::Function>::New(isolate, notification_callback_),
-      context->Global(), base::size(argv), argv);
+      context->Global(), std::size(argv), argv);
 }
 
 void AccessibilityController::LogAccessibilityEvents() {

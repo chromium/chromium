@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(
   const NSSize window_offsets[] = {
       {1.0, 0.0}, {-1.0, 0.0}, {0.0, 1.0}, {0.0, -1.0}};
   NSRect window_b_frame = [window_b frame];
-  for (size_t i = 0; i < base::size(window_offsets); i++) {
+  for (size_t i = 0; i < std::size(window_offsets); i++) {
     // Move window b so that it no longer completely covers
     // window_a's webcontents.
     NSRect offset_window_frame = NSOffsetRect(

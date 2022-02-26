@@ -130,7 +130,7 @@ class MidiSessionClientForTesting : public midi::mojom::MidiSessionClient {
 
 class MidiHostTest : public testing::Test {
  public:
-  MidiHostTest() : data_(kNoteOn, kNoteOn + base::size(kNoteOn)), port_id_(0) {
+  MidiHostTest() : data_(kNoteOn, kNoteOn + std::size(kNoteOn)), port_id_(0) {
     browser_context_ = std::make_unique<TestBrowserContext>();
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
     std::unique_ptr<FakeMidiManagerFactory> factory =

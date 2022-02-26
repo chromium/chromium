@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -157,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
 
   unsigned num_added_nodes = static_cast<unsigned>(
       content::EvalJs(shell(), "addTestNodes()").ExtractInt());
-  ASSERT_EQ(num_added_nodes, base::size(kExpectedFontFamilyNames));
+  ASSERT_EQ(num_added_nodes, std::size(kExpectedFontFamilyNames));
 
   std::unique_ptr<base::DictionaryValue> params =
       std::make_unique<base::DictionaryValue>();
@@ -177,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
       result->FindKeyOfType("nodeIds", base::Value::Type::LIST)->Clone();
   base::Value::ConstListView nodes_view = node_list.GetListDeprecated();
   ASSERT_EQ(nodes_view.size(), num_added_nodes);
-  ASSERT_EQ(nodes_view.size(), base::size(kExpectedFontFamilyNames));
+  ASSERT_EQ(nodes_view.size(), std::size(kExpectedFontFamilyNames));
   for (size_t i = 0; i < nodes_view.size(); ++i) {
     const base::Value& nodeId = nodes_view[i];
     params = std::make_unique<base::DictionaryValue>();

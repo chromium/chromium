@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -58,7 +57,7 @@ const char kWasmUrl[] = "https://foo.test/helper.wasm";
 // Packs kToyWasm into a std::string.
 std::string ToyWasm() {
   return std::string(reinterpret_cast<const char*>(kToyWasm),
-                     base::size(kToyWasm));
+                     std::size(kToyWasm));
 }
 
 // Creates generateBid() scripts with the specified result value, in raw

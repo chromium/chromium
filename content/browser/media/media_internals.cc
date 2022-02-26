@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -74,7 +73,7 @@ std::string EffectsToString(int effects) {
   };
 
   std::string ret;
-  for (size_t i = 0; i < base::size(flags); ++i) {
+  for (size_t i = 0; i < std::size(flags); ++i) {
     if (effects & flags[i].flag) {
       if (!ret.empty())
         ret += " | ";

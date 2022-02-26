@@ -11,7 +11,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -204,7 +203,7 @@ void BrowserAccessibilityStateImplWin::UpdateHistogramsOnOtherThread() {
   bool satogo = false;  // Very few users -- do not need uniques
   for (size_t i = 0; i < module_count; i++) {
     TCHAR filename[MAX_PATH];
-    GetModuleFileName(modules[i], filename, base::size(filename));
+    GetModuleFileName(modules[i], filename, std::size(filename));
     std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
     if (base::LowerCaseEqualsASCII(module_name, "fsdomsrv.dll"))
       g_jaws = true;

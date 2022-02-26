@@ -7,11 +7,9 @@
 // /third_party/blink/public/common/messaging/message_port_descriptor.h.
 
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/cxx17_backports.h"
 #include "base/unguessable_token.h"
 #include "content/public/android/content_jni_headers/AppWebMessagePortDescriptor_jni.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -43,7 +41,7 @@ JNI_AppWebMessagePortDescriptor_CreatePair(JNIEnv* env) {
   uint64_t pointers[2] = {reinterpret_cast<uint64_t>(port0),
                           reinterpret_cast<uint64_t>(port1)};
   return base::android::ToJavaLongArray(
-      env, reinterpret_cast<const int64_t*>(pointers), base::size(pointers));
+      env, reinterpret_cast<const int64_t*>(pointers), std::size(pointers));
 }
 
 JNI_EXPORT jlong JNI_AppWebMessagePortDescriptor_Create(JNIEnv* env,
@@ -134,8 +132,7 @@ JNI_AppWebMessagePortDescriptor_PassSerialized(
                             id.GetLowForSerialization(),
                             id.GetHighForSerialization(), sequence_number};
   return base::android::ToJavaLongArray(
-      env, reinterpret_cast<const int64_t*>(serialized),
-      base::size(serialized));
+      env, reinterpret_cast<const int64_t*>(serialized), std::size(serialized));
 }
 
 JNI_EXPORT void JNI_AppWebMessagePortDescriptor_CloseAndDestroy(

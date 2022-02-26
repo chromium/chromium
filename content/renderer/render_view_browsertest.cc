@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -162,7 +161,7 @@ int ConvertMockKeyboardModifier(MockKeyboard::Modifiers modifiers) {
       {MockKeyboard::RIGHT_ALT, ui::EF_ALT_DOWN},
   };
   int flags = 0;
-  for (size_t i = 0; i < base::size(kModifierMap); ++i) {
+  for (size_t i = 0; i < std::size(kModifierMap); ++i) {
     if (kModifierMap[i].src & modifiers) {
       flags |= kModifierMap[i].dst;
     }
@@ -712,7 +711,7 @@ TEST_F(RenderViewImplTest, OnNavigationHttpPost) {
 
   // Set up post data.
   const char raw_data[] = "post \0\ndata";
-  const size_t length = base::size(raw_data);
+  const size_t length = std::size(raw_data);
   scoped_refptr<network::ResourceRequestBody> post_data(
       new network::ResourceRequestBody);
   post_data->AppendBytes(raw_data, length);
@@ -894,7 +893,7 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
       blink::kWebNavigationTypeOther,
   };
 
-  for (size_t i = 0; i < base::size(kNavTypes); ++i) {
+  for (size_t i = 0; i < std::size(kNavTypes); ++i) {
     auto navigation_info = std::make_unique<blink::WebNavigationInfo>();
     navigation_info->url_request = blink::WebURLRequest(GURL("http://foo.com"));
     navigation_info->url_request.SetRequestorOrigin(
@@ -1368,7 +1367,7 @@ TEST_F(RenderViewImplTextInputStateChanged, OnImeTypeChanged) {
     input_mode = updated_states()[0]->mode;
     EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, type);
 
-    for (size_t test = 0; test < base::size(kInputModeTestCases); test++) {
+    for (size_t test = 0; test < std::size(kInputModeTestCases); test++) {
       const InputModeTestCase* test_case = &kInputModeTestCases[test];
       std::u16string javascript = base::ASCIIToUTF16(base::StringPrintf(
           "document.getElementById('%s').focus();", test_case->input_id));
@@ -1943,7 +1942,7 @@ TEST_F(RenderViewImplTest, ImeComposition) {
       {IME_FINISHCOMPOSINGTEXT, false, -1, -1, L"", L"\xC548\xB155"},
   };
 
-  for (size_t i = 0; i < base::size(kImeMessages); i++) {
+  for (size_t i = 0; i < std::size(kImeMessages); i++) {
     const ImeMessage* ime_message = &kImeMessages[i];
     switch (ime_message->command) {
       case IME_INITIALIZE:

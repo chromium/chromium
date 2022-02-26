@@ -619,7 +619,7 @@ void GpuProcessHost::GetHasGpuProcess(base::OnceCallback<void(bool)> callback) {
     return;
   }
   bool has_gpu = false;
-  for (size_t i = 0; i < base::size(g_gpu_process_hosts); ++i) {
+  for (size_t i = 0; i < std::size(g_gpu_process_hosts); ++i) {
     GpuProcessHost* host = g_gpu_process_hosts[i];
     if (host && ValidateHost(host)) {
       has_gpu = true;
@@ -1198,7 +1198,7 @@ bool GpuProcessHost::LaunchGpuProcess() {
   // If you want a browser command-line switch passed to the GPU process
   // you need to add it to |kSwitchNames| at the beginning of this file.
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                             base::size(kSwitchNames));
+                             std::size(kSwitchNames));
   cmd_line->CopySwitchesFrom(
       browser_command_line, switches::kGLSwitchesCopiedFromGpuProcessHost,
       switches::kGLSwitchesCopiedFromGpuProcessHostNumSwitches);

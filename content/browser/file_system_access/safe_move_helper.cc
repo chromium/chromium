@@ -99,7 +99,7 @@ class HashCalculator : public base::RefCounted<HashCalculator> {
     }
     if (bytes_read == 0) {
       std::string hash_str(hash_->GetHashLength(), 0);
-      hash_->Finish(base::data(hash_str), hash_str.size());
+      hash_->Finish(std::data(hash_str), hash_str.size());
       std::move(callback_).Run(base::File::FILE_OK, hash_str, file_size_);
       return;
     }

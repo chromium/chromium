@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "content/public/browser/permission_type.h"
 #include "content/web_test/browser/web_test_browser_context.h"
@@ -84,9 +83,9 @@ void WebTestPushMessagingService::SubscribeFromWorker(
 
   if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
     std::vector<uint8_t> p256dh(kTestP256Key,
-                                kTestP256Key + base::size(kTestP256Key));
+                                kTestP256Key + std::size(kTestP256Key));
     std::vector<uint8_t> auth(kAuthentication,
-                              kAuthentication + base::size(kAuthentication));
+                              kAuthentication + std::size(kAuthentication));
     const std::string subscription_id = "layoutTestRegistrationId";
     const GURL endpoint = CreateEndpoint(subscription_id);
 
@@ -110,9 +109,9 @@ void WebTestPushMessagingService::GetSubscriptionInfo(
     const std::string& subscription_id,
     SubscriptionInfoCallback callback) {
   std::vector<uint8_t> p256dh(kTestP256Key,
-                              kTestP256Key + base::size(kTestP256Key));
+                              kTestP256Key + std::size(kTestP256Key));
   std::vector<uint8_t> auth(kAuthentication,
-                            kAuthentication + base::size(kAuthentication));
+                            kAuthentication + std::size(kAuthentication));
   const GURL endpoint = CreateEndpoint(subscription_id);
   std::move(callback).Run(true /* is_valid */, endpoint, GetFutureTime(),
                           p256dh, auth);

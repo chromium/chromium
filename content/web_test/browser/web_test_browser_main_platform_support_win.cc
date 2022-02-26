@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 #include <windows.h>
+
 #include <iostream>
 #include <list>
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -64,7 +64,7 @@ bool WebTestBrowserCheckLayoutSystemDeps() {
                               &metrics.lfSmCaptionFont};
   const wchar_t required_font[] = L"Segoe UI";
   int required_font_size = -12;
-  for (size_t i = 0; i < base::size(system_fonts); ++i) {
+  for (size_t i = 0; i < std::size(system_fonts); ++i) {
     if (system_fonts[i]->lfHeight != required_font_size ||
         wcscmp(required_font, system_fonts[i]->lfFaceName)) {
       errors.push_back(

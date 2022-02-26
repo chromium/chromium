@@ -137,7 +137,7 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
     if (file.IsValid()) {
       std::string input_js(file_info->size, '\0');
       if (file_info->size ==
-          file.Read(0, base::data(input_js), file_info->size)) {
+          file.Read(0, std::data(input_js), file_info->size)) {
         absl::optional<base::Value> val = base::JSONReader::Read(input_js);
         if (val && val->is_dict()) {
           std::string* s = val->FindStringKey("message");

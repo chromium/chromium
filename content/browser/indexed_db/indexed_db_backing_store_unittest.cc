@@ -16,7 +16,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
@@ -1009,7 +1008,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
       IndexedDBKeyRange(keys[1], keys[3], false, true),
       IndexedDBKeyRange(keys[0], keys[3], true, true)};
 
-  for (size_t i = 0; i < base::size(ranges); ++i) {
+  for (size_t i = 0; i < std::size(ranges); ++i) {
     const int64_t database_id = 1;
     const int64_t object_store_id = i + 1;
     const IndexedDBKeyRange& range = ranges[i];
@@ -1104,7 +1103,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
       IndexedDBKeyRange(keys[2], keys[1], false, false),
       IndexedDBKeyRange(keys[2], keys[1], true, true)};
 
-  for (size_t i = 0; i < base::size(ranges); ++i) {
+  for (size_t i = 0; i < std::size(ranges); ++i) {
     const int64_t database_id = 1;
     const int64_t object_store_id = i + 1;
     const IndexedDBKeyRange& range = ranges[i];

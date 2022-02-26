@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -129,8 +128,8 @@ std::string RandomLabel() {
   static const size_t kRfc4122LengthLabel = 36u;
   std::string label(kRfc4122LengthLabel, ' ');
   for (char& c : label) {
-    // Use |base::size(kAlphabet) - 1| to avoid |kAlphabet|s terminating '\0';
-    c = kAlphabet[base::RandGenerator(base::size(kAlphabet) - 1)];
+    // Use |std::size(kAlphabet) - 1| to avoid |kAlphabet|s terminating '\0';
+    c = kAlphabet[base::RandGenerator(std::size(kAlphabet) - 1)];
     DCHECK(std::isalnum(c)) << c;
   }
   return label;
@@ -2338,7 +2337,7 @@ void MediaStreamManager::DevicesEnumerated(
   bool requested[] = {requested_audio_input, requested_video_input};
   MediaStreamType stream_types[] = {MediaStreamType::DEVICE_AUDIO_CAPTURE,
                                     MediaStreamType::DEVICE_VIDEO_CAPTURE};
-  for (size_t i = 0; i < base::size(requested); ++i) {
+  for (size_t i = 0; i < std::size(requested); ++i) {
     if (!requested[i])
       continue;
 

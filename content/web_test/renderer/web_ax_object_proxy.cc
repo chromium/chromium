@@ -10,7 +10,6 @@
 #include <map>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gin/handle.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -505,7 +504,7 @@ void WebAXObjectProxy::NotificationReceived(
   // dirtying layout during post-layout hooks?
   frame->CallFunctionEvenIfScriptDisabled(
       v8::Local<v8::Function>::New(isolate, notification_callback_),
-      context->Global(), base::size(argv), argv);
+      context->Global(), std::size(argv), argv);
 }
 
 void WebAXObjectProxy::Reset() {

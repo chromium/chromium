@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -242,7 +241,7 @@ std::string AttributionReport::PrivacyBudgetKey() const {
   ctx->Update(kVersion, sizeof(kVersion));
 
   std::string output(crypto::kSHA256Length, 0);
-  ctx->Finish(base::data(output), output.size());
+  ctx->Finish(std::data(output), output.size());
 
   return output;
 }

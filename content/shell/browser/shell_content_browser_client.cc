@@ -5,11 +5,11 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -302,8 +302,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kForwardSwitches,
-                                 base::size(kForwardSwitches));
+                                 kForwardSwitches, std::size(kForwardSwitches));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

@@ -8,7 +8,6 @@
 #include <atk/atkutil.h>
 #include <atspi/atspi.h>
 
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
@@ -294,7 +293,7 @@ void AccessibilityEventRecorderAuraLinux::AddATSPIEventListeners() {
       atspi_event_listener_new(OnATSPIEventReceived, this, nullptr);
 
   GError* error = nullptr;
-  for (size_t i = 0; i < base::size(kEventNames); i++) {
+  for (size_t i = 0; i < std::size(kEventNames); i++) {
     atspi_event_listener_register(atspi_event_listener_, kEventNames[i],
                                   &error);
     if (error) {
@@ -309,7 +308,7 @@ void AccessibilityEventRecorderAuraLinux::RemoveATSPIEventListeners() {
     return;
 
   GError* error = nullptr;
-  for (size_t i = 0; i < base::size(kEventNames); i++) {
+  for (size_t i = 0; i < std::size(kEventNames); i++) {
     atspi_event_listener_deregister(atspi_event_listener_, kEventNames[i],
                                     nullptr);
     if (error) {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/webui/web_ui_data_source_impl.h"
@@ -39,13 +38,13 @@ class TestClient : public TestContentClient {
     base::RefCountedStaticMemory* bytes = nullptr;
     if (resource_id == kDummyDefaultResourceId) {
       bytes = new base::RefCountedStaticMemory(
-          kDummyDefaultResource, base::size(kDummyDefaultResource));
+          kDummyDefaultResource, std::size(kDummyDefaultResource));
     } else if (resource_id == kDummyResourceId) {
       bytes = new base::RefCountedStaticMemory(kDummyResource,
-                                               base::size(kDummyResource));
+                                               std::size(kDummyResource));
     } else if (resource_id == kDummyJSResourceId) {
       bytes = new base::RefCountedStaticMemory(kDummyJSResource,
-                                               base::size(kDummyJSResource));
+                                               std::size(kDummyJSResource));
     }
     return bytes;
   }

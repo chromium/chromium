@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/input/motion_event_web.h"
+
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "content/browser/renderer_host/input/motion_event_web.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/gesture_detection/motion_event_generic.h"
@@ -33,7 +33,7 @@ TEST(MotionEventWebTest, Constructor) {
   PointerProperties pp;
   MotionEventGeneric generic_event(MotionEvent::Action::MOVE, event_time, pp);
   for (MotionEvent::ToolType tool_type : tool_types) {
-    for (size_t i = 0; i < base::size(tilts_x); ++i) {
+    for (size_t i = 0; i < std::size(tilts_x); ++i) {
       const float tilt_x = tilts_x[i];
       const float tilt_y = tilts_y[i];
       const float orientation = orientations[i];

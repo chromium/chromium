@@ -129,7 +129,7 @@ int WriteBasicResponse(
     int64_t id) {
   const char kHttpHeaders[] = "HTTP/1.0 200 HONKYDORY\0Content-Length: 5\0\0";
   const char kHttpBody[] = "Hello";
-  std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+  std::string headers(kHttpHeaders, std::size(kHttpHeaders));
   return WriteStringResponse(storage, id, headers, std::string(kHttpBody));
 }
 

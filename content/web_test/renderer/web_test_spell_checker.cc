@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 
 namespace content {
@@ -165,7 +164,7 @@ bool WebTestSpellChecker::InitializeIfNeeded() {
       "ifmmp", "qwertyuiopasd", "qwertyuiopasdf", "upper case", "wellcome"};
 
   misspelled_words_.clear();
-  for (size_t i = 0; i < base::size(misspelled_words); ++i)
+  for (size_t i = 0; i < std::size(misspelled_words); ++i)
     misspelled_words_.push_back(
         std::u16string(misspelled_words[i],
                        misspelled_words[i] + strlen(misspelled_words[i])));

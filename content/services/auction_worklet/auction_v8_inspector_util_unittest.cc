@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8-inspector.h"
@@ -21,7 +20,7 @@ namespace auction_worklet {
 TEST(AuctionV8InspectorUtilTest, GetStringBytes8) {
   const uint8_t chars[] = {'a', 'b', 'c', 0xD0, 0xB0, 0xD0, 0xB1, 0xD0, 0xB2};
   auto string_buf = v8_inspector::StringBuffer::create(
-      v8_inspector::StringView(chars, base::size(chars)));
+      v8_inspector::StringView(chars, std::size(chars)));
   EXPECT_THAT(GetStringBytes(string_buf.get()),
               ElementsAre('a', 'b', 'c', 0xD0, 0xB0, 0xD0, 0xB1, 0xD0, 0xB2));
 }
@@ -36,7 +35,7 @@ TEST(AuctionV8InspectorUtilTest, GetStringBytes16) {
                               // U+1F600, GRINNING FACE, as surrogate pairs.
                               0xD83D, 0xDE00};
   auto string_buf = v8_inspector::StringBuffer::create(
-      v8_inspector::StringView(chars16, base::size(chars16)));
+      v8_inspector::StringView(chars16, std::size(chars16)));
   EXPECT_THAT(GetStringBytes(string_buf.get()),
               ElementsAre(0xD0, 0x94, 0xD1, 0x8F, 0xD0, 0xBA, 0xD1, 0x83, 0xD1,
                           0x8E, '!', 0xF0, 0x9F, 0x98, 0x80));

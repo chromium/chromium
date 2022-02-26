@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/strings/utf_string_conversions.h"
@@ -299,7 +298,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif
     };
     cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                               base::size(kSwitchNames));
+                               std::size(kSwitchNames));
 
     network_session_configurator::CopyNetworkSwitches(browser_command_line,
                                                       cmd_line.get());

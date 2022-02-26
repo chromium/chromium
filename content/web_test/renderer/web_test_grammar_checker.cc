@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -54,7 +53,7 @@ bool WebTestGrammarChecker::CheckGrammarOfString(
       {"the the adlj adaasj sdklj. there there", 33, 5},
       {"zz apple orange.", 0, 16},
   };
-  for (size_t i = 0; i < base::size(kGrammarErrors); ++i) {
+  for (size_t i = 0; i < std::size(kGrammarErrors); ++i) {
     size_t offset = 0;
     std::u16string error(
         kGrammarErrors[i].text,

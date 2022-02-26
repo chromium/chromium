@@ -685,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, AutoMountNoHandler) {
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file1.dat", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file1.dat", kTestFileData, std::size(kTestFileData) - 1);
   auto client = TestLoad(CreateFileSystemURL("file1.dat"));
 
   EXPECT_TRUE(client->has_received_response());
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, CrossOriginFileBlocked) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file1.dat", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file1.dat", kTestFileData, std::size(kTestFileData) - 1);
 
   // Navigate main frame to foo.com.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest,
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest,
                        FileTestMultipleRangesNotSupported) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file1.dat", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file1.dat", kTestFileData, std::size(kTestFileData) - 1);
   net::HttpRequestHeaders headers;
   headers.SetHeader(net::HttpRequestHeaders::kRange,
                     "bytes=0-5,10-200,200-300");
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest,
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileRangeOutOfBounds) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file1.dat", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file1.dat", kTestFileData, std::size(kTestFileData) - 1);
   net::HttpRequestHeaders headers;
   headers.SetHeader(net::HttpRequestHeaders::kRange,
                     net::HttpByteRange::Bounded(500, 1000).GetHeaderValue());
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, NoSuchFile) {
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileCancel) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file1.dat", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file1.dat", kTestFileData, std::size(kTestFileData) - 1);
   auto client = TestLoadNoRun(CreateFileSystemURL("file1.dat"));
 
   // client.reset();
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileGetMimeType) {
 
 IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileIncognito) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  WriteFile("file", kTestFileData, base::size(kTestFileData) - 1);
+  WriteFile("file", kTestFileData, std::size(kTestFileData) - 1);
 
   // Creates a new filesystem context for incognito mode.
   scoped_refptr<FileSystemContext> file_system_context =

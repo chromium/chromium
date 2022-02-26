@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/simple_test_clock.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,8 +71,8 @@ TEST_F(HostZoomMapTest, GetAllZoomLevels) {
        zoomed},
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "zoomed.com", "https",
        zoomed}, };
-  ASSERT_EQ(base::size(expected), levels.size());
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  ASSERT_EQ(std::size(expected), levels.size());
+  for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");
     EXPECT_EQ(expected[i].mode, levels[i].mode);
     EXPECT_EQ(expected[i].scheme, levels[i].scheme);
@@ -108,8 +107,8 @@ TEST_F(HostZoomMapTest, LastModifiedTimestamp) {
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "login", "chrome", 3.0,
        base::Time()},
   };
-  ASSERT_EQ(base::size(expected), levels.size());
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  ASSERT_EQ(std::size(expected), levels.size());
+  for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");
     EXPECT_EQ(expected[i].mode, levels[i].mode);
     EXPECT_EQ(expected[i].scheme, levels[i].scheme);

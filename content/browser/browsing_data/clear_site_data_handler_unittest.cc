@@ -479,7 +479,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
 
     // |NetworkServiceClient| creates a new |ClearSiteDataHandler| for each
     // navigation, redirect, or subresource header responses.
-    for (size_t i = 0; i < base::size(kTestCases); i++) {
+    for (size_t i = 0; i < std::size(kTestCases); i++) {
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
           base::BindRepeating(&FakeWebContentsGetter), GURL(kTestCases[i].url),

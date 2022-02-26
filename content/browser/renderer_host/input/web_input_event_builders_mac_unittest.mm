@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/mac_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -187,7 +186,7 @@ TEST(WebInputEventBuilderMacTest, NumPadMapping) {
        ui::DomKey::FromCharacter('9')},
   };
 
-  for (size_t i = 0; i < base::size(table); ++i) {
+  for (size_t i = 0; i < std::size(table); ++i) {
     NSEvent* mac_event = BuildFakeKeyEvent(table[i].mac_key_code,
                                            table[i].character, 0, NSKeyDown);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
@@ -200,7 +199,7 @@ TEST(WebInputEventBuilderMacTest, NumPadMapping) {
 // Test that left- and right-hand modifier keys are interpreted correctly when
 // pressed simultaneously.
 TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
-  for (size_t i = 0; i < base::size(kModifierKeys) / 2; ++i) {
+  for (size_t i = 0; i < std::size(kModifierKeys) / 2; ++i) {
     const ModifierKey& left = kModifierKeys[2 * i];
     const ModifierKey& right = kModifierKeys[2 * i + 1];
     // Press the left key.
@@ -231,7 +230,7 @@ TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
 // Test that individual modifier keys are still reported correctly, even if the
 // undocumented left- or right-hand flags are not set.
 TEST(WebInputEventBuilderMacTest, MissingUndocumentedModifierFlags) {
-  for (size_t i = 0; i < base::size(kModifierKeys); ++i) {
+  for (size_t i = 0; i < std::size(kModifierKeys); ++i) {
     const ModifierKey& key = kModifierKeys[i];
     NSEvent* mac_event = BuildFakeKeyEvent(
         key.mac_key_code, 0, key.non_specific_mask, NSFlagsChanged);

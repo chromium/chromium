@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -1997,7 +1996,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest, CORS) {
   std::string requests_list_string;
 
   std::vector<MockSignedExchangeHandlerParams> mock_params;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     if (i) {
       target_sxg_outer_link_header += ",";
       target_sxg_inner_link_header += ",";
@@ -2083,7 +2082,7 @@ let results = [];
       NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
 
   // Wait until all (main- and sub-resource) SXGs are prefetched.
-  while (GetCachedExchanges(shell()).size() < base::size(kTestCases) + 1) {
+  while (GetCachedExchanges(shell()).size() < std::size(kTestCases) + 1) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
@@ -2092,7 +2091,7 @@ let results = [];
 
   NavigateToURLAndWaitTitle(target_sxg_url, "done");
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("TestCase %zu", i));
     EXPECT_EQ(
         EvalJs(shell(), base::StringPrintf("results[%zu]", i)).ExtractString(),

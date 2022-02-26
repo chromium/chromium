@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +32,7 @@ TEST(PluginUtilsTest, VersionExtraction) {
     { "1..0", "1.0.0" }                // Empty version component
   };
 
-  for (size_t i = 0; i < base::size(versions); i++) {
+  for (size_t i = 0; i < std::size(versions); i++) {
     base::Version version;
     WebPluginInfo::CreateVersionFromString(
         base::ASCIIToUTF16(versions[i][0]), &version);

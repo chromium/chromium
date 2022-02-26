@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+
+#include <functional>
+#include <memory>
 
 #include "base/android/build_info.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
-
-#include <functional>
-#include <memory>
 
 namespace {
 
@@ -231,7 +230,7 @@ size_t GetNumTables(base::File& font_file) {
   font_file.Seek(base::File::FROM_BEGIN, 5);
   uint8_t num_tables_bytes[2] = {};
   font_file.ReadAtCurrentPos(reinterpret_cast<char*>(num_tables_bytes),
-                             base::size(num_tables_bytes));
+                             std::size(num_tables_bytes));
   uint16_t num_tables =
       static_cast<uint16_t>(num_tables_bytes[0] + (num_tables_bytes[1] << 8));
   return num_tables;
@@ -265,7 +264,7 @@ class FontFileCorruptor {
       for (size_t i = 0; i < num_tables; ++i) {
         CHECK_EQ(static_cast<int>(kSizeOneTableRecord),
                  font_file.Write(kOffsetTableRecords + i * kSizeOneTableRecord,
-                                 garbage, base::size(garbage)));
+                                 garbage, std::size(garbage)));
       }
     });
   }

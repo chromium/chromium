@@ -183,7 +183,7 @@ EmbeddedWorkerTestHelper::CreateMainScriptResponse() {
       "Content-Type: application/javascript\0"
       "\0";
   response_head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      std::string(data, base::size(data)));
+      std::string(data, std::size(data)));
   return std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
       response_head);
 }

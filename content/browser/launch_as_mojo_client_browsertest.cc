@@ -72,7 +72,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
         switches::kOzonePlatform,
     };
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                                  base::size(kSwitchesToCopy));
+                                  std::size(kSwitchesToCopy));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

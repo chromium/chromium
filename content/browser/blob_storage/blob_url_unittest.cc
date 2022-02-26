@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -136,12 +135,12 @@ class BlobURLTest : public testing::Test {
     const char kFilename1[] = "FileSystemFile1.dat";
     temp_file_system_file1_ = GetFileSystemURL(kFilename1);
     WriteFileSystemFile(kFilename1, kTestFileSystemFileData1,
-                        base::size(kTestFileSystemFileData1) - 1,
+                        std::size(kTestFileSystemFileData1) - 1,
                         &temp_file_system_file_modification_time1_);
     const char kFilename2[] = "FileSystemFile2.dat";
     temp_file_system_file2_ = GetFileSystemURL(kFilename2);
     WriteFileSystemFile(kFilename2, kTestFileSystemFileData2,
-                        base::size(kTestFileSystemFileData2) - 1,
+                        std::size(kTestFileSystemFileData2) - 1,
                         &temp_file_system_file_modification_time2_);
   }
 
@@ -355,13 +354,13 @@ class BlobURLTest : public testing::Test {
 
 TEST_F(BlobURLTest, TestGetSimpleDataRequest) {
   blob_data_->AppendData(kTestData1);
-  TestSuccessNonrangeRequest(kTestData1, base::size(kTestData1) - 1);
+  TestSuccessNonrangeRequest(kTestData1, std::size(kTestData1) - 1);
 }
 
 TEST_F(BlobURLTest, TestGetSimpleFileRequest) {
   blob_data_->AppendFile(temp_file1_, 0, std::numeric_limits<uint64_t>::max(),
                          base::Time());
-  TestSuccessNonrangeRequest(kTestFileData1, base::size(kTestFileData1) - 1);
+  TestSuccessNonrangeRequest(kTestFileData1, std::size(kTestFileData1) - 1);
 }
 
 TEST_F(BlobURLTest, TestGetLargeFileRequest) {
@@ -405,7 +404,7 @@ TEST_F(BlobURLTest, TestGetSimpleFileSystemFileRequest) {
       0, std::numeric_limits<uint64_t>::max(), base::Time(),
       file_system_context_);
   TestSuccessNonrangeRequest(kTestFileSystemFileData1,
-                             base::size(kTestFileSystemFileData1) - 1);
+                             std::size(kTestFileSystemFileData1) - 1);
 }
 
 TEST_F(BlobURLTest, TestGetLargeFileSystemFileRequest) {
@@ -470,7 +469,7 @@ TEST_F(BlobURLTest, TestGetSimpleDataHandleRequest) {
       base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1,
                                                         ""));
   TestSuccessNonrangeRequest(kTestDataHandleData1,
-                             base::size(kTestDataHandleData1) - 1);
+                             std::size(kTestDataHandleData1) - 1);
 }
 
 TEST_F(BlobURLTest, TestGetComplicatedDataFileAndDiskCacheRequest) {
@@ -570,7 +569,7 @@ TEST_F(BlobURLTest, TestSideData) {
   expected_status_code_ = 200;
   expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(static_cast<int>(base::size(kTestDataHandleData2) - 1),
+  EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
   EXPECT_EQ(std::string(kTestDiskCacheSideData), response_metadata_);
@@ -583,7 +582,7 @@ TEST_F(BlobURLTest, TestZeroSizeSideData) {
   expected_status_code_ = 200;
   expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(static_cast<int>(base::size(kTestDataHandleData2) - 1),
+  EXPECT_EQ(static_cast<int>(std::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
   EXPECT_TRUE(response_metadata_.empty());

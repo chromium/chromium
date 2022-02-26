@@ -16,7 +16,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -284,7 +283,7 @@ static void SetUpGLibLogHandler() {
   // Register GLib-handled assertions to go through our logging system.
   const char* const kLogDomains[] = {nullptr, "Gtk", "Gdk", "GLib",
                                      "GLib-GObject"};
-  for (size_t i = 0; i < base::size(kLogDomains); i++) {
+  for (size_t i = 0; i < std::size(kLogDomains); i++) {
     g_log_set_handler(
         kLogDomains[i],
         static_cast<GLogLevelFlags>(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL |

@@ -66,7 +66,7 @@ base::CommandLine CreateCommandLine() {
       switches::kOzonePlatform,
   };
   command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
-                                base::size(kSwitchesToCopy));
+                                std::size(kSwitchesToCopy));
 #endif
   return command_line;
 }

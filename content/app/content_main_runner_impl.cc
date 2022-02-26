@@ -292,7 +292,7 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       switches::kVModule,
   };
   cmd_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                             kForwardSwitches, base::size(kForwardSwitches));
+                             kForwardSwitches, std::size(kForwardSwitches));
 
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(cmd_line, -1);
 
@@ -606,7 +606,7 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
 
   mojo::core::InitFeatures();
 
-  for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
+  for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
       return kMainFunctions[i].function(std::move(main_params));
   }
@@ -673,7 +673,7 @@ RunOtherNamedProcessTypeMain(const std::string& process_type,
     base::HangWatcher::GetInstance()->Start();
   }
 
-  for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
+  for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name) {
       auto exit_code =
           delegate->RunProcess(process_type, std::move(main_function_params));

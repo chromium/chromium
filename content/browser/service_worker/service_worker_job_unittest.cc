@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1285,7 +1284,7 @@ void WriteStringResponse(
     const std::string& body) {
   mojo_base::BigBuffer body_buffer(base::as_bytes(base::make_span(body)));
   const char kHttpHeaders[] = "HTTP/1.0 200 HONKYDORY\0\0";
-  std::string headers(kHttpHeaders, base::size(kHttpHeaders));
+  std::string headers(kHttpHeaders, std::size(kHttpHeaders));
   WriteResponse(writer, headers, std::move(body_buffer));
 }
 
@@ -1426,13 +1425,13 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       // Spoof caching the script for the initial version.
       WriteStringResponse(writer, kBody);
       version->script_cache_map()->NotifyFinishedCaching(
-          script, base::size(kBody), net::OK, std::string());
+          script, std::size(kBody), net::OK, std::string());
     } else {
       EXPECT_NE(GURL(kNoChangeOrigin), script.DeprecatedGetOriginAsURL());
       // The script must be changed.
       WriteStringResponse(writer, kNewBody);
       version->script_cache_map()->NotifyFinishedCaching(
-          script, base::size(kNewBody), net::OK, std::string());
+          script, std::size(kNewBody), net::OK, std::string());
     }
 
     version->SetMainScriptResponse(CreateMainScriptResponse());
@@ -1850,7 +1849,7 @@ TEST_F(ServiceWorkerUpdateJobTest, Update_ScriptUrlChanged) {
   version->script_cache_map()->NotifyStartedCaching(new_script, resource_id);
   WriteStringResponse(writer, kBody);
   version->script_cache_map()->NotifyFinishedCaching(
-      new_script, base::size(kBody), net::OK, std::string());
+      new_script, std::size(kBody), net::OK, std::string());
 
   // Run the update job.
   base::RunLoop().RunUntilIdle();

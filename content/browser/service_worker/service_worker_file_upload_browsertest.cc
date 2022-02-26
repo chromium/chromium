@@ -59,7 +59,7 @@ void ExpectEqual(const base::DictionaryValue& expected,
 }
 
 const char kFileContent[] = "uploaded file content";
-const size_t kFileSize = base::size(kFileContent) - 1;
+const size_t kFileSize = std::size(kFileContent) - 1;
 }  // namespace
 
 // Tests POST requests that include a file and are intercepted by a service

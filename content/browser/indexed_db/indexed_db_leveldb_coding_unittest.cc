@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -557,7 +556,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        0      // Type is null
     };
     encoded_paths.push_back(
-        std::string(expected, expected + base::size(expected)));
+        std::string(expected, expected + std::size(expected)));
   }
 
   {
@@ -567,7 +566,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        0      // Length is 0
     };
     encoded_paths.push_back(
-        std::string(expected, expected + base::size(expected)));
+        std::string(expected, expected + std::size(expected)));
   }
 
   {
@@ -577,7 +576,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        3, 0, 'f', 0, 'o', 0, 'o'  // String length 3, UTF-16BE
     };
     encoded_paths.push_back(
-        std::string(expected, expected + base::size(expected)));
+        std::string(expected, expected + std::size(expected)));
   }
 
   {
@@ -588,7 +587,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        'r'  // String length 7, UTF-16BE
     };
     encoded_paths.push_back(
-        std::string(expected, expected + base::size(expected)));
+        std::string(expected, expected + std::size(expected)));
   }
 
   {
@@ -603,7 +602,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeDecodeIDBKeyPath) {
                        'r'  // Member 3 (String length 7)
     };
     encoded_paths.push_back(
-        std::string(expected, expected + base::size(expected)));
+        std::string(expected, expected + std::size(expected)));
   }
 
   ASSERT_EQ(key_paths.size(), encoded_paths.size());
@@ -685,12 +684,12 @@ TEST(IndexedDBLevelDBCodingTest, DecodeLegacyIDBKeyPath) {
   {
     key_paths.emplace_back(u"foo");
     char expected[] = {0, 'f', 0, 'o', 0, 'o'};
-    encoded_paths.push_back(std::string(expected, base::size(expected)));
+    encoded_paths.push_back(std::string(expected, std::size(expected)));
   }
   {
     key_paths.emplace_back(u"foo.bar");
     char expected[] = {0, 'f', 0, 'o', 0, 'o', 0, '.', 0, 'b', 0, 'a', 0, 'r'};
-    encoded_paths.push_back(std::string(expected, base::size(expected)));
+    encoded_paths.push_back(std::string(expected, std::size(expected)));
   }
 
   ASSERT_EQ(key_paths.size(), encoded_paths.size());

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/notifications/notification_database_conversions.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "content/browser/notifications/notification_database_conversions.h"
 #include "content/browser/notifications/notification_database_data.pb.h"
 #include "content/browser/notifications/notification_database_resources.pb.h"
 #include "content/public/browser/notification_database_data.h"
@@ -64,11 +64,10 @@ const bool kHasTriggered = true;
 TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
-      kNotificationVibrationPattern +
-          base::size(kNotificationVibrationPattern));
+      kNotificationVibrationPattern + std::size(kNotificationVibrationPattern));
 
   std::vector<char> developer_data(
-      kNotificationData, kNotificationData + base::size(kNotificationData));
+      kNotificationData, kNotificationData + std::size(kNotificationData));
 
   blink::PlatformNotificationData notification_data;
   notification_data.title = kNotificationTitle;
@@ -256,7 +255,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeDirections) {
       blink::mojom::NotificationDirection::RIGHT_TO_LEFT,
       blink::mojom::NotificationDirection::AUTO};
 
-  for (size_t i = 0; i < base::size(directions); ++i) {
+  for (size_t i = 0; i < std::size(directions); ++i) {
     blink::PlatformNotificationData notification_data;
     notification_data.direction = directions[i];
 
@@ -282,7 +281,7 @@ TEST(NotificationDatabaseConversionsTest,
       NotificationDatabaseData::ClosedReason::DEVELOPER,
       NotificationDatabaseData::ClosedReason::UNKNOWN};
 
-  for (size_t i = 0; i < base::size(closed_reasons); ++i) {
+  for (size_t i = 0; i < std::size(closed_reasons); ++i) {
     NotificationDatabaseData database_data;
     database_data.closed_reason = closed_reasons[i];
 

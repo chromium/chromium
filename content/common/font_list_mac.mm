@@ -165,7 +165,7 @@ class FontFamilyResolver {
     CFStringRef set_values[] = {kCTFontFamilyNameAttribute};
     return base::ScopedCFTypeRef<CFSetRef>(CFSetCreate(
         kCFAllocatorDefault, reinterpret_cast<const void**>(set_values),
-        base::size(set_values), &kCFTypeSetCallBacks));
+        std::size(set_values), &kCFTypeSetCallBacks));
   }
 
   // Creates the mutable dictionary stored in |font_descriptor_attributes_|.

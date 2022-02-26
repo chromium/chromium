@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -794,10 +793,10 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
 TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
   std::vector<OriginClaimedAuthorityPair> tests(
       &kValidRelyingPartyTestCases[0],
-      &kValidRelyingPartyTestCases[base::size(kValidRelyingPartyTestCases)]);
-  tests.insert(tests.end(), &kInvalidRelyingPartyTestCases[0],
-               &kInvalidRelyingPartyTestCases[base::size(
-                   kInvalidRelyingPartyTestCases)]);
+      &kValidRelyingPartyTestCases[std::size(kValidRelyingPartyTestCases)]);
+  tests.insert(
+      tests.end(), &kInvalidRelyingPartyTestCases[0],
+      &kInvalidRelyingPartyTestCases[std::size(kInvalidRelyingPartyTestCases)]);
 
   for (const auto& test_case : tests) {
     SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +

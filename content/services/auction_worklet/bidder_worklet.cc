@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -92,7 +91,7 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
       return v8::MaybeLocal<v8::Value>();
     }
     prev_wins_v8.push_back(
-        v8::Array::New(isolate, win_values, base::size(win_values)));
+        v8::Array::New(isolate, win_values, std::size(win_values)));
   }
   return v8::Array::New(isolate, prev_wins_v8.data(), prev_wins_v8.size());
 }

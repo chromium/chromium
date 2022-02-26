@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -1301,7 +1300,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
        "application/json"},
   };
 
-  for (size_t i = 0; i < base::size(kAllowedUrls); ++i) {
+  for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;
     request.url = kAllowedUrls[i].url;
     request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
@@ -1332,7 +1331,7 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   bidder_worklet->url_loader_factory().FlushForTesting();
   EXPECT_FALSE(bidder_worklet->url_loader_factory().is_connected());
-  EXPECT_EQ(base::size(kAllowedUrls),
+  EXPECT_EQ(std::size(kAllowedUrls),
             url_loader_factory_.pending_requests()->size());
   EXPECT_EQ("Unexpected request", TakeBadMessage());
 }
@@ -1361,7 +1360,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
        "application/json"},
   };
 
-  for (size_t i = 0; i < base::size(kAllowedUrls); ++i) {
+  for (size_t i = 0; i < std::size(kAllowedUrls); ++i) {
     network::ResourceRequest request;
     request.url = kAllowedUrls[i].url;
     request.headers.SetHeader(net::HttpRequestHeaders::kAccept,
@@ -1392,7 +1391,7 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   seller_worklet->url_loader_factory().FlushForTesting();
   EXPECT_FALSE(seller_worklet->url_loader_factory().is_connected());
-  EXPECT_EQ(base::size(kAllowedUrls),
+  EXPECT_EQ(std::size(kAllowedUrls),
             url_loader_factory_.pending_requests()->size());
   EXPECT_EQ("Unexpected request", TakeBadMessage());
 }

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
@@ -351,8 +350,7 @@ void WebTestContentBrowserClient::AppendExtraCommandLineSwitches(
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
-                                 kForwardSwitches,
-                                 base::size(kForwardSwitches));
+                                 kForwardSwitches, std::size(kForwardSwitches));
 }
 
 std::unique_ptr<BrowserMainParts>
@@ -411,8 +409,8 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
     };
 
     origins_to_isolate.reserve(origins_to_isolate.size() +
-                               base::size(kWptHostnames) *
-                                   base::size(kOriginTemplates));
+                               std::size(kWptHostnames) *
+                                   std::size(kOriginTemplates));
     for (const char* kWptHostname : kWptHostnames) {
       for (const char* kOriginTemplate : kOriginTemplates) {
         std::string origin = base::StringPrintf(kOriginTemplate, kWptHostname);

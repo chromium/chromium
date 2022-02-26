@@ -195,7 +195,7 @@ bool GeneratedCodeCache::IsValidHeader(
 }
 
 std::string GeneratedCodeCache::GetResourceURLFromKey(const std::string& key) {
-  constexpr size_t kPrefixStringLen = base::size(kPrefix) - 1;
+  constexpr size_t kPrefixStringLen = std::size(kPrefix) - 1;
   // |key| may not have a prefix and separator (e.g. for deduplicated entries).
   // In that case, return an empty string.
   const size_t separator_index = key.find(kSeparator);
@@ -404,8 +404,8 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
     uint8_t result[crypto::kSHA256Length];
     crypto::SHA256HashString(
         base::StringPiece(reinterpret_cast<char*>(copy.data()), copy.size()),
-        result, base::size(result));
-    std::string checksum_key = base::HexEncode(result, base::size(result));
+        result, std::size(result));
+    std::string checksum_key = base::HexEncode(result, std::size(result));
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + kSHAKeySizeInBytes);
     // Copy |checksum_key| into the small buffer.

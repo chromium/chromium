@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "content/shell/browser/shell_platform_delegate.h"
-
 #include <stddef.h>
 
 #include <algorithm>
@@ -13,7 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +18,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_platform_delegate.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -241,7 +239,7 @@ class ShellView : public views::BoxLayoutView,
     DCHECK(GetWidget());
     static const ui::KeyboardCode keys[] = {ui::VKEY_F5, ui::VKEY_BROWSER_BACK,
                                             ui::VKEY_BROWSER_FORWARD};
-    for (size_t i = 0; i < base::size(keys); ++i) {
+    for (size_t i = 0; i < std::size(keys); ++i) {
       GetFocusManager()->RegisterAccelerator(
           ui::Accelerator(keys[i], ui::EF_NONE),
           ui::AcceleratorManager::kNormalPriority, this);
