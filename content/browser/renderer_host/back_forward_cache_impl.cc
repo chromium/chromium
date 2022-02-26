@@ -797,17 +797,6 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
         BackForwardCacheMetrics::NotRestoredReason::kSchemeNotHTTPOrHTTPS);
   }
 
-  // Do not store if activation navigations are disabled by the
-  // NavigatorDelegate as a workaround for the following bug.
-  // TODO(https://crbug.com/1234857): Remove this when the bug is fixed.
-  if (rfh->frame_tree()
-          ->navigator()
-          .GetDelegate()
-          ->IsActivationNavigationDisallowedForBug1234857()) {
-    result.No(BackForwardCacheMetrics::NotRestoredReason::
-                  kActivationNavigationsDisallowedForBug1234857);
-  }
-
   // We should not cache pages with Cache-control: no-store. Note that
   // even though this is categorized as a "feature", we will check this within
   // CanPotentiallyStorePageLater as it's not possible to change the HTTP

@@ -1313,14 +1313,6 @@ class WebContents : public PageNavigator,
   // Serialise this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
-  // Disallows navigations that activate a prerendered page or a back/forward
-  // cached page in this WebContents. Such pages will be ignored and normal
-  // navigation will occur instead.
-  // TODO(https://crbug.com/1234857): Remove this. This is a temporary
-  // workaround to avoid breaking features that must be taught to deal with
-  // activation navigations.
-  virtual void DisallowActivationNavigationsForBug1234857() = 0;
-
   // Returns the value from CreateParams::creator_location.
   virtual const base::Location& GetCreatorLocation() = 0;
 

@@ -336,6 +336,7 @@ class CONTENT_EXPORT NavigationRequest
       std::unique_ptr<NavigationThrottle> navigation_throttle) override;
   bool IsDeferredForTesting() override;
   bool IsCommitDeferringConditionDeferredForTesting() override;
+  CommitDeferringCondition* GetCommitDeferringConditionForTesting() override;
   bool WasStartedFromContextMenu() override;
   const GURL& GetSearchableFormURL() override;
   const std::string& GetSearchableFormEncoding() override;

@@ -565,7 +565,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void SetIgnoreInputEvents(bool ignore_input_events) override;
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
-  void DisallowActivationNavigationsForBug1234857() override;
   const base::Location& GetCreatorLocation() override;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
@@ -895,7 +894,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RegisterExistingOriginToPreventOptInIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) override;
-  bool IsActivationNavigationDisallowedForBug1234857() override;
 
   // RenderWidgetHostDelegate --------------------------------------------------
 
@@ -2292,8 +2290,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // It is used when the page has not loaded enough to know a background
   // color or if the page does not set a background color.
   absl::optional<SkColor> page_base_background_color_;
-
-  bool disallow_activation_navigations_ = false;
 
   // TODO(1231679): Remove/reevaluate after the PCScan experiment is finished.
   std::unique_ptr<StarScanLoadObserver> star_scan_load_observer_;

@@ -56,9 +56,12 @@ class PasswordProtectionCommitDeferringCondition
   // WillCommitNavigation will not defer the commit.
   void ResumeNavigation();
 
-  // Returns whether the NavigationHandle tried to commit but was deferred from
-  // doing so by this condition.
-  bool is_deferred_for_testing() const { return !resume_.is_null(); }
+  // For testing only. Registers a callback that will be invoked when
+  // WillCommitNavigatoin is called by the navigation. This is useful for
+  // yielding in a test when this condition is invoked.
+  void register_invoke_callback_for_testing(base::OnceClosure callback) {
+    invoke_callback_for_testing_ = std::move(callback);
+  }
 
  private:
   // A pointer to the PasswordProtectionRequestContent on whose behalf this
@@ -69,6 +72,8 @@ class PasswordProtectionCommitDeferringCondition
   // The resume closure used to resume the navigation past this
   // CommitDeferringCondition.
   base::OnceClosure resume_;
+
+  base::OnceClosure invoke_callback_for_testing_;
 
   // Set to true to indicate the request has asked to resume the navigation,
   // i.e. the request result didn't result in a modal being shown, or the user

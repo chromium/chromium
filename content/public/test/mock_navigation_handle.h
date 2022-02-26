@@ -211,6 +211,9 @@ class MockNavigationHandle : public NavigationHandle {
     return weak_factory_.GetSafeRef();
   }
 
+  CommitDeferringCondition* GetCommitDeferringConditionForTesting() override {
+    return nullptr;
+  }
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {
     previous_main_frame_url_ = previous_main_frame_url;
