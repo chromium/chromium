@@ -517,7 +517,6 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/acos/acos_001_to_006.html [ Failure ]
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
 crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
-crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_017_to_024.html [ Failure ]
 crbug.com/angleproject/6486 [ mac angle-metal passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
 
 # Mac / Passthrough command decoder / Metal / Intel
