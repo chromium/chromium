@@ -2301,6 +2301,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3277691515294482687">Linux'ı yeni sürüme geçirmeden önce hem uygulamalarımı hem de dosyalarımı Dosyalarım klasörüne yedekle.</translation>
 <translation id="3278001907972365362">Google Hesabınız/Hesaplarınız işlem gerektiriyor</translation>
 <translation id="3278800075417428224">CloudReady 2.0 ayarlarında dilleri yönetin</translation>
+<translation id="3278928434075969895">Bu profil Chrome OS proxy ayarlarını kullanır.</translation>
 <translation id="3279092821516760512">Seçili kişiler yakındayken sizinle içerik paylaşabilirler. Siz kabul edene kadar aktarım başlamaz.</translation>
 <translation id="3279230909244266691">Bu işlem birkaç dakika sürebilir. Sanal makine başlatılıyor.</translation>
 <translation id="3280237271814976245">Farklı k&amp;aydet...</translation>
@@ -4872,6 +4873,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5909379458939060601">Bu profil ve tarama verileri silinsin mi?</translation>
 <translation id="5910363049092958439">Resmi Farklı Ka&amp;ydet...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> çevrimdışı</translation>
+<translation id="5911505723657992440">Bu profil için Chrome OS proxy ayarlarını kullan.</translation>
 <translation id="5911533659001334206">Kısayol görüntüleyici</translation>
 <translation id="5914724413750400082">Katsayı (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />

@@ -907,6 +907,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1869433484041798909">Bukmark tugmasi</translation>
 <translation id="1871098866036088250">Chrome brauzerida ochish</translation>
 <translation id="187145082678092583">Kamroq ilovalar</translation>
+<translation id="1871463148436682760">Barakalla!</translation>
 <translation id="1871534214638631766">Ustiga oʻng klik yoki biroz bosib turilsa, tegishli axborot chiqsin</translation>
 <translation id="1871569928317311284">Tungi mavzuni faolsizlantirish</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> qurilmangizdagi Chromium OS versiyasi yangi</translation>
@@ -2337,6 +2338,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> chegirma</translation>
 <translation id="3305389145870741612">Formatlashga bir necha soniya ketishi mumkin. Kutib turing.</translation>
 <translation id="3305661444342691068">PDF‘ning oldindan ko‘rinishini ochish</translation>
+<translation id="3306992216458434072">Guruhni nomlang va rangini tanlang</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" /> uchun chegirmalar olish</translation>
 <translation id="3308116878371095290">Cookie faylini saqlab olish urinishi bloklandi.</translation>
 <translation id="3308134619352333507">Tugmani yashirish</translation>
@@ -3751,6 +3753,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4708794300267213770">Qurilma uyqu rejimidan chiqarilishida ekran qulfi ko‘rsatilsin</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />’dan chiqish</translation>
 <translation id="4711638718396952945">Dastlabki sozlamalarni tiklash</translation>
+<translation id="47158868804223727">Guruh nomini bosib, uni yoyish yoki yigʻish mumkin</translation>
 <translation id="4716483597559580346">Xavfsizlikni oshirish uchun qurilmani zavod sozlamalariga qaytaring</translation>
 <translation id="471880041731876836">Bu sahifani ochishga ruxsatingiz yo‘q</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> hisobi paroli</translation>
@@ -3814,6 +3817,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4794810983896241342">Yangilanishlar <ph name="BEGIN_LINK" />administrator<ph name="END_LINK" /> tomonidan boshqariladi.</translation>
 <translation id="479536056609751218">Veb-sahifa, faqat HTML</translation>
 <translation id="4796142525425001238">Doim tiklash</translation>
+<translation id="4797314204379834752">Vazifalarni tartiblash, onlayn shopping va hokazo amallar uchun varaqlar guruhidan foydalaning</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth jurnali<ph name="END_LINK" /> biriktirilsin (Google ichki tekshiruvi uchun)</translation>
 <translation id="479863874072008121">Qurilmalarni boshqarish</translation>
 <translation id="4800839971935185386">Nom va belgi oʻzgarishlari tekshiruvi</translation>
@@ -4054,6 +4058,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5039696241953571917">Google hisobingizga saqlangan parollarni koʻrish va boshqarish</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5040823038948176460">Qoʻshimcha kontent sozlamlari</translation>
+<translation id="5041509233170835229">Chrome ilovasi</translation>
 <translation id="5043440033854483429">Nomi jami 15 tagacha harf, raqam va tirelardan (-) iborat boʻlsin.</translation>
 <translation id="5043913660911154449">Yoki printeringiz PPD faylini tanlang <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
@@ -5380,6 +5385,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6393156038355142111">Ishonchli parol yaratish</translation>
 <translation id="6393550101331051049">Xavfli kontentni chiqarishga ruxsat berilgan</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Tizim haqidagi ma’lumotlar<ph name="END_LINK1" /> va k<ph name="BEGIN_LINK2" />o‘rsatkichlar qiymatlarini<ph name="END_LINK2" /> jo‘natish</translation>
+<translation id="6396175271241405634">Tizim ilovasi</translation>
 <translation id="6396988158856674517">Saytlarga harakat sensorlaridan foydalanishni taqiqlash</translation>
 <translation id="6398715114293939307">Google Play Market olib tashlansin</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
@@ -5449,6 +5455,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6460566145397380451">MIDI qurilmalarga ulanishga ruxsat berilgan</translation>
 <translation id="6460601847208524483">Keyingisini topish</translation>
 <translation id="6461170143930046705">Tarmoqlar qidirilmoqda...</translation>
+<translation id="6462204616987156669">Varaq ustida oʻng klikni bosib, “Varaqni yangi guruhga kiritish” bandini tanlang</translation>
 <translation id="6463795194797719782">&amp;O‘zgartirish...</translation>
 <translation id="6464825623202322042">Shu qurilma</translation>
 <translation id="6465841119675156448">Internetsiz</translation>
@@ -5867,6 +5874,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6885771755599377173">Tizim haqida ma’lumot</translation>
 <translation id="6886871292305414135">&amp;Havolani yangi ichki oynada ochish</translation>
 <translation id="6889957081990109136">Kalit hali belgilanmagan</translation>
+<translation id="689007770043972343">Boshqa ochiq varaqlarni guruhlarga tortib tashlash mumkin</translation>
 <translation id="6892812721183419409">Havolani <ph name="USER" /> nomidan ochish</translation>
 <translation id="6895032998810961280">Tozalash vaqtida bu kompyuterda topilgan zararli dasturlar, tizim sozlamalari va jarayonlar hisoboti Google serverlariga yuborilsin</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> hisobi <ph name="MANAGER" /> domenida boshqariladi va administrator tomonidan ikkinchi hisobdan kirish taqiqlagan</translation>
@@ -6444,6 +6452,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 ta cookie fayl}other{{NUM_COOKIES} ta cookie fayl}}</translation>
 <translation id="7493386493263658176">“<ph name="EXTENSION_NAME" />” kengaytmasi parollar va bank kartalaringiz kabi barcha matnlarni saqlay oladi. Ishga tushirilsinmi?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android ilovasi</translation>
 <translation id="7495778526395737099">Eski parolingizni unutdingizmi?</translation>
 <translation id="7497981768003291373">Yaqinda yozilgan WebRTC matnli jurnallari topilmadi.</translation>
 <translation id="7501957181231305652">yoki</translation>

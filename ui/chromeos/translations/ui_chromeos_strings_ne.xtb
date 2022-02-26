@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">यो फोल्डर Linux सँग सेयर गरिएको छ</translation>
 <translation id="1864756863218646478">फाइल फेला पर्न सकेन।</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, जोड्नुहोस्</translation>
+<translation id="1914901738028575085">CloudReady २.० चल्ने डिभाइस</translation>
 <translation id="1920670151694390848">मलयालम लिपि रूपान्तरण</translation>
 <translation id="1920798810075583923">खरबुजा</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फर्म्याट गरियो</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">साइकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> चयन गरियो।</translation>
 <translation id="872537912056138402">क्रोएसियाली</translation>
+<translation id="873847021056608403">CloudReady २.० चल्ने डिभाइसहरू</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको, कनेक्ट गर्नुहोस्</translation>
 <translation id="8750438273876807512">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् र <ph name="ICON" /> मा ट्याप गर्नुहोस् र "सेल्फमा पिन गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="8787254343425541995">साझा नेटवर्क को लागि प्रोक्सीहरू अनुमति दिनुहोस्</translation>

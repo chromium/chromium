@@ -1240,6 +1240,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2203088913459920044">El nombre puede contener letras, números y caracteres especiales</translation>
 <translation id="220321590587754225">No se ha podido conectar. Inténtalo de nuevo.</translation>
 <translation id="2204034823255629767">Leer y modificar todo lo que escribas</translation>
+<translation id="2207115382329026341">Habilita la configuración de streaming de aplicaciones desde tu teléfono.</translation>
 <translation id="220858061631308971">Introduce este código PIN en "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">No se ha podido completar la instalación</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -1431,6 +1432,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
 <translation id="236939127352773362">Cuando algún dispositivo cercano esté compartiendo archivos</translation>
 <translation id="2371076942591664043">Abrir al &amp;finalizar</translation>
+<translation id="237307274687369010">No se ha podido iniciar <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Ajustar al tamaño del papel</translation>
 <translation id="2375406435414127095">Conecta tu teléfono</translation>
 <translation id="2377588536920405462">Para inhabilitar la ubicación, desactiva el ajuste de ubicación principal en el dispositivo. También puedes desactivar el uso de sensores y redes Wi‑Fi o móviles para determinar la ubicación en los ajustes de ubicación.</translation>
@@ -2303,6 +2305,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3277691515294482687">Crear una copia de seguridad de mis aplicaciones y archivos en la carpeta Mis archivos antes de actualizar Linux</translation>
 <translation id="3278001907972365362">Parece que hay algún problema con tus cuentas de Google</translation>
 <translation id="3278800075417428224">Gestionar idiomas en los ajustes de CloudReady 2.0</translation>
+<translation id="3278928434075969895">Este perfil usa la configuración de proxy de Chrome OS.</translation>
 <translation id="3279092821516760512">Determinados contactos pueden compartir archivos contigo cuando estéis cerca. Las transferencias no se iniciarán hasta que las aceptes.</translation>
 <translation id="3279230909244266691">Iniciando la máquina virtual. Este proceso puede tardar unos minutos.</translation>
 <translation id="3280237271814976245">Gu&amp;ardar como...</translation>
@@ -4873,6 +4876,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5909379458939060601">¿Eliminar este perfil y los datos de navegación?</translation>
 <translation id="5910363049092958439">Guar&amp;dar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> no tiene conexión</translation>
+<translation id="5911505723657992440">Usar la configuración de proxy de Chrome OS en este perfil.</translation>
 <translation id="5911533659001334206">Visor de combinaciones de teclas</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
 <ph name="MODULUS_HEX_DUMP" />

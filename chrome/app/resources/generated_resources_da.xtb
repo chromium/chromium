@@ -1253,6 +1253,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2203088913459920044">Navne må indeholde bogstaver, tal og specialtegn</translation>
 <translation id="220321590587754225">Der kunne ikke oprettes forbindelse. Prøv igen.</translation>
 <translation id="2204034823255629767">Læs og rediger alt, hvad du indtaster</translation>
+<translation id="2207115382329026341">Aktivér indstillinger for appstreaming på din telefon.</translation>
 <translation id="220858061631308971">Angiv denne pinkode på "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Installationen kunne ikke gennemføres</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
@@ -1446,6 +1447,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2367972762794486313">Vis apps</translation>
 <translation id="236939127352773362">Når enheder deler indhold i nærheden</translation>
 <translation id="2371076942591664043">Åbn når &amp;færdigt</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> kunne ikke åbnes</translation>
 <translation id="2373666622366160481">Tilpas til papiret</translation>
 <translation id="2375406435414127095">Opret forbindelse til din telefon</translation>
 <translation id="2377588536920405462">Du kan deaktivere Placering ved at deaktivere den overordnede lokationsindstilling på din enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i lokationsindstillingerne.</translation>
@@ -2319,6 +2321,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3277691515294482687">Sikkerhedskopiér mine apps og filer i mappen My files [Mine filer], før Linux opgraderes.</translation>
 <translation id="3278001907972365362">Din Google-konto kræver handling</translation>
 <translation id="3278800075417428224">Administrer sprog i indstillingerne for CloudReady 2.0</translation>
+<translation id="3278928434075969895">Denne profil anvender proxyindstillingerne for Chrome OS.</translation>
 <translation id="3279092821516760512">Dine valgte kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
 <translation id="3279230909244266691">Denne proces kan tage et par minutter. Den virtuelle maskine startes.</translation>
 <translation id="3280237271814976245">Gem &amp;som...</translation>
@@ -4891,6 +4894,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5909379458939060601">Vil du slette denne profil og de tilhørende browserdata?</translation>
 <translation id="5910363049092958439">Ge&amp;m billede som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> er offline</translation>
+<translation id="5911505723657992440">Brug proxyindstillingerne for Chrome OS på denne profil.</translation>
 <translation id="5911533659001334206">Genvejsviser</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bit):
   <ph name="MODULUS_HEX_DUMP" />

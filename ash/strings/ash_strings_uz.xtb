@@ -965,6 +965,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7076293881109082629">Kirish</translation>
 <translation id="7086931198345821656">Bu yangilanish oʻrnatilishi uchun <ph name="DEVICE_TYPE" /> butunlay tozalanishi (powerwash) lozim. Barcha maʼlumotlar oʻchirib tashlanadi. <ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7098053464892629930">Barcha funksiyalardan foydalanish uchun Google Play Market orqali <ph name="NAME" /> ilovasini yuklab oling</translation>
 <translation id="7098389117866926363">USB-C qurilma (orqa tomondagi chap port)</translation>
 <translation id="7106330611027933926">Ish panelini ochish</translation>
 <translation id="7118268675952955085">skrinshot</translation>
@@ -1040,7 +1041,6 @@ yangi oʻrnatilgan</translation>
 <translation id="7595633564847427181">D</translation>
 <translation id="7600875258240007829">Barcha bildirishnomalarni ochish</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
-<translation id="7610198039767537854">Telefon kamerasida olingan oxirgi rasmlarni <ph name="DEVICE_TYPE" /> qurilmasida ochish</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Flomaster</translation>
 <translation id="7633755430369750696">Nearby Share sozlamalarini ochish.</translation>
@@ -1210,6 +1210,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8660331759611631213">71 sonining kvadrat ildizi</translation>
 <translation id="8663756353922886599">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Tarmoq ro‘yxatini ochish. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Qurilmani sozlash uchun <ph name="NAME" /> ilovasini oching</translation>
 <translation id="8676770494376880701">Kam quvvatli zaryadlash vositasi</translation>
 <translation id="8683506306463609433">Unumdorlik kuzatilmoqda</translation>
 <translation id="8685326675965865247">Qurilma, ilovalar, sozlamalar va internetdan qidiring. Ilovalaringiz boʻylab strelkalar yordamida kezing.</translation>

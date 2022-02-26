@@ -1216,13 +1216,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
           Tampoco tiene efecto si la habilitas, la dejas vacía o no la estableces.</translation>
 <translation id="229322770310505679">Habilita el concepto de grupos atómicos de políticas</translation>
-<translation id="2293378264822766451">Si habilitas la política, prevalecerán las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> si entran en conflicto con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Solo pueden combinarse políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador mediante <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas las demás políticas destinadas a los usuarios tendrán la prioridad predeterminada.
-
-      La política puede combinarse con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Si se habilitan ambas políticas, las políticas de nube destinadas a los usuarios también prevalecerán sobre las políticas de la plataforma que estén en conflicto.
-
-      Si no estableces la política o la inhabilitas, las políticas de nube destinadas a los usuarios tendrán la prioridad predeterminada.</translation>
 <translation id="22941467117331786">Si estableces la política como verdadera, se mostrará un botón grande y rojo para salir de la cuenta. Lo encontrarás en la bandeja del sistema durante sesiones activas y con la pantalla desbloqueada.
 
       Si la estableces como falsa o no la estableces, no se mostrará ningún botón.</translation>

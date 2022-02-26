@@ -2305,6 +2305,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3277691515294482687">Pirms Linux jaunināšanas dublēt manas lietotnes un failus mapē Mani faili.</translation>
 <translation id="3278001907972365362">Pievērsiet uzmanību savam(-iem) Google kontam(-iem).</translation>
 <translation id="3278800075417428224">Valodu pārvaldība CloudReady 2.0 iestatījumos</translation>
+<translation id="3278928434075969895">Šim profilam tiek izmantoti Chrome OS starpniekservera iestatījumi.</translation>
 <translation id="3279092821516760512">Atlasītās kontaktpersonas var kopīgot ar jums saturu, kad tās atrodas tuvumā. Satura pārsūtīšana tiks sāka tikai pēc jūsu apstiprinājuma.</translation>
 <translation id="3279230909244266691">Šis process var ilgt dažas minūtes. Notiek virtuālās mašīnas startēšana.</translation>
 <translation id="3280237271814976245">Saglabāt kā...</translation>
@@ -4876,6 +4877,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5909379458939060601">Vai dzēst šo profilu un pārlūkošanas datus?</translation>
 <translation id="5910363049092958439">Saglabāt attēlu &amp;kā...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ir bezsaistē</translation>
+<translation id="5911505723657992440">Izmantot Chrome OS starpniekservera iestatījumus šim profilam.</translation>
 <translation id="5911533659001334206">Īsinājumtaustiņu skatīšana</translation>
 <translation id="5914724413750400082">Modulis (<ph name="MODULUS_NUM_BITS" /> biti):
   <ph name="MODULUS_HEX_DUMP" />

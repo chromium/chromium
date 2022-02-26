@@ -519,6 +519,7 @@
 <translation id="2523886232349826891">यो डिभाइसमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
 <translation id="2524461107774643265">थप जानकारी थप्नुहोस्</translation>
 <translation id="2529899080962247600">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी प्रविष्टि हुनु हुँदैन। थप सबै प्रविष्टि बेवास्ता गरिने छन्।</translation>
+<translation id="2535585790302968248">तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{र थप १}other{र थप #}}</translation>
 <translation id="2536110899380797252">ठेगाना थप्नुहोस्</translation>
 <translation id="2539524384386349900">पत्ता लगाउनुहोस्</translation>
@@ -585,6 +586,7 @@
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
 <translation id="2713444072780614174">सेतो</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्ना भुक्तानी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थित गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="271663710482723385">तपाईं फुल स्क्रिनबाट बाहिरिन चाहनुहुन्छ भने |<ph name="ACCELERATOR1" />| र |<ph name="ACCELERATOR2" />| की एकै पटक थिच्नुहोस्</translation>
 <translation id="2721148159707890343">अनुरोध सफल भयो</translation>
 <translation id="2723669454293168317">Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्नुहोस्</translation>
 <translation id="2726001110728089263">छेउको ट्रे</translation>
@@ -1257,6 +1259,7 @@
 <translation id="4854362297993841467">डेलिभरीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="4854853140771946034">Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउनुहोस्</translation>
 <translation id="485902285759009870">कोड पुष्टि गरिँदै छ...</translation>
+<translation id="4866506163384898554">तपाईं कर्सर देखाउन चाहनुहुन्छ भने |<ph name="ACCELERATOR1" />| र |<ph name="ACCELERATOR2" />| की एकै पटक थिच्नुहोस्</translation>
 <translation id="4876188919622883022">सरलीकृत हेराइको सुविधा</translation>
 <translation id="4876305945144899064">कुनै पनि प्रयोगकर्ता नाम छैन</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1480,6 +1483,7 @@
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5560088892362098740">म्याद सकिने मिति</translation>
 <translation id="55635442646131152">कागजातको रूपरेखा</translation>
+<translation id="5565613213060953222">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="5565735124758917034">सक्रिय</translation>
 <translation id="5570825185877910964">खाता सेभ गर्नुहोस्</translation>
 <translation id="5571083550517324815">यो ठेगानाबाट पिकअप गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
@@ -1946,6 +1950,7 @@
 <translation id="7192203810768312527"><ph name="SIZE" /> ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="719464814642662924">भिषा</translation>
 <translation id="7201591969684833065">तपाईंका प्रशासक निम्न कुरा हेर्न सक्नुहुन्छ:</translation>
+<translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने ट्याब की अनि इन्टर की थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="7202346780273620635">Letter-Extra</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ले सुरक्षा मानहरूको पालना गर्दैन।</translation>
 <translation id="7210993021468939304">कन्टेनर भित्र Linux का क्रियाकलाप हेर्न र कन्टेनरभित्र Linux एपहरू इन्स्टल गर्न र चलाउन सक्छ</translation>
@@ -2211,6 +2216,7 @@
 <translation id="799149739215780103">बाइन्ड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने कार्य सुचारु भएको छ</translation>
 <translation id="7995512525968007366">तोकिएको छैन</translation>
+<translation id="7998269595945679889">इन्कोग्निटो ट्याब खोल्ने बटन, तपाईं गोप्य रूपमा ब्राउज गर्न चाहनुहुन्छ भने इन्टर की थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="800218591365569300">मेमोरी खाली गर्न अन्य ट्याब वा प्रोग्रामहरू बन्द गरी हेर्नुहोस्।</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{यो कार्ड र यसको बिलिङ ठेगाना सुरक्षित गरिने छ। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यसको प्रयोग गर्न सक्नु हुने छ।}other{यी कार्ड र यिनका बिलिङ ठेगाना सुरक्षित गरिने छन्। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यिनको प्रयोग गर्न सक्नु हुने छ।}}</translation>

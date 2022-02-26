@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हुँदै छ (<ph name="PERCENTAGE_VALUE" />% पूरा भयो)</translation>
 <translation id="1310380015393971138">कुनै पनि <ph name="NETWORK_NAME" /> नेटवर्क उपलब्ध छैन</translation>
+<translation id="131421566576084655">पछिल्लो पटक डेटा प्रयोग रिसेट गरिएको मिति उपलब्ध छैन</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">गृह सञ्जाल, रोम गरिरहेको छैन</translation>
 <translation id="1327977588028644528">गेटवे</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">मसँग किपेयर छ</translation>
+<translation id="1435763214710588005">चयन गरिएको दिनमा डेटा प्रयोग स्वतः रिसेट गर्छ</translation>
 <translation id="1442433966118452622">फोटोको स्रोत</translation>
 <translation id="1451536289672181509">यो डिभाइस किबोर्ड हो।</translation>
 <translation id="1459693405370120464">मौसम</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> अपडेट गर्न सकिएन</translation>
 <translation id="1567064801249837505">एल्बमहरू</translation>
 <translation id="1572585716423026576">वालपेपरका रूपमा सेट गर्नुहोस्</translation>
+<translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641857168437328880">डकुमेन्ट फिडर (एकतर्फी)</translation>
@@ -392,6 +395,7 @@
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="594552776027197022">क्रमरहित किपेयर सिर्जना गर्नुहोस्</translation>
 <translation id="5972388717451707488">अपडेट इन्जिन</translation>
+<translation id="6034694447310538551">मासिक रूपमा डेटा प्रयोग स्वतः रिसेट गर्ने विकल्प अन गर</translation>
 <translation id="6037291330010597344">स्क्यानरको डकुमेन्ट फिडर खाली छ। डकुमेन्टहरू हाल्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6040852767465482106">अज्ञात पहिचान</translation>
@@ -415,6 +419,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
+<translation id="6235460611964961764">डेटा प्रयोग म्यानुअल तरिकाले रिसेट गर</translation>
 <translation id="6243280677745499710">हाल सेट गरिएको</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -628,6 +633,7 @@
 <translation id="8910721771319628100">डिफल्ट नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">प्रिन्ट गर्न सकिएन - ट्रे छैन</translation>
+<translation id="8923267550422472772">डेटा प्रयोग रिसेट गर्ने दिन</translation>
 <translation id="8928727111548978589">प्रिन्ट गर्न सकिएन - कागज सकियो</translation>
 <translation id="8930521118335213258">पियर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>

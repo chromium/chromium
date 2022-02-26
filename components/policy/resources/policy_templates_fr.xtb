@@ -1220,13 +1220,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
           Elle n'a aucune incidence non plus si elle est activée, si elle n'est pas configurée ou si elle est vide.</translation>
 <translation id="229322770310505679">Activer le concept de groupes atomiques de règles</translation>
-<translation id="2293378264822766451">Si cette règle est activée, les règles associées à un compte <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> prévalent en cas de conflit avec les règles <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Seules les règles provenant d'utilisateurs sécurisés peuvent être fusionnées. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
-
-      Cette règle peut être combinée avec la règle <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Si les deux règles sont activées, les règles cloud utilisateurs prévalent aussi sur les règles de la plate-forme en conflit.
-
-      Si cette règle est désactivée ou qu'elle n'est pas configurée, les règles cloud utilisateur prévalent par défaut.</translation>
 <translation id="22941467117331786">Si cette règle est définie sur "True", un gros bouton rouge de déconnexion figure dans la barre d'état système durant les sessions actives (lorsque l'écran n'est pas verrouillé).
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, ce bouton n'est pas affiché.</translation>

@@ -1214,13 +1214,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 
           Il criterio non ha effetto se viene impostato su Attivato, se viene lasciato vuoto o se non viene configurato.</translation>
 <translation id="229322770310505679">Consenti il concetto di gruppi atomici di criteri</translation>
-<translation id="2293378264822766451">Se il criterio viene impostato su Attivato, i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hanno la precedenza in caso di conflitto con i criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      È possibile unire soltanto i criteri derivanti da utenti sicuri. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente avranno la precedenza per impostazione predefinita.
-
-      Il criterio può essere combinato con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se entrambi i criteri vengono attivati, anche i criteri relativi al cloud degli utenti avranno la precedenza sui criteri relativi alla piattaforma in conflitto.
-
-      Se il criterio non viene configurato o se viene impostato su Disattivato, i criteri relativi al cloud degli utenti avranno la priorità per impostazione predefinita.</translation>
 <translation id="22941467117331786">Se il criterio è impostato su True, viene visualizzato un grande pulsante di disconnessione nella barra delle applicazioni durante le sessioni attive mentre la schermata non è bloccata.
 
       Se il criterio è impostato su False o se non viene configurato, non viene visualizzato alcun pulsante.</translation>

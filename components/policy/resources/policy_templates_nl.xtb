@@ -1186,13 +1186,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 
           Dit beleid is niet geldig als het is ingesteld op Enabled (Aangezet), leeg wordt gelaten of niet wordt ingesteld.</translation>
 <translation id="229322770310505679">Hiermee wordt het concept van atomische beleidsgroepen toegepast</translation>
-<translation id="2293378264822766451">Als je het beleid toepast, krijgen beleidsregels die zijn gekoppeld aan een <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-account voorrang als er een conflict is met <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-beleidsregels.
-
-      Alleen beleidsregels die afkomstig zijn van beveiligde gebruikers kunnen worden samengevoegd. Een beveiligde gebruiker is aangesloten bij de organisatie die de browser van de gebruiker beheert via <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Alle andere beleidsregels op gebruikersniveau hebben een standaardvoorrang.
-
-      Het beleid kan worden gecombineerd met <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Als beide beleidsregels worden toegepast, krijgen cloudbeleidsregels voor gebruikers ook voorrang als er een conflict is met platformbeleid.
-
-      Als je het beleid niet instelt of niet toepast, krijgen cloudbeleidsregels op gebruikersniveau een standaardprioriteit.</translation>
 <translation id="22941467117331786">Als je het beleid instelt op 'True', wordt er tijdens actieve sessies waarbij het scherm niet is vergrendeld een grote, rode knop voor uitloggen weergegeven in het systeemvak.
 
       Als je het beleid instelt op 'False' of niet instelt, wordt er geen knop weergegeven.</translation>

@@ -1194,13 +1194,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
           Etkin değerine ayarlanır, boş bırakılır veya ayarlanmazsa bu politikanın hiçbir etkisi olmaz.</translation>
 <translation id="229322770310505679">Politika atom grupları kavramını etkinleştirir</translation>
-<translation id="2293378264822766451">Politika, Etkin değerine ayarlanırsa bir <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hesabına ilişkin politikalar ile <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> politikaları arasında uyuşmazlık olması halinde ilki öncelikli olur.
-
-      Yalnızca güvenli kullanıcılardan gelen politikalar birleştirilebilir. Güvenli kullanıcı, tarayıcı yönetimini <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> ile yapan kuruluşa bağlıdır. Diğer tüm kullanıcı düzeyindeki politikalar varsayılan olarak öncelikli olur.
-
-      Politika, <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> ile birlikte kullanılabilir. İki politika da etkinleştirilirse kullanıcı bulut politikaları da uyuşmazlık içeren platform politikaları karşısında öncelikli olur.
-
-      Politika ayarlanmadan bırakılır veya Devre Dışı değerine ayarlanırsa kullanıcı düzeyindeki bulut politikaları varsayılan olarak öncelikli olur.</translation>
 <translation id="22941467117331786">Politikayı True (Doğru) değerine ayarlamak, ekran kilitli değilken etkin oturumlar sırasında sistem tepsisinde büyük, kırmızı bir oturum kapatma düğmesi görüntüler.
 
       Politikayı False (Yanlış) değerine ayarlamak veya ayarlamadan bırakmak, düğme görüntülenmeyecek anlamına gelir.</translation>

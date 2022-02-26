@@ -1189,13 +1189,6 @@
 
           如果設為「啟用」、保留空白或不設定，這項政策就不會生效。</translation>
 <translation id="229322770310505679">啟用不可部分完成的政策群組概念</translation>
-<translation id="2293378264822766451">如果將這項政策設為 Enabled，當與 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帳戶相關聯的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />政策發生衝突時，前者的優先順序會高於後者。
-
-      系統只能合併由安全使用者產生的政策。安全使用者指的是與機構相關聯的使用者，而且機構會利用 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務來管理他們的瀏覽器。其他所有使用者層級政策都會採用預設優先順序。
-
-      這項政策可以與 <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> 結合。如果同時啟用兩項政策，使用者雲端政策的優先順序也會高於相衝突的平台政策。
-
-      如果將這項政策設為 Disabled 或不設定，使用者層級的雲端政策就會採用預設優先順序。</translation>
 <translation id="22941467117331786">如果將這項政策設為 True，在有效工作階段期間且螢幕未鎖定時，系統匣中會顯示大型的紅色登出按鈕。
 
       如果將這項政策設為 False 或不設定，系統匣中不會顯示任何按鈕。</translation>

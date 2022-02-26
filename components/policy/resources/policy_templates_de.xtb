@@ -1201,13 +1201,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="229322770310505679">Gruppen aus Einzelrichtlinien aktivieren</translation>
-<translation id="2293378264822766451">Wenn diese Richtlinie aktiviert ist, haben Richtlinien, die mit einem <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-Konto verknüpft sind, Vorrang, wenn sie im Widerspruch zu <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-Richtlinien stehen.
-
-      Nur Richtlinien, die von sicheren Nutzern stammen, dürfen zusammengeführt werden. Ein sicherer Nutzer ist mit der Organisation verknüpft, die seinen Browser mithilfe von <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet. Alle anderen Richtlinien auf Nutzerebene haben standardmäßig Vorrang.
-
-      Die Richtlinie kann mit <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> kombiniert werden. Sind beide Richtlinien aktiviert, haben Cloud-Richtlinien auf Nutzerebene auch Vorrang vor widersprüchlichen Plattformrichtlinien.
-
-      Wenn die Richtlinie nicht konfiguriert oder deaktiviert wird, haben Cloud-Richtlinien auf Nutzerebene standardmäßig Priorität.</translation>
 <translation id="22941467117331786">Wenn die Richtlinie auf "True" gesetzt ist, wird während aktiver Sitzungen in der Taskleiste eine große rote Schaltfläche zum Abmelden angezeigt, solange das Display nicht gesperrt ist.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, wird keine Schaltfläche angezeigt.</translation>
@@ -2946,6 +2939,11 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Dies kann von Administratoren genutzt werden, die mehr Zeit für die Aktualisierung ihrer internen Website benötigen, die von dieser neuen Einschränkung betroffen ist. Diese Unternehmensrichtlinie ist vorübergehend. Nach Version 104 von <ph name="PRODUCT_NAME" /> wird sie voraussichtlich entfernt.
       </translation>
 <translation id="4268586991084547853">Bessere Kompatibilität mit der Richtlinie „Microsoft IE/Edge Enterprise Mode Sitelists“.</translation>
+<translation id="4269798992490176617">Wenn diese Richtlinie aktiviert ist, kann <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen aus einer Browsersitzung auf einem Remote-Host ausführen.
+
+      Ist diese Richtlinie deaktiviert oder nicht konfiguriert, wird das Standardverhalten angewandt.
+
+      Diese Funktion wird nur innerhalb der internen Netzwerkumgebung von Google unterstützt.</translation>
 <translation id="4269859918103560644">Nutzer kann entscheiden</translation>
 <translation id="4274691295133617461">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Lesezugriff auf Dateien und Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten. Ist sie auf "2" gesetzt, wird der Zugriff verweigert.
 
@@ -5338,6 +5336,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7063895219334505671">Pop-ups auf diesen Websites zulassen</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
+<translation id="70681795425744184">Nicht zulassen, dass CRD WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7070525176564511548">Passworteingabe wöchentlich erforderlich (alle 168 Stunden)</translation>
 <translation id="7072208053150563108">Änderungsrate des Computerpassworts</translation>
 <translation id="7072567600438630966">Aktivieren von Phone Hub zulassen.</translation>
@@ -5625,6 +5624,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7407441173422042771">Mit dieser Richtlinie wird die Netzwerkvorhersage bei <ph name="PRODUCT_NAME" /> gesteuert. Mit ihr werden der DNS-Vorabruf, die TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, wird die Netzwerkvorhersage aktiviert, aber sie kann von Nutzern nicht geändert werden.</translation>
+<translation id="7410074797376205571">Zulassen, dass <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7412456346709338637">Datenzugriff von Thunderbolt/USB4-Peripheriegeräten aktivieren</translation>
 <translation id="7417438464912687020">Verbindungen zu diesem Computer per Remotezugriff erlauben</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
@@ -6571,6 +6571,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
        Ist die Richtlinie deaktiviert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, nicht blockiert.
 
        Diese Richtlinie wird in Version 95 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
+<translation id="8427466947904008809">Zulassen, dass CRD WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8433769814000220721">Vorschläge zur Entdeckung neuer Inhalte aktivieren</translation>
 <translation id="843609873781525167">Wenn die Richtlinie auf "True" gesetzt ist, prüft <ph name="PRODUCT_NAME" /> beim Start immer, ob es der Standardbrowser ist. Nach Möglichkeit legt sich die Anwendung dann automatisch als Standard fest. Ist die Richtlinie auf "False" gesetzt, prüft <ph name="PRODUCT_NAME" /> nie, ob es der Standardbrowser ist. Außerdem werden alle Nutzersteuerelemente zum Einstellen dieser Option deaktiviert.

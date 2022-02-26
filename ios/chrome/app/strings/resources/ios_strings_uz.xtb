@@ -489,6 +489,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5490005495580364134">Barcha cookie fayllarni taqiqlash (tavsiya etilmaydi)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> soat oldin</translation>
 <translation id="5525269841082836315">Kodli ibora yaratish</translation>
+<translation id="5542540507657872337"><ph name="COUNT" /> ta natija topildi</translation>
 <translation id="5548760955356983418">Handoff funksiyasi veb-saytni bir qurilmada ochib, boshqasida davom etish imkoniyatini beradi. Ochilgan sayt Mac kompyuteringizning Dock panelida paydo bo‘ladi.
 
 Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamalarida (“Umumiy” bo‘limida) ham yoqish kerak. Barcha qurilmalaringiz umumiy iCloud hisobida sinxronlanishi zarur.</translation>

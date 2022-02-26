@@ -965,6 +965,7 @@ New install</translation>
 <translation id="7076293881109082629">Signing in</translation>
 <translation id="7086931198345821656">This update requires powerwashing your <ph name="DEVICE_TYPE" />. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7098053464892629930">Download the app for <ph name="NAME" /> on Google Play to see all available features</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
 <translation id="7106330611027933926">Show deskbar</translation>
 <translation id="7118268675952955085">screenshot</translation>
@@ -1040,7 +1041,6 @@ New install</translation>
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">See all notifications</translation>
 <translation id="7607002721634913082">Paused</translation>
-<translation id="7610198039767537854">View recent photos from your phone‘s camera roll on <ph name="DEVICE_TYPE" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Marker pen</translation>
 <translation id="7633755430369750696">Show Nearby Share settings.</translation>
@@ -1210,6 +1210,7 @@ New install</translation>
 <translation id="8660331759611631213">Square root of 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">Show network list. <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">Open <ph name="NAME" /> to set up your device</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8683506306463609433">Performance tracing active</translation>
 <translation id="8685326675965865247">Search your device, apps, settings and web. Use the arrow keys to navigate your apps.</translation>

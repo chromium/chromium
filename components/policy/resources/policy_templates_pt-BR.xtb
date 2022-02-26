@@ -1216,13 +1216,6 @@ Web e PWAs. No momento, com suporte apenas no
 
           Esta política não terá efeito se for definida como "Ativada", deixada vazia ou sem definição.</translation>
 <translation id="229322770310505679">Ativar o conceito de grupos atômicos de política</translation>
-<translation id="2293378264822766451">Se a política for ativada, políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ter precedência se estiverem em conflito com políticas do <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Apenas políticas originárias de usuários seguros podem ser mescladas. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
-
-      A política pode ser combinada com <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Se ambas as políticas forem ativadas, as políticas da nuvem de usuários também poderão ter precedência sobre as políticas em conflito da plataforma.
-
-      Se a política for desativada ou deixada sem definição, as políticas da nuvem de usuários terão prioridade por padrão.</translation>
 <translation id="22941467117331786">Se a política for definida como verdadeira, um botão grande e vermelho para sair da conta será exibido na bandeja do sistema em sessões ativas em que a tela não esteja bloqueada.
 
       Se ela for definida como falsa ou não for definida, nenhum botão será exibido.</translation>

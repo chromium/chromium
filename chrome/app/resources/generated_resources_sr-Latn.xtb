@@ -2304,6 +2304,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3277691515294482687">Napravi rezervne kopije mojih aplikacija i datoteka u direktorijumu Moje datoteke pre nadogradnje Linux-a.</translation>
 <translation id="3278001907972365362">Treba da proverite Google naloge</translation>
 <translation id="3278800075417428224">Upravljajte jezicima u podešavanjima OS-a CloudReady 2.0</translation>
+<translation id="3278928434075969895">Ovaj profil koristi Chrome OS podešavanja za proksi.</translation>
 <translation id="3279092821516760512">Izabrani kontakti mogu da dele sa vama kada ste u blizini. Prenosi neće započeti dok ne prihvatite.</translation>
 <translation id="3279230909244266691">Ovo može da potraje par minuta. Pokreće se virtuelna mašina.</translation>
 <translation id="3280237271814976245">Sačuvaj &amp;kao...</translation>
@@ -4875,6 +4876,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5909379458939060601">Želite da izbrišete ovaj profil i podatke pregledanja?</translation>
 <translation id="5910363049092958439">Sa&amp;čuvaj sliku kao...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> je oflajn</translation>
+<translation id="5911505723657992440">Koristi Chrome OS podešavanja za proksi za ovaj profil.</translation>
 <translation id="5911533659001334206">Prikazivač prečica</translation>
 <translation id="5914724413750400082">Modul (<ph name="MODULUS_NUM_BITS" /> bit(ov)a):
   <ph name="MODULUS_HEX_DUMP" />

@@ -1162,7 +1162,6 @@
 
           このポリシーを有効に設定するか、空白または未設定のままにした場合、ポリシーは無視されます。</translation>
 <translation id="229322770310505679">ポリシーの最小単位グループの概念を有効にする</translation>
-<translation id="2293378264822766451">このポリシーを有効にした場合、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> ポリシーと競合した場合に、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> アカウントに関連付けられたポリシーが優先されます。なお、統合できるのはセキュア ユーザーのポリシーのみです。セキュア ユーザーとは、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> を使用してブラウザを管理している組織に所属するユーザーです。他のユーザーレベルのポリシーはすべて、デフォルトの優先順位になります。このポリシーは <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> と組み合わせることができます。両方のポリシーが有効な場合、ユーザーのクラウド ポリシーも、競合するプラットフォーム ポリシーより優先されます。ポリシーを未設定のままにするか無効に設定した場合、ユーザーレベルのクラウド ポリシーがデフォルトの優先順位になります。</translation>
 <translation id="22941467117331786">このポリシーを True に設定した場合、アクティブなセッション中に画面がロックされていなければ、システムトレイに赤い大きなログアウト ボタンが表示されます。このポリシーを False に設定するか未設定のままにした場合、ボタンは表示されません。</translation>
 <translation id="2294382669900758280">Android アプリで再生中の動画は、このポリシーを <ph name="TRUE" /> に設定した場合でも考慮されません。</translation>
 <translation id="2299220924812062390">有効なプラグインのリストを指定する</translation>

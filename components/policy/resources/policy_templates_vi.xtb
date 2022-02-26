@@ -1220,13 +1220,6 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
 
           Chính sách này không có hiệu lực nếu bạn đặt thành Bật, để trống hoặc không đặt.</translation>
 <translation id="229322770310505679">Cho phép dùng khái niệm về nhóm chính sách không thể phân chia</translation>
-<translation id="2293378264822766451">Khi bạn bật chính sách này, các chính sách liên kết với tài khoản <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />sẽ được ưu tiên áp dụng nếu chúng xung đột với các chính sách <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Chỉ các chính sách bắt nguồn từ những người dùng an toàn mới có thể hợp nhất. Một người dùng an toàn được liên kết với tổ chức quản lý trình duyệt của họ bằng <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tất cả chính sách khác ở cấp người dùng sẽ được ưu tiên theo mặc định.
-
-      Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Nếu bạn bật cả hai chính sách, thì các chính sách đám mây ở cấp người dùng cũng sẽ được ưu tiên hơn các chính sách xung đột của nền tảng.
-
-      Nếu bạn không đặt hoặc tắt chính sách này, thì các chính sách đám mây ở cấp người dùng sẽ có mức ưu tiên theo mặc định.</translation>
 <translation id="22941467117331786">Nếu bạn đặt chính sách này thành True, thì một nút đăng xuất màu đỏ có kích thước lớn sẽ hiển thị trên khay hệ thống trong các phiên đang hoạt động khi màn hình không khóa.
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì sẽ không có nút nào xuất hiện.</translation>

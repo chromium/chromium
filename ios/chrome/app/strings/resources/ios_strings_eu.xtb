@@ -42,6 +42,7 @@
 <translation id="1265739287306757398">Lortu argibideak</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1275718070701477396">Hautatua</translation>
+<translation id="1281818060020671000">Kudeatu datuak</translation>
 <translation id="1282311502488501110">Ez hasi saioa</translation>
 <translation id="1283524564873030414">Azken 24 orduetakoak</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
@@ -406,6 +407,7 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4689564913179979534">Kudeatu ordainketa-metodoak…</translation>
 <translation id="470966556546083668">Ez aktibatu sinkronizazioa</translation>
 <translation id="4731472194328757163">Kamerarako eta mikrofonorako sarbideak gaituta daude</translation>
+<translation id="4737560986434232178">Bilatu erabilitako azken fitxetan</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4747097190499141774">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>

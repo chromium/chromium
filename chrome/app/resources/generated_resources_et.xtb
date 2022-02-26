@@ -2309,6 +2309,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3277691515294482687">Varunda minu rakendused ja failid enne Linuxi versiooni uuendamist kausta Minu failid.</translation>
 <translation id="3278001907972365362">Teie Google'i kontod vajavad tähelepanu</translation>
 <translation id="3278800075417428224">Hallake keeli CloudReady 2.0 seadetes</translation>
+<translation id="3278928434075969895">See profiil kasutab Chrome OS-i puhverserveri seadeid.</translation>
 <translation id="3279092821516760512">Valitud kontaktid saavad läheduses olles teiega jagada. Ülekandeid ei alustata enne, kui nõusoleku annate.</translation>
 <translation id="3279230909244266691">Protsess võib võtta mõne minuti. Virtuaalset masinat käivitatakse.</translation>
 <translation id="3280237271814976245">Salvesta &amp;nimega...</translation>
@@ -4880,6 +4881,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5909379458939060601">Kas kustutada see profiil ja sirvimisandmed?</translation>
 <translation id="5910363049092958439">Sal&amp;vesta pilt nimega...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> on võrguühenduseta</translation>
+<translation id="5911505723657992440">Kasuta selle profiili jaoks Chrome OS-i puhverserveri seadeid.</translation>
 <translation id="5911533659001334206">Otseteede vaatur</translation>
 <translation id="5914724413750400082">Moodul (<ph name="MODULUS_NUM_BITS" /> bitti):
   <ph name="MODULUS_HEX_DUMP" />

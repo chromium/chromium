@@ -1253,6 +1253,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2203088913459920044">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character</translation>
 <translation id="220321590587754225">Hindi makakonekta. Subukan ulit.</translation>
 <translation id="2204034823255629767">Basahin at baguhin ang anumang tina-type mo</translation>
+<translation id="2207115382329026341">I-enable ang mga setting sa pag-stream ng mga app sa iyong telepono.</translation>
 <translation id="220858061631308971">Pakilagay ang PIN code na ito sa "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2210462644007531147">Hindi matapos ang pag-install</translation>
 <translation id="2212565012507486665">Payagan ang cookies</translation>
@@ -1446,6 +1447,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2367972762794486313">Ipakita ang apps</translation>
 <translation id="236939127352773362">Kapag nagbabahagi ang mga device sa malapit</translation>
 <translation id="2371076942591664043">Buksan kapag &amp;tapos na</translation>
+<translation id="237307274687369010">Hindi mailunsad ang <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Pagkasyahin sa papel</translation>
 <translation id="2375406435414127095">Kumonekta sa iyong telepono</translation>
 <translation id="2377588536920405462">Puwede mong i-off ang Lokasyon sa pamamagitan ng pag-off sa pangunahing setting ng Lokasyon sa iyong device. Puwede mo ring i-off ang paggamit ng Wi-Fi, mga mobile network, at mga sensor para sa lokasyon sa mga setting ng lokasyon.</translation>
@@ -2319,6 +2321,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3277691515294482687">I-back up ang aking mga app at file sa folder na Aking Mga File bago i-upgrade ang Linux.</translation>
 <translation id="3278001907972365362">Nangangailangan ng pansin ang iyong (mga) Google Account</translation>
 <translation id="3278800075417428224">Pamahalaan ang mga wika sa mga setting ng CloudReady 2.0</translation>
+<translation id="3278928434075969895">Gumagamit ang profile na ito ng mga setting ng proxy ng Chrome OS.</translation>
 <translation id="3279092821516760512">Makakapagbahagi sa iyo ang mga piling contact kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>
 <translation id="3279230909244266691">Maaaring abutin nang ilang minuto ang prosesong ito. Sinisimulan ang virtual machine.</translation>
 <translation id="3280237271814976245">I-save &amp;bilang...</translation>
@@ -4891,6 +4894,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5909379458939060601">I-delete ang profile at data mula sa pag-browse na ito?</translation>
 <translation id="5910363049092958439">I-sa&amp;ve ang Imahe Bilang...</translation>
 <translation id="5910726859585389579">Offline ang <ph name="DEVICE_TYPE" /></translation>
+<translation id="5911505723657992440">Gamitin ang mga setting ng proxy ng Chrome OS para sa profile na ito.</translation>
 <translation id="5911533659001334206">Shortcut viewer</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> (na) bit):
   <ph name="MODULUS_HEX_DUMP" />

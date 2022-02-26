@@ -2318,6 +2318,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3277691515294482687">Säkerhetskopiera mina appar och filer till mappen Mina filer innan Linux uppgraderas.</translation>
 <translation id="3278001907972365362">Ditt Google-konto/dina Google-konton kräver åtgärd</translation>
 <translation id="3278800075417428224">Hantera språk i inställningarna för CloudReady 2.0</translation>
+<translation id="3278928434075969895">Den här profilen använder proxyinställningarna i Chrome OS.</translation>
 <translation id="3279092821516760512">Utvalda kontakter kan dela med dig när de är i närheten. Inga överföringar startas förrän du har godkänt dem.</translation>
 <translation id="3279230909244266691">Detta kan ta några minuter. Den virtuella maskinen startas.</translation>
 <translation id="3280237271814976245">Spara so&amp;m...</translation>
@@ -4890,6 +4891,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5909379458939060601">Vill du radera den här profilen och tillhörande webbinformation?</translation>
 <translation id="5910363049092958439">S&amp;para bild som...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> är offline</translation>
+<translation id="5911505723657992440">Använd proxyinställningarna i Chrome OS för den här profilen.</translation>
 <translation id="5911533659001334206">Kortkommandovisare</translation>
 <translation id="5914724413750400082">Modulus (<ph name="MODULUS_NUM_BITS" /> bitar):
   <ph name="MODULUS_HEX_DUMP" />

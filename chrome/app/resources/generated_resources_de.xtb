@@ -1237,6 +1237,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2203088913459920044">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen</translation>
 <translation id="220321590587754225">Verbindung nicht möglich. Versuchen Sie es erneut.</translation>
 <translation id="2204034823255629767">Ihre Eingaben lesen und ändern</translation>
+<translation id="2207115382329026341">Aktivieren Sie die Einstellungen für das App-Streaming von Ihrem Smartphone.</translation>
 <translation id="220858061631308971">Geben Sie diesen PIN-Code bitte auf "<ph name="DEVICE_NAME" /> " ein:</translation>
 <translation id="2210462644007531147">Installation konnte nicht abgeschlossen werden</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
@@ -1427,6 +1428,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2367972762794486313">Apps anzeigen</translation>
 <translation id="236939127352773362">Wenn Geräte in der Nähe etwas teilen</translation>
 <translation id="2371076942591664043">Nach &amp;Download öffnen</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> konnte nicht gestartet werden</translation>
 <translation id="2373666622366160481">An Papierformat anpassen</translation>
 <translation id="2375406435414127095">Mit dem Smartphone verbinden</translation>
 <translation id="2377588536920405462">Sie können die Standortermittlung deaktivieren, indem Sie die Haupteinstellung "Standort" auf Ihrem Gerät deaktivieren. Außerdem haben Sie die Möglichkeit, die Nutzung von WLANs, Mobilfunknetzen und Sensoren zur Standortermittlung in den Standorteinstellungen zu deaktivieren.</translation>
@@ -2300,6 +2302,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3277691515294482687">Meine Apps und Dateien vor dem Upgrade von Linux im Ordner "Meine Dateien" sichern.</translation>
 <translation id="3278001907972365362">Ihre Google-Konten erfordern Aufmerksamkeit</translation>
 <translation id="3278800075417428224">Sprachen in den Einstellungen von CloudReady 2.0 verwalten</translation>
+<translation id="3278928434075969895">Dieses Profil verwendet die Chrome OS-Proxy-Einstellungen.</translation>
 <translation id="3279092821516760512">Ausgewählte Kontakte können Daten mit Ihnen teilen, wenn Sie in der Nähe sind. Die Übertragung beginnt erst, nachdem Sie die Einladung angenommen haben.</translation>
 <translation id="3279230909244266691">Der Vorgang kann einige Minuten dauern. Virtuelle Maschine wird gestartet.</translation>
 <translation id="3280237271814976245">Speichern &amp;unter...</translation>
@@ -4869,6 +4872,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5909379458939060601">Dieses Profil und diese Browserdaten löschen?</translation>
 <translation id="5910363049092958439">Bi&amp;ld speichern unter...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ist offline</translation>
+<translation id="5911505723657992440">Für dieses Profil Chrome OS-Proxy-Einstellungen verwenden.</translation>
 <translation id="5911533659001334206">Tastenkombinationsanzeige</translation>
 <translation id="5914724413750400082">Modulo (<ph name="MODULUS_NUM_BITS" /> Bits):
   <ph name="MODULUS_HEX_DUMP" />

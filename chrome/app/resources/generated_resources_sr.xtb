@@ -2304,6 +2304,7 @@
 <translation id="3277691515294482687">Направи резервне копије мојих апликација и датотека у директоријуму Моје датотеке пре надоградње Linux-а.</translation>
 <translation id="3278001907972365362">Треба да проверите Google налоге</translation>
 <translation id="3278800075417428224">Управљајте језицима у подешавањима ОС-а CloudReady 2.0</translation>
+<translation id="3278928434075969895">Овај профил користи Chrome ОС подешавања за прокси.</translation>
 <translation id="3279092821516760512">Изабрани контакти могу да деле са вама када сте у близини. Преноси неће започети док не прихватите.</translation>
 <translation id="3279230909244266691">Ово може да потраје пар минута. Покреће се виртуелна машина.</translation>
 <translation id="3280237271814976245">Сачувај &amp;као...</translation>
@@ -4875,6 +4876,7 @@
 <translation id="5909379458939060601">Желите да избришете овај профил и податке прегледања?</translation>
 <translation id="5910363049092958439">Са&amp;чувај слику као...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> је офлајн</translation>
+<translation id="5911505723657992440">Користи Chrome ОС подешавања за прокси за овај профил.</translation>
 <translation id="5911533659001334206">Приказивач пречица</translation>
 <translation id="5914724413750400082">Модул (<ph name="MODULUS_NUM_BITS" /> бит(ов)а):
   <ph name="MODULUS_HEX_DUMP" />

@@ -1219,13 +1219,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
           Esta política no tendrá efecto si se habilita, se deja vacía o no se define.</translation>
 <translation id="229322770310505679">Habilitar el concepto de grupos atómicos de políticas</translation>
-<translation id="2293378264822766451">Si se habilita esta política, las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tendrán preferencia si entran en conflicto con las políticas de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Solo se pueden fusionar las políticas procedentes de usuarios seguros. Un usuario seguro está afiliado con la organización que gestiona el navegador usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Las demás políticas a nivel de usuario tendrán preferencia de forma predeterminada.
-
-      La política se puede combinar con <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Si se habilitan ambas políticas, las políticas basadas en la nube a nivel de usuario también prevalecerán sobre las políticas en conflicto a nivel de plataforma.
-
-      Si se inhabilita esta política o no se establece, las políticas basadas en la nube a nivel de usuario tendrán prioridad de forma predeterminada.</translation>
 <translation id="22941467117331786">Si se asigna el valor "Verdadero" a esta política, se mostrará un botón de cierre de sesión grande y de color rojo en la bandeja del sistema durante las sesiones activas cuando la pantalla no esté bloqueada.
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, no se mostrará ese botón.</translation>

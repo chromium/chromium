@@ -489,6 +489,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5490005495580364134">Block all cookies (not recommended)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> h ago</translation>
 <translation id="5525269841082836315">Create passphrase</translation>
+<translation id="5542540507657872337"><ph name="COUNT" /> found</translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>

@@ -1218,13 +1218,6 @@
 
           정책이 사용 설정되거나, 비어 있거나, 설정되지 않을 경우 아무런 영향을 미치지 않습니다.</translation>
 <translation id="229322770310505679">정책 전체 그룹의 개념 사용</translation>
-<translation id="2293378264822766451">정책을 사용으로 설정하면 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> 정책과 충돌하는 경우 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 계정에 연결된 정책이 우선 적용됩니다.
-
-      보안 사용자가 만든 정책만 병합 가능합니다. 보안 사용자는 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />를 사용하여 브라우저를 관리하는 조직에 속합니다. 다른 모든 사용자 수준 정책은 기본적으로 우선 적용됩니다.
-
-      이 정책은 <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> 정책과 결합될 수 있습니다. 두 정책이 모두 사용으로 설정되어 있으면 사용자 클라우드 정책이 충돌하는 플랫폼 정책보다 우선 적용됩니다.
-
-      정책을 설정하지 않거나 사용 안함으로 설정하면 사용자 수준 클라우드 정책이 기본적으로 우선 적용됩니다.</translation>
 <translation id="22941467117331786">정책을 True로 설정하면 스크린이 잠겨 있지 않을 때 활성 세션 동안 작업 표시줄에 커다란 빨간색 로그아웃 버튼이 표시됩니다.
 
       정책을 False로 설정하거나 설정하지 않으면 어떤 버튼도 표시되지 않습니다.</translation>

@@ -920,6 +920,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1869433484041798909">Bookmark button</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="187145082678092583">Fewer apps</translation>
+<translation id="1871463148436682760">Nicely done!</translation>
 <translation id="1871534214638631766">Show related info when you right-click or long press on content</translation>
 <translation id="1871569928317311284">Turn Dark theme off</translation>
 <translation id="1871615898038944731">Your <ph name="DEVICE_TYPE" /> is up to date</translation>
@@ -2350,6 +2351,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> off</translation>
 <translation id="3305389145870741612">The formatting process can take a couple of seconds. Please wait.</translation>
 <translation id="3305661444342691068">Open PDF in Preview</translation>
+<translation id="3306992216458434072">Name your group and choose a colour</translation>
 <translation id="3307176291962384345">Get discounts for <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">This page was prevented from setting cookies.</translation>
 <translation id="3308134619352333507">Hide Button</translation>
@@ -3764,6 +3766,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
+<translation id="47158868804223727">Click the group name to expand or collapse it</translation>
 <translation id="4716483597559580346">Powerwash for added security</translation>
 <translation id="471880041731876836">You don't have permission to visit this site</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
@@ -3827,6 +3830,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4794810983896241342">Updates are managed by <ph name="BEGIN_LINK" />your administrator<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Web Page, HTML Only</translation>
 <translation id="4796142525425001238">Always restore</translation>
+<translation id="4797314204379834752">Try using tab groups to organise tasks, for online shopping and more</translation>
 <translation id="4798236378408895261">Attach <ph name="BEGIN_LINK" />Bluetooth Logs<ph name="END_LINK" /> (Google internal)</translation>
 <translation id="479863874072008121">Manage devices</translation>
 <translation id="4800839971935185386">Review name and icon updates</translation>
@@ -4067,6 +4071,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5039696241953571917">View and manage saved passwords in your Google Account</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5040823038948176460">Additional content settings</translation>
+<translation id="5041509233170835229">Chrome app</translation>
 <translation id="5043440033854483429">Name can use letters, numbers and hyphens (-), and must be between 1 and 15 characters inclusive.</translation>
 <translation id="5043913660911154449">Or specify your printer PPD <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Incorrect password</translation>
@@ -5393,6 +5398,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />system information<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">System app</translation>
 <translation id="6396988158856674517">Block sites from using motion sensors</translation>
 <translation id="6398715114293939307">Remove Google Play Store</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
@@ -5462,6 +5468,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6460566145397380451">Allowed to connect to MIDI devices</translation>
 <translation id="6460601847208524483">Find next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
+<translation id="6462204616987156669">Right-click on a Tab and select 'Add Tab to new group'</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
 <translation id="6464825623202322042">This device</translation>
 <translation id="6465841119675156448">Without Internet</translation>
@@ -5879,6 +5886,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6885771755599377173">System information preview</translation>
 <translation id="6886871292305414135">Open link in new &amp;tab</translation>
 <translation id="6889957081990109136">Switch hasn’t been assigned yet</translation>
+<translation id="689007770043972343">Try dragging other open tabs to your group</translation>
 <translation id="6892812721183419409">Open Link as <ph name="USER" /></translation>
 <translation id="6895032998810961280">Report details to Google about harmful software, system settings and processes that were found on your computer during this clean up</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> is managed by <ph name="MANAGER" /> and your admin has blocked sign-in as a secondary account</translation>
@@ -6456,6 +6464,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> extension may collect all the text you type, including personal data like passwords and credit card numbers. Do you want to use this extension?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android app</translation>
 <translation id="7495778526395737099">Forgot your old password?</translation>
 <translation id="7497981768003291373">You have no recently captured WebRTC text logs.</translation>
 <translation id="7501957181231305652">or</translation>

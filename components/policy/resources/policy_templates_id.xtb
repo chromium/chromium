@@ -1219,13 +1219,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
           Kebijakan ini tidak berpengaruh jika disetel ke Aktif, dibiarkan kosong, atau tidak disetel.</translation>
 <translation id="229322770310505679">Mengaktifkan konsep grup atom kebijakan</translation>
-<translation id="2293378264822766451">Jika kebijakan disetel ke Aktif, kebijakan yang berkaitan dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diprioritaskan jika kebijakan tersebut bertentangan dengan kebijakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
-
-      Hanya kebijakan yang berasal dari pengguna aman yang dapat digabungkan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
-
-      Kebijakan ini dapat digabungkan dengan <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" />. Jika kedua kebijakan disetel ke aktif, kebijakan cloud pengguna juga akan lebih diprioritaskan daripada kebijakan platform yang bertentangan.
-
-      Jika kebijakan tidak disetel atau disetel ke nonaktif, kebijakan cloud tingkat pengguna akan memiliki prioritas default.</translation>
 <translation id="22941467117331786">Jika kebijakan ditetapkan ke Benar (True), tombol logout besar berwarna merah akan ditampilkan di baki sistem selama sesi aktif saat layar tidak dikunci.
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, tombol tidak akan muncul.</translation>

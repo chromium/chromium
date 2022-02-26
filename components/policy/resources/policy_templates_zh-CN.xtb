@@ -1184,13 +1184,6 @@
 
           如果已启用、留空或未设置，此政策将不会产生任何影响。</translation>
 <translation id="229322770310505679">启用政策原子组的概念</translation>
-<translation id="2293378264822766451">如果此政策已启用，当与 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 帐号关联的政策和 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> 政策冲突时，系统会以前者为准。
-
-      只能合并源自安全用户的政策。安全用户是指与会使用 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />来管理用户浏览器的组织关联的用户。其他所有的用户级政策都将具有默认优先级。
-
-      此政策可与 <ph name="POLICY_CLOUDPOLICYOVERRIDESPLATFORMPOLICY" /> 结合使用。如果这两项政策均已启用，当用户级云政策与平台政策冲突时，系统也会以前者为准。
-
-      如果此政策未设置或已停用，用户级云政策将具有默认优先级。</translation>
 <translation id="22941467117331786">如果此政策设为 True，当会话处于活动状态且屏幕未锁定时，系统任务栏中会显示一个大的红色退出按钮。
 
       如果此政策设为 False 或未设置，系统任务栏中不会显示任何按钮。</translation>

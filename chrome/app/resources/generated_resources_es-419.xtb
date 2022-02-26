@@ -2300,6 +2300,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3277691515294482687">Crear una copia de seguridad de mis apps y archivos en la carpeta Mis archivos antes de actualizar a Linux.</translation>
 <translation id="3278001907972365362">Tus Cuentas de Google necesitan atención</translation>
 <translation id="3278800075417428224">Administra los idiomas en la configuración de CloudReady 2.0</translation>
+<translation id="3278928434075969895">Este perfil usa la configuración de proxy de Chrome OS.</translation>
 <translation id="3279092821516760512">Ciertos contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>
 <translation id="3279230909244266691">Este proceso puede demorar unos minutos. Se está iniciando la máquina virtual.</translation>
 <translation id="3280237271814976245">Gu&amp;ardar como...</translation>
@@ -4871,6 +4872,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5909379458939060601">¿Quieres borrar este perfil y los datos de navegación?</translation>
 <translation id="5910363049092958439">Gu&amp;ardar imagen como...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> está sin conexión</translation>
+<translation id="5911505723657992440">Usa la configuración de proxy de Chrome OS en este perfil.</translation>
 <translation id="5911533659001334206">Visualizador de combinaciones de teclas</translation>
 <translation id="5914724413750400082">Módulo (<ph name="MODULUS_NUM_BITS" /> bits):
   <ph name="MODULUS_HEX_DUMP" />
