@@ -128,34 +128,34 @@ PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;
 
 void PrintPreviewHandlerChromeOS::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setupPrinter",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandlePrinterSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAccessToken",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetAccessToken,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "grantExtensionPrinterAccess",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getEulaUrl",
       base::BindRepeating(&PrintPreviewHandlerChromeOS::HandleGetEulaUrl,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestPrinterStatus",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "choosePrintServers",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleChoosePrintServers,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getPrintServersConfig",
       base::BindRepeating(
           &PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig,
@@ -180,11 +180,11 @@ void PrintPreviewHandlerChromeOS::OnJavascriptDisallowed() {
 }
 
 void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
-    const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated()[0].is_string() &&
-         args->GetListDeprecated()[1].is_string());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
-  std::string printer_id = args->GetListDeprecated()[1].GetString();
+    const base::Value::List& args) {
+  DCHECK(args[0].is_string());
+  DCHECK(args[1].is_string());
+  std::string callback_id = args[0].GetString();
+  std::string printer_id = args[1].GetString();
   DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
@@ -198,14 +198,13 @@ void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
 // |args| is expected to contain a string with representing the callback id
 // followed by a list of arguments the first of which should be the printer id.
 void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   std::string callback_id;
   std::string printer_name;
   MaybeAllowJavascript();
-  if (args->GetListDeprecated()[0].is_string() &&
-      args->GetListDeprecated()[1].is_string()) {
-    callback_id = args->GetListDeprecated()[0].GetString();
-    printer_name = args->GetListDeprecated()[1].GetString();
+  if (args[0].is_string() && args[1].is_string()) {
+    callback_id = args[0].GetString();
+    printer_name = args[1].GetString();
   }
 
   if (callback_id.empty() || printer_name.empty()) {
@@ -222,10 +221,10 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
 }
 
 void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
-    const base::ListValue* args) {
-  DCHECK(args->GetListDeprecated()[0].is_string());
+    const base::Value::List& args) {
+  DCHECK(args[0].is_string());
 
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string callback_id = args[0].GetString();
   DCHECK(!callback_id.empty());
   MaybeAllowJavascript();
 
@@ -237,12 +236,12 @@ void PrintPreviewHandlerChromeOS::HandleGetAccessToken(
 }
 
 void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
   MaybeAllowJavascript();
 
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& destination_id = args->GetListDeprecated()[1].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& destination_id = args[1].GetString();
 
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
   handler->StartGetEulaUrl(
@@ -326,11 +325,11 @@ void PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo(
 }
 
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
 
-  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
-  const std::string& printer_id = args->GetListDeprecated()[1].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
 
   MaybeAllowJavascript();
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
@@ -341,12 +340,12 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 }
 
 void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetListDeprecated().size());
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
 
-  const base::Value& val = args->GetListDeprecated()[0];
+  const base::Value& val = args[0];
   std::vector<std::string> print_server_ids;
-  for (const auto& id : val.GetListDeprecated()) {
+  for (const auto& id : val.GetList()) {
     print_server_ids.push_back(id.GetString());
   }
   MaybeAllowJavascript();
@@ -359,9 +358,9 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
 }
 
 void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
-    const base::ListValue* args) {
-  CHECK(args->GetListDeprecated()[0].is_string());
-  std::string callback_id = args->GetListDeprecated()[0].GetString();
+    const base::Value::List& args) {
+  CHECK(args[0].is_string());
+  std::string callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   MaybeAllowJavascript();
   if (!local_printer_) {

@@ -68,16 +68,16 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Grants an extension access to a provisional printer.  First element of
   // |args| is the provisional printer ID.
-  void HandleGrantExtensionPrinterAccess(const base::ListValue* args);
+  void HandleGrantExtensionPrinterAccess(const base::Value::List& args);
 
   // Performs printer setup. First element of |args| is the printer name.
-  void HandlePrinterSetup(const base::ListValue* args);
+  void HandlePrinterSetup(const base::Value::List& args);
 
   // Generates new token and sends back to UI.
-  void HandleGetAccessToken(const base::ListValue* args);
+  void HandleGetAccessToken(const base::Value::List& args);
 
   // Gets the EULA URL.
-  void HandleGetEulaUrl(const base::ListValue* args);
+  void HandleGetEulaUrl(const base::Value::List& args);
 
   // Send OAuth2 access token.
   void SendAccessToken(const std::string& callback_id,
@@ -100,7 +100,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
                                  const base::DictionaryValue& printer_info);
 
   // Called to initiate a status request for a printer.
-  void HandleRequestPrinterStatusUpdate(const base::ListValue* args);
+  void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
 
   // crosapi::mojom::PrintServerObserver Implementation
   void OnPrintServersChanged(
@@ -109,10 +109,10 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Loads printers corresponding to the print server(s).  First element of
   // |args| is the print server IDs.
-  void HandleChoosePrintServers(const base::ListValue* args);
+  void HandleChoosePrintServers(const base::Value::List& args);
 
   // Gets the list of print servers and fetching mode.
-  void HandleGetPrintServersConfig(const base::ListValue* args);
+  void HandleGetPrintServersConfig(const base::Value::List& args);
 
   // Holds token service to get OAuth2 access tokens.
   std::unique_ptr<AccessTokenService> token_service_;

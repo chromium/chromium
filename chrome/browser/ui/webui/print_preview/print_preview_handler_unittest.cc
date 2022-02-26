@@ -469,7 +469,7 @@ class PrintPreviewHandlerTest : public testing::Test {
       browser_process->SetApplicationLocale(locale);
       base::test::ScopedRestoreICUDefaultLocale scoped_locale(locale);
       base::ResetFormattersForTesting();
-      handler()->HandleGetInitialSettings(args.GetListDeprecated());
+      handler()->HandleGetInitialSettings(args.GetList());
     }
     // Reset again now that |scoped_locale| has been destroyed.
     browser_process->SetApplicationLocale(original_locale);
@@ -629,7 +629,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     base::Value args(base::Value::Type::LIST);
     args.Append(callback_id_in);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinters(args.GetListDeprecated());
+    handler()->HandleGetPrinters(args.GetList());
   }
 
   // Validates that the printers-added Web UI event has been fired for
@@ -645,8 +645,7 @@ class PrintPreviewHandlerTest : public testing::Test {
         static_cast<mojom::PrinterType>(add_data.arg2()->GetInt());
     EXPECT_EQ(expected_type, type);
     ASSERT_TRUE(add_data.arg3());
-    base::Value::ConstListView printer_list =
-        add_data.arg3()->GetListDeprecated();
+    const base::Value::List& printer_list = add_data.arg3()->GetList();
     ASSERT_EQ(printer_list.size(), 1u);
     EXPECT_TRUE(printer_list[0].FindKeyOfType("printer_name",
                                               base::Value::Type::STRING));
@@ -661,7 +660,7 @@ class PrintPreviewHandlerTest : public testing::Test {
     args.Append(callback_id_in);
     args.Append(printer_name);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinterCapabilities(args.GetListDeprecated());
+    handler()->HandleGetPrinterCapabilities(args.GetList());
   }
 
   // Validates that a printer capabilities promise was resolved/rejected.
@@ -1239,7 +1238,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
         "test-callback-id-" + base::NumberToString(2 * i + 1);
     base::Value preview_list_args =
         ConstructPreviewArgs(preview_callback_id, preview_ticket);
-    handler()->HandleGetPreview(preview_list_args.GetListDeprecated());
+    handler()->HandleGetPreview(preview_list_args.GetList());
 
     // Send printing request.
     mojom::PrinterType type = kAllTypes[i];
@@ -1251,7 +1250,7 @@ TEST_F(PrintPreviewHandlerTest, Print) {
     std::string json;
     base::JSONWriter::Write(print_ticket, &json);
     print_args.Append(json);
-    handler()->HandlePrint(print_args.GetListDeprecated());
+    handler()->HandlePrint(print_args.GetList());
 
     CheckHistograms(histograms, type);
 
@@ -1288,7 +1287,7 @@ TEST_F(PrintPreviewHandlerTest, GetPreview) {
   base::Value print_ticket = GetPrintPreviewTicket();
   base::Value list_args =
       ConstructPreviewArgs("test-callback-id-1", print_ticket);
-  handler()->HandleGetPreview(list_args.GetListDeprecated());
+  handler()->HandleGetPreview(list_args.GetList());
   run_loop.Run();
 
   // Verify that the preview was requested from the renderer with the
@@ -1318,7 +1317,7 @@ TEST_F(PrintPreviewHandlerTest, SendPreviewUpdates) {
   const char callback_id_in[] = "test-callback-id-1";
   base::Value print_ticket = GetPrintPreviewTicket();
   base::Value list_args = ConstructPreviewArgs(callback_id_in, print_ticket);
-  handler()->HandleGetPreview(list_args.GetListDeprecated());
+  handler()->HandleGetPreview(list_args.GetList());
   run_loop.Run();
   const base::Value& preview_params = print_render_frame.GetSettings();
 
@@ -1436,7 +1435,7 @@ TEST_F(PrintPreviewHandlerFailingTest, GetPrinterCapabilities) {
     args.Append(callback_id_in);
     args.Append(kDummyPrinterName);
     args.Append(static_cast<int>(type));
-    handler()->HandleGetPrinterCapabilities(args.GetListDeprecated());
+    handler()->HandleGetPrinterCapabilities(args.GetList());
     EXPECT_TRUE(handler()->CalledOnlyForType(type));
 
     // Start with 1 call from initial settings, then add 1 more for each loop
