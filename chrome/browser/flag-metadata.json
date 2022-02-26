@@ -5243,12 +5243,12 @@
   {
     "name": "scrollable-tabstrip",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "scrollable-tabstrip-buttons",
     "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "sct-auditing",
