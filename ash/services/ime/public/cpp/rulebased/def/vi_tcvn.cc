@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/vi_tcvn.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace vi_tcvn {
 
@@ -398,7 +398,7 @@ const char* kTransforms[] = {u8"A\u0300",
                              u8"\u1ef8",
                              u8"y\u0303",
                              u8"\u1ef9"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace vi_tcvn

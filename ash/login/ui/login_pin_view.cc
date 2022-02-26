@@ -12,7 +12,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -67,12 +66,12 @@ constexpr int kButtonWidthDp = 72;
 constexpr gfx::Size kButtonSize = gfx::Size(kButtonWidthDp, kButtonHeightDp);
 
 std::u16string GetButtonLabelForNumber(int value) {
-  DCHECK(value >= 0 && value < int{base::size(kPinLabels)});
+  DCHECK(value >= 0 && value < int{std::size(kPinLabels)});
   return base::ASCIIToUTF16(std::to_string(value));
 }
 
 std::u16string GetButtonSubLabelForNumber(int value) {
-  DCHECK(value >= 0 && value < int{base::size(kPinLabels)});
+  DCHECK(value >= 0 && value < int{std::size(kPinLabels)});
   return base::ASCIIToUTF16(kPinLabels[value]);
 }
 

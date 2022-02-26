@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/gu_phone.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace gu_phone {
 
@@ -728,7 +728,7 @@ const char* kTransforms[] = {
     u8"\\1\u0abe\u0aaf\u0abc",
     u8"([\u0a95-\u0ab9])\u001daax",
     u8"\\1\u0abe\u0a95\u0acd\u0ab7"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune =
     "a|aa|ac|aaC|aac|a\\.|aK|aC|aaK|aS|aaS|aa~|aa\\.|a~";
 

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/events/keyboard_driven_event_rewriter.h"
+
 #include <stddef.h>
 
 #include <string>
 
-#include "ash/events/keyboard_driven_event_rewriter.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -114,7 +114,7 @@ TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
     { ui::VKEY_RETURN, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN },
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     EXPECT_EQ(base::StringPrintf("PassThrough ui_flags=%d", kTests[i].ui_flags),
               GetRewrittenEventAsString(kTests[i].ui_keycode,
                                         kTests[i].ui_flags, ui::ET_KEY_PRESSED))
@@ -137,7 +137,7 @@ TEST_F(KeyboardDrivenEventRewriterTest, Rewrite) {
     { ui::VKEY_F6, kModifierMask },
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     EXPECT_EQ("Rewritten ui_flags=0",
               GetRewrittenEventAsString(kTests[i].ui_keycode,
                                         kTests[i].ui_flags, ui::ET_KEY_PRESSED))

@@ -17,7 +17,6 @@
 #include "ash/style/default_colors.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -284,7 +283,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
       gfx::ShadowValue(gfx::Vector2d(0, 3), 1, SkColorSetARGB(0x1A, 0, 0, 0)),
       gfx::ShadowValue(gfx::Vector2d(0, 0), 1, SkColorSetARGB(0x54, 0, 0, 0)),
   };
-  icon_shadows_.assign(kShadows, kShadows + base::size(kShadows));
+  icon_shadows_.assign(kShadows, kShadows + std::size(kShadows));
 
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks. This crashes if fetching a11y node

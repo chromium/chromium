@@ -149,7 +149,7 @@ TEST_P(OverviewHighlightControllerTest, BasicArrowKeyNavigation) {
       {9, 8, 7, 6, 5, 4, 3, 2, 1, 9}   // Up (same as Left)
   };
 
-  for (size_t key_index = 0; key_index < base::size(arrow_keys); ++key_index) {
+  for (size_t key_index = 0; key_index < std::size(arrow_keys); ++key_index) {
     ToggleOverview();
     const std::vector<std::unique_ptr<OverviewItem>>& overview_windows =
         GetOverviewItemsForRoot(0);

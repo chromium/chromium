@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/ethi.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ethi {
 
@@ -1313,7 +1313,7 @@ const char* kTransforms[] = {u8"\u128a\u001d?\u12a5",
                              u8"\u1370",
                              u8"'9",
                              u8"\u1371"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace ethi

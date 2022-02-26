@@ -4,7 +4,6 @@
 
 #include "ash/system/progress_indicator/progress_ring_pulse_animation.h"
 
-#include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -45,7 +44,7 @@ ProgressRingPulseAnimation::ProgressRingPulseAnimation()
                             base::Milliseconds(kAnimationDurationInMs),
                             /*is_cyclic=*/false) {
 #if DCHECK_IS_ON()
-  constexpr size_t kAnimationKeyFramesCount = base::size(kAnimationKeyFrames);
+  constexpr size_t kAnimationKeyFramesCount = std::size(kAnimationKeyFrames);
   DCHECK_GE(kAnimationKeyFramesCount, 2u);
   for (size_t i = 0u; i < kAnimationKeyFramesCount; ++i) {
     if (i == 0u) {
@@ -76,7 +75,7 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
 
   // Loop over all animation key frames until the correct key frames for the
   // current animation `fraction` are found.
-  for (size_t i = 1u; i < base::size(kAnimationKeyFrames); ++i) {
+  for (size_t i = 1u; i < std::size(kAnimationKeyFrames); ++i) {
     if (fraction > kAnimationKeyFrames[i].fraction)
       continue;
 

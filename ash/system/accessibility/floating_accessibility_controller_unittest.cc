@@ -427,7 +427,7 @@ TEST_F(FloatingAccessibilityControllerTest, ActiveFeaturesButtons) {
 
   {
     base::RunLoop loop_enable;
-    SetOnLayoutCallback(base::BarrierClosure(base::size(kFeatureButtons),
+    SetOnLayoutCallback(base::BarrierClosure(std::size(kFeatureButtons),
                                              loop_enable.QuitClosure()));
     // Enable all features.
     for (FeatureWithButton feature : kFeatureButtons)
@@ -441,7 +441,7 @@ TEST_F(FloatingAccessibilityControllerTest, ActiveFeaturesButtons) {
   EXPECT_TRUE(window_bounds.Contains(GetMenuViewBounds()));
   {
     base::RunLoop loop_disable;
-    SetOnLayoutCallback(base::BarrierClosure(base::size(kFeatureButtons),
+    SetOnLayoutCallback(base::BarrierClosure(std::size(kFeatureButtons),
                                              loop_disable.QuitClosure()));
     // Enable all features.
     // Dicable all features.

@@ -4,7 +4,6 @@
 
 #include "ash/webui/file_manager/resource_loader.h"
 
-#include "base/cxx17_backports.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +35,7 @@ TEST_F(ResourceLoaderTest, AddFilesAppResources) {
       {"file_manager/untrusted_resources/files_img_content.css", 11},
   };
 
-  const size_t kTestResourcesSize = base::size(kTestResources);
+  const size_t kTestResourcesSize = std::size(kTestResources);
 
   AddFilesAppResources(source()->GetWebUIDataSource(), kTestResources,
                        kTestResourcesSize);

@@ -59,7 +59,7 @@ const RoutineProperties kRoutineProperties[] = {
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcDnsResolution},
 };
 
-const size_t kRoutinePropertiesLength = base::size(kRoutineProperties);
+const size_t kRoutinePropertiesLength = std::size(kRoutineProperties);
 
 static_assert(kRoutinePropertiesLength ==
                   static_cast<size_t>(mojom::RoutineType::kMaxValue) + 1,

@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/si.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace si {
 
@@ -457,7 +457,7 @@ const char* kTransforms[] = {u8"\u0d85\u0dcf",
                              u8"([\u0d9a-\u0dc6](\u0dca\u200d[\u0dba\u0dbb])|("
                              u8"\u0dbb\u0dca\u200d))\u0ddc\u001d\u0dca",
                              u8"\\1\u0ddd"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace si

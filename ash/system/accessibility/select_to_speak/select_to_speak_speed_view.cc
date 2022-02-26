@@ -39,7 +39,7 @@ SelectToSpeakSpeedView::SelectToSpeakSpeedView(Delegate* delegate,
 void SelectToSpeakSpeedView::SetInitialSpeechRate(double initial_speech_rate) {
   RemoveAllChildViews();
 
-  for (size_t i = 0; i < base::size(kSelectToSpeakSpeechRates); i++) {
+  for (size_t i = 0; i < std::size(kSelectToSpeakSpeechRates); i++) {
     double option_speed = kSelectToSpeakSpeechRates[i];
     bool is_selected = option_speed == initial_speech_rate;
     // Add 1 to the index, because view IDs cannot be 0.
@@ -60,7 +60,7 @@ void SelectToSpeakSpeedView::AddMenuItem(int option_id,
 
 void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
   unsigned int speed_index = sender->GetID() - 1;
-  if (speed_index >= 0 && speed_index < base::size(kSelectToSpeakSpeechRates)) {
+  if (speed_index >= 0 && speed_index < std::size(kSelectToSpeakSpeechRates)) {
     delegate_->OnSpeechRateSelected(kSelectToSpeakSpeechRates[speed_index]);
   }
 }

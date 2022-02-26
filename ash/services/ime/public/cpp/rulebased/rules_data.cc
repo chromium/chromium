@@ -39,7 +39,6 @@
 #include "ash/services/ime/public/cpp/rulebased/def/vi_vni.h"
 #include "ash/services/ime/public/mojom/input_method.mojom-shared.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -206,7 +205,7 @@ constexpr mojom::DomCode k102Keys[] = {
 // Parses the raw key mappings and generate a KeyMap instance.
 KeyMap ParseKeyMap(const char** raw_key_map, bool is_102) {
   const mojom::DomCode* std_keys = is_102 ? k102Keys : k101Keys;
-  size_t nkeys = is_102 ? base::size(k102Keys) : base::size(k101Keys);
+  size_t nkeys = is_102 ? std::size(k102Keys) : std::size(k101Keys);
   KeyMap key_map;
   for (size_t i = 0; i < nkeys; ++i)
     key_map[std_keys[i]] = raw_key_map[i];

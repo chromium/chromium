@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -109,7 +108,7 @@ TEST_F(WallpaperResizerTest, BasicResize) {
       WALLPAPER_LAYOUT_CENTER, WALLPAPER_LAYOUT_CENTER_CROPPED,
       WALLPAPER_LAYOUT_STRETCH, WALLPAPER_LAYOUT_TILE,
   };
-  const int length = base::size(layouts);
+  const int length = std::size(layouts);
 
   for (int i = 0; i < length; i++) {
     WallpaperLayout layout = layouts[i];

@@ -8,7 +8,6 @@
 #include "ash/services/ime/public/cpp/rulebased/engine.h"
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
 #include "ash/services/ime/public/mojom/input_method.mojom-shared.h"
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -165,7 +164,7 @@ TEST_F(RulebasedImeTest, Transforms) {
   const char* transforms[] = {
       u8"a", u8"x", u8"x\u001dAA", u8"X", u8"(\\w)(\\w)[<>]", u8"\\2\\1"};
   auto data = rulebased::RulesData::Create(us::kKeyMap, false, transforms,
-                                           base::size(transforms), nullptr);
+                                           std::size(transforms), nullptr);
   std::string transformed;
   bool res = data->Transform("..", -1, "b", &transformed);
   EXPECT_FALSE(res);
@@ -185,7 +184,7 @@ TEST_F(RulebasedImeTest, PredictTransform) {
       u8"10",        u8"A",           u8"([aeou])\u001d?`",
       u8"\\1\u0300", u8"[\\[\\]]{2}", u8"ʘ"};
   auto data = rulebased::RulesData::Create(us::kKeyMap, false, transforms,
-                                           base::size(transforms), nullptr);
+                                           std::size(transforms), nullptr);
   bool res = data->PredictTransform("..x", -1);
   EXPECT_FALSE(res);
   res = data->PredictTransform(u8"..0", -1);

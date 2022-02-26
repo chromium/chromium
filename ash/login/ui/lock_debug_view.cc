@@ -29,7 +29,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -141,8 +140,8 @@ LoginUserInfo PopulateUserData(const LoginUserInfo& user,
   result.basic_user_info.display_name =
       is_public_account
           ? kDebugPublicAccountNames[user_index %
-                                     base::size(kDebugPublicAccountNames)]
-          : kDebugUserNames[user_index % base::size(kDebugUserNames)];
+                                     std::size(kDebugPublicAccountNames)]
+          : kDebugUserNames[user_index % std::size(kDebugUserNames)];
   result.basic_user_info.display_email =
       result.basic_user_info.account_id.GetUserEmail();
 
@@ -692,7 +691,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
   // Calculates the debugging detachable base ID that should become the paired
   // base in the model when the button for cycling paired bases is clicked.
   int NextBaseId() const {
-    return (base_id_ + 1) % base::size(kDebugDetachableBases);
+    return (base_id_ + 1) % std::size(kDebugDetachableBases);
   }
 
   // Gets the descripting text for currently paired base, if any.
@@ -711,7 +710,7 @@ class LockDebugView::DebugLoginDetachableBaseModel
     pairing_status_ = pairing_status;
     if (pairing_status == DetachableBasePairingStatus::kAuthenticated) {
       CHECK_GE(base_id, 0);
-      CHECK_LT(base_id, static_cast<int>(base::size(kDebugDetachableBases)));
+      CHECK_LT(base_id, static_cast<int>(std::size(kDebugDetachableBases)));
       base_id_ = base_id;
     } else {
       base_id_ = kNullBaseId;

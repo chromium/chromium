@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/vi_viqr.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace vi_viqr {
 
@@ -20,7 +20,7 @@ const char* kTransforms[] = {
     u8"\\\\\\'", u8"'",      u8"\\\\\\?", u8"?",      u8"\\\\\\~", u8"~",
     u8"\\\\\\.", u8".",      u8"\\`",     u8"\u0300", u8"\\'",     u8"\u0301",
     u8"\\?",     u8"\u0309", u8"\\~",     u8"\u0303", u8"\\.",     u8"\u0323"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace vi_viqr

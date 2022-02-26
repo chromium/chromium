@@ -5,7 +5,6 @@
 #include "ash/public/cpp/accelerators.h"
 
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 
 namespace ash {
@@ -233,7 +232,7 @@ const AcceleratorData kAcceleratorData[] = {
      TOGGLE_RESIZE_LOCK_MENU},
 };
 
-const size_t kAcceleratorDataLength = base::size(kAcceleratorData);
+const size_t kAcceleratorDataLength = std::size(kAcceleratorData);
 
 const AcceleratorData kDisableWithNewMappingAcceleratorData[] = {
     // Desk creation and removal:
@@ -249,7 +248,7 @@ const AcceleratorData kDisableWithNewMappingAcceleratorData[] = {
 };
 
 const size_t kDisableWithNewMappingAcceleratorDataLength =
-    base::size(kDisableWithNewMappingAcceleratorData);
+    std::size(kDisableWithNewMappingAcceleratorData);
 
 const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
     // Desk creation and removal:
@@ -295,7 +294,7 @@ const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
 };
 
 const size_t kEnableWithNewMappingAcceleratorDataLength =
-    base::size(kEnableWithNewMappingAcceleratorData);
+    std::size(kEnableWithNewMappingAcceleratorData);
 
 const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
     // These are the desk shortcuts as advertised, but previously
@@ -312,7 +311,7 @@ const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
 };
 
 const size_t kEnableWithPositionalAcceleratorsDataLength =
-    base::size(kEnableWithPositionalAcceleratorsData);
+    std::size(kEnableWithPositionalAcceleratorsData);
 
 const AcceleratorData
     kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[] = {
@@ -339,7 +338,7 @@ const AcceleratorData
 };
 
 const size_t kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength =
-    base::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
+    std::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
 
 // static
 AcceleratorController* AcceleratorController::Get() {

@@ -9,7 +9,6 @@
 #include "ash/services/ime/public/cpp/rulebased/engine.h"
 #include "ash/services/ime/public/cpp/rulebased/rulebased_fuzzer.pb.h"
 #include "ash/services/ime/public/cpp/rulebased/rules_data.h"
-#include "base/cxx17_backports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace rulebased = chromeos::ime::rulebased;
@@ -83,7 +82,7 @@ constexpr const char* kEngineIds[] = {
     "vi_vni",
 };
 
-static rulebased::Engine engines[base::size(kEngineIds)];
+static rulebased::Engine engines[std::size(kEngineIds)];
 
 uint8_t GetModifierFromKeyEvent(const rulebased_fuzzer::KeyEvent& e) {
   uint8_t modifiers = 0;

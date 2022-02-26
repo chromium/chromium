@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/disks/disk_mount_manager.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,9 +13,7 @@
 #include <vector>
 
 #include "ash/components/disks/disk.h"
-#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -601,10 +601,10 @@ class DiskMountManagerTest : public testing::Test {
   void InitDisksAndMountPoints() {
     // Disks should be  added first (when adding device mount points it is
     // expected that the corresponding disk is already added).
-    for (size_t i = 0; i < base::size(kTestDisks); i++)
+    for (size_t i = 0; i < std::size(kTestDisks); i++)
       AddTestDisk(kTestDisks[i]);
 
-    for (size_t i = 0; i < base::size(kTestMountPoints); i++)
+    for (size_t i = 0; i < std::size(kTestMountPoints); i++)
       AddTestMountPoint(kTestMountPoints[i]);
   }
 

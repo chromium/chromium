@@ -15,7 +15,6 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -324,7 +323,7 @@ SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
                                                   bool inverted) const {
   constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60,
                              kAlpha80, kAlpha90, kAlpha95};
-  DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
+  DCHECK_LT(static_cast<size_t>(type), std::size(kAlphas));
   return SkColorSetA(
       inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),
       kAlphas[static_cast<int>(type)]);
@@ -334,7 +333,7 @@ SkColor AshColorProvider::GetBaseLayerColorImpl(BaseLayerType type,
                                                 bool inverted) const {
   constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80,
                              kAlpha90, kAlpha95, 0xFF};
-  DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
+  DCHECK_LT(static_cast<size_t>(type), std::size(kAlphas));
   return SkColorSetA(
       inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),
       kAlphas[static_cast<int>(type)]);

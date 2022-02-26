@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/deva_phone.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace deva_phone {
 
@@ -533,7 +533,7 @@ const char* kTransforms[] = {
     u8"\u0965",
     u8"\u0964\u001d?\\.",
     u8"\u2026"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = "n(\\.)?|c|ch|C|nc|nC|nch|\\.|a";
 
 }  // namespace deva_phone

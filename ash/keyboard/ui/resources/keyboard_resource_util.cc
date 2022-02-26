@@ -6,7 +6,6 @@
 
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "ash/keyboard/ui/grit/keyboard_resources_map.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -93,7 +92,7 @@ const webui::ResourcePath* GetKeyboardExtensionResources(size_t* size) {
       {"keyboard/sounds/keypress-standard.wav",
        IDR_KEYBOARD_SOUNDS_KEYPRESS_STANDARD},
   };
-  *size = base::size(kKeyboardResources);
+  *size = std::size(kKeyboardResources);
   return kKeyboardResources;
 }
 

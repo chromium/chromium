@@ -35,7 +35,7 @@ TEST(KeyEventStructTraitsTest, Convert) {
       {ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, ui::EF_SHIFT_DOWN},
       {ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, ui::EF_CAPS_LOCK_ON},
   };
-  for (size_t idx = 0; idx < base::size(kTestData); ++idx) {
+  for (size_t idx = 0; idx < std::size(kTestData); ++idx) {
     auto copy = std::make_unique<ui::KeyEvent>(kTestData[idx]);
     std::unique_ptr<ui::KeyEvent> output;
     mojo::test::SerializeAndDeserialize<arc::mojom::KeyEventData>(copy, output);

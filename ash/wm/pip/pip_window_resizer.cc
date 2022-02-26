@@ -129,7 +129,7 @@ void CollectPositionMetric(const gfx::Rect& bounds_in_screen,
                                bounds),
        AshPipPosition::BOTTOM_RIGHT}};
 
-  std::sort(area_ninths, area_ninths + base::size(area_ninths));
+  std::sort(area_ninths, area_ninths + std::size(area_ninths));
   UMA_HISTOGRAM_ENUMERATION(kAshPipPositionHistogramName,
                             area_ninths[8].second);
 }

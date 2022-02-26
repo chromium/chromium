@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/vi_vni.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace vi_vni {
 
@@ -81,7 +81,7 @@ const char* kTransforms[] = {
     u8"\u0103\u00e2\u00ea\u00f4\u01a1\u01b0\u0102\u00c2\u00ca\u00d4\u01a0\u01af"
     u8"])\u001d?([a-zA-Z])",
     u8"\\2\\1\\3"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace vi_vni

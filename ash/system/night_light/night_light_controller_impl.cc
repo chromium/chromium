@@ -475,7 +475,7 @@ float NightLightControllerImpl::RemapAmbientColorTemperature(
                 {4200, 5500}, {4800, 5800}, {5300, 6000},
                 {6000, 6400}, {7000, 6800}, {8000, 7500}};
 
-  constexpr size_t kTableSize = base::size(kTable);
+  constexpr size_t kTableSize = std::size(kTable);
   // We clamp to a range defined by the minimum possible input value and the
   // maximum. Given that the interval kTable[i].input_temperature,
   // kTable[i+1].input_temperature exclude the upper bound, we clamp it to the

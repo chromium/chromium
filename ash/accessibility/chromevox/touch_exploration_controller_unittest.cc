@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/accessibility/chromevox/mock_touch_exploration_controller_delegate.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -1154,7 +1153,7 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;
@@ -1215,7 +1214,7 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;

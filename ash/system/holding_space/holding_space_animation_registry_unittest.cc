@@ -241,7 +241,7 @@ TEST_P(HoldingSpaceAnimationRegistryTest, ProgressIndicatorAnimations) {
           item_1, future.GetCallback()),
       registry()->AddProgressRingAnimationChangedCallbackForKey(
           item_2, future.GetCallback())};
-  for (size_t i = 0u; i < base::size(subscriptions); ++i)
+  for (size_t i = 0u; i < std::size(subscriptions); ++i)
     EXPECT_EQ(future.Take(), nullptr);
 
   // Verify animation `registry()` state.

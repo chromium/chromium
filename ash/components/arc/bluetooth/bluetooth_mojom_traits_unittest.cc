@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -123,7 +122,7 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisement) {
       converted_service = advertisement->service_data();
   EXPECT_EQ(converted_service->size(), 1U);
   EXPECT_EQ(converted_service->begin()->first, kUuid16Str);
-  for (size_t i = 0; i < base::size(kServiceData); i++) {
+  for (size_t i = 0; i < std::size(kServiceData); i++) {
     EXPECT_EQ(kServiceData[i], converted_service->begin()->second[i]);
   }
 
@@ -134,7 +133,7 @@ TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisement) {
   EXPECT_EQ(cic & 0xff, kManufacturerData[0]);
   EXPECT_EQ((cic >> 8) & 0xff, kManufacturerData[1]);
   EXPECT_EQ(converted_manufacturer->begin()->second.size(),
-            base::size(kManufacturerData) - sizeof(uint16_t));
+            std::size(kManufacturerData) - sizeof(uint16_t));
 }
 
 TEST(BluetoothStructTraitsTest, DeserializeBluetoothAdvertisementFailure) {

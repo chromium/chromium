@@ -6,8 +6,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
-
 namespace ash {
 namespace {
 
@@ -79,7 +77,7 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
 };
 // clang-format on
 
-const size_t kLoginAcceleratorDataLength = base::size(kLoginAcceleratorData);
+const size_t kLoginAcceleratorDataLength = std::size(kLoginAcceleratorData);
 
 std::string MapToWebUIAccelerator(LoginAcceleratorAction action) {
   switch (action) {

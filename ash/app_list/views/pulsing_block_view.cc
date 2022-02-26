@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
@@ -34,12 +33,12 @@ const float kAnimationScale[] = {0.8f, 1.0f, 0.8f};
 
 void SchedulePulsingAnimation(ui::Layer* layer) {
   DCHECK(layer);
-  DCHECK_EQ(base::size(kAnimationOpacity), base::size(kAnimationScale));
+  DCHECK_EQ(std::size(kAnimationOpacity), std::size(kAnimationScale));
 
   const gfx::Rect local_bounds(layer->bounds().size());
   views::AnimationBuilder builder;
   views::AnimationSequenceBlock block = builder.Repeatedly();
-  for (size_t i = 0; i < base::size(kAnimationOpacity); ++i) {
+  for (size_t i = 0; i < std::size(kAnimationOpacity); ++i) {
     block = block.SetDuration(base::Milliseconds(kAnimationDurationInMs))
                 .SetOpacity(layer, kAnimationOpacity[i])
                 .SetTransform(layer,
@@ -58,7 +57,7 @@ PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  const int max_delay = kAnimationDurationInMs * base::size(kAnimationOpacity);
+  const int max_delay = kAnimationDurationInMs * std::size(kAnimationOpacity);
   const int delay = start_delay ? base::RandInt(0, max_delay) : 0;
   start_delay_timer_.Start(FROM_HERE, base::Milliseconds(delay), this,
                            &PulsingBlockView::OnStartDelayTimer);

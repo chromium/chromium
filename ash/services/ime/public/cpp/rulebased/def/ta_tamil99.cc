@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/ta_tamil99.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ta_tamil99 {
 
@@ -425,7 +425,7 @@ const char* kTransforms[] = {u8"([\u0b95-\u0bb9])\u0b85", u8"\\1\u200d",
                              u8"([\u0b95-\u0bb9])\u0b92", u8"\\1\u0bca",
                              u8"([\u0b95-\u0bb9])\u0b93", u8"\\1\u0bcb",
                              u8"([\u0b95-\u0bb9])\u0b94", u8"\\1\u0bcc"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace ta_tamil99

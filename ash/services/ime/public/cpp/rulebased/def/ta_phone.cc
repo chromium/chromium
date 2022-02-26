@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/ta_phone.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ta_phone {
 
@@ -544,7 +544,7 @@ const char* kTransforms[] = {u8"\u0bcd\u0bb1\u0bcd\u0bb1\u0bcd\u001d?i",
                              u8"\u0ba9\u0bcd\u0b9f\u0bcd\u0bb0\u0bcd",
                              u8"\u0ba3\u0bcd\u0b9f\u0bcd\u001d?r",
                              u8"\u0ba9\u0bcd\u0bb1\u0bcd"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = "t|dh|d";
 
 }  // namespace ta_phone

@@ -5,11 +5,11 @@
 #include "ash/components/timezone/timezone_request.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -258,7 +258,7 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   bool found = false;
-  for (size_t i = 0; i < base::size(statusString2Enum); ++i) {
+  for (size_t i = 0; i < std::size(statusString2Enum); ++i) {
     if (*status != statusString2Enum[i].string)
       continue;
 
@@ -486,7 +486,7 @@ std::string TimeZoneResponseData::ToStringForDebug() const {
       "error_message='%s', status=%u (%s)",
       dstOffset, rawOffset, timeZoneId.c_str(), timeZoneName.c_str(),
       error_message.c_str(), (unsigned)status,
-      (status < base::size(status2string) ? status2string[status] : "unknown"));
+      (status < std::size(status2string) ? status2string[status] : "unknown"));
 }
 
 }  // namespace ash

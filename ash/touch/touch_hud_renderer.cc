@@ -86,7 +86,7 @@ class TouchPointView : public views::View,
 
     fill_flags.setShader(cc::PaintShader::MakeRadialGradient(
         gfx::PointToSkPoint(center), SkIntToScalar(kPointRadius),
-        gradient_colors, gradient_pos, base::size(gradient_colors),
+        gradient_colors, gradient_pos, std::size(gradient_colors),
         SkTileMode::kMirror));
     canvas->DrawCircle(center, SkIntToScalar(kPointRadius), fill_flags);
 

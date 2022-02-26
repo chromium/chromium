@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/kn_phone.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace kn_phone {
 
@@ -320,7 +320,7 @@ const char* kTransforms[] = {u8"0",
                              u8"\u0964",
                              u8"\u0964\u001d?\\|",
                              u8"\u0965"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = "C|c";
 
 }  // namespace kn_phone

@@ -412,7 +412,7 @@ class LoginPasswordView::EasyUnlockIcon : public views::ImageButton {
         std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
             std::make_unique<ui::LayerAnimationSequence>();
         opacity_sequence->set_is_repeating(true);
-        for (size_t i = 0; i < base::size(kSpinnerFramesParams); ++i) {
+        for (size_t i = 0; i < std::size(kSpinnerFramesParams); ++i) {
           opacity_sequence->AddElement(
               ui::LayerAnimationElement::CreateOpacityElement(
                   kSpinnerFramesParams[i].opacity,
@@ -515,7 +515,7 @@ class LoginPasswordView::AlternateIconsView : public views::View {
     // the layer animator or the observer is destroyed.
     opacity_sequence->AddObserver(observer_.get());
     opacity_sequence->set_is_repeating(true);
-    for (size_t i = 0; i < base::size(kAlternateFramesParams); ++i) {
+    for (size_t i = 0; i < std::size(kAlternateFramesParams); ++i) {
       opacity_sequence->AddElement(
           ui::LayerAnimationElement::CreateOpacityElement(
               kAlternateFramesParams[i].opacity,

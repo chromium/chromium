@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ash {
 
@@ -556,7 +556,7 @@ extern const float kAccelerometerLaptopModeTestData[] = {
     0.0703125f,   -0.0986328f,   0.948242f,     -0.928711f,    -0.162109f,
     -0.333008f};
 extern const size_t kAccelerometerLaptopModeTestDataLength =
-    base::size(kAccelerometerLaptopModeTestData);
+    std::size(kAccelerometerLaptopModeTestData);
 
 extern const float kAccelerometerFullyOpenTestData[] = {
     0.892578f,    -0.0810547f,  0.0146484f,    0.929688f,     -0.0644531f,
@@ -994,7 +994,7 @@ extern const float kAccelerometerFullyOpenTestData[] = {
     0.887695f,    0.0146484f,   0.360352f,     0.927734f,     -0.03125f,
     0.272461f};
 extern const size_t kAccelerometerFullyOpenTestDataLength =
-    base::size(kAccelerometerFullyOpenTestData);
+    std::size(kAccelerometerFullyOpenTestData);
 
 extern const float kAccelerometerVerticalHingeTestData[] = {
     -0.0766145f,  6.02381f,     7.85298f,     -0.268151f,   -8.84897f,
@@ -1996,7 +1996,7 @@ extern const float kAccelerometerVerticalHingeTestData[] = {
 };
 
 extern const size_t kAccelerometerVerticalHingeTestDataLength =
-    base::size(kAccelerometerVerticalHingeTestData);
+    std::size(kAccelerometerVerticalHingeTestData);
 
 extern const float kAccelerometerVerticalHingeUnstableAnglesTestData[] = {
     8.5904f,   -1.36948f,  -3.74453f,   8.72447f,  1.1971f,    4.00311f,
@@ -2023,6 +2023,6 @@ extern const float kAccelerometerVerticalHingeUnstableAnglesTestData[] = {
 };
 
 extern const size_t kAccelerometerVerticalHingeUnstableAnglesTestDataLength =
-    base::size(kAccelerometerVerticalHingeUnstableAnglesTestData);
+    std::size(kAccelerometerVerticalHingeUnstableAnglesTestData);
 
 }  // namespace ash

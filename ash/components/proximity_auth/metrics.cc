@@ -25,7 +25,7 @@ int32_t DigestToInt32(const base::MD5Digest& digest) {
   // First, copy to a uint32_t, since byte swapping and endianness conversions
   // expect unsigned integers.
   uint32_t unsigned_value;
-  DCHECK_GE(base::size(digest.a), sizeof(unsigned_value));
+  DCHECK_GE(std::size(digest.a), sizeof(unsigned_value));
   memcpy(&unsigned_value, digest.a, sizeof(unsigned_value));
   unsigned_value = base::ByteSwap(base::HostToNet32(unsigned_value));
 

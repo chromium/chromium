@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/ta_itrans.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ta_itrans {
 
@@ -83,7 +83,7 @@ const char* kTransforms[] = {u8"k",    u8"\u0b95\u0bcd",
                              u8"#",    u8"\u0bcd",
                              u8"\\$",  u8"\u0bb0",
                              u8"\\^",  u8"\u0ba4\u0bcd"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = "[\\^lrshkdnJNtTaeiouAEIOU]|sh|ks|dn";
 
 }  // namespace ta_itrans

@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/my.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace my {
 
@@ -440,7 +440,7 @@ const char* kTransforms[] = {
     u8"\\1\u1039\u1031",
     u8"\u1039\u1031\u001d([\u1000-\u1019\u101c\u101e\u1020\u1021])",
     u8"\u1039\\1\u1031"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = nullptr;
 
 }  // namespace my

@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -69,7 +68,7 @@ SkColor GetBackgroundColor(int index) {
        SkColorSetA(gfx::kGoogleBlue600, 0x19)}};
 
   DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(base::size(kBackgroundColors)));
+  DCHECK_LT(index, static_cast<int>(std::size(kBackgroundColors)));
 
   if (features::IsDarkLightModeEnabled()) {
     return ColorProvider::Get()->IsDarkModeEnabled()
@@ -91,7 +90,7 @@ SkColor GetForegroundColor(int index) {
       {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
 
   DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(base::size(kForegroundColors)));
+  DCHECK_LT(index, static_cast<int>(std::size(kForegroundColors)));
 
   if (features::IsDarkLightModeEnabled()) {
     return ColorProvider::Get()->IsDarkModeEnabled()

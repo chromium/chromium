@@ -16,9 +16,9 @@ namespace {
 // /sys/class/power_supply/hid-{AA:BB:CC:DD:EE:FF|AAAA:BBBB:CCCC.DDDD}-battery.
 constexpr char kHIDBatteryPrefix[] = "/sys/class/power_supply/hid-";
 constexpr char kHIDBatterySuffix[] = "-battery";
-constexpr size_t kPrefixLen = base::size(kHIDBatteryPrefix) - 1;
+constexpr size_t kPrefixLen = std::size(kHIDBatteryPrefix) - 1;
 constexpr size_t kPrefixAndSuffixLen =
-    (base::size(kHIDBatteryPrefix) - 1) + (base::size(kHIDBatterySuffix) - 1);
+    (std::size(kHIDBatteryPrefix) - 1) + (std::size(kHIDBatterySuffix) - 1);
 
 // Regex to check for valid bluetooth addresses.
 constexpr char kBluetoothAddressRegex[] =

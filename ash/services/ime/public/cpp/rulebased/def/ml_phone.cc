@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/public/cpp/rulebased/def/ml_phone.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ml_phone {
 
@@ -835,7 +835,7 @@ const char* kTransforms[] = {
     u8"\u0d7b",
     u8"r",
     u8"\u0d7c"};
-const unsigned int kTransformsLen = base::size(kTransforms);
+const unsigned int kTransformsLen = std::size(kTransforms);
 const char* kHistoryPrune = "a|@|@a|c|R|_|~";
 
 }  // namespace ml_phone
