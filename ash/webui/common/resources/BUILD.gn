@@ -30,6 +30,7 @@ generate_grd("build_grdp") {
   input_files = [
     "fake_observables.js",
     "fake_method_resolver.js",
+    "mojo_utils.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [ ":preprocess_generated" ]
@@ -47,6 +48,7 @@ js_type_check("closure_compile_module") {
     ":keyboard_diagram",
     ":keyboard_icons",
     ":keyboard_key",
+    ":mojo_utils",
     ":navigation_selector",
     ":navigation_view_panel",
     ":page_toolbar",
@@ -79,6 +81,10 @@ js_library("keyboard_key") {
     ":keyboard_icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("mojo_utils") {
+  deps = [ "//ash/webui/common/mojom:mojom_js_library_for_compile" ]
 }
 
 js_library("navigation_selector") {
