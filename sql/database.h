@@ -237,10 +237,17 @@ class COMPONENT_EXPORT(SQL) Database {
   // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);
 
-  // Run "PRAGMA integrity_check" and post each line of
-  // results into |messages|.  Returns the success of running the
-  // statement - per the SQLite documentation, if no errors are found the
-  // call should succeed, and a single value "ok" should be in messages.
+  // Asks SQLite to perform a full integrity check on the database.
+  //
+  // Returns true if the integrity check was completed successfully. Success
+  // does not necessarily entail that the database is healthy. Finding
+  // corruption and reporting it in `messages` counts as success.
+  //
+  // If the method returns true, `messages` is populated with a list of
+  // diagnostic messages. If the integrity check finds no errors, `messages`
+  // will contain exactly one "ok" string. This unusual API design is explained
+  // by the fact that SQLite exposes integrity check functionality as a PRAGMA,
+  // and the PRAGMA returns "ok" in case of success.
   bool FullIntegrityCheck(std::vector<std::string>* messages);
 
   // Meant to be called from a client error callback so that it's able to

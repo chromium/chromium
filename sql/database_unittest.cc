@@ -1298,6 +1298,8 @@ TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
   static constexpr char kTableSql[] =
       "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL)";
   ASSERT_TRUE(db_->Execute(kTableSql));
+  ASSERT_TRUE(db_->Execute("CREATE INDEX rows_by_value ON rows(value)"));
+
   {
     std::vector<std::string> messages;
     EXPECT_TRUE(db_->FullIntegrityCheck(&messages))
@@ -1305,16 +1307,11 @@ TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
     EXPECT_THAT(messages, testing::ElementsAre("ok"))
         << "FullIntegrityCheck() should report ok before database is corrupted";
   }
-  db_->Close();
 
-  ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
-  {
-    sql::test::ScopedErrorExpecter expecter;
-    expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
-    EXPECT_TRUE(expecter.SawExpectedErrors())
-        << "Open() did not encounter SQLITE_CORRUPT";
-  }
+  db_->Close();
+  ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_by_value"));
+  ASSERT_TRUE(db_->Open(db_path_));
+
   {
     std::vector<std::string> messages;
     EXPECT_TRUE(db_->FullIntegrityCheck(&messages))
@@ -1322,9 +1319,6 @@ TEST_P(SQLDatabaseTest, FullIntegrityCheck) {
     EXPECT_THAT(messages, testing::Not(testing::ElementsAre("ok")))
         << "FullIntegrityCheck() should not report ok for a corrupted database";
   }
-
-  // TODO(shess): CorruptTableOrIndex could be used to produce a
-  // file that would pass the quick check and fail the full check.
 }
 
 TEST_P(SQLDatabaseTest, OnMemoryDump) {
