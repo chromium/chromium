@@ -958,4 +958,32 @@ TEST_F(CaptureModeCameraTest, ChangeFolderWhileVideoRecordingInProgress) {
             saved_video_file.DirName());
 }
 
+// Tests that there is no crash if moving the mouse to be on the top of the
+// camera preview after capture type switching. Selected window should not be
+// changed in this process either.
+TEST_F(CaptureModeCameraTest, HoveringMouseOverCameraPreview) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(window());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+
+  // No camera preview when it is in `kImage`.
+  controller->SetType(CaptureModeType::kImage);
+  event_generator->MoveMouseToCenterOf(window());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+
+  // The native window of camera preview widget should be ignored from the
+  // candidates of the selected window. So moving the mouse to be on top of the
+  // camera preview should not cause any crash or selected window changes.
+  controller->SetType(CaptureModeType::kVideo);
+  event_generator->MoveMouseTo(camera_controller->camera_preview_widget()
+                                   ->GetWindowBoundsInScreen()
+                                   .CenterPoint());
+  EXPECT_EQ(window(), controller->capture_mode_session()->GetSelectedWindow());
+}
+
 }  // namespace ash
