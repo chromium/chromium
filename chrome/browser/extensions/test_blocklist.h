@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
+#include "chrome/browser/extensions/scoped_database_manager_for_test.h"
 
 namespace extensions {
 
@@ -89,7 +90,7 @@ class TestBlocklist {
 
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db_;
 
-  Blocklist::ScopedDatabaseManagerForTest scoped_blocklist_db_;
+  ScopedDatabaseManagerForTest scoped_blocklist_db_;
 };
 
 }  // namespace extensions

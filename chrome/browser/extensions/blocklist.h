@@ -18,11 +18,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "extensions/browser/blocklist_state.h"
 
 namespace content {
 class BrowserContext;
+}
+
+namespace safe_browsing {
+class SafeBrowsingDatabaseManager;
 }
 
 namespace extensions {
@@ -45,22 +48,6 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
 
    private:
     raw_ptr<Blocklist> blocklist_;
-  };
-
-  class ScopedDatabaseManagerForTest {
-   public:
-    explicit ScopedDatabaseManagerForTest(
-        scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-            database_manager);
-
-    ScopedDatabaseManagerForTest(const ScopedDatabaseManagerForTest&) = delete;
-    ScopedDatabaseManagerForTest& operator=(
-        const ScopedDatabaseManagerForTest&) = delete;
-
-    ~ScopedDatabaseManagerForTest();
-
-   private:
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> original_;
   };
 
   using BlocklistStateMap = std::map<std::string, BlocklistState>;
@@ -124,6 +111,8 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   void RemoveObserver(Observer* observer);
 
  private:
+  friend class ScopedDatabaseManagerForTest;
+
   // Use via ScopedDatabaseManagerForTest.
   static void SetDatabaseManager(
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>

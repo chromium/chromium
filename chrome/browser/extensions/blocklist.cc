@@ -22,6 +22,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -163,16 +164,6 @@ Blocklist::Observer::Observer(Blocklist* blocklist) : blocklist_(blocklist) {
 
 Blocklist::Observer::~Observer() {
   blocklist_->RemoveObserver(this);
-}
-
-Blocklist::ScopedDatabaseManagerForTest::ScopedDatabaseManagerForTest(
-    scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
-    : original_(GetDatabaseManager()) {
-  SetDatabaseManager(database_manager);
-}
-
-Blocklist::ScopedDatabaseManagerForTest::~ScopedDatabaseManagerForTest() {
-  SetDatabaseManager(original_);
 }
 
 Blocklist::Blocklist(ExtensionPrefs* prefs) {
