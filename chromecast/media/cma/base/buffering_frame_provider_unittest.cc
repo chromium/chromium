@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
@@ -125,12 +124,12 @@ TEST_F(BufferingFrameProviderTest, FastProviderSlowConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(provider_delayed_pattern,
-                              provider_delayed_pattern +
-                                  base::size(provider_delayed_pattern)),
+            std::vector<bool>(
+                provider_delayed_pattern,
+                provider_delayed_pattern + std::size(provider_delayed_pattern)),
             std::vector<bool>(consumer_delayed_pattern,
                               consumer_delayed_pattern +
-                                  base::size(consumer_delayed_pattern)));
+                                  std::size(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -145,12 +144,12 @@ TEST_F(BufferingFrameProviderTest, SlowProviderFastConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(provider_delayed_pattern,
-                              provider_delayed_pattern +
-                                  base::size(provider_delayed_pattern)),
+            std::vector<bool>(
+                provider_delayed_pattern,
+                provider_delayed_pattern + std::size(provider_delayed_pattern)),
             std::vector<bool>(consumer_delayed_pattern,
                               consumer_delayed_pattern +
-                                  base::size(consumer_delayed_pattern)));
+                                  std::size(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -172,12 +171,12 @@ TEST_F(BufferingFrameProviderTest, SlowFastProducerConsumer) {
 
   const size_t frame_count = 100u;
   Configure(frame_count,
-            std::vector<bool>(provider_delayed_pattern,
-                              provider_delayed_pattern +
-                                  base::size(provider_delayed_pattern)),
+            std::vector<bool>(
+                provider_delayed_pattern,
+                provider_delayed_pattern + std::size(provider_delayed_pattern)),
             std::vector<bool>(consumer_delayed_pattern,
                               consumer_delayed_pattern +
-                                  base::size(consumer_delayed_pattern)));
+                                  std::size(consumer_delayed_pattern)));
 
   base::test::SingleThreadTaskEnvironment task_environment;
   base::ThreadTaskRunnerHandle::Get()->PostTask(

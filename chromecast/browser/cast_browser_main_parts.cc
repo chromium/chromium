@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -189,7 +188,7 @@ void RunClosureOnSignal(int signum) {
 void RegisterClosureOnSignal(base::OnceClosure closure) {
   DCHECK(!g_signal_closure);
   DCHECK(closure);
-  DCHECK_GT(base::size(kSignalsToRunClosure), 0U);
+  DCHECK_GT(std::size(kSignalsToRunClosure), 0U);
 
   // Memory leak on purpose, since |g_signal_closure| should live until
   // process exit.

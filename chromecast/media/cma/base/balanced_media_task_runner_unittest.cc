@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -220,7 +219,7 @@ TEST_F(BalancedMediaTaskRunnerTest, OneTaskRunner) {
   int timestamps0_ms[] = {0, 10, 20, 30, 40, 30, 50, 60, 20, 30, 70};
   std::vector<std::vector<int> > timestamps_ms(1);
   timestamps_ms[0] = std::vector<int>(
-      timestamps0_ms, timestamps0_ms + base::size(timestamps0_ms));
+      timestamps0_ms, timestamps0_ms + std::size(timestamps0_ms));
 
   // Scheduling pattern.
   std::vector<size_t> scheduling_pattern(1);
@@ -230,7 +229,7 @@ TEST_F(BalancedMediaTaskRunnerTest, OneTaskRunner) {
   int expected_timestamps[] = {0, 10, 20, 30, 40, 50, 60, 70};
   std::vector<int> expected_timestamps_ms(
       std::vector<int>(expected_timestamps,
-                       expected_timestamps + base::size(expected_timestamps)));
+                       expected_timestamps + std::size(expected_timestamps)));
 
   SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);
@@ -247,21 +246,21 @@ TEST_F(BalancedMediaTaskRunnerTest, TwoTaskRunnerUnbalanced) {
   int timestamps1_ms[] = {5, 15, 25, 35, 45, 35, 55, 65, 25, 35, 75};
   std::vector<std::vector<int> > timestamps_ms(2);
   timestamps_ms[0] = std::vector<int>(
-      timestamps0_ms, timestamps0_ms + base::size(timestamps0_ms));
+      timestamps0_ms, timestamps0_ms + std::size(timestamps0_ms));
   timestamps_ms[1] = std::vector<int>(
-      timestamps1_ms, timestamps1_ms + base::size(timestamps1_ms));
+      timestamps1_ms, timestamps1_ms + std::size(timestamps1_ms));
 
   // Scheduling pattern.
   size_t pattern[] = {1, 0, 0, 0, 0};
   std::vector<size_t> scheduling_pattern =
-      std::vector<size_t>(pattern, pattern + base::size(pattern));
+      std::vector<size_t>(pattern, pattern + std::size(pattern));
 
   // Expected results.
   int expected_timestamps[] = {
     5, 0, 10, 20, 30, 15, 40, 25, 50, 35, 60, 45, 70, 55, 65, 75 };
   std::vector<int> expected_timestamps_ms(
       std::vector<int>(expected_timestamps,
-                       expected_timestamps + base::size(expected_timestamps)));
+                       expected_timestamps + std::size(expected_timestamps)));
 
   SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);

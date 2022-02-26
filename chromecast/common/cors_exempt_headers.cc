@@ -46,7 +46,7 @@ base::span<const char*> GetLegacyCorsExemptHeaders() {
 bool IsCorsExemptHeader(base::StringPiece header) {
   static const base::NoDestructor<base::flat_set<std::string>>
       exempt_header_set(kExemptHeaders,
-                        kExemptHeaders + base::size(kExemptHeaders));
+                        kExemptHeaders + std::size(kExemptHeaders));
   return exempt_header_set->find(header) != exempt_header_set->end();
 }
 

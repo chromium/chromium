@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
@@ -466,7 +465,7 @@ int MixerOutputStreamAlsa::DetermineOutputRate(int requested_sample_rate) {
   // doesn't always choose a rate that's actually near the given input sample
   // rate when the input sample rate is not supported.
   const int* kSupportedSampleRatesEnd =
-      kSupportedSampleRates + base::size(kSupportedSampleRates);
+      kSupportedSampleRates + std::size(kSupportedSampleRates);
   auto* nearest_sample_rate =
       std::min_element(kSupportedSampleRates, kSupportedSampleRatesEnd,
                        [requested_sample_rate](int r1, int r2) -> bool {

@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -70,32 +69,32 @@ const char* const kWorkqEvents[] = {
 void AddCategoryEvents(const std::string& category,
                        std::vector<std::string>* events) {
   if (category == "gfx") {
-    std::copy(kGfxEvents, kGfxEvents + base::size(kGfxEvents),
+    std::copy(kGfxEvents, kGfxEvents + std::size(kGfxEvents),
               std::back_inserter(*events));
     return;
   }
   if (category == "input") {
-    std::copy(kInputEvents, kInputEvents + base::size(kInputEvents),
+    std::copy(kInputEvents, kInputEvents + std::size(kInputEvents),
               std::back_inserter(*events));
     return;
   }
   if (category == TRACE_DISABLED_BY_DEFAULT("irq")) {
-    std::copy(kIrqEvents, kIrqEvents + base::size(kIrqEvents),
+    std::copy(kIrqEvents, kIrqEvents + std::size(kIrqEvents),
               std::back_inserter(*events));
     return;
   }
   if (category == "power") {
-    std::copy(kPowerEvents, kPowerEvents + base::size(kPowerEvents),
+    std::copy(kPowerEvents, kPowerEvents + std::size(kPowerEvents),
               std::back_inserter(*events));
     return;
   }
   if (category == "sched") {
-    std::copy(kSchedEvents, kSchedEvents + base::size(kSchedEvents),
+    std::copy(kSchedEvents, kSchedEvents + std::size(kSchedEvents),
               std::back_inserter(*events));
     return;
   }
   if (category == "workq") {
-    std::copy(kWorkqEvents, kWorkqEvents + base::size(kWorkqEvents),
+    std::copy(kWorkqEvents, kWorkqEvents + std::size(kWorkqEvents),
               std::back_inserter(*events));
     return;
   }

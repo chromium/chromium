@@ -11,7 +11,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/i18n/rtl.h"
@@ -404,7 +403,7 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
   };
 
   const std::string& scheme = url.scheme();
-  for (size_t i = 0; i < base::size(kProtocolList); ++i) {
+  for (size_t i = 0; i < std::size(kProtocolList); ++i) {
     if (scheme == kProtocolList[i])
       return true;
   }
@@ -468,7 +467,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kForceMediaResolutionWidth,
         network::switches::kUnsafelyTreatInsecureOriginAsSecure};
     command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches,
-                                   base::size(kForwardSwitches));
+                                   std::size(kForwardSwitches));
   } else if (process_type == switches::kUtilityProcess) {
     if (browser_command_line->HasSwitch(switches::kAudioOutputChannels)) {
       command_line->AppendSwitchASCII(switches::kAudioOutputChannels,
@@ -490,7 +489,7 @@ void CastContentBrowserClient::AppendExtraCommandLineSwitches(
         switches::kVSyncInterval,
     };
     command_line->CopySwitchesFrom(*browser_command_line, kForwardSwitches,
-                                   base::size(kForwardSwitches));
+                                   std::size(kForwardSwitches));
 
     auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
     gfx::Size res = display.GetSizeInPixel();

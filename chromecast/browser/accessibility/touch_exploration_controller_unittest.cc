@@ -1311,7 +1311,7 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;
@@ -1372,7 +1372,7 @@ TEST_F(TouchExplorationTest, DISABLED_GestureSwipePortrit) {
   // detector test, since it seems to be about the right amount to get a swipe.
   const int kSteps = 15;
 
-  for (size_t i = 0; i < base::size(gestures_to_test); ++i) {
+  for (size_t i = 0; i < std::size(gestures_to_test); ++i) {
     const float distance = 2 * gesture_detector_config_.touch_slop + 1;
     int move_x = gestures_to_test[i].move_x * distance;
     int move_y = gestures_to_test[i].move_y * distance;

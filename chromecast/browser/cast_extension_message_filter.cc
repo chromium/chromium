@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -42,7 +41,7 @@ CastExtensionMessageFilter::CastExtensionMessageFilter(
     int render_process_id,
     content::BrowserContext* context)
     : BrowserMessageFilter(kExtensionFilteredMessageClasses,
-                           base::size(kExtensionFilteredMessageClasses)),
+                           std::size(kExtensionFilteredMessageClasses)),
       render_process_id_(render_process_id),
       context_(context),
       extension_info_map_(

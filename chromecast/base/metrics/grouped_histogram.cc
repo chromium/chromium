@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
@@ -171,7 +170,7 @@ void PreregisterHistogram(const char* name,
 } // namespace
 
 void PreregisterAllGroupedHistograms() {
-  for (size_t i = 0; i < base::size(kHistogramsToGroup); ++i) {
+  for (size_t i = 0; i < std::size(kHistogramsToGroup); ++i) {
     PreregisterHistogram(
         kHistogramsToGroup[i].name,
         kHistogramsToGroup[i].minimum,

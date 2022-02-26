@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_piece.h"
@@ -56,7 +55,7 @@ bool IsAlsaDeviceAvailable(CastAudioManagerAlsa::StreamType type,
   // it or not.
   if (type == CastAudioManagerAlsa::kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < base::size(kInvalidAudioInputDevices); ++i) {
+    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
       if (kInvalidAudioInputDevices[i] == device_name)
         return false;
     }

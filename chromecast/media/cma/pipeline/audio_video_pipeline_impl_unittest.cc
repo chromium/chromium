@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -251,7 +250,7 @@ class PipelineHelper {
     frame_provider->Configure(
         std::vector<bool>(
             provider_delayed_pattern,
-            provider_delayed_pattern + base::size(provider_delayed_pattern)),
+            provider_delayed_pattern + std::size(provider_delayed_pattern)),
         std::move(frame_generator));
     frame_provider->SetDelayFlush(true);
     return std::move(frame_provider);
