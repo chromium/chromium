@@ -78,4 +78,9 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
     public ChipView getPedalChipView() {
         return mPedal.getChipView();
     }
+
+    /** @return The {@link PedalView} in this view. */
+    PedalView getPedalView() {
+        return mPedal;
+    }
 }

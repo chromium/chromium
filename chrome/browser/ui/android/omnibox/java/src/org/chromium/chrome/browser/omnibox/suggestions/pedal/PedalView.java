@@ -38,6 +38,8 @@ public class PedalView extends SimpleHorizontalLayoutView {
     public PedalView(Context context) {
         super(context);
 
+        setFocusable(true);
+
         mPedal = new ChipView(context, null);
         mPedal.setLayoutParams(LayoutParams.forDynamicView());
 
@@ -92,5 +94,10 @@ public class PedalView extends SimpleHorizontalLayoutView {
     /** @return The {@link ChipView} in this view. */
     ChipView getChipView() {
         return mPedal;
+    }
+
+    @Override
+    public boolean isFocused() {
+        return super.isFocused() || (isSelected() && !isInTouchMode());
     }
 }

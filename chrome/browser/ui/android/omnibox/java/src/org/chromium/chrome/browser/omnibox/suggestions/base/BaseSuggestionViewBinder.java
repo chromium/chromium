@@ -230,7 +230,7 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param model A property model to look up relevant properties.
      * @return A selectable background drawable.
      */
-    private static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
+    public static Drawable getSelectableBackgroundDrawable(View view, PropertyModel model) {
         return OmniboxResourceProvider.resolveAttributeToDrawable(view.getContext(),
                 model.get(SuggestionCommonProperties.COLOR_SCHEME),
                 R.attr.selectableItemBackground);
