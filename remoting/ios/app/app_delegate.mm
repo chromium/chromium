@@ -32,10 +32,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-static NSString* const kTosUrl = @"https://policies.google.com/terms";
-static NSString* const kPrivacyPolicyUrl =
-    @"https://policies.google.com/privacy";
-
 @interface AppDelegate ()<FirstLaunchViewControllerDelegate> {
   FirstLaunchViewPresenter* _firstLaunchViewPresenter;
 }

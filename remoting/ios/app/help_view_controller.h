@@ -5,12 +5,11 @@
 #ifndef REMOTING_IOS_APP_HELP_VIEW_CONTROLLER_H_
 #define REMOTING_IOS_APP_HELP_VIEW_CONTROLLER_H_
 
+#import <SafariServices/SafariServices.h>
 #import <UIKit/UIKit.h>
 
-#import "remoting/ios/app/web_view_controller.h"
-
 // A VC that shows the help center.
-@interface HelpViewController : WebViewController
+@interface HelpViewController : SFSafariViewController
 
 - (instancetype)init;
 
