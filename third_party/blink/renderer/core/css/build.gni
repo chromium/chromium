@@ -271,6 +271,8 @@ blink_core_sources_css = [
   "cssom/css_color_value.h",
   "cssom/css_hsl.cc",
   "cssom/css_hsl.h",
+  "cssom/css_hwb.cc",
+  "cssom/css_hwb.h",
   "cssom/css_keyword_value.cc",
   "cssom/css_keyword_value.h",
   "cssom/css_math_clamp.cc",

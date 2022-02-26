@@ -18,7 +18,7 @@ namespace blink {
 
 class Color;
 
-enum class ColorFormat { kRgb, kHex, kHsl };
+enum class ColorFormat { kRgb, kHex, kHsl, kHwb };
 enum class ContrastAlgorithm { kAa, kAaa, kApca };
 
 struct CORE_EXPORT LineStyle {

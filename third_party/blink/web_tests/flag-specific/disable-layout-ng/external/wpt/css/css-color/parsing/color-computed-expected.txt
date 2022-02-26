@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 403 tests; 27 PASS, 376 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 407 tests; 40 PASS, 367 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'currentcolor'
 PASS Property color value 'transparent'
 PASS Property color value 'red'
@@ -34,6 +34,7 @@ FAIL Property color value 'rgba(20% none none / none)' assert_true: 'rgba(20% no
 FAIL Property color value 'rgba(none none none / 50%)' assert_true: 'rgba(none none none / 50%)' is a supported value for color. expected true got false
 PASS Property color value 'hsl(120 30% 50%)'
 PASS Property color value 'hsl(120 30% 50% / 0.5)'
+PASS Property color value 'hsl(120 30% 50% / 50%)'
 FAIL Property color value 'hsl(none none none)' assert_true: 'hsl(none none none)' is a supported value for color. expected true got false
 PASS Property color value 'hsl(0 0% 0%)'
 FAIL Property color value 'hsl(none none none / none)' assert_true: 'hsl(none none none / none)' is a supported value for color. expected true got false
@@ -50,24 +51,27 @@ FAIL Property color value 'hsl(120 none 50%)' assert_true: 'hsl(120 none 50%)' i
 PASS Property color value 'hsl(120 0% 50%)'
 FAIL Property color value 'hsl(120 100% 50% / none)' assert_true: 'hsl(120 100% 50% / none)' is a supported value for color. expected true got false
 PASS Property color value 'hsl(120 100% 50% / 0)'
+PASS Property color value 'hsl(120 100% 50% / 0%)'
 FAIL Property color value 'hsl(none 100% 50%)' assert_true: 'hsl(none 100% 50%)' is a supported value for color. expected true got false
 PASS Property color value 'hsl(0 100% 50%)'
-FAIL Property color value 'hwb(120 30% 50%)' assert_true: 'hwb(120 30% 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(120 30% 50% / 0.5)' assert_true: 'hwb(120 30% 50% / 0.5)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(120 30% 50%)'
+PASS Property color value 'hwb(120 30% 50% / 0.5)'
+PASS Property color value 'hwb(120 30% 50% / 50%)'
 FAIL Property color value 'hwb(none none none)' assert_true: 'hwb(none none none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(0 0% 0%)' assert_true: 'hwb(0 0% 0%)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(0 0% 0%)'
 FAIL Property color value 'hwb(none none none / none)' assert_true: 'hwb(none none none / none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(0 0% 0% / 0)' assert_true: 'hwb(0 0% 0% / 0)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(0 0% 0% / 0)'
 FAIL Property color value 'hwb(120 none none)' assert_true: 'hwb(120 none none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(120 0% 0%)' assert_true: 'hwb(120 0% 0%)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(120 0% 0%)'
 FAIL Property color value 'hwb(120 80% none)' assert_true: 'hwb(120 80% none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(120 80% 0%)' assert_true: 'hwb(120 80% 0%)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(120 80% 0%)'
 FAIL Property color value 'hwb(120 none 50%)' assert_true: 'hwb(120 none 50%)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(120 0% 50%)' assert_true: 'hwb(120 0% 50%)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(120 0% 50%)'
 FAIL Property color value 'hwb(120 30% 50% / none)' assert_true: 'hwb(120 30% 50% / none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(120 30% 50% / 0)' assert_true: 'hwb(120 30% 50% / 0)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(120 30% 50% / 0)'
+PASS Property color value 'hwb(120 30% 50% / 0%)'
 FAIL Property color value 'hwb(none 100% 50% / none)' assert_true: 'hwb(none 100% 50% / none)' is a supported value for color. expected true got false
-FAIL Property color value 'hwb(0 100% 50% / 0)' assert_true: 'hwb(0 100% 50% / 0)' is a supported value for color. expected true got false
+PASS Property color value 'hwb(0 100% 50% / 0)'
 FAIL Property color value 'color(srgb 0% 0% 0%)' assert_true: 'color(srgb 0% 0% 0%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb 10% 10% 10%)' assert_true: 'color(srgb 10% 10% 10%)' is a supported value for color. expected true got false
 FAIL Property color value 'color(srgb .2 .2 25%)' assert_true: 'color(srgb .2 .2 25%)' is a supported value for color. expected true got false

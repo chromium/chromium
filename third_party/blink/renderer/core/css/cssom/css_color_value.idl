@@ -11,4 +11,5 @@
 ] interface CSSColorValue {
   CSSRGB toRGB();
   CSSHSL toHSL();
+  CSSHWB toHWB();
 };

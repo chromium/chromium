@@ -1,36 +1,36 @@
 This is a testharness.js-based test.
-FAIL HWB value should parse and round correctly: hwb(0 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(30 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(60 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(120 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(180 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(210 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(240 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(270 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(300 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(330 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(360 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90deg 50% 50%) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 0% 50%) assert_equals: expected "rgb(64, 128, 0)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 12.5% 50%) assert_equals: expected "rgb(80, 128, 32)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 25% 50%) assert_equals: expected "rgb(96, 128, 64)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 37.5% 50%) assert_equals: expected "rgb(112, 128, 96)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 62.5% 50%) assert_equals: expected "rgb(142, 142, 142)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 75% 50%) assert_equals: expected "rgb(153, 153, 153)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 87.5% 50%) assert_equals: expected "rgb(162, 162, 162)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 100% 50%) assert_equals: expected "rgb(170, 170, 170)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 0%) assert_equals: expected "rgb(191, 255, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 12.5%) assert_equals: expected "rgb(175, 223, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 25%) assert_equals: expected "rgb(159, 191, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 37.5%) assert_equals: expected "rgb(143, 159, 128)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 62.5%) assert_equals: expected "rgb(113, 113, 113)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 75%) assert_equals: expected "rgb(102, 102, 102)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 87.5%) assert_equals: expected "rgb(93, 93, 93)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 100%) assert_equals: expected "rgb(85, 85, 85)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 50% / 0) assert_equals: expected "rgba(128, 128, 128, 0)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 50% / 0.2) assert_equals: expected "rgba(128, 128, 128, 0.2)" but got "rgb(12, 34, 223)"
-FAIL HWB value should parse and round correctly: hwb(90 50% 50% / 1) assert_equals: expected "rgb(128, 128, 128)" but got "rgb(12, 34, 223)"
+PASS HWB value should parse and round correctly: hwb(0 50% 50%)
+PASS HWB value should parse and round correctly: hwb(30 50% 50%)
+PASS HWB value should parse and round correctly: hwb(60 50% 50%)
+PASS HWB value should parse and round correctly: hwb(90 50% 50%)
+PASS HWB value should parse and round correctly: hwb(120 50% 50%)
+PASS HWB value should parse and round correctly: hwb(180 50% 50%)
+PASS HWB value should parse and round correctly: hwb(210 50% 50%)
+PASS HWB value should parse and round correctly: hwb(240 50% 50%)
+PASS HWB value should parse and round correctly: hwb(270 50% 50%)
+PASS HWB value should parse and round correctly: hwb(300 50% 50%)
+PASS HWB value should parse and round correctly: hwb(330 50% 50%)
+PASS HWB value should parse and round correctly: hwb(360 50% 50%)
+PASS HWB value should parse and round correctly: hwb(90deg 50% 50%)
+PASS HWB value should parse and round correctly: hwb(90 0% 50%)
+PASS HWB value should parse and round correctly: hwb(90 12.5% 50%)
+PASS HWB value should parse and round correctly: hwb(90 25% 50%)
+PASS HWB value should parse and round correctly: hwb(90 37.5% 50%)
+PASS HWB value should parse and round correctly: hwb(90 62.5% 50%)
+PASS HWB value should parse and round correctly: hwb(90 75% 50%)
+PASS HWB value should parse and round correctly: hwb(90 87.5% 50%)
+PASS HWB value should parse and round correctly: hwb(90 100% 50%)
+PASS HWB value should parse and round correctly: hwb(90 50% 0%)
+PASS HWB value should parse and round correctly: hwb(90 50% 12.5%)
+PASS HWB value should parse and round correctly: hwb(90 50% 25%)
+PASS HWB value should parse and round correctly: hwb(90 50% 37.5%)
+PASS HWB value should parse and round correctly: hwb(90 50% 62.5%)
+PASS HWB value should parse and round correctly: hwb(90 50% 75%)
+PASS HWB value should parse and round correctly: hwb(90 50% 87.5%)
+PASS HWB value should parse and round correctly: hwb(90 50% 100%)
+PASS HWB value should parse and round correctly: hwb(90 50% 50% / 0)
+PASS HWB value should parse and round correctly: hwb(90 50% 50% / 0.2)
+PASS HWB value should parse and round correctly: hwb(90 50% 50% / 1)
 PASS HWB value with commas should not be parsed: hwb(90deg, 50%, 50%)
 PASS HWB value with commas should not be parsed: hwb(90deg, 50%, 50%, 0.2)
 PASS HWB value with commas should not be parsed: hwb(90, 50%, 50%)

@@ -17,6 +17,7 @@ class Color;
 class CSSNumericValue;
 class CSSRGB;
 class CSSHSL;
+class CSSHWB;
 
 class CORE_EXPORT CSSColorValue : public CSSStyleValue {
   DEFINE_WRAPPERTYPEINFO();
@@ -24,6 +25,7 @@ class CORE_EXPORT CSSColorValue : public CSSStyleValue {
  public:
   CSSRGB* toRGB() const;
   CSSHSL* toHSL() const;
+  CSSHWB* toHWB() const;
 
   const CSSValue* ToCSSValue() const override;
 

@@ -57,6 +57,7 @@ test_computed_value("color", "rgba(none none none / 50%)", "rgba(0, 0, 0, 0.5)")
 
 test_computed_value("color", "hsl(120 30% 50%)", "rgb(89, 166, 89)");
 test_computed_value("color", "hsl(120 30% 50% / 0.5)", "rgba(89, 166, 89, 0.5)");
+test_computed_value("color", "hsl(120 30% 50% / 50%)", "rgba(89, 166, 89, 0.5)");
 test_computed_value("color", "hsl(none none none)", "rgb(0, 0, 0)");
 test_computed_value("color", "hsl(0 0% 0%)", "rgb(0, 0, 0)");
 test_computed_value("color", "hsl(none none none / none)", "rgba(0, 0, 0, 0)");
@@ -73,11 +74,13 @@ test_computed_value("color", "hsl(120 none 50%)", "rgb(128, 128, 128)");
 test_computed_value("color", "hsl(120 0% 50%)", "rgb(128, 128, 128)");
 test_computed_value("color", "hsl(120 100% 50% / none)", "rgba(0, 255, 0, 0)");
 test_computed_value("color", "hsl(120 100% 50% / 0)", "rgba(0, 255, 0, 0)");
+test_computed_value("color", "hsl(120 100% 50% / 0%)", "rgba(0, 255, 0, 0)");
 test_computed_value("color", "hsl(none 100% 50%)", "rgb(255, 0, 0)");
 test_computed_value("color", "hsl(0 100% 50%)", "rgb(255, 0, 0)");
 
 test_computed_value("color", "hwb(120 30% 50%)", "rgb(77, 128, 77)");
 test_computed_value("color", "hwb(120 30% 50% / 0.5)", "rgba(77, 128, 77, 0.5)");
+test_computed_value("color", "hwb(120 30% 50% / 50%)", "rgba(77, 128, 77, 0.5)");
 test_computed_value("color", "hwb(none none none)", "rgb(255, 0, 0)");
 test_computed_value("color", "hwb(0 0% 0%)", "rgb(255, 0, 0)");
 test_computed_value("color", "hwb(none none none / none)", "rgba(255, 0, 0, 0)");
@@ -90,6 +93,7 @@ test_computed_value("color", "hwb(120 none 50%)", "rgb(0, 128, 0)");
 test_computed_value("color", "hwb(120 0% 50%)", "rgb(0, 128, 0)");
 test_computed_value("color", "hwb(120 30% 50% / none)", "rgba(77, 128, 77, 0)");
 test_computed_value("color", "hwb(120 30% 50% / 0)", "rgba(77, 128, 77, 0)");
+test_computed_value("color", "hwb(120 30% 50% / 0%)", "rgba(77, 128, 77, 0)");
 test_computed_value("color", "hwb(none 100% 50% / none)", "rgba(170, 170, 170, 0)");
 test_computed_value("color", "hwb(0 100% 50% / 0)", "rgba(170, 170, 170, 0)");
 

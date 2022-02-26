@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/cssom/css_hsl.h"
+#include "third_party/blink/renderer/core/css/cssom/css_hwb.h"
 #include "third_party/blink/renderer/core/css/cssom/css_rgb.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
@@ -17,6 +18,10 @@ CSSRGB* CSSColorValue::toRGB() const {
 
 CSSHSL* CSSColorValue::toHSL() const {
   return MakeGarbageCollected<CSSHSL>(ToColor());
+}
+
+CSSHWB* CSSColorValue::toHWB() const {
+  return MakeGarbageCollected<CSSHWB>(ToColor());
 }
 
 const CSSValue* CSSColorValue::ToCSSValue() const {

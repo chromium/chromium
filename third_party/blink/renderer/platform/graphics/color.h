@@ -44,6 +44,7 @@ PLATFORM_EXPORT RGBA32 MakeRGBA(int r, int g, int b, int a);
 
 PLATFORM_EXPORT RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a);
 PLATFORM_EXPORT RGBA32 MakeRGBAFromHSLA(double h, double s, double l, double a);
+PLATFORM_EXPORT RGBA32 MakeRGBAFromHWBA(double h, double w, double b, double a);
 PLATFORM_EXPORT RGBA32
 MakeRGBAFromCMYKA(float c, float m, float y, float k, float a);
 
@@ -121,6 +122,7 @@ class PLATFORM_EXPORT Color {
   void GetRGBA(float& r, float& g, float& b, float& a) const;
   void GetRGBA(double& r, double& g, double& b, double& a) const;
   void GetHSL(double& h, double& s, double& l) const;
+  void GetHWB(double& h, double& w, double& b) const;
 
   explicit operator SkColor() const;
 
@@ -145,6 +147,8 @@ class PLATFORM_EXPORT Color {
   static const RGBA32 kTransparent = 0x00000000;
 
  private:
+  void GetHueMaxMin(double&, double&, double&) const;
+
   RGBA32 color_;
 };
 

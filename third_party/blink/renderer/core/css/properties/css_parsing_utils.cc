@@ -1087,6 +1087,27 @@ CSSPrimitiveValue* ConsumeAngle(
   return ConsumeMathFunctionAngle(range, context);
 }
 
+// ConsumeHue takes an angle as input (as angle or as plain number in degrees)
+// and returns a number in the range [0.0, 6.0].
+CSSPrimitiveValue* ConsumeHue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    absl::optional<WebFeature> unitless_zero_feature) {
+  CSSPrimitiveValue* value = ConsumeAngle(range, context, absl::nullopt);
+  double angle_value;
+  if (!value) {
+    value = ConsumeNumber(range, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value)
+      return nullptr;
+    angle_value = value->GetDoubleValue();
+  } else {
+    angle_value = value->ComputeDegrees();
+  }
+  return CSSNumericLiteralValue::Create(
+      fmod(fmod(angle_value, 360.0) + 360.0, 360.0) / 60.0,
+      CSSPrimitiveValue::UnitType::kNumber);
+}
+
 CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                CSSPrimitiveValue::ValueRange value_range) {
@@ -1351,19 +1372,12 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
   DCHECK(range.Peek().FunctionId() == CSSValueID::kHsl ||
          range.Peek().FunctionId() == CSSValueID::kHsla);
   CSSParserTokenRange args = ConsumeFunction(range);
-  CSSPrimitiveValue* hsl_value = ConsumeAngle(args, context, absl::nullopt);
-  double angle_value;
-  if (!hsl_value) {
-    hsl_value =
-        ConsumeNumber(args, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (!hsl_value)
-      return false;
-    angle_value = hsl_value->GetDoubleValue();
-  } else {
-    angle_value = hsl_value->ComputeDegrees();
-  }
+  CSSPrimitiveValue* hsl_value = ConsumeHue(args, context, absl::nullopt);
+  if (!hsl_value)
+    return false;
   double color_array[3];
-  color_array[0] = fmod(fmod(angle_value, 360.0) + 360.0, 360.0) / 60.0;
+  color_array[0] = hsl_value->GetDoubleValue();
+
   bool requires_commas = false;
   for (int i = 1; i < 3; i++) {
     if (ConsumeCommaIncludingWhitespace(args)) {
@@ -1401,6 +1415,47 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
   }
   result =
       MakeRGBAFromHSLA(color_array[0], color_array[1], color_array[2], alpha);
+  return args.AtEnd();
+}
+
+static bool ParseHWBParameters(CSSParserTokenRange& range,
+                               const CSSParserContext& context,
+                               RGBA32& result) {
+  DCHECK(range.Peek().FunctionId() == CSSValueID::kHwb ||
+         range.Peek().FunctionId() == CSSValueID::kHwba);
+  CSSParserTokenRange args = ConsumeFunction(range);
+  // Consume hue, an angle.
+  CSSPrimitiveValue* value = ConsumeHue(args, context, absl::nullopt);
+  if (!value)
+    return false;
+  double hue = value->GetDoubleValue();
+
+  // Consume two percentage values.
+  double percentages[2];
+  for (int i = 0; i < 2; i++) {
+    value = ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value)
+      return false;
+    double double_value = value->GetDoubleValue();
+    percentages[i] = ClampTo<double>(double_value, 0.0, 100.0) /
+                     100.0;  // Needs to be a value between 0 and 1.0.
+  }
+
+  // If present, consume the alpha value.
+  double alpha = 1.0;
+  if (ConsumeSlashIncludingWhitespace(args)) {
+    if (!ConsumeNumberRaw(args, context, alpha)) {
+      CSSPrimitiveValue* alpha_percent =
+          ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (!alpha_percent)
+        return false;
+      else
+        alpha = alpha_percent->GetDoubleValue() / 100.0;
+    }
+    alpha = ClampTo<double>(alpha, 0.0, 1.0);
+  }
+
+  result = MakeRGBAFromHWBA(hue, percentages[0], percentages[1], alpha);
   return args.AtEnd();
 }
 
@@ -1443,15 +1498,26 @@ static bool ParseHexColor(CSSParserTokenRange& range,
 static bool ParseColorFunction(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                RGBA32& result) {
-  CSSValueID function_id = range.Peek().FunctionId();
-  if (function_id < CSSValueID::kRgb || function_id > CSSValueID::kHsla)
-    return false;
   CSSParserTokenRange color_range = range;
-  if ((function_id <= CSSValueID::kRgba &&
-       !ParseRGBParameters(color_range, context, result)) ||
-      (function_id >= CSSValueID::kHsl &&
-       !ParseHSLParameters(color_range, context, result)))
-    return false;
+  switch (range.Peek().FunctionId()) {
+    case CSSValueID::kRgb:
+    case CSSValueID::kRgba:
+      if (!ParseRGBParameters(color_range, context, result))
+        return false;
+      break;
+    case CSSValueID::kHsl:
+    case CSSValueID::kHsla:
+      if (!ParseHSLParameters(color_range, context, result))
+        return false;
+      break;
+    case CSSValueID::kHwb:
+    case CSSValueID::kHwba:
+      if (!ParseHWBParameters(color_range, context, result))
+        return false;
+      break;
+    default:
+      return false;
+  }
   range = color_range;
   return true;
 }

@@ -1947,6 +1947,9 @@ std::unique_ptr<protocol::DictionaryValue> InspectorHighlight::AsProtocolValue()
     case ColorFormat::kHsl:
       object->setString("colorFormat", "hsl");
       break;
+    case ColorFormat::kHwb:
+      object->setString("colorFormat", "hwb");
+      break;
     case ColorFormat::kHex:
       object->setString("colorFormat", "hex");
       break;

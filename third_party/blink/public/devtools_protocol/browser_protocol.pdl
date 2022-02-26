@@ -6540,6 +6540,7 @@ experimental domain Overlay
     enum
       rgb
       hsl
+      hwb
       hex
 
   # Configurations for Persistent Grid Highlight

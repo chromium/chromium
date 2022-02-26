@@ -696,6 +696,7 @@ interface CSSColorValue
     attribute @@toStringTag
     method constructor
     method toHSL
+    method toHWB
     method toRGB
 interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
@@ -757,6 +758,17 @@ interface CSSHSL : CSSColorValue
     setter h
     setter l
     setter s
+interface CSSHWB : CSSColorValue
+    attribute @@toStringTag
+    getter alpha
+    getter b
+    getter h
+    getter w
+    method constructor
+    setter alpha
+    setter b
+    setter h
+    setter w
 interface CSSImageValue : CSSStyleValue
     attribute @@toStringTag
     method constructor

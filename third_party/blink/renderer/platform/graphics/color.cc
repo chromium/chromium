@@ -79,6 +79,32 @@ double CalcHue(double temp1, double temp2, double hue_val) {
   return temp1;
 }
 
+// Explanation of this algorithm can be found in the CSS Color 4 Module
+// specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
+// further explanation available at http://en.wikipedia.org/wiki/HSL_color_space
+
+// Hue is in the range of 0.0 to 6.0, the remainder are in the range 0.0 to 1.0.
+// Out parameters r, g, and b are also returned in range 0.0 to 1.0.
+void HSLToRGB(double hue,
+              double saturation,
+              double lightness,
+              double& r,
+              double& g,
+              double& b) {
+  if (!saturation) {
+    r = g = b = lightness;
+  } else {
+    double temp2 = lightness <= 0.5
+                       ? lightness * (1.0 + saturation)
+                       : lightness + saturation - lightness * saturation;
+    double temp1 = 2.0 * lightness - temp2;
+
+    r = CalcHue(temp1, temp2, hue + 2.0);
+    g = CalcHue(temp1, temp2, hue);
+    b = CalcHue(temp1, temp2, hue - 2.0);
+  }
+}
+
 int ColorFloatToRGBAByte(float f) {
   return ClampTo(static_cast<int>(lroundf(255.0f * f)), 0, 255);
 }
@@ -156,33 +182,43 @@ RGBA32 MakeRGBA32FromFloats(float r, float g, float b, float a) {
          ColorFloatToRGBAByte(g) << 8 | ColorFloatToRGBAByte(b);
 }
 
-// Explanation of this algorithm can be found in the CSS Color 4 Module
-// specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
-// further explanation available at http://en.wikipedia.org/wiki/HSL_color_space
-
 // Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
 RGBA32 MakeRGBAFromHSLA(double hue,
                         double saturation,
                         double lightness,
                         double alpha) {
   const double scale_factor = 255.0;
+  double r, g, b;
+  HSLToRGB(hue, saturation, lightness, r, g, b);
 
-  if (!saturation) {
-    int grey_value = static_cast<int>(round(lightness * scale_factor));
-    return MakeRGBA(grey_value, grey_value, grey_value,
+  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
+                  static_cast<int>(round(g * scale_factor)),
+                  static_cast<int>(round(b * scale_factor)),
+                  static_cast<int>(round(alpha * scale_factor)));
+}
+
+// Hue is in the range of 0 to 6.0, the remainder are in the range 0 to 1.0
+RGBA32 MakeRGBAFromHWBA(double hue, double white, double black, double alpha) {
+  const double scale_factor = 255.0;
+
+  if (white + black >= 1.0) {
+    int gray = static_cast<int>(round(white / (white + black) * scale_factor));
+    return MakeRGBA(gray, gray, gray,
                     static_cast<int>(round(alpha * scale_factor)));
   }
 
-  double temp2 = lightness <= 0.5
-                     ? lightness * (1.0 + saturation)
-                     : lightness + saturation - lightness * saturation;
-  double temp1 = 2.0 * lightness - temp2;
+  // Leverage HSL to RGB conversion to find HWB to RGB, see
+  // https://drafts.csswg.org/css-color-4/#hwb-to-rgb
+  double r, g, b;
+  HSLToRGB(hue, 1.0, 0.5, r, g, b);
+  r += white - (white + black) * r;
+  g += white - (white + black) * g;
+  b += white - (white + black) * b;
 
-  return MakeRGBA(
-      static_cast<int>(round(CalcHue(temp1, temp2, hue + 2.0) * scale_factor)),
-      static_cast<int>(round(CalcHue(temp1, temp2, hue) * scale_factor)),
-      static_cast<int>(round(CalcHue(temp1, temp2, hue - 2.0) * scale_factor)),
-      static_cast<int>(round(alpha * scale_factor)));
+  return MakeRGBA(static_cast<int>(round(r * scale_factor)),
+                  static_cast<int>(round(g * scale_factor)),
+                  static_cast<int>(round(b * scale_factor)),
+                  static_cast<int>(round(alpha * scale_factor)));
 }
 
 RGBA32 MakeRGBAFromCMYKA(float c, float m, float y, float k, float a) {
@@ -370,15 +406,16 @@ void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
   a = Alpha() / 255.0;
 }
 
-void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
-  // http://en.wikipedia.org/wiki/HSL_color_space. This is a direct copy of
-  // the algorithm therein, although it's 360^o based and we end up wanting
-  // [0...1) based. It's clearer if we stick to 360^o until the end.
+// Hue, max and min are returned in range of 0.0 to 1.0.
+void Color::GetHueMaxMin(double& hue, double& max, double& min) const {
+  // This is a helper function to calculate intermediate quantities needed
+  // for conversion to HSL or HWB formats. The algorithm contained below
+  // is a copy of http://en.wikipedia.org/wiki/HSL_color_space.
   double r = static_cast<double>(Red()) / 255.0;
   double g = static_cast<double>(Green()) / 255.0;
   double b = static_cast<double>(Blue()) / 255.0;
-  double max = std::max(std::max(r, g), b);
-  double min = std::min(std::min(r, g), b);
+  max = std::max(std::max(r, g), b);
+  min = std::min(std::min(r, g), b);
 
   if (max == min)
     hue = 0.0;
@@ -389,11 +426,16 @@ void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
   else
     hue = (60.0 * ((r - g) / (max - min))) + 240.0;
 
+  // Adjust for rounding errors and scale to interval 0.0 to 1.0.
   if (hue >= 360.0)
     hue -= 360.0;
-
-  // makeRGBAFromHSLA assumes that hue is in [0...1).
   hue /= 360.0;
+}
+
+// Hue, saturation and lightness are returned in range of 0.0 to 1.0.
+void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
+  double max, min;
+  GetHueMaxMin(hue, max, min);
 
   lightness = 0.5 * (max + min);
   if (max == min)
@@ -402,6 +444,15 @@ void Color::GetHSL(double& hue, double& saturation, double& lightness) const {
     saturation = ((max - min) / (max + min));
   else
     saturation = ((max - min) / (2.0 - (max + min)));
+}
+
+// Output parameters hue, white and black are in the range 0.0 to 1.0.
+void Color::GetHWB(double& hue, double& white, double& black) const {
+  // https://drafts.csswg.org/css-color-4/#the-hwb-notation. This is an
+  // implementation of the algorithm to transform sRGB to HWB.
+  double max;
+  GetHueMaxMin(hue, max, white);
+  black = 1.0 - max;
 }
 
 Color ColorFromPremultipliedARGB(RGBA32 pixel_color) {
