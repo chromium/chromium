@@ -139,6 +139,15 @@ class AutocompleteController : public AutocompleteProviderListener,
   // no query is running.
   void DeleteMatch(const AutocompleteMatch& match);
 
+  // Asks the relevant provider to partially delete match, and ensures observers
+  // are notified of resulting changes immediately.  This should only be called
+  // when no query is running.
+  // Calling this method does not imply removal of the AutocompleteMatch.
+  // |element_index| parameter specifies which part of the match should be
+  // deleted. For cases where the entire AutocompleteMatch should be removed,
+  // please see |DeleteMatch| method.
+  void DeleteMatchElement(const AutocompleteMatch& match, size_t element_index);
+
   // Removes any entries that were copied from the last result. This is used by
   // the popup to ensure it's not showing an out-of-date query.
   void ExpireCopiedEntries();

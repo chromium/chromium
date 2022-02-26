@@ -30,11 +30,28 @@ public interface SuggestionHost {
 
     /**
      * Triggered when the user long presses the omnibox suggestion.
+     * Deletes the entire AutocompleteMatch. Execution of this method implies removal of the
+     * AutocompleteMatch.
      *
      * @param suggestion Long-pressed Suggestion.
+     * @param titleText The title to display in the delete dialog.
      * @param position The position of the suggestion on the list.
      */
-    void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position);
+    void onDeleteMatch(
+            @NonNull AutocompleteMatch suggestion, @NonNull String titleText, int position);
+
+    /**
+     * Triggered when the user long presses the omnibox suggestion element (eg. tile).
+     * Performs partial deletion of an AutocompleteMatch, focusing on the supplied element.
+     * Execution of this method does not imply removal of the AutocompleteMatch.
+     *
+     * @param suggestion Long-pressed Suggestion.
+     * @param titleText The title to display in the delete dialog.
+     * @param position The position of the suggestion on the list.
+     * @param element Element of the suggestion to be deleted.
+     */
+    void onDeleteMatchElement(@NonNull AutocompleteMatch suggestion, @NonNull String titleText,
+            int position, int element);
 
     /**
      * Triggered when the user selects a switch to tab action.

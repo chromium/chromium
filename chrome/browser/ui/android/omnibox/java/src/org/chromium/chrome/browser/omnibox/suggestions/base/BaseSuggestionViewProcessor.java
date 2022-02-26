@@ -145,7 +145,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param position Position of the suggestion on the list.
      */
     protected void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position) {
-        mSuggestionHost.onSuggestionLongClicked(suggestion, position);
+        mSuggestionHost.onDeleteMatch(suggestion, suggestion.getDisplayText(), position);
     }
 
     @Override

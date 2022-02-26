@@ -236,6 +236,14 @@ class AutocompleteProvider
   // responsibility of the caller to do so after calling us.
   virtual void DeleteMatch(const AutocompleteMatch& match);
 
+  // Called to delete an element of a match. This element should not appear
+  // again in this or future queries. Unlike DeleteMatch, this call does not
+  // delete the entire AutocompleteMatch, but focuses on just one part of it.
+  // NOTE: Do NOT call OnProviderUpdate() in this method, it is the
+  // responsibility of the caller to do so after calling us.
+  virtual void DeleteMatchElement(const AutocompleteMatch& match,
+                                  size_t element_index);
+
   // Called when an omnibox event log entry is generated.  This gives
   // a provider the opportunity to add diagnostic information to the
   // logs.  A provider is expected to append a single entry of whatever

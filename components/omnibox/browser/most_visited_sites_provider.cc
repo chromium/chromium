@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -36,7 +37,7 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
                              const GURL& url,
                              int relevance,
                              AutocompleteMatchType::Type type) {
-  AutocompleteMatch match(provider, relevance, false, type);
+  AutocompleteMatch match(provider, relevance, true, type);
   match.destination_url = url;
 
   match.fill_into_edit +=
@@ -219,3 +220,57 @@ void MostVisitedSitesProvider::OnURLsAvailable(
 }
 
 void MostVisitedSitesProvider::OnIconMadeAvailable(const GURL& site_url) {}
+
+void MostVisitedSitesProvider::BlockURL(const GURL& site_url) {
+  scoped_refptr<history::TopSites> top_sites = client_->GetTopSites();
+  if (top_sites) {
+    top_sites->AddBlockedUrl(site_url);
+  }
+
+  if (most_visited_sites_) {
+    most_visited_sites_->DeleteCustomLink(site_url);
+    most_visited_sites_->AddOrRemoveBlockedUrl(site_url, /* add_url=*/true);
+  }
+}
+
+void MostVisitedSitesProvider::DeleteMatch(const AutocompleteMatch& match) {
+  DCHECK_EQ(match.type, AutocompleteMatchType::NAVSUGGEST);
+
+  BlockURL(match.destination_url);
+  for (auto i = matches_.begin(); i != matches_.end(); ++i) {
+    if (i->contents == match.contents) {
+      matches_.erase(i);
+      break;
+    }
+  }
+}
+void MostVisitedSitesProvider::DeleteMatchElement(
+    const AutocompleteMatch& source_match,
+    size_t element_index) {
+  DCHECK_EQ(source_match.type, AutocompleteMatchType::TILE_NAVSUGGEST);
+  DCHECK_GE(element_index, 0u);
+  DCHECK_LT((size_t)element_index, source_match.navsuggest_tiles.size());
+
+  // Attempt to modify the match in place.
+  DCHECK_EQ(matches_.size(), 1ul);
+  DCHECK_EQ(matches_[0].type, AutocompleteMatchType::TILE_NAVSUGGEST);
+
+  if (source_match.type != AutocompleteMatchType::TILE_NAVSUGGEST ||
+      element_index < 0u ||
+      element_index >= source_match.navsuggest_tiles.size() ||
+      matches_.size() != 1u ||
+      matches_[0].type != AutocompleteMatchType::TILE_NAVSUGGEST) {
+    return;
+  }
+
+  const auto& url_to_delete = source_match.navsuggest_tiles[element_index].url;
+  BlockURL(url_to_delete);
+  auto& tiles_to_update = matches_[0].navsuggest_tiles;
+  base::EraseIf(tiles_to_update, [&url_to_delete](const auto& tile) {
+    return tile.url == url_to_delete;
+  });
+
+  if (tiles_to_update.empty()) {
+    matches_.clear();
+  }
+}

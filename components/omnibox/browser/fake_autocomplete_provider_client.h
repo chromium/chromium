@@ -57,9 +57,20 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   query_tiles::TileService* GetQueryTileService() const override;
   const TabMatcher& GetTabMatcher() const override;
+  scoped_refptr<history::TopSites> GetTopSites() override;
+  ntp_tiles::MostVisitedSites* GetNtpMostVisitedSites() override;
 
+  // Test-only setters
   void set_in_memory_url_index(std::unique_ptr<InMemoryURLIndex> index) {
     in_memory_url_index_ = std::move(index);
+  }
+
+  void set_top_sites(scoped_refptr<history::TopSites> top_sites) {
+    top_sites_ = std::move(top_sites);
+  }
+
+  void set_ntp_most_visited_sites(ntp_tiles::MostVisitedSites* ntp_mv_sites) {
+    ntp_most_visited_sites_ = ntp_mv_sites;
   }
 
  private:
@@ -73,6 +84,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;
   std::unique_ptr<query_tiles::TileService> tile_service_;
   FakeTabMatcher fake_tab_matcher_;
+  scoped_refptr<history::TopSites> top_sites_{};
+  ntp_tiles::MostVisitedSites* ntp_most_visited_sites_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_
