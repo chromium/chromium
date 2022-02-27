@@ -34,9 +34,9 @@
 #include <unicode/ucptrie.h>
 #include <unicode/uobject.h>
 #include <unicode/uscript.h>
+
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -296,7 +296,7 @@ bool Character::IsVerticalMathCharacter(UChar32 text_content) {
          text_content != kArabicMathematicalOperatorHahWithDal &&
          !std::binary_search(stretchy_operator_with_inline_axis,
                              stretchy_operator_with_inline_axis +
-                                 base::size(stretchy_operator_with_inline_axis),
+                                 std::size(stretchy_operator_with_inline_axis),
                              text_content);
 }
 

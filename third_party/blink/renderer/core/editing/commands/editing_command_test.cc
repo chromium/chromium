@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/static_range.h"
@@ -33,7 +32,7 @@ const CommandNameEntry kCommandNameEntries[] = {
 };
 // Test all commands except EditingCommandType::Invalid.
 static_assert(
-    base::size(kCommandNameEntries) + 1 ==
+    std::size(kCommandNameEntries) + 1 ==
         static_cast<size_t>(EditingCommandType::kNumberOfCommandTypes),
     "must test all valid EditingCommandType");
 
@@ -42,7 +41,7 @@ static_assert(
 class EditingCommandTest : public EditingTestBase {};
 
 TEST_F(EditingCommandTest, EditorCommandOrder) {
-  for (size_t i = 1; i < base::size(kCommandNameEntries); ++i) {
+  for (size_t i = 1; i < std::size(kCommandNameEntries); ++i) {
     EXPECT_GT(0,
               WTF::CodeUnitCompareIgnoringASCIICase(
                   kCommandNameEntries[i - 1].name, kCommandNameEntries[i].name))

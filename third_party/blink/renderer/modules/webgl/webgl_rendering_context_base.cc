@@ -28,7 +28,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -1066,9 +1065,9 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
     disabled_extensions_.insert(entry);
   }
 
-#define ADD_VALUES_TO_SET(set, values)              \
-  for (size_t i = 0; i < base::size(values); ++i) { \
-    set.insert(values[i]);                          \
+#define ADD_VALUES_TO_SET(set, values)             \
+  for (size_t i = 0; i < std::size(values); ++i) { \
+    set.insert(values[i]);                         \
   }
 
   ADD_VALUES_TO_SET(supported_internal_formats_, kSupportedFormatsES2);

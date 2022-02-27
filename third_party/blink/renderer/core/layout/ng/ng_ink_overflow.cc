@@ -60,7 +60,7 @@ NGInkOverflow::NGInkOverflow(Type source_type, const NGInkOverflow& source) {
                     "outsets should be the size of a pointer");
       single_ = source.single_;
 #if DCHECK_IS_ON()
-      for (wtf_size_t i = 0; i < base::size(outsets_); ++i)
+      for (wtf_size_t i = 0; i < std::size(outsets_); ++i)
         DCHECK_EQ(outsets_[i], source.outsets_[i]);
 #endif
       break;
@@ -89,7 +89,7 @@ NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
                     "outsets should be the size of a pointer");
       single_ = source.single_;
 #if DCHECK_IS_ON()
-      for (wtf_size_t i = 0; i < base::size(outsets_); ++i)
+      for (wtf_size_t i = 0; i < std::size(outsets_); ++i)
         DCHECK_EQ(outsets_[i], source.outsets_[i]);
 #endif
       break;

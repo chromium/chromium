@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -59,11 +58,11 @@ static_assert(static_cast<int>(SVGTransformType::kSkewx) == 5,
               "index of SVGTransformType::kSkewx has changed");
 static_assert(static_cast<int>(SVGTransformType::kSkewy) == 6,
               "index of SVGTransformType::kSkewy has changed");
-static_assert(base::size(kRequiredValuesForType) - 1 ==
+static_assert(std::size(kRequiredValuesForType) - 1 ==
                   static_cast<int>(SVGTransformType::kSkewy),
               "the number of transform types have changed");
-static_assert(base::size(kRequiredValuesForType) ==
-                  base::size(kOptionalValuesForType),
+static_assert(std::size(kRequiredValuesForType) ==
+                  std::size(kOptionalValuesForType),
               "the arrays should have the same number of elements");
 
 const unsigned kMaxTransformArguments = 6;

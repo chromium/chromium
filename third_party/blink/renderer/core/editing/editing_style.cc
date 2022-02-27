@@ -103,7 +103,7 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
   if (properties.IsEmpty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        base::size(kStaticEditingProperties), properties);
+        std::size(kStaticEditingProperties), properties);
     for (wtf_size_t index = 0; index < properties.size(); index++) {
       if (properties[index]->IDEquals(CSSPropertyID::kTextDecoration)) {
         properties.EraseAt(index);
@@ -120,7 +120,7 @@ static const Vector<const CSSProperty*>& InheritableEditingProperties(
   if (properties.IsEmpty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        base::size(kStaticEditingProperties), properties);
+        std::size(kStaticEditingProperties), properties);
     for (wtf_size_t index = 0; index < properties.size();) {
       if (!properties[index]->IsInherited()) {
         properties.EraseAt(index);
@@ -768,7 +768,7 @@ static const Vector<const CSSProperty*>& BlockPropertiesVector(
   if (properties.IsEmpty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticBlockProperties,
-        base::size(kStaticBlockProperties), properties);
+        std::size(kStaticBlockProperties), properties);
   }
   return properties;
 }
@@ -910,7 +910,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
   };
   if (should_ignore_text_only_properties == kIgnoreTextOnlyProperties) {
     difference->RemovePropertiesInSet(kTextOnlyProperties,
-                                      base::size(kTextOnlyProperties));
+                                      std::size(kTextOnlyProperties));
   }
 
   if (difference->IsEmpty())

@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -121,8 +120,8 @@ TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
   // [0,1].
   float progress[][2] = {{0, 1}, {-.25, 1.25}};
 
-  for (size_t i = 0; i < base::size(test_transforms); ++i) {
-    for (size_t j = 0; j < base::size(progress); ++j) {
+  for (size_t i = 0; i < std::size(test_transforms); ++i) {
+    for (size_t j = 0; j < std::size(progress); ++j) {
       TransformOperations from_ops;
       TransformOperations to_ops;
       from_ops.Operations().push_back(TranslateTransformOperation::Create(
@@ -179,8 +178,8 @@ TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
   // [0,1].
   float progress[][2] = {{0, 1}, {-.25f, 1.25f}};
 
-  for (size_t i = 0; i < base::size(test_transforms); ++i) {
-    for (size_t j = 0; j < base::size(progress); ++j) {
+  for (size_t i = 0; i < std::size(test_transforms); ++i) {
+    for (size_t j = 0; j < std::size(progress); ++j) {
       TransformOperations from_ops;
       TransformOperations to_ops;
       from_ops.Operations().push_back(TranslateTransformOperation::Create(
@@ -280,9 +279,9 @@ TEST(TransformOperationsTest, AbsoluteAnimatedOnAxisRotationBounds) {
   EXPECT_BOXF_EQ(box, bounds);
 }
 
-// This would have been best as anonymous structs, but |base::size|
+// This would have been best as anonymous structs, but |std::size|
 // does not get along with anonymous structs once we support C++11
-// base::size will automatically support anonymous structs.
+// std::size will automatically support anonymous structs.
 
 struct ProblematicAxisTest {
   double x;
@@ -310,7 +309,7 @@ TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
       {0, 1, 1, gfx::BoxF(-1, dim1, dim1, 2, dim2, dim2)},
       {1, 0, 1, gfx::BoxF(dim1, -1, dim1, dim2, 2, dim2)}};
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     float x = tests[i].x;
     float y = tests[i].y;
     float z = tests[i].z;
@@ -341,9 +340,9 @@ TEST(TransformOperationsTest, BlendedBoundsForRotationEmpiricalTests) {
 
   float progress[][2] = {{0, 1}, {-0.25f, 1.25f}};
 
-  for (size_t i = 0; i < base::size(axes); ++i) {
-    for (size_t j = 0; j < base::size(angles); ++j) {
-      for (size_t k = 0; k < base::size(progress); ++k) {
+  for (size_t i = 0; i < std::size(axes); ++i) {
+    for (size_t j = 0; j < std::size(angles); ++j) {
+      for (size_t k = 0; k < std::size(progress); ++k) {
         float x = axes[i][0];
         float y = axes[i][1];
         float z = axes[i][2];
@@ -387,8 +386,8 @@ TEST(TransformOperationsTest, EmpiricalAnimatedPerspectiveBoundsTest) {
 
   float progress[][2] = {{0, 1}, {-0.1f, 1.1f}};
 
-  for (size_t i = 0; i < base::size(depths); ++i) {
-    for (size_t j = 0; j < base::size(progress); ++j) {
+  for (size_t i = 0; i < std::size(depths); ++i) {
+    for (size_t j = 0; j < std::size(progress); ++j) {
       TransformOperations from_ops;
       TransformOperations to_ops;
 

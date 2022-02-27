@@ -1100,7 +1100,7 @@ TEST_F(ContentCaptureSimTest, UserActivatedDelay) {
       base::Milliseconds(500), base::Seconds(1),  base::Seconds(2),
       base::Seconds(4),        base::Seconds(8),  base::Seconds(16),
       base::Seconds(32),       base::Seconds(64), base::Seconds(128)};
-  size_t expected_delays_size = base::size(expected_delays);
+  size_t expected_delays_size = std::size(expected_delays);
   // The first task has been scheduled but not run yet, the delay will be
   // increased until current task starts to run. Verifies the value is
   // unchanged.

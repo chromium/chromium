@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 
-#include "base/cxx17_backports.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -83,7 +82,7 @@ CSSComputedStyleDeclaration::ComputableProperties(
   if (properties.IsEmpty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kCSSComputableProperties,
-        base::size(kCSSComputableProperties), properties);
+        std::size(kCSSComputableProperties), properties);
   }
   return properties;
 }

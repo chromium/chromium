@@ -23,7 +23,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -245,7 +244,7 @@ const QuotesData* QuotesDataForLanguage(const AtomicString& lang) {
     return nullptr;
 
   // This could be just a hash table, but doing that adds 200k to LayoutQuote.o
-  Language* languages_end = g_languages + base::size(g_languages);
+  Language* languages_end = g_languages + std::size(g_languages);
   std::string lowercase_lang = lang.LowerASCII().Utf8();
   Language key = {lowercase_lang.c_str(), 0, 0, 0, 0, nullptr};
   Language* match = std::lower_bound(g_languages, languages_end, key);

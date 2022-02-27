@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -48,7 +47,7 @@ TEST(MultipartResponseTest, SkippableLength) {
       {"\rLine", 0, 0},       {"Line\r\nLine", 4, 2}, {"Line\nLine", 4, 1},
       {"Line\n\nLine", 4, 1}, {"Line\rLine", 4, 0},   {"Line\r\rLine", 4, 0},
   };
-  for (size_t i = 0; i < base::size(line_tests); ++i) {
+  for (size_t i = 0; i < std::size(line_tests); ++i) {
     Vector<char> input;
     input.Append(line_tests[i].input,
                  static_cast<wtf_size_t>(strlen(line_tests[i].input)));
@@ -69,7 +68,7 @@ TEST(MultipartResponseTest, FindBoundary) {
       {"foo", "bound", kNotFound}, {"bound", "--boundbound", 0},
   };
 
-  for (size_t i = 0; i < base::size(boundary_tests); ++i) {
+  for (size_t i = 0; i < std::size(boundary_tests); ++i) {
     Vector<char> boundary, data;
     boundary.Append(boundary_tests[i].boundary,
                     static_cast<uint32_t>(strlen(boundary_tests[i].boundary)));

@@ -66,7 +66,7 @@ const struct {
 };
 
 static_assert(
-    base::size(kInputTypeStringNameMap) ==
+    std::size(kInputTypeStringNameMap) ==
         static_cast<size_t>(InputEvent::InputType::kNumberOfInputTypes),
     "must handle all InputEvent::InputType");
 

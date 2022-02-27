@@ -112,7 +112,7 @@ MathMLOperatorDictionaryCategory FindCategory(
     } else {
       // Perform a binary search for 2-ASCII-chars operators.
       const char** last =
-          operators_2_ascii_chars + base::size(operators_2_ascii_chars);
+          operators_2_ascii_chars + std::size(operators_2_ascii_chars);
       const char** entry = std::lower_bound(
           operators_2_ascii_chars, last, content,
           [](const char* lhs, const String& rhs) -> bool {
@@ -156,7 +156,7 @@ MathMLOperatorDictionaryCategory FindCategory(
 
   // Perform a binary search on the compact dictionary.
   const EntryRange* entry_range = std::upper_bound(
-      compact_dictionary, compact_dictionary + base::size(compact_dictionary),
+      compact_dictionary, compact_dictionary + std::size(compact_dictionary),
       key, [](uint16_t lhs, EntryRange rhs) -> bool {
         return lhs < ExtractKey(rhs);
       });

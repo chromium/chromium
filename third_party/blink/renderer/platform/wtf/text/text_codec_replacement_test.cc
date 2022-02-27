@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -50,7 +49,7 @@ TEST(TextCodecReplacement, EncodesToUTF8) {
 
   // "Kanji" in Chinese characters.
   const UChar kTestCase[] = {0x6F22, 0x5B57};
-  wtf_size_t test_case_size = base::size(kTestCase);
+  wtf_size_t test_case_size = std::size(kTestCase);
   std::string result =
       codec->Encode(kTestCase, test_case_size, kEntitiesForUnencodables);
 

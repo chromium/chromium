@@ -73,7 +73,7 @@ static const struct {
 #endif
 };
 
-static_assert(base::size(kPreferredCodecIdAndVEAProfiles) ==
+static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
                   static_cast<int>(CodecId::kLast),
               "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
 

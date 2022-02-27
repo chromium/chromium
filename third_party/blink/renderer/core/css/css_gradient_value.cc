@@ -30,7 +30,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -1322,7 +1321,7 @@ gfx::SizeF RadiusToCorner(const gfx::PointF& point,
 
   unsigned corner_index = 0;
   float distance = (point - corners[corner_index]).Length();
-  for (unsigned i = 1; i < base::size(corners); ++i) {
+  for (unsigned i = 1; i < std::size(corners); ++i) {
     float new_distance = (point - corners[i]).Length();
     if (compare(new_distance, distance)) {
       corner_index = i;

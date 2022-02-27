@@ -6,7 +6,6 @@
 
 #include <unicode/uscript.h>
 
-#include "base/cxx17_backports.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -695,7 +694,7 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
                     0x0648,
                     kZeroWidthSpaceCharacter,
                     kZeroWidthSpaceCharacter};
-  const unsigned length = base::size(string);
+  const unsigned length = std::size(string);
   HarfBuzzShaper shaper(String(string, length));
   scoped_refptr<ShapeResult> result = ShapeWithParameter(&shaper);
   EXPECT_EQ(0u, result->StartIndex());
@@ -925,7 +924,7 @@ TEST_F(HarfBuzzShaperTest, EmojiZWJSequence) {
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(
-      String(emoji_zwj_sequence, base::size(emoji_zwj_sequence)));
+      String(emoji_zwj_sequence, std::size(emoji_zwj_sequence)));
   scoped_refptr<ShapeResult> result = shaper.Shape(&font, direction);
 }
 
@@ -1899,7 +1898,7 @@ TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
   Font emoji_font = CreateNotoColorEmoji();
   scoped_refptr<ShapeResult> result =
       shaper.Shape(&emoji_font, TextDirection::kLtr);
-  CHECK_EQ(num_calls, base::size(expectations));
+  CHECK_EQ(num_calls, std::size(expectations));
 }
 
 // https://crbug.com/1255482

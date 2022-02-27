@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/time/time_override.h"
@@ -193,7 +192,7 @@ Response InspectorPerformanceAgent::getMetrics(
                base::TimeTicks::Now().since_origin().InSecondsF());
 
   // Renderer instance counters.
-  for (size_t i = 0; i < base::size(kInstanceCounterNames); ++i) {
+  for (size_t i = 0; i < std::size(kInstanceCounterNames); ++i) {
     AppendMetric(result.get(), kInstanceCounterNames[i],
                  InstanceCounters::CounterValue(
                      static_cast<InstanceCounters::CounterType>(i)));

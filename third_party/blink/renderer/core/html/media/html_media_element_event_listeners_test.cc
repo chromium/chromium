@@ -613,7 +613,7 @@ class CueEventListener final : public NativeEventListener {
     cue_event_deltas_[cue_index].exit_time_delta = base::Seconds(diff_seconds);
   }
 
-  std::array<CueChangeEventTimeDelta, base::size(kTestCueData)>
+  std::array<CueChangeEventTimeDelta, std::size(kTestCueData)>
       cue_event_deltas_;
 };
 

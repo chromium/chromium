@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -273,7 +272,7 @@ TEST_F(CachingWordShaperTest, SegmentEmojiSubdivisionFlags) {
                         0xDC73, 0xDB40, 0xDC63, 0xDB40, 0xDC74, 0xDB40, 0xDC7F,
                         0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40,
                         0xDC65, 0xDB40, 0xDC6E, 0xDB40, 0xDC67, 0xDB40, 0xDC7F};
-  TextRun text_run(kStr, base::size(kStr));
+  TextRun text_run(kStr, std::size(kStr));
 
   scoped_refptr<const ShapeResult> word_result;
   CachingWordShapeIterator iterator(cache.get(), text_run, &font);

@@ -198,7 +198,7 @@ String Length::ToString() const {
       "MaxContent", "MinIntrinsic", "FillAvailable", "FitContent",
       "Calculated", "ExtendToZoom", "DeviceWidth",   "DeviceHeight",
       "None",       "Content"};
-  if (type_ < base::size(kTypeNames))
+  if (type_ < std::size(kTypeNames))
     builder.Append(kTypeNames[type_]);
   else
     builder.Append("?");

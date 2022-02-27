@@ -109,10 +109,10 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       clock_(base::DefaultTickClock::GetInstance()),
       event_name_("Blink.UpdateTime") {
   // All of these are assumed to have one entry per sub-metric.
-  DCHECK_EQ(base::size(absolute_metric_records_), metrics_data().size());
-  DCHECK_EQ(base::size(current_sample_.sub_metrics_counts),
+  DCHECK_EQ(std::size(absolute_metric_records_), metrics_data().size());
+  DCHECK_EQ(std::size(current_sample_.sub_metrics_counts),
             metrics_data().size());
-  DCHECK_EQ(base::size(current_sample_.sub_main_frame_counts),
+  DCHECK_EQ(std::size(current_sample_.sub_main_frame_counts),
             metrics_data().size());
 
   // Record average and worst case for the primary metric.
@@ -265,7 +265,7 @@ void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
   bool is_pre_fcp = (fcp_state_ != kHavePassedFCP);
 
   // Accumulate for UKM and record the UMA
-  DCHECK_LT(metric_index, base::size(absolute_metric_records_));
+  DCHECK_LT(metric_index, std::size(absolute_metric_records_));
   auto& record = absolute_metric_records_[metric_index];
   record.interval_count += count;
   if (in_main_frame_update_)

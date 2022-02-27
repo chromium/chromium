@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -114,7 +113,7 @@ const char* const kWebEffectiveConnectionTypeMapping[] = {
 };
 
 const size_t kWebEffectiveConnectionTypeMappingCount =
-    base::size(kWebEffectiveConnectionTypeMapping);
+    std::size(kWebEffectiveConnectionTypeMapping);
 
 bool IsClientHintSentByDefault(network::mojom::WebClientHintsType type) {
   switch (type) {

@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_DOM_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_DOM_WRAPPER_H_
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/custom_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -109,7 +108,7 @@ inline void V8DOMWrapper::SetNativeInfoInternal(
   DCHECK(wrapper_type_info);
   int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
   void* values[] = {wrappable, const_cast<WrapperTypeInfo*>(wrapper_type_info)};
-  wrapper->SetAlignedPointerInInternalFields(base::size(indices), indices,
+  wrapper->SetAlignedPointerInInternalFields(std::size(indices), indices,
                                              values);
 }
 
@@ -117,7 +116,7 @@ inline void V8DOMWrapper::ClearNativeInfo(v8::Isolate* isolate,
                                           v8::Local<v8::Object> wrapper) {
   int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
   void* values[] = {nullptr, nullptr};
-  wrapper->SetAlignedPointerInInternalFields(base::size(indices), indices,
+  wrapper->SetAlignedPointerInInternalFields(std::size(indices), indices,
                                              values);
 }
 

@@ -5535,7 +5535,7 @@ const CSSValue* PaintOrder::CSSValueFromComputedStyleInternal(
       {PT_MARKERS, PT_NONE},    // kPaintOrderMarkersFillStroke
       {PT_MARKERS, PT_STROKE},  // kPaintOrderMarkersStrokeFill
   };
-  DCHECK_LT(static_cast<size_t>(paint_order) - 1, base::size(canonical_form));
+  DCHECK_LT(static_cast<size_t>(paint_order) - 1, std::size(canonical_form));
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   for (const auto& keyword : canonical_form[paint_order - 1]) {
     const auto paint_order_type = static_cast<EPaintOrderType>(keyword);

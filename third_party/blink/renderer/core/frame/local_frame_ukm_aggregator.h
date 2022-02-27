@@ -201,7 +201,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"ServiceDocumentUpdate", true},
         {"UserDrivenDocumentUpdate", true},
         {"ParseStyleSheet", true}};
-    static_assert(base::size(data) == kCount, "Metrics data mismatch");
+    static_assert(std::size(data) == kCount, "Metrics data mismatch");
     return data;
   }
 

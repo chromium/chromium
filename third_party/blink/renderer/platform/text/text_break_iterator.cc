@@ -26,7 +26,6 @@
 #include <unicode/uchar.h>
 #include <unicode/uvernum.h>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -224,11 +223,11 @@ static const unsigned char kBreakAllLineBreakClassTable[][BA_LB_COUNT / 8 + 1] =
 #undef DI
 #undef AL
 
-static_assert(base::size(kAsciiLineBreakTable) ==
+static_assert(std::size(kAsciiLineBreakTable) ==
                   kAsciiLineBreakTableLastChar - kAsciiLineBreakTableFirstChar +
                       1,
               "asciiLineBreakTable should be consistent");
-static_assert(base::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
+static_assert(std::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
               "breakAllLineBreakClassTable should be consistent");
 
 static inline bool ShouldBreakAfter(UChar last_ch, UChar ch, UChar next_ch) {

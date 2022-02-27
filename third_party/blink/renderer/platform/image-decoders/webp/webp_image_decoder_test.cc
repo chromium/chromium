@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -123,7 +122,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
@@ -139,7 +138,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 
@@ -166,7 +165,7 @@ TEST(AnimatedWebPTests,
        ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
@@ -182,7 +181,7 @@ TEST(AnimatedWebPTests,
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 
@@ -208,7 +207,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
        ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
@@ -224,7 +223,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 

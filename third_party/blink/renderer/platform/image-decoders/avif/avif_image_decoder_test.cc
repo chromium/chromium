@@ -773,7 +773,7 @@ TEST(StaticAVIFTests, NoCrashWhenCheckingForMultipleSubImages) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   constexpr char kHeader[] = {0x00, 0x00, 0x00, 0x20, 0x66, 0x74, 0x79, 0x70};
   auto buffer = SharedBuffer::Create();
-  buffer->Append(kHeader, base::size(kHeader));
+  buffer->Append(kHeader, std::size(kHeader));
   decoder->SetData(buffer.get(), false);
   EXPECT_FALSE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }

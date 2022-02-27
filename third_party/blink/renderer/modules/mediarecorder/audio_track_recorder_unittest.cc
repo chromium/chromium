@@ -207,12 +207,12 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     if (codec_ == AudioTrackRecorder::CodecId::kOpus) {
       // Decode |encoded_data| and check we get the expected number of frames
       // per buffer.
-      EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
-                opus_decode_float(
-                    opus_decoder_,
-                    reinterpret_cast<uint8_t*>(base::data(encoded_data)),
-                    static_cast<wtf_size_t>(encoded_data.size()),
-                    opus_buffer_.get(), kFramesPerBuffer, 0));
+      EXPECT_EQ(
+          kDefaultSampleRate * kOpusBufferDurationMs / 1000,
+          opus_decode_float(opus_decoder_,
+                            reinterpret_cast<uint8_t*>(std::data(encoded_data)),
+                            static_cast<wtf_size_t>(encoded_data.size()),
+                            opus_buffer_.get(), kFramesPerBuffer, 0));
     } else if (codec_ == AudioTrackRecorder::CodecId::kPcm) {
       // Manually confirm that we're getting the same data out as what we
       // generated from the sine wave.

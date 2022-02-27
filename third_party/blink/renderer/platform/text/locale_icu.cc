@@ -33,10 +33,10 @@
 #include <unicode/udatpg.h>
 #include <unicode/udisplaycontext.h>
 #include <unicode/uloc.h>
+
 #include <limits>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
@@ -143,7 +143,7 @@ UDateFormat* LocaleICU::OpenDateFormat(UDateFormatStyle time_style,
   const UChar kGmtTimezone[3] = {'G', 'M', 'T'};
   UErrorCode status = U_ZERO_ERROR;
   return udat_open(time_style, date_style, locale_.c_str(), kGmtTimezone,
-                   base::size(kGmtTimezone), nullptr, -1, &status);
+                   std::size(kGmtTimezone), nullptr, -1, &status);
 }
 
 // We cannot use udat_*Symbols API to get standalone month names to use in
@@ -257,8 +257,8 @@ void LocaleICU::InitializeCalendar() {
 
 static std::unique_ptr<Vector<String>> CreateFallbackMonthLabels() {
   std::unique_ptr<Vector<String>> labels = std::make_unique<Vector<String>>();
-  labels->ReserveCapacity(base::size(WTF::kMonthFullName));
-  for (unsigned i = 0; i < base::size(WTF::kMonthFullName); ++i)
+  labels->ReserveCapacity(std::size(WTF::kMonthFullName));
+  for (unsigned i = 0; i < std::size(WTF::kMonthFullName); ++i)
     labels->push_back(WTF::kMonthFullName[i]);
   return labels;
 }
@@ -414,8 +414,8 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
       return short_month_labels_;
     }
   }
-  short_month_labels_.ReserveCapacity(base::size(WTF::kMonthName));
-  for (unsigned i = 0; i < base::size(WTF::kMonthName); ++i)
+  short_month_labels_.ReserveCapacity(std::size(WTF::kMonthName));
+  for (unsigned i = 0; i < std::size(WTF::kMonthName); ++i)
     short_month_labels_.push_back(WTF::kMonthName[i]);
   return short_month_labels_;
 }

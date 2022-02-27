@@ -29,17 +29,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
-
-#include <ft2build.h>
 #include <freetype/freetype.h>
+#include <ft2build.h>
 #include <unicode/uscript.h>
+#include <windows.h>  // For GetACP()
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -48,6 +46,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
@@ -59,9 +58,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
-
-// For GetACP()
-#include <windows.h>
 
 namespace blink {
 
@@ -325,10 +321,10 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   int num_fonts = 0;
   if (script == USCRIPT_HAN) {
     pan_uni_fonts = kCjkFonts;
-    num_fonts = base::size(kCjkFonts);
+    num_fonts = std::size(kCjkFonts);
   } else {
     pan_uni_fonts = kCommonFonts;
-    num_fonts = base::size(kCommonFonts);
+    num_fonts = std::size(kCommonFonts);
   }
   // Font returned from getFallbackFamily may not cover |character|
   // because it's based on script to font mapping. This problem is
@@ -556,7 +552,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
       {u" ultrabold", 10, FontSelectionValue(800)},
       {u" black", 6, FontSelectionValue(900)},
       {u" heavy", 6, FontSelectionValue(900)}};
-  size_t num_variants = base::size(kVariantForSuffix);
+  size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyWeightSuffix& entry = kVariantForSuffix[i];
     if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {
@@ -593,7 +589,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
       {u" expanded", 9, ExpandedWidthValue()},
       {u" extraexpanded", 14, ExtraExpandedWidthValue()},
       {u" ultraexpanded", 14, UltraExpandedWidthValue()}};
-  size_t num_variants = base::size(kVariantForSuffix);
+  size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyStretchSuffix& entry = kVariantForSuffix[i];
     if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {

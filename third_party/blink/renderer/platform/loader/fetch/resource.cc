@@ -30,7 +30,6 @@
 #include <cassert>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
@@ -114,11 +113,11 @@ const char* const kHeaderPrefixesToIgnoreAfterRevalidation[] = {
 
 static inline bool ShouldUpdateHeaderAfterRevalidation(
     const AtomicString& header) {
-  for (size_t i = 0; i < base::size(kHeadersToIgnoreAfterRevalidation); i++) {
+  for (size_t i = 0; i < std::size(kHeadersToIgnoreAfterRevalidation); i++) {
     if (EqualIgnoringASCIICase(header, kHeadersToIgnoreAfterRevalidation[i]))
       return false;
   }
-  for (size_t i = 0; i < base::size(kHeaderPrefixesToIgnoreAfterRevalidation);
+  for (size_t i = 0; i < std::size(kHeaderPrefixesToIgnoreAfterRevalidation);
        i++) {
     if (header.StartsWithIgnoringASCIICase(
             kHeaderPrefixesToIgnoreAfterRevalidation[i]))

@@ -32,7 +32,6 @@
 
 #include <unicode/unistr.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
@@ -213,7 +212,7 @@ std::unique_ptr<JSONObject> ObjectForSkPath(const SkPath& path) {
     auto path_point_item = std::make_unique<JSONObject>();
     path_point_item->SetString("verb", verb_params.name);
     DCHECK_LE(verb_params.point_count + verb_params.point_offset,
-              base::size(points));
+              std::size(points));
     path_point_item->SetArray(
         "points", ArrayForSkPoints(verb_params.point_count,
                                    points + verb_params.point_offset));

@@ -355,7 +355,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, NewItemInMiddle) {
 TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
   gfx::Rect initial_rect(100, 100, 100, 100);
   Persistent<FakeDisplayItemClient> clients[6];
-  for (size_t i = 0; i < base::size(clients); i++) {
+  for (size_t i = 0; i < std::size(clients); i++) {
     clients[i] =
         MakeGarbageCollected<FakeDisplayItemClient>(String::Format("%zu", i));
   }
@@ -379,7 +379,7 @@ TEST_P(DisplayItemRasterInvalidatorTest, Incremental) {
         gfx::Rect(100, 100, 150, 100), gfx::Rect(100, 100, 100, 150),
         gfx::Rect(100, 100, 150, 80),  gfx::Rect(100, 100, 80, 150),
         gfx::Rect(100, 100, 150, 150), gfx::Rect(100, 100, 80, 80)};
-    for (size_t i = 0; i < base::size(clients); i++) {
+    for (size_t i = 0; i < std::size(clients); i++) {
       clients[i]->Invalidate(PaintInvalidationReason::kIncremental);
       DrawRect(context, *clients[i], kBackgroundType,
                gfx::Rect(visual_rects[i]));

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -164,9 +163,9 @@ std::string CalculateFrameHash(base::StringPiece name) {
 
   std::string hashed_name;
   uint8_t result[crypto::kSHA256Length];
-  crypto::SHA256HashString(name, result, base::size(result));
+  crypto::SHA256HashString(name, result, std::size(result));
   hashed_name += "<!--frameHash";
-  hashed_name += base::HexEncode(result, base::size(result));
+  hashed_name += base::HexEncode(result, std::size(result));
   hashed_name += "-->";
   return hashed_name;
 }

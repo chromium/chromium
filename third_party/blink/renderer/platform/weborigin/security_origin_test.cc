@@ -32,7 +32,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/test/scoped_command_line.h"
 #include "base/unguessable_token.h"
 #include "net/base/url_util.h"
@@ -76,7 +75,7 @@ class SecurityOriginTest : public testing::Test {
 TEST_F(SecurityOriginTest, ValidPortsCreateTupleOrigins) {
   uint16_t ports[] = {0, 80, 443, 5000, kMaxAllowedPort};
 
-  for (size_t i = 0; i < base::size(ports); ++i) {
+  for (size_t i = 0; i < std::size(ports); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromValidTuple("http", "example.com", ports[i]);
     EXPECT_FALSE(origin->IsOpaque())
@@ -128,7 +127,7 @@ TEST_F(SecurityOriginTest, CanAccess) {
       {false, "file:///", "file://localhost/"},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin1 =
         SecurityOrigin::CreateFromString(tests[i].origin1);
     scoped_refptr<const SecurityOrigin> origin2 =
@@ -235,7 +234,7 @@ TEST_F(SecurityOriginTest, CanRequest) {
       {false, "https://foobar.com", "https://bazbar.com"},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     scoped_refptr<const SecurityOrigin> origin =
         SecurityOrigin::CreateFromString(tests[i].origin);
     blink::KURL url(tests[i].url);

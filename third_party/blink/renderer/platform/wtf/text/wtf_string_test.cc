@@ -27,7 +27,6 @@
 
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -343,7 +342,7 @@ TEST(StringTest, StringPrinter) {
                                          0x30C8};  // "Test" in Japanese.
   EXPECT_EQ("\"\\u30C6\\u30B9\\u30C8\"",
             ToStdStringThroughPrinter(
-                String(kUnicodeSample, base::size(kUnicodeSample))));
+                String(kUnicodeSample, std::size(kUnicodeSample))));
 }
 
 class TestMatcher {

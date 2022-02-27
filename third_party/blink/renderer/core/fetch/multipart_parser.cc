@@ -4,14 +4,13 @@
 
 #include "third_party/blink/renderer/core/fetch/multipart_parser.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+#include <utility>
+
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
-#include <algorithm>
-#include <utility>
 
 namespace blink {
 
@@ -19,10 +18,10 @@ namespace {
 
 constexpr char kCloseDelimiterSuffix[] = "--\r\n";
 constexpr size_t kCloseDelimiterSuffixSize =
-    base::size(kCloseDelimiterSuffix) - 1u;
+    std::size(kCloseDelimiterSuffix) - 1u;
 constexpr size_t kDashBoundaryOffset = 2u;  // The length of "\r\n".
 constexpr char kDelimiterSuffix[] = "\r\n";
-constexpr size_t kDelimiterSuffixSize = base::size(kDelimiterSuffix) - 1u;
+constexpr size_t kDelimiterSuffixSize = std::size(kDelimiterSuffix) - 1u;
 
 }  // namespace
 

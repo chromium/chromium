@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -67,7 +66,7 @@ static ScreenOrientationInfo* OrientationsMap(unsigned& length) {
       {portrait, device::mojom::blink::ScreenOrientationLockType::PORTRAIT},
       {landscape, device::mojom::blink::ScreenOrientationLockType::LANDSCAPE},
       {natural, device::mojom::blink::ScreenOrientationLockType::NATURAL}};
-  length = base::size(orientation_map);
+  length = std::size(orientation_map);
 
   return orientation_map;
 }

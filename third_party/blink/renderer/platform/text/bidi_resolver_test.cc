@@ -32,7 +32,6 @@
 
 #include <fstream>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/bidi_test_harness.h"
@@ -111,7 +110,7 @@ TEST(BidiResolver, ParagraphDirectionSurrogates) {
       // Test broken surrogate: trail appearing before
       // lead. (U+10858 units reversed)
       {{0xDC58, 0xD802}, 2, TextDirection::kLtr, false}};
-  for (size_t i = 0; i < base::size(kTestData); ++i)
+  for (size_t i = 0; i < std::size(kTestData); ++i)
     TestDirectionality(kTestData[i]);
 }
 

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -81,7 +80,7 @@ static_assert(kEndOfWebCryptoKeyUsage == (1 << 7) + 1,
               "keyUsageMappings needs to be updated");
 
 const char* KeyUsageToString(WebCryptoKeyUsage usage) {
-  for (size_t i = 0; i < base::size(kKeyUsageMappings); ++i) {
+  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
     if (kKeyUsageMappings[i].value == usage)
       return kKeyUsageMappings[i].name;
   }
@@ -90,7 +89,7 @@ const char* KeyUsageToString(WebCryptoKeyUsage usage) {
 }
 
 WebCryptoKeyUsageMask KeyUsageStringToMask(const String& usage_string) {
-  for (size_t i = 0; i < base::size(kKeyUsageMappings); ++i) {
+  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
     if (kKeyUsageMappings[i].name == usage_string)
       return kKeyUsageMappings[i].value;
   }
@@ -159,7 +158,7 @@ ScriptValue CryptoKey::algorithm(ScriptState* script_state) {
 //        different).
 ScriptValue CryptoKey::usages(ScriptState* script_state) {
   Vector<String> result;
-  for (size_t i = 0; i < base::size(kKeyUsageMappings); ++i) {
+  for (size_t i = 0; i < std::size(kKeyUsageMappings); ++i) {
     WebCryptoKeyUsage usage = kKeyUsageMappings[i].value;
     if (key_.Usages() & usage)
       result.push_back(KeyUsageToString(usage));

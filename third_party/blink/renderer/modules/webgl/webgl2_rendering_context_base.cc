@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -174,7 +173,7 @@ WebGL2RenderingContextBase::WebGL2RenderingContextBase(
                                 graphics_info,
                                 requested_attributes,
                                 context_type) {
-  for (size_t i = 0; i < base::size(kSupportedInternalFormatsStorage); ++i) {
+  for (size_t i = 0; i < std::size(kSupportedInternalFormatsStorage); ++i) {
     supported_internal_formats_storage_.insert(
         kSupportedInternalFormatsStorage[i]);
   }

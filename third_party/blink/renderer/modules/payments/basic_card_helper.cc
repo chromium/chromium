@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/payments/basic_card_helper.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_basic_card_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
@@ -49,7 +48,7 @@ void BasicCardHelper::ParseBasiccardData(
     }
 
     for (const String& network : basic_card->supportedNetworks()) {
-      for (size_t i = 0; i < base::size(kBasicCardNetworks); ++i) {
+      for (size_t i = 0; i < std::size(kBasicCardNetworks); ++i) {
         if (network == kBasicCardNetworks[i].name) {
           supported_networks_output.push_back(kBasicCardNetworks[i].code);
           break;
@@ -60,7 +59,7 @@ void BasicCardHelper::ParseBasiccardData(
 }
 
 bool BasicCardHelper::IsNetworkName(const String& input) {
-  for (size_t i = 0; i < base::size(kBasicCardNetworks); ++i) {
+  for (size_t i = 0; i < std::size(kBasicCardNetworks); ++i) {
     if (input == kBasicCardNetworks[i].name) {
       return true;
     }

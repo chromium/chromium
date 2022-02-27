@@ -113,7 +113,6 @@ _CONFIG = [
             'absl::nullopt_t',
             'base::ranges::.+',
             'base::sequence_manager::TaskTimeObserver',
-            'base::size',
             'base::span',
             'logging::GetVlogLevel',
             'logging::SetLogItems',
@@ -1212,7 +1211,7 @@ _CONFIG = [
             'third_party/blink/renderer/modules/mediarecorder/',
         ],
         'allowed': [
-            'base::data',
+            'std::data',
             # TODO(crbug.com/960665): Remove base::queue once it is replaced with a WTF equivalent.
             'base::queue',
             'base::SharedMemory',

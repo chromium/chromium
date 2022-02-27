@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -444,7 +443,7 @@ const CSSValue* Border::CSSValueFromComputedStyleInternal(
   static const CSSProperty* kProperties[3] = {&GetCSSPropertyBorderRight(),
                                               &GetCSSPropertyBorderBottom(),
                                               &GetCSSPropertyBorderLeft()};
-  for (size_t i = 0; i < base::size(kProperties); ++i) {
+  for (size_t i = 0; i < std::size(kProperties); ++i) {
     const CSSValue* value_for_side = kProperties[i]->CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style);
     if (!base::ValuesEquivalent(value, value_for_side)) {

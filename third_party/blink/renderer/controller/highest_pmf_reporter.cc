@@ -120,7 +120,7 @@ void HighestPmfReporter::OnReportMetrics() {
   peak_resident_bytes_at_current_highest_pmf_ = 0.0;
   webpage_counts_at_current_highest_pmf_ = 0;
   report_count_++;
-  if (report_count_ >= base::size(time_to_report)) {
+  if (report_count_ >= std::size(time_to_report)) {
     // Stop observing the MemoryUsageMonitor once there's no more histogram to
     // report.
     MemoryUsageMonitor::Instance().RemoveObserver(this);

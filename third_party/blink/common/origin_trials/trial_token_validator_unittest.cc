@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -228,10 +227,10 @@ class TrialTokenValidatorTest : public testing::Test {
         insecure_origin_(url::Origin::Create(GURL(kInsecureOrigin))),
         valid_token_signature_(
             std::string(reinterpret_cast<const char*>(kSampleTokenSignature),
-                        base::size(kSampleTokenSignature))),
+                        std::size(kSampleTokenSignature))),
         expired_token_signature_(
             std::string(reinterpret_cast<const char*>(kExpiredTokenSignature),
-                        base::size(kExpiredTokenSignature))),
+                        std::size(kExpiredTokenSignature))),
         response_headers_(new net::HttpResponseHeaders("")) {
     TrialTokenValidator::SetOriginTrialPolicyGetter(
         base::BindRepeating([](OriginTrialPolicy* policy) { return policy; },

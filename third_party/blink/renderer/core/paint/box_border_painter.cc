@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -962,7 +961,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
 }
 
 void BoxBorderPainter::ComputeBorderProperties() {
-  for (unsigned i = 0; i < base::size(edges_); ++i) {
+  for (unsigned i = 0; i < std::size(edges_); ++i) {
     const BorderEdge& edge = edges_[i];
 
     if (!edge.ShouldRender()) {

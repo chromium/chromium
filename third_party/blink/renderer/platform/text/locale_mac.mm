@@ -34,7 +34,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -128,7 +127,7 @@ const Vector<String>& LocaleMac::MonthLabels() {
       month_labels_.push_back(String(array[i]));
     return month_labels_;
   }
-  for (unsigned i = 0; i < base::size(WTF::kMonthFullName); ++i)
+  for (unsigned i = 0; i < std::size(WTF::kMonthFullName); ++i)
     month_labels_.push_back(WTF::kMonthFullName[i]);
   return month_labels_;
 }
@@ -143,7 +142,7 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
       week_day_short_labels_.push_back(String(array[i]));
     return week_day_short_labels_;
   }
-  for (unsigned i = 0; i < base::size(WTF::kWeekdayName); ++i) {
+  for (unsigned i = 0; i < std::size(WTF::kWeekdayName); ++i) {
     // weekdayName starts with Monday.
     week_day_short_labels_.push_back(WTF::kWeekdayName[(i + 6) % 7]);
   }
@@ -256,7 +255,7 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
       short_month_labels_.push_back(array[i]);
     return short_month_labels_;
   }
-  for (unsigned i = 0; i < base::size(WTF::kMonthName); ++i)
+  for (unsigned i = 0; i < std::size(WTF::kMonthName); ++i)
     short_month_labels_.push_back(WTF::kMonthName[i]);
   return short_month_labels_;
 }

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -1882,10 +1881,10 @@ v8::Local<v8::Value> ReadableStream::CreateReadResult(
   v8::Local<v8::Name> names[2] = {value_string, done_string};
   v8::Local<v8::Value> values[2] = {value, done_value};
 
-  static_assert(base::size(names) == base::size(values),
+  static_assert(std::size(names) == std::size(values),
                 "names and values arrays must be the same size");
   return v8::Object::New(isolate, v8::Null(isolate), names, values,
-                         base::size(names));
+                         std::size(names));
 }
 
 void ReadableStream::Error(ScriptState* script_state,

@@ -33,7 +33,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -152,13 +151,13 @@ void LocaleWin::EnsureShortMonthLabels() {
       LOCALE_SABBREVMONTHNAME9,  LOCALE_SABBREVMONTHNAME10,
       LOCALE_SABBREVMONTHNAME11, LOCALE_SABBREVMONTHNAME12,
   };
-  short_month_labels_.ReserveCapacity(base::size(kTypes));
-  for (unsigned i = 0; i < base::size(kTypes); ++i) {
+  short_month_labels_.ReserveCapacity(std::size(kTypes));
+  for (unsigned i = 0; i < std::size(kTypes); ++i) {
     short_month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (short_month_labels_.back().IsEmpty()) {
       short_month_labels_.Shrink(0);
-      short_month_labels_.ReserveCapacity(base::size(WTF::kMonthName));
-      for (unsigned m = 0; m < base::size(WTF::kMonthName); ++m)
+      short_month_labels_.ReserveCapacity(std::size(WTF::kMonthName));
+      for (unsigned m = 0; m < std::size(WTF::kMonthName); ++m)
         short_month_labels_.push_back(WTF::kMonthName[m]);
       return;
     }
@@ -278,13 +277,13 @@ void LocaleWin::EnsureMonthLabels() {
       LOCALE_SMONTHNAME7,  LOCALE_SMONTHNAME8,  LOCALE_SMONTHNAME9,
       LOCALE_SMONTHNAME10, LOCALE_SMONTHNAME11, LOCALE_SMONTHNAME12,
   };
-  month_labels_.ReserveCapacity(base::size(kTypes));
-  for (unsigned i = 0; i < base::size(kTypes); ++i) {
+  month_labels_.ReserveCapacity(std::size(kTypes));
+  for (unsigned i = 0; i < std::size(kTypes); ++i) {
     month_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (month_labels_.back().IsEmpty()) {
       month_labels_.Shrink(0);
-      month_labels_.ReserveCapacity(base::size(WTF::kMonthFullName));
-      for (unsigned m = 0; m < base::size(WTF::kMonthFullName); ++m)
+      month_labels_.ReserveCapacity(std::size(WTF::kMonthFullName));
+      for (unsigned m = 0; m < std::size(WTF::kMonthFullName); ++m)
         month_labels_.push_back(WTF::kMonthFullName[m]);
       return;
     }
@@ -299,13 +298,13 @@ void LocaleWin::EnsureWeekDayShortLabels() {
                             LOCALE_SSHORTESTDAYNAME2, LOCALE_SSHORTESTDAYNAME3,
                             LOCALE_SSHORTESTDAYNAME4, LOCALE_SSHORTESTDAYNAME5,
                             LOCALE_SSHORTESTDAYNAME6};
-  week_day_short_labels_.ReserveCapacity(base::size(kTypes));
-  for (unsigned i = 0; i < base::size(kTypes); ++i) {
+  week_day_short_labels_.ReserveCapacity(std::size(kTypes));
+  for (unsigned i = 0; i < std::size(kTypes); ++i) {
     week_day_short_labels_.push_back(GetLocaleInfoString(kTypes[i]));
     if (week_day_short_labels_.back().IsEmpty()) {
       week_day_short_labels_.Shrink(0);
-      week_day_short_labels_.ReserveCapacity(base::size(WTF::kWeekdayName));
-      for (unsigned w = 0; w < base::size(WTF::kWeekdayName); ++w) {
+      week_day_short_labels_.ReserveCapacity(std::size(WTF::kWeekdayName));
+      for (unsigned w = 0; w < std::size(WTF::kWeekdayName); ++w) {
         // weekdayName starts with Monday.
         week_day_short_labels_.push_back(WTF::kWeekdayName[(w + 6) % 7]);
       }

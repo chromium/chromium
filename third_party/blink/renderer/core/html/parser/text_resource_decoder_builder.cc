@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -81,7 +80,7 @@ static const WTF::TextEncoding GetEncodingFromDomain(const KURL& url) {
   url.Host().Split(".", tokens);
   if (!tokens.IsEmpty()) {
     auto tld = tokens.back();
-    for (size_t i = 0; i < base::size(kEncodings); i++) {
+    for (size_t i = 0; i < std::size(kEncodings); i++) {
       if (tld == kEncodings[i].domain)
         return WTF::TextEncoding(kEncodings[i].encoding);
     }

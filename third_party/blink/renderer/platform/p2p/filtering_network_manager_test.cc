@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -291,7 +290,7 @@ TEST_F(FilteringNetworkManagerTest, MultipleRoutesNotRequested) {
       {kMockNetworksChangedWithSameNetwork, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -318,7 +317,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByStartUpdating) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -343,7 +342,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByPermissionsDenied) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that after permissions have been denied, a network change signal from
@@ -363,7 +362,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByNetworksChanged) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -390,7 +389,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByPermissionsGranted) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -416,7 +415,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByStartUpdating) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -440,7 +439,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByNetworksChanged) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, base::size(tests));
+  RunTests(tests, std::size(tests));
 }
 
 // Test that the networks provided by the GetNetworks() and
@@ -459,7 +458,7 @@ TEST_F(FilteringNetworkManagerTest, NullMdnsResponderAfterPermissionGranted) {
       // ENUMERATION_ALLOWED.
       {kStartUpdating, kSignalEnumerationAllowed},
   };
-  RunTests(setup_steps, base::size(setup_steps));
+  RunTests(setup_steps, std::size(setup_steps));
 
   NetworkList networks;
   network_manager_->GetNetworks(&networks);

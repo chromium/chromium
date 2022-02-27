@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/hash/md5.h"
 #include "base/rand_util.h"
@@ -96,7 +95,7 @@ bool MarkNameIsTrigger(const String& mark_name) {
 
 String GenerateFullTrigger(const String& site, const String& mark_name) {
   DCHECK(MarkNameIsTrigger(mark_name));
-  return site + "-" + mark_name.Substring(base::size(kTriggerPrefix) - 1);
+  return site + "-" + mark_name.Substring(std::size(kTriggerPrefix) - 1);
 }
 
 }  // namespace

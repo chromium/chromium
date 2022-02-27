@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -915,7 +914,7 @@ TEST_F(MultiBufferDataSourceTest, StopDuringRead) {
   InitializeWith206Response();
 
   uint8_t buffer[256];
-  data_source_->Read(kDataSize, base::size(buffer), buffer,
+  data_source_->Read(kDataSize, std::size(buffer), buffer,
                      base::BindOnce(&MultiBufferDataSourceTest::ReadCallback,
                                     base::Unretained(this)));
 

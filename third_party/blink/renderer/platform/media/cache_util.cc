@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -63,7 +62,7 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
       base::Seconds(3600);  // Arbitrary value.
 
   const char kMaxAgePrefix[] = "max-age=";
-  const size_t kMaxAgePrefixLen = base::size(kMaxAgePrefix) - 1;
+  const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
   if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
     int64_t max_age_seconds;
     base::StringToInt64(
@@ -99,7 +98,7 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   base::TimeDelta ret = base::Days(30);
 
   const char kMaxAgePrefix[] = "max-age=";
-  const size_t kMaxAgePrefixLen = base::size(kMaxAgePrefix) - 1;
+  const size_t kMaxAgePrefixLen = std::size(kMaxAgePrefix) - 1;
   if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
     int64_t max_age_seconds;
     base::StringToInt64(

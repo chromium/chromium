@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/web_vector.h"
-
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -61,8 +59,8 @@ TEST(WebVectorTest, Empty) {
 TEST(WebVectorTest, Swap) {
   const int kFirstData[] = {1, 2, 3, 4, 5};
   const int kSecondData[] = {6, 5, 8};
-  const size_t kFirstDataLength = base::size(kFirstData);
-  const size_t kSecondDataLength = base::size(kSecondData);
+  const size_t kFirstDataLength = std::size(kFirstData);
+  const size_t kSecondDataLength = std::size(kSecondData);
 
   WebVector<int> first(kFirstData, kFirstDataLength);
   WebVector<int> second(kSecondData, kSecondDataLength);
@@ -137,9 +135,9 @@ TEST(WebVectorTest, EmplaceBackArgumentForwarding) {
   WebVector<WebString> vector;
   vector.reserve(1);
   WebUChar buffer[] = {'H', 'e', 'l', 'l', 'o', ' ', 'b', 'l', 'i', 'n', 'k'};
-  vector.emplace_back(buffer, base::size(buffer));
+  vector.emplace_back(buffer, std::size(buffer));
   ASSERT_EQ(1U, vector.size());
-  EXPECT_EQ(WebString(buffer, base::size(buffer)), vector[0]);
+  EXPECT_EQ(WebString(buffer, std::size(buffer)), vector[0]);
 }
 
 TEST(WebVectorTest, EmplaceBackElementPlacement) {

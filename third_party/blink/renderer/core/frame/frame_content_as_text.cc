@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/frame_content_as_text.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -37,7 +36,7 @@ void FrameContentAsText(wtf_size_t max_chars,
 
   // The separator between frames when the frames are converted to plain text.
   const LChar kFrameSeparator[] = {'\n', '\n'};
-  const size_t frame_separator_length = base::size(kFrameSeparator);
+  const size_t frame_separator_length = std::size(kFrameSeparator);
 
   // Recursively walk the children.
   const FrameTree& frame_tree = frame->Tree();

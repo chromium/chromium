@@ -184,7 +184,7 @@ bool MediaRecorderHandler::CanSupportMimeType(const String& type,
   static const char* const kAudioCodecs[] = {"opus", "pcm"};
   const char* const* codecs = video ? &kVideoCodecs[0] : &kAudioCodecs[0];
   const int codecs_count =
-      video ? base::size(kVideoCodecs) : base::size(kAudioCodecs);
+      video ? std::size(kVideoCodecs) : std::size(kAudioCodecs);
 
   std::vector<std::string> codecs_list;
   media::SplitCodecs(web_codecs.Utf8(), &codecs_list);

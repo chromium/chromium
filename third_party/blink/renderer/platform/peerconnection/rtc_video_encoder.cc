@@ -10,7 +10,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -188,7 +187,7 @@ webrtc::VideoEncoder::EncoderInfo CopyToWebrtcEncoderInfo(
       webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
       "webrtc::kMaxSpatiallayers is less than "
       "media::VideoEncoderInfo::kMaxSpatialLayers");
-  for (size_t i = 0; i < base::size(enc_info.fps_allocation); ++i) {
+  for (size_t i = 0; i < std::size(enc_info.fps_allocation); ++i) {
     if (enc_info.fps_allocation[i].empty())
       continue;
     info.fps_allocation[i] =
@@ -1163,7 +1162,7 @@ void RTCVideoEncoder::Impl::LogAndNotifyError(
   static const char* const kErrorNames[] = {
       "kIllegalStateError", "kInvalidArgumentError", "kPlatformFailureError"};
   static_assert(
-      base::size(kErrorNames) == media::VideoEncodeAccelerator::kErrorMax + 1,
+      std::size(kErrorNames) == media::VideoEncodeAccelerator::kErrorMax + 1,
       "Different number of errors and textual descriptions");
   DLOG(ERROR) << location.ToString() << kErrorNames[error] << " - " << str;
   NotifyError(error);

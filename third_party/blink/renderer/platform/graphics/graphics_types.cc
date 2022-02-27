@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -51,9 +50,8 @@ static const char* const kCanvasBlendModeNames[] = {
     "darken",     "lighten",    "color-dodge", "color-burn",
     "hard-light", "soft-light", "difference",  "exclusion",
     "hue",        "saturation", "color",       "luminosity"};
-const int kNumCompositeOperatorNames =
-    base::size(kCanvasCompositeOperatorNames);
-const int kNumBlendModeNames = base::size(kCanvasBlendModeNames);
+const int kNumCompositeOperatorNames = std::size(kCanvasCompositeOperatorNames);
+const int kNumBlendModeNames = std::size(kCanvasBlendModeNames);
 
 bool ParseCanvasCompositeAndBlendMode(const String& s,
                                       CompositeOperator& op,

@@ -1220,7 +1220,7 @@ ManifestParser::ParseProtocolHandler(const JSONObject* object) {
     const char kToken[] = "%s";
     String user_url = protocol_handler->url.GetString();
     String tokenless_url = protocol_handler->url.GetString();
-    tokenless_url.Remove(user_url.Find(kToken), base::size(kToken) - 1);
+    tokenless_url.Remove(user_url.Find(kToken), std::size(kToken) - 1);
     KURL full_url(manifest_url_, tokenless_url);
 
     if (!VerifyCustomHandlerURLSyntax(full_url, manifest_url_, user_url,

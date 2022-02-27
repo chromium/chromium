@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -55,7 +54,7 @@ TEST(NotificationDataTest, ReflectProperties) {
   V8TestingScope scope(base_url);
 
   Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
   auto* vibration_sequence =
@@ -143,7 +142,7 @@ TEST(NotificationDataTest, SilentNotificationWithVibration) {
   V8TestingScope scope;
 
   Vector<unsigned> vibration_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibration); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibration); ++i)
     vibration_pattern.push_back(kNotificationVibration[i]);
 
   auto* vibration_sequence =
@@ -243,7 +242,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
   V8TestingScope scope;
 
   Vector<unsigned> unnormalized_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibrationUnnormalized); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibrationUnnormalized); ++i)
     unnormalized_pattern.push_back(kNotificationVibrationUnnormalized[i]);
 
   auto* vibration_sequence =
@@ -261,7 +260,7 @@ TEST(NotificationDataTest, VibrationNormalization) {
   EXPECT_FALSE(exception_state.HadException());
 
   Vector<int> normalized_pattern;
-  for (size_t i = 0; i < base::size(kNotificationVibrationNormalized); ++i)
+  for (size_t i = 0; i < std::size(kNotificationVibrationNormalized); ++i)
     normalized_pattern.push_back(kNotificationVibrationNormalized[i]);
 
   ASSERT_EQ(normalized_pattern.size(),

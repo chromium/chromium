@@ -94,7 +94,7 @@ const CommandNameEntry kCommandNameEntries[] = {
 };
 // Handles all commands except EditingCommandType::Invalid.
 static_assert(
-    base::size(kCommandNameEntries) + 1 ==
+    std::size(kCommandNameEntries) + 1 ==
         static_cast<size_t>(EditingCommandType::kNumberOfCommandTypes),
     "must handle all valid EditingCommandType");
 
@@ -1814,7 +1814,7 @@ static const EditorInternalCommand* InternalCommand(
   };
   // Handles all commands except EditingCommandType::Invalid.
   static_assert(
-      base::size(kEditorCommands) + 1 ==
+      std::size(kEditorCommands) + 1 ==
           static_cast<size_t>(EditingCommandType::kNumberOfCommandTypes),
       "must handle all valid EditingCommandType");
 
@@ -1825,7 +1825,7 @@ static const EditorInternalCommand* InternalCommand(
 
   int command_index = static_cast<int>(command_type) - 1;
   DCHECK(command_index >= 0 &&
-         command_index < static_cast<int>(base::size(kEditorCommands)));
+         command_index < static_cast<int>(std::size(kEditorCommands)));
   return &kEditorCommands[command_index];
 }
 

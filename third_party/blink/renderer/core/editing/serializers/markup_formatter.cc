@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -122,7 +121,7 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
   WTF::VisitCharacters(source, [&](const auto* chars, unsigned) {
     AppendCharactersReplacingEntitiesInternal(
         result, source, chars, source.length(), kEntityMaps,
-        base::size(kEntityMaps), entity_mask);
+        std::size(kEntityMaps), entity_mask);
   });
 }
 

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -132,7 +131,7 @@ String FormatOriginalResourceSizeBytes(int64_t bytes) {
   // Find the smallest unit that can represent |bytes| in 3 digits or less.
   // Round up to the next higher unit if possible when it would take 4 digits to
   // display the amount, e.g. 1000 KB will be rounded up to 1 MB.
-  for (; units < kUnitsResourceIds + (base::size(kUnitsResourceIds) - 1) &&
+  for (; units < kUnitsResourceIds + (std::size(kUnitsResourceIds) - 1) &&
          bytes >= denomenator * 1000;
        ++units, denomenator *= 1024) {
   }

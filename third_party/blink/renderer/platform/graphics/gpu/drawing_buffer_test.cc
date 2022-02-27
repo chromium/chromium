@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -666,7 +665,7 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
       DepthStencilTestCase(true, true, 1, "both"),
   };
 
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(cases[i].test_case_name);
     auto gl = std::make_unique<DepthStencilTrackingGLES2Interface>();
     DepthStencilTrackingGLES2Interface* tracking_gl = gl.get();

@@ -53,7 +53,6 @@
 
 #include "third_party/blink/renderer/core/html/html_document.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -142,7 +141,7 @@ static HashSet<StringImpl*>* CreateHtmlCaseInsensitiveAttributesSet() {
       &html_names::kTypeAttr,          &html_names::kValignAttr,
       &html_names::kValuetypeAttr,     &html_names::kVlinkAttr};
 
-  attr_set->ReserveCapacityForSize(base::size(case_insensitive_attributes));
+  attr_set->ReserveCapacityForSize(std::size(case_insensitive_attributes));
   for (const QualifiedName* attr : case_insensitive_attributes)
     attr_set->insert(attr->LocalName().Impl());
 

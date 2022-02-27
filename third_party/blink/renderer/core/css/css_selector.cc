@@ -29,7 +29,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -519,11 +518,11 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
   if (has_arguments) {
     pseudo_type_map = kPseudoTypeWithArgumentsMap;
     pseudo_type_map_end =
-        kPseudoTypeWithArgumentsMap + base::size(kPseudoTypeWithArgumentsMap);
+        kPseudoTypeWithArgumentsMap + std::size(kPseudoTypeWithArgumentsMap);
   } else {
     pseudo_type_map = kPseudoTypeWithoutArgumentsMap;
     pseudo_type_map_end = kPseudoTypeWithoutArgumentsMap +
-                          base::size(kPseudoTypeWithoutArgumentsMap);
+                          std::size(kPseudoTypeWithoutArgumentsMap);
   }
   const NameToPseudoStruct* match = std::lower_bound(
       pseudo_type_map, pseudo_type_map_end, name,

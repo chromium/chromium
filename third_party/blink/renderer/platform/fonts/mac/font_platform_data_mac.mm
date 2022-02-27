@@ -26,7 +26,6 @@
 #import <AppKit/NSFont.h>
 #import <AvailabilityMacros.h>
 
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #include "third_party/blink/public/platform/mac/web_sandbox_support.h"
@@ -113,13 +112,13 @@ static CFDictionaryRef CascadeToLastResortFontAttributes() {
       CTFontDescriptorCreateWithNameAndSize(CFSTR("LastResort"), 0));
   const void* descriptors[] = {last_resort};
   base::ScopedCFTypeRef<CFArrayRef> values_array(
-      CFArrayCreate(kCFAllocatorDefault, descriptors, base::size(descriptors),
+      CFArrayCreate(kCFAllocatorDefault, descriptors, std::size(descriptors),
                     &kCFTypeArrayCallBacks));
 
   const void* keys[] = {kCTFontCascadeListAttribute};
   const void* values[] = {values_array};
   attributes = CFDictionaryCreate(
-      kCFAllocatorDefault, keys, values, base::size(keys),
+      kCFAllocatorDefault, keys, values, std::size(keys),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   return attributes;
 }

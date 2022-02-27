@@ -433,11 +433,11 @@ TEST(CharacterTest, IsVerticalMathCharacter) {
     } else if (test_char == kArabicMathematicalOperatorHahWithDal) {
       EXPECT_FALSE(Character::IsVerticalMathCharacter(test_char));
     } else {
-      bool in_vertical = !std::binary_search(
-          stretchy_operator_with_inline_axis,
-          stretchy_operator_with_inline_axis +
-              base::size(stretchy_operator_with_inline_axis),
-          test_char);
+      bool in_vertical =
+          !std::binary_search(stretchy_operator_with_inline_axis,
+                              stretchy_operator_with_inline_axis +
+                                  std::size(stretchy_operator_with_inline_axis),
+                              test_char);
       EXPECT_TRUE(Character::IsVerticalMathCharacter(test_char) == in_vertical);
     }
   }

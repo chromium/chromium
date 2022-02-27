@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -133,7 +132,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
         const UChar astral_character[2] = {high_surrogate.value(), *begin};
         // Third argument is ignored, as above.
         *prefix =
-            encoder_->Encode(astral_character, base::size(astral_character),
+            encoder_->Encode(astral_character, std::size(astral_character),
                              WTF::kNoUnencodables);
         ++begin;
         if (begin == end)

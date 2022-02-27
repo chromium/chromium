@@ -154,7 +154,7 @@ void FEComponentTransfer::GetValues(unsigned char r_values[256],
 
   for (unsigned channel = 0; channel < 4; channel++) {
     SECURITY_DCHECK(static_cast<size_t>(transfer_function[channel].type) <
-                    base::size(call_effect));
+                    std::size(call_effect));
     (*call_effect[transfer_function[channel].type])(tables[channel],
                                                     transfer_function[channel]);
   }

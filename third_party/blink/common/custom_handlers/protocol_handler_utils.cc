@@ -17,8 +17,8 @@ bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
 
   static constexpr const char kWebPrefix[] = "web+";
   static constexpr const char kExtPrefix[] = "ext+";
-  DCHECK_EQ(base::size(kWebPrefix), base::size(kExtPrefix));
-  static constexpr const size_t kPrefixLength = base::size(kWebPrefix) - 1;
+  DCHECK_EQ(std::size(kWebPrefix), std::size(kExtPrefix));
+  static constexpr const size_t kPrefixLength = std::size(kWebPrefix) - 1;
   if (base::StartsWith(scheme, kWebPrefix,
                        base::CompareCase::INSENSITIVE_ASCII) ||
       (allow_ext_prefix &&

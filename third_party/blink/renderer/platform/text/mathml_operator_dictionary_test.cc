@@ -118,7 +118,7 @@ static const UChar32 category_m[]{
 
 template <typename T, size_t N>
 bool IsInCategory(const T (&table)[N], UChar32 character) {
-  return std::binary_search(table, table + base::size(table), character);
+  return std::binary_search(table, table + std::size(table), character);
 }
 
 String FromUChar32(UChar32 c) {

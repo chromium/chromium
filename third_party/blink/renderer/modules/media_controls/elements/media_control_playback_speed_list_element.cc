@@ -222,13 +222,13 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
   checked_item_ = nullptr;
 
   // Construct a menu for playback speeds.
-  for (unsigned i = 0; i < base::size(kPlaybackSpeeds); i++) {
+  for (unsigned i = 0; i < std::size(kPlaybackSpeeds); i++) {
     auto& playback_speed = kPlaybackSpeeds[i];
     auto* playback_speed_item = CreatePlaybackSpeedListItem(
         playback_speed.display_name, playback_speed.playback_rate);
     playback_speed_item->setAttribute(
         html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(base::size(kPlaybackSpeeds) + 1));
+        WTF::AtomicString::Number(std::size(kPlaybackSpeeds) + 1));
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
                                       WTF::AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,

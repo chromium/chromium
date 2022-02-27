@@ -189,7 +189,7 @@ inline void WritePixel(float max_channel,
   }
 
   gfx::FloatToHalfFloat(rgba_pixels, reinterpret_cast<uint16_t*>(rgba_dest),
-                        base::size(rgba_pixels));
+                        std::size(rgba_pixels));
 }
 
 enum class ColorType { kMono, kColor };

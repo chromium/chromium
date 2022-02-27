@@ -33,7 +33,6 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
@@ -113,7 +112,7 @@ NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
   };
   size_t select_weight = roundf(font_weight / 100) - 1;
   DCHECK_GE(select_weight, 0ul);
-  DCHECK_LE(select_weight, base::size(ns_font_weights));
+  DCHECK_LE(select_weight, std::size(ns_font_weights));
   return ns_font_weights[select_weight];
 }
 
@@ -328,7 +327,7 @@ int ToAppKitFontWeight(FontSelectionValue font_weight) {
       12,  // FontWeight900
   };
   DCHECK_GE(select_weight, 0ul);
-  DCHECK_LE(select_weight, base::size(app_kit_font_weights));
+  DCHECK_LE(select_weight, std::size(app_kit_font_weights));
   return app_kit_font_weights[select_weight];
 }
 

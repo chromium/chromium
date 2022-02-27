@@ -52,7 +52,7 @@ const struct {
     {3, CAST_UNIT(kUserUnits)},
 };
 static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) ==
-                  base::size(g_initial_lengths_table),
+                  std::size(g_initial_lengths_table),
               "the enumeration is synchronized with the value table");
 static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) <=
                   1u << SVGLength::kInitialValueBits,
@@ -63,7 +63,7 @@ static_assert(static_cast<size_t>(SVGLength::Initial::kNumValues) <=
 const CSSPrimitiveValue& CreateInitialCSSValue(
     SVGLength::Initial initial_value) {
   size_t initial_value_index = static_cast<size_t>(initial_value);
-  DCHECK_LT(initial_value_index, base::size(g_initial_lengths_table));
+  DCHECK_LT(initial_value_index, std::size(g_initial_lengths_table));
   const auto& entry = g_initial_lengths_table[initial_value_index];
   return *CSSNumericLiteralValue::Create(
       entry.value, static_cast<CSSPrimitiveValue::UnitType>(entry.unit));

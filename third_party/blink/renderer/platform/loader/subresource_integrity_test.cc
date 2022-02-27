@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,8 +25,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-#include <algorithm>
 
 namespace blink {
 
@@ -402,7 +401,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
       "sha384-XVVXBGoYw6AJOh9J+Z8pBDMVVPfkBpngexkA7JqZu8d5GENND6TEIup/tA1v5GPr "
       "sha512-tbUPioKbVBplr0b1ucnWB57SJWt4x9dOE0Vy2mzCXvH3FepqDZ+"
       "07yMK81ytlg0MPaIrPAjcHqba5csorDWtKg==",
-      valid_sha384_and_sha512, base::size(valid_sha384_and_sha512));
+      valid_sha384_and_sha512, std::size(valid_sha384_and_sha512));
 
   const IntegrityMetadata valid_sha256_and_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -411,7 +410,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   };
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-deadbeef",
-      valid_sha256_and_sha256, base::size(valid_sha256_and_sha256));
+      valid_sha256_and_sha256, std::size(valid_sha256_and_sha256));
 
   const IntegrityMetadata valid_sha256_and_invalid_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -420,7 +419,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   ExpectParseMultipleHashes(
       "sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE= sha256-!!!!",
       valid_sha256_and_invalid_sha256,
-      base::size(valid_sha256_and_invalid_sha256));
+      std::size(valid_sha256_and_invalid_sha256));
 
   const IntegrityMetadata invalid_sha256_and_valid_sha256[] = {
       IntegrityMetadata("BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
@@ -429,7 +428,7 @@ TEST_F(SubresourceIntegrityTest, Parsing) {
   ExpectParseMultipleHashes(
       "sha256-!!! sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",
       invalid_sha256_and_valid_sha256,
-      base::size(invalid_sha256_and_valid_sha256));
+      std::size(invalid_sha256_and_valid_sha256));
 
   ExpectParse("sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=?foo=bar",
               "BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=",

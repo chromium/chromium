@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -77,10 +76,10 @@ v8::Local<v8::Object> CreateKeyValueObject(v8::Isolate* isolate,
   v8::Local<v8::Name> names[] = {V8AtomicString(isolate, key1),
                                  V8AtomicString(isolate, key2)};
   v8::Local<v8::Value> values[] = {value1, value2};
-  static_assert(base::size(names) == base::size(values),
+  static_assert(std::size(names) == std::size(values),
                 "names and values arrays must be the same size");
   return v8::Object::New(isolate, v8::Null(isolate), names, values,
-                         base::size(names));
+                         std::size(names));
 }
 
 // Unpacks an object created by CreateKeyValueObject(). |value1| and |value2|

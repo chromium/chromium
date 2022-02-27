@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -66,7 +65,7 @@ constexpr char kQuickBrownFoxFormData[] =
     "Quick brown fox\r\n"
     "--boundary--\r\n";
 constexpr size_t kQuickBrownFoxFormDataLength =
-    base::size(kQuickBrownFoxFormData) - 1u;
+    std::size(kQuickBrownFoxFormData) - 1u;
 
 class FetchDataLoaderTest : public testing::Test {
  protected:

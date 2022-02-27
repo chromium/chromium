@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
-#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -61,7 +60,7 @@ namespace blink {
 static const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
                                                     CSSValueID::kVerticalRl,
                                                     CSSValueID::kVerticalLr};
-static_assert(base::size(kDisplayWritingModeMap) ==
+static_assert(std::size(kDisplayWritingModeMap) ==
                   VTTCue::kNumberOfWritingDirections,
               "displayWritingModeMap should have the same number of elements "
               "as VTTCue::NumberOfWritingDirections");
@@ -69,7 +68,7 @@ static_assert(base::size(kDisplayWritingModeMap) ==
 static const CSSValueID kDisplayAlignmentMap[] = {
     CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
     CSSValueID::kLeft, CSSValueID::kRight};
-static_assert(base::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
+static_assert(std::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
 
