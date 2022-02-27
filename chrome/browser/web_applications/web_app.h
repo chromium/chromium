@@ -249,8 +249,8 @@ class WebApp {
     return permissions_policy_;
   }
 
-  const absl::optional<webapps::WebappInstallSource>
-  install_source_for_metrics() const {
+  absl::optional<webapps::WebappInstallSource> install_source_for_metrics()
+      const {
     return install_source_for_metrics_;
   }
 

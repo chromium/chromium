@@ -496,7 +496,7 @@ bool WebAppUiManagerImpl::IsBrowserForInstalledApp(Browser* browser) {
   return true;
 }
 
-const AppId WebAppUiManagerImpl::GetAppIdForBrowser(Browser* browser) {
+AppId WebAppUiManagerImpl::GetAppIdForBrowser(Browser* browser) {
   return browser->app_controller()->app_id();
 }
 

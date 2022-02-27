@@ -230,7 +230,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
 
     // If the lacros service or the sharesheet interface are not
     // available on this version of ash-chrome, this test suite will no-op.

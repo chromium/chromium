@@ -856,11 +856,11 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
                         registrar_->registry_.end(), filter_);
 }
 
-const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
+WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
   return AppSet(this, nullptr, /*empty=*/registry_profile_being_deleted_);
 }
 
-const WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
+WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(
       this,
       [](const WebApp& web_app) {
@@ -875,7 +875,7 @@ void WebAppRegistrar::SetRegistry(Registry&& registry) {
   registry_ = std::move(registry);
 }
 
-const WebAppRegistrar::AppSet WebAppRegistrar::FilterApps(Filter filter) const {
+WebAppRegistrar::AppSet WebAppRegistrar::FilterApps(Filter filter) const {
   return AppSet(this, filter, /*empty=*/registry_profile_being_deleted_);
 }
 

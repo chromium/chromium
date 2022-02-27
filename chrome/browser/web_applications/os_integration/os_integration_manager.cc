@@ -333,7 +333,7 @@ const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
   return file_handler_manager_->GetEnabledFileHandlers(app_id);
 }
 
-const absl::optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
+absl::optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   DCHECK(file_handler_manager_);

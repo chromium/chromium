@@ -390,11 +390,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
   };
 
   // Returns all apps in the registry (a superset) including stubs.
-  const AppSet GetAppsIncludingStubs() const;
+  AppSet GetAppsIncludingStubs() const;
   // Returns all apps excluding stubs for apps in sync install. Apps in sync
   // install are being installed and should be hidden for most subsystems. This
   // is a subset of GetAppsIncludingStubs().
-  const AppSet GetApps() const;
+  AppSet GetApps() const;
 
  protected:
   Profile* profile() const { return profile_; }
@@ -404,7 +404,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);
 
-  const AppSet FilterApps(Filter filter) const;
+  AppSet FilterApps(Filter filter) const;
 
   void CountMutation();
 

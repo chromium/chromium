@@ -92,7 +92,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   // Returns AppId of the Browser's installed App, |IsBrowserForInstalledApp|
   // must be true.
-  const AppId GetAppIdForBrowser(Browser* browser);
+  AppId GetAppIdForBrowser(Browser* browser);
 
   void OnExtensionSystemReady();
 

@@ -188,7 +188,7 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
              : nullptr;
 }
 
-const absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
+absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
     const AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   if (!IsFileHandlingAPIAvailable(app_id) || launch_files.empty() ||
