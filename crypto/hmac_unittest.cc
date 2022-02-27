@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "crypto/hmac.h"
+
 #include <stddef.h>
 #include <string.h>
 
 #include <string>
 
-#include "base/cxx17_backports.h"
-#include "crypto/hmac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static const size_t kSHA1DigestSize = 20;
@@ -146,7 +146,7 @@ TEST(HMACTest, RFC2202TestCases) {
           "\xBB\xFF\x1A\x91" }
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     crypto::HMAC hmac(crypto::HMAC::SHA1);
     ASSERT_TRUE(hmac.Init(reinterpret_cast<const unsigned char*>(cases[i].key),
                           cases[i].key_len));
@@ -243,7 +243,7 @@ TEST(HMACTest, HMACObjectReuse) {
   ASSERT_TRUE(
       hmac.Init(reinterpret_cast<const unsigned char*>(kSimpleKey),
                 kSimpleKeyLength));
-  for (size_t i = 0; i < base::size(kSimpleHmacCases); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleHmacCases); ++i) {
     std::string data_string(kSimpleHmacCases[i].data,
                             kSimpleHmacCases[i].data_len);
     unsigned char digest[kSHA1DigestSize];
@@ -258,7 +258,7 @@ TEST(HMACTest, Verify) {
       hmac.Init(reinterpret_cast<const unsigned char*>(kSimpleKey),
                 kSimpleKeyLength));
   const char empty_digest[kSHA1DigestSize] = { 0 };
-  for (size_t i = 0; i < base::size(kSimpleHmacCases); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleHmacCases); ++i) {
     // Expected results
     EXPECT_TRUE(hmac.Verify(
         base::StringPiece(kSimpleHmacCases[i].data,

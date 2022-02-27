@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -266,7 +265,7 @@ TEST(ECPrivateKeyUnitTest, LoadOpenSSLKeyTest) {
   std::string raw_public_key;
   EXPECT_TRUE(keypair_openssl->ExportRawPublicKey(&raw_public_key));
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(kOpenSSLRawPublicKey),
-                        base::size(kOpenSSLRawPublicKey)),
+                        std::size(kOpenSSLRawPublicKey)),
             raw_public_key);
 }
 

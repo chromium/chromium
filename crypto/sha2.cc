@@ -27,7 +27,7 @@ void SHA256HashString(base::StringPiece str, void* output, size_t len) {
 
 std::string SHA256HashString(base::StringPiece str) {
   std::string output(kSHA256Length, 0);
-  SHA256HashString(str, base::data(output), output.size());
+  SHA256HashString(str, std::data(output), output.size());
   return output;
 }
 
