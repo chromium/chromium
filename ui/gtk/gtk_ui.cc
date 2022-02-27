@@ -14,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/environment.h"
 #include "base/logging.h"
@@ -555,7 +554,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
   std::string content_types[] = {content_type, kUnknownContentType};
 
-  for (size_t i = 0; i < base::size(content_types); ++i) {
+  for (size_t i = 0; i < std::size(content_types); ++i) {
     auto icon = TakeGObject(g_content_type_get_icon(content_type.c_str()));
     SkBitmap bitmap;
     if (GtkCheckVersion(4)) {

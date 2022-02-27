@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -347,8 +346,8 @@ TEST_F(InputMethodUtilTest, TestInputMethodIDMigration) {
 
   util_.MigrateInputMethods(&input_method_ids);
 
-  EXPECT_EQ(base::size(migration_cases), input_method_ids.size());
-  for (size_t i = 0; i < base::size(migration_cases); ++i) {
+  EXPECT_EQ(std::size(migration_cases), input_method_ids.size());
+  for (size_t i = 0; i < std::size(migration_cases); ++i) {
     EXPECT_EQ(
         extension_ime_util::GetInputMethodIDByEngineID(migration_cases[i][1]),
         input_method_ids[i]);

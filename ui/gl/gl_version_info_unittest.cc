@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gl/gl_version_info.h"
+
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_version_info.h"
 
 namespace gl {
 
@@ -51,7 +51,7 @@ TEST(GLVersionInfoTest, ParseGLVersionStringTest) {
       {"OpenGL ES 3.1V@104.0", 3, 1, true, false, true, "", "104.0"}};
 
   gfx::ExtensionSet extensions;
-  for (size_t ii = 0; ii < base::size(kTestData); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTestData); ++ii) {
     GLVersionInfo version_info(kTestData[ii].gl_version, nullptr, extensions);
     EXPECT_EQ(kTestData[ii].expected_gl_major, version_info.major_version);
     EXPECT_EQ(kTestData[ii].expected_gl_minor, version_info.minor_version);
@@ -128,7 +128,7 @@ TEST(GLVersionInfoTest, DriverVendorForANGLE) {
   };
 
   gfx::ExtensionSet extensions;
-  for (size_t ii = 0; ii < base::size(kTestData); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTestData); ++ii) {
     GLVersionInfo version_info(kTestData[ii].gl_version,
                                kTestData[ii].gl_renderer, extensions);
     EXPECT_TRUE(version_info.is_angle);

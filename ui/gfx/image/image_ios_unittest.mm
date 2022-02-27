@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <QuartzCore/QuartzCore.h>
-#include <stddef.h>
-#import <UIKit/UIKit.h>
+#include "ui/gfx/image/image.h"
 
-#include "base/cxx17_backports.h"
+#import <QuartzCore/QuartzCore.h>
+#import <UIKit/UIKit.h>
+#include <stddef.h>
+
 #include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
@@ -73,8 +73,8 @@ TEST_F(ImageIOSTest, ImageConversionWithUnsupportedScaleFactor) {
   const CGFloat kHeight = 100;
   const CGFloat kTestScales[3] = { 1.0f, 2.0f, 3.0f };
 
-  for (size_t i = 0; i < base::size(kTestScales); ++i) {
-    for (size_t j = 0; j < base::size(kTestScales); ++j) {
+  for (size_t i = 0; i < std::size(kTestScales); ++i) {
+    for (size_t j = 0; j < std::size(kTestScales); ++j) {
       const CGFloat source_scale = kTestScales[i];
       const CGFloat supported_scale = kTestScales[j];
 

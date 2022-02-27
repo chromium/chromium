@@ -5,7 +5,6 @@
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
 #include "base/callback_forward.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -408,7 +407,7 @@ TEST_F(SelectFileDialogMacTest, SelectionType) {
        PICK_FILES | MULTIPLE_SELECTION, "Open"},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); i++) {
+  for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(
         base::StringPrintf("i=%lu file_dialog_type=%d", i, test_cases[i].type));
     args.type = test_cases[i].type;

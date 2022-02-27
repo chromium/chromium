@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -161,12 +160,12 @@ void TextExample::CreateExampleView(View* container) {
       "Right",
   };
   h_align_cb_ = AddCombobox(table_container, u"H-Align", kHorizontalAligments,
-                            base::size(kHorizontalAligments),
+                            std::size(kHorizontalAligments),
                             &TextExample::AlignComboboxChanged);
 
   constexpr const char* kElideBehaviors[] = {"Elide", "No Elide"};
   eliding_cb_ = AddCombobox(table_container, u"Eliding", kElideBehaviors,
-                            base::size(kElideBehaviors),
+                            std::size(kElideBehaviors),
                             &TextExample::ElideComboboxChanged);
 
   constexpr const char* kPrefixOptions[] = {
@@ -175,7 +174,7 @@ void TextExample::CreateExampleView(View* container) {
       "Hide",
   };
   prefix_cb_ = AddCombobox(table_container, u"Prefix", kPrefixOptions,
-                           base::size(kPrefixOptions),
+                           std::size(kPrefixOptions),
                            &TextExample::PrefixComboboxChanged);
 
   constexpr const char* kTextExamples[] = {
@@ -186,14 +185,14 @@ void TextExample::CreateExampleView(View* container) {
   };
   text_cb_ =
       AddCombobox(table_container, u"Example Text", kTextExamples,
-                  base::size(kTextExamples), &TextExample::TextComboboxChanged);
+                  std::size(kTextExamples), &TextExample::TextComboboxChanged);
 
   constexpr const char* kWeightLabels[] = {
       "Thin",     "Extra Light", "Light",      "Normal", "Medium",
       "Semibold", "Bold",        "Extra Bold", "Black",
   };
   weight_cb_ = AddCombobox(table_container, u"Font Weight", kWeightLabels,
-                           base::size(kWeightLabels),
+                           std::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
   weight_cb_->SelectValue(u"Normal");
 

@@ -4,7 +4,6 @@
 
 #include "ui/events/blink/blink_event_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -166,9 +165,9 @@ TEST(BlinkEventUtilTest, LineAndDocumentScrollEvents) {
       ui::ScrollGranularity::kScrollByDocument,
   };
 
-  for (size_t i = 0; i < base::size(types); i++) {
+  for (size_t i = 0; i < std::size(types); i++) {
     ui::EventType type = types[i];
-    for (size_t j = 0; j < base::size(units); j++) {
+    for (size_t j = 0; j < std::size(units); j++) {
       ui::ScrollGranularity unit = units[j];
       ui::GestureEventDetails details(type, 1, 1, unit);
       details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);

@@ -4,7 +4,6 @@
 
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "build/build_config.h"
@@ -102,7 +101,7 @@ uint32_t EvdevCodeToXkbKeycode(int evdev_code) {
 
 // static
 size_t KeycodeConverter::NumKeycodeMapEntriesForTest() {
-  return base::size(kDomCodeMappings);
+  return std::size(kDomCodeMappings);
 }
 
 // static
@@ -112,7 +111,7 @@ const KeycodeMapEntry* KeycodeConverter::GetKeycodeMapForTest() {
 
 // static
 const char* KeycodeConverter::DomKeyStringForTest(size_t index) {
-  if (index >= base::size(kDomKeyMappings))
+  if (index >= std::size(kDomKeyMappings))
     return nullptr;
   return kDomKeyMappings[index].string;
 }

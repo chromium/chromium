@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/half_float.h"
+
 #include <math.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/half_float.h"
 
 namespace gfx {
 
@@ -75,7 +75,7 @@ TEST_F(HalfFloatTest, SimpleTest) {
       0.0f,    1.0f,    10.0f,    1000.0f,  65503.0f,
       1.0E-3f, 1.0E-6f, 1.0E-20f, 1.0E-44f,
   };
-  for (size_t i = 0; i < base::size(test); i++) {
+  for (size_t i = 0; i < std::size(test); i++) {
     EXPECT_EQ(ConvertTruth(test[i]), Convert(test[i])) << " float = "
                                                        << test[i];
     if (test[i] != 0.0) {

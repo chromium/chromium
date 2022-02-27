@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -177,11 +176,11 @@ void LabelExample::AddCustomLabel(View* container) {
   textfield_->SetAssociatedLabel(content_label);
 
   alignment_ =
-      AddCombobox(table, u"Alignment: ", kAlignments, base::size(kAlignments),
+      AddCombobox(table, u"Alignment: ", kAlignments, std::size(kAlignments),
                   &LabelExample::AlignmentChanged);
   elide_behavior_ = AddCombobox(
       table, u"Elide Behavior: ", ExamplePreferredSizeLabel::kElideBehaviors,
-      base::size(ExamplePreferredSizeLabel::kElideBehaviors),
+      std::size(ExamplePreferredSizeLabel::kElideBehaviors),
       &LabelExample::ElidingChanged);
 
   auto* checkboxes =

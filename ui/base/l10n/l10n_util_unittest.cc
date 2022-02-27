@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/l10n/l10n_util.h"
+
 #include <stddef.h>
 
 #include <cstring>
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
@@ -26,7 +27,6 @@
 #include "testing/platform_test.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/grit/ui_base_test_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/ui_base_paths.h"
 
@@ -115,7 +115,7 @@ TEST_F(L10nUtilTest, GetAppLocale) {
       "fr", "he", "nb",          "pt-BR", "pt-PT", "zh-CN", "zh-TW",
   };
 
-  for (size_t i = 0; i < base::size(filenames); ++i) {
+  for (size_t i = 0; i < std::size(filenames); ++i) {
     base::FilePath filename = new_locale_dir.AppendASCII(
         filenames[i] + ".pak");
     base::WriteFile(filename, "");

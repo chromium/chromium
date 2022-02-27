@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/number_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -85,7 +84,7 @@ DataUnits GetByteDisplayUnits(int64_t bytes) {
     return DATA_UNITS_BYTE;
   }
 
-  int unit_index = base::size(kUnitThresholds);
+  int unit_index = std::size(kUnitThresholds);
   while (--unit_index > 0) {
     if (bytes >= kUnitThresholds[unit_index])
       break;

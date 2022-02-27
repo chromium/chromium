@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/system/sys_info.h"
@@ -109,7 +108,7 @@ constexpr const char* kCachedAtoms[] = {
 };
 
 // Make sure the sizes of enum and |kCachedAtoms| are aligned.
-static_assert(base::size(kCachedAtoms) ==
+static_assert(std::size(kCachedAtoms) ==
                   ui::DeviceDataManagerX11::DT_LAST_ENTRY,
               "kCachedAtoms count / enum mismatch");
 

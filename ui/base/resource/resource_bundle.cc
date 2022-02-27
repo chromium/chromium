@@ -132,7 +132,7 @@ bool HasBrotliHeader(base::StringPiece data) {
   // Check that the data is brotli decoded by checking for kBrotliConst in
   // header. Header added during compression at tools/grit/grit/node/base.py.
   const uint8_t* data_bytes = reinterpret_cast<const uint8_t*>(data.data());
-  static_assert(base::size(ResourceBundle::kBrotliConst) == 2,
+  static_assert(std::size(ResourceBundle::kBrotliConst) == 2,
                 "Magic number should be 2 bytes long");
   return data.size() >= ResourceBundle::kBrotliHeaderSize &&
          *data_bytes == ResourceBundle::kBrotliConst[0] &&
@@ -144,11 +144,11 @@ size_t GetBrotliDecompressSize(base::StringPiece input) {
   CHECK(input.data());
   CHECK(HasBrotliHeader(input));
   const uint8_t* raw_input = reinterpret_cast<const uint8_t*>(input.data());
-  raw_input = raw_input + base::size(ResourceBundle::kBrotliConst);
+  raw_input = raw_input + std::size(ResourceBundle::kBrotliConst);
   // Get size of uncompressed resource from header.
   uint64_t uncompress_size = 0;
   int bytes_size = static_cast<int>(ResourceBundle::kBrotliHeaderSize -
-                                    base::size(ResourceBundle::kBrotliConst));
+                                    std::size(ResourceBundle::kBrotliConst));
   for (int i = 0; i < bytes_size; i++) {
     uncompress_size |= static_cast<uint64_t>(*(raw_input + i)) << (i * 8);
   }
@@ -458,7 +458,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     base::debug::Alias(&last_error);
     wchar_t path_copy[MAX_PATH];
     base::wcslcpy(path_copy, locale_file_path.value().c_str(),
-                  base::size(path_copy));
+                  std::size(path_copy));
     base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN)
     CHECK(false);
@@ -1188,12 +1188,12 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
 // static
 bool ResourceBundle::PNGContainsFallbackMarker(const unsigned char* buf,
                                                size_t size) {
-  if (size < base::size(kPngMagic) ||
-      memcmp(buf, kPngMagic, base::size(kPngMagic)) != 0) {
+  if (size < std::size(kPngMagic) ||
+      memcmp(buf, kPngMagic, std::size(kPngMagic)) != 0) {
     // Data invalid or a JPEG.
     return false;
   }
-  size_t pos = base::size(kPngMagic);
+  size_t pos = std::size(kPngMagic);
 
   // Scan for custom chunks until we find one, find the IDAT chunk, or run out
   // of chunks.
@@ -1205,11 +1205,11 @@ bool ResourceBundle::PNGContainsFallbackMarker(const unsigned char* buf,
     if (size - pos - kPngChunkMetadataSize < length)
       break;
     if (length == 0 && memcmp(buf + pos + sizeof(uint32_t), kPngScaleChunkType,
-                              base::size(kPngScaleChunkType)) == 0) {
+                              std::size(kPngScaleChunkType)) == 0) {
       return true;
     }
     if (memcmp(buf + pos + sizeof(uint32_t), kPngDataChunkType,
-               base::size(kPngDataChunkType)) == 0) {
+               std::size(kPngDataChunkType)) == 0) {
       // Stop looking for custom chunks, any custom chunks should be before an
       // IDAT chunk.
       break;
@@ -1232,10 +1232,10 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
 bool ResourceBundle::LoadLottieBytesString(int resource_id,
                                            std::string* bytes_string) const {
   const base::StringPiece potential_lottie = GetRawDataResource(resource_id);
-  if (potential_lottie.substr(0u, base::size(kLottiePrefix)) !=
-      base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
+  if (potential_lottie.substr(0u, std::size(kLottiePrefix)) !=
+      base::StringPiece(kLottiePrefix, std::size(kLottiePrefix)))
     return false;
-  DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
+  DecompressIfNeeded(potential_lottie.substr(std::size(kLottiePrefix)),
                      bytes_string);
   return true;
 }

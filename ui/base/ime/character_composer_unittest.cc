@@ -412,7 +412,7 @@ TEST_F(CharacterComposerTest, HexadecimalComposition) {
   ExpectUnicodeKeyComposed(
       VKEY_RETURN, DomCode::ENTER, EF_NONE, '\r',
       std::u16string(kMusicalKeyboard,
-                     kMusicalKeyboard + base::size(kMusicalKeyboard)));
+                     kMusicalKeyboard + std::size(kMusicalKeyboard)));
 }
 
 TEST_F(CharacterComposerTest, HexadecimalCompositionPreedit) {

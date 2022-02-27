@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -417,7 +416,7 @@ TEST(WebInputEventTest, KeyEvent) {
       {ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::EF_ALT_DOWN),
        blink::WebInputEvent::Type::kKeyUp, blink::WebInputEvent::kAltKey}};
 
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     blink::WebKeyboardEvent web_event = MakeWebKeyboardEvent(tests[i].event);
     ASSERT_TRUE(blink::WebInputEvent::IsKeyboardEventType(web_event.GetType()));
     ASSERT_EQ(tests[i].web_type, web_event.GetType());
@@ -462,7 +461,7 @@ TEST(WebInputEventTest, MousePointerEvent) {
        gfx::Point(13, 3), gfx::Point(53, 3)},
   };
 
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     ui::MouseEvent ui_event(tests[i].ui_type, tests[i].location,
                             tests[i].screen_location, base::TimeTicks(),
                             tests[i].ui_modifiers, 0);

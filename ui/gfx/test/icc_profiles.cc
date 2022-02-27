@@ -4,8 +4,6 @@
 
 #include "ui/gfx/test/icc_profiles.h"
 
-#include "base/cxx17_backports.h"
-
 namespace gfx {
 
 namespace {
@@ -1897,42 +1895,42 @@ unsigned char overshoot_profile_data[] = {
 ICCProfile ICCProfileForTestingAdobeRGB() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(adobe_rgb_profile_data),
-      base::size(adobe_rgb_profile_data));
+      std::size(adobe_rgb_profile_data));
 }
 
 ICCProfile ICCProfileForTestingGenericRGB() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(generic_rgb_profile_data),
-      base::size(generic_rgb_profile_data));
+      std::size(generic_rgb_profile_data));
 }
 
 ICCProfile ICCProfileForTestingSRGB() {
   return ICCProfile::FromData(reinterpret_cast<const char*>(srgb_profile_data),
-                              base::size(srgb_profile_data));
+                              std::size(srgb_profile_data));
 }
 
 ICCProfile ICCProfileForTestingColorSpin() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(colorspin_profile_data),
-      base::size(colorspin_profile_data));
+      std::size(colorspin_profile_data));
 }
 
 ICCProfile ICCProfileForTestingNoAnalyticTrFn() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(no_analytic_tr_fn_profile_data),
-      base::size(no_analytic_tr_fn_profile_data));
+      std::size(no_analytic_tr_fn_profile_data));
 }
 
 ICCProfile ICCProfileForTestingA2BOnly() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(a2b_only_profile_data),
-      base::size(a2b_only_profile_data));
+      std::size(a2b_only_profile_data));
 }
 
 ICCProfile ICCProfileForTestingOvershoot() {
   return ICCProfile::FromData(
       reinterpret_cast<const char*>(overshoot_profile_data),
-      base::size(overshoot_profile_data));
+      std::size(overshoot_profile_data));
 }
 
 }  // namespace gfx

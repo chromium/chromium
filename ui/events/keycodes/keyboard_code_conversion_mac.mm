@@ -4,12 +4,11 @@
 
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
-#include <algorithm>
-
 #import <Carbon/Carbon.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/scoped_policy.h"
@@ -577,9 +576,9 @@ int MacKeyCodeForWindowsKeyCode(KeyboardCode keycode,
   from.keycode = keycode;
 
   const KeyCodeMap* ptr = std::lower_bound(
-      kKeyCodesMap, kKeyCodesMap + base::size(kKeyCodesMap), from);
+      kKeyCodesMap, kKeyCodesMap + std::size(kKeyCodesMap), from);
 
-  if (ptr >= kKeyCodesMap + base::size(kKeyCodesMap) ||
+  if (ptr >= kKeyCodesMap + std::size(kKeyCodesMap) ||
       ptr->keycode != keycode || ptr->macKeycode == -1)
     return -1;
 

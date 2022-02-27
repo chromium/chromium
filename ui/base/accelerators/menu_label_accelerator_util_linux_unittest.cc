@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -24,7 +23,7 @@ TEST(MenuLabelAcceleratorTest, ConvertAcceleratorsFromWindowsStyle) {
     { "&foo &&bar", "_foo &bar" },
     { "&foo &bar", "_foo _bar" },
   };
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::string result = ConvertAcceleratorsFromWindowsStyle(cases[i].input);
     EXPECT_EQ(cases[i].output, result);
   }
@@ -43,7 +42,7 @@ TEST(MenuLabelAcceleratorTest, RemoveWindowsStyleAccelerators) {
     { "&foo &&bar", "foo &bar" },
     { "&foo &bar", "foo bar" },
   };
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::string result = RemoveWindowsStyleAccelerators(cases[i].input);
     EXPECT_EQ(cases[i].output, result);
   }

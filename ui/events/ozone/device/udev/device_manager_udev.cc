@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -67,7 +66,7 @@ device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {
   struct udev_monitor* monitor =
       device::udev_monitor_new_from_netlink(udev, "udev");
   if (monitor) {
-    for (size_t i = 0; i < base::size(kSubsystems); ++i)
+    for (size_t i = 0; i < std::size(kSubsystems); ++i)
       device::udev_monitor_filter_add_match_subsystem_devtype(
           monitor, kSubsystems[i], NULL);
 
@@ -108,7 +107,7 @@ void DeviceManagerUdev::ScanDevices(DeviceEventObserver* observer) {
   if (!enumerate)
     return;
 
-  for (size_t i = 0; i < base::size(kSubsystems); ++i)
+  for (size_t i = 0; i < std::size(kSubsystems); ++i)
     device::udev_enumerate_add_match_subsystem(enumerate.get(), kSubsystems[i]);
   device::udev_enumerate_scan_devices(enumerate.get());
 

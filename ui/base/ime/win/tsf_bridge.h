@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "base/component_export.h"
+#include "ui/base/ime/input_method_delegate.h"
 
 namespace ui {
 class TextInputClient;

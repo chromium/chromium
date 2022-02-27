@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/text/bytes_formatting.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/text/bytes_formatting.h"
 
 namespace ui {
 
@@ -29,7 +29,7 @@ TEST(BytesFormattingTest, GetByteDisplayUnits) {
 #endif
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i)
+  for (size_t i = 0; i < std::size(cases); ++i)
     EXPECT_EQ(cases[i].expected, GetByteDisplayUnits(cases[i].bytes));
 }
 
@@ -72,7 +72,7 @@ TEST(BytesFormattingTest, FormatBytes) {
 #endif
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_EQ(base::ASCIIToUTF16(cases[i].expected),
               FormatBytesWithUnits(cases[i].bytes, cases[i].units, false));
     EXPECT_EQ(base::ASCIIToUTF16(cases[i].expected_with_units),

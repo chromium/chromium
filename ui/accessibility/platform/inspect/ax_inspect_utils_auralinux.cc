@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/pattern.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
@@ -109,8 +108,7 @@ const char* ATSPIStateToString(AtspiStateType state) {
 #endif
   };
 
-  return GetNameForPlatformConstant(state_table, base::size(state_table),
-                                    state);
+  return GetNameForPlatformConstant(state_table, std::size(state_table), state);
 }
 
 const char* ATSPIRoleToString(AtspiRole role) {
@@ -251,7 +249,7 @@ const char* ATSPIRoleToString(AtspiRole role) {
 #endif
   };
 
-  return GetNameForPlatformConstant(role_table, base::size(role_table), role);
+  return GetNameForPlatformConstant(role_table, std::size(role_table), role);
 }
 
 // This is used to ensure a standard set of AtkRole name conversions between

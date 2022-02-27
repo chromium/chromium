@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,7 +110,7 @@ TEST(StructTraitsTest, KeyEvent) {
        base::TimeTicks() + base::Microseconds(102)},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
@@ -150,7 +149,7 @@ TEST(StructTraitsTest, MouseEvent) {
        PointerDetails(EventPointerType::kMouse, kPointerIdMouse)},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
@@ -176,7 +175,7 @@ TEST(StructTraitsTest, MouseWheelEvent) {
        gfx::Vector2d(120, -15)},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
@@ -257,7 +256,7 @@ TEST(StructTraitsTest, GestureEvent) {
        pinch_update_details},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
@@ -303,7 +302,7 @@ TEST(StructTraitsTest, ScrollEvent) {
        EventMomentumPhase::END, ScrollEventPhase::kNone},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,
@@ -332,7 +331,7 @@ TEST(StructTraitsTest, PointerDetails) {
       {EventPointerType::kTouch, 1, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f},
       {EventPointerType::kEraser, 21, 22.f, 23.f, 24.f, 25.f, 26.f, 27.f},
   };
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     // Set |offset| as the constructor used above does not modify it.
     PointerDetails input(kTestData[i]);
     input.offset.set_x(i);
@@ -356,7 +355,7 @@ TEST(StructTraitsTest, TouchEvent) {
       {ET_TOUCH_MOVED, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
       {ET_TOUCH_CANCELLED, {1, 2}, base::TimeTicks::Now(), {}, EF_NONE},
   };
-  for (size_t i = 0; i < base::size(kTestData); i++) {
+  for (size_t i = 0; i < std::size(kTestData); i++) {
     std::unique_ptr<Event> expected_copy = Event::Clone(kTestData[i]);
     std::unique_ptr<Event> output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Event>(expected_copy,

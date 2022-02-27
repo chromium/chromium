@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gl/gl_image_io_surface.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gl/gl_image_io_surface.h"
 #include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
 #include "ui/gl/test/gl_image_zero_initialize_test_template.h"
@@ -53,7 +53,7 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
       corrected_color[2] = color[0];
       corrected_color[3] = color[3];
     } else {
-      memcpy(corrected_color, color, base::size(corrected_color));
+      memcpy(corrected_color, color, std::size(corrected_color));
     }
 
     for (size_t plane = 0; plane < NumberOfPlanesForLinearBufferFormat(format);

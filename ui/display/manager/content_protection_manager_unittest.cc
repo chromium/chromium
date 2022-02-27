@@ -65,7 +65,7 @@ class ContentProtectionManagerTest : public testing::Test {
     DisplayConnectionType conn_types[] = {
         DISPLAY_CONNECTION_TYPE_INTERNAL, DISPLAY_CONNECTION_TYPE_HDMI,
         DISPLAY_CONNECTION_TYPE_VGA, DISPLAY_CONNECTION_TYPE_HDMI};
-    for (size_t i = 0; i < base::size(kDisplayIds); ++i) {
+    for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
       displays_[i] = FakeDisplaySnapshot::Builder()
                          .SetId(kDisplayIds[i])
                          .SetType(conn_types[i])
@@ -93,7 +93,7 @@ class ContentProtectionManagerTest : public testing::Test {
 
  protected:
   void UpdateDisplays(size_t count) {
-    ASSERT_LE(count, base::size(displays_));
+    ASSERT_LE(count, std::size(displays_));
 
     std::vector<std::unique_ptr<DisplaySnapshot>> displays;
     for (size_t i = 0; i < count; ++i)
@@ -128,7 +128,7 @@ class ContentProtectionManagerTest : public testing::Test {
   uint32_t connection_mask_ = DISPLAY_CONNECTION_TYPE_NONE;
   uint32_t protection_mask_ = CONTENT_PROTECTION_METHOD_NONE;
 
-  std::unique_ptr<DisplaySnapshot> displays_[base::size(kDisplayIds)];
+  std::unique_ptr<DisplaySnapshot> displays_[std::size(kDisplayIds)];
 };
 
 TEST_F(ContentProtectionManagerTest, Basic) {

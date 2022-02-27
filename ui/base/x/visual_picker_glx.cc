@@ -11,7 +11,6 @@
 #include <numeric>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
 #include "ui/gfx/x/future.h"
 
@@ -116,7 +115,7 @@ x11::VisualId VisualPickerGlx::PickBestGlVisual(
     for (const uint32_t prop : static_props)
       props[prop] = configs.property_list[i++];
     const size_t extra_props =
-        (configs.num_properties - base::size(static_props)) / 2;
+        (configs.num_properties - std::size(static_props)) / 2;
     for (size_t j = 0; j < extra_props; j++) {
       const auto key = configs.property_list[i++];
       const auto value = configs.property_list[i++];

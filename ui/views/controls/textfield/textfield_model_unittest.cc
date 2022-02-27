@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2443,9 +2442,9 @@ TEST_F(TextfieldModelTest, Transpose) {
 
   TextfieldModel model(nullptr);
 
-  EXPECT_EQ(all_tests.size(), base::size(test_strings));
+  EXPECT_EQ(all_tests.size(), std::size(test_strings));
 
-  for (size_t i = 0; i < base::size(test_strings); i++) {
+  for (size_t i = 0; i < std::size(test_strings); i++) {
     for (size_t j = 0; j < all_tests[i].size(); j++) {
       SCOPED_TRACE(testing::Message() << "Testing case " << i << ", " << j
                                       << " with string " << test_strings[i]);

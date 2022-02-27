@@ -54,7 +54,7 @@ bool IsDisplaySizeValid(const gfx::Size& physical_size) {
     VLOG(1) << "Smaller than minimum display size";
     return false;
   }
-  for (size_t i = 1; i < base::size(kInvalidDisplaySizeList); ++i) {
+  for (size_t i = 1; i < std::size(kInvalidDisplaySizeList); ++i) {
     const gfx::Size size(kInvalidDisplaySizeList[i][0],
                          kInvalidDisplaySizeList[i][1]);
     if (physical_size == size) {

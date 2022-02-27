@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -120,7 +119,7 @@ void BubbleExample::ShowBubble(Button** button,
                                bool persistent,
                                const ui::Event& event) {
   static int arrow_index = 0, color_index = 0;
-  static const int count = base::size(arrows);
+  static const int count = std::size(arrows);
   arrow_index = (arrow_index + count + (event.IsShiftDown() ? -1 : 1)) % count;
   BubbleBorder::Arrow arrow = arrows[arrow_index];
   if (event.IsControlDown())
@@ -130,7 +129,7 @@ void BubbleExample::ShowBubble(Button** button,
 
   // |bubble| will be destroyed by its widget when the widget is destroyed.
   ExampleBubble* bubble = new ExampleBubble(*button, arrow);
-  bubble->set_color(colors[(color_index++) % base::size(colors)]);
+  bubble->set_color(colors[(color_index++) % std::size(colors)]);
   bubble->set_shadow(shadow);
   if (persistent)
     bubble->set_close_on_deactivate(false);

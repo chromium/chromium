@@ -90,7 +90,7 @@ bool VulkanOverlayRenderer::Initialize() {
       /* .pipelineBindPoint = */ VK_PIPELINE_BIND_POINT_GRAPHICS,
       /* .inputAttachmentCount = */ 0,
       /* .pInputAttachments = */ nullptr,
-      /* .colorAttachmentCount = */ base::size(color_attachment_references),
+      /* .colorAttachmentCount = */ std::size(color_attachment_references),
       /* .pColorAttachments = */ color_attachment_references,
       /* .pResolveAttachments = */ nullptr,
       /* .pDepthStencilAttachment = */ nullptr,
@@ -102,9 +102,9 @@ bool VulkanOverlayRenderer::Initialize() {
       /* .sType = */ VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
       /* .pNext = */ nullptr,
       /* .flags = */ 0,
-      /* .attachmentCount = */ base::size(render_pass_attachments),
+      /* .attachmentCount = */ std::size(render_pass_attachments),
       /* .pAttachments = */ render_pass_attachments,
-      /* .subpassCount = */ base::size(render_pass_subpasses),
+      /* .subpassCount = */ std::size(render_pass_subpasses),
       /* .pSubpasses = */ render_pass_subpasses,
       /* .dependencyCount = */ 0,
       /* .pDependencies = */ nullptr,
@@ -173,9 +173,9 @@ void VulkanOverlayRenderer::RenderFrame() {
 
   const Buffer& buffer = *buffers_[next_buffer_];
   next_buffer_++;
-  next_buffer_ %= base::size(buffers_);
+  next_buffer_ %= std::size(buffers_);
   ++in_use_buffers_;
-  DCHECK_LE(in_use_buffers_, base::size(buffers_));
+  DCHECK_LE(in_use_buffers_, std::size(buffers_));
 
   gpu::VulkanCommandBuffer& command_buffer = *buffer.command_buffer();
 
@@ -218,7 +218,7 @@ std::unique_ptr<gfx::GpuFence> VulkanOverlayRenderer::SubmitFence(
     VkFence fence) {
   VkResult result;
   VkFence fences[] = {fence};
-  result = vkResetFences(device_queue_->GetVulkanDevice(), base::size(fences),
+  result = vkResetFences(device_queue_->GetVulkanDevice(), std::size(fences),
                          fences);
   CHECK_EQ(result, VK_SUCCESS);
 

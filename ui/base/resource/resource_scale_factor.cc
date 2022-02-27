@@ -4,14 +4,14 @@
 
 #include "ui/base/resource/resource_scale_factor.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace ui {
 
 namespace {
 
 const float kResourceScaleFactorScales[] = {1.0f, 1.0f, 2.0f, 3.0f};
-static_assert(NUM_SCALE_FACTORS == base::size(kResourceScaleFactorScales),
+static_assert(NUM_SCALE_FACTORS == std::size(kResourceScaleFactorScales),
               "kScaleFactorScales has incorrect size");
 
 }  // namespace

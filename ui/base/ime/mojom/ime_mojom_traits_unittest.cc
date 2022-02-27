@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/ime/mojom/ime_types_mojom_traits.h"
-
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/mojom/ime_mojom_traits_test.mojom.h"
+#include "ui/base/ime/mojom/ime_types_mojom_traits.h"
 
 namespace ui {
 
@@ -68,7 +66,7 @@ TEST_F(IMEStructTraitsTest, TextInputType) {
   };
 
   mojo::Remote<mojom::IMEStructTraitsTest> remote = GetTraitsTestRemote();
-  for (size_t i = 0; i < base::size(kTextInputTypes); i++) {
+  for (size_t i = 0; i < std::size(kTextInputTypes); i++) {
     ui::TextInputType type_out;
     ASSERT_TRUE(remote->EchoTextInputType(kTextInputTypes[i], &type_out));
     EXPECT_EQ(kTextInputTypes[i], type_out);

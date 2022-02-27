@@ -18,7 +18,6 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/no_destructor.h"
@@ -1262,7 +1261,7 @@ std::wstring CreateValidFileNameFromTitle(const GURL& url,
 
   // Maximum length of title after truncation.
   static constexpr size_t kMaxFileTitleLength =
-      kMaxFileNameLength - base::size(kExtension);
+      kMaxFileNameLength - std::size(kExtension);
 
   if (validated.size() > kMaxFileTitleLength)
     validated.erase(kMaxFileTitleLength);

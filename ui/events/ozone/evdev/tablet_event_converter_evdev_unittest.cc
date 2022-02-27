@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
@@ -71,7 +70,7 @@ const ui::DeviceCapabilities kWacomIntuos5SPen = {
     /* led */ "0",
     /* ff */ "0",
     kWacomIntuos5SPenAbsAxes,
-    base::size(kWacomIntuos5SPenAbsAxes),
+    std::size(kWacomIntuos5SPenAbsAxes),
 };
 
 const ui::DeviceAbsoluteAxis EpsonBrightLink1430AbsAxes[] = {
@@ -104,7 +103,7 @@ const ui::DeviceCapabilities EpsonBrightLink1430 = {
     /* led */ "0",
     /* ff */ "0",
     EpsonBrightLink1430AbsAxes,
-    base::size(EpsonBrightLink1430AbsAxes),
+    std::size(EpsonBrightLink1430AbsAxes),
 };
 
 }  // namespace
@@ -305,7 +304,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveTopLeft) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(1u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -339,7 +338,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveTopRight) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(1u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -374,7 +373,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveBottomLeft) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(1u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -410,7 +409,7 @@ TEST_F(TabletEventConverterEvdevTest, MoveBottomRight) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(1u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -461,7 +460,7 @@ TEST_F(TabletEventConverterEvdevTest, Tap) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(3u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -520,7 +519,7 @@ TEST_F(TabletEventConverterEvdevTest, StylusButtonPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(3u, size());
 
   ui::MouseEvent* event = dispatched_event(0);
@@ -544,7 +543,7 @@ TEST_F(TabletEventConverterEvdevTest, CheckStylusFiltering) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(0u, size());
 }
 
@@ -591,7 +590,7 @@ TEST_F(TabletEventConverterEvdevTest, DigitizerPenOneSideButtonPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  dev->ProcessEvents(mock_kernel_queue, base::size(mock_kernel_queue));
+  dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(3u, size());
 
   ui::MouseEvent* event = dispatched_event(0);

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -106,7 +105,7 @@ const DeviceCapabilities kHJCGamepad = {
     /* led */ "0",
     /* ff */ "0",
     kHJCGamepadAbsAxes,
-    base::size(kHJCGamepadAbsAxes),
+    std::size(kHJCGamepadAbsAxes),
 };
 
 // Captured from Xbox 360 gamepad.
@@ -140,7 +139,7 @@ const DeviceCapabilities kXboxGamepad = {
     /* led */ "0",
     /* ff */ "107030000 0",
     kXboxGamepadAbsAxes,
-    base::size(kXboxGamepadAbsAxes),
+    std::size(kXboxGamepadAbsAxes),
 };
 
 // Captured from iBuffalo gamepad.
@@ -169,7 +168,7 @@ const DeviceCapabilities kiBuffaloGamepad = {
     /* led */ "0",
     /* ff */ "0",
     kiBuffaloGamepadAbsAxes,
-    base::size(kiBuffaloGamepadAbsAxes),
+    std::size(kiBuffaloGamepadAbsAxes),
 };
 
 // Captured from Basking.
@@ -206,7 +205,7 @@ const DeviceCapabilities kBaskingTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kBaskingTouchScreenAbsAxes,
-    base::size(kBaskingTouchScreenAbsAxes),
+    std::size(kBaskingTouchScreenAbsAxes),
 };
 
 // Captured from Pixelbook.
@@ -245,7 +244,7 @@ const DeviceCapabilities kEveTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kEveTouchScreenAbsAxes,
-    base::size(kEveTouchScreenAbsAxes),
+    std::size(kEveTouchScreenAbsAxes),
 };
 
 // Captured from Pixel Slate.
@@ -284,7 +283,7 @@ const DeviceCapabilities kNocturneTouchScreen = {
     /* led */ "0",
     /* ff */ "0",
     kNocturneTouchScreenAbsAxes,
-    base::size(kNocturneTouchScreenAbsAxes),
+    std::size(kNocturneTouchScreenAbsAxes),
 };
 
 // Captured from Chromebook Pixel.
@@ -342,7 +341,7 @@ const DeviceCapabilities kLinkTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kLinkTouchscreenAbsAxes,
-    base::size(kLinkTouchscreenAbsAxes),
+    std::size(kLinkTouchscreenAbsAxes),
 };
 
 // Fake Atmel touchscreen based on real device from Chromebook Pixel,
@@ -381,7 +380,7 @@ const DeviceCapabilities kLinkWithToolTypeTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kLinkWithToolTypeTouchscreenAbsAxes,
-    base::size(kLinkWithToolTypeTouchscreenAbsAxes),
+    std::size(kLinkWithToolTypeTouchscreenAbsAxes),
 };
 
 // Captured from Chromebook Pixel.
@@ -418,7 +417,7 @@ const DeviceCapabilities kLinkTouchpad = {
     /* led */ "0",
     /* ff */ "0",
     kLinkTouchpadAbsAxes,
-    base::size(kLinkTouchpadAbsAxes),
+    std::size(kLinkTouchpadAbsAxes),
 };
 
 const DeviceCapabilities kMorphiusPointingStick = {
@@ -491,7 +490,7 @@ const DeviceCapabilities kHpUsbKeyboard_Extra = {
     /* led */ "0",
     /* ff */ "0",
     kHpUsbKeyboard_ExtraAbsAxes,
-    base::size(kHpUsbKeyboard_ExtraAbsAxes),
+    std::size(kHpUsbKeyboard_ExtraAbsAxes),
 };
 
 // Captured from Dell MS111-L 3-Button Optical USB Mouse.
@@ -542,7 +541,7 @@ const DeviceCapabilities kMimoTouch2Touchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kMimoTouch2TouchscreenAbsAxes,
-    base::size(kMimoTouch2TouchscreenAbsAxes),
+    std::size(kMimoTouch2TouchscreenAbsAxes),
 };
 
 // Captured from Wacom Intuos Pen and Touch Small Tablet.
@@ -573,7 +572,7 @@ const DeviceCapabilities kWacomIntuosPtS_Pen = {
     /* led */ "0",
     /* ff */ "0",
     kWacomIntuosPtS_PenAbsAxes,
-    base::size(kWacomIntuosPtS_PenAbsAxes),
+    std::size(kWacomIntuosPtS_PenAbsAxes),
 };
 
 // Captured from Wacom Intuos Pen and Touch Small Tablet.
@@ -608,7 +607,7 @@ const DeviceCapabilities kWacomIntuosPtS_Finger = {
     /* led */ "0",
     /* ff */ "0",
     kWacomIntuosPtS_FingerAbsAxes,
-    base::size(kWacomIntuosPtS_FingerAbsAxes),
+    std::size(kWacomIntuosPtS_FingerAbsAxes),
 };
 
 // Captured from Logitech Wireless Touch Keyboard K400.
@@ -639,7 +638,7 @@ const DeviceCapabilities kLogitechTouchKeyboardK400 = {
     /* led */ "1f",
     /* ff */ "0",
     kLogitechTouchKeyboardK400AbsAxes,
-    base::size(kLogitechTouchKeyboardK400AbsAxes),
+    std::size(kLogitechTouchKeyboardK400AbsAxes),
 };
 
 // Captured from Elo TouchSystems 2700 touchscreen.
@@ -671,7 +670,7 @@ const DeviceCapabilities kElo_TouchSystems_2700 = {
     /* led */ "0",
     /* ff */ "0",
     kElo_TouchSystems_2700AbsAxes,
-    base::size(kElo_TouchSystems_2700AbsAxes),
+    std::size(kElo_TouchSystems_2700AbsAxes),
 };
 
 // Captured from Intel reference design: "Wilson Beach".
@@ -702,7 +701,7 @@ const DeviceCapabilities kWilsonBeachActiveStylus = {
     /* led */ "0",
     /* ff */ "0",
     kWilsonBeachActiveStylusAbsAxes,
-    base::size(kWilsonBeachActiveStylusAbsAxes),
+    std::size(kWilsonBeachActiveStylusAbsAxes),
 };
 
 // Captured from Eve Chromebook
@@ -732,7 +731,7 @@ const DeviceCapabilities kEveStylus = {
     /* led */ "0",
     /* ff */ "0",
     kEveStylusAbsAxes,
-    base::size(kEveStylusAbsAxes),
+    std::size(kEveStylusAbsAxes),
 };
 
 // Captured from Pixel Slate
@@ -762,7 +761,7 @@ const DeviceCapabilities kNocturneStylus = {
     /* led */ "0",
     /* ff */ "0",
     kNocturneStylusAbsAxes,
-    base::size(kNocturneStylusAbsAxes),
+    std::size(kNocturneStylusAbsAxes),
 };
 
 const DeviceCapabilities kHammerKeyboard = {
@@ -823,7 +822,7 @@ const DeviceCapabilities kHammerTouchpad = {
     /* led */ "0",
     /* ff */ "0",
     kHammerTouchpadAbsAxes,
-    base::size(kHammerTouchpadAbsAxes),
+    std::size(kHammerTouchpadAbsAxes),
 };
 
 // Captured from Logitech Tap touch controller
@@ -852,7 +851,7 @@ const DeviceCapabilities kIlitekTP_Mouse = {
     /* led */ "0",
     /* ff */ "0",
     kIlitekTP_Mouse_AbsAxes,
-    base::size(kIlitekTP_Mouse_AbsAxes),
+    std::size(kIlitekTP_Mouse_AbsAxes),
 };
 const DeviceAbsoluteAxis kIlitekTPAbsAxes[] = {
     {ABS_X, {0, 0, 16384, 0, 0, 76}},
@@ -883,7 +882,7 @@ const DeviceCapabilities kIlitekTP = {
     /* led */ "0",
     /* ff */ "0",
     kIlitekTPAbsAxes,
-    base::size(kIlitekTPAbsAxes),
+    std::size(kIlitekTPAbsAxes),
 };
 
 const DeviceCapabilities kSideVolumeButton = {
@@ -943,7 +942,7 @@ const DeviceCapabilities kKohakuTouchscreen = {
     /* led */ "0",
     /* ff */ "0",
     kKohakuTouchscreenAxes,
-    base::size(kKohakuTouchscreenAxes),
+    std::size(kKohakuTouchscreenAxes),
 };
 
 const DeviceAbsoluteAxis kKohakuStylusAxes[] = {
@@ -976,7 +975,7 @@ const DeviceCapabilities kKohakuStylus = {
     /* led */ "0",
     /* ff */ "0",
     kKohakuStylusAxes,
-    base::size(kKohakuStylusAxes),
+    std::size(kKohakuStylusAxes),
 };
 
 const DeviceAbsoluteAxis kXboxEliteAxes[] = {
@@ -1004,7 +1003,9 @@ const DeviceCapabilities kXboxElite = {
     /* version */ "0903",
     /* prop */ "0",
     /* ev */ "10001b",
-    /* key */ "4000000 0 7fff000000000000 1000000000000 100040000000 e080ffdf01cfffff fffffffffffffffe",
+    /* key */
+    "4000000 0 7fff000000000000 1000000000000 100040000000 e080ffdf01cfffff "
+    "fffffffffffffffe",
     /* rel */ "0",
     /* abs */ "30627",
     /* msc */ "10",
@@ -1012,7 +1013,7 @@ const DeviceCapabilities kXboxElite = {
     /* led */ "0",
     /* ff */ "0",
     kXboxEliteAxes,
-    base::size(kXboxEliteAxes),
+    std::size(kXboxEliteAxes),
 };
 const DeviceCapabilities kDellActivePenButton = {
     /* path */
@@ -1065,7 +1066,7 @@ const DeviceCapabilities kDrallionStylus = {
     /* led */ "0",
     /* ff */ "0",
     kDrallionStylusAxes,
-    base::size(kDrallionStylusAxes),
+    std::size(kDrallionStylusAxes),
 };
 
 const DeviceCapabilities kDrallionKeyboard = {
@@ -1303,7 +1304,7 @@ const DeviceCapabilities kMicrosoftBluetoothNumberPad = {
     /* led */ "7",
     /* ff */ "0",
     kMicrosoftBluetoothNumberPadAbsAxes,
-    base::size(kMicrosoftBluetoothNumberPadAbsAxes),
+    std::size(kMicrosoftBluetoothNumberPadAbsAxes),
 };
 
 // Captured from Dell Latitude E6510, which report non valid resolutions and is
@@ -1336,7 +1337,7 @@ const ui::DeviceCapabilities kDellLatitudeE6510Touchpad = {
     /* led */ "0",
     /* ff */ "0",
     kDellLatitudeE6510TouchpadAbsAxes,
-    base::size(kDellLatitudeE6510TouchpadAbsAxes),
+    std::size(kDellLatitudeE6510TouchpadAbsAxes),
 };
 
 // Captured from HP ProBook 6560b. Touchpad that is semi-multitouch.
@@ -1369,7 +1370,7 @@ const ui::DeviceCapabilities kHPProBook6560bTouchpad = {
     /* led */ "0",
     /* ff */ "0",
     kHPProBook6560bTouchpadAbsAxes,
-    base::size(kHPProBook6560bTouchpadAbsAxes),
+    std::size(kHPProBook6560bTouchpadAbsAxes),
 };
 
 const DeviceCapabilities kJinlonKeyboard = {
@@ -1435,7 +1436,7 @@ const DeviceCapabilities kRedrixTouchpad = {
     /* led */ "0",
     /* ff */ "8000 0",
     kRedrixTouchpadAxes,
-    base::size(kRedrixTouchpadAxes),
+    std::size(kRedrixTouchpadAxes),
 };
 
 // NB: Please use the capture_device_capabilities.py script to add more

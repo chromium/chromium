@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/shadow_value.h"
+
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/shadow_value.h"
 
 namespace gfx {
 
@@ -58,7 +58,7 @@ TEST(ShadowValueTest, GetMargin) {
       },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     Insets margin = ShadowValue::GetMargin(
         ShadowValues(kTestCases[i].shadows,
                      kTestCases[i].shadows + kTestCases[i].shadow_count));

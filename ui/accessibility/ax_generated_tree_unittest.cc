@@ -6,7 +6,6 @@
 #include <numeric>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -136,7 +135,7 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorNoPermutations) {
   // clang-format on
 
   int n = generator.UniqueTreeCount();
-  ASSERT_EQ(static_cast<int>(base::size(EXPECTED_TREES)), n);
+  ASSERT_EQ(static_cast<int>(std::size(EXPECTED_TREES)), n);
 
   for (int i = 0; i < n; ++i) {
     AXTree tree;
@@ -208,7 +207,7 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorWithPermutations) {
   // clang-format on
 
   int n = generator.UniqueTreeCount();
-  ASSERT_EQ(static_cast<int>(base::size(EXPECTED_TREES)), n);
+  ASSERT_EQ(static_cast<int>(std::size(EXPECTED_TREES)), n);
 
   for (int i = 0; i < n; i++) {
     AXTree tree;

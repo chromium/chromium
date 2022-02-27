@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -1365,7 +1364,7 @@ TEST_F(TextfieldTest, DeletionWithSelection) {
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(2, 6));
@@ -1392,7 +1391,7 @@ TEST_F(TextfieldTest, DeletionWithMultipleSelections) {
   InitTextfield();
   // [Ctrl] ([Alt] on Mac) + [Delete]/[Backspace] should delete the active
   // selection, regardless of [Shift].
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     // Select: o[ne] [two] th[re]e
@@ -1420,7 +1419,7 @@ TEST_F(TextfieldTest, DeletionWithEditCommands) {
   };
 
   InitTextfield();
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     textfield_->SetText(u"one two three");
     textfield_->SetSelectedRange(gfx::Range(4));
@@ -3118,7 +3117,7 @@ TEST_F(TextfieldTest, GetCompositionCharacterBounds_ComplexText) {
       // U+0020 SPACE
       0x0020,
   };
-  const size_t kUtf16CharsCount = base::size(kUtf16Chars);
+  const size_t kUtf16CharsCount = std::size(kUtf16Chars);
 
   ui::CompositionText composition;
   composition.text.assign(kUtf16Chars, kUtf16Chars + kUtf16CharsCount);

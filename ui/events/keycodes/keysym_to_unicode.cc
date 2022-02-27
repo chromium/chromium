@@ -8,7 +8,6 @@
 
 #include <unordered_map>
 
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
@@ -813,8 +812,8 @@ const struct {
 class KeySymToUnicode {
  public:
   KeySymToUnicode()
-      : keysym_to_unicode_map_(base::size(g_keysym_to_unicode_table)) {
-    for (size_t i = 0; i < base::size(g_keysym_to_unicode_table); ++i) {
+      : keysym_to_unicode_map_(std::size(g_keysym_to_unicode_table)) {
+    for (size_t i = 0; i < std::size(g_keysym_to_unicode_table); ++i) {
       keysym_to_unicode_map_[g_keysym_to_unicode_table[i].keysym] =
           g_keysym_to_unicode_table[i].unicode;
     }

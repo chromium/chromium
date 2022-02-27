@@ -55,7 +55,7 @@ std::string GetBitmapDataUrl(const SkBitmap& bitmap) {
 
 std::string GetPngDataUrl(const unsigned char* data, size_t size) {
   constexpr char kPrefix[] = "data:image/png;base64,";
-  constexpr size_t kPrefixLen = base::size(kPrefix) - 1;
+  constexpr size_t kPrefixLen = std::size(kPrefix) - 1;
   // Includes room for trailing null byte.
   size_t max_encode_len = modp_b64_encode_len(size);
   std::string output;

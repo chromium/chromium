@@ -10,7 +10,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -300,7 +299,7 @@ class DisplayConfiguratorTest : public testing::Test {
   // output-change events to |configurator_| and triggers the configure
   // timeout if one was scheduled.
   void UpdateOutputs(size_t num_outputs, bool send_events) {
-    ASSERT_LE(num_outputs, base::size(outputs_));
+    ASSERT_LE(num_outputs, std::size(outputs_));
     std::vector<DisplaySnapshot*> outputs;
     for (size_t i = 0; i < num_outputs; ++i)
       outputs.push_back(outputs_[i].get());

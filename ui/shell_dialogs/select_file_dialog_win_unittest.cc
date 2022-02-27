@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/shell_dialogs/select_file_dialog_win.h"
+
 #include <stddef.h>
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -23,7 +24,6 @@
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/shell_dialogs/select_file_dialog_win.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -38,7 +38,7 @@ constexpr wchar_t kSaveFileDefaultTitle[] = L"Save As";
 // Returns the title of |window|.
 std::wstring GetWindowTitle(HWND window) {
   wchar_t buffer[256];
-  UINT count = ::GetWindowText(window, buffer, base::size(buffer));
+  UINT count = ::GetWindowText(window, buffer, std::size(buffer));
   return std::wstring(buffer, count);
 }
 
@@ -123,7 +123,7 @@ std::wstring GetDialogItemText(HWND window, int dialog_item_id) {
 
   wchar_t buffer[256];
   UINT count =
-      ::GetDlgItemText(window, dialog_item_id, buffer, base::size(buffer));
+      ::GetDlgItemText(window, dialog_item_id, buffer, std::size(buffer));
   return std::wstring(buffer, count);
 }
 
@@ -226,7 +226,7 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
           ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE, kSelectFileDefaultTitle,
       }};
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
 
     const auto& test_case = kTestCases[i];

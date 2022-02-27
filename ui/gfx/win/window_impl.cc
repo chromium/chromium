@@ -8,7 +8,6 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -145,7 +144,7 @@ ATOM ClassRegistrar::RetrieveClassAtom(const ClassInfo& class_info) {
     auto last_error = ::GetLastError();
     base::debug::Alias(&last_error);
     wchar_t name_copy[64];
-    base::wcslcpy(name_copy, name.c_str(), base::size(name_copy));
+    base::wcslcpy(name_copy, name.c_str(), std::size(name_copy));
     base::debug::Alias(name_copy);
     PCHECK(atom);
   }

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -42,7 +41,7 @@ TEST(ShellDialogsWin, AppendExtensionIfNeeded) {
       {L"sample.unknown", L"*.*", L"", L"sample.unknown"},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
 
     EXPECT_EQ(std::wstring(test_cases[i].expected_filename),

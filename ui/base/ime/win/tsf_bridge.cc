@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/ime/win/tsf_bridge.h"
+
 #include <msctf.h>
 
 #include <map>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -18,7 +19,6 @@
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/win/mock_tsf_bridge.h"
-#include "ui/base/ime/win/tsf_bridge.h"
 #include "ui/base/ime/win/tsf_text_store.h"
 #include "ui/base/ui_base_features.h"
 
@@ -493,7 +493,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
       TEXT_INPUT_TYPE_EMAIL,     TEXT_INPUT_TYPE_NUMBER,
       TEXT_INPUT_TYPE_TELEPHONE, TEXT_INPUT_TYPE_URL,
   };
-  for (size_t i = 0; i < base::size(kTextInputTypes); ++i) {
+  for (size_t i = 0; i < std::size(kTextInputTypes); ++i) {
     const TextInputType input_type = kTextInputTypes[i];
     Microsoft::WRL::ComPtr<ITfContext> context;
     Microsoft::WRL::ComPtr<ITfDocumentMgr> document_manager;

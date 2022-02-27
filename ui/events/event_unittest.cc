@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -318,7 +317,7 @@ TEST(EventTest, KeyEvent) {
       {VKEY_OEM_3, EF_SHIFT_DOWN, '~'},
   };
 
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     KeyEvent key(ET_KEY_PRESSED, kTestData[i].key_code, kTestData[i].flags);
     EXPECT_EQ(kTestData[i].character, key.GetCharacter())
         << " Index:" << i << " key_code:" << kTestData[i].key_code;

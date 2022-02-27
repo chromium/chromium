@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
@@ -90,8 +89,8 @@ bool XGlobalShortcutListener::RegisterAccelerator(KeyboardCode key_code,
   // Because XGrabKey only works on the exact modifiers mask, we should register
   // our hot keys with modifiers that we want to ignore, including Num lock,
   // Caps lock, Scroll lock. See comment about |kModifiersMasks|.
-  x11::Future<void> grab_requests[base::size(kModifiersMasks)];
-  for (size_t i = 0; i < base::size(kModifiersMasks); i++) {
+  x11::Future<void> grab_requests[std::size(kModifiersMasks)];
+  for (size_t i = 0; i < std::size(kModifiersMasks); i++) {
     grab_requests[i] = connection_->GrabKey(
         {false, x_root_window_, modifiers | kModifiersMasks[i], keycode,
          x11::GrabMode::Async, x11::GrabMode::Async});

@@ -222,7 +222,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
     base::UmaHistogramEnumeration(
         kBlockZeroSerialNumberTypeMetric,
         GetSerialNumberType(serial_number_bytes,
-                            base::size(serial_number_bytes)));
+                            std::size(serial_number_bytes)));
   }
 
   const uint32_t serial_number =
@@ -588,7 +588,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           const std::bitset<kMaxNumColorimetryEntries>
               supported_primaries_bitfield(edid[data_offset + 2]);
           static_assert(
-              kMaxNumColorimetryEntries == base::size(kPrimaryIDMap),
+              kMaxNumColorimetryEntries == std::size(kPrimaryIDMap),
               "kPrimaryIDMap should describe all possible colorimetry entries");
           for (size_t entry = 0; entry < kMaxNumColorimetryEntries; ++entry) {
             if (supported_primaries_bitfield[entry])
@@ -602,7 +602,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           const std::bitset<kMaxNumHDRStaticMedatataEntries>
               supported_eotfs_bitfield(edid[data_offset + 2]);
           static_assert(
-              kMaxNumHDRStaticMedatataEntries == base::size(kTransferIDMap),
+              kMaxNumHDRStaticMedatataEntries == std::size(kTransferIDMap),
               "kTransferIDMap should describe all possible transfer entries");
           for (size_t entry = 0; entry < kMaxNumHDRStaticMedatataEntries;
                ++entry) {

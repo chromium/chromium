@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
@@ -187,7 +186,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenSingleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());
@@ -211,7 +210,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenDoubleClick) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(2u, size());
@@ -243,7 +242,7 @@ TEST_F(StylusButtonEventConverterEvdevTest, DellActivePenLongPress) {
       {{0, 0}, EV_SYN, SYN_REPORT, 0},
   };
 
-  for (unsigned i = 0; i < base::size(mock_kernel_queue); ++i) {
+  for (unsigned i = 0; i < std::size(mock_kernel_queue); ++i) {
     dev->ProcessEvent(mock_kernel_queue[i]);
   }
   EXPECT_EQ(0u, size());

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -96,23 +95,23 @@ int ComputeDisplayResolutionEnum(const DisplayMode* mode) {
   const gfx::Size size = mode->size();
   uint32_t width_idx = 0;
   uint32_t height_idx = 0;
-  for (; width_idx < base::size(kDisplayResolutionSamples); width_idx++) {
+  for (; width_idx < std::size(kDisplayResolutionSamples); width_idx++) {
     if (size.width() <= kDisplayResolutionSamples[width_idx])
       break;
   }
-  for (; height_idx < base::size(kDisplayResolutionSamples); height_idx++) {
+  for (; height_idx < std::size(kDisplayResolutionSamples); height_idx++) {
     if (size.height() <= kDisplayResolutionSamples[height_idx])
       break;
   }
 
-  if (width_idx == base::size(kDisplayResolutionSamples) ||
-      height_idx == base::size(kDisplayResolutionSamples))
-    return base::size(kDisplayResolutionSamples) *
-               base::size(kDisplayResolutionSamples) +
+  if (width_idx == std::size(kDisplayResolutionSamples) ||
+      height_idx == std::size(kDisplayResolutionSamples))
+    return std::size(kDisplayResolutionSamples) *
+               std::size(kDisplayResolutionSamples) +
            1;  // Overflow bucket
   // Computes the index of DisplayResolution, starting from 1, since 0 is used
   // when powering off the display.
-  return width_idx * base::size(kDisplayResolutionSamples) + height_idx + 1;
+  return width_idx * std::size(kDisplayResolutionSamples) + height_idx + 1;
 }
 
 void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
@@ -123,8 +122,8 @@ void UpdateResolutionAndRefreshRateUma(const DisplayConfigureRequest& request) {
       internal ? "ConfigureDisplays.Internal.Modeset.Resolution"
                : "ConfigureDisplays.External.Modeset.Resolution",
       ComputeDisplayResolutionEnum(request.mode),
-      base::size(kDisplayResolutionSamples) *
-              base::size(kDisplayResolutionSamples) +
+      std::size(kDisplayResolutionSamples) *
+              std::size(kDisplayResolutionSamples) +
           2);
 
   base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(

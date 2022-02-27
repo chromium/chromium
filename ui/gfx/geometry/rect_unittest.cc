@@ -5,9 +5,9 @@
 #include "ui/gfx/geometry/rect.h"
 
 #include <stddef.h>
+
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
@@ -44,7 +44,7 @@ TEST(RectTest, Contains) {
     {0, 0, -10, -10, 0, 0, false},
   #endif
   };
-  for (size_t i = 0; i < base::size(contains_cases); ++i) {
+  for (size_t i = 0; i < std::size(contains_cases); ++i) {
     const ContainsCase& value = contains_cases[i];
     Rect rect(value.rect_x, value.rect_y, value.rect_width, value.rect_height);
     EXPECT_EQ(value.contained, rect.Contains(value.point_x, value.point_y));
@@ -74,7 +74,7 @@ TEST(RectTest, Intersects) {
     { 10, 10, 10, 10, 20, 15, 10, 10, false },
     { 10, 10, 10, 10, 21, 15, 10, 10, false }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     EXPECT_EQ(tests[i].intersects, r1.Intersects(r2));
@@ -116,7 +116,7 @@ TEST(RectTest, Intersect) {
       0, 0, 2, 2,
       0, 0, 0, 0 }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
@@ -207,7 +207,7 @@ TEST(RectTest, AdjustToFit) {
       0, 0, 3, 3,
       2, 2, 1, 1 }
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
@@ -506,7 +506,7 @@ TEST(RectTest, BoundingRect) {
     { Point(-4, 6), Point(6, -4), Rect(-4, -4, 10, 10) },
   };
 
-  for (size_t i = 0; i < base::size(int_tests); ++i) {
+  for (size_t i = 0; i < std::size(int_tests); ++i) {
     Rect actual = BoundingRect(int_tests[i].a, int_tests[i].b);
     EXPECT_EQ(int_tests[i].expected, actual);
   }

@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/devices/x11/xinput_util.h"
@@ -234,7 +233,7 @@ void ScopedXI2Event::InitScrollEvent(int deviceid,
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_offset_ordinal),
       Valuator(DeviceDataManagerX11::DT_CMT_FINGER_COUNT, finger_count)};
   SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + base::size(valuators)));
+      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
 }
 
 void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
@@ -254,7 +253,7 @@ void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_velocity_ordinal)};
 
   SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + base::size(valuators)));
+      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
 }
 
 void ScopedXI2Event::InitTouchEvent(int deviceid,

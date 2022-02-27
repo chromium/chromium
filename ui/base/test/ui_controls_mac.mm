@@ -5,11 +5,11 @@
 #include "ui/base/test/ui_controls.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/task/current_thread.h"
@@ -195,7 +195,7 @@ NSWindow* WindowAtCurrentMouseLocation() {
   NSUInteger result = 0;
   const int buttons[3] = {
       ui_controls::LEFT, ui_controls::RIGHT, ui_controls::MIDDLE};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     if (g_mouse_button_down[buttons[i]])
       result |= (1 << i);
   }

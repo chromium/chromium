@@ -8,12 +8,10 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_local.h"
-
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -72,11 +70,11 @@ int ReplaceAltGraphWithControlAndAlt(int flags) {
              : flags;
 }
 
-const int kModifierFlagsCombinations = (1 << base::size(modifier_flags)) - 1;
+const int kModifierFlagsCombinations = (1 << std::size(modifier_flags)) - 1;
 
 int GetModifierFlags(int combination) {
   int flags = EF_NONE;
-  for (size_t i = 0; i < base::size(modifier_flags); ++i) {
+  for (size_t i = 0; i < std::size(modifier_flags); ++i) {
     if (combination & (1 << i))
       flags |= modifier_flags[i];
   }
@@ -391,14 +389,14 @@ void PlatformKeyMap::UpdateLayout(HKL layout) {
     for (int key_code = 0; key_code <= 0xFF; ++key_code) {
       wchar_t translated_chars[5];
       int rv = ::ToUnicodeEx(key_code, 0, keyboard_state, translated_chars,
-                             base::size(translated_chars), 0, keyboard_layout_);
+                             std::size(translated_chars), 0, keyboard_layout_);
 
       if (rv == -1) {
         // Dead key, injecting VK_SPACE to get character representation.
         BYTE empty_state[256];
         memset(empty_state, 0, sizeof(empty_state));
         rv = ::ToUnicodeEx(VK_SPACE, 0, empty_state, translated_chars,
-                           base::size(translated_chars), 0, keyboard_layout_);
+                           std::size(translated_chars), 0, keyboard_layout_);
         // Expecting a dead key character (not followed by a space).
         if (rv == 1) {
           printable_keycode_to_key_[std::make_pair(static_cast<int>(key_code),

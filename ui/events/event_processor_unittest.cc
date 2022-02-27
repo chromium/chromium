@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -412,7 +411,7 @@ TEST_F(EventProcessorTest, HandlerSequence) {
 
   std::string expected[] = { "PreR", "PreC", "PreG", "G", "PostG", "PostC",
       "PostR", "PreR", "PreC", "C", "PostC", "PostR", "PreR", "R", "PostR" };
-  EXPECT_EQ(std::vector<std::string>(expected, expected + base::size(expected)),
+  EXPECT_EQ(std::vector<std::string>(expected, expected + std::size(expected)),
             recorder);
 
   root()->RemovePreTargetHandler(&pre_root);

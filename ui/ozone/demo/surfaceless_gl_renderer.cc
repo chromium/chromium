@@ -134,11 +134,11 @@ SurfacelessGlRenderer::~SurfacelessGlRenderer() {
   // Need to make current when deleting the framebuffer resources allocated in
   // the buffers.
   context_->MakeCurrent(gl_surface_.get());
-  for (size_t i = 0; i < base::size(buffers_); ++i)
+  for (size_t i = 0; i < std::size(buffers_); ++i)
     buffers_[i].reset();
 
   for (size_t i = 0; i < kMaxLayers; ++i) {
-    for (size_t j = 0; j < base::size(overlay_buffers_[i]); ++j)
+    for (size_t j = 0; j < std::size(overlay_buffers_[i]); ++j)
       overlay_buffers_[i][j].reset();
   }
 }
@@ -164,7 +164,7 @@ bool SurfacelessGlRenderer::Initialize() {
   else
     primary_plane_rect_ = gfx::Rect(size_);
 
-  for (size_t i = 0; i < base::size(buffers_); ++i) {
+  for (size_t i = 0; i < std::size(buffers_); ++i) {
     buffers_[i] = std::make_unique<BufferWrapper>();
     if (!buffers_[i]->Initialize(widget_, primary_plane_rect_.size()))
       return false;
@@ -180,7 +180,7 @@ bool SurfacelessGlRenderer::Initialize() {
     const gfx::Size overlay_size =
         gfx::Size(size_.width() / 8, size_.height() / 8);
     for (size_t i = 0; i < overlay_cnt_; ++i) {
-      for (size_t j = 0; j < base::size(overlay_buffers_[i]); ++j) {
+      for (size_t j = 0; j < std::size(overlay_buffers_[i]); ++j) {
         overlay_buffers_[i][j] = std::make_unique<BufferWrapper>();
         overlay_buffers_[i][j]->Initialize(gfx::kNullAcceleratedWidget,
                                            overlay_size);
@@ -302,7 +302,7 @@ void SurfacelessGlRenderer::PostRenderFrameTask(
 
   switch (result.swap_result) {
     case gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS:
-      for (size_t i = 0; i < base::size(buffers_); ++i) {
+      for (size_t i = 0; i < std::size(buffers_); ++i) {
         buffers_[i] = std::make_unique<BufferWrapper>();
         if (!buffers_[i]->Initialize(widget_, primary_plane_rect_.size()))
           LOG(FATAL) << "Failed to recreate buffer";

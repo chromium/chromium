@@ -4,7 +4,6 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
-#include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,7 +31,7 @@ const int kAcceleratorModifiers[] = {EF_SHIFT_DOWN, EF_CONTROL_DOWN,
 // kAcceleratorModifiers used to determine which flags are set.
 int BuildAcceleratorModifier(int id) {
   int result = 0;
-  for (size_t i = 0; i < base::size(kAcceleratorModifiers); ++i) {
+  for (size_t i = 0; i < std::size(kAcceleratorModifiers); ++i) {
     if (((1 << i) & id) != 0)
       result |= kAcceleratorModifiers[i];
   }
@@ -130,7 +129,7 @@ TEST_F(AcceleratorManagerTest, Process) {
   TestAcceleratorTarget target;
 
   // Test all cases of possible modifiers.
-  for (size_t i = 0; i < (1 << base::size(kAcceleratorModifiers)); ++i) {
+  for (size_t i = 0; i < (1 << std::size(kAcceleratorModifiers)); ++i) {
     const int modifiers = BuildAcceleratorModifier(i);
     Accelerator accelerator(GetAccelerator(VKEY_A, modifiers));
     manager_.Register({accelerator}, AcceleratorManager::kNormalPriority,
@@ -152,7 +151,7 @@ TEST_F(AcceleratorManagerTest, Process) {
     EXPECT_FALSE(manager_.Process(GetAccelerator(VKEY_SHIFT, modifiers)))
         << i;  // different vkey
 
-    for (size_t test_i = 0; test_i < (1 << base::size(kAcceleratorModifiers));
+    for (size_t test_i = 0; test_i < (1 << std::size(kAcceleratorModifiers));
          ++test_i) {
       if (test_i == i)
         continue;

@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <string>
 
 #include "base/base_paths.h"
 #include "base/big_endian.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -78,11 +78,11 @@ gfx::ImageSkia ParseLottieAsStillImageForTesting(
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
 void AddCustomChunk(const base::StringPiece& custom_chunk,
                     std::vector<unsigned char>* bitmap_data) {
-  EXPECT_LT(base::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
+  EXPECT_LT(std::size(kPngMagic) + kPngChunkMetadataSize, bitmap_data->size());
   EXPECT_TRUE(std::equal(bitmap_data->begin(),
-                         bitmap_data->begin() + base::size(kPngMagic),
+                         bitmap_data->begin() + std::size(kPngMagic),
                          kPngMagic));
-  auto ihdr_start = bitmap_data->begin() + base::size(kPngMagic);
+  auto ihdr_start = bitmap_data->begin() + std::size(kPngMagic);
   uint8_t ihdr_length_data[sizeof(uint32_t)];
   for (size_t i = 0; i < sizeof(uint32_t); ++i)
     ihdr_length_data[i] = *(ihdr_start + i);
@@ -641,7 +641,7 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
   CreateDataPackWithSingleBitmap(
       data_2x_path, 10,
       base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        base::size(kPngScaleChunk)));
+                        std::size(kPngScaleChunk)));
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();

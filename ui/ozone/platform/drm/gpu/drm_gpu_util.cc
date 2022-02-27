@@ -75,8 +75,8 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix) {
 
   ScopedDrmColorCtmPtr ctm(
       static_cast<drm_color_ctm*>(malloc(sizeof(drm_color_ctm))));
-  DCHECK_EQ(color_matrix.size(), base::size(ctm->matrix));
-  for (size_t i = 0; i < base::size(ctm->matrix); ++i) {
+  DCHECK_EQ(color_matrix.size(), std::size(ctm->matrix));
+  for (size_t i = 0; i < std::size(ctm->matrix); ++i) {
     if (color_matrix[i] < 0) {
       ctm->matrix[i] = static_cast<uint64_t>(-color_matrix[i] * (1ull << 32));
       ctm->matrix[i] |= static_cast<uint64_t>(1) << 63;

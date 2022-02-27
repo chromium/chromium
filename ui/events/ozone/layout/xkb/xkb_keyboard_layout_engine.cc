@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -511,64 +510,64 @@ struct PrintableMultiEntry {
 
 // Entries are ordered by character value.
 const PrintableMultiEntry kMultiMap[] = {
-    {0x0021, kU0021, base::size(kU0021)},  // exclamation mark
-    {0x0022, kU0022, base::size(kU0022)},  // quotation mark
-    {0x0023, kU0023, base::size(kU0023)},  // number sign
-    {0x0024, kU0024, base::size(kU0024)},  // dollar sign
-    {0x0027, kU0027, base::size(kU0027)},  // apostrophe
-    {0x0028, kU0028, base::size(kU0028)},  // left parenthesis
-    {0x0029, kU0029, base::size(kU0029)},  // right parenthesis
-    {0x002A, kU002A, base::size(kU002A)},  // asterisk
-    {0x002B, kU002B, base::size(kU002B)},  // plus sign
-    {0x002C, kU002C, base::size(kU002C)},  // comma
-    {0x002D, kU002D, base::size(kU002D)},  // hyphen-minus
-    {0x002E, kU002E, base::size(kU002E)},  // full stop
-    {0x002F, kU002F, base::size(kU002F)},  // solidus
-    {0x003A, kU003A, base::size(kU003A)},  // colon
-    {0x003B, kU003B, base::size(kU003B)},  // semicolon
-    {0x003D, kU003D, base::size(kU003D)},  // equals sign
-    {0x003F, kU003F, base::size(kU003F)},  // question mark
-    {0x0040, kU0040, base::size(kU0040)},  // commercial at
-    {0x005B, kU005B, base::size(kU005B)},  // left square bracket
-    {0x005C, kU005C, base::size(kU005C)},  // reverse solidus
-    {0x005D, kU005D, base::size(kU005D)},  // right square bracket
-    {0x005F, kU005F, base::size(kU005F)},  // low line
-    {0x0060, kU0060, base::size(kU0060)},  // grave accent
-    {0x00A7, kU00A7, base::size(kU00A7)},  // section sign
-    {0x00AB, kU00AB, base::size(kU00AB)},  // left double angle quotation mark
-    {0x00B0, kU00B0, base::size(kU00B0)},  // degree sign
-    {0x00BA, kU00BA, base::size(kU00BA)},  // masculine ordinal indicator
-    {0x00E0, kU00E0, base::size(kU00E0)},  // a grave
-    {0x00E1, kU00E1, base::size(kU00E1)},  // a acute
-    {0x00E2, kU00E2, base::size(kU00E2)},  // a circumflex
-    {0x00E4, kU00E4, base::size(kU00E4)},  // a diaeresis
-    {0x00E6, kU00E6, base::size(kU00E6)},  // ae
-    {0x00E7, kU00E7, base::size(kU00E7)},  // c cedilla
-    {0x00E8, kU00E8, base::size(kU00E8)},  // e grave
-    {0x00E9, kU00E9, base::size(kU00E9)},  // e acute
-    {0x00ED, kU00ED, base::size(kU00ED)},  // i acute
-    {0x00F0, kU00F0, base::size(kU00F0)},  // eth
-    {0x00F3, kU00F3, base::size(kU00F3)},  // o acute
-    {0x00F4, kU00F4, base::size(kU00F4)},  // o circumflex
-    {0x00F6, kU00F6, base::size(kU00F6)},  // o diaeresis
-    {0x00F8, kU00F8, base::size(kU00F8)},  // o stroke
-    {0x00F9, kU00F9, base::size(kU00F9)},  // u grave
-    {0x00FA, kU00FA, base::size(kU00FA)},  // u acute
-    {0x00FC, kU00FC, base::size(kU00FC)},  // u diaeresis
-    {0x0103, kU0103, base::size(kU0103)},  // a breve
-    {0x0105, kU0105, base::size(kU0105)},  // a ogonek
-    {0x010D, kU010D, base::size(kU010D)},  // c caron
-    {0x0111, kU0111, base::size(kU0111)},  // d stroke
-    {0x0117, kU0117, base::size(kU0117)},  // e dot above
-    {0x0119, kU0119, base::size(kU0119)},  // e ogonek
-    {0x012F, kU012F, base::size(kU012F)},  // i ogonek
-    {0x0142, kU0142, base::size(kU0142)},  // l stroke
-    {0x015F, kU015F, base::size(kU015F)},  // s cedilla
-    {0x0161, kU0161, base::size(kU0161)},  // s caron
-    {0x016B, kU016B, base::size(kU016B)},  // u macron
-    {0x0173, kU0173, base::size(kU0173)},  // u ogonek
-    {0x017C, kU017C, base::size(kU017C)},  // z dot above
-    {0x017E, kU017E, base::size(kU017E)},  // z caron
+    {0x0021, kU0021, std::size(kU0021)},  // exclamation mark
+    {0x0022, kU0022, std::size(kU0022)},  // quotation mark
+    {0x0023, kU0023, std::size(kU0023)},  // number sign
+    {0x0024, kU0024, std::size(kU0024)},  // dollar sign
+    {0x0027, kU0027, std::size(kU0027)},  // apostrophe
+    {0x0028, kU0028, std::size(kU0028)},  // left parenthesis
+    {0x0029, kU0029, std::size(kU0029)},  // right parenthesis
+    {0x002A, kU002A, std::size(kU002A)},  // asterisk
+    {0x002B, kU002B, std::size(kU002B)},  // plus sign
+    {0x002C, kU002C, std::size(kU002C)},  // comma
+    {0x002D, kU002D, std::size(kU002D)},  // hyphen-minus
+    {0x002E, kU002E, std::size(kU002E)},  // full stop
+    {0x002F, kU002F, std::size(kU002F)},  // solidus
+    {0x003A, kU003A, std::size(kU003A)},  // colon
+    {0x003B, kU003B, std::size(kU003B)},  // semicolon
+    {0x003D, kU003D, std::size(kU003D)},  // equals sign
+    {0x003F, kU003F, std::size(kU003F)},  // question mark
+    {0x0040, kU0040, std::size(kU0040)},  // commercial at
+    {0x005B, kU005B, std::size(kU005B)},  // left square bracket
+    {0x005C, kU005C, std::size(kU005C)},  // reverse solidus
+    {0x005D, kU005D, std::size(kU005D)},  // right square bracket
+    {0x005F, kU005F, std::size(kU005F)},  // low line
+    {0x0060, kU0060, std::size(kU0060)},  // grave accent
+    {0x00A7, kU00A7, std::size(kU00A7)},  // section sign
+    {0x00AB, kU00AB, std::size(kU00AB)},  // left double angle quotation mark
+    {0x00B0, kU00B0, std::size(kU00B0)},  // degree sign
+    {0x00BA, kU00BA, std::size(kU00BA)},  // masculine ordinal indicator
+    {0x00E0, kU00E0, std::size(kU00E0)},  // a grave
+    {0x00E1, kU00E1, std::size(kU00E1)},  // a acute
+    {0x00E2, kU00E2, std::size(kU00E2)},  // a circumflex
+    {0x00E4, kU00E4, std::size(kU00E4)},  // a diaeresis
+    {0x00E6, kU00E6, std::size(kU00E6)},  // ae
+    {0x00E7, kU00E7, std::size(kU00E7)},  // c cedilla
+    {0x00E8, kU00E8, std::size(kU00E8)},  // e grave
+    {0x00E9, kU00E9, std::size(kU00E9)},  // e acute
+    {0x00ED, kU00ED, std::size(kU00ED)},  // i acute
+    {0x00F0, kU00F0, std::size(kU00F0)},  // eth
+    {0x00F3, kU00F3, std::size(kU00F3)},  // o acute
+    {0x00F4, kU00F4, std::size(kU00F4)},  // o circumflex
+    {0x00F6, kU00F6, std::size(kU00F6)},  // o diaeresis
+    {0x00F8, kU00F8, std::size(kU00F8)},  // o stroke
+    {0x00F9, kU00F9, std::size(kU00F9)},  // u grave
+    {0x00FA, kU00FA, std::size(kU00FA)},  // u acute
+    {0x00FC, kU00FC, std::size(kU00FC)},  // u diaeresis
+    {0x0103, kU0103, std::size(kU0103)},  // a breve
+    {0x0105, kU0105, std::size(kU0105)},  // a ogonek
+    {0x010D, kU010D, std::size(kU010D)},  // c caron
+    {0x0111, kU0111, std::size(kU0111)},  // d stroke
+    {0x0117, kU0117, std::size(kU0117)},  // e dot above
+    {0x0119, kU0119, std::size(kU0119)},  // e ogonek
+    {0x012F, kU012F, std::size(kU012F)},  // i ogonek
+    {0x0142, kU0142, std::size(kU0142)},  // l stroke
+    {0x015F, kU015F, std::size(kU015F)},  // s cedilla
+    {0x0161, kU0161, std::size(kU0161)},  // s caron
+    {0x016B, kU016B, std::size(kU016B)},  // u macron
+    {0x0173, kU0173, std::size(kU0173)},  // u ogonek
+    {0x017C, kU017C, std::size(kU017C)},  // z dot above
+    {0x017E, kU017E, std::size(kU017E)},  // z caron
 };
 
 // Table mapping unshifted characters to VKEY values.
@@ -881,11 +880,11 @@ void XkbKeyboardLayoutEngine::SetKeymap(xkb_keymap* keymap) {
                {ui::EF_CAPS_LOCK_ON, XKB_MOD_NAME_CAPS},
                {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM}};
   xkb_flag_map_.clear();
-  xkb_flag_map_.reserve(base::size(flags));
+  xkb_flag_map_.reserve(std::size(flags));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   xkb_mod_mask_t num_lock_mask = 0;
 #endif
-  for (size_t i = 0; i < base::size(flags); ++i) {
+  for (size_t i = 0; i < std::size(flags); ++i) {
     xkb_mod_index_t index = xkb_keymap_mod_get_index(keymap, flags[i].xkb_name);
     if (index == XKB_MOD_INVALID) {
       DVLOG(3) << "XKB keyboard layout does not contain " << flags[i].xkb_name;
@@ -1058,7 +1057,7 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
     return key_code;
 
   // Check the multi-character tables.
-  const PrintableMultiEntry* multi_end = kMultiMap + base::size(kMultiMap);
+  const PrintableMultiEntry* multi_end = kMultiMap + std::size(kMultiMap);
   const PrintableMultiEntry* multi =
       std::lower_bound(kMultiMap, multi_end, plain_character,
                        [](const PrintableMultiEntry& e, char16_t c) {
@@ -1092,7 +1091,7 @@ KeyboardCode XkbKeyboardLayoutEngine::DifficultKeyboardCode(
   }
 
   // Check the simple character table.
-  const PrintableSimpleEntry* simple_end = kSimpleMap + base::size(kSimpleMap);
+  const PrintableSimpleEntry* simple_end = kSimpleMap + std::size(kSimpleMap);
   const PrintableSimpleEntry* simple =
       std::lower_bound(kSimpleMap, simple_end, plain_character,
                        [](const PrintableSimpleEntry& e, char16_t c) {

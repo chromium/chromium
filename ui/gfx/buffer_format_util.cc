@@ -5,7 +5,6 @@
 #include "ui/gfx/buffer_format_util.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/switches.h"
@@ -23,7 +22,7 @@ const BufferFormat kBufferFormats[] = {
     BufferFormat::RGBA_F16,     BufferFormat::YUV_420_BIPLANAR,
     BufferFormat::YVU_420,      BufferFormat::P010};
 
-static_assert(base::size(kBufferFormats) ==
+static_assert(std::size(kBufferFormats) ==
                   (static_cast<int>(BufferFormat::LAST) + 1),
               "BufferFormat::LAST must be last value of kBufferFormats");
 
@@ -31,7 +30,7 @@ static_assert(base::size(kBufferFormats) ==
 
 std::vector<BufferFormat> GetBufferFormatsForTesting() {
   return std::vector<BufferFormat>(kBufferFormats,
-                                   kBufferFormats + base::size(kBufferFormats));
+                                   kBufferFormats + std::size(kBufferFormats));
 }
 
 size_t AlphaBitsForBufferFormat(BufferFormat format) {
@@ -107,13 +106,13 @@ size_t SubsamplingFactorForBufferFormat(BufferFormat format, size_t plane) {
       return 1;
     case BufferFormat::YVU_420: {
       static size_t factor[] = {1, 2, 2};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(factor));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(factor));
       return factor[plane];
     }
     case BufferFormat::YUV_420_BIPLANAR:
     case BufferFormat::P010: {
       static size_t factor[] = {1, 2};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(factor));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(factor));
       return factor[plane];
     }
   }
@@ -235,19 +234,19 @@ size_t BufferOffsetForBufferFormat(const Size& size,
       return 0;
     case BufferFormat::YVU_420: {
       static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4, 5};
-      DCHECK_LT(plane, base::size(offset_in_2x2_sub_sampling_sizes));
+      DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
       return offset_in_2x2_sub_sampling_sizes[plane] * (size.width() / 2) *
              (size.height() / 2);
     }
     case gfx::BufferFormat::YUV_420_BIPLANAR: {
       static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
-      DCHECK_LT(plane, base::size(offset_in_2x2_sub_sampling_sizes));
+      DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
       return offset_in_2x2_sub_sampling_sizes[plane] * (size.width() / 2) *
              (size.height() / 2);
     }
     case BufferFormat::P010: {
       static size_t offset_in_2x2_sub_sampling_sizes[] = {0, 4};
-      DCHECK_LT(plane, base::size(offset_in_2x2_sub_sampling_sizes));
+      DCHECK_LT(plane, std::size(offset_in_2x2_sub_sampling_sizes));
       return 2 * offset_in_2x2_sub_sampling_sizes[plane] *
              (size.width() / 2 + size.height() / 2);
     }

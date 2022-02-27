@@ -8,7 +8,6 @@
 
 #include <cstring>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -229,7 +228,7 @@ bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
       {0x222a, 0x0001},  // ILITEK ILITEK-TP
   };
 
-  for (size_t i = 0; i < base::size(kUSBLegacyDenyListedDevices); ++i) {
+  for (size_t i = 0; i < std::size(kUSBLegacyDenyListedDevices); ++i) {
     if (id.vendor == kUSBLegacyDenyListedDevices[i].vid &&
         id.product == kUSBLegacyDenyListedDevices[i].pid) {
       return true;
@@ -323,39 +322,39 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
 }
 
 void EventDeviceInfo::SetEventTypes(const unsigned long* ev_bits, size_t len) {
-  AssignBitset(ev_bits, len, ev_bits_, base::size(ev_bits_));
+  AssignBitset(ev_bits, len, ev_bits_, std::size(ev_bits_));
 }
 
 void EventDeviceInfo::SetKeyEvents(const unsigned long* key_bits, size_t len) {
-  AssignBitset(key_bits, len, key_bits_, base::size(key_bits_));
+  AssignBitset(key_bits, len, key_bits_, std::size(key_bits_));
 }
 
 void EventDeviceInfo::SetRelEvents(const unsigned long* rel_bits, size_t len) {
-  AssignBitset(rel_bits, len, rel_bits_, base::size(rel_bits_));
+  AssignBitset(rel_bits, len, rel_bits_, std::size(rel_bits_));
 }
 
 void EventDeviceInfo::SetAbsEvents(const unsigned long* abs_bits, size_t len) {
-  AssignBitset(abs_bits, len, abs_bits_, base::size(abs_bits_));
+  AssignBitset(abs_bits, len, abs_bits_, std::size(abs_bits_));
 }
 
 void EventDeviceInfo::SetMscEvents(const unsigned long* msc_bits, size_t len) {
-  AssignBitset(msc_bits, len, msc_bits_, base::size(msc_bits_));
+  AssignBitset(msc_bits, len, msc_bits_, std::size(msc_bits_));
 }
 
 void EventDeviceInfo::SetSwEvents(const unsigned long* sw_bits, size_t len) {
-  AssignBitset(sw_bits, len, sw_bits_, base::size(sw_bits_));
+  AssignBitset(sw_bits, len, sw_bits_, std::size(sw_bits_));
 }
 
 void EventDeviceInfo::SetLedEvents(const unsigned long* led_bits, size_t len) {
-  AssignBitset(led_bits, len, led_bits_, base::size(led_bits_));
+  AssignBitset(led_bits, len, led_bits_, std::size(led_bits_));
 }
 
 void EventDeviceInfo::SetFfEvents(const unsigned long* ff_bits, size_t len) {
-  AssignBitset(ff_bits, len, ff_bits_, base::size(ff_bits_));
+  AssignBitset(ff_bits, len, ff_bits_, std::size(ff_bits_));
 }
 
 void EventDeviceInfo::SetProps(const unsigned long* prop_bits, size_t len) {
-  AssignBitset(prop_bits, len, prop_bits_, base::size(prop_bits_));
+  AssignBitset(prop_bits, len, prop_bits_, std::size(prop_bits_));
 }
 
 void EventDeviceInfo::SetAbsInfo(unsigned int code,
@@ -729,7 +728,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
   };
 
   if (id.bustype == BUS_USB) {
-    for (size_t i = 0; i < base::size(kUSBInternalDevices); ++i) {
+    for (size_t i = 0; i < std::size(kUSBInternalDevices); ++i) {
       if (id.vendor == kUSBInternalDevices[i].vid &&
           id.product == kUSBInternalDevices[i].pid)
         return InputDeviceType::INPUT_DEVICE_INTERNAL;

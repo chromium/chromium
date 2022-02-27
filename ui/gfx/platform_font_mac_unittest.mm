@@ -7,7 +7,6 @@
 #include <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -189,7 +188,7 @@ TEST(PlatformFontMacTest, ValidateFontHeight) {
   Font default_font;
   Font::FontStyle styles[] = {Font::NORMAL, Font::ITALIC, Font::UNDERLINE};
 
-  for (size_t i = 0; i < base::size(styles); ++i) {
+  for (size_t i = 0; i < std::size(styles); ++i) {
     SCOPED_TRACE(testing::Message() << "Font::FontStyle: " << styles[i]);
     // Include the range of sizes used by ResourceBundle::FontStyle (-1 to +8).
     for (int delta = -1; delta <= 8; ++delta) {

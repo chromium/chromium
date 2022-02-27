@@ -4,7 +4,6 @@
 
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
@@ -22,7 +21,7 @@ static const char* const s_runStateNames[] = {"WAITING_FOR_TARGET_AVAILABILITY",
                                               "ABORTED_BUT_NEEDS_COMPLETION"};
 
 static_assert(static_cast<int>(KeyframeModel::LAST_RUN_STATE) + 1 ==
-                  base::size(s_runStateNames),
+                  std::size(s_runStateNames),
               "RunStateEnumSize should equal the number of elements in "
               "s_runStateNames");
 

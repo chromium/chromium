@@ -138,7 +138,7 @@ def dump_capabilities(out, dev, identifier=None):
 
   if has_abs:
     out.write('    %s,\n' % absinfo_identifier)
-    out.write('    base::size(%s),\n' % absinfo_identifier)
+    out.write('    std::size(%s),\n' % absinfo_identifier)
   else:
     out.write('    /* abs_axis */ nullptr,\n')
     out.write('    /* abs_axis_count */ 0,\n')

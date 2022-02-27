@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -85,7 +84,7 @@ TEST(TextEliderTest, ElideEmail) {
   };
 
   const FontList font_list;
-  for (size_t i = 0; i < base::size(testcases); ++i) {
+  for (size_t i = 0; i < std::size(testcases); ++i) {
     const std::u16string expected_output = testcases[i].output;
     EXPECT_EQ(
         expected_output,
@@ -155,7 +154,7 @@ TEST(TextEliderTest, TestFilenameEliding) {
        u"file.name.re…emelylongext"}};
 
   static const FontList font_list;
-  for (size_t i = 0; i < base::size(testcases); ++i) {
+  for (size_t i = 0; i < std::size(testcases); ++i) {
     base::FilePath filepath(testcases[i].input);
     std::u16string expected = testcases[i].output;
     std::u16string using_width_of = testcases[i].using_width_of.empty()
@@ -184,7 +183,7 @@ TEST(TextEliderTest, ElideTextTruncate) {
       {u"Tests", kTestWidth, u"Test"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::u16string result =
         ElideText(cases[i].input, font_list, cases[i].width, TRUNCATE);
     EXPECT_EQ(cases[i].output, result);
@@ -208,7 +207,7 @@ TEST(TextEliderTest, ElideTextEllipsis) {
       {u"Test", kTestWidth, u"Test"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::u16string result =
         ElideText(cases[i].input, font_list, cases[i].width, ELIDE_TAIL);
     EXPECT_EQ(cases[i].output, result);
@@ -234,7 +233,7 @@ TEST(TextEliderTest, ElideTextEllipsisFront) {
       {u"Test123", kEllipsis23Width, u"…23"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::u16string result =
         ElideText(cases[i].input, font_list, cases[i].width, ELIDE_HEAD);
     EXPECT_EQ(cases[i].output, result);
@@ -327,7 +326,7 @@ TEST(TextEliderTest, ElideTextLongStrings) {
 
   const FontList font_list;
   float ellipsis_width = GetStringWidthF(u"…", font_list);
-  for (size_t i = 0; i < base::size(testcases_end); ++i) {
+  for (size_t i = 0; i < std::size(testcases_end); ++i) {
     // Compare sizes rather than actual contents because if the test fails,
     // output is rather long.
     EXPECT_EQ(testcases_end[i].output.size(),
@@ -355,7 +354,7 @@ TEST(TextEliderTest, ElideTextLongStrings) {
       {data_scheme + million_a, long_string_middle},
   };
 
-  for (size_t i = 0; i < base::size(testcases_middle); ++i) {
+  for (size_t i = 0; i < std::size(testcases_middle); ++i) {
     // Compare sizes rather than actual contents because if the test fails,
     // output is rather long.
     EXPECT_EQ(testcases_middle[i].output.size(),
@@ -381,7 +380,7 @@ TEST(TextEliderTest, ElideTextLongStrings) {
       {data_scheme + hundred_thousand_a, long_string_beginning},
       {data_scheme + million_a, long_string_beginning},
   };
-  for (size_t i = 0; i < base::size(testcases_beginning); ++i) {
+  for (size_t i = 0; i < std::size(testcases_beginning); ++i) {
     EXPECT_EQ(testcases_beginning[i].output.size(),
               ElideText(
                   testcases_beginning[i].input, font_list,
@@ -656,7 +655,7 @@ TEST(TextEliderTest, ElideString) {
       {u"Hello, my name is Tom", 7, true, u"He...om"},
       {u"Hello, my name is Tom", 10, true, u"Hell...Tom"},
       {u"Hello, my name is Tom", 100, false, u"Hello, my name is Tom"}};
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::u16string output;
     EXPECT_EQ(cases[i].result,
               ElideString(cases[i].input, cases[i].max_len, &output));
@@ -706,7 +705,7 @@ TEST(TextEliderTest, ElideRectangleText) {
       {u"Te  Te Test", test_width, 3 * line_height, false, u"Te|Te|Test"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::vector<std::u16string> lines;
     EXPECT_EQ(cases[i].truncated_y ? INSUFFICIENT_SPACE_VERTICAL : 0,
               ElideRectangleText(cases[i].input, font_list,
@@ -795,7 +794,7 @@ TEST(TextEliderTest, ElideRectangleTextPunctuation) {
       {u"Test. Test", test_width, line_height * 3, true, false, u"Test|.|Test"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::vector<std::u16string> lines;
     const WordWrapBehavior wrap_behavior =
         (cases[i].wrap_words ? WRAP_LONG_WORDS : TRUNCATE_LONG_WORDS);
@@ -859,7 +858,7 @@ TEST(TextEliderTest, ElideRectangleTextLongWords) {
        u"Test|Test|Test|T"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     std::vector<std::u16string> lines;
     EXPECT_EQ(cases[i].truncated_x ? INSUFFICIENT_SPACE_HORIZONTAL : 0,
               ElideRectangleText(
@@ -985,7 +984,7 @@ TEST(TextEliderTest, ElideRectangleString) {
       {u"Hi, my name is Tom", 1, 40, false, u"Hi, my name is Tom"},
   };
   std::u16string output;
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_EQ(cases[i].result,
               ElideRectangleString(cases[i].input, cases[i].max_rows,
                                    cases[i].max_cols, true, &output));
@@ -1066,7 +1065,7 @@ TEST(TextEliderTest, ElideRectangleStringNotStrict) {
       {u"Hi, my name_is Dick", 1, 40, false, u"Hi, my name_is Dick"},
   };
   std::u16string output;
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     EXPECT_EQ(cases[i].result,
               ElideRectangleString(cases[i].input, cases[i].max_rows,
                                    cases[i].max_cols, false, &output));

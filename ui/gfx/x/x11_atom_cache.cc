@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
@@ -169,7 +168,7 @@ constexpr const char* kAtomsToCache[] = {
     "xwayland-touch",
 };
 
-constexpr int kCacheCount = base::size(kAtomsToCache);
+constexpr int kCacheCount = std::size(kAtomsToCache);
 
 }  // namespace
 

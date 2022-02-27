@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/font_fallback_win.h"
-
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +14,7 @@
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "ui/gfx/font_fallback_win.h"
 #include "ui/gfx/platform_font.h"
 #include "ui/gfx/test/font_fallback_test_data.h"
 
@@ -240,7 +238,7 @@ std::vector<FallbackFontTestCase> GetSampleFontTestCases() {
     char16_t text[8];
     UErrorCode errorCode = U_ZERO_ERROR;
     int text_length =
-        uscript_getSampleString(script, text, base::size(text), &errorCode);
+        uscript_getSampleString(script, text, std::size(text), &errorCode);
     if (text_length <= 0 || errorCode != U_ZERO_ERROR)
       continue;
 

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
@@ -29,7 +28,7 @@ TEST(Point3FTest, VectorArithmetic) {
     { gfx::Point3F(-9.6f, 9.5f, -2.8f), a - v1 + v2 }
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i)
+  for (size_t i = 0; i < std::size(tests); ++i)
     EXPECT_EQ(tests[i].expected.ToString(),
               tests[i].actual.ToString());
 

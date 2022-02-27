@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/composition_text.h"
@@ -118,7 +117,7 @@ void CompareImeTextSpan(const ImeTextSpan& a, const ui::ImeTextSpan& b) {
 }
 
 TEST(CompositionTextUtilPangoTest, ExtractCompositionText) {
-  for (size_t i = 0; i < base::size(kTestData); ++i) {
+  for (size_t i = 0; i < std::size(kTestData); ++i) {
     const char* text = kTestData[i].text;
     const AttributeInfo* attrs = kTestData[i].attrs;
     SCOPED_TRACE(testing::Message() << "Testing:" << i

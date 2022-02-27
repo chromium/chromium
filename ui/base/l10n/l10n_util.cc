@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/message_formatter.h"
@@ -1026,7 +1025,7 @@ const char* const* GetAcceptLanguageListForTesting() {
 }
 
 size_t GetAcceptLanguageListSizeForTesting() {
-  return base::size(kAcceptLanguageList);
+  return std::size(kAcceptLanguageList);
 }
 
 const char* const* GetPlatformLocalesForTesting() {
@@ -1034,7 +1033,7 @@ const char* const* GetPlatformLocalesForTesting() {
 }
 
 size_t GetPlatformLocalesSizeForTesting() {
-  return base::size(kPlatformLocales);
+  return std::size(kPlatformLocales);
 }
 
 }  // namespace l10n_util

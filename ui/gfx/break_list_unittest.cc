@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/range/range.h"
@@ -158,7 +157,7 @@ TEST_F(BreakListTest, GetBreakAndRange) {
     { 9, 4, Range(6, 8) },
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     BreakList<bool>::const_iterator it = breaks.GetBreak(cases[i].position);
     EXPECT_EQ(breaks.breaks()[cases[i].break_index], *it);
     EXPECT_EQ(breaks.GetRange(it), cases[i].range);

@@ -10,7 +10,6 @@
 
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -71,8 +70,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
     static const int kTestFlags[] = {EF_SHIFT_DOWN, EF_ALTGR_DOWN,
                                      EF_MOD3_DOWN};
     xkb_flag_map_.clear();
-    xkb_flag_map_.resize(base::size(kTestFlags));
-    for (size_t i = 0; i < base::size(kTestFlags); ++i) {
+    xkb_flag_map_.resize(std::size(kTestFlags));
+    for (size_t i = 0; i < std::size(kTestFlags); ++i) {
       XkbFlagMapEntry e = {kTestFlags[i],
                            static_cast<xkb_mod_mask_t>(kTestFlags[i])};
       xkb_flag_map_.push_back(e);
@@ -773,7 +772,7 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForPrintable) {
 
   };
 
-  for (size_t i = 0; i < base::size(kVkeyTestCase); ++i) {
+  for (size_t i = 0; i < std::size(kVkeyTestCase); ++i) {
     SCOPED_TRACE(i);
     const auto& e = kVkeyTestCase[i];
     layout_engine_->SetEntry(&e.test);
@@ -909,7 +908,7 @@ TEST_F(XkbLayoutEngineVkTest, XkbRuleNamesForLayoutName) {
       /* 50 */ {"ge", "ge", ""},
       /* 51 */ {"mn", "mn", ""},
       /* 52 */ {"ie", "ie", ""}};
-  for (size_t i = 0; i < base::size(kVkeyTestCase); ++i) {
+  for (size_t i = 0; i < std::size(kVkeyTestCase); ++i) {
     SCOPED_TRACE(i);
     const VkTestXkbKeyboardLayoutEngine::RuleNames* e = &kVkeyTestCase[i];
     std::string layout_id;

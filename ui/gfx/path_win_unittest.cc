@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/win/scoped_gdi_object.h"
 #include "skia/ext/skia_utils_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,8 +83,8 @@ TEST(CreateHRGNFromSkPathTest, RoundCornerTest) {
   path.addRRect(rrect);
   base::win::ScopedRegion region(CreateHRGNFromSkPath(path));
   const std::vector<SkIRect>& region_rects = GetRectsFromHRGN(region.get());
-  EXPECT_EQ(base::size(rects), region_rects.size());
-  for (size_t i = 0; i < base::size(rects) && i < region_rects.size(); ++i)
+  EXPECT_EQ(std::size(rects), region_rects.size());
+  for (size_t i = 0; i < std::size(rects) && i < region_rects.size(); ++i)
     EXPECT_EQ(rects[i], region_rects[i]);
 }
 
@@ -103,8 +102,8 @@ TEST(CreateHRGNFromSkPathTest, NonContiguousPath) {
   }
   base::win::ScopedRegion region(CreateHRGNFromSkPath(path));
   const std::vector<SkIRect>& region_rects = GetRectsFromHRGN(region.get());
-  ASSERT_EQ(base::size(rects), region_rects.size());
-  for (size_t i = 0; i < base::size(rects); ++i)
+  ASSERT_EQ(std::size(rects), region_rects.size());
+  for (size_t i = 0; i < std::size(rects); ++i)
     EXPECT_EQ(rects[i], region_rects[i]);
 }
 

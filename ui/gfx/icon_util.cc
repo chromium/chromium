@@ -5,7 +5,6 @@
 #include "ui/gfx/icon_util.h"
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -157,7 +156,7 @@ const int IconUtil::kIconDimensions[] = {
   256   // Used by Vista onwards for large icons.
 };
 
-const size_t IconUtil::kNumIconDimensions = base::size(kIconDimensions);
+const size_t IconUtil::kNumIconDimensions = std::size(kIconDimensions);
 const size_t IconUtil::kNumIconDimensionsUpToMediumSize = 9;
 
 base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(

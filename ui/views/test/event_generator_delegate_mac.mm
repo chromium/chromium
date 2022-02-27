@@ -5,7 +5,6 @@
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 #include "base/memory/singleton.h"
@@ -370,7 +369,7 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
       {@"Paste", @selector(paste:), @"v"},
       {@"Select All", @selector(selectAll:), @"a"},
   };
-  for (size_t i = 0; i < base::size(fake_menu_item); ++i) {
+  for (size_t i = 0; i < std::size(fake_menu_item); ++i) {
     [fake_menu_ insertItemWithTitle:fake_menu_item[i].title
                              action:fake_menu_item[i].action
                       keyEquivalent:fake_menu_item[i].key_equivalent

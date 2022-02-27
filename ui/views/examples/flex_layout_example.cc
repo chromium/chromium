@@ -44,20 +44,20 @@ void FlexLayoutExample::ContentsChanged(Textfield* sender,
 void FlexLayoutExample::CreateAdditionalControls() {
   constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
   orientation_ = CreateAndAddCombobox(
-      u"Orientation", kOrientationValues, base::size(kOrientationValues),
+      u"Orientation", kOrientationValues, std::size(kOrientationValues),
       base::BindRepeating(&FlexLayoutExample::OrientationChanged,
                           base::Unretained(this)));
 
   constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
   main_axis_alignment_ = CreateAndAddCombobox(
-      u"Main axis", kMainAxisValues, base::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues, std::size(kMainAxisValues),
       base::BindRepeating(&FlexLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
   constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
                                                "End"};
   cross_axis_alignment_ = CreateAndAddCombobox(
-      u"Cross axis", kCrossAxisValues, base::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues, std::size(kCrossAxisValues),
       base::BindRepeating(&FlexLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
 

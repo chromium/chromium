@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -196,7 +195,7 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
   // doesn't hurt.
   CGDirectDisplayID online_displays[1024];
   CGDisplayCount online_display_count = 0;
-  if (CGGetOnlineDisplayList(base::size(online_displays), online_displays,
+  if (CGGetOnlineDisplayList(std::size(online_displays), online_displays,
                              &online_display_count) != kCGErrorSuccess) {
     return std::vector<DisplayMac>(1, BuildPrimaryDisplay());
   }

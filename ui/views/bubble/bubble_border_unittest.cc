@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/bubble/bubble_border.h"
+
 #include <stddef.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -280,7 +280,7 @@ TEST_F(BubbleBorderTest, GetSizeForContentsSizeTest) {
       {BubbleBorder::NONE, kMediumSize, kMediumNoArrow},
       {BubbleBorder::FLOAT, kMediumSize, kMediumNoArrow}};
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%d arrow=%d", static_cast<int>(i),
                                     cases[i].arrow));
 
@@ -363,7 +363,7 @@ TEST_F(BubbleBorderTest, GetBoundsOriginTest) {
          kAnchor.y() + (kAnchor.height() - kTotalSize.height()) / 2},
     };
 
-    for (size_t j = 0; j < base::size(cases); ++j) {
+    for (size_t j = 0; j < std::size(cases); ++j) {
       SCOPED_TRACE(base::StringPrintf("shadow=%d j=%d arrow=%d",
                                       static_cast<int>(shadow),
                                       static_cast<int>(j), cases[j].arrow));

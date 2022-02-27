@@ -50,11 +50,11 @@ std::string UiaIdentifierToStringPretty(int32_t id) {
   auto str = base::WideToUTF8(UiaIdentifierToString(id));
   // Remove UIA_ prefix, and EventId/PropertyId suffixes
   if (base::StartsWith(str, "UIA_", base::CompareCase::SENSITIVE))
-    str = str.substr(base::size("UIA_") - 1);
+    str = str.substr(std::size("UIA_") - 1);
   if (base::EndsWith(str, "EventId", base::CompareCase::SENSITIVE))
-    str = str.substr(0, str.size() - base::size("EventId") + 1);
+    str = str.substr(0, str.size() - std::size("EventId") + 1);
   if (base::EndsWith(str, "PropertyId", base::CompareCase::SENSITIVE))
-    str = str.substr(0, str.size() - base::size("PropertyId") + 1);
+    str = str.substr(0, str.size() - std::size("PropertyId") + 1);
   return str;
 }
 

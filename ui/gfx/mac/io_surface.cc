@@ -11,7 +11,6 @@
 
 #include "base/bits.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -62,12 +61,12 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
       return 8;
     case gfx::BufferFormat::YUV_420_BIPLANAR: {
       constexpr int32_t bytes_per_element[] = {1, 2};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(bytes_per_element));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
     case gfx::BufferFormat::P010: {
       constexpr int32_t bytes_per_element[] = {2, 4};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(bytes_per_element));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
     case gfx::BufferFormat::BGR_565:
