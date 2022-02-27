@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -38,7 +37,7 @@ void CleanupDeprecatedTrackedPreferences(
       // TODO(pmonette): Remove in 2022+.
       "module_blacklist_cache_md5_digest"};
 
-  for (size_t i = 0; i < base::size(kDeprecatedTrackedPreferences); ++i) {
+  for (size_t i = 0; i < std::size(kDeprecatedTrackedPreferences); ++i) {
     const char* key = kDeprecatedTrackedPreferences[i];
     pref_store_contents->RemovePath(key);
     hash_store_transaction->ClearHash(key);

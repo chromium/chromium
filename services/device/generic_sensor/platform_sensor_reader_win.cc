@@ -12,7 +12,6 @@
 #include <iomanip>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
@@ -377,7 +376,7 @@ std::unique_ptr<PlatformSensorReaderWinBase> PlatformSensorReaderWin32::Create(
   }
 
   GUID interests[] = {SENSOR_EVENT_STATE_CHANGED, SENSOR_EVENT_DATA_UPDATED};
-  hr = sensor->SetEventInterest(interests, base::size(interests));
+  hr = sensor->SetEventInterest(interests, std::size(interests));
   if (FAILED(hr))
     return nullptr;
 

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/data_decoder/image_decoder_impl.h"
+
 #include <memory>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -14,7 +15,6 @@
 #include "gin/array_buffer.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
-#include "services/data_decoder/image_decoder_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -132,7 +132,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
   int heights[] = {max_height_for_msg - 10, max_height_for_msg + 10,
                    2 * max_height_for_msg + 10};
   int widths[] = {heights[0] * 3 / 2, heights[1] * 3 / 2, heights[2] * 3 / 2};
-  for (size_t i = 0; i < base::size(heights); i++) {
+  for (size_t i = 0; i < std::size(heights); i++) {
     std::vector<unsigned char> jpg;
     ASSERT_TRUE(CreateJPEGImage(widths[i], heights[i], SK_ColorRED, &jpg));
 

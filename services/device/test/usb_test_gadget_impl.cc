@@ -453,7 +453,7 @@ class DeviceAddListener : public UsbService::Observer {
       const uint16_t product_id = device->product_id();
       if (product_id_ == -1) {
         bool found = false;
-        for (size_t i = 0; i < base::size(kConfigurations); ++i) {
+        for (size_t i = 0; i < std::size(kConfigurations); ++i) {
           if (product_id == kConfigurations[i].product_id) {
             found = true;
             break;
@@ -580,7 +580,7 @@ bool UsbTestGadgetImpl::Unclaim() {
 
 bool UsbTestGadgetImpl::SetType(Type type) {
   const struct UsbTestGadgetConfiguration* config = NULL;
-  for (size_t i = 0; i < base::size(kConfigurations); ++i) {
+  for (size_t i = 0; i < std::size(kConfigurations); ++i) {
     if (kConfigurations[i].type == type) {
       config = &kConfigurations[i];
     }

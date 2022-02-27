@@ -1840,14 +1840,14 @@ TEST_F(NetworkContextTest, ClearHostCache) {
           base::TimeTicks::Now(), base::Days(1));
     }
     // Sanity check.
-    EXPECT_EQ(base::size(kDomains) * 2, host_cache->entries().size());
+    EXPECT_EQ(std::size(kDomains) * 2, host_cache->entries().size());
 
     // Set up and run the filter, according to |test_case|.
     mojom::ClearDataFilterPtr clear_data_filter;
     if (!test_case.null_filter) {
       clear_data_filter = mojom::ClearDataFilter::New();
       clear_data_filter->type = test_case.type;
-      for (size_t i = 0; i < base::size(kDomains); ++i) {
+      for (size_t i = 0; i < std::size(kDomains); ++i) {
         if (test_case.filter_domains & (1 << i))
           clear_data_filter->domains.push_back(kDomains[i]);
       }
@@ -1859,7 +1859,7 @@ TEST_F(NetworkContextTest, ClearHostCache) {
 
     // Check that only the expected domains remain in the cache.
     size_t expected_cached = 0;
-    for (size_t i = 0; i < base::size(kDomains); ++i) {
+    for (size_t i = 0; i < std::size(kDomains); ++i) {
       bool expect_domain_cached =
           ((test_case.expected_cached_domains & (1 << i)) != 0);
       EXPECT_EQ(expect_domain_cached,

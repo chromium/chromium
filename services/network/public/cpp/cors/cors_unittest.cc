@@ -237,7 +237,7 @@ TEST_F(CorsTest, SafelistedAccept) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
     // 1 for the trailing null character.
-    auto* end = kAllowed + base::size(kAllowed) - 1;
+    auto* end = kAllowed + std::size(kAllowed) - 1;
     EXPECT_EQ(std::find(kAllowed, end, c) != end,
               IsCorsSafelistedHeader("accept", std::string(1, c)));
     EXPECT_EQ(std::find(kAllowed, end, c) != end,
@@ -266,7 +266,7 @@ TEST_F(CorsTest, SafelistedAcceptLanguage) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
     // 1 for the trailing null character.
-    auto* end = kAllowed + base::size(kAllowed) - 1;
+    auto* end = kAllowed + std::size(kAllowed) - 1;
     EXPECT_EQ(std::find(kAllowed, end, c) != end,
               IsCorsSafelistedHeader("aCcEPT-lAngUAge", std::string(1, c)));
   }
@@ -313,7 +313,7 @@ TEST_F(CorsTest, SafelistedContentLanguage) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     char c = static_cast<char>(i);
     // 1 for the trailing null character.
-    auto* end = kAllowed + base::size(kAllowed) - 1;
+    auto* end = kAllowed + std::size(kAllowed) - 1;
     EXPECT_EQ(std::find(kAllowed, end, c) != end,
               IsCorsSafelistedHeader("content-language", std::string(1, c)));
     EXPECT_EQ(std::find(kAllowed, end, c) != end,
@@ -337,7 +337,7 @@ TEST_F(CorsTest, SafelistedContentType) {
     SCOPED_TRACE(testing::Message() << "c = static_cast<char>(" << i << ")");
     const char c = static_cast<char>(i);
     // 1 for the trailing null character.
-    const auto* const end = kAllowed + base::size(kAllowed) - 1;
+    const auto* const end = kAllowed + std::size(kAllowed) - 1;
     const bool is_allowed = std::find(kAllowed, end, c) != end;
     const std::string value = std::string("text/plain; charset=") + c;
 

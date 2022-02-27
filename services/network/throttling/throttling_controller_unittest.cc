@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -98,7 +97,7 @@ class ThrottlingControllerTestHelper {
     if (with_upload) {
       upload_data_stream_ =
           std::make_unique<net::ChunkedUploadDataStream>(kUploadIdentifier);
-      upload_data_stream_->AppendData(kUploadData, base::size(kUploadData),
+      upload_data_stream_->AppendData(kUploadData, std::size(kUploadData),
                                       true);
       request_->upload_data_stream = upload_data_stream_.get();
     }
@@ -291,7 +290,7 @@ TEST(ThrottlingControllerTest, UploadDoesNotFail) {
   int rv = helper.Start(true);
   EXPECT_EQ(rv, net::ERR_INTERNET_DISCONNECTED);
   rv = helper.ReadUploadData();
-  EXPECT_EQ(rv, static_cast<int>(base::size(kUploadData)));
+  EXPECT_EQ(rv, static_cast<int>(std::size(kUploadData)));
 }
 
 TEST(ThrottlingControllerTest, DownloadOnly) {
@@ -335,7 +334,7 @@ TEST(ThrottlingControllerTest, UploadOnly) {
   EXPECT_EQ(callback->run_count(), 1);
   helper.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(callback->run_count(), 2);
-  EXPECT_EQ(callback->value(), static_cast<int>(base::size(kUploadData)));
+  EXPECT_EQ(callback->value(), static_cast<int>(std::size(kUploadData)));
 }
 
 TEST(ThrottlingControllerTest, DownloadBufferSizeIsNotModifiedIfNotThrottled) {

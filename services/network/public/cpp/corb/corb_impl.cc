@@ -381,7 +381,7 @@ SniffingResult CrossOriginReadBlocking::SniffForHTML(StringPiece data) {
     AdvancePastWhitespace(&data);
 
     SniffingResult signature_match =
-        MatchesSignature(&data, kHtmlSignatures, base::size(kHtmlSignatures),
+        MatchesSignature(&data, kHtmlSignatures, std::size(kHtmlSignatures),
                          base::CompareCase::INSENSITIVE_ASCII);
     if (signature_match != kNo)
       return signature_match;
@@ -402,7 +402,7 @@ SniffingResult CrossOriginReadBlocking::SniffForXML(base::StringPiece data) {
   // initializer.
   AdvancePastWhitespace(&data);
   static constexpr StringPiece kXmlSignatures[] = {StringPiece("<?xml")};
-  return MatchesSignature(&data, kXmlSignatures, base::size(kXmlSignatures),
+  return MatchesSignature(&data, kXmlSignatures, std::size(kXmlSignatures),
                           base::CompareCase::SENSITIVE);
 }
 
@@ -504,7 +504,7 @@ SniffingResult CrossOriginReadBlocking::SniffForFetchOnlyResource(
       StringPiece("while (1);"),
   };
   SniffingResult has_parser_breaker = MatchesSignature(
-      &data, kScriptBreakingPrefixes, base::size(kScriptBreakingPrefixes),
+      &data, kScriptBreakingPrefixes, std::size(kScriptBreakingPrefixes),
       base::CompareCase::SENSITIVE);
   if (has_parser_breaker != kNo)
     return has_parser_breaker;

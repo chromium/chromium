@@ -4,7 +4,6 @@
 
 #include "services/network/ssl_config_service_mojo.h"
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -352,9 +351,9 @@ TEST_F(NetworkServiceSSLConfigServiceTest, SSLVersion) {
       {mojom::SSLVersion::kTLS13, net::SSL_PROTOCOL_VERSION_TLS1_3},
   };
 
-  for (size_t min_index = 0; min_index < base::size(kVersionTable);
+  for (size_t min_index = 0; min_index < std::size(kVersionTable);
        ++min_index) {
-    for (size_t max_index = min_index; max_index < base::size(kVersionTable);
+    for (size_t max_index = min_index; max_index < std::size(kVersionTable);
          ++max_index) {
       // If the versions match the default values, skip this value in the table.
       // The defaults will get plenty of testing anyways, when switching back to

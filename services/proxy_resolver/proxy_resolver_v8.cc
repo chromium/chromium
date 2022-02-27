@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
@@ -483,7 +482,7 @@ class ProxyResolverV8::Context {
     v8::TryCatch try_catch(isolate_);
     v8::Local<v8::Value> ret;
     if (!v8::Function::Cast(*function)
-             ->Call(context, context->Global(), base::size(argv), argv)
+             ->Call(context, context->Global(), std::size(argv), argv)
              .ToLocal(&ret)) {
       DCHECK(try_catch.HasCaught());
       HandleError(try_catch.Message());

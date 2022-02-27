@@ -180,8 +180,8 @@ void AssertDecodesToCborAndExtractField(base::StringPiece signing_data,
   absl::optional<cbor::Value> parsed = cbor::Reader::Read(base::as_bytes(
       // Skip over the domain separator (e.g. "Trust Token v0").
       base::make_span(signing_data)
-          .subspan(base::size(TrustTokenRequestSigningHelper::
-                                  kRequestSigningDomainSeparator))));
+          .subspan(std::size(TrustTokenRequestSigningHelper::
+                                 kRequestSigningDomainSeparator))));
   ASSERT_TRUE(parsed);
 
   const cbor::Value::MapValue& map = parsed->GetMap();

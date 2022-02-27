@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -954,7 +953,7 @@ TEST_F(ProxyResolverV8TracingTest, MultipleResolvers) {
       resolver3.get(),
   };
 
-  const size_t kNumResolvers = base::size(resolver);
+  const size_t kNumResolvers = std::size(resolver);
   const size_t kNumIterations = 20;
   const size_t kNumResults = kNumResolvers * kNumIterations;
   net::TestCompletionCallback callback[kNumResults];

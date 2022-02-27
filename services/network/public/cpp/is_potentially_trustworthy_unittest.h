@@ -361,7 +361,7 @@ TYPED_TEST_P(AbstractTrustworthinessTest, TestcasesInheritedFromBlink) {
       {false, false, "data:text/html,Hello"},
   };
 
-  for (size_t i = 0; i < base::size(inputs); ++i) {
+  for (size_t i = 0; i < std::size(inputs); ++i) {
     SCOPED_TRACE(inputs[i].url);
     auto origin = this->CreateOriginFromString(inputs[i].url);
     EXPECT_EQ(inputs[i].is_potentially_trustworthy,

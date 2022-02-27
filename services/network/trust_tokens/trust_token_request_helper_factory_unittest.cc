@@ -170,7 +170,7 @@ TEST_F(TrustTokenRequestHelperFactoryTest, ForbiddenHeaders) {
   histogram_tester.ExpectUniqueSample(
       "Net.TrustTokens.RequestHelperFactoryOutcome.Signing",
       Outcome::kRequestRejectedDueToBearingAnInternalTrustTokensHeader,
-      base::size(TrustTokensRequestHeaders()));
+      std::size(TrustTokensRequestHeaders()));
 }
 
 TEST_F(TrustTokenRequestHelperFactoryTest,

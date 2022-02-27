@@ -8,7 +8,6 @@
 #include <winioctl.h>
 #include <wlanapi.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
@@ -111,7 +110,7 @@ std::unique_ptr<WindowsWlanApi> WindowsWlanApi::Create() {
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   static const wchar_t* const kDLL = L"%WINDIR%\\system32\\wlanapi.dll";
   wchar_t path[MAX_PATH] = {0};
-  ExpandEnvironmentStrings(kDLL, path, base::size(path));
+  ExpandEnvironmentStrings(kDLL, path, std::size(path));
   HINSTANCE library = LoadLibraryEx(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
   if (!library)
     return nullptr;

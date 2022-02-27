@@ -307,8 +307,8 @@ TEST(HprofParserTest, ResolveSuperClassObjectFields) {
        "base_f1", "base_f2"},
   };
 
-  ASSERT_EQ(parser.class_objects().size(), base::size(expected));
-  for (unsigned i = 1; i < base::size(expected); ++i) {
+  ASSERT_EQ(parser.class_objects().size(), std::size(expected));
+  for (unsigned i = 1; i < std::size(expected); ++i) {
     const auto& expected_class = expected[i - 1];
     auto it = parser.class_objects().find(i);
     ASSERT_TRUE(it != parser.class_objects().end())
@@ -612,7 +612,7 @@ TEST(HprofParserTest, NativeSizeComputation) {
                        ToLittleEndian(kRegistryInstanceId),
                        // Registry
                        0, ToLittleEndian(9876)};
-  const int length = base::size(file_data) * sizeof(uint32_t);
+  const int length = std::size(file_data) * sizeof(uint32_t);
   constexpr uint32_t kCleanerOffset = 0;    // First object
   constexpr uint32_t kThunkOffset = 12;     // Second object
   constexpr uint32_t kRegistryOffset = 16;  // Third object

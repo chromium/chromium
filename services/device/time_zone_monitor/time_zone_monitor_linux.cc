@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/ref_counted.h"
@@ -139,7 +138,7 @@ class TimeZoneMonitorLinuxImpl
     const char* const kFilesToWatch[] = {
         "/etc/localtime", "/etc/timezone", "/etc/TZ",
     };
-    for (size_t index = 0; index < base::size(kFilesToWatch); ++index) {
+    for (size_t index = 0; index < std::size(kFilesToWatch); ++index) {
       file_path_watchers_.push_back(std::make_unique<base::FilePathWatcher>());
       file_path_watchers_.back()->Watch(
           base::FilePath(kFilesToWatch[index]),

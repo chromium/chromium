@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1914,7 +1913,7 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
   };
   mojom::CookieDeletionFilter test_filter;
   test_filter.including_domains = std::vector<std::string>();
-  for (int i = 0; i < static_cast<int>(base::size(filter_domains)); ++i)
+  for (int i = 0; i < static_cast<int>(std::size(filter_domains)); ++i)
     test_filter.including_domains->push_back(filter_domains[i]);
 
   struct TestCase {
@@ -1951,7 +1950,7 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
   };
 
   mojom::CookieDeletionFilter clear_filter;
-  for (int i = 0; i < static_cast<int>(base::size(test_cases)); ++i) {
+  for (int i = 0; i < static_cast<int>(std::size(test_cases)); ++i) {
     TestCase& test_case(test_cases[i]);
 
     // Clear store.
