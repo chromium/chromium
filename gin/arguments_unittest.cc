@@ -57,7 +57,7 @@ TEST_F(ArgumentsTest, TestArgumentsHolderCreationContext) {
     ASSERT_TRUE(ConvertFromV8(isolate, script->Run(context).ToLocalChecked(),
                               &function));
     v8::Local<v8::Value> args[] = {object};
-    function->Call(context, v8::Undefined(isolate), base::size(args), args)
+    function->Call(context, v8::Undefined(isolate), std::size(args), args)
         .ToLocalChecked();
   };
 
