@@ -55,7 +55,7 @@ constexpr struct SpecialUsages {
     {kConsumerUsagePage, kHomeUsageNumber},
     {kConsumerUsagePage, kBackUsageNumber},
 };
-constexpr size_t kSpecialUsagesLen = base::size(kSpecialUsages);
+constexpr size_t kSpecialUsagesLen = std::size(kSpecialUsages);
 
 // Scales |value| from the range |min| <= x <= |max| to a Standard Gamepad axis
 // value in the range -1.0 <= x <= 1.0.

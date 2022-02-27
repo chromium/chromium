@@ -130,7 +130,7 @@ struct VibrationFrequency {
     // This list must be kept sorted.
     {0x0068, 0x3a, 141},
     {0x0098, 0x46, 182}};
-const size_t kVibrationFrequencySize = base::size(kVibrationFrequency);
+const size_t kVibrationFrequencySize = std::size(kVibrationFrequency);
 
 // https://github.com/dekuNukem/Nintendo_Switch_Reverse_Engineering/blob/master/rumble_data_table.md
 struct VibrationAmplitude {
@@ -174,7 +174,7 @@ struct VibrationAmplitude {
     {0xc0, 0x0070, 920}, {0xc2, 0x8070, 940},  {0xc4, 0x0071, 960},
     {0xc6, 0x8071, 981}, {0xc8, 0x0072, 1000},
 };
-const size_t kVibrationAmplitudeSize = base::size(kVibrationAmplitude);
+const size_t kVibrationAmplitudeSize = std::size(kVibrationAmplitude);
 
 // Define indices for the additional buttons on Switch controllers.
 enum SWITCH_BUTTON_INDICES {
@@ -1125,14 +1125,14 @@ void NintendoController::UpdateLeftGamepadState(Gamepad& pad,
       BUTTON_INDEX_DPAD_RIGHT,      SWITCH_BUTTON_INDEX_CAPTURE,
       SWITCH_BUTTON_INDEX_LEFT_SL,  SWITCH_BUTTON_INDEX_LEFT_SR,
   };
-  const size_t kLeftButtonIndicesSize = base::size(kLeftButtonIndices);
+  const size_t kLeftButtonIndicesSize = std::size(kLeftButtonIndices);
 
   // Axes associated with the left Joy-Con thumbstick.
   const size_t kLeftAxisIndices[] = {
       AXIS_INDEX_LEFT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_LEFT_STICK_Y,  // or is attached to a grip.
   };
-  const size_t kLeftAxisIndicesSize = base::size(kLeftAxisIndices);
+  const size_t kLeftAxisIndicesSize = std::size(kLeftAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
     for (size_t i = 0; i < kLeftButtonIndicesSize; ++i)
@@ -1163,14 +1163,14 @@ void NintendoController::UpdateRightGamepadState(Gamepad& pad,
       SWITCH_BUTTON_INDEX_RIGHT_SL,
       SWITCH_BUTTON_INDEX_RIGHT_SR,
   };
-  const size_t kRightButtonIndicesSize = base::size(kRightButtonIndices);
+  const size_t kRightButtonIndicesSize = std::size(kRightButtonIndices);
 
   // Axes associated with the right Joy-Con thumbstick.
   const size_t kRightAxisIndices[] = {
       AXIS_INDEX_RIGHT_STICK_X,  // Axes assume the Joy-Con is held vertically
       AXIS_INDEX_RIGHT_STICK_Y,  // or is attached to a grip.
   };
-  const size_t kRightAxisIndicesSize = base::size(kRightAxisIndices);
+  const size_t kRightAxisIndicesSize = std::size(kRightAxisIndices);
 
   if (pad_.buttons_length == SWITCH_BUTTON_INDEX_COUNT) {
     for (size_t i = 0; i < kRightButtonIndicesSize; ++i)

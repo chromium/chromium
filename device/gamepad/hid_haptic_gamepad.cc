@@ -50,7 +50,7 @@ HidHapticGamepad::HapticReportData kHapticReportData[] = {
     // Stadia controller
     {0x18d1, 0x9400, 0x05, 5, 1, 3, 2 * kBitsPerByte, 0, 0xffff},
 };
-size_t kHapticReportDataLength = base::size(kHapticReportData);
+size_t kHapticReportDataLength = std::size(kHapticReportData);
 
 HidHapticGamepad::HidHapticGamepad(const HapticReportData& data,
                                    std::unique_ptr<HidWriter> writer)

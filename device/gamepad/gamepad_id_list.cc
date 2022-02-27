@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/cxx17_backports.h"
-
 namespace device {
 
 namespace {
@@ -626,7 +624,7 @@ constexpr struct GamepadInfo {
     {0xf766, 0x0001, kXInputTypeNone},
     {0xf766, 0x0005, kXInputTypeNone},
 };
-constexpr size_t kGamepadInfoLength = base::size(kGamepadInfo);
+constexpr size_t kGamepadInfoLength = std::size(kGamepadInfo);
 
 bool CompareEntry(const GamepadInfo& a, const GamepadInfo& b) {
   return std::tie(a.vendor, a.product) < std::tie(b.vendor, b.product);

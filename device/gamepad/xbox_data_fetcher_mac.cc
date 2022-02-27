@@ -4,18 +4,17 @@
 
 #include "device/gamepad/xbox_data_fetcher_mac.h"
 
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <string>
-
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/usb/USB.h>
 
-#include "base/cxx17_backports.h"
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <string>
+
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -366,7 +365,7 @@ void XboxDataFetcher::XboxControllerGotData(
     pad.buttons[17].value = data.buttons[14] ? 1.0f : 0.0f;
     pad.buttons_length = 18;
   }
-  for (size_t i = 0; i < base::size(data.axes); i++) {
+  for (size_t i = 0; i < std::size(data.axes); i++) {
     pad.axes[i] = data.axes[i];
   }
 

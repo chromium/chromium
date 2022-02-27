@@ -58,7 +58,7 @@ Gamepad GetWebGamepadInstance(GamepadTestDataType type) {
   constexpr char16_t kTestIdString[] = {L'M', L'o', L'c', L'k', L'S',
                                         L't', L'i', L'c', L'k', L' ',
                                         L'3', L'0', L'0', L'0', L'\0'};
-  constexpr size_t kTestIdStringLength = base::size(kTestIdString);
+  constexpr size_t kTestIdStringLength = std::size(kTestIdString);
 
   Gamepad send;
   memset(&send, 0, sizeof(Gamepad));

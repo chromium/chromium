@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
@@ -55,7 +54,7 @@ struct SpecialUsages {
     {kConsumerUsagePage, kBackUsageNumber},
     {kConsumerUsagePage, kRecordUsageNumber},
 };
-const size_t kSpecialUsagesLen = base::size(kSpecialUsages);
+const size_t kSpecialUsagesLen = std::size(kSpecialUsages);
 
 float NormalizeAxis(CFIndex value, CFIndex min, CFIndex max) {
   return (2.f * (value - min) / static_cast<float>(max - min)) - 1.f;

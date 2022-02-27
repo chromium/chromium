@@ -8,7 +8,6 @@
 
 #include <sstream>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -163,7 +162,7 @@ TEST(BluetoothUUIDTest, BluetoothUUID_CaseInsensitive) {
       {"00001aBc-0000-1000-8000-00805F9b34fB", k128Bit},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE("Input UUID: " + test_cases[i].input_uuid);
     BluetoothUUID uuid(test_cases[i].input_uuid);
     EXPECT_TRUE(uuid.IsValid());

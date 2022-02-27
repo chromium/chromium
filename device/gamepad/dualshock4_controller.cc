@@ -202,7 +202,7 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
       data->controller_data.button_ps,
       data->controller_data.button_touch,
   };
-  for (size_t i = 0; i < base::size(button_values); ++i) {
+  for (size_t i = 0; i < std::size(button_values); ++i) {
     pad->buttons[i].pressed = button_values[i];
     pad->buttons[i].touched = button_values[i];
     pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;

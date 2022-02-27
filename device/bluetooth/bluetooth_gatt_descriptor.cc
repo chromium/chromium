@@ -5,9 +5,9 @@
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 
 #include <stddef.h>
+
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 
 namespace device {
@@ -25,7 +25,7 @@ struct UUIDs {
         "0x2900", "0x2901", "0x2902", "0x2903", "0x2904", "0x2905"
     };
 
-    for (size_t i = 0; i < base::size(strings); ++i)
+    for (size_t i = 0; i < std::size(strings); ++i)
       uuids.push_back(BluetoothUUID(strings[i]));
 
     return uuids;

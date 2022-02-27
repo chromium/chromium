@@ -8,8 +8,9 @@
 #include <dxgi.h>
 #include <wrl.h>
 
+#include <iterator>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 
 namespace vr {
 
@@ -28,7 +29,7 @@ void GetD3D11_1Adapter(int32_t* adapter_index, IDXGIAdapter** adapter) {
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> d3d11_device_context;
     if (SUCCEEDED(D3D11CreateDevice(
             *adapter, D3D_DRIVER_TYPE_UNKNOWN, NULL, flags, feature_levels,
-            base::size(feature_levels), D3D11_SDK_VERSION, &d3d11_device,
+            std::size(feature_levels), D3D11_SDK_VERSION, &d3d11_device,
             &feature_level_out, &d3d11_device_context))) {
       *adapter_index = i;
       return;

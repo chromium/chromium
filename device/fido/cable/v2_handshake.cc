@@ -5,12 +5,12 @@
 #include "device/fido/cable/v2_handshake.h"
 
 #include <inttypes.h>
+
 #include <array>
 #include <type_traits>
 
 #include "base/base64url.h"
 #include "base/bits.h"
-#include "base/cxx17_backports.h"  // for base::size
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -122,7 +122,7 @@ namespace tunnelserver {
 static const char* kAssignedDomains[] = {"cable.ua5v.com", "cable.auth.com"};
 
 absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
-  if (domain >= 256 || domain < base::size(kAssignedDomains)) {
+  if (domain >= 256 || domain < std::size(kAssignedDomains)) {
     return KnownDomainID(domain);
   }
   return absl::nullopt;
@@ -133,7 +133,7 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   if (domain < 256) {
     // The |KnownDomainID| type should only contain valid values for this but,
     // just in case, CHECK it too.
-    CHECK_LT(domain, base::size(kAssignedDomains));
+    CHECK_LT(domain, std::size(kAssignedDomains));
     return kAssignedDomains[domain];
   }
 
@@ -382,7 +382,7 @@ absl::optional<Components> Parse(const std::string& qr_url) {
   const cbor::Value::MapValue& qr_contents_map(qr_contents->GetMap());
 
   base::span<const uint8_t> values[2];
-  for (size_t i = 0; i < base::size(values); i++) {
+  for (size_t i = 0; i < std::size(values); i++) {
     const cbor::Value::MapValue::const_iterator it =
         qr_contents_map.find(cbor::Value(static_cast<int>(i)));
     if (it == qr_contents_map.end() || !it->second.is_bytestring()) {
@@ -431,7 +431,7 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
   qr_contents.emplace(1, qr_key.subspan(device::cablev2::kQRSeedSize));
 
   qr_contents.emplace(
-      2, static_cast<int64_t>(base::size(tunnelserver::kAssignedDomains)));
+      2, static_cast<int64_t>(std::size(tunnelserver::kAssignedDomains)));
 
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 

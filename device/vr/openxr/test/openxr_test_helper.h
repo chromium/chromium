@@ -8,13 +8,13 @@
 #include <d3d11.h>
 #include <unknwn.h>
 #include <wrl.h>
+
 #include <array>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -170,7 +170,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_TYPE_SYSTEM_PROPERTIES, nullptr,           0, 0xBADFACE, "Test System",
       {2048, 2048, 1},           {XR_TRUE, XR_TRUE}};
 
-  static constexpr uint32_t kNumExtensionsSupported = base::size(kExtensions);
+  static constexpr uint32_t kNumExtensionsSupported = std::size(kExtensions);
 
  private:
   struct ActionProperties {

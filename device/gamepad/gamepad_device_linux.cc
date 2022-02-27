@@ -12,7 +12,6 @@
 #include <sys/ioctl.h>
 
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -53,7 +52,7 @@ const size_t kSpecialKeys[] = {
     KEY_HOMEPAGE, KEY_BACK,
     // Record is used for Xbox Series X's share button over BT.
     KEY_RECORD};
-const size_t kSpecialKeysLen = base::size(kSpecialKeys);
+const size_t kSpecialKeysLen = std::size(kSpecialKeys);
 
 #define LONG_BITS (CHAR_BIT * sizeof(long))
 #define BITS_TO_LONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)

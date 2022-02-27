@@ -5,7 +5,6 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -428,7 +427,7 @@ std::vector<uint8_t> GetTestSignResponse() {
 
 // Get a subset of the response for testing error handling.
 std::vector<uint8_t> GetTestCorruptedSignResponse(size_t length) {
-  DCHECK_LE(length, base::size(test_data::kTestU2fSignResponse));
+  DCHECK_LE(length, std::size(test_data::kTestU2fSignResponse));
   return fido_parsing_utils::Materialize(fido_parsing_utils::ExtractSpan(
       test_data::kTestU2fSignResponse, 0, length));
 }

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
 #include "build/build_config.h"
@@ -97,7 +96,7 @@ XrResult CreateInstance(
                                  version_info::GetMajorVersionNumber();
   errno_t error =
       strcpy_s(instance_create_info.applicationInfo.applicationName,
-               base::size(instance_create_info.applicationInfo.applicationName),
+               std::size(instance_create_info.applicationInfo.applicationName),
                application_name.c_str());
   DCHECK_EQ(error, 0);
 
@@ -109,7 +108,7 @@ XrResult CreateInstance(
   instance_create_info.applicationInfo.applicationVersion = build;
 
   error = strcpy_s(instance_create_info.applicationInfo.engineName,
-                   base::size(instance_create_info.applicationInfo.engineName),
+                   std::size(instance_create_info.applicationInfo.engineName),
                    "Chromium");
   DCHECK_EQ(error, 0);
 

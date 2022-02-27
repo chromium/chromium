@@ -97,7 +97,7 @@ class Extractor {
       const cbor::Value& value = map_it->second;
       const unsigned cbor_type_u = static_cast<unsigned>(value.type());
       const unsigned value_type_u = static_cast<unsigned>(value_type);
-      DCHECK(value_type_u < base::size(kExpectedCBORTypes));
+      DCHECK(value_type_u < std::size(kExpectedCBORTypes));
       if (cbor_type_u >= 8 ||
           (kExpectedCBORTypes[value_type_u] & (1u << cbor_type_u)) == 0) {
         return false;

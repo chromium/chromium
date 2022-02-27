@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,7 +87,7 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_AcceptsAllValidFormats) {
     "1a2b3c4d5e6f",
   };
 
-  for (size_t i = 0; i < base::size(kValidFormats); ++i) {
+  for (size_t i = 0; i < std::size(kValidFormats); ++i) {
     SCOPED_TRACE(std::string("Input format: '") + kValidFormats[i] + "'");
     EXPECT_EQ("1A:2B:3C:4D:5E:6F",
               CanonicalizeBluetoothAddress(kValidFormats[i]));
@@ -127,7 +126,7 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
       "1A|2B|3C|4D|5E|6F",
   };
 
-  for (size_t i = 0; i < base::size(kInvalidFormats); ++i) {
+  for (size_t i = 0; i < std::size(kInvalidFormats); ++i) {
     SCOPED_TRACE(std::string("Input format: '") + kInvalidFormats[i] + "'");
     EXPECT_EQ(std::string(), CanonicalizeBluetoothAddress(kInvalidFormats[i]));
 
