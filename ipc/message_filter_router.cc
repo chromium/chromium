@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
 #include "ipc/ipc_message_utils.h"
@@ -72,7 +71,7 @@ void MessageFilterRouter::RemoveFilter(MessageFilter* filter) {
   if (RemoveFilterImpl(global_filters_, filter))
     return;
 
-  for (size_t i = 0; i < base::size(message_class_filters_); ++i)
+  for (size_t i = 0; i < std::size(message_class_filters_); ++i)
     RemoveFilterImpl(message_class_filters_[i], filter);
 }
 
@@ -89,7 +88,7 @@ bool MessageFilterRouter::TryFilters(const Message& message) {
 
 void MessageFilterRouter::Clear() {
   global_filters_.clear();
-  for (size_t i = 0; i < base::size(message_class_filters_); ++i)
+  for (size_t i = 0; i < std::size(message_class_filters_); ++i)
     message_class_filters_[i].clear();
 }
 

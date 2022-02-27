@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/sync_socket.h"
-
 #include <stddef.h>
 #include <stdio.h>
+
 #include <memory>
 #include <sstream>
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/sync_socket.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -53,7 +52,7 @@ IPC_MESSAGE_CONTROL0(MsgClassShutdown)
 namespace {
 
 const char kHelloString[] = "Hello, SyncSocket Client";
-const size_t kHelloStringLength = base::size(kHelloString);
+const size_t kHelloStringLength = std::size(kHelloString);
 
 // The SyncSocket server listener class processes two sorts of
 // messages from the client.
@@ -229,7 +228,7 @@ TEST_F(SyncSocketTest, DisconnectTest) {
   size_t received = 1U;  // Initialize to an unexpected value.
   worker.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&BlockingRead, &pair[0], &buf[0],
-                                base::size(buf), &received));
+                                std::size(buf), &received));
 
   // Wait for the worker thread to say hello.
   char hello[kHelloStringLength] = {0};
