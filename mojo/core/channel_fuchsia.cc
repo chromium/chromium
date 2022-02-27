@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
@@ -291,7 +290,7 @@ class ChannelFuchsia : public Channel,
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
 
       zx_status_t read_result =
-          handle_.read(0, buffer, handles, buffer_capacity, base::size(handles),
+          handle_.read(0, buffer, handles, buffer_capacity, std::size(handles),
                        &bytes_read, &handles_read);
       if (read_result == ZX_OK) {
         for (size_t i = 0; i < handles_read; ++i) {
@@ -304,7 +303,7 @@ class ChannelFuchsia : public Channel,
           break;
         }
       } else if (read_result == ZX_ERR_BUFFER_TOO_SMALL) {
-        DCHECK_LE(handles_read, base::size(handles));
+        DCHECK_LE(handles_read, std::size(handles));
         next_read_size = bytes_read;
       } else if (read_result == ZX_ERR_SHOULD_WAIT) {
         break;
@@ -338,7 +337,7 @@ class ChannelFuchsia : public Channel,
       zx_handle_t handles[ZX_CHANNEL_MAX_MSG_HANDLES] = {};
       size_t handles_count = outgoing_handles.size();
 
-      DCHECK_LE(handles_count, base::size(handles));
+      DCHECK_LE(handles_count, std::size(handles));
       for (size_t i = 0; i < handles_count; ++i) {
         DCHECK(outgoing_handles[i].handle().is_valid());
         handles[i] = outgoing_handles[i].handle().GetHandle().get();

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -270,7 +269,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckSharedBuffer,
   std::string read_buffer(100, '\0');
   uint32_t num_bytes = static_cast<uint32_t>(read_buffer.size());
   MojoHandle handles[10];
-  uint32_t num_handlers = base::size(handles);  // Maximum number to receive
+  uint32_t num_handlers = std::size(handles);  // Maximum number to receive
   CHECK_EQ(MojoReadMessage(h, &read_buffer[0], &num_bytes, &handles[0],
                            &num_handlers, MOJO_READ_MESSAGE_FLAG_NONE),
            MOJO_RESULT_OK);
@@ -350,7 +349,7 @@ TEST_F(MultiprocessMessagePipeTest, SharedBufferPassing) {
     handles[0] = duplicated_shared_buffer;
     ASSERT_EQ(MOJO_RESULT_OK,
               MojoWriteMessage(h, &go1[0], static_cast<uint32_t>(go1.size()),
-                               &handles[0], base::size(handles),
+                               &handles[0], std::size(handles),
                                MOJO_WRITE_MESSAGE_FLAG_NONE));
 
     // Wait for a message from the child.
@@ -407,7 +406,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckPlatformHandleFile,
   std::string read_buffer(100, '\0');
   uint32_t num_bytes = static_cast<uint32_t>(read_buffer.size());
   MojoHandle handles[255];  // Maximum number to receive.
-  uint32_t num_handlers = base::size(handles);
+  uint32_t num_handlers = std::size(handles);
 
   CHECK_EQ(MojoReadMessage(h, &read_buffer[0], &num_bytes, &handles[0],
                            &num_handlers, MOJO_READ_MESSAGE_FLAG_NONE),
@@ -504,7 +503,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(CheckMessagePipe, MultiprocessMessagePipeTest, h) {
 
   // It should have a message pipe.
   MojoHandle handles[10];
-  uint32_t num_handlers = base::size(handles);
+  uint32_t num_handlers = std::size(handles);
   CHECK_EQ(MojoReadMessage(h, nullptr, nullptr, &handles[0], &num_handlers,
                            MOJO_READ_MESSAGE_FLAG_NONE),
            MOJO_RESULT_OK);
@@ -620,7 +619,7 @@ DEFINE_TEST_CLIENT_WITH_PIPE(DataPipeConsumer, MultiprocessMessagePipeTest, h) {
 
   // It should have a message pipe.
   MojoHandle handles[10];
-  uint32_t num_handlers = base::size(handles);
+  uint32_t num_handlers = std::size(handles);
   CHECK_EQ(MojoReadMessage(h, nullptr, nullptr, &handles[0], &num_handlers,
                            MOJO_READ_MESSAGE_FLAG_NONE),
            MOJO_RESULT_OK);

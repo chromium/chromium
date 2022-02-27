@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -219,7 +218,7 @@ TEST_F(WTFTypesTest, SendStringArray) {
   // arrs[1] is null.
   arrs[2] = ConstructStringArray();
 
-  for (size_t i = 0; i < base::size(arrs); ++i) {
+  for (size_t i = 0; i < std::size(arrs); ++i) {
     base::RunLoop loop;
     // Test that a absl::optional<WTF::Vector<WTF::String>> is unchanged after
     // the following conversion:
@@ -246,7 +245,7 @@ TEST_F(WTFTypesTest, SendStringMap) {
   // maps[1] is null.
   maps[2] = ConstructStringMap();
 
-  for (size_t i = 0; i < base::size(maps); ++i) {
+  for (size_t i = 0; i < std::size(maps); ++i) {
     base::RunLoop loop;
     // Test that a absl::optional<WTF::HashMap<WTF::String, WTF::String>> is
     // unchanged after the following conversion:

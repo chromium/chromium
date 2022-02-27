@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/cxx17_backports.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/base/ref_counted_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -15,7 +14,7 @@ TEST(RefCountedMemoryTest, Data) {
   uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
 
   scoped_refptr<base::RefCountedMemory> in =
-      new base::RefCountedStaticMemory(&data, base::size(data));
+      new base::RefCountedStaticMemory(&data, std::size(data));
 
   scoped_refptr<base::RefCountedMemory> out;
   ASSERT_TRUE(
@@ -29,7 +28,7 @@ TEST(RefCountedMemoryTest, Null) {
   // Stuff real data in out to ensure it gets overwritten with a null.
   uint8_t data[] = {'a', 'b', 'c', 'd', 'e'};
   scoped_refptr<base::RefCountedMemory> out =
-      new base::RefCountedStaticMemory(&data, base::size(data));
+      new base::RefCountedStaticMemory(&data, std::size(data));
 
   scoped_refptr<base::RefCountedMemory> in;
   ASSERT_TRUE(

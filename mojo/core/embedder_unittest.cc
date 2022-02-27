@@ -13,7 +13,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -360,8 +359,8 @@ TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
   const size_t kShmSize = 1234;
   RunTestClient("MultiprocessMixMachAndFdsClient", [&](MojoHandle server_mp) {
     // 1. Create fds or Mach objects and mojo handles from them.
-    MojoHandle platform_handles[base::size(kTestHandleTypes)];
-    for (size_t i = 0; i < base::size(kTestHandleTypes); i++) {
+    MojoHandle platform_handles[std::size(kTestHandleTypes)];
+    for (size_t i = 0; i < std::size(kTestHandleTypes); i++) {
       const auto type = kTestHandleTypes[i];
       PlatformHandle scoped_handle;
       if (type == HandleType::POSIX) {
@@ -387,7 +386,7 @@ TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
 
     // 2. Send all the handles to the child.
     WriteMessageWithHandles(server_mp, "hello", platform_handles,
-                            base::size(kTestHandleTypes));
+                            std::size(kTestHandleTypes));
 
     // 3. Read a message from |server_mp|.
     EXPECT_EQ("bye", ReadMessage(server_mp));
@@ -397,7 +396,7 @@ TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
                                   EmbedderTest,
                                   client_mp) {
-  const int kNumHandles = base::size(kTestHandleTypes);
+  const int kNumHandles = std::size(kTestHandleTypes);
   MojoHandle platform_handles[kNumHandles];
 
   // 1. Read from |client_mp|, which should have a message containing

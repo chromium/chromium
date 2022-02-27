@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -192,7 +191,7 @@ TEST_F(DataPipeTest, Basic) {
   int32_t elements[10] = {};
   uint32_t num_bytes = 0;
 
-  num_bytes = static_cast<uint32_t>(base::size(elements) * sizeof(elements[0]));
+  num_bytes = static_cast<uint32_t>(std::size(elements) * sizeof(elements[0]));
 
   elements[0] = 123;
   elements[1] = 456;
@@ -235,7 +234,7 @@ TEST_F(DataPipeTest, CreateAndMaybeTransfer) {
        100,                              // |element_num_bytes|.
        0}                                // |capacity_num_bytes|.
   };
-  for (size_t i = 0; i < base::size(test_options); i++) {
+  for (size_t i = 0; i < std::size(test_options); i++) {
     MojoHandle producer_handle, consumer_handle;
     MojoCreateDataPipeOptions* options = i ? &test_options[i] : nullptr;
     ASSERT_EQ(MOJO_RESULT_OK,
@@ -260,7 +259,7 @@ TEST_F(DataPipeTest, SimpleReadWrite) {
   uint32_t num_bytes = 0;
 
   // Try reading; nothing there yet.
-  num_bytes = static_cast<uint32_t>(base::size(elements) * sizeof(elements[0]));
+  num_bytes = static_cast<uint32_t>(std::size(elements) * sizeof(elements[0]));
   ASSERT_EQ(MOJO_RESULT_SHOULD_WAIT, ReadData(elements, &num_bytes));
 
   // Query; nothing there yet.
@@ -898,7 +897,7 @@ TEST_F(DataPipeTest, AllOrNone) {
   // Try writing more than the total capacity of the pipe.
   uint32_t num_bytes = 20u * sizeof(int32_t);
   int32_t buffer[100];
-  Seq(0, base::size(buffer), buffer);
+  Seq(0, std::size(buffer), buffer);
   ASSERT_EQ(MOJO_RESULT_OUT_OF_RANGE, WriteData(buffer, &num_bytes, true));
 
   // Should still be empty.
@@ -908,7 +907,7 @@ TEST_F(DataPipeTest, AllOrNone) {
 
   // Write some data.
   num_bytes = 5u * sizeof(int32_t);
-  Seq(100, base::size(buffer), buffer);
+  Seq(100, std::size(buffer), buffer);
   ASSERT_EQ(MOJO_RESULT_OK, WriteData(buffer, &num_bytes, true));
   ASSERT_EQ(5u * sizeof(int32_t), num_bytes);
 
@@ -934,7 +933,7 @@ TEST_F(DataPipeTest, AllOrNone) {
   // Try writing more than the available capacity of the pipe, but less than the
   // total capacity.
   num_bytes = 6u * sizeof(int32_t);
-  Seq(200, base::size(buffer), buffer);
+  Seq(200, std::size(buffer), buffer);
   ASSERT_EQ(MOJO_RESULT_OUT_OF_RANGE, WriteData(buffer, &num_bytes, true));
 
   // Try reading too much.
@@ -951,13 +950,13 @@ TEST_F(DataPipeTest, AllOrNone) {
 
   // Just a little.
   num_bytes = 2u * sizeof(int32_t);
-  Seq(300, base::size(buffer), buffer);
+  Seq(300, std::size(buffer), buffer);
   ASSERT_EQ(MOJO_RESULT_OK, WriteData(buffer, &num_bytes, true));
   ASSERT_EQ(2u * sizeof(int32_t), num_bytes);
 
   // Just right.
   num_bytes = 3u * sizeof(int32_t);
-  Seq(400, base::size(buffer), buffer);
+  Seq(400, std::size(buffer), buffer);
   ASSERT_EQ(MOJO_RESULT_OK, WriteData(buffer, &num_bytes, true));
   ASSERT_EQ(3u * sizeof(int32_t), num_bytes);
 
@@ -1053,7 +1052,7 @@ TEST_F(DataPipeTest, AllOrNone) {
 // this.)
 TEST_F(DataPipeTest, WrapAround) {
   unsigned char test_data[1000];
-  for (size_t i = 0; i < base::size(test_data); i++)
+  for (size_t i = 0; i < std::size(test_data); i++)
     test_data[i] = static_cast<unsigned char>(i);
 
   const MojoCreateDataPipeOptions options = {
@@ -1130,7 +1129,7 @@ TEST_F(DataPipeTest, WrapAround) {
 
   // Read as much as possible. We should read 100 bytes.
   num_bytes =
-      static_cast<uint32_t>(base::size(read_buffer) * sizeof(read_buffer[0]));
+      static_cast<uint32_t>(std::size(read_buffer) * sizeof(read_buffer[0]));
   memset(read_buffer, 0, num_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, ReadData(read_buffer, &num_bytes));
   ASSERT_EQ(100u, num_bytes);
