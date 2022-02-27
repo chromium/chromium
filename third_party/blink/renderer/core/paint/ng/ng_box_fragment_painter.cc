@@ -1978,7 +1978,12 @@ bool NGBoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       // We set offset in container block instead of offset in |fragment| like
       // |NGBoxFragmentPainter::HitTestTextFragment()|.
       // See http://crbug.com/1043471
+      DCHECK(!box_item_ || box_item_->BoxFragment() == &fragment);
       if (box_item_ && box_item_->IsInlineBox()) {
+        // Opaque fragments should be included only for list-based hit-testing.
+        if (fragment.IsOpaque() &&
+            !hit_test.result->GetHitTestRequest().ListBased())
+          return false;
         DCHECK(inline_box_cursor_);
         if (hit_test.AddNodeToResultWithContentOffset(
                 fragment.NodeForHitTest(),
@@ -2081,6 +2086,7 @@ bool NGBoxFragmentPainter::HitTestLineBoxFragment(
     const NGPhysicalLineBoxFragment& fragment,
     const NGInlineBackwardCursor& cursor,
     const PhysicalOffset& physical_offset) {
+  DCHECK_EQ(cursor.Current()->LineBoxFragment(), &fragment);
   PhysicalRect overflow_rect = cursor.Current().InkOverflow();
   overflow_rect.Move(physical_offset);
   if (!hit_test.location.Intersects(overflow_rect))
@@ -2185,23 +2191,8 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     }
 
     if (fragment.IsBlockInInline()) {
-      if (NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
-                                                     physical_offset)) {
-        return true;
-      }
-      if (!box_fragment_.IsInlineBox()) {
-        // fast/events/pointerevents/mouse-pointer-transition-events.html
-        // requires this.
-        return false;
-      }
-      // [1] and [2] reach here for hit test on empty <div> with size.
-      // [1] label-contains-other-interactive-content.html
-      // [2] svg/custom/use-event-retargeting.html
-      if (hit_test.action != kHitTestForeground)
-        return false;
-      return NGBoxFragmentPainter(fragment).NodeAtPoint(
-          *hit_test.result, hit_test.location, physical_offset,
-          kHitTestChildBlockBackgrounds);
+      return NGBoxFragmentPainter(fragment).NodeAtPoint(hit_test,
+                                                        physical_offset);
     }
 
     // When traversing into a different inline formatting context,
