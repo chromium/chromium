@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/activity_tracker.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -216,12 +215,12 @@ bool AddDirectory(int path,
 // Compares the loaded |module| file name matches |module_name|.
 bool IsExpandedModuleName(HMODULE module, const wchar_t* module_name) {
   wchar_t path[MAX_PATH];
-  DWORD sz = ::GetModuleFileNameW(module, path, base::size(path));
-  if ((sz == base::size(path)) || (sz == 0)) {
+  DWORD sz = ::GetModuleFileNameW(module, path, std::size(path));
+  if ((sz == std::size(path)) || (sz == 0)) {
     // XP does not set the last error properly, so we bail out anyway.
     return false;
   }
-  if (!::GetLongPathName(path, path, base::size(path)))
+  if (!::GetLongPathName(path, path, std::size(path)))
     return false;
   base::FilePath fname(path);
   return (fname.BaseName().value() == module_name);
@@ -283,7 +282,7 @@ void BlocklistAddOneDll(const wchar_t* module_name,
 // Eviction of injected DLLs is done by the sandbox so that the injected module
 // does not get a chance to execute any code.
 void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
-  for (int ix = 0; ix != base::size(kTroublesomeDlls); ++ix)
+  for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
     BlocklistAddOneDll(kTroublesomeDlls[ix], true, policy);
 }
 

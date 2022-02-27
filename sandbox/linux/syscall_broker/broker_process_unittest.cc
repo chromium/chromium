@@ -23,7 +23,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -608,7 +607,7 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
 
   // Save one FD to send to the broker later, and close the others.
   base::ScopedFD message_fd(available_fds[0]);
-  for (size_t i = 1; i < base::size(available_fds); i++) {
+  for (size_t i = 1; i < std::size(available_fds); i++) {
     SANDBOX_ASSERT(0 == IGNORE_EINTR(close(available_fds[i])));
   }
 
@@ -618,7 +617,7 @@ SANDBOX_TEST_ALLOW_NOISE(BrokerProcess, MAYBE_RecvMsgDescriptorLeak) {
   // be assigned to newly-created descriptors allocated by the process.)
   const rlim_t fd_limit =
       1 + *std::max_element(available_fds,
-                            available_fds + base::size(available_fds));
+                            available_fds + std::size(available_fds));
 
   struct rlimit rlim;
   SANDBOX_ASSERT(0 == getrlimit(RLIMIT_NOFILE, &rlim));

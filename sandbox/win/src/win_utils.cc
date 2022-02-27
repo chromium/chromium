@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/win/pe_image.h"
@@ -31,7 +30,7 @@ namespace {
 const size_t kDriveLetterLen = 3;
 
 constexpr wchar_t kNTDotPrefix[] = L"\\\\.\\";
-const size_t kNTDotPrefixLen = base::size(kNTDotPrefix) - 1;
+const size_t kNTDotPrefixLen = std::size(kNTDotPrefix) - 1;
 
 // Holds the information about a known registry key.
 struct KnownReservedKey {
@@ -108,7 +107,7 @@ bool IsDevicePath(const std::wstring& path, std::wstring* trimmed_path) {
 // "\Device\HarddiskVolumeX" in |path|.
 size_t PassHarddiskVolume(const std::wstring& path) {
   static constexpr wchar_t pattern[] = L"\\Device\\HarddiskVolume";
-  const size_t patternLen = base::size(pattern) - 1;
+  const size_t patternLen = std::size(pattern) - 1;
 
   // First, check for |pattern|.
   if ((path.size() < patternLen) || (!EqualPath(path, pattern, patternLen)))
@@ -176,14 +175,14 @@ bool IsPipe(const std::wstring& path) {
     start = sandbox::kNTPrefixLen;
 
   const wchar_t kPipe[] = L"pipe\\";
-  if (path.size() < start + base::size(kPipe) - 1)
+  if (path.size() < start + std::size(kPipe) - 1)
     return false;
 
-  return EqualPath(path, start, kPipe, base::size(kPipe) - 1);
+  return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
 }
 
 HKEY GetReservedKeyFromName(const std::wstring& name) {
-  for (size_t i = 0; i < base::size(kKnownKey); ++i) {
+  for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name == kKnownKey[i].name)
       return kKnownKey[i].key;
   }
@@ -192,7 +191,7 @@ HKEY GetReservedKeyFromName(const std::wstring& name) {
 }
 
 bool ResolveRegistryName(std::wstring name, std::wstring* resolved_name) {
-  for (size_t i = 0; i < base::size(kKnownKey); ++i) {
+  for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name.find(kKnownKey[i].name) == 0) {
       HKEY key;
       DWORD disposition;

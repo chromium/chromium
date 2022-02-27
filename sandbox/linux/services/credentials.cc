@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -236,7 +235,7 @@ bool Credentials::HasAnyCapability() {
 
   PCHECK(sys_capget(&hdr, data) == 0);
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     if (data[i].effective || data[i].permitted || data[i].inheritable) {
       return true;
     }

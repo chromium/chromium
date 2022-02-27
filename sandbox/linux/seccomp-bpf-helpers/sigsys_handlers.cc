@@ -14,7 +14,6 @@
 #include <unistd.h>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
@@ -183,7 +182,7 @@ void SetSeccompCrashKey(const struct arch_seccomp_data& args) {
   memset(crash_key, '\0', crash_key_length);
 
   size_t offset = 0;
-  for (size_t i = 0; i < base::size(values); ++i) {
+  for (size_t i = 0; i < std::size(values); ++i) {
     const char* strings[2] = { prefixes[i], values[i] };
     for (auto* string : strings) {
       size_t string_len = strlen(string);

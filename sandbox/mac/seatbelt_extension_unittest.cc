@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -32,7 +31,7 @@ const char kSandboxProfile[] = R"(
 )";
 
 const char kTestData[] = "hello world";
-constexpr int kTestDataLen = base::size(kTestData);
+constexpr int kTestDataLen = std::size(kTestData);
 
 const char kSwitchFile[] = "test-file";
 const char kSwitchExtension[] = "test-extension";

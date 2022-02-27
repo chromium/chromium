@@ -14,7 +14,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
@@ -451,7 +450,7 @@ CodeGen::Node PolicyCompiler::Trap(TrapRegistry::TrapFnc fnc,
 }
 
 bool PolicyCompiler::IsRequiredForUnsafeTrap(int sysno) {
-  for (size_t i = 0; i < base::size(kSyscallsRequiredForUnsafeTraps); ++i) {
+  for (size_t i = 0; i < std::size(kSyscallsRequiredForUnsafeTraps); ++i) {
     if (sysno == kSyscallsRequiredForUnsafeTraps[i]) {
       return true;
     }

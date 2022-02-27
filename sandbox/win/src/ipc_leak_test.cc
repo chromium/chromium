@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdlib.h>
 #include <windows.h>
 
 #include <memory>
 
-#include <stdlib.h>
-
-#include "base/cxx17_backports.h"
 #include "base/memory/page_size.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/crosscall_client.h"
@@ -274,7 +272,7 @@ TEST(IPCTest, IPCLeak) {
                    {TESTIPC_CREATENAMEDPIPEW, "TESTIPC_CREATENAMEDPIPEW",
                     INVALID_HANDLE_VALUE}};
 
-  static_assert(base::size(test_data) == TESTIPC_LAST, "Not enough tests.");
+  static_assert(std::size(test_data) == TESTIPC_LAST, "Not enough tests.");
   for (auto test : test_data) {
     TestRunner runner;
     std::wstring command = std::wstring(L"IPC_Leak ");

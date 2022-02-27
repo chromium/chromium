@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -286,8 +285,8 @@ TEST(SandboxNtUtil, CopyNameAndAttributes) {
             sandbox::CopyNameAndAttributes(&object_attributes, &name, &name_len,
                                            &attributes));
   EXPECT_EQ(object_attributes.Attributes, attributes);
-  EXPECT_EQ(base::size(name_buffer), name_len);
-  EXPECT_EQ(0, wcsncmp(name.get(), name_buffer, base::size(name_buffer)));
+  EXPECT_EQ(std::size(name_buffer), name_len);
+  EXPECT_EQ(0, wcsncmp(name.get(), name_buffer, std::size(name_buffer)));
   EXPECT_EQ(L'\0', name.get()[name_len]);
 }
 

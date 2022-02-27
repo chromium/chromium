@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -346,7 +345,7 @@ std::wstring FixNTPrefixForMatch(const std::wstring& name) {
 
   // NT prefix escaped for rule matcher
   const wchar_t kNTPrefixEscaped[] = L"\\/?/?\\";
-  const int kNTPrefixEscapedLen = base::size(kNTPrefixEscaped) - 1;
+  const int kNTPrefixEscapedLen = std::size(kNTPrefixEscaped) - 1;
 
   if (0 != mod_name.compare(0, kNTPrefixLen, kNTPrefix)) {
     if (0 != mod_name.compare(0, kNTPrefixEscapedLen, kNTPrefixEscaped)) {

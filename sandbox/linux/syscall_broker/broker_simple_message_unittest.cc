@@ -433,7 +433,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultValue* expected_results[] = {&data1_value};
 
     BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           base::size(expected_results));
+                                           std::size(expected_results));
 
     wait_event.Wait();
   }
@@ -457,7 +457,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultValue* expected_results[] = {&int1_value};
 
     BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           base::size(expected_results));
+                                           std::size(expected_results));
 
     wait_event.Wait();
   }
@@ -485,7 +485,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
     ExpectedResultValue* expected_results[] = {&data1_value, &int1_value};
 
     BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           base::size(expected_results));
+                                           std::size(expected_results));
 
     wait_event.Wait();
   }
@@ -518,7 +518,7 @@ TEST(BrokerSimpleMessage, SendAndRecvMsg) {
                                                &data2_value, &int2_value};
 
     BrokerSimpleMessageTestHelper::RecvMsg(&ipc_reader, expected_results,
-                                           base::size(expected_results));
+                                           std::size(expected_results));
 
     wait_event.Wait();
   }
@@ -550,7 +550,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
         FROM_HERE,
         base::BindOnce(&BrokerSimpleMessageTestHelper::RecvMsgAndReply,
                        &ipc_reader, expected_results,
-                       base::size(expected_results), reply_data1, -1));
+                       std::size(expected_results), reply_data1, -1));
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 
@@ -583,7 +583,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
         FROM_HERE,
         base::BindOnce(&BrokerSimpleMessageTestHelper::RecvMsgAndReply,
                        &ipc_reader, expected_results,
-                       base::size(expected_results), reply_data1, -1));
+                       std::size(expected_results), reply_data1, -1));
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 
@@ -617,7 +617,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
         FROM_HERE,
         base::BindOnce(&BrokerSimpleMessageTestHelper::RecvMsgAndReply,
                        &ipc_reader, expected_results,
-                       base::size(expected_results), reply_data1, -1));
+                       std::size(expected_results), reply_data1, -1));
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 
@@ -655,7 +655,7 @@ TEST(BrokerSimpleMessage, SendRecvMsgSynchronous) {
         FROM_HERE,
         base::BindOnce(&BrokerSimpleMessageTestHelper::RecvMsgAndReply,
                        &ipc_reader, expected_results,
-                       base::size(expected_results), reply_data1, -1));
+                       std::size(expected_results), reply_data1, -1));
 
     PostWaitableEventToThread(&message_thread, &wait_event);
 

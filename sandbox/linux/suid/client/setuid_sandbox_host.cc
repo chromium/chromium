@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -51,7 +50,7 @@ void UnsetExpectedEnvironmentVariables(base::EnvironmentMap* env_map) {
       kSandboxNETNSEnvironmentVarName,
   };
 
-  for (size_t i = 0; i < base::size(environment_vars); ++i) {
+  for (size_t i = 0; i < std::size(environment_vars); ++i) {
     // Setting values in EnvironmentMap to an empty-string will make
     // sure that they get unset from the environment via AlterEnvironment().
     (*env_map)[environment_vars[i]] = base::NativeEnvironmentString();
