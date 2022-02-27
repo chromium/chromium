@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/cpu_reduction_experiment.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -63,7 +62,7 @@ constexpr size_t kMaxOwnedPartialUpdateDependents = 300u;
 constexpr const char* kReportTypeNames[]{
     "", "MissedDeadlineFrame.", "DroppedFrame.", "CompositorOnlyFrame."};
 
-static_assert(base::size(kReportTypeNames) == kFrameReportTypeCount,
+static_assert(std::size(kReportTypeNames) == kFrameReportTypeCount,
               "Compositor latency report types has changed.");
 
 // This value should be recalculated in case of changes to the number of values
@@ -143,7 +142,7 @@ CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::~Iterator() =
 
 bool CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::IsValid()
     const {
-  return index_ < base::size(owner_->list_);
+  return index_ < std::size(owner_->list_);
 }
 
 void CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::Advance() {
@@ -212,7 +211,7 @@ CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Iterator(
 CompositorFrameReporter::ProcessedVizBreakdown::Iterator::~Iterator() = default;
 
 bool CompositorFrameReporter::ProcessedVizBreakdown::Iterator::IsValid() const {
-  return index_ < base::size(owner_->list_) && owner_->list_[index_];
+  return index_ < std::size(owner_->list_) && owner_->list_[index_];
 }
 
 void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::Advance() {

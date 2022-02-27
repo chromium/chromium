@@ -31,7 +31,7 @@ constexpr double kBucketBounds[7] = {0, 3, 6, 12, 25, 50, 75};
 
 // Search backwards using the bucket bounds defined above.
 size_t DecideSmoothnessBucket(double pdf) {
-  size_t i = base::size(kBucketBounds) - 1;
+  size_t i = std::size(kBucketBounds) - 1;
   while (pdf < kBucketBounds[i])
     i--;
   return i;
@@ -96,9 +96,9 @@ double SlidingWindowHistogram::GetPercentDroppedFrameVariance() const {
 std::vector<double> SlidingWindowHistogram::GetPercentDroppedFrameBuckets()
     const {
   if (total_count_ == 0)
-    return std::vector<double>(base::size(kBucketBounds), 0);
-  std::vector<double> buckets(base::size(kBucketBounds));
-  for (size_t i = 0; i < base::size(kBucketBounds); ++i) {
+    return std::vector<double>(std::size(kBucketBounds), 0);
+  std::vector<double> buckets(std::size(kBucketBounds));
+  for (size_t i = 0; i < std::size(kBucketBounds); ++i) {
     buckets[i] =
         static_cast<double>(smoothness_buckets_[i]) * 100 / total_count_;
   }
@@ -112,7 +112,7 @@ void SlidingWindowHistogram::Clear() {
 }
 
 std::ostream& SlidingWindowHistogram::Dump(std::ostream& stream) const {
-  for (size_t i = 0; i < base::size(histogram_bins_); ++i) {
+  for (size_t i = 0; i < std::size(histogram_bins_); ++i) {
     stream << i << ": " << histogram_bins_[i] << std::endl;
   }
   return stream << "Total: " << total_count_;
@@ -349,7 +349,7 @@ void DroppedFrameCounter::ReportFrames() {
         sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy]
             .GetPercentDroppedFrameBuckets();
     DCHECK_EQ(sliding_window_buckets.size(),
-              base::size(smoothness_data.buckets));
+              std::size(smoothness_data.buckets));
     std::copy(sliding_window_buckets.begin(), sliding_window_buckets.end(),
               smoothness_data.buckets);
 

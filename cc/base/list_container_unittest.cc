@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -798,7 +797,7 @@ TEST(ListContainerTest, InsertCopyBeforeMany) {
         list.AllocateAndConstruct<SimpleDerivedElement>();
     element->set_value(initial_list_element);
   }
-  EXPECT_EQ(base::size(initial_list), list.size());
+  EXPECT_EQ(std::size(initial_list), list.size());
 
   // Insert the missing elements.
   auto iter = list.begin();
@@ -917,7 +916,7 @@ TEST(ListContainerTest, InsertBeforeMany) {
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
   };
-  const size_t size = base::size(initial_list);
+  const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =
         list.AllocateAndConstruct<SimpleDerivedElement>();
@@ -1044,7 +1043,7 @@ TEST(ListContainerTest, InsertAfterMany) {
       23, 24, 25, 26, 27, 28, 29, 30, 32, 34, 36, 37, 51, 52, 54, 56,
       60, 64, 65, 70, 75, 76, 80, 81, 83, 86, 87, 90, 93, 95, 97, 98,
   };
-  const size_t size = base::size(initial_list);
+  const size_t size = std::size(initial_list);
   for (size_t i = 0; i < size; ++i) {
     SimpleDerivedElement* element =
         list.AllocateAndConstruct<SimpleDerivedElement>();

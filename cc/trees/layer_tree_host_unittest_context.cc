@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/layers/heads_up_display_layer.h"
@@ -330,7 +329,7 @@ class LayerTreeHostContextTestLostContextSucceeds
         },
     };
 
-    if (test_case_ >= base::size(kTests))
+    if (test_case_ >= std::size(kTests))
       return false;
     // Make sure that we lost our context at least once in the last test run so
     // the test did something.

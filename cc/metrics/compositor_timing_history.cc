@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -286,12 +286,12 @@ const int kUMADurationBuckets[] = {
     32000000,
 };
 
-#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample)              \
-  do {                                                                      \
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                       \
-        name "2", sample.InMicroseconds(),                                  \
-        std::vector<int>(kUMAVSyncBuckets,                                  \
-                         kUMAVSyncBuckets + base::size(kUMAVSyncBuckets))); \
+#define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample)             \
+  do {                                                                     \
+    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                      \
+        name "2", sample.InMicroseconds(),                                 \
+        std::vector<int>(kUMAVSyncBuckets,                                 \
+                         kUMAVSyncBuckets + std::size(kUMAVSyncBuckets))); \
   } while (false)
 
 #define UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, suffix, sample) \
@@ -300,7 +300,7 @@ const int kUMADurationBuckets[] = {
         name "2" suffix, sample.InMicroseconds(),                        \
         std::vector<int>(                                                \
             kUMADurationBuckets,                                         \
-            kUMADurationBuckets + base::size(kUMADurationBuckets)));     \
+            kUMADurationBuckets + std::size(kUMADurationBuckets)));      \
   } while (false)
 
 #define UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(name, sample) \

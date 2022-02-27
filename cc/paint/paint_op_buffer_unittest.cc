@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -2611,11 +2610,11 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
       static_cast<SkBlendMode>(static_cast<uint8_t>(~0)),
   };
 
-  for (size_t i = 0; i < base::size(bad_modes_for_draw_color); ++i) {
+  for (size_t i = 0; i < std::size(bad_modes_for_draw_color); ++i) {
     buffer.push<DrawColorOp>(SK_ColorMAGENTA, bad_modes_for_draw_color[i]);
   }
 
-  for (size_t i = 0; i < base::size(bad_modes_for_flags); ++i) {
+  for (size_t i = 0; i < std::size(bad_modes_for_flags); ++i) {
     PaintFlags flags = test_flags[i % test_flags.size()];
     flags.setBlendMode(bad_modes_for_flags[i]);
     buffer.push<DrawRectOp>(test_rects[i % test_rects.size()], flags);

@@ -5,10 +5,10 @@
 #include "cc/layers/surface_layer_impl.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/debug/debug_colors.h"
@@ -244,7 +244,7 @@ void SurfaceLayerImpl::AppendRainbowDebugBorder(
       0x800000ff,  // Blue.
       0x80ee82ee,  // Violet.
   };
-  const int kNumColors = base::size(colors);
+  const int kNumColors = std::size(colors);
 
   const int kStripeWidth = 300;
   const int kStripeHeight = 300;

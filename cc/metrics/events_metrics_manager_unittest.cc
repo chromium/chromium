@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/metrics/event_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -190,7 +189,7 @@ TEST_F(EventsMetricsManagerTest, NestedEventsMetrics) {
       },
   };
 
-  for (size_t i = 0; i < base::size(configs); i++) {
+  for (size_t i = 0; i < std::size(configs); i++) {
     auto& config = configs[i];
     std::vector<const EventMetrics*> expected_saved_metrics;
 

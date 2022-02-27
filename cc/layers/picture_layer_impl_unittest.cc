@@ -12,7 +12,6 @@
 #include <set>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -3482,7 +3481,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
     while (std::abs(tile->contents_scale_key() - expected_scales[scale_index]) >
            std::numeric_limits<float>::epsilon()) {
       ++scale_index;
-      ASSERT_LT(scale_index, base::size(expected_scales));
+      ASSERT_LT(scale_index, std::size(expected_scales));
     }
 
     EXPECT_FLOAT_EQ(tile->contents_scale_key(), expected_scales[scale_index]);
@@ -3530,7 +3529,7 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
     while (std::abs(tile->contents_scale_key() - expected_scales[scale_index]) >
            std::numeric_limits<float>::epsilon()) {
       ++scale_index;
-      ASSERT_LT(scale_index, base::size(expected_scales));
+      ASSERT_LT(scale_index, std::size(expected_scales));
     }
 
     EXPECT_FLOAT_EQ(tile->contents_scale_key(), expected_scales[scale_index]);

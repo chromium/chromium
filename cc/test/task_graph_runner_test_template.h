@@ -5,13 +5,12 @@
 #ifndef CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 #define CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "cc/raster/task_graph_runner.h"
 
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"
@@ -281,8 +280,8 @@ TYPED_TEST_P(SingleThreadTaskGraphRunnerTest, Priority) {
         TaskInfo(i, 0u, 2u, 1u, 0u, 1u),  // Priority 1
         TaskInfo(i, 1u, 3u, 1u, 0u, 0u)   // Priority 0
     };
-    this->ScheduleTasks(
-        i, std::vector<TaskInfo>(tasks, tasks + base::size(tasks)));
+    this->ScheduleTasks(i,
+                        std::vector<TaskInfo>(tasks, tasks + std::size(tasks)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {

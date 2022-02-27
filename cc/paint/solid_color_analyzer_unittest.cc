@@ -4,7 +4,6 @@
 
 #include "cc/paint/solid_color_analyzer.h"
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
@@ -424,7 +423,7 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
 
   for (int case_scale = 0; case_scale < 2; ++case_scale) {
     bool scaled = case_scale > 0;
-    for (size_t i = 0; i < base::size(cases); ++i) {
+    for (size_t i = 0; i < std::size(cases); ++i) {
       Reset();
       Initialize(canvas_rect);
 

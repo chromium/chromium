@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
@@ -834,7 +833,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
     for (int j = 0; j < (bounds.height() + grid_size - 1) / grid_size; j++) {
       for (int i = 0; i < (bounds.width() + grid_size - 1) / grid_size; i++) {
         PaintFlags flags;
-        flags.setColor(test_colors[(i + j * 3) % base::size(test_colors)]);
+        flags.setColor(test_colors[(i + j * 3) % std::size(test_colors)]);
         display_list->push<DrawRectOp>(
             SkRect::MakeXYWH(i * grid_size, j * grid_size, grid_size,
                              grid_size),
