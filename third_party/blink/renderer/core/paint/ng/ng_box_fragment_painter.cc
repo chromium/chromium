@@ -2400,7 +2400,7 @@ bool NGBoxFragmentPainter::ShouldHitTestCulledInlineAncestors(
     // inline, e.g. <span>a<div>b</div></span>.
     return false;
   }
-  return !item.IsBlockInInline();
+  return true;
 }
 
 bool NGBoxFragmentPainter::HitTestItemsChildren(
