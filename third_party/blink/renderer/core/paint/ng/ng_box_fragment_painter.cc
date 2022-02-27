@@ -2310,11 +2310,6 @@ bool NGBoxFragmentPainter::HitTestChildren(
   }
   // Check descendants of this fragment because floats may be in the
   // |NGFragmentItems| of the descendants.
-  if (hit_test.action == kHitTestFloat &&
-      box_fragment_.HasFloatingDescendantsForPaint()) {
-    return HitTestFloatingChildren(hit_test, box_fragment_, accumulated_offset);
-  }
-
   if (hit_test.action == kHitTestFloat) {
     return box_fragment_.HasFloatingDescendantsForPaint() &&
            HitTestFloatingChildren(hit_test, box_fragment_, accumulated_offset);
