@@ -3978,7 +3978,7 @@
   {
     "name": "media-app-handles-pdf",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 106
   },
   {
     "name": "media-app-multi-window",
