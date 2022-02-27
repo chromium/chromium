@@ -54,7 +54,7 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
       {15, 12, 26.666666f, 189.333328f, 84.000008f, 13.333344f},
       {15, 16, 28.000000f, 117.333334f, 152.000000f, 19.999992f},
   };
-  static_assert(base::size(kExpectedTextRuns) == kExpectedTextRunCount,
+  static_assert(std::size(kExpectedTextRuns) == kExpectedTextRunCount,
                 "Bad test expectation count");
 
   static constexpr size_t kExpectedCharCount = 30;
@@ -66,7 +66,7 @@ TEST_F(AccessibilityTest, GetAccessibilityPage) {
       {'y', 12}, {'e', 12},     {',', 4},      {' ', 6.6666}, {'w', 16},
       {'o', 12}, {'r', 8},      {'l', 4},      {'d', 12},     {'!', 2.6666},
   };
-  static_assert(base::size(kExpectedChars) == kExpectedCharCount,
+  static_assert(std::size(kExpectedChars) == kExpectedCharCount,
                 "Bad test expectation count");
 
   TestClient client;
@@ -134,7 +134,7 @@ TEST_F(AccessibilityTest, GetAccessibilityImageInfo) {
   EXPECT_EQ(gfx::Rect(5, 3, 816, 1056), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
-  ASSERT_EQ(page_objects.images.size(), base::size(kExpectedImageInfo));
+  ASSERT_EQ(page_objects.images.size(), std::size(kExpectedImageInfo));
 
   for (size_t i = 0; i < page_objects.images.size(); ++i) {
     EXPECT_EQ(page_objects.images[i].alt_text, kExpectedImageInfo[i].alt_text);
@@ -452,7 +452,7 @@ TEST_F(AccessibilityTest, GetAccessibilityLinkInfo) {
   EXPECT_EQ(gfx::Rect(5, 3, 533, 266), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
-  ASSERT_EQ(page_objects.links.size(), base::size(expected_link_info));
+  ASSERT_EQ(page_objects.links.size(), std::size(expected_link_info));
 
   for (size_t i = 0; i < page_objects.links.size(); ++i) {
     const AccessibilityLinkInfo& link_info = page_objects.links[i];
@@ -491,7 +491,7 @@ TEST_F(AccessibilityTest, GetAccessibilityHighlightInfo) {
   EXPECT_EQ(gfx::Rect(5, 3, 533, 266), page_info.bounds);
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
-  ASSERT_EQ(page_objects.highlights.size(), base::size(kExpectedHighlightInfo));
+  ASSERT_EQ(page_objects.highlights.size(), std::size(kExpectedHighlightInfo));
 
   for (size_t i = 0; i < page_objects.highlights.size(); ++i) {
     const AccessibilityHighlightInfo& highlight_info =
@@ -539,7 +539,7 @@ TEST_F(AccessibilityTest, GetAccessibilityTextFieldInfo) {
   EXPECT_EQ(text_runs.size(), page_info.text_run_count);
   EXPECT_EQ(chars.size(), page_info.char_count);
   ASSERT_EQ(page_objects.form_fields.text_fields.size(),
-            base::size(kExpectedTextFieldInfo));
+            std::size(kExpectedTextFieldInfo));
 
   for (size_t i = 0; i < page_objects.form_fields.text_fields.size(); ++i) {
     const AccessibilityTextFieldInfo& text_field_info =

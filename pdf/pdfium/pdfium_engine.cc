@@ -2951,7 +2951,7 @@ void PDFiumEngine::LoadForm() {
       static constexpr FPDF_ANNOTATION_SUBTYPE kFocusableAnnotSubtypes[] = {
           FPDF_ANNOT_LINK, FPDF_ANNOT_HIGHLIGHT, FPDF_ANNOT_WIDGET};
       FPDF_BOOL ret = FPDFAnnot_SetFocusableSubtypes(
-          form(), kFocusableAnnotSubtypes, base::size(kFocusableAnnotSubtypes));
+          form(), kFocusableAnnotSubtypes, std::size(kFocusableAnnotSubtypes));
       DCHECK(ret);
     }
   }

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/icu_test_util.h"
@@ -1428,7 +1427,7 @@ class PdfViewPluginBaseSubmitFormTest : public PdfViewPluginBaseTest {
   void SubmitFailingForm(const std::string& url) {
     EXPECT_CALL(fake_plugin_, CreateUrlLoaderInternal).Times(0);
     constexpr char kFormData[] = "form data";
-    fake_plugin_.SubmitForm(url, kFormData, base::size(kFormData));
+    fake_plugin_.SubmitForm(url, kFormData, std::size(kFormData));
   }
 
  protected:
