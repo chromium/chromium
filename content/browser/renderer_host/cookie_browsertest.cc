@@ -33,6 +33,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/alternative_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -274,6 +275,58 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   // isn't same-site with its ancestors. The SameSite=None but insecure cookie
   // is rejected.
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
+}
+
+IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingChar) {
+  using std::string_literals::operator""s;
+
+  std::string cookie_string;
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->AddCustomHeader("Set-Cookie", cookie_string);
+        return std::move(response);
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL http_url = embedded_test_server()->GetURL("/");
+  base::HistogramTester histogram;
+
+  // Test scenarios where a control char may appear at start, middle and end of
+  // a cookie line. Control char array with NULL (\x0), CR (\xD), and LF (xA)
+  char kTestChars[] = {'\x0', '\xD', '\xA'};
+
+  for (const auto& test : kTestChars) {
+    std::string ctl_string(1, test);
+
+    // ctrl char at start of string
+    cookie_string = ctl_string + "foo=bar"s;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    // ctrl char at middle of string
+    cookie_string = "foo=bar;"s + ctl_string + "httponly"s;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+    // ctrl char at end of string
+    cookie_string = "foo=bar;"s + "httponly;"s + ctl_string;
+    EXPECT_TRUE(NavigateToURL(shell(), http_url));
+  }
+  // Test if there are multiple control characters that terminate.
+  cookie_string = "foo=bar;\xA\xDhttponly"s;
+  EXPECT_TRUE(NavigateToURL(shell(), http_url));
+
+  FetchHistogramsFromChildProcesses();
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNull, 0);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharNewline, 0);
+  histogram.ExpectBucketCount(
+      "Cookie.TruncatingCharacterInCookieString",
+      net::TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed, 0);
 }
 
 class RestrictedCookieManagerInterceptor
