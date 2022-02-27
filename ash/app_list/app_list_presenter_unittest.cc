@@ -15,6 +15,7 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -378,6 +379,45 @@ class AppListBubbleAndTabletTest
     UpdateDisplay("1024x768");
   }
 
+  AppsGridView* GetAppsGridView() {
+    if (tablet_mode_param())
+      return GetAppListTestHelper()->GetRootPagedAppsGridView();
+    return GetAppListTestHelper()->GetScrollableAppsGridView();
+  }
+
+  void SetupGridTestApi() {
+    grid_test_api_ =
+        std::make_unique<test::AppsGridViewTestApi>(GetAppsGridView());
+  }
+
+  void OnReorderAnimationDone(base::OnceClosure closure,
+                              bool aborted,
+                              AppListReorderAnimationStatus status) {
+    EXPECT_FALSE(aborted);
+    EXPECT_EQ(AppListReorderAnimationStatus::kFadeInAnimation, status);
+    std::move(closure).Run();
+  }
+
+  void SortAppList(AppListSortOrder order) {
+    DCHECK(productivity_launcher_param());
+    tablet_mode_param()
+        ? GetAppListTestHelper()
+              ->GetAppsContainerView()
+              ->UpdateForNewSortingOrder(
+                  order,
+                  /*animate=*/true,
+                  /*update_position_closure=*/base::DoNothing())
+        : GetAppListTestHelper()->GetBubbleView()->UpdateForNewSortingOrder(
+              order,
+              /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    base::RunLoop run_loop;
+    GetAppsGridView()->AddReorderCallbackForTest(
+        base::BindRepeating(&AppListBubbleAndTabletTest::OnReorderAnimationDone,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   // Whether we should use the ProductivityLauncher flag.
   bool productivity_launcher_param() { return std::get<0>(GetParam()); }
 
@@ -538,6 +578,7 @@ class AppListBubbleAndTabletTest
   }
 
  protected:
+  std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
@@ -692,6 +733,29 @@ class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTestBase {
 INSTANTIATE_TEST_SUITE_P(All,
                          AppListBubbleAndTabletTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
+
+// Verify that open folders are closed after sorting apps grid. Only run for
+// Productivity launcher.
+TEST_P(AppListBubbleAndTabletTest, SortingClosesOpenFolderView) {
+  if (!productivity_launcher_param())
+    return;
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  app_list_test_model_->CreateAndPopulateFolderWithApps(4);
+
+  // Setup tablet/clamshell mode and show launcher.
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  SetupGridTestApi();
+
+  grid_test_api_->PressItemAt(0);
+  EXPECT_TRUE(AppListIsInFolderView());
+
+  SortAppList(AppListSortOrder::kNameAlphabetical);
+  EXPECT_FALSE(AppListIsInFolderView());
+}
 
 // Tests that Zero State Search is only shown when needed.
 TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {

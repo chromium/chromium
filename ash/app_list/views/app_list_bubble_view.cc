@@ -490,6 +490,11 @@ void AppListBubbleView::UpdateForNewSortingOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
+  // Hide any open folder by showing the apps page.
+  if (showing_folder_) {
+    HideFolderView(/*animate=*/false, /*hide_for_reparent=*/false);
+  }
+
   apps_page_->UpdateForNewSortingOrder(new_order, animate,
                                        std::move(update_position_closure));
 }

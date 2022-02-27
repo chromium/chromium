@@ -689,6 +689,10 @@ void AppsContainerView::UpdateForNewSortingOrder(
   if (new_order)
     toast_container_->AnnounceSortOrder(*new_order);
 
+  // Hide any open folder and transition to the apps page.
+  SetShowState(SHOW_APPS, /*show_apps_with_animation=*/false);
+  DisableFocusForShowingActiveFolder(false);
+
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.
     app_list_nudge_controller_->OnTemporarySortOrderChanged(new_order);
