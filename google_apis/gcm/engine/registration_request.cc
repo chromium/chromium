@@ -5,10 +5,10 @@
 #include "google_apis/gcm/engine/registration_request.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_number_conversions.h"
@@ -260,7 +260,7 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
   size_t error_pos = response.find(kErrorPrefix);
   if (error_pos != std::string::npos) {
     std::string error =
-        response.substr(error_pos + base::size(kErrorPrefix) - 1);
+        response.substr(error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
     return GetStatusFromError(error);
   }
@@ -281,7 +281,7 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
 
   size_t token_pos = response.find(kTokenPrefix);
   if (token_pos != std::string::npos) {
-    *token = response.substr(token_pos + base::size(kTokenPrefix) - 1);
+    *token = response.substr(token_pos + std::size(kTokenPrefix) - 1);
     return SUCCESS;
   }
 

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -38,11 +37,11 @@ typedef std::vector<net::MockRead> ReadList;
 typedef std::vector<net::MockWrite> WriteList;
 
 const char kReadData[] = "read_data";
-const int kReadDataSize = base::size(kReadData) - 1;
+const int kReadDataSize = std::size(kReadData) - 1;
 const char kReadData2[] = "read_alternate_data";
-const int kReadData2Size = base::size(kReadData2) - 1;
+const int kReadData2Size = std::size(kReadData2) - 1;
 const char kWriteData[] = "write_data";
-const int kWriteDataSize = base::size(kWriteData) - 1;
+const int kWriteDataSize = std::size(kWriteData) - 1;
 
 class GCMSocketStreamTest : public testing::Test {
  public:

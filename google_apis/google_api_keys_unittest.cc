@@ -12,7 +12,6 @@
 
 #include "google_apis/google_api_keys_unittest.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
@@ -69,7 +68,7 @@ GoogleAPIKeysTest::~GoogleAPIKeysTest() {}
 void GoogleAPIKeysTest::SetUp() {
   // Unset all environment variables that can affect these tests,
   // for the duration of the tests.
-  for (size_t i = 0; i < base::size(env_cache_); ++i) {
+  for (size_t i = 0; i < std::size(env_cache_); ++i) {
     EnvironmentCache& cache = env_cache_[i];
     cache.was_set = env_->HasVar(cache.variable_name);
     cache.value.clear();
@@ -82,7 +81,7 @@ void GoogleAPIKeysTest::SetUp() {
 
 void GoogleAPIKeysTest::TearDown() {
   // Restore environment.
-  for (size_t i = 0; i < base::size(env_cache_); ++i) {
+  for (size_t i = 0; i < std::size(env_cache_); ++i) {
     EnvironmentCache& cache = env_cache_[i];
     if (cache.was_set) {
       env_->SetVar(cache.variable_name, cache.value);

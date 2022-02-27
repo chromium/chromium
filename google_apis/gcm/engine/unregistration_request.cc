@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -218,7 +217,7 @@ UnregistrationRequest::Status UnregistrationRequest::ParseResponse(
   // some errors will have HTTP_OK response code!
   if (response.find(kErrorPrefix) != std::string::npos) {
     std::string error = response.substr(response.find(kErrorPrefix) +
-                                        base::size(kErrorPrefix) - 1);
+                                        std::size(kErrorPrefix) - 1);
     DVLOG(1) << "Unregistration response error message: " << error;
     return GetStatusFromError(error);
   }

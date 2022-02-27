@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -131,7 +130,7 @@ std::string MakeRegistrationKey(const std::string& app_id) {
 }
 
 std::string ParseRegistrationKey(const std::string& key) {
-  return key.substr(base::size(kRegistrationKeyStart) - 1);
+  return key.substr(std::size(kRegistrationKeyStart) - 1);
 }
 
 std::string MakeIncomingKey(const std::string& persistent_id) {
@@ -151,7 +150,7 @@ std::string MakeOutgoingKey(const std::string& persistent_id) {
 }
 
 std::string ParseOutgoingKey(const std::string& key) {
-  return key.substr(base::size(kOutgoingMsgKeyStart) - 1);
+  return key.substr(std::size(kOutgoingMsgKeyStart) - 1);
 }
 
 std::string MakeGServiceSettingKey(const std::string& setting_name) {
@@ -159,7 +158,7 @@ std::string MakeGServiceSettingKey(const std::string& setting_name) {
 }
 
 std::string ParseGServiceSettingKey(const std::string& key) {
-  return key.substr(base::size(kGServiceSettingKeyStart) - 1);
+  return key.substr(std::size(kGServiceSettingKeyStart) - 1);
 }
 
 std::string MakeAccountKey(const CoreAccountId& account_id) {
@@ -167,8 +166,7 @@ std::string MakeAccountKey(const CoreAccountId& account_id) {
 }
 
 CoreAccountId ParseAccountKey(const std::string& key) {
-  return CoreAccountId::FromString(
-      key.substr(base::size(kAccountKeyStart) - 1));
+  return CoreAccountId::FromString(key.substr(std::size(kAccountKeyStart) - 1));
 }
 
 std::string MakeHeartbeatKey(const std::string& scope) {
@@ -176,7 +174,7 @@ std::string MakeHeartbeatKey(const std::string& scope) {
 }
 
 std::string ParseHeartbeatKey(const std::string& key) {
-  return key.substr(base::size(kHeartbeatKeyStart) - 1);
+  return key.substr(std::size(kHeartbeatKeyStart) - 1);
 }
 
 std::string MakeInstanceIDKey(const std::string& app_id) {
@@ -184,7 +182,7 @@ std::string MakeInstanceIDKey(const std::string& app_id) {
 }
 
 std::string ParseInstanceIDKey(const std::string& key) {
-  return key.substr(base::size(kInstanceIDKeyStart) - 1);
+  return key.substr(std::size(kInstanceIDKeyStart) - 1);
 }
 
 // Note: leveldb::Slice keeps a pointer to the data in |s|, which must therefore
@@ -1012,7 +1010,7 @@ bool GCMStoreImpl::Backend::LoadIncomingMessages(
       std::string persistent_id = data.substr(0, found);
       int64_t expiration_time = 0LL;
       if (!base::StringToInt64(
-              data.substr(found + base::size(kIncomingMsgSeparator) - 1),
+              data.substr(found + std::size(kIncomingMsgSeparator) - 1),
               &expiration_time)) {
         LOG(ERROR)
             << "Failed to parse expiration time from the incoming message "

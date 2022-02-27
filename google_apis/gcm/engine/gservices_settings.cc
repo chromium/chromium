@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -231,7 +230,7 @@ bool GServicesSettings::UpdateFromCheckinResponse(
     if (settings_diff && base::StartsWith(name, kDeleteSettingPrefix,
                                           base::CompareCase::SENSITIVE)) {
       std::string setting_to_delete =
-          name.substr(base::size(kDeleteSettingPrefix) - 1);
+          name.substr(std::size(kDeleteSettingPrefix) - 1);
       new_settings.erase(setting_to_delete);
       DVLOG(1) << "Setting deleted: " << setting_to_delete;
     } else {
