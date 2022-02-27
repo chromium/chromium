@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
@@ -415,10 +414,10 @@ std::string GetDriverInfo(HANDLE printer) {
     }
   }
 
-  for (size_t i = 0; i < base::size(info); ++i) {
+  for (size_t i = 0; i < std::size(info); ++i) {
     std::replace(info[i].begin(), info[i].end(), ';', ',');
     driver_info.append(info[i]);
-    if (i < base::size(info) - 1)
+    if (i < std::size(info) - 1)
       driver_info.append(";");
   }
   return driver_info;

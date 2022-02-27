@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "printing/backend/win_helper.h"
@@ -59,7 +58,7 @@ void PrintingContextSystemDialogWin::AskUserForSettings(
     ranges[0].nFromPage = 1;
     ranges[0].nToPage = max_pages;
     dialog_options.nPageRanges = 1;
-    dialog_options.nMaxPageRanges = base::size(ranges);
+    dialog_options.nMaxPageRanges = std::size(ranges);
     dialog_options.nMinPage = 1;
     dialog_options.nMaxPage = max_pages;
     dialog_options.lpPageRanges = ranges;

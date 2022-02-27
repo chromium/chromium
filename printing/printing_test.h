@@ -10,8 +10,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
-
 // Disable the whole test case when executing on a computer that has no printer
 // installed.
 // Note: Parent should be testing::Test or InProcessBrowserTest.
@@ -21,7 +19,7 @@ class PrintingTest : public Parent {
   static bool IsTestCaseDisabled() { return GetDefaultPrinter().empty(); }
   static std::wstring GetDefaultPrinter() {
     wchar_t printer_name[MAX_PATH];
-    DWORD size = base::size(printer_name);
+    DWORD size = std::size(printer_name);
     BOOL result = ::GetDefaultPrinter(printer_name, &size);
     if (result == 0) {
       if (GetLastError() == ERROR_FILE_NOT_FOUND) {
