@@ -371,3 +371,14 @@ var NewTabPageDiscountConsentDialogTest = class extends NewTabPageBrowserTest {
 TEST_F('NewTabPageDiscountConsentDialogTest', 'All', function() {
   mocha.run();
 });
+
+var NewTabPageDiscountConsentCartTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/cart/discount_consent_card_test.js&host=webui-test';
+  }
+};
+
+TEST_F('NewTabPageDiscountConsentCartTest', 'All', function() {
+  mocha.run();
+});
