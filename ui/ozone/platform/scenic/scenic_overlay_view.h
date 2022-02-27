@@ -8,7 +8,6 @@
 #include <fuchsia/ui/scenic/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/resources.h>
 #include <lib/ui/scenic/cpp/session.h>
-#include <memory>
 
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,9 +23,8 @@ namespace ui {
 // instances to display overlays.
 class ScenicOverlayView {
  public:
-  ScenicOverlayView(
-      scenic::SessionPtrAndListenerRequest session_and_listener_request,
-      ScenicSurfaceFactory* scenic_surface_factory);
+  explicit ScenicOverlayView(
+      scenic::SessionPtrAndListenerRequest session_and_listener_request);
   ~ScenicOverlayView();
   ScenicOverlayView(const ScenicOverlayView&) = delete;
   ScenicOverlayView& operator=(const ScenicOverlayView&) = delete;
@@ -50,28 +48,18 @@ class ScenicOverlayView {
   // If |enable_blend| is true, sets |image_pipe_| as non-opaque.
   void SetBlendMode(bool enable_blend);
 
-  // Return true if |view_holder_token_| can be attached to a surface from
-  // |widget|.
-  bool CanAttachToAcceleratedWidget(gfx::AcceleratedWidget widget);
-
-  // Return true if |view_holder_token_| is attached to the scene graph of
-  // surface corresponding to |widget|.
-  bool AttachToScenicSurface(gfx::AcceleratedWidget widget,
-                             gfx::SysmemBufferCollectionId id);
+  // Attaches the view using the specified token.
+  void AttachToScenicSurface(fuchsia::ui::views::ViewToken view_token);
 
  private:
   scenic::Session scenic_session_;
   // Used for safely queueing Present() operations on |scenic_session_|.
   SafePresenter safe_presenter_;
-  ScenicSurfaceFactory* const scenic_surface_factory_;
-  fuchsia::ui::views::ViewHolderToken view_holder_token_;
-  scenic::View view_;
+  absl::optional<scenic::View> view_;
   fuchsia::images::ImagePipe2Ptr image_pipe_;
-  std::unique_ptr<scenic::Material> image_material_;
+  scenic::Material image_material_;
 
   bool enable_blend_ = false;
-  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  gfx::SysmemBufferCollectionId buffer_collection_id_;
 
   THREAD_CHECKER(thread_checker_);
 };
