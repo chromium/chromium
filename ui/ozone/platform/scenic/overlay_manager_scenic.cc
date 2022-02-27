@@ -13,7 +13,7 @@ namespace {
 
 class OverlayCandidatesScenic : public OverlayCandidatesOzone {
  public:
-  OverlayCandidatesScenic(gfx::AcceleratedWidget widget) : widget_(widget) {}
+  OverlayCandidatesScenic() = default;
 
   void CheckOverlaySupport(OverlaySurfaceCandidateList* candidates) override {
     for (auto& candidate : *candidates) {
@@ -21,13 +21,9 @@ class OverlayCandidatesScenic : public OverlayCandidatesOzone {
         continue;
       SysmemNativePixmap* sysmem_native_pixmap =
           reinterpret_cast<SysmemNativePixmap*>(candidate.native_pixmap.get());
-      candidate.overlay_handled =
-          sysmem_native_pixmap->SupportsOverlayPlane(widget_);
+      candidate.overlay_handled = sysmem_native_pixmap->SupportsOverlayPlane();
     }
   }
-
- private:
-  const gfx::AcceleratedWidget widget_;
 };
 
 }  // namespace
@@ -41,7 +37,7 @@ OverlayManagerScenic::~OverlayManagerScenic() = default;
 
 std::unique_ptr<OverlayCandidatesOzone>
 OverlayManagerScenic::CreateOverlayCandidates(gfx::AcceleratedWidget widget) {
-  return std::make_unique<OverlayCandidatesScenic>(widget);
+  return std::make_unique<OverlayCandidatesScenic>();
 }
 
 }  // namespace ui
