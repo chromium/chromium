@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/atomicops.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -129,7 +128,7 @@ bool FinancialPing::FormRequest(Product product,
   // Add the product events.
   char cgi[kMaxCgiLength + 1];
   cgi[0] = 0;
-  bool has_events = GetProductEventsAsCgi(product, cgi, base::size(cgi));
+  bool has_events = GetProductEventsAsCgi(product, cgi, std::size(cgi));
   if (has_events)
     base::StringAppendF(request, "&%s", cgi);
 
@@ -143,7 +142,7 @@ bool FinancialPing::FormRequest(Product product,
     for (int ap = NO_ACCESS_POINT + 1; ap < LAST_ACCESS_POINT; ap++) {
       rlz[0] = 0;
       AccessPoint point = static_cast<AccessPoint>(ap);
-      if (GetAccessPointRlz(point, rlz, base::size(rlz)) && rlz[0] != '\0')
+      if (GetAccessPointRlz(point, rlz, std::size(rlz)) && rlz[0] != '\0')
         all_points[idx++] = point;
     }
     all_points[idx] = NO_ACCESS_POINT;
@@ -153,7 +152,7 @@ bool FinancialPing::FormRequest(Product product,
   // This will also include the RLZ Exchange Protocol CGI Argument.
   cgi[0] = 0;
   if (GetPingParams(product, has_events ? access_points : all_points, cgi,
-                    base::size(cgi)))
+                    std::size(cgi)))
     base::StringAppendF(request, "&%s", cgi);
 
   if (has_events && !exclude_machine_id) {
@@ -441,7 +440,7 @@ bool FinancialPing::IsPingTime(Product product, bool no_delay) {
   // Check if this product has any unreported events.
   char cgi[kMaxCgiLength + 1];
   cgi[0] = 0;
-  bool has_events = GetProductEventsAsCgi(product, cgi, base::size(cgi));
+  bool has_events = GetProductEventsAsCgi(product, cgi, std::size(cgi));
   if (no_delay && has_events)
     return true;
 

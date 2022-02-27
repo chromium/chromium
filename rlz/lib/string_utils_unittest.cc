@@ -8,7 +8,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "rlz/lib/assert.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,11 +17,11 @@ TEST(StringUtilsUnittest, IsAscii) {
   rlz_lib::SetExpectedAssertion("");
 
   char bad_letters[] = {'\x80', '\xA0', '\xFF'};
-  for (size_t i = 0; i < base::size(bad_letters); ++i)
+  for (size_t i = 0; i < std::size(bad_letters); ++i)
     EXPECT_FALSE(rlz_lib::IsAscii(bad_letters[i]));
 
   char good_letters[] = {'A', '~', '\n', 0x7F, 0x00};
-  for (size_t i = 0; i < base::size(good_letters); ++i)
+  for (size_t i = 0; i < std::size(good_letters); ++i)
     EXPECT_TRUE(rlz_lib::IsAscii(good_letters[i]));
 }
 

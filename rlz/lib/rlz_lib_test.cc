@@ -1142,7 +1142,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
                               rlz_lib::FIRST_SEARCH);
   char cgi[256];
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAF"));
 
   // Simulate another user on the machine sending the RLZ ping, so "should send
@@ -1154,7 +1154,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
   // The first search event should no longer appear, so there are no events
   // to report.
   EXPECT_FALSE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
 
   // The event should be permanently deleted, so setting the flag back to
   // true should still not return the event.
@@ -1162,7 +1162,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent) {
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueTrue);
   EXPECT_FALSE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent2) {
@@ -1178,7 +1178,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
                               rlz_lib::FIRST_SEARCH);
   char cgi[256];
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAF"));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 
@@ -1190,7 +1190,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
 
   // Only the "CAI" event should appear.
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 
   // The event should be permanently deleted, so setting the flag back to
@@ -1199,7 +1199,7 @@ TEST_F(RlzLibTest, NoRecordCAFEvent2) {
       chromeos::system::kShouldSendRlzPingKey,
       chromeos::system::kShouldSendRlzPingValueTrue);
   EXPECT_TRUE(
-      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, base::size(cgi)));
+      rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi)));
   EXPECT_NE(nullptr, strstr(cgi, "CAI"));
 }
 #endif

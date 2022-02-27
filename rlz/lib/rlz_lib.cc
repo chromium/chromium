@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -625,7 +624,7 @@ bool GetPingParams(Product product, const AccessPoint* access_points,
     bool first_rlz = true;  // comma before every RLZ but the first.
     for (int i = 0; access_points[i] != NO_ACCESS_POINT; i++) {
       char rlz[kMaxRlzLength + 1];
-      if (GetAccessPointRlz(access_points[i], rlz, base::size(rlz))) {
+      if (GetAccessPointRlz(access_points[i], rlz, std::size(rlz))) {
         const char* access_point = GetAccessPointName(access_points[i]);
         if (!access_point)
           continue;
@@ -641,7 +640,7 @@ bool GetPingParams(Product product, const AccessPoint* access_points,
     // Report the DCC too if not empty. DCCs are windows-only.
     char dcc[kMaxDccLength + 1];
     dcc[0] = 0;
-    if (GetMachineDealCode(dcc, base::size(dcc)) && dcc[0])
+    if (GetMachineDealCode(dcc, std::size(dcc)) && dcc[0])
       base::StringAppendF(&cgi_string, "&%s=%s", kDccCgiVariable, dcc);
 #endif
   }
