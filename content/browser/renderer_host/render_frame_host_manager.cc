@@ -3375,6 +3375,9 @@ void RenderFrameHostManager::CommitPending(
     }
   }
 
+  // TODO(https://crbug.com/1262098): used to track down crash.
+  auto check_on_delete_ref = render_frame_host_->EnableCheckIfDeleted();
+
   // For all main frames, the RenderWidgetHost will not be destroyed when the
   // local frame is detached. https://crbug.com/419087
   //
@@ -3420,7 +3423,9 @@ void RenderFrameHostManager::CommitPending(
   // also exist. For a local root frame, they share lifetimes exactly. For
   // another child frame, the RenderWidgetHostView comes from a parent, but if
   // this renderer frame is live its ancestors must be as well.
-  DCHECK(new_view);
+  // TODO(https://crbug.com/1262098): used to track down crash, converted
+  // from DCHECK to CHECK.
+  CHECK(new_view);
 
   if (focus_render_view) {
     if (is_main_frame) {
@@ -3467,6 +3472,8 @@ void RenderFrameHostManager::CommitPending(
   // the RFH so that we can clean up RendererResources related to the RFH first.
   delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),
                                             render_frame_host_.get());
+
+  check_on_delete_ref.reset();
 
   // Make the new view show the contents of old view until it has something
   // useful to show.
