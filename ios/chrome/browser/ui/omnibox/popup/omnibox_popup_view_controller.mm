@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #include "ios/chrome/browser/ui/elements/self_sizing_table_view.h"
 #include "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"

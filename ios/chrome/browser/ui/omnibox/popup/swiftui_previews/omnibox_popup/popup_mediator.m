@@ -22,7 +22,8 @@
 }
 
 - (PopupModel*)createModel {
-  PopupModel* model = [[PopupModel alloc] initWithMatches:PopupMatch.previews];
+  PopupModel* model = [[PopupModel alloc] initWithMatches:PopupMatch.previews
+                                                 delegate:nil];
   return model;
 }
 

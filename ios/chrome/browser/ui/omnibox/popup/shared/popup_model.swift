@@ -3,11 +3,23 @@
 // found in the LICENSE file.
 
 import Foundation
+import UIKit
 
-@objcMembers public class PopupModel: NSObject, ObservableObject {
+@objcMembers public class PopupModel: NSObject, ObservableObject, AutocompleteResultConsumer {
   @Published var matches: [PopupMatch]
+  weak var delegate: AutocompleteResultConsumerDelegate?
 
-  public init(matches: [PopupMatch]) {
+  public init(matches: [PopupMatch], delegate: AutocompleteResultConsumerDelegate?) {
     self.matches = matches
+    self.delegate = delegate
   }
+  
+  // MARK: AutocompleteResultConsumer
+  
+  public func updateMatches(_ matches : [AutocompleteSuggestion], withAnimation: Bool) {
+    self.matches = matches.map(PopupMatch.init(match:))
+  }
+  
+  public func setTextAlignment(_ alignment: NSTextAlignment) {}
+  public func setSemanticContentAttribute(_ semanticContentAttribute: UISemanticContentAttribute) {}
 }

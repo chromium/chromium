@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#ifdef __cplusplus
 class GURL;
+#endif
+
 @protocol OmniboxIcon;
 
 // Represents an autocomplete suggestion in UI.
@@ -38,10 +41,16 @@ class GURL;
 
 // Wether the suggestion has a downloadable image.
 - (BOOL)hasImage;
+
+// Image loading is treated differently in SwiftUI, so these fields are
+// unnecessary.
+#ifdef __cplusplus
+
 // URL of the image, if |hasImage| is true.
 - (GURL)imageURL;
 // Page URL to be used to retrieve the favicon.
 - (GURL)faviconPageURL;
+#endif
 
 - (id<OmniboxIcon>)icon;
 

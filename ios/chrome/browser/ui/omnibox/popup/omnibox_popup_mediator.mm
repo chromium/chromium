@@ -57,7 +57,6 @@ const CGFloat kOmniboxIconSize = 16;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
     _open = NO;
-    _model = [[PopupModel alloc] initWithMatches:@[]];
   }
   return self;
 }
@@ -76,8 +75,6 @@ const CGFloat kOmniboxIconSize = 16;
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
       [[NSMutableArray alloc] init];
 
-  NSMutableArray<PopupMatch*>* popupMatches = [[NSMutableArray alloc] init];
-
   size_t size = _currentResult.size();
   for (size_t i = 0; i < size; i++) {
     const AutocompleteMatch& match =
@@ -88,30 +85,7 @@ const CGFloat kOmniboxIconSize = 16;
     formatter.incognito = _incognito;
     formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
     [wrappedMatches addObject:formatter];
-
-    __weak __typeof(self) weakSelf = self;
-    BOOL trailingButtonHandlerIsNoop =
-        (!formatter.isAppendable) && (!formatter.isTabMatch);
-    BOOL deletionHandlerIsNoop = !formatter.supportsDeletion;
-    PopupMatch* popupMatch =
-        [[PopupMatch alloc] initWithTitle:formatter.text.string
-                                 subtitle:formatter.detailText.string
-                                      url:nil
-                             isAppendable:formatter.isAppendable
-                               isTabMatch:formatter.isTabMatch
-                         supportsDeletion:formatter.supportsDeletion
-                                    pedal:nil
-                    trailingButtonHandler:trailingButtonHandlerIsNoop ? ^{} : ^{
-                      [weakSelf autocompleteResultConsumer:nil
-                                didTapTrailingButtonForRow:i];
-        }
-                          deletionHandler:deletionHandlerIsNoop ? ^{} : ^{
-            [weakSelf autocompleteResultConsumer:nil didSelectRowForDeletion:i];
-        }];
-    [popupMatches addObject:popupMatch];
   }
-
-  self.model.matches = popupMatches;
 
   return wrappedMatches;
 }

@@ -39,6 +39,7 @@
 @property(nonatomic, strong)
     UIViewController<ContentProviding>* popupViewController;
 @property(nonatomic, strong) OmniboxPopupMediator* mediator;
+@property(nonatomic, strong) PopupModel* model;
 
 @end
 
@@ -84,8 +85,11 @@
           templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
   if (base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI)) {
-    self.popupViewController = [OmniboxPopupViewProvider
-        makeViewControllerWithModel:self.mediator.model];
+    self.model = [[PopupModel alloc] initWithMatches:@[]
+                                            delegate:self.mediator];
+    self.popupViewController =
+        [OmniboxPopupViewProvider makeViewControllerWithModel:self.model];
+    self.mediator.consumer = self.model;
   } else {
     OmniboxPopupViewController* popupViewController =
         [[OmniboxPopupViewController alloc] init];

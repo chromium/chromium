@@ -18,7 +18,6 @@
 @protocol BrowserCommands;
 @class DefaultBrowserPromoNonModalScheduler;
 @class OmniboxPopupPresenter;
-@class PopupModel;
 class FaviconLoader;
 class WebStateList;
 
@@ -75,8 +74,6 @@ class OmniboxPopupMediatorDelegate {
 // Whether the default search engine is Google impacts which icon is used in
 // some cases
 @property(nonatomic, assign) BOOL defaultSearchEngineIsGoogle;
-
-@property(nonatomic, strong, readonly) PopupModel* model;
 
 // Designated initializer. Takes ownership of |imageFetcher|.
 - (instancetype)initWithFetcher:

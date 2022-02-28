@@ -15,7 +15,7 @@ struct PopupView: View {
         }
         .onDelete { indexSet in
           for matchIndex in indexSet {
-            model.matches[matchIndex].selectedForDeletion()
+            model.delegate?.autocompleteResultConsumer( model, didSelectRowForDeletion: UInt(matchIndex))
           }
         }
       }
@@ -27,6 +27,6 @@ struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
     PopupView(
       model: PopupModel(
-        matches: PopupMatch.previews))
+        matches: PopupMatch.previews, delegate:nil))
   }
 }

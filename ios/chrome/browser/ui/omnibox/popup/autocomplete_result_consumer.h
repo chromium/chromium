@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_RESULT_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_RESULT_CONSUMER_H_
 
-#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
+#import <UIKit/UIKit.h>
+
+@protocol AutocompleteSuggestion;
 
 @protocol AutocompleteResultConsumer;
 

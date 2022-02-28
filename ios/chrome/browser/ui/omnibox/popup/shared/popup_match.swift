@@ -26,6 +26,18 @@ import Foundation
   /// Closure to execute when the match is deleted.
   let deletionHandler: () -> Void
 
+  public init(match: AutocompleteSuggestion) {
+    self.title = match.text().string
+    self.subtitle = match.detailText()?.string
+    self.isAppendable = match.isAppendable()
+    self.isTabMatch = match.isTabMatch()
+    self.supportsDeletion = match.supportsDeletion()
+    self.pedal = nil
+    self.trailingButtonHandler = {}
+    self.deletionHandler = {}
+    self.url = nil // TODO: remove url
+  }
+
   public init(
     title: String, subtitle: String?, url: URL?, isAppendable: Bool, isTabMatch: Bool,
     supportsDeletion: Bool, pedal: Pedal?, trailingButtonHandler: @escaping () -> Void = {},

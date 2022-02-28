@@ -90,11 +90,8 @@ source_set("popup_accessibility_identifier_constants") {
 
 source_set("popup_ui") {
   sources = [
-    "autocomplete_result_consumer.h",
-    "autocomplete_suggestion.h",
     "favicon_retriever.h",
     "image_retriever.h",
-    "omnibox_icon.h",
     "omnibox_icon_view.h",
     "omnibox_icon_view.mm",
     "omnibox_popup_row_cell.h",
@@ -145,6 +142,7 @@ source_set("popup_internal") {
   ]
   deps = [
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/browser/browser_state",
@@ -159,7 +157,12 @@ source_set("popup_internal") {
 }
 
 source_set("popup_ui_protocols") {
-  sources = [ "content_providing.h" ]
+  sources = [
+    "autocomplete_result_consumer.h",
+    "autocomplete_suggestion.h",
+    "content_providing.h",
+    "omnibox_icon.h",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -171,6 +174,7 @@ source_set("unit_tests") {
     ":popup",
     ":popup_internal",
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
     "//components/omnibox/browser",
     "//ios/chrome/app/strings",
