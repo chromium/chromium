@@ -1470,29 +1470,85 @@ if (!is_android) {
       "data/",
       "//ash/components/arc/test/data/icons",
       "//chrome/browser/page_load_metrics/integration_tests/data/",
+      "//chrome/test/data/cart/",
+      "//components/test/data/ad_tagging/",
+      "//components/test/data/ads_observer/",
       "//components/test/data/autofill/",
       "//components/test/data/optimization_guide/",
       "//components/test/data/payments/",
-      "//components/test/data/ad_tagging/",
-      "//components/test/data/ads_observer/",
       "//components/test/data/subresource_filter/",
       "//components/test/data/translate/",
       "//components/test/data/update_client/",
       "//content/test/data/",
       "//google_apis/test/",
-      "//chrome/test/data/cart/",
-      "//media/test/data/",
+
+      # Media data deps are included individually to prevent runaway isolate
+      # size growth.
+      "//media/test/data/90rotation.mp4",
+      "//media/test/data/bear-320x240-audio-only.webm",
+      "//media/test/data/bear-320x240-av_enc-a.webm",
+      "//media/test/data/bear-320x240-av_enc-av.webm",
+      "//media/test/data/bear-320x240-av_enc-v.webm",
+      "//media/test/data/bear-320x240-multitrack.webm",
+      "//media/test/data/bear-320x240-opus-av_enc-av.webm",
+      "//media/test/data/bear-320x240-opus-av_enc-v.webm",
+      "//media/test/data/bear-320x240-v-vp9_fullsample_enc-v.webm",
+      "//media/test/data/bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4",
+      "//media/test/data/bear-320x240-v-vp9_profile2_subsample_cenc-v.webm",
+      "//media/test/data/bear-320x240-v-vp9_subsample_enc-v.webm",
+      "//media/test/data/bear-320x240-v_enc-v.webm",
+      "//media/test/data/bear-320x240-v_frag-vp9-cenc.mp4",
+      "//media/test/data/bear-320x240-video-only.webm",
+      "//media/test/data/bear-320x240.webm",
+      "//media/test/data/bear-640x360-a_frag-cbcs.mp4",
+      "//media/test/data/bear-640x360-a_frag-cenc.mp4",
+      "//media/test/data/bear-640x360-av_enc-av.webm",
+      "//media/test/data/bear-640x360-v_frag-cbc1.mp4",
+      "//media/test/data/bear-640x360-v_frag-cbcs.mp4",
+      "//media/test/data/bear-640x360-v_frag-cenc-mdat.mp4",
+      "//media/test/data/bear-640x360-v_frag-cenc.mp4",
+      "//media/test/data/bear-640x360-v_frag-cens.mp4",
+      "//media/test/data/bear-640x360.webm",
+      "//media/test/data/bear-a_enc-a.webm",
+      "//media/test/data/bear-av1-320x180-10bit-cenc.mp4",
+      "//media/test/data/bear-av1-320x180-10bit-cenc.webm",
+      "//media/test/data/bear-av1-cenc.mp4",
+      "//media/test/data/bear-av1-cenc.webm",
+      "//media/test/data/bear-flac-cenc.mp4",
+      "//media/test/data/bear-opus-cenc.mp4",
+      "//media/test/data/eme_and_get_display_media.html",
+      "//media/test/data/eme_load_session_after_close_test.html",
+      "//media/test/data/eme_player.html",
+      "//media/test/data/eme_player_js/",
+      "//media/test/data/eme_remove_session_test.html",
+      "//media/test/data/encrypted_frame_size_change.html",
+      "//media/test/data/frame_size_change-av_enc-v.webm",
+      "//media/test/data/id3_png_test.mp3",
+      "//media/test/data/mse_config_change.html",
+      "//media/test/data/mse_different_containers.html",
+      "//media/test/data/multiple_cdm_types.html",
+      "//media/test/data/no_streams.webm",
+      "//media/test/data/sfx.ogg",
+      "//media/test/data/test_key_system_instantiation.html",
+      "//media/test/data/webaudio_oscillator.html",
+
       "//net/tools/testserver/",
-      "//ppapi/tests/test_case.html",
-      "//ppapi/tests/test_case.html.mock-http-headers",
-      "//ppapi/tests/test_page.css",
-      "//ppapi/tests/test_page.css.mock-http-headers",
       "//third_party/mocha/mocha.js",
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/simplejson/",
       "//ui/webui/resources/",
     ]
+
+    if (enable_plugins) {
+      data += [
+        "//ppapi/tests/test_case.html",
+        "//ppapi/tests/test_case.html.mock-http-headers",
+        "//ppapi/tests/test_page.css",
+        "//ppapi/tests/test_page.css.mock-http-headers",
+      ]
+    }
+
     data += js2gtest_js_libraries
     data += metric_integration_jsdeps
 
@@ -2931,6 +2987,11 @@ if (!is_android) {
           "../browser/chromeos/extensions/telemetry/api:browser_tests",
           "//chrome/browser/error_reporting:test_support",
           "//chromeos/dbus/dlp:dlp",
+        ]
+
+        data += [
+          "//media/test/data/90rotation.mp4",
+          "//media/test/data/id3_png_test.mp3",
         ]
       }
 
