@@ -92,6 +92,7 @@ fyi_reclient_staging_builder(
     name = "Win x64 Builder reclient staging",
     console_view_category = "win",
     cores = 32,
+    builderless = True,
     os = os.WINDOWS_ANY,
 )
 
@@ -99,5 +100,6 @@ fyi_reclient_test_builder(
     name = "Win x64 Builder reclient test",
     console_view_category = "win",
     cores = 32,
+    builderless = True,
     os = os.WINDOWS_ANY,
 )
