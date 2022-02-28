@@ -10,7 +10,6 @@
     {
       "api_level_below_or_equal": 25,
       "wrapper_conversion": [
-        "java.time.Clock"
       ]
     },
     {
@@ -73,22 +72,11 @@
     {
       "api_level_below_or_equal": 25,
       "rewrite_prefix": {
-        "j$.time.": "java.time.",
-        "java.time.": "j$.time.",
         "java.util.Desugar": "j$.util.Desugar"
       },
       "retarget_lib_member": {
-        "java.util.Date#toInstant": "java.util.DesugarDate",
-        "java.util.GregorianCalendar#toZonedDateTime": "java.util.DesugarGregorianCalendar",
-        "java.util.TimeZone#toZoneId": "java.util.DesugarTimeZone"
       },
       "custom_conversion": {
-        "java.time.ZonedDateTime": "java.time.TimeConversions",
-        "java.time.LocalDate": "java.time.TimeConversions",
-        "java.time.Duration": "java.time.TimeConversions",
-        "java.time.ZoneId": "java.time.TimeConversions",
-        "java.time.MonthDay": "java.time.TimeConversions",
-        "java.time.Instant": "java.time.TimeConversions"
       }
     },
     {
@@ -149,24 +137,11 @@
     {
       "api_level_below_or_equal": 25,
       "rewrite_prefix": {
-        "java.time.": "j$.time.",
         "java.util.Desugar": "j$.util.Desugar"
       },
       "retarget_lib_member": {
-        "java.util.Calendar#toInstant": "java.util.DesugarCalendar",
-        "java.util.Date#from": "java.util.DesugarDate",
-        "java.util.Date#toInstant": "java.util.DesugarDate",
-        "java.util.GregorianCalendar#from": "java.util.DesugarGregorianCalendar",
-        "java.util.GregorianCalendar#toZonedDateTime": "java.util.DesugarGregorianCalendar",
-        "java.util.TimeZone#toZoneId": "java.util.DesugarTimeZone"
       },
       "custom_conversion": {
-        "java.time.ZonedDateTime": "java.time.TimeConversions",
-        "java.time.LocalDate": "java.time.TimeConversions",
-        "java.time.Duration": "java.time.TimeConversions",
-        "java.time.ZoneId": "java.time.TimeConversions",
-        "java.time.MonthDay": "java.time.TimeConversions",
-        "java.time.Instant": "java.time.TimeConversions"
       }
     },
     {

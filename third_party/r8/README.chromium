@@ -32,6 +32,8 @@ Local Modifications:
     Android P instrumentation tests. https://crbug.com/1256614
   * Removed references to ThreadLocalRandom to avoid streams APIs being pulled
     in unnecessarily.  https://crbug.com/1280841
+  * Removed references to java.time and associated classes.
+    https://crbug.com/1301349
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
