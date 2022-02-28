@@ -103,7 +103,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool DescriptionChanged() const;
 
   const std::string& Version() const;
-  const std::string& GetVersion() const;
   bool VersionChanged() const;
 
   std::vector<std::string> AdditionalSearchTerms() const;

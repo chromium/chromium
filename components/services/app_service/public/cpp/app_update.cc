@@ -411,6 +411,10 @@ bool AppUpdate::DescriptionChanged() const {
 }
 
 const std::string& AppUpdate::Version() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(version, base::EmptyString())
+  }
+
   if (mojom_delta_ && mojom_delta_->version.has_value()) {
     return mojom_delta_->version.value();
   }
@@ -418,10 +422,6 @@ const std::string& AppUpdate::Version() const {
     return mojom_state_->version.value();
   }
   return base::EmptyString();
-}
-
-const std::string& AppUpdate::GetVersion() const {
-  GET_VALUE_WITH_FALLBACK(version, base::EmptyString())
 }
 
 bool AppUpdate::VersionChanged() const {
