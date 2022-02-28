@@ -824,6 +824,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true"
+    name="OptimizationGuide.PredictionManager.ModelAvailableAtRegistration.{OptimizationTarget}"
+    units="BooleanAvailable" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the model was in the local store for {OptimizationTarget}
+    when the observer for {OptimizationTarget} was registered with the
+    prediction manager. Recorded at most once per session (profile start) when
+    {OptimizationTarget} is registered.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram base="true"
     name="OptimizationGuide.PredictionManager.ModelTypeChanged.{OptimizationTarget}"
     units="BooleanChanged" expires_after="M106">
   <owner>sophiechang@chromium.org</owner>

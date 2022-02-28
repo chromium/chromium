@@ -189,6 +189,16 @@ bool IsModelMetadataTypeOnServerAllowlist(
              "WebPermissionPredictionsModelMetadata";
 }
 
+void RecordModelAvailableAtRegistration(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    bool model_available_at_registration) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PredictionManager.ModelAvailableAtRegistration." +
+          optimization_guide::GetStringNameForOptimizationTarget(
+              optimization_target),
+      model_available_at_registration);
+}
+
 }  // namespace
 
 namespace optimization_guide {
@@ -664,6 +674,8 @@ void PredictionManager::LoadPredictionModels(
           BuildPredictionModelFromCommandLineForOptimizationTarget(
               optimization_target);
       OnLoadPredictionModel(std::move(prediction_model));
+      RecordModelAvailableAtRegistration(optimization_target,
+                                         prediction_model != nullptr);
     }
     return;
   }
@@ -675,8 +687,12 @@ void PredictionManager::LoadPredictionModels(
   for (const auto& optimization_target : optimization_targets) {
     // The prediction model for this optimization target has already been
     // loaded.
-    if (!model_and_features_store_->FindPredictionModelEntryKey(
-            optimization_target, &model_entry_key)) {
+    bool model_stored_locally =
+        model_and_features_store_->FindPredictionModelEntryKey(
+            optimization_target, &model_entry_key);
+    RecordModelAvailableAtRegistration(optimization_target,
+                                       model_stored_locally);
+    if (!model_stored_locally) {
       continue;
     }
     model_and_features_store_->LoadPredictionModel(
