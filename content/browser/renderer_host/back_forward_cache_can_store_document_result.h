@@ -39,8 +39,6 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   BackForwardCacheCanStoreDocumentResult();
   BackForwardCacheCanStoreDocumentResult(
       BackForwardCacheCanStoreDocumentResult&&);
-  BackForwardCacheCanStoreDocumentResult& operator=(
-      BackForwardCacheCanStoreDocumentResult&&);
   ~BackForwardCacheCanStoreDocumentResult();
 
   // Add reasons contained in the |other| to |this|.
