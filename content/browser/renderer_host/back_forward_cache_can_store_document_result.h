@@ -38,6 +38,8 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
 
   BackForwardCacheCanStoreDocumentResult();
   BackForwardCacheCanStoreDocumentResult(
+      BackForwardCacheCanStoreDocumentResult&);
+  BackForwardCacheCanStoreDocumentResult(
       BackForwardCacheCanStoreDocumentResult&&);
   ~BackForwardCacheCanStoreDocumentResult();
 
