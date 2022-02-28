@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webusb/usb_interface.h"
 
+#include "base/notreached.h"
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webusb/usb_alternate_interface.h"
 #include "third_party/blink/renderer/modules/webusb/usb_configuration.h"
@@ -42,6 +43,9 @@ USBInterface::USBInterface(const USBDevice* device,
   DCHECK_LT(
       interface_index_,
       device_->Info().configurations[configuration_index_]->interfaces.size());
+
+  for (wtf_size_t i = 0; i < Info().alternates.size(); ++i)
+    alternates_.push_back(USBAlternateInterface::Create(this, i));
 }
 
 const device::mojom::blink::UsbInterfaceInfo& USBInterface::Info() const {
@@ -51,18 +55,20 @@ const device::mojom::blink::UsbInterfaceInfo& USBInterface::Info() const {
 }
 
 USBAlternateInterface* USBInterface::alternate() const {
+  wtf_size_t index = 0;
   if (device_->IsInterfaceClaimed(configuration_index_, interface_index_)) {
-    return USBAlternateInterface::Create(
-        this, device_->SelectedAlternateInterfaceIndex(interface_index_));
+    index = device_->SelectedAlternateInterfaceIndex(interface_index_);
   }
-  return USBAlternateInterface::Create(this, 0);
+  // Every interface is guaranteed to have at least one alternate according
+  // according to Interface Descriptor in section 9.6.5 of USB31 specification,
+  // and how UsbInterfaceInfo is constructed by BuildUsbInterfaceInfoPtr() and
+  // AggregateInterfacesForConfig() in services/device/usb/usb_descriptors.cc.
+  DCHECK_LT(index, alternates_.size());
+  return alternates_[index];
 }
 
 HeapVector<Member<USBAlternateInterface>> USBInterface::alternates() const {
-  HeapVector<Member<USBAlternateInterface>> alternates;
-  for (wtf_size_t i = 0; i < Info().alternates.size(); ++i)
-    alternates.push_back(USBAlternateInterface::Create(this, i));
-  return alternates;
+  return alternates_;
 }
 
 bool USBInterface::claimed() const {
@@ -71,6 +77,7 @@ bool USBInterface::claimed() const {
 
 void USBInterface::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
+  visitor->Trace(alternates_);
   ScriptWrappable::Trace(visitor);
 }
 

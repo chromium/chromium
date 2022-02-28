@@ -171,6 +171,7 @@ class USBDevice : public ScriptWrappable,
   device::mojom::blink::UsbDeviceInfoPtr device_info_;
   HeapMojoRemote<device::mojom::blink::UsbDevice> device_;
   HeapHashSet<Member<ScriptPromiseResolver>> device_requests_;
+  HeapVector<Member<USBConfiguration>> configurations_;
   bool opened_;
   bool device_state_change_in_progress_;
   wtf_size_t configuration_index_;

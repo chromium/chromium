@@ -42,6 +42,7 @@ class USBInterface : public ScriptWrappable {
 
  private:
   Member<const USBDevice> device_;
+  HeapVector<Member<USBAlternateInterface>> alternates_;
   const wtf_size_t configuration_index_;
   const wtf_size_t interface_index_;
 };

@@ -113,6 +113,10 @@ USBDevice::USBDevice(UsbDeviceInfoPtr device_info,
     device_.set_disconnect_handler(
         WTF::Bind(&USBDevice::OnConnectionError, WrapWeakPersistent(this)));
   }
+
+  for (wtf_size_t i = 0; i < Info().configurations.size(); ++i)
+    configurations_.push_back(USBConfiguration::Create(this, i));
+
   wtf_size_t configuration_index =
       FindConfigurationIndex(Info().active_configuration);
   if (configuration_index != kNotFound)
@@ -138,17 +142,14 @@ wtf_size_t USBDevice::SelectedAlternateInterfaceIndex(
 }
 
 USBConfiguration* USBDevice::configuration() const {
-  if (configuration_index_ != kNotFound)
-    return USBConfiguration::Create(this, configuration_index_);
-  return nullptr;
+  if (configuration_index_ == kNotFound)
+    return nullptr;
+  DCHECK_LT(configuration_index_, configurations_.size());
+  return configurations_[configuration_index_];
 }
 
 HeapVector<Member<USBConfiguration>> USBDevice::configurations() const {
-  wtf_size_t num_configurations = Info().configurations.size();
-  HeapVector<Member<USBConfiguration>> configurations(num_configurations);
-  for (wtf_size_t i = 0; i < num_configurations; ++i)
-    configurations[i] = USBConfiguration::Create(this, i);
-  return configurations;
+  return configurations_;
 }
 
 ScriptPromise USBDevice::open(ScriptState* script_state) {
@@ -542,6 +543,7 @@ void USBDevice::ContextDestroyed() {
 void USBDevice::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(device_requests_);
+  visitor->Trace(configurations_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

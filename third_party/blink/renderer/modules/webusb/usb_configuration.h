@@ -40,6 +40,7 @@ class USBConfiguration : public ScriptWrappable {
 
  private:
   Member<const USBDevice> device_;
+  HeapVector<Member<USBInterface>> interfaces_;
   const wtf_size_t configuration_index_;
 };
 
