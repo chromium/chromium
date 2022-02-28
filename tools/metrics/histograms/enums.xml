@@ -37326,6 +37326,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4171" label="CrossOriginAccessBasedOnDocumentDomain"/>
   <int value="4172" label="CookieWithTruncatingChar"/>
   <int value="4173" label="VideoTrackGenerator"/>
+  <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
+  <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

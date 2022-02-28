@@ -3492,6 +3492,8 @@ enum WebFeature {
   kCrossOriginAccessBasedOnDocumentDomain = 4171,
   kCookieWithTruncatingChar = 4172,
   kVideoTrackGenerator = 4173,
+  kMediaCapabilitiesDecodingInfoWebrtc = 4174,
+  kMediaCapabilitiesEncodingInfoWebrtc = 4175,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
