@@ -1778,11 +1778,12 @@ Vector2d RenderText::GetAlignmentOffset(size_t line_number) {
   HorizontalAlignment horizontal_alignment = GetCurrentHorizontalAlignment();
   if (horizontal_alignment != ALIGN_LEFT) {
     const int width =
-        multiline_
-            ? std::ceil(GetShapedText()->lines()[line_number].size.width()) +
-                  (cursor_enabled_ ? 1 : 0)
-            : GetContentWidth();
+        multiline_ ? base::ClampCeil(
+                         GetShapedText()->lines()[line_number].size.width() +
+                         (cursor_enabled_ ? 1.0f : 0.0f))
+                   : GetContentWidth();
     offset.set_x(display_rect().width() - width);
+
     // Put any extra margin pixel on the left to match legacy behavior.
     if (horizontal_alignment == ALIGN_CENTER)
       offset.set_x((offset.x() + 1) / 2);

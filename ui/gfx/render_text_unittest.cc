@@ -49,6 +49,7 @@
 #include "ui/gfx/render_text_harfbuzz.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/gfx/switches.h"
+#include "ui/gfx/test/scoped_default_font_description.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 
@@ -8559,5 +8560,35 @@ TEST_F(RenderTextTest, StringSizeUpdatedWhenDeviceScaleFactorChanges) {
   EXPECT_EQ(scaled_render_text->GetStringSizeF(), scaled_size);
 }
 #endif
+
+// This test case is a unit test version of the clusterfuzz issue found in
+// crbug.com/1298286. It fixes removes integer-overflow undefined behavior.
+TEST_F(RenderTextTest, Clusterfuzz_Issue_1298286) {
+  gfx::FontList::SetDefaultFontDescription("Arial, Times New Roman, 15px");
+
+  gfx::FontList font_list;
+  gfx::Rect field(2119635455, font_list.GetHeight());
+
+  std::unique_ptr<gfx::RenderText> render_text =
+      gfx::RenderText::CreateRenderText();
+  render_text->SetFontList(font_list);
+  render_text->SetHorizontalAlignment(ALIGN_RIGHT);
+  render_text->SetDirectionalityMode(DIRECTIONALITY_FROM_UI);
+  render_text->SetText(u"t:");
+  render_text->SetDisplayRect(field);
+  render_text->SetCursorEnabled(true);
+
+  gfx::test::RenderTextTestApi render_text_test_api(render_text.get());
+  render_text_test_api.SetGlyphWidth(2016371456);
+
+  EXPECT_FALSE(render_text->multiline());
+
+  auto substring_bounds = render_text->GetSubstringBounds(gfx::Range(0, 2));
+
+  EXPECT_EQ(1UL, substring_bounds.size());
+  // Before the fix in crbug.com/1298286, this rect's x member would be -1
+  // because of undefined behavior due to integer overflow.
+  EXPECT_EQ(0, substring_bounds[0].x());
+}
 
 }  // namespace gfx
