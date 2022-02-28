@@ -72,6 +72,9 @@ class WallpaperControllerClientImpl
   void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
+  void FetchGooglePhotosPhoto(const AccountId& account_id,
+                              const std::string& id,
+                              FetchGooglePhotosPhotoCallback callback) override;
   void SaveWallpaperToDriveFs(
       const AccountId& account_id,
       const base::FilePath& origin,
@@ -188,6 +191,11 @@ class WallpaperControllerClientImpl
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
+  void OnGooglePhotosPhotoFetched(
+      FetchGooglePhotosPhotoCallback callback,
+      ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+          response);
+
   void ObserveVolumeManagerForAccountId(const AccountId& account_id);
 
   // WallpaperController interface in ash.
@@ -205,6 +213,9 @@ class WallpaperControllerClientImpl
 
   std::unique_ptr<wallpaper_handlers::BackdropSurpriseMeImageFetcher>
       surprise_me_image_fetcher_;
+
+  std::unique_ptr<wallpaper_handlers::GooglePhotosPhotosFetcher>
+      google_photos_photos_fetcher_;
 
   base::ScopedMultiSourceObservation<file_manager::VolumeManager,
                                      file_manager::VolumeManagerObserver>

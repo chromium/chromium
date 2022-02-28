@@ -4204,11 +4204,56 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
   ClearWallpaperCount();
   ASSERT_EQ(0, GetWallpaperCount());
   base::test::TestFuture<bool> google_photos_future;
-  controller_->SetGooglePhotosWallpaper({account_id_1, ""},
+  GooglePhotosWallpaperParams params(account_id_1, "foobar");
+  controller_->SetGooglePhotosWallpaper(params,
                                         google_photos_future.GetCallback());
   EXPECT_EQ(feature_enabled, google_photos_future.Get());
   EXPECT_EQ(feature_enabled,
             controller_->GetWallpaperType() == WallpaperType::kGooglePhotos);
+
+  WallpaperInfo wallpaper_info;
+  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+  WallpaperInfo expected_wallpaper_info(params);
+  EXPECT_EQ(feature_enabled, wallpaper_info == expected_wallpaper_info);
+}
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
+       SetGooglePhotosWallpaperFails) {
+  SimulateUserLogin(account_id_1);
+
+  // First set the wallpaper to an Online one so we can tell for sure if setting
+  // a Google Photos wallpaper has failed.
+  base::test::TestFuture<bool> online_future;
+  OnlineWallpaperParams online_params({account_id_1,
+                                       kAssetId,
+                                       GURL(kDummyUrl),
+                                       kDummyCollectionId,
+                                       WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                       /*preview_mode=*/false,
+                                       /*from_user=*/true,
+                                       /*daily_refresh_enabled=*/false,
+                                       kUnitId,
+                                       {}});
+  controller_->SetOnlineWallpaper(online_params, online_future.GetCallback());
+  ASSERT_TRUE(online_future.Wait());
+  ASSERT_EQ(1, GetWallpaperCount());
+  ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  // Attempt to set a Google Photos wallpaper with the client set to fail to
+  // fetch the Google Photos photo data.
+  client_.set_fetch_google_photos_photo_fails(true);
+  ClearWallpaperCount();
+  ASSERT_EQ(0, GetWallpaperCount());
+  base::test::TestFuture<bool> google_photos_future;
+  controller_->SetGooglePhotosWallpaper({account_id_1, "foobar"},
+                                        google_photos_future.GetCallback());
+  EXPECT_FALSE(google_photos_future.Get());
+  EXPECT_NE(controller_->GetWallpaperType(), WallpaperType::kGooglePhotos);
+
+  WallpaperInfo wallpaper_info;
+  EXPECT_TRUE(controller_->GetUserWallpaperInfo(account_id_1, &wallpaper_info));
+  WallpaperInfo expected_wallpaper_info(online_params);
+  EXPECT_EQ(wallpaper_info, expected_wallpaper_info);
 }
 
 }  // namespace ash

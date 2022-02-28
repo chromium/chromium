@@ -2988,6 +2988,7 @@ static_library("ui") {
       "//ash/webui/network_ui:traffic_counters_resource_provider",
       "//ash/webui/os_feedback_ui",
       "//ash/webui/personalization_app",
+      "//ash/webui/personalization_app/mojom",
       "//ash/webui/personalization_app/proto",
       "//ash/webui/print_management",
       "//ash/webui/projector_app",

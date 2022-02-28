@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/wallpaper_private_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -47,6 +49,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/pref_names.h"
@@ -747,6 +750,24 @@ void WallpaperControllerClientImpl::FetchImagesForCollection(
                      std::move(images_info_fetcher)));
 }
 
+void WallpaperControllerClientImpl::FetchGooglePhotosPhoto(
+    const AccountId& account_id,
+    const std::string& id,
+    FetchGooglePhotosPhotoCallback callback) {
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (!google_photos_photos_fetcher_) {
+    google_photos_photos_fetcher_ =
+        std::make_unique<wallpaper_handlers::GooglePhotosPhotosFetcher>(
+            profile);
+  }
+  auto fetched_callback =
+      base::BindOnce(&WallpaperControllerClientImpl::OnGooglePhotosPhotoFetched,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
+      id, /*album_id=*/absl::nullopt,
+      /*resume_token=*/absl::nullopt, std::move(fetched_callback));
+}
+
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
   ash::CrosSettings::Get()->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
@@ -796,6 +817,17 @@ void WallpaperControllerClientImpl::OnFetchImagesForCollection(
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
   std::move(callback).Run(success, std::move(images));
+}
+
+void WallpaperControllerClientImpl::OnGooglePhotosPhotoFetched(
+    FetchGooglePhotosPhotoCallback callback,
+    ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr
+        response) {
+  if (!response->photos.has_value() || response->photos.value().size() != 1) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  std::move(callback).Run(std::move(response->photos.value()[0]));
 }
 
 void WallpaperControllerClientImpl::ObserveVolumeManagerForAccountId(

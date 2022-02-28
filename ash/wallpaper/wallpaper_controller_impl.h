@@ -24,6 +24,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
@@ -469,11 +470,12 @@ class ASH_EXPORT WallpaperControllerImpl
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
 
-  // Used as the callback of fetching the metadata for a Google Photos photo
-  // from the unique id. Currently metadata is simply the image URL (stubbed).
-  void OnGooglePhotosMetadataFetched(const GooglePhotosWallpaperParams& params,
-                                     SetWallpaperCallback callback,
-                                     const std::string& metadata);
+  // Used as the callback of fetching the data for a Google Photos photo from
+  // the unique id.
+  void OnGooglePhotosPhotoFetched(
+      const GooglePhotosWallpaperParams& params,
+      SetWallpaperCallback callback,
+      ash::personalization_app::mojom::GooglePhotosPhotoPtr photo);
 
   // Used as the callback of downloading wallpapers of type
   // `WallpaperType::kGooglePhotos`. Shows the wallpaper immediately if

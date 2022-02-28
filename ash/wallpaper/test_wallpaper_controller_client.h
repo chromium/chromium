@@ -45,6 +45,10 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
     fetch_daily_refresh_info_fails_ = fails;
   }
 
+  void set_fetch_google_photos_photo_fails(bool fails) {
+    fetch_google_photos_photo_fails_ = fails;
+  }
+
   void set_fake_files_id_for_account_id(const AccountId& account_id,
                                         std::string fake_files_id) {
     fake_files_ids_[account_id] = fake_files_id;
@@ -68,6 +72,9 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
+  void FetchGooglePhotosPhoto(const AccountId& account_id,
+                              const std::string& id,
+                              FetchGooglePhotosPhotoCallback callback) override;
   void SaveWallpaperToDriveFs(
       const AccountId& account_id,
       const base::FilePath& origin,
@@ -91,6 +98,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   std::unordered_map<AccountId, std::string> fake_files_ids_;
   bool wallpaper_sync_enabled_ = true;
   bool fetch_images_for_collection_fails_ = false;
+  bool fetch_google_photos_photo_fails_ = false;
 };
 
 }  // namespace ash

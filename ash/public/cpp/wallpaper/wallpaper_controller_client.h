@@ -12,11 +12,15 @@
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 
 class AccountId;
 
 namespace ash {
+
+namespace personalization_app::mojom {
+class GooglePhotosPhoto;
+}
 
 // Used by ash to control a Chrome client of the WallpaperController.
 class ASH_PUBLIC_EXPORT WallpaperControllerClient {
@@ -65,6 +69,13 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   virtual void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) = 0;
+
+  using FetchGooglePhotosPhotoCallback = base::OnceCallback<void(
+      mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto>)>;
+  virtual void FetchGooglePhotosPhoto(
+      const AccountId& account_id,
+      const std::string& id,
+      FetchGooglePhotosPhotoCallback callback) = 0;
 };
 
 }  // namespace ash

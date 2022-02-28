@@ -4,9 +4,11 @@
 
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -88,6 +90,21 @@ void TestWallpaperControllerClient::FetchImagesForCollection(
     images.push_back(image2);
 
     std::move(callback).Run(/*success=*/true, std::move(images));
+  }
+}
+
+void TestWallpaperControllerClient::FetchGooglePhotosPhoto(
+    const AccountId& account_id,
+    const std::string& id,
+    FetchGooglePhotosPhotoCallback callback) {
+  base::Time time;
+  if (fetch_google_photos_photo_fails_ ||
+      !base::Time::FromString("15 Jun 2011 12:00:00", &time)) {
+    std::move(callback).Run(nullptr);
+  } else {
+    std::move(callback).Run(personalization_app::mojom::GooglePhotosPhoto::New(
+        id, "name", base::TimeFormatFriendlyDate(time),
+        GURL("https://google.com/picture.png")));
   }
 }
 

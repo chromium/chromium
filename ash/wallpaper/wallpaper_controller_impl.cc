@@ -36,6 +36,7 @@
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_window_state_manager.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -59,6 +60,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
@@ -1236,13 +1238,6 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromData(
   DecodeImageData(std::move(decoded_callback), image_data);
 }
 
-std::string FetchGooglePhotosMetadataFromId(const std::string& id) {
-  // Stubbed, return the url of the google logo for testing.
-  NOTIMPLEMENTED();
-  return "https://www.google.com/images/branding/googlelogo/1x/"
-         "googlelogo_color_272x92dp.png";
-}
-
 void WallpaperControllerImpl::SetGooglePhotosWallpaper(
     const GooglePhotosWallpaperParams& params,
     WallpaperController::SetWallpaperCallback callback) {
@@ -1257,15 +1252,11 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
   }
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
 
-  // TODO(angusmclean): This async call is to simulate fetching the URL. The
-  // `FetchGooglePhotosMetadataFromId()` method may be replaced with some other
-  // API, or unstubbed.
-  PostTaskAndReplyWithResult(
-      sequenced_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&FetchGooglePhotosMetadataFromId, params.id),
-      base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosMetadataFetched,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), params,
-                     std::move(callback)));
+  wallpaper_controller_client_->FetchGooglePhotosPhoto(
+      params.account_id, params.id,
+      base::BindOnce(&WallpaperControllerImpl::OnGooglePhotosPhotoFetched,
+                     set_wallpaper_weak_factory_.GetWeakPtr(),
+                     std::move(params), std::move(callback)));
 }
 
 void WallpaperControllerImpl::SetDefaultWallpaper(const AccountId& account_id,
@@ -2156,18 +2147,34 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
       CustomWallpaperElement(base::FilePath(), image);
 }
 
-void WallpaperControllerImpl::OnGooglePhotosMetadataFetched(
+void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
     const GooglePhotosWallpaperParams& params,
     SetWallpaperCallback callback,
-    const std::string& metadata) {
-  // TODO(angusmclean): Verify that the image is still valid/not deleted, then
-  // check the cache for it, only downloading if necessary.
+    ash::personalization_app::mojom::GooglePhotosPhotoPtr photo) {
+  if (photo.is_null()) {
+    // The photo doesn't exist, or has been deleted. If this photo is the
+    // current wallpaper, we need to reset to the default.
+    if (current_wallpaper_->wallpaper_info().location == params.id) {
+      // TODO(angusmclean): Remove cached version once caching is implemented.
+      SetDefaultWallpaperImpl(params.account_id, /*show_wallpaper=*/true);
+    }
+    std::move(callback).Run(false);
+    return;
+  }
+  // We need to add a string to the URL to make sure we get back the correct
+  // resolution image, within reason and maintaining aspect ratio. See:
+  // https://developers.google.com/photos/library/guides/access-media-items
+  GURL url(base::StringPrintf("%s=w%d-h%d", photo->url.spec().c_str(),
+                              kLargeWallpaperMaxWidth,
+                              kLargeWallpaperMaxHeight));
+
+  // TODO(angusmclean): Check the cache for the image. Download if not.
   ImageDownloader::DownloadCallback download_callback = base::BindOnce(
       &WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded,
       set_wallpaper_weak_factory_.GetWeakPtr(), std::move(params),
       std::move(callback));
   // TODO(angusmclean): Use a real traffic annotation below.
-  ImageDownloader::Get()->Download(GURL(metadata), NO_TRAFFIC_ANNOTATION_YET,
+  ImageDownloader::Get()->Download(url, NO_TRAFFIC_ANNOTATION_YET,
                                    /*additional_headers=*/{},
                                    /*credentials_account_id=*/params.account_id,
                                    std::move(download_callback));
@@ -2177,9 +2184,16 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
     const GooglePhotosWallpaperParams& params,
     SetWallpaperCallback callback,
     const gfx::ImageSkia& image) {
-  // TODO(angusmclean): Replace this DCHECK with actual logic to handle an image
-  // coming back empty.
-  DCHECK(!image.isNull());
+  DCHECK(callback);
+  if (image.isNull()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  // Image returned successfully. We can reliably assume success from here, and
+  // we need to call the callback before `ShowWallpaperImage` to ensure proper
+  // propagation of `CurrentWallpaper` to the WebUI.
+  std::move(callback).Run(true);
+
   WallpaperInfo wallpaper_info(params);
 
   if (!SetUserWallpaperInfo(params.account_id, wallpaper_info)) {
@@ -2192,12 +2206,13 @@ void WallpaperControllerImpl::OnGooglePhotosWallpaperDownloaded(
     ShowWallpaperImage(image, wallpaper_info, /*preview_mode=*/false,
                        /*always_on_top=*/false);
   }
-  std::move(callback).Run(true);
 }
 
 void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
                                                    const WallpaperInfo& info,
                                                    bool show_wallpaper) {
+  // TODO(angusmclean): Handle Google Photos wallpapers here as well, once
+  // caching is implemented.
   if (info.type != WallpaperType::kOnline &&
       info.type != WallpaperType::kDaily &&
       info.type != WallpaperType::kDefault) {
