@@ -275,11 +275,10 @@ apps::AppType AppUpdate::GetAppType() const {
 }
 
 const std::string& AppUpdate::AppId() const {
+  if (ShouldUseNonMojom()) {
+    return delta_ ? delta_->app_id : state_->app_id;
+  }
   return mojom_delta_ ? mojom_delta_->app_id : mojom_state_->app_id;
-}
-
-const std::string& AppUpdate::GetAppId() const {
-  return delta_ ? delta_->app_id : state_->app_id;
 }
 
 apps::Readiness AppUpdate::Readiness() const {

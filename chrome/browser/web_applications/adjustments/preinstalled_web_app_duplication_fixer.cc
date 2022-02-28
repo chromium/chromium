@@ -104,9 +104,9 @@ void PreinstalledWebAppDuplicationFixer::ScanForDuplication() {
           return;
 
         if (update.GetAppType() == apps::AppType::kWeb)
-          installed_web_apps.push_back(update.GetAppId());
+          installed_web_apps.push_back(update.AppId());
         else if (update.GetAppType() == apps::AppType::kChromeApp)
-          installed_chrome_apps.push_back(update.GetAppId());
+          installed_chrome_apps.push_back(update.AppId());
       });
 
   size_t fix_count = 0;

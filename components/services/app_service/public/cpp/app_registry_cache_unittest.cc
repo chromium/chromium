@@ -58,11 +58,7 @@ class MockRegistryObserver : public apps::AppRegistryCache::Observer {
 };
 
 MATCHER_P(HasAppId, app_id, "Has the correct app id") {
-  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
-    return arg.GetAppId() == app_id;
-  } else {
-    return arg.AppId() == app_id;
-  }
+  return arg.AppId() == app_id;
 }
 
 // Responds to a cache's OnAppUpdate to call back into the cache, checking that
@@ -111,21 +107,21 @@ class RecursiveObserver : public AppRegistryCache::Observer {
         if (num_apps_seen_on_app_update_ == 0) {
           // If this is the first time that OnAppUpdate is called, after a
           // PrepareForOnApps call, then just populate the names_snapshot_ map.
-          names_snapshot_[inner.GetAppId()] = inner.Name();
+          names_snapshot_[inner.AppId()] = inner.Name();
         } else {
           // Otherwise, check that the names found during this OnAppUpdate call
           // match those during the first OnAppUpdate call.
-          auto iter = names_snapshot_.find(inner.GetAppId());
+          auto iter = names_snapshot_.find(inner.AppId());
           EXPECT_EQ(inner.Name(),
                     (iter != names_snapshot_.end()) ? iter->second : "");
         }
       }
 
-      if (outer.GetAppId() == inner.GetAppId()) {
+      if (outer.AppId() == inner.AppId()) {
         ExpectEq(outer, inner);
       }
 
-      if (inner.GetAppId() == "p") {
+      if (inner.AppId() == "p") {
         EXPECT_EQ(expected_name_for_p_, inner.Name());
       }
 
@@ -137,13 +133,13 @@ class RecursiveObserver : public AppRegistryCache::Observer {
         "no_such_app_id",
         [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
 
-    EXPECT_TRUE(cache_->ForApp(
-        outer.GetAppId(),
-        [&outer](const AppUpdate& inner) { ExpectEq(outer, inner); }));
+    EXPECT_TRUE(cache_->ForApp(outer.AppId(), [&outer](const AppUpdate& inner) {
+      ExpectEq(outer, inner);
+    }));
 
     if (outer.NameChanged()) {
       std::string old_name;
-      auto iter = old_names_.find(outer.GetAppId());
+      auto iter = old_names_.find(outer.AppId());
       if (iter != old_names_.end()) {
         old_name = iter->second;
       }
@@ -152,7 +148,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
       // "mango" to "mulberry" and never from "mulberry" to "melon".
       EXPECT_LT(old_name, outer.Name());
     }
-    old_names_[outer.GetAppId()] = outer.Name();
+    old_names_[outer.AppId()] = outer.Name();
 
     std::vector<AppPtr> super_recursive;
     while (!super_recursive_apps_.empty()) {
@@ -180,7 +176,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
 
   static void ExpectEq(const AppUpdate& outer, const AppUpdate& inner) {
     EXPECT_EQ(outer.GetAppType(), inner.GetAppType());
-    EXPECT_EQ(outer.GetAppId(), inner.GetAppId());
+    EXPECT_EQ(outer.AppId(), inner.AppId());
     EXPECT_EQ(outer.StateIsNull(), inner.StateIsNull());
     EXPECT_EQ(outer.Readiness(), inner.Readiness());
     EXPECT_EQ(outer.Name(), inner.Name());
@@ -228,11 +224,7 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer overrides.
   void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
-      updated_ids_.insert(update.GetAppId());
-    } else {
-      updated_ids_.insert(update.AppId());
-    }
+    updated_ids_.insert(update.AppId());
   }
 
   void UpdateApps() {
@@ -311,7 +303,7 @@ class AppRegistryCacheTest : public testing::Test,
           (update.Readiness() == Readiness::kReady)) {
         num_freshly_installed_++;
       }
-      updated_ids_.insert(update.GetAppId());
+      updated_ids_.insert(update.AppId());
       updated_names_.insert(update.Name());
     } else {
       EXPECT_NE("", update.Name());
@@ -481,14 +473,14 @@ TEST_P(AppRegistryCacheTest, OnApps) {
   bool found_c = false;
   EXPECT_TRUE(cache.ForApp("c", [&found_c](const apps::AppUpdate& update) {
     found_c = true;
-    EXPECT_EQ("c", update.GetAppId());
+    EXPECT_EQ("c", update.AppId());
   }));
   EXPECT_TRUE(found_c);
 
   bool found_e = false;
   EXPECT_FALSE(cache.ForApp("e", [&found_e](const apps::AppUpdate& update) {
     found_e = true;
-    EXPECT_EQ("e", update.GetAppId());
+    EXPECT_EQ("e", update.AppId());
   }));
   EXPECT_FALSE(found_e);
 }

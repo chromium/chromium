@@ -80,7 +80,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::AppType GetAppType() const;
 
   const std::string& AppId() const;
-  const std::string& GetAppId() const;
 
   apps::Readiness Readiness() const;
   apps::Readiness PriorReadiness() const;
