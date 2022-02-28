@@ -1254,7 +1254,7 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
         "Blink.Canvas.2DLayerBridge.WillReadFrequently",
         context_ && context_->CreationAttributes().will_read_frequently);
 
-    if (ShouldAccelerate() &&
+    if (ShouldAccelerate() && context_ &&
         !context_->CreationAttributes().will_read_frequently) {
       canvas2d_bridge_ = Create2DLayerBridge(RasterMode::kGPU);
     }
