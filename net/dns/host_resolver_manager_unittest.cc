@@ -6630,6 +6630,49 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Secure_Local_CacheHit) {
                   testing::ElementsAre(kExpectedSecureIP)))));
 }
 
+// On an IPv6 network, if we get A results and the AAAA response is SERVFAIL, we
+// fail the whole DnsTask rather than proceeding with just the A results. In
+// SECURE mode, fallback to the system resolver is disabled. See
+// https://crbug.com/1292324.
+TEST_F(HostResolverManagerDnsTest,
+       SecureDnsModeIsSecureAndAAAAServfailCausesFailDespiteAResults) {
+  constexpr char kName[] = "name.test";
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(
+          MockDnsClientRule::ResultType::kOk,
+          BuildTestDnsAddressResponse(kName, IPAddress(192, 168, 1, 103))),
+      /*delay=*/false);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kFail),
+      /*delay=*/false);
+
+  DnsConfig config = CreateValidDnsConfig();
+  config.use_local_ipv6 = true;
+
+  CreateResolver();
+  UseMockDnsClient(config, std::move(rules));
+  DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = SecureDnsMode::kSecure;
+  resolver_->SetDnsConfigOverrides(overrides);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      url::SchemeHostPort(url::kHttpsScheme, kName, 443), NetworkIsolationKey(),
+      NetLogWithSource(), /*optional_parameters=*/absl::nullopt,
+      resolve_context_.get(), resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
+  EXPECT_FALSE(response.request()->GetEndpointResults());
+  EXPECT_FALSE(response.request()->GetTextResults());
+  EXPECT_FALSE(response.request()->GetHostnameResults());
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+
+  // Expect result not cached.
+  EXPECT_EQ(resolve_context_->host_cache()->size(), 0u);
+}
+
 // Test for a resolve with a transaction that takes longer than usual to
 // complete. With the typical behavior of using fast timeouts, this is expected
 // to timeout and fallback to the system resolver.
