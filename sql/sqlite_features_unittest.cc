@@ -292,6 +292,20 @@ TEST_F(SQLiteFeaturesTest, CachedRegexp) {
   EXPECT_EQ(7, s.ColumnInt(0));
 }
 
+TEST_F(SQLiteFeaturesTest, JsonIsDisabled) {
+  static constexpr char kCreateSql[] =
+      "CREATE TABLE rows(id INTEGER PRIMARY KEY NOT NULL, data TEXT NOT NULL)";
+  ASSERT_TRUE(db_.Execute(kCreateSql));
+  ASSERT_TRUE(db_.Execute("INSERT INTO rows(data) VALUES('{\"a\": 1}')"));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    EXPECT_FALSE(db_.Execute("SELECT data -> '$.a' FROM rows"));
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+}
+
 // The "No Isolation Between Operations On The Same Database Connection" section
 // in https://sqlite.org/isolation.html implies that it's safe to issue multiple
 // concurrent SELECTs against the same area.
