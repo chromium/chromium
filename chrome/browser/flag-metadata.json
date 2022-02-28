@@ -5898,6 +5898,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "use-load-simulated-request-for-error-page-navigation",
+    "owners": [ "alionadangla", "bwwilliams", "gambard" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "use_messages_staging_url",
     "owners": [ "azeemarshad", "khorimoto", "jonmann" ],
     // This flag is required for QA and dogfood testing.

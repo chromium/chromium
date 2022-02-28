@@ -652,6 +652,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseLensToSearchForImageName,
      flag_descriptions::kUseLensToSearchForImageDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseLensToSearchForImage)},
+    {"use-load-simulated-request-for-error-page-navigation",
+     flag_descriptions::kUseLoadSimulatedRequestForErrorPageNavigationName,
+     flag_descriptions::
+         kUseLoadSimulatedRequestForErrorPageNavigationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         web::features::kUseLoadSimulatedRequestForErrorPageNavigation)},
     {"download-vcard", flag_descriptions::kDownloadVcardName,
      flag_descriptions::kDownloadVcardDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDownloadVcard)},

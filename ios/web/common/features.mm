@@ -71,6 +71,10 @@ const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
 extern const base::Feature kEnableFullscreenAPI{
     "EnableFullscreenAPI", base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kUseLoadSimulatedRequestForErrorPageNavigation{
+    "UseLoadSimulatedRequestForErrorPageNavigation",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
 }
@@ -92,6 +96,14 @@ bool IsNewDownloadAPIEnabled() {
 bool IsMediaPermissionsControlEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kMediaPermissionsControl);
+  }
+  return false;
+}
+
+bool IsLoadSimulatedRequestAPIEnabled() {
+  if (@available(iOS 15, *)) {
+    return base::FeatureList::IsEnabled(
+        kUseLoadSimulatedRequestForErrorPageNavigation);
   }
   return false;
 }

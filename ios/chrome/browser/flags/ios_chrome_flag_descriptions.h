@@ -508,6 +508,12 @@ extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 extern const char kUseLensToSearchForImageName[];
 extern const char kUseLensToSearchForImageDescription[];
 
+// Title and description for the flag to enable using the
+// loadSimulatedRequest:responseHTMLString: API for displaying error pages in
+// CRWWKNavigationHandler.
+extern const char kUseLoadSimulatedRequestForErrorPageNavigationName[];
+extern const char kUseLoadSimulatedRequestForErrorPageNavigationDescription[];
+
 // Title and description for the flag to enable the replacement of some images
 // by SFSymbols.
 extern const char kUseSFSymbolsSamplesName[];
