@@ -194,8 +194,9 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                      "MixingGraphImpl::OnMoreData", "delay", delay,
                      "delay_timestamp", delay_timestamp);
 
+  // The expected playout time is |delay_timestamp| + |delay|.
   base::TimeDelta total_delay =
-      base::TimeTicks::Now() - delay_timestamp + delay;
+      delay_timestamp + delay - base::TimeTicks::Now();
   if (total_delay < base::TimeDelta())
     total_delay = base::TimeDelta();
 
