@@ -74,7 +74,8 @@ def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
   # Ensure the manifest package matches that of the apk's arsc package
   # So that resource references resolve correctly. The actual manifest
   # package name is set via --rename-manifest-package.
-  manifest_node.set('package', arsc_package_name)
+  if arsc_package_name is not None:
+    manifest_node.set('package', arsc_package_name)
 
   # Pylint for some reason things app_node is an int.
   # pylint: disable=no-member
@@ -108,7 +109,6 @@ def main(raw_args):
 
   arsc_package, _ = resource_utils.ExtractArscPackage(options.aapt2_path,
                                                       options.in_apk)
-  assert arsc_package is not None, 'The apk does not have a valid package.'
   # Extract version from the compiled manifest since it might have been set
   # via aapt, and not exist in the manifest's text form.
   version_code, version_name, manifest_package = (
