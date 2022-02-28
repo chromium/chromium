@@ -35,6 +35,13 @@ consoles.list_view(
 )
 
 try_.builder(
+    name = "mac-arm64-on-arm64-rel",
+    builderless = False,
+    cpu = cpu.ARM64,
+    os = os.MAC_11,
+)
+
+try_.builder(
     name = "mac-osxbeta-rel",
     os = os.MAC_DEFAULT,
 )
