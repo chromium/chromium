@@ -868,7 +868,7 @@
         Simplified view for web pages
       </message>
       <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
-        Get notified when a site can be shown in simplified view
+        Get notified when an article can be shown in simplified view
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TITLE" desc="Title of preference that allows the user to use a simplified tab switcher that is accessibility friendly. The words 'Open tabs' should match translation in TC ID 3108541343994525384, provided that 'open' is correctly used as an adjective and not a verb.">
         Simplified view for open tabs
