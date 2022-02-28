@@ -85,7 +85,8 @@ class RepostFormTabHelperTest : public PlatformTest {
       : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[RepostFormTabHelperTestDelegate alloc] init]),
         location_(CGPointMake(kDialogHLocation, kDialogVLocation)) {
-    RepostFormTabHelper::CreateForWebState(web_state_.get(), delegate_);
+    RepostFormTabHelper::CreateForWebState(web_state_.get());
+    RepostFormTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     delegate_.tabHelper = tab_helper();
   }
 

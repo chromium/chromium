@@ -51,7 +51,8 @@ class PassKitCoordinatorTest : public PlatformTest {
         initWithWebState:web_state_.get()];
     test_navigation_manager_ = std::make_unique<web::FakeNavigationManager>();
 
-    PassKitTabHelper::CreateForWebState(web_state_.get(), delegate_);
+    PassKitTabHelper::CreateForWebState(web_state_.get());
+    PassKitTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     web_state_->SetNavigationManager(std::move(test_navigation_manager_));
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];

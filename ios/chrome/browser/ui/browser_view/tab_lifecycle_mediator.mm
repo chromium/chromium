@@ -96,10 +96,10 @@
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerCoordinator);
-  DownloadManagerTabHelper::CreateForWebState(webState,
-                                              _downloadManagerCoordinator);
+  DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(
+      _downloadManagerCoordinator);
 
-  NetExportTabHelper::CreateForWebState(webState, _tabHelperDelegate);
+  NetExportTabHelper::FromWebState(webState)->SetDelegate(_tabHelperDelegate);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -122,6 +122,10 @@
   }
 
   web_deprecated::SetSwipeRecognizerProvider(webState, nil);
+
+  DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
+
+  NetExportTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
 
 @end

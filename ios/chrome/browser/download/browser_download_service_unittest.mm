@@ -35,14 +35,12 @@ const char16_t kRealityFileName[] = u"important_file.reality";
 template <class TabHelper>
 class StubTabHelper : public TabHelper {
  public:
+  // Overrides the method from web::WebStateUserData<TabHelper>.
   static void CreateForWebState(web::WebState* web_state) {
     web_state->SetUserData(TabHelper::UserDataKey(),
                            base::WrapUnique(new StubTabHelper(web_state)));
   }
 
-  StubTabHelper(const StubTabHelper&) = delete;
-  StubTabHelper& operator=(const StubTabHelper&) = delete;
-
   // Adds the given task to tasks() lists.
   void Download(std::unique_ptr<web::DownloadTask> task) override {
     tasks_.push_back(std::move(task));
@@ -52,38 +50,9 @@ class StubTabHelper : public TabHelper {
   using DownloadTasks = std::vector<std::unique_ptr<web::DownloadTask>>;
   const DownloadTasks& tasks() const { return tasks_; }
 
- private:
-  StubTabHelper(web::WebState* web_state)
-      : TabHelper(web_state, /*delegate=*/nil) {}
-
-  DownloadTasks tasks_;
-};
-
-// Substitutes ARQuickLookTabHelper for testing.
-class TestARQuickLookTabHelper : public ARQuickLookTabHelper {
- public:
-  static void CreateForWebState(web::WebState* web_state) {
-    web_state->SetUserData(
-        ARQuickLookTabHelper::UserDataKey(),
-        base::WrapUnique(new TestARQuickLookTabHelper(web_state)));
-  }
-
-  TestARQuickLookTabHelper(const TestARQuickLookTabHelper&) = delete;
-  TestARQuickLookTabHelper& operator=(const TestARQuickLookTabHelper&) = delete;
-
-  // Adds the given task to tasks() lists.
-  void Download(std::unique_ptr<web::DownloadTask> task) override {
-    tasks_.push_back(std::move(task));
-  }
-
-  // Tasks added via Download() call.
-  using DownloadTasks = std::vector<std::unique_ptr<web::DownloadTask>>;
-  const DownloadTasks& tasks() const { return tasks_; }
+  StubTabHelper(web::WebState* web_state) : TabHelper(web_state) {}
 
  private:
-  TestARQuickLookTabHelper(web::WebState* web_state)
-      : ARQuickLookTabHelper(web_state) {}
-
   DownloadTasks tasks_;
 };
 
@@ -95,7 +64,7 @@ class BrowserDownloadServiceTest : public PlatformTest {
   BrowserDownloadServiceTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()) {
     StubTabHelper<PassKitTabHelper>::CreateForWebState(&web_state_);
-    TestARQuickLookTabHelper::CreateForWebState(&web_state_);
+    StubTabHelper<ARQuickLookTabHelper>::CreateForWebState(&web_state_);
     StubTabHelper<DownloadManagerTabHelper>::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(browser_state_.get());
   }
@@ -109,8 +78,8 @@ class BrowserDownloadServiceTest : public PlatformTest {
         PassKitTabHelper::FromWebState(&web_state_));
   }
 
-  TestARQuickLookTabHelper* ar_quick_look_tab_helper() {
-    return static_cast<TestARQuickLookTabHelper*>(
+  StubTabHelper<ARQuickLookTabHelper>* ar_quick_look_tab_helper() {
+    return static_cast<StubTabHelper<ARQuickLookTabHelper>*>(
         ARQuickLookTabHelper::FromWebState(&web_state_));
   }
 

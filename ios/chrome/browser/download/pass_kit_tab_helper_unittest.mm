@@ -38,7 +38,8 @@ class PassKitTabHelperTest : public PlatformTest {
   PassKitTabHelperTest()
       : delegate_([[FakePassKitTabHelperDelegate alloc]
             initWithWebState:&web_state_]) {
-    PassKitTabHelper::CreateForWebState(&web_state_, delegate_);
+    PassKitTabHelper::CreateForWebState(&web_state_);
+    PassKitTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
   }
 
   PassKitTabHelper* tab_helper() {

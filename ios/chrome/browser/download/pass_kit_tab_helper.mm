@@ -40,25 +40,14 @@ DownloadPassKitResult GetUmaResult(web::DownloadTask* task) {
 
 }  // namespace
 
-PassKitTabHelper::PassKitTabHelper(web::WebState* web_state,
-                                   id<PassKitTabHelperDelegate> delegate)
-    : web_state_(web_state), delegate_(delegate) {
+PassKitTabHelper::PassKitTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
   DCHECK(web_state_);
 }
 
 PassKitTabHelper::~PassKitTabHelper() {
   for (auto& task : tasks_) {
     task->RemoveObserver(this);
-  }
-}
-
-void PassKitTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<PassKitTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(), base::WrapUnique(new PassKitTabHelper(
-                                              web_state, delegate)));
   }
 }
 
@@ -70,6 +59,10 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   tasks_.insert(std::move(task));
   task_ptr->AddObserver(this);
   task_ptr->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
+}
+
+void PassKitTabHelper::SetDelegate(id<PassKitTabHelperDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {

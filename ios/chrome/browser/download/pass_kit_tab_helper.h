@@ -48,19 +48,16 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
 
   ~PassKitTabHelper() override;
 
-  // Creates TabHelper. |delegate| is not retained by TabHelper. |web_state|
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state,
-                                id<PassKitTabHelperDelegate> delegate);
-
   // Asynchronously downloads pkpass file using the given |task|. Asks delegate
   // to present "Add pkpass" dialog when the download is complete.
   virtual void Download(std::unique_ptr<web::DownloadTask> task);
 
+  // Set the delegate. The tab helper will no-op if used when delegate is nil.
+  void SetDelegate(id<PassKitTabHelperDelegate> delegate);
+
  protected:
   // Allow subclassing from PassKitTabHelper for testing purposes.
-  PassKitTabHelper(web::WebState* web_state,
-                   id<PassKitTabHelperDelegate> delegate);
+  PassKitTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<PassKitTabHelper>;

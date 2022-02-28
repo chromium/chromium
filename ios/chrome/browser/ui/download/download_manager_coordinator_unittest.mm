@@ -69,16 +69,6 @@ std::unique_ptr<web::FakeDownloadTask> CreateTestTask() {
   return task;
 }
 
-// Substitutes real TabHelper for testing.
-class StubTabHelper : public DownloadManagerTabHelper {
- public:
-  StubTabHelper(web::WebState* web_state)
-      : DownloadManagerTabHelper(web_state, /*delegate=*/nullptr) {}
-
-  StubTabHelper(const StubTabHelper&) = delete;
-  StubTabHelper& operator=(const StubTabHelper&) = delete;
-};
-
 }  // namespace
 
 // Test fixture for testing DownloadManagerCoordinator class.
@@ -91,7 +81,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
     activity_view_controller_class_ =
         OCMClassMock([UIActivityViewController class]);
-    tab_helper_ = std::make_unique<StubTabHelper>(&web_state_);
+    DownloadManagerTabHelper::CreateForWebState(&web_state_);
     coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()];
@@ -112,6 +102,10 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     [[InstallationNotifier sharedInstance] stopPolling];
   }
 
+  DownloadManagerTabHelper* tab_helper() {
+    return DownloadManagerTabHelper::FromWebState(&web_state_);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -119,7 +113,6 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
   id activity_view_controller_class_;
-  std::unique_ptr<StubTabHelper> tab_helper_;
   web::FakeWebState web_state_;
   // Application can be lazily created by tests, but it has to be OCMock.
   // Destructor will call -stopMocking on this object to make sure that
@@ -219,7 +212,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateCreatedDownload) {
   auto task = CreateTestTask();
   histogram_tester_.ExpectTotalCount("Download.IOSDownloadFileUI", 0);
 
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                        didCreateDownload:task.get()
                        webStateIsVisible:YES];
 
@@ -257,7 +250,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
   task->Start(path, web::DownloadTask::Destination::kToMemory);
   task->SetDone(true);
 
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                        didCreateDownload:task.get()
                        webStateIsVisible:YES];
 
@@ -276,7 +269,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
 
   // Replace download task with a new one.
   auto new_task = CreateTestTask();
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                        didCreateDownload:new_task.get()
                        webStateIsVisible:YES];
 
@@ -294,7 +287,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
 TEST_F(DownloadManagerCoordinatorTest,
        DelegateCreatedDownloadForHiddenWebState) {
   auto task = CreateTestTask();
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                        didCreateDownload:task.get()
                        webStateIsVisible:NO];
 
@@ -307,7 +300,7 @@ TEST_F(DownloadManagerCoordinatorTest,
 // is reset to null (to prevent a stale raw pointer).
 TEST_F(DownloadManagerCoordinatorTest, DelegateHideDownload) {
   auto task = CreateTestTask();
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                        didCreateDownload:task.get()
                        webStateIsVisible:YES];
   @autoreleasepool {
@@ -315,7 +308,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateHideDownload) {
     // autorelease coordinator_. task_environment_ has to outlive the
     // coordinator, so wrapping -downloadManagerTabHelper:didHideDownload:
     // call in @autorelease will ensure that coordinator_ is deallocated.
-    [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+    [coordinator_ downloadManagerTabHelper:tab_helper()
                            didHideDownload:task.get()];
   }
 
@@ -329,7 +322,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateHideDownload) {
 // showing web state presents download manager UI for that web state.
 TEST_F(DownloadManagerCoordinatorTest, DelegateShowDownload) {
   auto task = CreateTestTask();
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                          didShowDownload:task.get()];
 
   // Only first presentation is animated. Switching between tab should create
@@ -675,7 +668,7 @@ TEST_F(DownloadManagerCoordinatorTest, DecidePolicyForDownload) {
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                  decidePolicyForDownload:&task
                        completionHandler:^(NewDownloadPolicy){
                        }];
@@ -719,7 +712,7 @@ TEST_F(DownloadManagerCoordinatorTest,
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       &web_state_, OverlayModality::kWebContentArea);
   ASSERT_EQ(0U, queue->size());
-  [coordinator_ downloadManagerTabHelper:tab_helper_.get()
+  [coordinator_ downloadManagerTabHelper:tab_helper()
                  decidePolicyForDownload:&task
                        completionHandler:^(NewDownloadPolicy){
                        }];

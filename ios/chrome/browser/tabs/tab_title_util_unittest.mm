@@ -33,6 +33,7 @@ class TabTitleUtilTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
+    DownloadManagerTabHelper::CreateForWebState(&web_state_);
   }
 
   web::FakeWebState web_state_;
@@ -41,8 +42,6 @@ class TabTitleUtilTest : public PlatformTest {
 
 // Tests GetTabTitle when there is a download task in the download manager.
 TEST_F(TabTitleUtilTest, GetTabTitleWithDownloadTest) {
-  DownloadManagerTabHelper::CreateForWebState(&web_state_,
-                                              /*delegate=*/nullptr);
   DownloadManagerTabHelper* tab_helper =
       DownloadManagerTabHelper::FromWebState(&web_state_);
   auto task = std::make_unique<web::FakeDownloadTask>(
@@ -63,8 +62,6 @@ TEST_F(TabTitleUtilTest, GetTabTitleWithDownloadTest) {
 
 // Tests GetTabTitle when there is no download task in the download manager.
 TEST_F(TabTitleUtilTest, GetTabTitleWithNoDownloadTest) {
-  DownloadManagerTabHelper::CreateForWebState(&web_state_,
-                                              /*delegate=*/nullptr);
   // No title set on the web state.
   std::u16string default_title =
       l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);

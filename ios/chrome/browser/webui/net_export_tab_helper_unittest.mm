@@ -49,7 +49,8 @@ class NetExportTabHelperTest : public ChromeWebTest {
  protected:
   void SetUp() override {
     ChromeWebTest::SetUp();
-    NetExportTabHelper::CreateForWebState(web_state(), delegate_);
+    NetExportTabHelper::CreateForWebState(web_state());
+    NetExportTabHelper::FromWebState(web_state())->SetDelegate(delegate_);
   }
 
   // A delegate that is given to the NetExportTabHelper for testing.

@@ -58,8 +58,7 @@ class ShareToDataBuilderTest : public PlatformTest {
     delegate_ = [[FakeSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::FromWebState(web_state_.get())->SetDelegate(delegate_);
     // Needed by the ShareToDataForWebState to get the tab title.
-    DownloadManagerTabHelper::CreateForWebState(web_state_.get(),
-                                                /*delegate=*/nullptr);
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     web_state_->SetTitle(kExpectedTitle);
 
     // Add a fake view to the FakeWebState. This will be used to capture the

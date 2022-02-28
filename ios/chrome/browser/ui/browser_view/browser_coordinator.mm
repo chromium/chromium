@@ -1198,13 +1198,14 @@
         self.viewController);
   }
 
-  PassKitTabHelper::CreateForWebState(webState, self.passKitCoordinator);
+  PassKitTabHelper::FromWebState(webState)->SetDelegate(
+      self.passKitCoordinator);
 
   if (PrintTabHelper::FromWebState(webState)) {
     PrintTabHelper::FromWebState(webState)->set_printer(self.printController);
   }
 
-  RepostFormTabHelper::CreateForWebState(webState, self);
+  RepostFormTabHelper::FromWebState(webState)->SetDelegate(self);
 
   if (StoreKitTabHelper::FromWebState(webState)) {
     StoreKitTabHelper::FromWebState(webState)->SetLauncher(
@@ -1214,9 +1215,17 @@
 
 // Uninstalls delegates for |webState|.
 - (void)uninstallDelegatesForWebState:(web::WebState*)webState {
+  if (AutofillTabHelper::FromWebState(webState)) {
+    AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
+  }
+
+  PassKitTabHelper::FromWebState(webState)->SetDelegate(nil);
+
   if (PrintTabHelper::FromWebState(webState)) {
     PrintTabHelper::FromWebState(webState)->set_printer(nil);
   }
+
+  RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   if (StoreKitTabHelper::FromWebState(webState)) {
     StoreKitTabHelper::FromWebState(webState)->SetLauncher(nil);

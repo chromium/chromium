@@ -11,10 +11,8 @@
 #error "This file requires ARC support."
 #endif
 
-RepostFormTabHelper::RepostFormTabHelper(
-    web::WebState* web_state,
-    id<RepostFormTabHelperDelegate> delegate)
-    : web_state_(web_state), delegate_(delegate) {
+RepostFormTabHelper::RepostFormTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
   web_state_->AddObserver(this);
 }
 
@@ -22,21 +20,15 @@ RepostFormTabHelper::~RepostFormTabHelper() {
   DCHECK(!web_state_);
 }
 
-void RepostFormTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<RepostFormTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  DCHECK(delegate);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new RepostFormTabHelper(web_state, delegate)));
-  }
-}
-
 void RepostFormTabHelper::DismissReportFormDialog() {
+  weak_factory_.InvalidateWeakPtrs();
   if (is_presenting_dialog_)
     [delegate_ repostFormTabHelperDismissRepostFormDialog:this];
+  is_presenting_dialog_ = false;
+}
+
+void RepostFormTabHelper::OnDialogPresented() {
+  DCHECK(is_presenting_dialog_);
   is_presenting_dialog_ = false;
 }
 
@@ -44,15 +36,36 @@ void RepostFormTabHelper::PresentDialog(
     CGPoint location,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(!is_presenting_dialog_);
+  if (!delegate_) {
+    // If there is is no delegate, then assume that we should not continue.
+    std::move(callback).Run(/*should_continue*/ false);
+    return;
+  }
+
+  base::OnceClosure on_dialog_presented = base::BindOnce(
+      &RepostFormTabHelper::OnDialogPresented, weak_factory_.GetWeakPtr());
+
+  __block base::OnceCallback<void(bool)> block_callback = base::BindOnce(
+      [](base::OnceClosure on_dialog_presented,
+         base::OnceCallback<void(bool)> callback, bool should_continue) {
+        if (!on_dialog_presented.IsCancelled())
+          std::move(on_dialog_presented).Run();
+        std::move(callback).Run(should_continue);
+      },
+      std::move(on_dialog_presented), std::move(callback));
+
   is_presenting_dialog_ = true;
-  __block base::OnceCallback<void(bool)> block_callback = std::move(callback);
   [delegate_ repostFormTabHelper:this
       presentRepostFormDialogForWebState:web_state_
                            dialogAtPoint:location
                        completionHandler:^(BOOL should_continue) {
-                         is_presenting_dialog_ = false;
                          std::move(block_callback).Run(should_continue);
                        }];
+}
+
+void RepostFormTabHelper::SetDelegate(
+    id<RepostFormTabHelperDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 void RepostFormTabHelper::DidStartNavigation(web::WebState* web_state,

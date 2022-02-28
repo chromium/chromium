@@ -12,26 +12,16 @@
 #error "This file requires ARC support."
 #endif
 
-// static
-void NetExportTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<NetExportTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(),
-                           base::WrapUnique(new NetExportTabHelper(delegate)));
-  }
-}
-
-NetExportTabHelper::NetExportTabHelper(id<NetExportTabHelperDelegate> delegate)
-    : delegate_(delegate) {
-  DCHECK(delegate);
-}
+NetExportTabHelper::NetExportTabHelper(web::WebState*) {}
 
 NetExportTabHelper::~NetExportTabHelper() = default;
 
 void NetExportTabHelper::ShowMailComposer(ShowMailComposerContext* context) {
   [delegate_ netExportTabHelper:this showMailComposerWithContext:context];
+}
+
+void NetExportTabHelper::SetDelegate(id<NetExportTabHelperDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(NetExportTabHelper)

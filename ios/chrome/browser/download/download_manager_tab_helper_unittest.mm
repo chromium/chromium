@@ -28,7 +28,9 @@ class DownloadManagerTabHelperTest : public PlatformTest {
   DownloadManagerTabHelperTest()
       : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeDownloadManagerTabHelperDelegate alloc] init]) {
-    DownloadManagerTabHelper::CreateForWebState(web_state_.get(), delegate_);
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
+    DownloadManagerTabHelper::FromWebState(web_state_.get())
+        ->SetDelegate(delegate_);
   }
 
   DownloadManagerTabHelper* tab_helper() {

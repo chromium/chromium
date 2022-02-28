@@ -30,11 +30,6 @@ class DownloadManagerTabHelper
 
   ~DownloadManagerTabHelper() override;
 
-  // Creates TabHelper. |delegate| is not retained by TabHelper. |web_state|
-  // must not be null.
-  static void CreateForWebState(web::WebState* web_state,
-                                id<DownloadManagerTabHelperDelegate> delegate);
-
   // Asynchronously downloads a file using the given |task|.
   virtual void Download(std::unique_ptr<web::DownloadTask> task);
 
@@ -42,10 +37,12 @@ class DownloadManagerTabHelper
   // cancelled.
   bool has_download_task() const { return task_.get(); }
 
+  // Set the delegate. The tab helper will no-op if the delegate is nil.
+  void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
+
  protected:
   // Allow subclassing from DownloadManagerTabHelper for testing purposes.
-  DownloadManagerTabHelper(web::WebState* web_state,
-                           id<DownloadManagerTabHelperDelegate> delegate);
+  DownloadManagerTabHelper(web::WebState* web_state);
 
  private:
   friend class web::WebStateUserData<DownloadManagerTabHelper>;
