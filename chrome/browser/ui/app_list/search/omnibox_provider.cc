@@ -107,7 +107,8 @@ OmniboxProvider::~OmniboxProvider() {}
 
 void OmniboxProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
-  last_query_.emplace(query, TokenizedString::Mode::kCamelCase);
+  last_query_ = query;
+  last_tokenized_query_.emplace(query, TokenizedString::Mode::kCamelCase);
 
   controller_->Stop(false);
   query_finished_ = false;
@@ -166,12 +167,12 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
 
     if (!is_zero_state_input_ && IsAnswer(match)) {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
-          profile_, list_controller_, controller_.get(), match));
+          profile_, list_controller_, controller_.get(), match, last_query_));
     } else if (match.type == AutocompleteMatchType::OPEN_TAB) {
-      DCHECK(last_query_.has_value());
+      DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
-          profile_, list_controller_, &favicon_cache_, last_query_.value(),
-          match));
+          profile_, list_controller_, &favicon_cache_,
+          last_tokenized_query_.value(), match));
     } else {
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, controller_.get(), &favicon_cache_,

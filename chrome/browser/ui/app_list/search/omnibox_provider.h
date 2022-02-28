@@ -51,7 +51,10 @@ class OmniboxProvider : public SearchProvider,
   // True if the input is empty for zero state suggestion.
   bool is_zero_state_input_ = false;
   AppListControllerDelegate* list_controller_;
-  absl::optional<chromeos::string_matching::TokenizedString> last_query_;
+
+  std::u16string last_query_;
+  absl::optional<chromeos::string_matching::TokenizedString>
+      last_tokenized_query_;
   base::TimeTicks query_start_time_;
   AutocompleteInput input_;
 

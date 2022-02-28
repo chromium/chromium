@@ -146,11 +146,13 @@ OmniboxAnswerResult::OmniboxAnswerResult(
     Profile* profile,
     AppListControllerDelegate* list_controller,
     AutocompleteController* autocomplete_controller,
-    const AutocompleteMatch& match)
+    const AutocompleteMatch& match,
+    const std::u16string& query)
     : profile_(profile),
       list_controller_(list_controller),
       autocomplete_controller_(autocomplete_controller),
-      match_(match) {
+      match_(match),
+      query_(query) {
   if (match_.search_terms_args && autocomplete_controller_) {
     match_.search_terms_args->request_source = TemplateURLRef::CROS_APP_LIST;
     autocomplete_controller_->SetMatchDestinationURL(&match_);
@@ -201,11 +203,14 @@ void OmniboxAnswerResult::UpdateIcon() {
 }
 
 void OmniboxAnswerResult::UpdateTitleAndDetails() {
-  // TODO(crbug.com/1250154): Simplify this and split into separate methods.
   if (IsCalculatorResult()) {
+    // Calculator results come in two forms:
+    // 1) Answer in |match.contents|, empty description,
+    // 2) Query in |match.contents|, answer in |match.description|.
     std::vector<TextItem> contents_vector = {CreateTextItem(match_.contents)};
     if (match_.description.empty()) {
       SetTitleTextVector(contents_vector);
+      SetDetailsTextVector({CreateTextItem(query_)});
     } else {
       SetTitleTextVector({CreateTextItem(match_.description)});
       SetDetailsTextVector(contents_vector);
