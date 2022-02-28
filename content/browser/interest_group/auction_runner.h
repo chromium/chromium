@@ -21,6 +21,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -559,6 +560,14 @@ class CONTENT_EXPORT AuctionRunner {
     // -----------------------------------
     // Methods not associated with a phase
     // -----------------------------------
+
+    // Creates a ComponentAuctionOtherSeller to pass to SellerWorklets when
+    // dealing with `bid`. If `this` is a component auction, returns an object
+    // with a `top_level_seller`. If this is a top-level auction and `bid` comes
+    // from a component auction, returns an object with a `component_seller` to
+    // `bid's` seller.
+    auction_worklet::mojom::ComponentAuctionOtherSellerPtr GetOtherSellerParam(
+        const Bid& bid) const;
 
     // Requests a WorkletHandle for the interest group identified by
     // `bid_state`, using the provided callbacks. Returns true if a worklet was

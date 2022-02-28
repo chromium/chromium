@@ -95,10 +95,14 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 6) {
+    if (Object.keys(browserSignals).length !== 7) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
+    if ('topLeverSeller' in browserSignals)
+      throw 'Wrong topLeverSeller ' + browserSignals.topLeverSeller;
+    if (!browserSignals.componentSeller.startsWith('https://d.test'))
+      throw 'Wrong componentSeller ' + browserSignals.componentSeller;
     const adComponentsJson = JSON.stringify(browserSignals.adComponents);
     if (adComponentsJson !== '["https://example.com/render-component"]')
       throw 'Wrong adComponents ' + adComponentsJson;

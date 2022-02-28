@@ -737,7 +737,8 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid,
       config_->auction_ad_config_non_shared_params.Clone(),
-      bid_raw->interest_group->owner, bid_raw->render_url,
+      GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
+      bid_raw->render_url,
       bid_raw->ad_components ? *bid_raw->ad_components : std::vector<GURL>(),
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
       base::BindOnce(&Auction::OnBidScored, weak_ptr_factory_.GetWeakPtr(),
@@ -1115,6 +1116,26 @@ void AuctionRunner::Auction::OnReportingPhaseComplete(
 
   std::move(reporting_phase_callback_)
       .Run(auction_result == AuctionResult::kSuccess);
+}
+
+auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+AuctionRunner::Auction::GetOtherSellerParam(const Bid& bid) const {
+  auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+      browser_signals_other_seller;
+  if (parent_) {
+    // This is a component seller scoring a bid from its own auction.
+    // Need to provide the top-level seller origin.
+    browser_signals_other_seller =
+        auction_worklet::mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+            parent_->config_->seller);
+  } else if (bid.auction != this) {
+    // This is a top-level seller scoring a bid from a component auction.
+    // Need to provide the component seller origin.
+    browser_signals_other_seller =
+        auction_worklet::mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+            bid.auction->config_->seller);
+  }
+  return browser_signals_other_seller;
 }
 
 bool AuctionRunner::Auction::RequestBidderWorklet(

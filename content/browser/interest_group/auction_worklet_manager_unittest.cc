@@ -261,6 +261,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                double bid,
                blink::mojom::AuctionAdConfigNonSharedParamsPtr
                    auction_ad_config_non_shared_params,
+               auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+                   browser_signals_other_seller,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,

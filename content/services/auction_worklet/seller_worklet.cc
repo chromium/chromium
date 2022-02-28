@@ -157,6 +157,25 @@ bool AppendAuctionConfig(AuctionV8Helper* const v8_helper,
   return true;
 }
 
+// Adds the top-level/component seller origin from
+// `browser_signals_other_seller` to `browser_signals_dict`. Does nothing if
+// `browser_signals_other_seller` is null. Returns false on error.
+bool AddOtherSeller(
+    mojom::ComponentAuctionOtherSeller* browser_signals_other_seller,
+    gin::Dictionary& browser_signals_dict) {
+  if (!browser_signals_other_seller)
+    return true;
+  if (browser_signals_other_seller->is_top_level_seller()) {
+    return browser_signals_dict.Set(
+        "topLevelSeller",
+        browser_signals_other_seller->get_top_level_seller().Serialize());
+  }
+  DCHECK(browser_signals_other_seller->is_component_seller());
+  return browser_signals_dict.Set(
+      "componentSeller",
+      browser_signals_other_seller->get_component_seller().Serialize());
+}
+
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -210,6 +229,7 @@ void SellerWorklet::ScoreAd(
     double bid,
     blink::mojom::AuctionAdConfigNonSharedParamsPtr
         auction_ad_config_non_shared_params,
+    mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
@@ -225,6 +245,8 @@ void SellerWorklet::ScoreAd(
   score_ad_task->bid = bid;
   score_ad_task->auction_ad_config_non_shared_params =
       std::move(auction_ad_config_non_shared_params);
+  score_ad_task->browser_signals_other_seller =
+      std::move(browser_signals_other_seller);
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
@@ -335,6 +357,7 @@ void SellerWorklet::V8State::ScoreAd(
     blink::mojom::AuctionAdConfigNonSharedParamsPtr
         auction_ad_config_non_shared_params,
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
+    mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<std::string>& browser_signal_ad_components,
@@ -394,6 +417,8 @@ void SellerWorklet::V8State::ScoreAd(
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
+      !AddOtherSeller(browser_signals_other_seller.get(),
+                      browser_signals_dict) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
@@ -689,6 +714,7 @@ void SellerWorklet::ScoreAdIfReady(ScoreAdTaskList::iterator task) {
           task->ad_metadata_json, task->bid,
           std::move(task->auction_ad_config_non_shared_params),
           std::move(task->trusted_scoring_signals_result),
+          std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_ad_components),

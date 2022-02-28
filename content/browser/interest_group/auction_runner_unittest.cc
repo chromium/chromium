@@ -95,7 +95,8 @@ std::string MakeBidScript(const url::Origin& seller,
                          trustedBiddingSignals, browserSignals) {
       var result = {ad: {"bidKey": "data for " + bid,
                          "groupName": interestGroupName,
-                         "renderUrl": "data for " + renderUrl},
+                         "renderUrl": "data for " + renderUrl,
+                         "seller": seller},
                     bid: bid, render: renderUrl};
       if (interestGroup.adComponents) {
         result.adComponents = [interestGroup.adComponents[0].renderUrl];
@@ -269,6 +270,7 @@ std::string MakeDecisionScript(
     const sendReportUrl = "%s";
     const debugLossReportUrl = "%s";
     const debugWinReportUrl = "%s";
+    const topLevelSeller = "https://adstuff.publisher1.com";
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                      browserSignals) {
       if (adMetadata.bidKey !== ("data for " + bid)) {
@@ -314,6 +316,31 @@ std::string MakeDecisionScript(
         throw new Error("auctionConfig.sellerTimeout is not a number. huh");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
+
+      if (decisionLogicUrl.startsWith(topLevelSeller)) {
+        // Top-level sellers should receive component sellers, but only for
+        // bids received from component auctions.
+        if ("topLevelSeller" in browserSignals)
+          throw new Error("Expected no topLevelSeller in browserSignals.");
+        if (adMetadata.seller == topLevelSeller) {
+          // If the bidder sent its bid directly to this top-level seller,
+          // there should be no `componentSeller`.
+          if ("componentSeller" in browserSignals)
+            throw new Error("Expected no componentSeller in browserSignals.");
+        } else {
+          // If the bidder sent its bid to a some other seller seller, that
+          // was the component seller, so `componentSeller` should be populated.
+          if (!browserSignals.componentSeller.includes("component"))
+            throw new Error("Incorrect componentSeller in browserSignals.");
+        }
+      } else {
+        // Component sellers should receive only the top-level seller.
+        if (browserSignals.topLevelSeller !== topLevelSeller)
+          throw new Error("Incorrect topLevelSeller in browserSignals.");
+        if ("componentSeller" in browserSignals)
+          throw new Error("Expected no componentSeller in browserSignals.");
+      }
+
       if ("joinCount" in browserSignals)
         throw new Error("wrong kind of browser signals");
       if (typeof browserSignals.biddingDurationMsec !== "number")
@@ -657,6 +684,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                double bid,
                blink::mojom::AuctionAdConfigNonSharedParamsPtr
                    auction_ad_config_non_shared_params,
+               auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+                   browser_signals_other_seller,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
@@ -1933,7 +1962,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
         "id":3,
         "method":"Debugger.setBreakpointByUrl",
         "params": {
-          "lineNumber": 5,
+          "lineNumber": 6,
           "url": "%s",
           "columnNumber": 0,
           "condition": ""
@@ -1960,7 +1989,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           hit_breakpoints->GetListDeprecated();
       ASSERT_EQ(1u, hit_breakpoints_list.size());
       ASSERT_TRUE(hit_breakpoints_list[0].is_string());
-      EXPECT_EQ(base::StringPrintf("1:5:0:%s", debug_url.spec().c_str()),
+      EXPECT_EQ(base::StringPrintf("1:6:0:%s", debug_url.spec().c_str()),
                 hit_breakpoints_list[0].GetString());
 
       // Just resume execution.

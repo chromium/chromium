@@ -79,6 +79,10 @@ function validateTrustedScoringSignals(signals) {
 function validateBrowserSignals(browserSignals) {
   if (browserSignals.topWindowHostname !== 'c.test')
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
+  if ('topLevelSeller' in browserSignals)
+    throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
+  if ("componentSeller" in browserSignals)
+    throw 'Wrong componentSeller ' + browserSignals.componentSeller;
   if (!browserSignals.interestGroupOwner.startsWith('https://a.test'))
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
   if (browserSignals.renderUrl !== "https://example.com/render")
