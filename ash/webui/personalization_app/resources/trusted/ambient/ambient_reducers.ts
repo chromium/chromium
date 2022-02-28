@@ -9,23 +9,23 @@ import {PersonalizationState} from '../personalization_state.js';
 import {AmbientActionName} from './ambient_actions.js';
 import {AmbientState} from './ambient_state.js';
 
+export function albumsReducer(
+    state: AmbientState['albums'], action: Actions,
+    _: PersonalizationState): AmbientState['albums'] {
+  switch (action.name) {
+    case AmbientActionName.SET_ALBUMS:
+      return action.albums;
+    default:
+      return state;
+  }
+}
+
 export function ambientModeEnabledReducer(
     state: AmbientState['ambientModeEnabled'], action: Actions,
     _: PersonalizationState): AmbientState['ambientModeEnabled'] {
   switch (action.name) {
     case AmbientActionName.SET_AMBIENT_MODE_ENABLED:
       return action.enabled;
-    default:
-      return state;
-  }
-}
-
-export function topicSourceReducer(
-    state: AmbientState['topicSource'], action: Actions,
-    _: PersonalizationState): AmbientState['topicSource'] {
-  switch (action.name) {
-    case AmbientActionName.SET_TOPIC_SOURCE:
-      return action.topicSource;
     default:
       return state;
   }
@@ -42,9 +42,21 @@ export function temperatureUnitReducer(
   }
 }
 
+export function topicSourceReducer(
+    state: AmbientState['topicSource'], action: Actions,
+    _: PersonalizationState): AmbientState['topicSource'] {
+  switch (action.name) {
+    case AmbientActionName.SET_TOPIC_SOURCE:
+      return action.topicSource;
+    default:
+      return state;
+  }
+}
+
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
+      albums: albumsReducer,
       ambientModeEnabled: ambientModeEnabledReducer,
-      topicSource: topicSourceReducer,
       temperatureUnit: temperatureUnitReducer,
+      topicSource: topicSourceReducer,
     };

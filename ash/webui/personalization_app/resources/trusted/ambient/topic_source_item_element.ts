@@ -10,11 +10,13 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style_css
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isSelectionEvent} from '../../common/utils.js';
 import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setTopicSource} from './ambient_controller.js';
@@ -73,6 +75,7 @@ export class TopicSourceItem extends WithPersonalizationStore {
     event.preventDefault();
     event.stopPropagation();
     setTopicSource(this.topicSource, getAmbientProvider(), this.getStore());
+    PersonalizationRouter.instance().selectAmbientAlbums(this.topicSource);
   }
 
   private getItemName_(): string {

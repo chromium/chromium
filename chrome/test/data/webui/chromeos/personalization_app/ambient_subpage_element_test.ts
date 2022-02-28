@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientActionName, SetAmbientModeEnabledAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
+import {AlbumItem} from 'chrome://personalization/trusted/ambient/album_item_element.js';
+import {AmbientActionName, SetAlbumsAction, SetAmbientModeEnabledAction, SetTemperatureUnitAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
-import {ToggleRow} from 'chrome://personalization/trusted/ambient/toggle_row_element.js';
 import {TopicSourceItem} from 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
 import {TemperatureUnit, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {Paths, PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -22,18 +23,22 @@ export function AmbientSubpageTest() {
   let ambientSubpageElement: AmbientSubpage|null;
   let ambientProvider: TestAmbientProvider;
   let personalizationStore: TestPersonalizationStore;
+  const routerOriginal = PersonalizationRouter.instance;
+  const routerMock = TestBrowserProxy.fromClass(PersonalizationRouter);
 
   setup(() => {
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
     personalizationStore = mocks.personalizationStore;
     AmbientObserver.initAmbientObserverIfNeeded();
+    PersonalizationRouter.instance = () => routerMock;
   });
 
   teardown(async () => {
     await teardownElement(ambientSubpageElement);
     ambientSubpageElement = null;
     AmbientObserver.shutdown();
+    PersonalizationRouter.instance = routerOriginal;
   });
 
   test('displays content', async () => {
@@ -41,8 +46,7 @@ export function AmbientSubpageTest() {
     const toggleRow =
         ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
     assertTrue(!!toggleRow);
-    const toggleButton =
-        toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
+    const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggleButton);
     assertFalse(toggleButton!.checked);
 
@@ -88,11 +92,10 @@ export function AmbientSubpageTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
-    const toggleRow = ambientSubpageElement.shadowRoot!.querySelector(
-                          'toggle-row') as ToggleRow;
+    const toggleRow =
+        ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
     assertTrue(!!toggleRow);
-    let toggleButton =
-        toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
+    const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggleButton);
     assertTrue(toggleButton!.checked);
 
@@ -124,11 +127,10 @@ export function AmbientSubpageTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpageElement);
 
-    const toggleRow = ambientSubpageElement.shadowRoot!.querySelector(
-                          'toggle-row') as ToggleRow;
+    const toggleRow =
+        ambientSubpageElement.shadowRoot!.querySelector('toggle-row');
     assertTrue(!!toggleRow);
-    const toggleButton =
-        toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
+    const toggleButton = toggleRow!.shadowRoot!.querySelector('cr-toggle');
     assertTrue(!!toggleButton);
     assertTrue(toggleButton!.checked);
 
@@ -154,7 +156,7 @@ export function AmbientSubpageTest() {
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
-    let action =
+    const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TOPIC_SOURCE) as SetTopicSourceAction;
     assertEquals(TopicSource.kArtGallery, action.topicSource);
@@ -207,7 +209,7 @@ export function AmbientSubpageTest() {
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(AmbientActionName.SET_TEMPERATURE_UNIT);
-    let action =
+    const action =
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
     assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
@@ -247,5 +249,109 @@ export function AmbientSubpageTest() {
         await personalizationStore.waitForAction(
             AmbientActionName.SET_TEMPERATURE_UNIT) as SetTemperatureUnitAction;
     assertEquals(TemperatureUnit.kCelsius, action.temperatureUnit);
+  });
+
+  test('has main settings visible with path ambient', async () => {
+    ambientSubpageElement =
+        initElement(AmbientSubpage, {path: Paths.Ambient, queryParams: {}});
+    await waitAfterNextRender(ambientSubpageElement);
+
+    const mainSettings =
+        ambientSubpageElement.shadowRoot!.querySelector<HTMLElement>(
+            '#mainSettings');
+    assertTrue(!!mainSettings);
+    assertFalse(mainSettings.hidden);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertTrue(albumsSubpage.hidden);
+  });
+
+  test('has albums subpage visible with path ambient albums', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kArtGallery}
+    });
+    await waitAfterNextRender(ambientSubpageElement);
+
+    const mainSettings =
+        ambientSubpageElement.shadowRoot!.querySelector<HTMLElement>(
+            '#mainSettings');
+    assertTrue(!!mainSettings);
+    assertTrue(mainSettings.hidden);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+  });
+
+  test('has correct albums on Google Photos albums subpage', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kGooglePhotos}
+    });
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(4, action.albums.length);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
+    assertTrue(!!albumList);
+
+    const albums = albumList.shadowRoot!.querySelectorAll<AlbumItem>(
+        'album-item:not([hidden])');
+    assertEquals(1, albums.length);
+    assertTrue(!!albums[0]);
+    assertEquals('3', albums[0].album!.id);
+    assertFalse(albums[0].album!.checked);
+    assertEquals(1, albums[0].album!.numberOfPhotos);
+    assertEquals(TopicSource.kGooglePhotos, albums[0].album!.topicSource);
+  });
+
+  test('has correct albums on Art albums subpage', async () => {
+    ambientSubpageElement = initElement(AmbientSubpage, {
+      path: Paths.AmbientAlbums,
+      queryParams: {topicSource: TopicSource.kArtGallery}
+    });
+    personalizationStore.setReducersEnabled(true);
+    personalizationStore.expectAction(AmbientActionName.SET_ALBUMS);
+    const action = await personalizationStore.waitForAction(
+                       AmbientActionName.SET_ALBUMS) as SetAlbumsAction;
+    assertEquals(4, action.albums.length);
+
+    const albumsSubpage =
+        ambientSubpageElement.shadowRoot!.querySelector('albums-subpage');
+    assertTrue(!!albumsSubpage);
+    assertFalse(albumsSubpage.hidden);
+    await waitAfterNextRender(albumsSubpage);
+
+    const albumList = albumsSubpage.shadowRoot!.querySelector('album-list');
+    assertTrue(!!albumList);
+
+    const albums = albumList.shadowRoot!.querySelectorAll<AlbumItem>(
+        'album-item:not([hidden])');
+    assertEquals(3, albums.length);
+    assertTrue(!!albums[0]);
+    assertTrue(!!albums[1]);
+    assertTrue(!!albums[2]);
+
+    assertEquals('0', albums[0].album!.id);
+    assertFalse(albums[0].album!.checked);
+    assertEquals(TopicSource.kArtGallery, albums[0].album!.topicSource);
+    assertEquals('1', albums[1].album!.id);
+    assertFalse(albums[1].album!.checked);
+    assertEquals(TopicSource.kArtGallery, albums[1].album!.topicSource);
+    assertEquals('2', albums[2].album!.id);
+    assertTrue(albums[2].album!.checked);
+    assertEquals(TopicSource.kArtGallery, albums[2].album!.topicSource);
   });
 }

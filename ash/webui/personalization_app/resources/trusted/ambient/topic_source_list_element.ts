@@ -39,7 +39,7 @@ export class TopicSourceList extends WithPersonalizationStore {
 
   topicSources: Array<TopicSource>;
   selectedTopicSource: TopicSource;
-  hasGooglePhotosAlbums_: boolean;
+  hasGooglePhotosAlbums: boolean;
 
   private isSelected_(
       topicSource: TopicSource, selectedTopicSource: TopicSource) {

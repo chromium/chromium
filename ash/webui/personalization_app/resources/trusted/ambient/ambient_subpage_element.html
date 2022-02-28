@@ -1,5 +1,8 @@
 <style>
-  #container {
+  #mainSettings[hidden] {
+    display: none;
+  }
+  #mainSettings {
     display: grid;
     grid-template-areas:
       '. . toggles . .'
@@ -24,14 +27,21 @@
   }
 </style>
 <div id="container">
-  <toggle-row checked="[[ambientModeEnabled_]]"
-      on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
-  </toggle-row>
-  <ambient-preview>Image Preview</ambient-preview>
-  <topic-source-list selected-topic-source="[[topicSource_]]"
-      has-google-photos-albums="[[hasGooglePhotosAlbums_]]">
-  </topic-source-list>
-  <ambient-weather-unit 
-      selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
-  </ambient-weather-unit>
+  <div id="mainSettings" hidden="[[!shouldShowMainSettings_(path)]]">
+    <toggle-row checked="[[ambientModeEnabled_]]"
+        on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
+    </toggle-row>
+    <!-- TODO(b/202853013) placeholder string -->
+    <ambient-preview>Image Preview</ambient-preview>
+    <topic-source-list selected-topic-source="[[topicSource_]]"
+        has-google-photos-albums="[[hasGooglePhotosAlbums_(albums_)]]">
+    </topic-source-list>
+    <ambient-weather-unit
+        selected-temperature-unit="[[temperatureUnitToString_(temperatureUnit_)]]">
+    </ambient-weather-unit>
+  </div>
+  <albums-subpage hidden="[[!shouldShowAlbums_(path)]]"
+      topic-source="[[getTopicSource_(queryParams)]]"
+      albums="[[getAlbums_(albums_, queryParams)]]">
+  </albums-subpage>
 </div>

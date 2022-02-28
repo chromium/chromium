@@ -65,6 +65,9 @@ polymer_js_files = [
   "common/icons.ts",
   "common/styles.ts",
 
+  "trusted/ambient/album_item_element.ts",
+  "trusted/ambient/album_list_element.ts",
+  "trusted/ambient/albums_subpage_element.ts",
   "trusted/ambient/ambient_preview_element.ts",
   "trusted/ambient/ambient_subpage_element.ts",
   "trusted/ambient/ambient_weather_element.ts",

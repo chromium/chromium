@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
  * Stores ambient related states.
  */
 export interface AmbientState {
+  albums: AmbientModeAlbum[]|null;
   ambientModeEnabled: boolean;
-  topicSource: TopicSource|null;
   temperatureUnit: TemperatureUnit|null;
+  topicSource: TopicSource|null;
 }
 
 export function emptyState(): AmbientState {
   return {
+    albums: null,
     ambientModeEnabled: false,
-    topicSource: null,
     temperatureUnit: null,
+    topicSource: null,
   };
 }

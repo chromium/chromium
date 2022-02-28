@@ -13,17 +13,25 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
 namespace {
+
+inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
+
+GURL GetGooglePhotosURL() {
+  return GURL(kGooglePhotosURL);
+}
 
 bool ShouldIncludeResource(const webui::ResourcePath& resource) {
   return base::StartsWith(resource.path, "trusted") ||
@@ -127,6 +135,16 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT},
       {"ambientModeWeatherUnitCelsius",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_CELSIUS},
+      {"ambientModeAlbumsSubpageRecentHighlightsDesc",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_RECENT_DESC},
+      {"ambientModeAlbumsSubpagePhotosNumPluralDesc",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_PHOTOS_NUM_PLURAL},
+      {"ambientModeAlbumsSubpagePhotosNumSingularDesc",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_PHOTOS_NUM_SINGULAR},
+      {"ambientModeAlbumsSubpageAlbumSelected",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_SELECTED},
+      {"ambientModeAlbumsSubpageAlbumUnselected",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_UNSELECTED},
 
       // Google Photos strings
       {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
@@ -138,6 +156,18 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  source->AddString(
+      "ambientModeAlbumsSubpageGooglePhotosTitle",
+      l10n_util::GetStringFUTF16(
+          IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_TITLE,
+          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+  source->AddString(
+      "ambientModeAlbumsSubpageGooglePhotosNoAlbum",
+      l10n_util::GetStringFUTF16(
+          IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
+          base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
 }

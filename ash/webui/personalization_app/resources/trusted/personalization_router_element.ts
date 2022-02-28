@@ -12,10 +12,11 @@ import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GooglePhotosAlbum, WallpaperCollection} from './personalization_app.mojom-webui.js';
+import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
 
 export enum Paths {
   Ambient = '/ambient',
+  AmbientAlbums = '/ambient/albums',
   CollectionImages = '/wallpaper/collection',
   Collections = '/wallpaper',
   GooglePhotosCollection = '/wallpaper/google-photos',
@@ -54,7 +55,8 @@ export class PersonalizationRouter extends PolymerElement {
   }
   private path_: string;
   private query_: string;
-  private queryParams_: {id?: string; googlePhotosAlbumId?: string;};
+  private queryParams_:
+      {id?: string; googlePhotosAlbumId?: string; topicSource?: string};
 
   static instance(): PersonalizationRouter {
     return document.querySelector(PersonalizationRouter.is) as
@@ -98,6 +100,11 @@ export class PersonalizationRouter extends PolymerElement {
   selectGooglePhotosAlbum(album: GooglePhotosAlbum) {
     this.goToRoute(
         Paths.GooglePhotosCollection, {googlePhotosAlbumId: album.id});
+  }
+
+  /** Navigate to albums subpage of specific topic source. */
+  selectAmbientAlbums(topicSource: TopicSource) {
+    this.goToRoute(Paths.AmbientAlbums, {topicSource});
   }
 
   goToRoute(path: Paths, queryParams: Object = {}) {

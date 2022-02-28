@@ -1,0 +1,21 @@
+<style include="cr-shared-style">
+  #pageDescription {
+    display: flex;
+    min-height: 32px;
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+
+<localized-link id="pageDescription"
+    localized-string="[[getTitleInnerHtml_(topicSource)]]">
+</localized-link>
+
+<!-- Only Google Photos may not has albums -->
+<template is="dom-if" if="[[!hasAlbums_(albums)]]">
+  <localized-link class="cr-row first"
+      localized-string=
+          "[[i18nAdvanced('ambientModeAlbumsSubpageGooglePhotosNoAlbum')]]"
+  </localized-link>
+</template>
+
+<album-list albums="[[albums]]" topic-source="[[topicSource]]"></album-list>

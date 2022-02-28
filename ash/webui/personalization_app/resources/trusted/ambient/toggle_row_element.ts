@@ -41,4 +41,10 @@ export class ToggleRow extends WithPersonalizationStore {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'toggle-row': ToggleRow;
+  }
+}
+
 customElements.define(ToggleRow.is, ToggleRow);
