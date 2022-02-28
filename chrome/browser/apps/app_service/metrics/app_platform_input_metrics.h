@@ -33,11 +33,20 @@ enum class InputEventSource {
   kMaxValue = kKeyboard,
 };
 
+extern const char kAppInputEventsKey[];
+
 // This class is used to record the input events for the app windows.
 class AppPlatformInputMetrics : public ui::EventHandler,
                                 public AppRegistryCache::Observer,
                                 public InstanceRegistry::Observer {
  public:
+  // For web apps and Chrome apps, there might be different app type name for
+  // opening in tab or window. So record the app type name for the event count.
+  using CountPerAppType = base::flat_map<AppTypeName, int>;
+
+  // The map to record the event count for each InputEventSource.
+  using EventSourceToCounts = base::flat_map<InputEventSource, CountPerAppType>;
+
   AppPlatformInputMetrics(Profile* profile,
                           AppRegistryCache& app_registry_cache,
                           InstanceRegistry& instance_registry);
@@ -63,13 +72,6 @@ class AppPlatformInputMetrics : public ui::EventHandler,
     AppTypeName app_type_name;
   };
 
-  // For web apps and Chrome apps, there might be different app type name for
-  // opening in tab or window. So record the app type name for the event count.
-  using CountPerAppType = base::flat_map<AppTypeName, int>;
-
-  // The map to record the event count for each InputEventSource.
-  using EventSourceToCounts = base::flat_map<InputEventSource, CountPerAppType>;
-
   // InstanceRegistry::Observer:
   void OnInstanceUpdate(const InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) override;
@@ -93,6 +95,21 @@ class AppPlatformInputMetrics : public ui::EventHandler,
 
   void RecordInputEventsUkm(ukm::SourceId source_id,
                             const EventSourceToCounts& event_counts);
+
+  // Saves the input events in `app_id_to_event_count_per_two_hours_` to the
+  // user pref each 2 hours. For example:
+  // web_app_id1: {
+  //   mouse:    { ChromeBrowser: 5, WebApp: 2}
+  //   keyboard: { ChromeBrowser: 2, WebApp: 3}
+  // },
+  // chrome_app_id2: {
+  //   stylus:   { ChromeBrowser: 2, ChromeApp: 12}
+  //   keyboard: { ChromeBrowser: 3, ChromeApp: 30}
+  // },
+  // Arc_app_id3: {
+  //   mouse:   { Arc: 5}
+  // },
+  void SaveInputEvents();
 
   Profile* profile_;
 
@@ -122,8 +139,12 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Arc_app_id3: {
   //   mouse:   { Arc: 5}
   // },
+  //
+  // TODO(crbug.com/1299978): Remove `app_id_to_event_count_per_five_minutes_`.
   std::map<std::string, EventSourceToCounts>
       app_id_to_event_count_per_five_minutes_;
+  std::map<std::string, EventSourceToCounts>
+      app_id_to_event_count_per_two_hours_;
 };
 
 }  // namespace apps

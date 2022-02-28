@@ -48,6 +48,7 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kAppRunningDuration);
   registry->RegisterDictionaryPref(kAppActivatedCount);
   registry->RegisterDictionaryPref(kAppUsageTime);
+  registry->RegisterDictionaryPref(kAppInputEventsKey);
 }
 
 // static
