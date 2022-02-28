@@ -601,18 +601,12 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
         for (web::WebState* webState : results) {
           [items addObject:CreateItem(webState)];
         }
-        // Updating UI (Reloading tabs) needs to happen on the main thread.
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [self.consumer populateItems:items selectedItemID:nil];
-        });
+        [self.consumer populateItems:items selectedItemID:nil];
       }));
 }
 
 - (void)resetToAllItems {
-  // Updating UI (Reloading tabs) needs to happen on the main thread.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self populateConsumerItems];
-  });
+  [self populateConsumerItems];
 }
 
 - (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText

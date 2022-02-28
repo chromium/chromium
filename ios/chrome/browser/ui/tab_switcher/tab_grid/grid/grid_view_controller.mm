@@ -945,8 +945,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - GridConsumer
 
-// TODO(crbug.com/1300733): Investigate this method not working correctly in the
-// main thread if the collectionview had already some items on it.
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID {
 #ifndef NDEBUG
@@ -962,7 +960,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.selectedItemID = selectedItemID;
   [self.selectedEditingItemIDs removeAllObjects];
   [self.selectedSharableEditingItemIDs removeAllObjects];
-  [self.collectionView reloadData];
+  [self reloadTabs];
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                                     animated:NO
                               scrollPosition:UICollectionViewScrollPositionTop];
@@ -1536,6 +1534,20 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return NO;
   }
   return self.items.count == 0;
+}
+
+// Reloads the tabs section of the grid view.
+- (void)reloadTabs {
+  NSIndexSet* targetSections =
+      [NSIndexSet indexSetWithIndex:kOpenTabsSectionIndex];
+  [UIView performWithoutAnimation:^{
+    // There is a collection view bug (crbug.com/1300733) that prevents
+    // CollectionView's |reloadData| from working properly if its preceded by
+    // CollectionView's |performBatchUpdates:| in the same UI cycle. To avoid
+    // this bug, |reloadSections:| method is used instead to reload the items in
+    // the tab grid.
+    [self.collectionView reloadSections:targetSections];
+  }];
 }
 
 // Updates the number of results found on the search open tabs section header.
