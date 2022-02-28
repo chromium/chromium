@@ -1799,6 +1799,12 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
                                            (int)event_source);
   }
 
+  void VerifyNoUkm() {
+    auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+    ASSERT_EQ(0U, entries.size());
+  }
+
  private:
   std::unique_ptr<ash::AshTestHelper> ash_test_helper_;
 
@@ -1813,12 +1819,14 @@ TEST_F(AppPlatformInputMetricsTest, WindowIsDestroyed) {
   ModifyInstance(/*app_id=*/"a", window(), kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
             InputEventSource::kMouse);
 
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kDestroyed);
   CreateInputEvent(InputEventSource::kMouse);
-  app_platform_input_metrics()->OnFiveMinutes();
+  app_platform_input_metrics()->OnTwoHours();
   // Verify no more input event is recorded.
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
             InputEventSource::kMouse);
@@ -1828,6 +1836,8 @@ TEST_F(AppPlatformInputMetricsTest, MouseEvent) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
             InputEventSource::kMouse);
 }
@@ -1836,6 +1846,8 @@ TEST_F(AppPlatformInputMetricsTest, StylusEvent) {
   ModifyInstance(/*app_id=*/"w", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("https://foo.com", AppTypeName::kWeb, /*event_count=*/1,
             InputEventSource::kStylus);
 }
@@ -1845,6 +1857,8 @@ TEST_F(AppPlatformInputMetricsTest, TouchEvents) {
   CreateInputEvent(InputEventSource::kTouch);
   CreateInputEvent(InputEventSource::kTouch);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/2,
             InputEventSource::kTouch);
 }
@@ -1853,6 +1867,8 @@ TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
   ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
             InputEventSource::kKeyboard);
 
@@ -1860,9 +1876,14 @@ TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnFiveMinutes();
 
-  // Verify 2 input metrics events are recorded.
-  const auto entries =
+  // Verify no more input events UKM recorded.
+  auto entries =
       test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(1U, entries.size());
+
+  app_platform_input_metrics()->OnTwoHours();
+  // Verify 2 input metrics events are recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(2U, entries.size());
   std::set<int> counts;
   for (const auto* entry : entries) {
@@ -1886,6 +1907,8 @@ TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {
   CreateInputEvent(InputEventSource::kKeyboard);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
 
   // Verify 3 input metrics events are recorded.
   const auto entries =
@@ -1927,6 +1950,8 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
   ModifyInstance(app_constants::kChromeAppId, window(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  app_platform_input_metrics()->OnTwoHours();
   VerifyUkm(std::string("app://") + app_constants::kChromeAppId,
             AppTypeName::kChromeBrowser, /*event_count=*/1,
             InputEventSource::kMouse);
@@ -1941,6 +1966,13 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
   ModifyInstance(web_app_id1, web_app_window1.get(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify no more input events UKM recorded.
+  auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(1U, entries.size());
+
+  app_platform_input_metrics()->OnTwoHours();
   // Verify 2 input metrics events are recorded.
   VerifyUkm(2, url1.spec(), AppTypeName::kChromeBrowser,
             /*event_count=*/1, InputEventSource::kMouse);
@@ -1957,6 +1989,12 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
   CreateInputEvent(InputEventSource::kStylus);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(2U, entries.size());
+
+  app_platform_input_metrics()->OnTwoHours();
   // Verify 3 input metrics events are recorded.
   VerifyUkm(3, url2.spec(), AppTypeName::kChromeBrowser,
             /*event_count=*/2, InputEventSource::kStylus);
@@ -1967,6 +2005,12 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
   ModifyInstance(web_app_id1, web_app_window1.get(), kActiveInstanceState);
   CreateInputEvent(InputEventSource::kKeyboard);
   app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(3U, entries.size());
+
+  app_platform_input_metrics()->OnTwoHours();
   // Verify 4 input metrics events are recorded.
   VerifyUkm(4, url1.spec(), AppTypeName::kChromeBrowser,
             /*event_count=*/1, InputEventSource::kKeyboard);
@@ -1975,10 +2019,90 @@ TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
   ModifyInstance(web_app_id1, web_app_window1.get(), kInactiveInstanceState);
   CreateInputEvent(InputEventSource::kStylus);
   app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(4U, entries.size());
+
+  app_platform_input_metrics()->OnTwoHours();
   // Verify 5 input metrics events are recorded.
   VerifyUkm(5, std::string("app://") + app_constants::kChromeAppId,
             AppTypeName::kChromeBrowser,
             /*event_count=*/1, InputEventSource::kStylus);
+}
+
+TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  CreateInputEvent(InputEventSource::kStylus);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyNoUkm();
+  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+
+  // Reset PlatformMetricsService to simulate the system reboot, and verify
+  // AppKM is restored from the user pref and reported after 5 minutes after
+  // reboot.
+  ResetAppPlatformMetricsService();
+  VerifyNoUkm();
+
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kStylus);
+
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify 2 input metrics events are recorded from pref.
+  auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(2U, entries.size());
+  int event_source;
+  int keyboard_event_count = 0;
+  int stylus_event_count = 0;
+  for (const auto* entry : entries) {
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
+                                                 GURL("app://com.google.A"));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)AppTypeName::kArc);
+    event_source =
+        *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventSource"));
+    if (event_source == (int)InputEventSource::kKeyboard) {
+      keyboard_event_count =
+          *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount"));
+    } else if (event_source == (int)InputEventSource::kStylus) {
+      stylus_event_count =
+          *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount"));
+    }
+  }
+  EXPECT_EQ(1, keyboard_event_count);
+  EXPECT_EQ(2, stylus_event_count);
+
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(2U, entries.size());
+
+  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+
+  // Reset PlatformMetricsService to simulate the system reboot, and verify
+  // only the new AppKM is reported.
+  ResetAppPlatformMetricsService();
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(2U, entries.size());
+
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify the input metrics events are recorded from pref.
+  VerifyUkm(/*count=*/3, "app://com.google.A", AppTypeName::kArc,
+            /*event_count=*/2, InputEventSource::kStylus);
+
+  // Reset PlatformMetricsService to simulate the system reboot, and verify no
+  // more AppKM is reported.
+  ResetAppPlatformMetricsService();
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify no more input events UKM recorded.
+  entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(3U, entries.size());
 }
 
 }  // namespace apps

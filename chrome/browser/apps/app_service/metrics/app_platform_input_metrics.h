@@ -111,9 +111,14 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // },
   void SaveInputEvents();
 
+  // Records the input events UKM saved in the user pref.
+  void RecordInputEventsUkmFromPref();
+
   Profile* profile_;
 
   BrowserToTabList browser_to_tab_list_;
+
+  bool should_record_ukm_from_pref_ = true;
 
   // The map from the window to the app info.
   base::flat_map<aura::Window*, AppInfo> window_to_app_info_;

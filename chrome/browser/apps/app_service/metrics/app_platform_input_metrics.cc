@@ -34,6 +34,20 @@ constexpr char kInputEventStylusKey[] = "stylus";
 constexpr char kInputEventTouchKey[] = "touch";
 constexpr char kInputEventKeyboardKey[] = "keyboard";
 
+base::flat_map<std::string, InputEventSource>& GetInputEventSourceMap() {
+  static base::NoDestructor<base::flat_map<std::string, InputEventSource>>
+      input_event_source_map;
+  if (input_event_source_map->empty()) {
+    *input_event_source_map = {
+        {kInputEventMouseKey, InputEventSource::kMouse},
+        {kInputEventStylusKey, InputEventSource::kStylus},
+        {kInputEventTouchKey, InputEventSource::kTouch},
+        {kInputEventKeyboardKey, InputEventSource::kKeyboard},
+    };
+  }
+  return *input_event_source_map;
+}
+
 InputEventSource GetInputEventSource(ui::EventPointerType type) {
   switch (type) {
     case ui::EventPointerType::kUnknown:
@@ -47,6 +61,15 @@ InputEventSource GetInputEventSource(ui::EventPointerType type) {
     case ui::EventPointerType::kEraser:
       return InputEventSource::kStylus;
   }
+}
+
+// Returns the input event source for the given `event_source` string.
+InputEventSource GetInputEventSourceFromString(
+    const std::string& event_source) {
+  const auto& input_event_source_map = GetInputEventSourceMap();
+  auto it = input_event_source_map.find(event_source);
+  return (it != input_event_source_map.end()) ? it->second
+                                              : InputEventSource::kUnknown;
 }
 
 // Returns the string key for `event_source` to save input events in the user
@@ -78,6 +101,35 @@ base::Value ConvertEventCountsToValue(
                              std::move(count_dict));
   }
   return event_counts_dict;
+}
+
+AppPlatformInputMetrics::EventSourceToCounts ConvertDictValueToEventCounts(
+    const base::Value::Dict& event_counts) {
+  AppPlatformInputMetrics::EventSourceToCounts ret;
+  for (const auto [app_id, counts] : event_counts) {
+    auto event_source = GetInputEventSourceFromString(app_id);
+    if (event_source == InputEventSource::kUnknown) {
+      continue;
+    }
+
+    const base::Value::Dict* counts_dict = counts.GetIfDict();
+    if (!counts_dict) {
+      continue;
+    }
+    for (const auto [app_type, count_value] : *counts_dict) {
+      auto app_type_name = GetAppTypeNameFromString(app_type);
+      if (app_type_name == AppTypeName::kUnknown) {
+        continue;
+      }
+
+      auto count = count_value.GetIfInt();
+      if (!count.has_value()) {
+        continue;
+      }
+      ret[event_source][app_type_name] = count.value();
+    }
+  }
+  return ret;
 }
 
 }  // namespace
@@ -123,7 +175,20 @@ void AppPlatformInputMetrics::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void AppPlatformInputMetrics::OnFiveMinutes() {
-  for (const auto& event_counts : app_id_to_event_count_per_five_minutes_) {
+  app_id_to_event_count_per_five_minutes_.clear();
+
+  // For the first five minutes, since the saved input events in pref haven't
+  // been recorded yet, read the input events saved in the user pref, and record
+  // the input events UKM, then save the new input events to the user pref.
+  if (should_record_ukm_from_pref_) {
+    RecordInputEventsUkmFromPref();
+    should_record_ukm_from_pref_ = false;
+  }
+  SaveInputEvents();
+}
+
+void AppPlatformInputMetrics::OnTwoHours() {
+  for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
     ukm::SourceId source_id = GetSourceId(event_counts.first);
     if (source_id == ukm::kInvalidSourceId) {
       continue;
@@ -133,12 +198,6 @@ void AppPlatformInputMetrics::OnFiveMinutes() {
     // counts.
     RecordInputEventsUkm(source_id, event_counts.second);
   }
-  app_id_to_event_count_per_five_minutes_.clear();
-  SaveInputEvents();
-}
-
-void AppPlatformInputMetrics::OnTwoHours() {
-  // TODO(crbug.com/1299978): Record the input events AppKM.
 
   app_id_to_event_count_per_two_hours_.clear();
 }
@@ -323,6 +382,30 @@ void AppPlatformInputMetrics::SaveInputEvents() {
   for (const auto& event_counts : app_id_to_event_count_per_two_hours_) {
     input_events_update->SetPath(
         event_counts.first, ConvertEventCountsToValue(event_counts.second));
+  }
+}
+
+void AppPlatformInputMetrics::RecordInputEventsUkmFromPref() {
+  DictionaryPrefUpdate input_events_update(profile_->GetPrefs(),
+                                           kAppInputEventsKey);
+  if (!input_events_update->is_dict()) {
+    return;
+  }
+
+  for (const auto [app_id, events] : input_events_update->GetDict()) {
+    ukm::SourceId source_id = GetSourceId(app_id);
+    if (source_id == ukm::kInvalidSourceId) {
+      continue;
+    }
+
+    const base::Value::Dict* events_dict = events.GetIfDict();
+    if (!events_dict) {
+      continue;
+    }
+
+    EventSourceToCounts event_counts =
+        ConvertDictValueToEventCounts(*events_dict);
+    RecordInputEventsUkm(source_id, event_counts);
   }
 }
 
