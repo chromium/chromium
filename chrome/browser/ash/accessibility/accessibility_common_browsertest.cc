@@ -11,14 +11,18 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/features/feature_channel.h"
 
 namespace ash {
 
-class AccessibilityCommonTest : public InProcessBrowserTest {
+class AccessibilityCommonTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<version_info::Channel> {
  public:
   bool DoesComponentExtensionExist(const std::string& id) {
     return extensions::ExtensionSystem::Get(
@@ -46,7 +50,9 @@ class AccessibilityCommonTest : public InProcessBrowserTest {
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
+IN_PROC_BROWSER_TEST_P(AccessibilityCommonTest, ToggleFeatures) {
+  extensions::ScopedCurrentChannel channel(GetParam());
+
   AccessibilityManager* manager = AccessibilityManager::Get();
   const auto& enabled_features =
       manager->GetAccessibilityCommonEnabledFeaturesForTest();
@@ -103,5 +109,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCommonTest, ToggleFeatures) {
   EXPECT_TRUE(
       DoesComponentExtensionExist(extension_misc::kChromeVoxExtensionId));
 }
+
+INSTANTIATE_TEST_SUITE_P(AllChannels,
+                         AccessibilityCommonTest,
+                         testing::Values(version_info::Channel::STABLE,
+                                         version_info::Channel::BETA,
+                                         version_info::Channel::DEV,
+                                         version_info::Channel::CANARY,
+                                         version_info::Channel::DEFAULT));
 
 }  // namespace ash
