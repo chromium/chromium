@@ -85,11 +85,11 @@ HostMappingRules::RewriteResult HostMappingRules::RewriteUrl(GURL& url) const {
   if (!RewriteHost(&host_port_pair))
     return RewriteResult::kNoMatchingRule;
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   std::string port_str = base::NumberToString(host_port_pair.port());
-  replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
+  replacements.SetPortStr(port_str);
   std::string host_str = host_port_pair.HostForURL();
-  replacements.SetHost(host_str.c_str(), url::Component(0, host_str.size()));
+  replacements.SetHostStr(host_str);
   GURL new_url = url.ReplaceComponents(replacements);
 
   if (!new_url.is_valid())
