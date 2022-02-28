@@ -100,7 +100,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool PublisherIdChanged() const;
 
   const std::string& Description() const;
-  const std::string& GetDescription() const;
   bool DescriptionChanged() const;
 
   const std::string& Version() const;
