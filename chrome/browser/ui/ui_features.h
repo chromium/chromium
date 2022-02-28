@@ -41,8 +41,6 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 
 extern const base::Feature kCommander;
 
-extern const base::Feature kDownloadBubble;
-
 #if !defined(ANDROID)
 extern const base::Feature kAccessCodeCastUI;
 #endif

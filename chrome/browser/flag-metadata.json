@@ -1351,6 +1351,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "download-bubble",
+    "owners": [ "bhatiarohit", "chrome-safebrowsing-alerts@google.com"],
+    "expiry_milestone": 103
+  },
+  {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
     "expiry_milestone": 102
@@ -5123,7 +5128,7 @@
     "name": "safe-browsing-password-protection-for-signed-in-users",
     "owners": [
       "xinghuilu",
-      "chrome-safebrowsing-core@google.com"
+      "chrome-safebrowsing-alerts@google.com"
     ],
     "expiry_milestone": 99
   },
