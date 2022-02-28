@@ -94,7 +94,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         }
 
         public void detachFromParent() {
-            Log.e(TAG, "SurfaceState : detach from parent : " + format);
+            Log.i(TAG, "SurfaceState : detach from parent : %d", format);
             final ViewGroup parent = mParent;
             // Since removeView can call surfaceDestroyed before returning, be sure that isAttached
             // will return false.
@@ -159,7 +159,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
 
     @Override
     public void requestSurface(int format) {
-        Log.e(TAG, "Transitioning to surface with format : " + format);
+        Log.i(TAG, "Transitioning to surface with format: %d", format);
         mRequestedByClient = (format == PixelFormat.TRANSLUCENT) ? mTranslucent : mOpaque;
 
         // If destruction is pending, then we must wait for it to complete.  When we're notified
@@ -284,7 +284,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // Note that |createPending| might not be set, if Android destroyed and recreated this
         // surface on its own.
 
-        Log.e(TAG, "surfaceCreated format : " + state.format);
+        Log.i(TAG, "surfaceCreated format: %d", state.format);
         if (state != mRequestedByClient) {
             // Surface is created, but it's not the one that's been requested most recently.  Just
             // destroy it again.
