@@ -41,9 +41,8 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- cert-manager.com-chain.pem : An OV certificate issued by a public trust
-    anchor valid for the domain ov-validation.cert-manager.com, and which
-    expires on 2022-06-22.
+- thepaverbros.com.pem : A certificate issued by a public trust anchor valid
+    for the domain thepaverbros.com, which expires on 2022-03-26.
 
 - gms.hongleong.com.my-verisign-chain.pem: A certificate chain for
   gms.hongleong.com.my issued by VeriSign Class 3 Public Primary Certification
