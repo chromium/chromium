@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 
 namespace blink {

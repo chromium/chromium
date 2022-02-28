@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/clipboard/data_object_item.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"

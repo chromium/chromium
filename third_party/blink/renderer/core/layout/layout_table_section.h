@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_box_component.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
 #include "third_party/blink/renderer/core/layout/table_grid_cell.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
