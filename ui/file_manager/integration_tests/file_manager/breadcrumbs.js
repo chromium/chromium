@@ -522,16 +522,7 @@ testcase.breadcrumbsEliderMenuItemTabLeft = async () => {
   const menu = ['bread-crumb', '#elider-menu', 'dialog[open]'];
   await remoteCall.waitForElement(appId, menu);
 
-  // Send an ArrowDown key to the drop-down menu.
-  const key = [menu, 'ArrowDown', false, false, false];
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
-
-  // Check: the drop-down menu item should focus.
-  const item = ['bread-crumb', '#elider-menu .dropdown-item:focus'];
-  await remoteCall.waitForElement(appId, item);
-
-  // Dispatch a <shift>-Tab key to the focused drop-down menu item.
+  // Dispatch a <shift>-Tab key to the drop-down menu.
   const result = await sendTestMessage(
       {name: 'dispatchTabKey', /* key modifier */ shift: true});
   chrome.test.assertEq(
@@ -570,16 +561,7 @@ testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   const menu = ['bread-crumb', '#elider-menu', 'dialog[open]'];
   await remoteCall.waitForElement(appId, menu);
 
-  // Send an ArrowDown key to the drop-down menu.
-  const key = [menu, 'ArrowDown', false, false, false];
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, key));
-
-  // Check: the drop-down menu item should focus.
-  const item = ['bread-crumb', '#elider-menu .dropdown-item:focus'];
-  await remoteCall.waitForElement(appId, item);
-
-  // Dispatch a Tab key to the focused drop-down menu item.
+  // Dispatch a Tab key to the drop-down menu.
   const result = await sendTestMessage(
       {name: 'dispatchTabKey', /* key modifier */ shift: false});
   chrome.test.assertEq(result, 'tabKeyDispatched', 'Tab key dispatch failure');
