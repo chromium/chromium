@@ -80,7 +80,7 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
     return uninstall_external_web_app_urls_;
   }
 
-  int num_reparent_tab_calls() { return num_reparent_tab_calls_; }
+  int num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
  private:
   void Finalize(const WebAppInstallInfo& web_app_info,

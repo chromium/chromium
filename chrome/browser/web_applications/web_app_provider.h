@@ -148,7 +148,7 @@ class WebAppProvider : public KeyedService {
   }
 
   // Returns whether the app registry is ready.
-  bool is_registry_ready() { return is_registry_ready_; }
+  bool is_registry_ready() const { return is_registry_ready_; }
 
   PreinstalledWebAppManager& preinstalled_web_app_manager() {
     return *preinstalled_web_app_manager_;

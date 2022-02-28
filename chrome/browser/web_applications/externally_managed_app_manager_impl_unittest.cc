@@ -162,13 +162,13 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     DCHECK(!preempt_registration_callback_);
   }
 
-  size_t install_run_count() { return install_run_count_; }
+  size_t install_run_count() const { return install_run_count_; }
 
   const std::vector<ExternalInstallOptions>& install_options_list() {
     return install_options_list_;
   }
 
-  size_t registration_run_count() { return registration_run_count_; }
+  size_t registration_run_count() const { return registration_run_count_; }
 
   const GURL& last_registered_install_url() {
     return last_registered_install_url_;

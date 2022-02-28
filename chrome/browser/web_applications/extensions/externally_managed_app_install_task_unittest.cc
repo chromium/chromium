@@ -148,7 +148,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     return uninstall_external_web_app_urls_;
   }
 
-  size_t num_reparent_tab_calls() { return num_reparent_tab_calls_; }
+  size_t num_reparent_tab_calls() const { return num_reparent_tab_calls_; }
 
   // WebAppInstallFinalizer
   void FinalizeInstall(const WebAppInstallInfo& web_app_info,

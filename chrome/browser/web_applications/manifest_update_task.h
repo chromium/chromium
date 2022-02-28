@@ -107,11 +107,11 @@ struct IconDiff {
 
   // Returns true iff an icon change was detected (not matter how
   // insignificant).
-  bool mismatch() { return diff_results != NO_CHANGE_DETECTED; }
+  bool mismatch() const { return diff_results != NO_CHANGE_DETECTED; }
 
   // Returns true iff the mismatch should result in app identity dlg being
   // shown.
-  bool requires_app_identity_check() {
+  bool requires_app_identity_check() const {
     return ((diff_results & LAUNCHER_ICON_CHANGED) != 0) ||
            ((diff_results & INSTALL_ICON_CHANGED) != 0);
   }

@@ -64,7 +64,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
 
   void Wait() { run_loop_.Run(); }
 
-  SkColor GetColorAtNavigation() { return color_at_navigation_; }
+  SkColor GetColorAtNavigation() const { return color_at_navigation_; }
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
