@@ -380,7 +380,13 @@ WebInputEventResult GestureManager::HandleGestureTap(
 WebInputEventResult GestureManager::HandleGestureShortPress(
     const GestureEventWithHitTestResults& targeted_event) {
   drag_in_progress_ = false;
-  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()) {
+  // TODO(crbug.com/1299010): When TouchDragAndContextMenu is enabled, we want
+  // to start drag here at short-press and open context-menu later at
+  // long-press.  However, on Android an ACTION_CANCEL event is fired on
+  // drag-start, and occcasionally that happens before long-press gesture
+  // timeout which causes GestureRecognizer to suppress long-press detection.
+  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled() &&
+      RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
     drag_in_progress_ =
         mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
   }
@@ -405,9 +411,14 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   gesture_context_menu_deferred_ = false;
 
-  if (!RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled() &&
-      frame_->GetSettings() &&
-      frame_->GetSettings()->GetTouchDragDropEnabled() && frame_->View()) {
+  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()) {
+    if (!RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
+      drag_in_progress_ =
+          mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+    }
+  } else if (frame_->GetSettings() &&
+             frame_->GetSettings()->GetTouchDragDropEnabled() &&
+             frame_->View()) {
     bool hit_test_contains_links =
         hit_test_result.URLElement() ||
         !hit_test_result.AbsoluteImageURL().IsNull() ||
