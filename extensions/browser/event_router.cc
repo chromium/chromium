@@ -45,6 +45,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ipc/ipc_channel_proxy.h"
 
 using base::DictionaryValue;
 using base::ListValue;

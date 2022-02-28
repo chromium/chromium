@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
+#include "ipc/ipc_channel_proxy.h"
 
 namespace {
 

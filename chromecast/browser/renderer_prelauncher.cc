@@ -10,6 +10,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/child_process_host.h"
+#include "ipc/ipc_message.h"
 
 namespace chromecast {
 

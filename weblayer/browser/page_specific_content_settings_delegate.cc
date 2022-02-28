@@ -10,6 +10,8 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
+#include "ipc/ipc_channel_proxy.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/content_settings_manager_delegate.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"

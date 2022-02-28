@@ -34,6 +34,7 @@
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 

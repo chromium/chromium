@@ -20,7 +20,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "ipc/ipc_channel_proxy.h"
+#include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom-forward.h"
@@ -64,6 +64,10 @@ class Token;
 namespace blink {
 class StorageKey;
 }  // namespace blink
+
+namespace IPC {
+class ChannelProxy;
+}  // namespace IPC
 
 namespace network {
 struct CrossOriginEmbedderPolicy;
