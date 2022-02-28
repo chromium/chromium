@@ -164,15 +164,6 @@ class StartupBrowserCreator {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-#if BUILDFLAG(IS_MAC)
-  // Searches for web apps to handle `urls` and prompts the user to pick one.
-  // Runs `on_urls_unhandled_cb` (either synchronously or asynchronously) if no
-  // web app is found or selected to open `urls`.
-  static void MaybeHandleProfileAgnosticUrls(
-      const std::vector<GURL>& urls,
-      base::OnceClosure on_urls_unhandled_cb);
-#endif
-
   // Returns true if Chrome is intended to load a profile and launch without any
   // window.
   static bool ShouldLoadProfileWithoutWindow(

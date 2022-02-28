@@ -50,18 +50,6 @@ AppId InstallWebApp(Profile* profile,
                     webapps::WebappInstallSource install_source =
                         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-// Install a web app with url_handlers then register it with the
-// UrlHandlerManager. This is sufficient for testing URL matching and launch
-// at startup.
-AppId InstallWebAppWithUrlHandlers(
-    Profile* profile,
-    const GURL& start_url,
-    const std::u16string& app_name,
-    const std::vector<apps::UrlHandlerInfo>& url_handlers);
-#endif
-
 // Synchronously uninstall a web app. May be used in unit tests and browser
 // tests.
 void UninstallWebApp(Profile* profile, const AppId& app_id);

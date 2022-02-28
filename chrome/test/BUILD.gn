@@ -1307,7 +1307,6 @@ if (!is_android) {
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core:unsafe_resource",
       "//components/security_state/content",
-      "//components/services/app_service/public/cpp:app_url_handling",
       "//components/services/app_service/public/cpp:protocol_handling",
       "//components/services/app_service/public/mojom",
       "//components/services/language_detection/public/cpp",
@@ -2431,13 +2430,6 @@ if (!is_android) {
       ]
 
       data_deps += [ "//chrome:packed_resources" ]
-    }
-
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources += [
-        "../browser/ui/startup/web_app_url_handling_startup_test_utils.cc",
-        "../browser/ui/startup/web_app_url_handling_startup_test_utils.h",
-      ]
     }
 
     if (enable_soda) {
@@ -4193,7 +4185,6 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
-        "../browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_browsertest.cc",
       ]
     }
 
