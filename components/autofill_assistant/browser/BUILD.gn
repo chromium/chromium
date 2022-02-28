@@ -279,6 +279,8 @@ static_library("browser") {
     "wait_for_document_operation.cc",
     "wait_for_document_operation.h",
     "wait_for_dom_observer.h",
+    "wait_for_dom_operation.cc",
+    "wait_for_dom_operation.h",
     "web/check_on_top_worker.cc",
     "web/check_on_top_worker.h",
     "web/click_or_tap_worker.cc",
