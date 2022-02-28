@@ -40,8 +40,7 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
       StreamingSearchPrefetchRequest* streaming_prefetch_request,
       Profile* profile,
       std::unique_ptr<network::ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      base::OnceClosure stop_prefetch_closure);
+      const net::NetworkTrafficAnnotationTag& network_traffic_annotation);
 
   ~StreamingSearchPrefetchURLLoader() override;
 
@@ -108,8 +107,8 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // Clears |producer_handle_| and |handle_watcher_|.
   void Finish();
 
-  // Post a task to delete this object by running stop_prefetch_closure_.
-  void PostTaskToStopPrefetchAndDeleteSelf();
+  // Post a task to delete this object at a later point.
+  void PostTaskToDeleteSelf();
 
   // Sets up mojo forwarding to the navigation path. Resumes
   // |network_url_loader_| calls. Serves the start of the response to the
@@ -170,8 +169,13 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
 
-  // Closure to cancel this prefetch. Running this callback will destroy |this|.
-  base::OnceClosure stop_prefetch_closure_;
+  // Set when this manages it's own lifetime.
+  std::unique_ptr<SearchPrefetchURLLoader> self_pointer_;
+
+  // Set to true when we encounter an error in between when the prefetch request
+  // owns this loader and the loader has started. When the forwarding client is
+  // set up, we will delete soon |this|.
+  bool pending_delete_ = false;
 
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };

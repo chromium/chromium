@@ -20,9 +20,7 @@ void StreamingSearchPrefetchRequest::StartPrefetchRequestInternal(
     std::unique_ptr<network::ResourceRequest> resource_request,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation) {
   streaming_url_loader_ = std::make_unique<StreamingSearchPrefetchURLLoader>(
-      this, profile, std::move(resource_request), network_traffic_annotation,
-      base::BindOnce(&StreamingSearchPrefetchRequest::StopPrefetch,
-                     weak_factory_.GetWeakPtr()));
+      this, profile, std::move(resource_request), network_traffic_annotation);
 }
 
 std::unique_ptr<SearchPrefetchURLLoader>
