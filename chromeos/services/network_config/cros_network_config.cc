@@ -63,6 +63,9 @@ const char kErrorInvalidONCConfiguration[] = "Error.InvalidONCConfiguration";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
 const char kErrorNotReady[] = "Error.NotReady";
 
+// IKEv2 string from Shill SupportedVPNType property.
+const char kIKEv2VPNType[] = "ikev2";
+
 // WireGuard string from Shill SupportedVPNType property.
 const char kWireGuardVPNType[] = "wireguard";
 
@@ -3143,6 +3146,12 @@ void CrosNetworkConfig::OnGetSupportedVpnTypes(
     result =
         base::SplitString(*value->GetIfString(), ",", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
+  }
+  if (!base::FeatureList::IsEnabled(ash::features::kEnableIkev2Vpn)) {
+    auto iter = std::find(result.begin(), result.end(), kIKEv2VPNType);
+    if (iter != result.end()) {
+      result.erase(iter);
+    }
   }
   if (!base::FeatureList::IsEnabled(ash::features::kEnableWireGuard)) {
     auto iter = std::find(result.begin(), result.end(), kWireGuardVPNType);
