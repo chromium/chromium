@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/scheme_host_port.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
 namespace {
@@ -262,10 +262,10 @@ TEST_F(SchemeHostPortTest, Comparison) {
       {"https", "b", 81},
   };
 
-  for (size_t i = 0; i < base::size(tuples); i++) {
+  for (size_t i = 0; i < std::size(tuples); i++) {
     url::SchemeHostPort current(tuples[i].scheme, tuples[i].host,
                                 tuples[i].port);
-    for (size_t j = i; j < base::size(tuples); j++) {
+    for (size_t j = i; j < std::size(tuples); j++) {
       url::SchemeHostPort to_compare(tuples[j].scheme, tuples[j].host,
                                      tuples[j].port);
       EXPECT_EQ(i < j, current < to_compare) << i << " < " << j;

@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "url/third_party/mozilla/url_parse.h"
-
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -137,7 +134,7 @@ TEST(URLParser, Length) {
     "http://user@",
     "http:",
   };
-  for (size_t i = 0; i < base::size(length_cases); i++) {
+  for (size_t i = 0; i < std::size(length_cases); i++) {
     int true_length = static_cast<int>(strlen(length_cases[i]));
 
     Parsed parsed;
@@ -196,7 +193,7 @@ TEST(URLParser, CountCharactersBefore) {
     {"file:///c:/foo", Parsed::HOST, true, 7},
     {"file:///c:/foo", Parsed::PATH, true, 7},
   };
-  for (size_t i = 0; i < base::size(count_cases); i++) {
+  for (size_t i = 0; i < std::size(count_cases); i++) {
     int length = static_cast<int>(strlen(count_cases[i].url));
 
     // Simple test to distinguish file and standard URLs.
@@ -314,7 +311,7 @@ TEST(URLParser, Standard) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < base::size(cases); i++) {
+  for (size_t i = 0; i < std::size(cases); i++) {
     const char* url = cases[i].input;
     ParseStandardURL(url, static_cast<int>(strlen(url)), &parsed);
     int port = ParsePort(url, parsed.port);
@@ -349,7 +346,7 @@ TEST(URLParser, PathURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < base::size(path_cases); i++) {
+  for (size_t i = 0; i < std::size(path_cases); i++) {
     const char* url = path_cases[i].input;
     ParsePathURL(url, static_cast<int>(strlen(url)), false, &parsed);
 
@@ -448,7 +445,7 @@ TEST(URLParser, ParseFileURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the construtor.
   Parsed parsed;
-  for (size_t i = 0; i < base::size(file_cases); i++) {
+  for (size_t i = 0; i < std::size(file_cases); i++) {
     const char* url = file_cases[i].input;
     ParseFileURL(url, static_cast<int>(strlen(url)), &parsed);
     int port = ParsePort(url, parsed.port);
@@ -509,7 +506,7 @@ TEST(URLParser, ExtractFileName) {
       {"http://www.google.com/foo;bar;html", "foo"},
   };
 
-  for (size_t i = 0; i < base::size(extract_cases); i++) {
+  for (size_t i = 0; i < std::size(extract_cases); i++) {
     const char* url = extract_cases[i].input;
     int len = static_cast<int>(strlen(url));
 
@@ -617,7 +614,7 @@ TEST(URLParser, MailtoUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < base::size(mailto_cases); ++i) {
+  for (size_t i = 0; i < std::size(mailto_cases); ++i) {
     const char* url = mailto_cases[i].input;
     ParseMailtoURL(url, static_cast<int>(strlen(url)), &parsed);
     int port = ParsePort(url, parsed.port);
@@ -649,7 +646,7 @@ TEST(URLParser, FileSystemURL) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   Parsed parsed;
-  for (size_t i = 0; i < base::size(filesystem_cases); i++) {
+  for (size_t i = 0; i < std::size(filesystem_cases); i++) {
     const FileSystemURLParseCase* parsecase = &filesystem_cases[i];
     const char* url = parsecase->input;
     ParseFileSystemURL(url, static_cast<int>(strlen(url)), &parsed);
