@@ -212,8 +212,8 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   DCHECK(self.webState != nullptr);
   NSDictionary<NSNumber*, NSNumber*>* permissionStates =
       self.webState->GetStatesForAllPermissions();
-  return permissionStates[@(web::PermissionMicrophone)] >
-                 permissionStates[@(web::PermissionCamera)]
+  return permissionStates[@(web::PermissionMicrophone)].unsignedIntValue >
+                 permissionStates[@(web::PermissionCamera)].unsignedIntValue
              ? BadgeType::kBadgeTypePermissionsMicrophone
              : BadgeType::kBadgeTypePermissionsCamera;
 }
