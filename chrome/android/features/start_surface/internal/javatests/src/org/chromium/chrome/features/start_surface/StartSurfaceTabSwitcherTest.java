@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
@@ -380,8 +381,8 @@ public class StartSurfaceTabSwitcherTest {
         }
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        CriteriaHelper.pollUiThread(
-                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        CriteriaHelper.pollUiThread(() -> cta.getLayoutManager() != null);
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         StartSurfaceTestUtils.waitForTabModel(cta);
         onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.logo));
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
@@ -410,7 +411,7 @@ public class StartSurfaceTabSwitcherTest {
                 org.chromium.chrome.start_surface.R.id.secondary_tasks_surface_view);
         RecyclerView recyclerView =
                 secondaryTaskSurface.findViewById(org.chromium.chrome.tab_ui.R.id.tab_list_view);
-        assertEquals(2, recyclerView.getChildCount());
+        CriteriaHelper.pollUiThread(() -> 2 == recyclerView.getChildCount());
         // Verifies that the tabs are shown in MRU order: the first card in the Tab switcher is the
         // last created Tab by tapping the MV tile; the second card is the Tab created or restored
         // in setup().

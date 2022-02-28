@@ -335,7 +335,7 @@ public class StaticLayout extends Layout {
     }
 
     private void updateStaticTab(Tab tab) {
-        if (!mIsActive || mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
+        if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
