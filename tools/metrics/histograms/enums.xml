@@ -76927,6 +76927,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="676" label="ZY (unused)"/>
   <int value="677" label="ZZ (unused)"/>
   <int value="678" label="countryCodeInvalid"/>
+  <int value="679" label="99"/>
+  <int value="680" label="98"/>
+  <int value="681" label="97"/>
 </enum>
 
 <enum name="ReinstallResponseParseResult">
