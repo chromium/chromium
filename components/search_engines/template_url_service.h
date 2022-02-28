@@ -303,6 +303,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   // provider.
   bool IsSearchResultsPageFromDefaultSearchProvider(const GURL& url) const;
 
+  // Returns true if the default search provider supports the side search
+  // feature.
+  bool IsSideSearchSupportedForDefaultSearchProvider() const;
+
+  // Generates a side search URL for the default search provider's search url.
+  GURL GenerateSideSearchURLForDefaultSearchProvider(
+      const GURL& search_url,
+      const std::string& version) const;
+
   // Returns true if the default search is managed through group policy.
   bool is_default_search_managed() const {
     return default_search_provider_source_ == DefaultSearchManager::FROM_POLICY;

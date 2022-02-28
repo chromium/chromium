@@ -37,6 +37,7 @@
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
+#include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
@@ -1626,6 +1627,19 @@ GURL TemplateURL::GenerateSearchURL(
   return GURL(url_ref().ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(u"blah.blah.blah.blah.blah"),
       search_terms_data, nullptr));
+}
+
+bool TemplateURL::IsSideSearchSupported() const {
+  return !side_search_param().empty();
+}
+
+GURL TemplateURL::GenerateSideSearchURL(
+    const GURL& search_url,
+    const std::string& version,
+    const SearchTermsData& search_terms_data) const {
+  DCHECK(IsSideSearchSupported());
+  DCHECK(IsSearchURL(search_url, search_terms_data));
+  return net::AppendQueryParameter(search_url, side_search_param(), version);
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {

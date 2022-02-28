@@ -48,6 +48,7 @@ class DefaultSearchManager {
   static const char kSearchURLPostParams[];
   static const char kSuggestionsURLPostParams[];
   static const char kImageURLPostParams[];
+  static const char kSideSearchParam[];
 
   static const char kSafeForAutoReplace[];
   static const char kInputEncodings[];

@@ -793,6 +793,19 @@ bool TemplateURLService::IsSearchResultsPageFromDefaultSearchProvider(
       default_provider->IsSearchURL(url, search_terms_data());
 }
 
+bool TemplateURLService::IsSideSearchSupportedForDefaultSearchProvider() const {
+  const TemplateURL* default_provider = GetDefaultSearchProvider();
+  return default_provider && default_provider->IsSideSearchSupported();
+}
+
+GURL TemplateURLService::GenerateSideSearchURLForDefaultSearchProvider(
+    const GURL& search_url,
+    const std::string& version) const {
+  DCHECK(IsSideSearchSupportedForDefaultSearchProvider());
+  return GetDefaultSearchProvider()->GenerateSideSearchURL(search_url, version,
+                                                           search_terms_data());
+}
+
 bool TemplateURLService::IsExtensionControlledDefaultSearch() const {
   return default_search_provider_source_ ==
       DefaultSearchManager::FROM_EXTENSION;

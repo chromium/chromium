@@ -48,6 +48,9 @@
     { "field": "search_url_post_params", "type": "string", "optional": true },
     { "field": "suggest_url_post_params", "type": "string", "optional": true },
     { "field": "image_url_post_params", "type": "string", "optional": true },
+    // The parameter appended to the engine's search URL when constructing the
+    // URL for the side search side panel.
+    { "field": "side_search_param", "type": "string", "optional": true },
     // A list of URL patterns that can be used, in addition to |search_url|,
     // to extract search terms from a URL.
     // If "search_url_post_params" is not empty, then all alternate URLs are
