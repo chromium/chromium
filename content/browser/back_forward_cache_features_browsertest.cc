@@ -229,9 +229,17 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(https://crbug.com/1299018): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel \
+  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel
+#else
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel \
+  DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel
+#endif
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
-    DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
+    MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
