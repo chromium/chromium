@@ -119,6 +119,10 @@ interface BidderWorklet {
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
+  // `browser_signal_top_level_seller_origin` The top-level seller origin,
+  //  if this worklet is running as part of a component (nested) Auction.
+  //  Null, otherwise.
+  //
   // `bidding_browser_signals` See BiddingBrowserSignals.
   //
   // `auction_start_time` The time the auction started, used to ensure the
@@ -128,12 +132,6 @@ interface BidderWorklet {
   // `bid` If the worklet is successfully loaded and chooses to bid in the
   //  auction, contains information about the bid. Null otherwise.
   //
-  // `debug_loss_report_url` The URL to request if the auction runs to
-  // completion and this bid does not win. All bidders are allowed to send loss
-  // report, including those who does not bid. This field has the debug prefix
-  // because it's part of an interim reporting API that will be replaced with
-  // standardized reporting APIs once available. It must be a valid HTTPS URL.
-  //
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
   //
@@ -141,10 +139,16 @@ interface BidderWorklet {
   //  was present in the HTTP response for the trusted bidding signals.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
+  // `debug_loss_report_url` The URL to request if the auction runs to
+  //  completion and this bid does not win. All bidders are allowed to send loss
+  //  report, including those who does not bid. This field has the debug prefix
+  //  because it's part of an interim reporting API that will be replaced with
+  //  standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
   // `debug_win_report_url` The URL to request if the auction runs to completion
-  // and this bid wins. This field has the debug prefix because it's part of an
-  // interim reporting API that will be replaced with standardized reporting
-  // APIs once available. It must be a valid HTTPS URL.
+  //  and this bid wins. This field has the debug prefix because it's part of an
+  //  interim reporting API that will be replaced with standardized reporting
+  //  APIs once available. It must be a valid HTTPS URL.
   //
   // `errors` The various error messages to be used for debugging. These are too
   //  sensitive for the renderer to see. There may be errors even when a bid
@@ -156,6 +160,7 @@ interface BidderWorklet {
       string? per_buyer_signals_json,
       mojo_base.mojom.TimeDelta? per_buyer_timeout,
       url.mojom.Origin browser_signal_seller_origin,
+      url.mojom.Origin? browser_signal_top_level_seller_origin,
       BiddingBrowserSignals bidding_browser_signals,
       mojo_base.mojom.Time auction_start_time) => (
           BidderWorkletBid? bid,

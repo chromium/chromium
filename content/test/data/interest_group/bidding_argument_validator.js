@@ -82,13 +82,16 @@ function validateTrustedBiddingSignals(trustedBiddingSignals) {
 }
 
 function validateBrowserSignals(browserSignals) {
-  if (Object.keys(browserSignals).length !== 5)
+  if (Object.keys(browserSignals).length !== 5) {
     throw 'Wrong number of browser signals fields ' +
         JSON.stringify(browserSignals);
+  }
   if (browserSignals.topWindowHostname !== 'c.test')
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if (!browserSignals.seller.startsWith('https://b.test'))
     throw 'Wrong seller ' + browserSignals.seller;
+  if ('topLevelSeller' in browserSignals)
+    throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
   if (browserSignals.joinCount !== 1)
     throw 'Wrong joinCount ' + browserSignals.joinCount;
   if (browserSignals.bidCount !== 0)

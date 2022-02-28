@@ -114,20 +114,20 @@ AuctionRunner::ScoredBid::~ScoredBid() = default;
 
 AuctionRunner::Auction::Auction(
     blink::mojom::AuctionAdConfig* config,
-    bool is_component_auction,
+    const Auction* parent,
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
     base::Time auction_start_time)
     : auction_worklet_manager_(auction_worklet_manager),
       interest_group_manager_(interest_group_manager),
       config_(config),
-      is_component_auction_(is_component_auction),
+      parent_(parent),
       auction_start_time_(auction_start_time) {
   for (const auto& component_auction_config : config->component_auctions) {
     // Nested component auctions are not supported.
-    DCHECK(!is_component_auction);
+    DCHECK(!parent_);
     component_auctions_.emplace_back(std::make_unique<Auction>(
-        component_auction_config.get(), /*is_component_auction=*/true,
+        component_auction_config.get(), /*parent=*/this,
         auction_worklet_manager, interest_group_manager, auction_start_time));
   }
 }
@@ -137,7 +137,7 @@ AuctionRunner::Auction::~Auction() {
     final_auction_result_ = AuctionResult::kAborted;
 
   // TODO(mmenke): Record histograms for component auctions.
-  if (!is_component_auction_) {
+  if (!parent_) {
     UMA_HISTOGRAM_ENUMERATION("Ads.InterestGroup.Auction.Result",
                               *final_auction_result_);
 
@@ -284,7 +284,7 @@ void AuctionRunner::Auction::StartReportingPhase(
   // Component auctions unload their seller worklets on completion, so need to
   // reload the seller worklet in the case of a component auction.
   if (!seller_worklet_handle_) {
-    DCHECK(is_component_auction_);
+    DCHECK(parent_);
     if (!auction_worklet_manager_->RequestSellerWorklet(
             config_->decision_logic_url, config_->trusted_scoring_signals_url,
             base::BindOnce(&Auction::ReportSellerResult,
@@ -465,7 +465,7 @@ void AuctionRunner::Auction::OnOneLoadCompleted() {
 
   // Record histograms about the interest groups participating in the auction.
   // TODO(mmenke): Record histograms for component auctions.
-  if (!is_component_auction_) {
+  if (!parent_) {
     // Only record histograms if there were interest groups that could
     // theoretically participate in the auction.
     if (num_owners_loaded_ > 0) {
@@ -591,6 +591,7 @@ void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
           interest_group.ad_components),
       config_->auction_ad_config_non_shared_params->auction_signals,
       PerBuyerSignals(bid_state), PerBuyerTimeout(bid_state), config_->seller,
+      parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       base::BindOnce(&Auction::OnGenerateBidComplete,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));
@@ -896,7 +897,7 @@ void AuctionRunner::Auction::OnBiddingAndScoringComplete(
   // If this is a component auction, have to unload the seller worklet handle to
   // avoid deadlock. Otherwise, loading the top-level seller worklet may be
   // blocked by component seller worklets taking up all the quota.
-  if (is_component_auction_)
+  if (parent_)
     seller_worklet_handle_.reset();
 
   // If the seller loaded callback hasn't been invoked yet, call it now. This is
@@ -1171,7 +1172,7 @@ AuctionRunner::AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
       owned_auction_config_(std::move(auction_config)),
       callback_(std::move(callback)),
       auction_(owned_auction_config_.get(),
-               /*is_component_auction=*/false,
+               /*parent=*/nullptr,
                auction_worklet_manager,
                interest_group_manager,
                /*auction_start_time=*/base::Time::Now()) {}

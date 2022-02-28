@@ -127,7 +127,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
-      const url::Origin& seller_origin,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override {

@@ -89,6 +89,7 @@ std::string MakeBidScript(const url::Origin& seller,
     const hasSignals = %s;
     const debugLossReportUrl = "%s";
     const debugWinReportUrl = "%s";
+    const topLevelSeller = "https://adstuff.publisher1.com";
 
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
@@ -145,8 +146,15 @@ std::string MakeBidScript(const url::Origin& seller,
       }
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname");
-      if (browserSignals.seller != seller)
+      if (browserSignals.seller !== seller)
          throw new Error("wrong seller");
+      if (browserSignals.seller === topLevelSeller) {
+        if ("topLevelSeller" in browserSignals)
+          throw new Error("expected no browserSignals.topLevelSeller");
+      } else {
+        if (browserSignals.topLevelSeller !== topLevelSeller)
+          throw new Error("wrong browserSignals.topLevelSeller");
+      }
       if (browserSignals.joinCount !== 3)
         throw new Error("joinCount")
       if (browserSignals.bidCount !== 5)
@@ -454,7 +462,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
-      const url::Origin& seller_origin,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override {

@@ -96,7 +96,8 @@ class BidderWorklet : public mojom::BidderWorklet {
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<base::TimeDelta> per_buyer_timeout,
-      const url::Origin& seller_origin,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
       mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       GenerateBidCallback generate_bid_callback) override;
@@ -124,7 +125,8 @@ class BidderWorklet : public mojom::BidderWorklet {
     absl::optional<std::string> auction_signals_json;
     absl::optional<std::string> per_buyer_signals_json;
     absl::optional<base::TimeDelta> per_buyer_timeout;
-    url::Origin seller_origin;
+    url::Origin browser_signal_seller_origin;
+    absl::optional<url::Origin> browser_signal_top_level_seller_origin;
     mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
     base::Time auction_start_time;
 
@@ -203,6 +205,8 @@ class BidderWorklet : public mojom::BidderWorklet {
         const absl::optional<std::string>& per_buyer_signals_json,
         const absl::optional<base::TimeDelta> per_buyer_timeout,
         const url::Origin& browser_signal_seller_origin,
+        const absl::optional<url::Origin>&
+            browser_signal_top_level_seller_origin,
         mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
         base::Time auction_start_time,
         scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result,

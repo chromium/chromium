@@ -288,10 +288,10 @@ class CONTENT_EXPORT AuctionRunner {
 
     // All passed in raw pointers must remain valid until the Auction is
     // destroyed. `config` is typically owned by the AuctionRunner's
-    // `owned_auction_config_` field. `is_component_auction` should be true
-    // if the Auction is a component of another auction.
+    // `owned_auction_config_` field. `parent` should be the parent Auction if
+    // this is a component auction, and null, otherwise.
     Auction(blink::mojom::AuctionAdConfig* config,
-            bool is_component_auction,
+            const Auction* parent,
             AuctionWorkletManager* auction_worklet_manager,
             InterestGroupManagerImpl* interest_group_manager,
             base::Time auction_start_time);
@@ -573,7 +573,8 @@ class CONTENT_EXPORT AuctionRunner {
 
     // Configuration of this auction.
     raw_ptr<const blink::mojom::AuctionAdConfig> config_;
-    const bool is_component_auction_;
+    // If this is a component auction, the parent Auction. Null, otherwise.
+    const raw_ptr<const Auction> parent_;
 
     // Component auctions that are part of this auction. This auction manages
     // their state transition, and their bids may participate in this auction as

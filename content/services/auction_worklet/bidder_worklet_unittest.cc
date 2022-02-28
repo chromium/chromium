@@ -159,6 +159,7 @@ class BidderWorkletTest : public testing::Test {
     top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
+    browser_signal_top_level_seller_origin_.reset();
     seller_signals_ = "[\"seller_signals\"]";
     browser_signal_render_url_ = GURL("https://render_url.test/");
     browser_signal_bid_ = 1;
@@ -350,7 +351,8 @@ class BidderWorkletTest : public testing::Test {
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
                        base::Unretained(this)));
     bidder_worklet->SendPendingSignalsRequests();
@@ -362,7 +364,8 @@ class BidderWorkletTest : public testing::Test {
     bidder_worklet->GenerateBid(
         CreateBidderWorkletNonSharedParams(), auction_signals_,
         per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindOnce([](mojom::BidderWorkletBidPtr bid, uint32_t data_version,
                           bool has_data_version,
                           const absl::optional<GURL>& debug_loss_report_url,
@@ -468,6 +471,8 @@ class BidderWorkletTest : public testing::Test {
   absl::optional<base::TimeDelta> per_buyer_timeout_;
   url::Origin top_window_origin_;
   url::Origin browser_signal_seller_origin_;
+  absl::optional<url::Origin> browser_signal_top_level_seller_origin_;
+
   std::string seller_signals_;
   absl::optional<uint32_t> data_version_;
   GURL browser_signal_render_url_;
@@ -1040,6 +1045,7 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
           CreateBidderWorkletNonSharedParams(),
           /*auction_signals_json=*/base::NumberToString(bid_value),
           per_buyer_signals_, per_buyer_timeout_, browser_signal_seller_origin_,
+          browser_signal_top_level_seller_origin_,
           CreateBiddingBrowserSignals(), auction_start_time_,
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
@@ -1130,7 +1136,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched1) {
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1226,7 +1233,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched2) {
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1328,7 +1336,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelBatched3) {
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1409,7 +1418,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallelNotBatched) {
     bidder_worklet->GenerateBid(
         std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
         per_buyer_timeout_, browser_signal_seller_origin_,
-        CreateBiddingBrowserSignals(), auction_start_time_,
+        browser_signal_top_level_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, i](
                 mojom::BidderWorkletBidPtr bid, uint32_t data_version,
@@ -1582,6 +1592,25 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
       R"({ad: browserSignals.seller, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
           R"("https://[::1]:40000")", 1, GURL("https://response.test/"),
+          /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopLevelSellerOrigin) {
+  browser_signal_top_level_seller_origin_ = absl::nullopt;
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: "topLevelSeller" in browserSignals,
+          bid:1,
+          render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New("false", 1, GURL("https://response.test/"),
+                                   /*ad_components=*/absl::nullopt,
+                                   base::TimeDelta()));
+
+  browser_signal_top_level_seller_origin_ =
+      url::Origin::Create(GURL("https://foo.test"));
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: browserSignals.topLevelSeller, bid:1, render:"https://response.test/"})",
+      mojom::BidderWorkletBid::New(
+          R"("https://foo.test")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
 }
 
