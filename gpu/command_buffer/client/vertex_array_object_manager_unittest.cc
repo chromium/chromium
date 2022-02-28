@@ -6,13 +6,11 @@
 
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -79,9 +77,9 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
   const GLuint kElementArray = 789;
   bool changed = false;
   GLuint ids[2] = { 1, 3, };
-  manager_->GenVertexArrays(base::size(ids), ids);
+  manager_->GenVertexArrays(std::size(ids), ids);
   // Bind buffers to attribs on 2 vaos.
-  for (size_t ii = 0; ii < base::size(ids); ++ii) {
+  for (size_t ii = 0; ii < std::size(ids); ++ii) {
     EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
     EXPECT_TRUE(manager_->SetAttribPointer(
         kBufferToUnbind, 0, 4, GL_FLOAT, false, 0, 0, GL_FALSE));
@@ -115,7 +113,7 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
   static const GLuint expected_element_array[] = {
     0, kElementArray,
   };
-  for (size_t ii = 0; ii < base::size(ids); ++ii) {
+  for (size_t ii = 0; ii < std::size(ids); ++ii) {
     EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
     for (size_t jj = 0; jj < 4; ++jj) {
       uint32_t param = 1;
@@ -198,7 +196,7 @@ TEST_F(VertexArrayObjectManagerTest, HaveEnabledClientSideArrays) {
 TEST_F(VertexArrayObjectManagerTest, BindElementArray) {
   bool changed = false;
   GLuint ids[2] = { 1, 3, };
-  manager_->GenVertexArrays(base::size(ids), ids);
+  manager_->GenVertexArrays(std::size(ids), ids);
 
   // Check the default element array is 0.
   EXPECT_EQ(0u, manager_->bound_element_array_buffer());
@@ -238,7 +236,7 @@ TEST_F(VertexArrayObjectManagerTest, GenBindDelete) {
   EXPECT_FALSE(changed);
 
   GLuint ids[2] = { 1, 3, };
-  manager_->GenVertexArrays(base::size(ids), ids);
+  manager_->GenVertexArrays(std::size(ids), ids);
   // Check Genned arrays succeed.
   EXPECT_TRUE(manager_->BindVertexArray(1, &changed));
   EXPECT_TRUE(changed);

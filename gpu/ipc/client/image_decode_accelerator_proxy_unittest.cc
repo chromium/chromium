@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/ipc/client/image_decode_accelerator_proxy.h"
+
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/test/task_environment.h"
 #include "cc/paint/paint_image.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/mock_gpu_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,7 +76,7 @@ class ImageDecodeAcceleratorProxyTest : public ::testing::Test {
 TEST_F(ImageDecodeAcceleratorProxyTest, ScheduleImageDecodeSendsMessage) {
   const uint8_t image[4] = {1, 2, 3, 4};
   base::span<const uint8_t> encoded_data =
-      base::span<const uint8_t>(image, base::size(image));
+      base::span<const uint8_t>(image, std::size(image));
 
   const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 

@@ -33,10 +33,10 @@ TEST_F(RasterImplementationTest, GenQueriesEXT) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kQueriesStartId;
   expected.data[1] = kQueriesStartId + 1;
-  gl_->GenQueriesEXT(base::size(ids), &ids[0]);
+  gl_->GenQueriesEXT(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kQueriesStartId, ids[0]);
   EXPECT_EQ(kQueriesStartId + 1, ids[1]);
@@ -49,10 +49,10 @@ TEST_F(RasterImplementationTest, DeleteQueriesEXT) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kQueriesStartId;
   expected.data[1] = kQueriesStartId + 1;
-  gl_->DeleteQueriesEXT(base::size(ids), &ids[0]);
+  gl_->DeleteQueriesEXT(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

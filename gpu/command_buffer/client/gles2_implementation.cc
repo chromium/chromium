@@ -25,7 +25,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
@@ -295,7 +294,7 @@ gpu::ContextResult GLES2Implementation::Initialize(
 
   if (support_client_side_arrays_) {
     GetIdHandler(SharedIdNamespaces::kBuffers)
-        ->MakeIds(this, kClientSideArrayId, base::size(reserved_ids_),
+        ->MakeIds(this, kClientSideArrayId, std::size(reserved_ids_),
                   &reserved_ids_[0]);
   }
 
@@ -329,7 +328,7 @@ GLES2Implementation::~GLES2Implementation() {
   // GLES2Implementation::Initialize() could fail before allocating
   // reserved_ids_, so we need delete them carefully.
   if (support_client_side_arrays_ && reserved_ids_[0]) {
-    DeleteBuffers(base::size(reserved_ids_), &reserved_ids_[0]);
+    DeleteBuffers(std::size(reserved_ids_), &reserved_ids_[0]);
   }
 
   // Release remaining BufferRange mem; This is when a MapBufferRange() is

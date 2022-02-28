@@ -21,7 +21,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -138,9 +137,9 @@ TEST_F(GLHelperBenchmark, ScaleBenchmark) {
   int input_sizes[] = {3200, 2040, 2560, 1476,  // Pixel tab size
                        1920, 1080, 1280, 720,  800, 480, 256, 144};
 
-  for (size_t q = 0; q < base::size(kQualities); q++) {
-    for (size_t outsize = 0; outsize < base::size(output_sizes); outsize += 2) {
-      for (size_t insize = 0; insize < base::size(input_sizes); insize += 2) {
+  for (size_t q = 0; q < std::size(kQualities); q++) {
+    for (size_t outsize = 0; outsize < std::size(output_sizes); outsize += 2) {
+      for (size_t insize = 0; insize < std::size(input_sizes); insize += 2) {
         uint32_t src_texture;
         gl_->GenTextures(1, &src_texture);
         uint32_t dst_texture;

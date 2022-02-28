@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -187,7 +186,7 @@ constexpr const char* kExtensions[] = {
     "GL_OES_texture_half_float_linear",
     "GL_OES_texture_npot",
     "GL_OES_vertex_array_object"};
-constexpr size_t kExtensionCount = base::size(kExtensions);
+constexpr size_t kExtensionCount = std::size(kExtensions);
 
 #if defined(GPU_FUZZER_USE_STUB)
 constexpr const char* kDriverVersions[] = {"OpenGL ES 2.0", "OpenGL ES 3.1",

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-
 #include <stddef.h>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/image_manager.h"
@@ -205,15 +203,15 @@ TEST_P(GLES2DecoderWithShaderTest, VertexAttribPointer) {
   static const GLsizei stride_offset[] = {
       0, 0, 1, 0, 1, 0, 0,
   };
-  for (size_t tt = 0; tt < base::size(types); ++tt) {
+  for (size_t tt = 0; tt < std::size(types); ++tt) {
     GLenum type = types[tt];
     GLsizei num_bytes = sizes[tt];
-    for (size_t ii = 0; ii < base::size(indices); ++ii) {
+    for (size_t ii = 0; ii < std::size(indices); ++ii) {
       GLuint index = indices[ii];
       for (GLint size = 0; size < 5; ++size) {
-        for (size_t oo = 0; oo < base::size(offset_mult); ++oo) {
+        for (size_t oo = 0; oo < std::size(offset_mult); ++oo) {
           GLuint offset = num_bytes * offset_mult[oo] + offset_offset[oo];
-          for (size_t ss = 0; ss < base::size(stride_mult); ++ss) {
+          for (size_t ss = 0; ss < std::size(stride_mult); ++ss) {
             GLsizei stride = num_bytes * stride_mult[ss] + stride_offset[ss];
             for (int normalize = 0; normalize < 2; ++normalize) {
               bool index_good = index < static_cast<GLuint>(kNumVertexAttribs);

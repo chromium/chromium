@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
@@ -828,7 +826,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformBlockivSucceeds) {
     GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER,
     GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER,
   };
-  for (size_t ii = 0; ii < base::size(kPname); ++ii) {
+  for (size_t ii = 0; ii < std::size(kPname); ++ii) {
     result->SetNumResults(0);
     cmd.Init(client_program_id_,
              0,
@@ -1069,7 +1067,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesSucceeds) {
   const char kName0[] = "Cow";
   const char kName1[] = "Chicken";
   const char* kNames[] = { kName0, kName1 };
-  const size_t kCount = base::size(kNames);
+  const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
   const GLuint kIndices[] = { 1, 2 };
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
@@ -1102,7 +1100,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesBadProgramFails) {
   const char kName0[] = "Cow";
   const char kName1[] = "Chicken";
   const char* kNames[] = { kName0, kName1 };
-  const size_t kCount = base::size(kNames);
+  const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
   auto* result =
@@ -1131,7 +1129,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesBadParamsFails) {
   const char kName0[] = "Cow";
   const char kName1[] = "Chicken";
   const char* kNames[] = { kName0, kName1 };
-  const size_t kCount = base::size(kNames);
+  const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
   const GLuint kIndices[] = { 1, 2 };
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
@@ -1161,7 +1159,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesResultNotInitFails) {
   const char kName0[] = "Cow";
   const char kName1[] = "Chicken";
   const char* kNames[] = { kName0, kName1 };
-  const size_t kCount = base::size(kNames);
+  const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
   auto* result =
@@ -1177,7 +1175,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetUniformIndicesBadSharedMemoryFails) {
   const char kName0[] = "Cow";
   const char kName1[] = "Chicken";
   const char* kNames[] = { kName0, kName1 };
-  const size_t kCount = base::size(kNames);
+  const size_t kCount = std::size(kNames);
   const char kValidStrEnd = 0;
   SetBucketAsCStrings(kBucketId, kCount, kNames, kCount, kValidStrEnd);
   auto* result =
@@ -1199,7 +1197,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivSucceeds) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 2 };
   const GLint kResults[] = { 1976, 321 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -1226,7 +1224,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivSucceeds) {
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadProgramFails) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 2 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -1253,7 +1251,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadProgramFails) {
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadParamsFails) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 100 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -1269,7 +1267,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadParamsFails) {
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadPnameFails) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 2 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -1293,7 +1291,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadPnameFails) {
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivResultNotInitFails) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 2 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -1307,7 +1305,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivResultNotInitFails) {
 TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformsivBadSharedMemoryFails) {
   const uint32_t kBucketId = 123;
   const GLuint kIndices[] = { 1, 2 };
-  const size_t kCount = base::size(kIndices);
+  const size_t kCount = std::size(kIndices);
   SetBucketData(kBucketId, kIndices, sizeof(GLuint) * kCount);
   auto* result =
       static_cast<cmds::GetActiveUniformsiv::Result*>(shared_memory_address_);
@@ -2074,12 +2072,12 @@ TEST_P(GLES2DecoderManualInitTest, ClearUniformsBeforeFirstProgramUse) {
         {kUniform3Name, kUniform3Size, kUniform3Type, kUniform3FakeLocation,
          kUniform3RealLocation, kUniform3DesiredLocation},
     };
-    SetupShader(attribs, base::size(attribs), uniforms, base::size(uniforms),
+    SetupShader(attribs, std::size(attribs), uniforms, std::size(uniforms),
                 client_program_id_, kServiceProgramId, client_vertex_shader_id_,
                 kServiceVertexShaderId, client_fragment_shader_id_,
                 kServiceFragmentShaderId);
     TestHelper::SetupExpectationsForClearingUniforms(gl_.get(), uniforms,
-                                                     base::size(uniforms));
+                                                     std::size(uniforms));
   }
 
   {

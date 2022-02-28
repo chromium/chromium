@@ -16,7 +16,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 
@@ -1548,7 +1547,7 @@ std::string GLES2Util::GetStringError(uint32_t value) {
     { GL_NONE, "GL_NONE" },
   };
   return GLES2Util::GetQualifiedEnumString(string_table,
-                                           base::size(string_table), value);
+                                           std::size(string_table), value);
 }
 
 std::string GLES2Util::GetStringBool(uint32_t value) {

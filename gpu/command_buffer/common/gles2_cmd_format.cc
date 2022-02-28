@@ -8,11 +8,9 @@
 // We explicitly do NOT include gles2_cmd_format.h here because client side
 // and service side have different requirements.
 
-#include "gpu/command_buffer/common/cmd_buffer_common.h"
-
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
+#include "gpu/command_buffer/common/cmd_buffer_common.h"
 
 namespace gpu {
 namespace gles2 {
@@ -29,7 +27,7 @@ const char* GetCommandName(CommandId id) {
   };
 
   size_t index = static_cast<size_t>(id) - kFirstGLES2Command;
-  return (index < base::size(names)) ? names[index] : "*unknown-command*";
+  return (index < std::size(names)) ? names[index] : "*unknown-command*";
 }
 
 }  // namespace gles2

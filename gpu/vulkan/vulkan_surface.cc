@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -147,8 +146,8 @@ bool VulkanSurface::Initialize(VulkanDeviceQueue* device_queue,
                                           ? kPreferredVkFormats32
                                           : kPreferredVkFormats16;
   unsigned int size = (format == FORMAT_RGBA_32)
-                          ? base::size(kPreferredVkFormats32)
-                          : base::size(kPreferredVkFormats16);
+                          ? std::size(kPreferredVkFormats32)
+                          : std::size(kPreferredVkFormats16);
 
   if (formats.size() == 1 && VK_FORMAT_UNDEFINED == formats[0].format) {
     surface_format_.format = preferred_formats[0];

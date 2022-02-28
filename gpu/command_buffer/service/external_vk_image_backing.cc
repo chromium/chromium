@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/service/external_vk_image_gl_representation.h"
@@ -80,7 +79,7 @@ static const struct {
     {GL_ZERO, GL_ZERO, 0},                         // YUV_420_BIPLANAR
     {GL_ZERO, GL_ZERO, 0},                         // P010
 };
-static_assert(base::size(kFormatTable) == (viz::RESOURCE_FORMAT_MAX + 1),
+static_assert(std::size(kFormatTable) == (viz::RESOURCE_FORMAT_MAX + 1),
               "kFormatTable does not handle all cases.");
 
 class ScopedDedicatedMemoryObject {

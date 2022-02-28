@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -32,7 +31,7 @@ constexpr const char* kGpuTraceSourceNames[] = {
     "TraceCmd",       // kTraceDecoder,
     "Disjoint",       // kTraceDisjoint, // Used internally.
 };
-static_assert(NUM_TRACER_SOURCES == base::size(kGpuTraceSourceNames),
+static_assert(NUM_TRACER_SOURCES == std::size(kGpuTraceSourceNames),
               "Trace source names must match enumeration.");
 
 TraceMarker::TraceMarker(const std::string& category, const std::string& name)

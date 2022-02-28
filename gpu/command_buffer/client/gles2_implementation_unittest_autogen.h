@@ -377,10 +377,10 @@ TEST_F(GLES2ImplementationTest, DeleteBuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kBuffersStartId;
   expected.data[1] = kBuffersStartId + 1;
-  gl_->DeleteBuffers(base::size(ids), &ids[0]);
+  gl_->DeleteBuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -391,10 +391,10 @@ TEST_F(GLES2ImplementationTest, DeleteFramebuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kFramebuffersStartId;
   expected.data[1] = kFramebuffersStartId + 1;
-  gl_->DeleteFramebuffers(base::size(ids), &ids[0]);
+  gl_->DeleteFramebuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -416,10 +416,10 @@ TEST_F(GLES2ImplementationTest, DeleteRenderbuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kRenderbuffersStartId;
   expected.data[1] = kRenderbuffersStartId + 1;
-  gl_->DeleteRenderbuffers(base::size(ids), &ids[0]);
+  gl_->DeleteRenderbuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -430,10 +430,10 @@ TEST_F(GLES2ImplementationTest, DeleteSamplers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kSamplersStartId;
   expected.data[1] = kSamplersStartId + 1;
-  gl_->DeleteSamplers(base::size(ids), &ids[0]);
+  gl_->DeleteSamplers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -466,10 +466,10 @@ TEST_F(GLES2ImplementationTest, DeleteTextures) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kTexturesStartId;
   expected.data[1] = kTexturesStartId + 1;
-  gl_->DeleteTextures(base::size(ids), &ids[0]);
+  gl_->DeleteTextures(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -480,10 +480,10 @@ TEST_F(GLES2ImplementationTest, DeleteTransformFeedbacks) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kTransformFeedbacksStartId;
   expected.data[1] = kTransformFeedbacksStartId + 1;
-  gl_->DeleteTransformFeedbacks(base::size(ids), &ids[0]);
+  gl_->DeleteTransformFeedbacks(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -630,10 +630,10 @@ TEST_F(GLES2ImplementationTest, GenBuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kBuffersStartId;
   expected.data[1] = kBuffersStartId + 1;
-  gl_->GenBuffers(base::size(ids), &ids[0]);
+  gl_->GenBuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kBuffersStartId, ids[0]);
   EXPECT_EQ(kBuffersStartId + 1, ids[1]);
@@ -659,10 +659,10 @@ TEST_F(GLES2ImplementationTest, GenFramebuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kFramebuffersStartId;
   expected.data[1] = kFramebuffersStartId + 1;
-  gl_->GenFramebuffers(base::size(ids), &ids[0]);
+  gl_->GenFramebuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kFramebuffersStartId, ids[0]);
   EXPECT_EQ(kFramebuffersStartId + 1, ids[1]);
@@ -677,10 +677,10 @@ TEST_F(GLES2ImplementationTest, GenRenderbuffers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kRenderbuffersStartId;
   expected.data[1] = kRenderbuffersStartId + 1;
-  gl_->GenRenderbuffers(base::size(ids), &ids[0]);
+  gl_->GenRenderbuffers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kRenderbuffersStartId, ids[0]);
   EXPECT_EQ(kRenderbuffersStartId + 1, ids[1]);
@@ -695,10 +695,10 @@ TEST_F(GLES2ImplementationTest, GenSamplers) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kSamplersStartId;
   expected.data[1] = kSamplersStartId + 1;
-  gl_->GenSamplers(base::size(ids), &ids[0]);
+  gl_->GenSamplers(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kSamplersStartId, ids[0]);
   EXPECT_EQ(kSamplersStartId + 1, ids[1]);
@@ -713,10 +713,10 @@ TEST_F(GLES2ImplementationTest, GenTextures) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kTexturesStartId;
   expected.data[1] = kTexturesStartId + 1;
-  gl_->GenTextures(base::size(ids), &ids[0]);
+  gl_->GenTextures(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kTexturesStartId, ids[0]);
   EXPECT_EQ(kTexturesStartId + 1, ids[1]);
@@ -731,10 +731,10 @@ TEST_F(GLES2ImplementationTest, GenTransformFeedbacks) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kTransformFeedbacksStartId;
   expected.data[1] = kTransformFeedbacksStartId + 1;
-  gl_->GenTransformFeedbacks(base::size(ids), &ids[0]);
+  gl_->GenTransformFeedbacks(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kTransformFeedbacksStartId, ids[0]);
   EXPECT_EQ(kTransformFeedbacksStartId + 1, ids[1]);
@@ -2602,10 +2602,10 @@ TEST_F(GLES2ImplementationTest, GenQueriesEXT) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kQueriesStartId;
   expected.data[1] = kQueriesStartId + 1;
-  gl_->GenQueriesEXT(base::size(ids), &ids[0]);
+  gl_->GenQueriesEXT(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kQueriesStartId, ids[0]);
   EXPECT_EQ(kQueriesStartId + 1, ids[1]);
@@ -2618,10 +2618,10 @@ TEST_F(GLES2ImplementationTest, DeleteQueriesEXT) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kQueriesStartId;
   expected.data[1] = kQueriesStartId + 1;
-  gl_->DeleteQueriesEXT(base::size(ids), &ids[0]);
+  gl_->DeleteQueriesEXT(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -2667,10 +2667,10 @@ TEST_F(GLES2ImplementationTest, GenVertexArraysOES) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = kVertexArraysStartId;
   expected.data[1] = kVertexArraysStartId + 1;
-  gl_->GenVertexArraysOES(base::size(ids), &ids[0]);
+  gl_->GenVertexArraysOES(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kVertexArraysStartId, ids[0]);
   EXPECT_EQ(kVertexArraysStartId + 1, ids[1]);
@@ -2683,10 +2683,10 @@ TEST_F(GLES2ImplementationTest, DeleteVertexArraysOES) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = kVertexArraysStartId;
   expected.data[1] = kVertexArraysStartId + 1;
-  gl_->DeleteVertexArraysOES(base::size(ids), &ids[0]);
+  gl_->DeleteVertexArraysOES(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

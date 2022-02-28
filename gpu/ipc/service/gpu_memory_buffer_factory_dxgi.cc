@@ -66,7 +66,7 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
 
     hr = D3D11CreateDevice(dxgi_adapter.Get(), driver_type,
                            /*Software=*/nullptr, flags, feature_levels,
-                           base::size(feature_levels), D3D11_SDK_VERSION,
+                           std::size(feature_levels), D3D11_SDK_VERSION,
                            &d3d11_device_, /*pFeatureLevel=*/nullptr,
                            /*ppImmediateContext=*/nullptr);
     if (FAILED(hr)) {

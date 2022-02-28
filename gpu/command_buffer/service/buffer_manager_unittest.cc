@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/command_buffer/service/buffer_manager.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
-#include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
@@ -527,7 +527,7 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
       GL_TRANSFORM_FEEDBACK_BUFFER,
       GL_UNIFORM_BUFFER
     };
-    for (size_t ii = 0; ii < base::size(kTargets); ++ii) {
+    for (size_t ii = 0; ii < std::size(kTargets); ++ii) {
       client_id++;
       service_id++;
       manager_->CreateBuffer(client_id, service_id);
@@ -535,7 +535,7 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
       ASSERT_TRUE(buffer != nullptr);
 
       EXPECT_TRUE(manager_->SetTarget(buffer, kTargets[ii]));
-      for (size_t jj = 0; jj < base::size(kTargets); ++jj) {
+      for (size_t jj = 0; jj < std::size(kTargets); ++jj) {
         EXPECT_TRUE(manager_->SetTarget(buffer, kTargets[jj]));
       }
       EXPECT_EQ(kTargets[ii], GetInitialTarget(buffer));
@@ -554,7 +554,7 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
       GL_TRANSFORM_FEEDBACK_BUFFER,
       GL_UNIFORM_BUFFER
     };
-    for (size_t ii = 0; ii < base::size(kTargets); ++ii) {
+    for (size_t ii = 0; ii < std::size(kTargets); ++ii) {
       client_id++;
       service_id++;
       manager_->CreateBuffer(client_id, service_id);
@@ -562,7 +562,7 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
       ASSERT_TRUE(buffer != nullptr);
 
       EXPECT_TRUE(manager_->SetTarget(buffer, kTargets[ii]));
-      for (size_t jj = 0; jj < base::size(kTargets); ++jj) {
+      for (size_t jj = 0; jj < std::size(kTargets); ++jj) {
         EXPECT_TRUE(manager_->SetTarget(buffer, kTargets[jj]));
       }
     }

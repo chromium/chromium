@@ -753,8 +753,8 @@ const char* const kMachineModelNameForEntry26[4] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry26 = {
-    base::size(kMachineModelNameForEntry26),  // machine model name size
-    kMachineModelNameForEntry26,              // machine model names
+    std::size(kMachineModelNameForEntry26),  // machine model name size
+    kMachineModelNameForEntry26,             // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version
@@ -807,7 +807,7 @@ const char* const kMachineModelNameForEntry27Exception0[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry27Exception0 = {
-    base::size(
+    std::size(
         kMachineModelNameForEntry27Exception0),  // machine model name size
     kMachineModelNameForEntry27Exception0,       // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -843,8 +843,8 @@ const char* const kMachineModelNameForEntry28[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry28 = {
-    base::size(kMachineModelNameForEntry28),  // machine model name size
-    kMachineModelNameForEntry28,              // machine model names
+    std::size(kMachineModelNameForEntry28),  // machine model name size
+    kMachineModelNameForEntry28,             // machine model names
     {GpuControlList::kEQ, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, "7.1",
      nullptr},  // machine model version
@@ -878,8 +878,8 @@ const char* const kMachineModelNameForEntry29[1] = {
 };
 
 const GpuControlList::MachineModelInfo kMachineModelInfoForEntry29 = {
-    base::size(kMachineModelNameForEntry29),  // machine model name size
-    kMachineModelNameForEntry29,              // machine model names
+    std::size(kMachineModelNameForEntry29),  // machine model name size
+    kMachineModelNameForEntry29,             // machine model names
     {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
      GpuControlList::kVersionSchemaCommon, nullptr,
      nullptr},  // machine model version

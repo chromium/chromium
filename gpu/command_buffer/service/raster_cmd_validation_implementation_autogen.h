@@ -96,18 +96,18 @@ static const viz::ResourceFormat valid_viz_resource_format_table[] = {
 };
 
 Validators::Validators()
-    : g_l_state(valid_g_l_state_table, base::size(valid_g_l_state_table)),
+    : g_l_state(valid_g_l_state_table, std::size(valid_g_l_state_table)),
       texture_mag_filter_mode(valid_texture_mag_filter_mode_table,
-                              base::size(valid_texture_mag_filter_mode_table)),
+                              std::size(valid_texture_mag_filter_mode_table)),
       texture_min_filter_mode(valid_texture_min_filter_mode_table,
-                              base::size(valid_texture_min_filter_mode_table)),
+                              std::size(valid_texture_min_filter_mode_table)),
       texture_parameter(valid_texture_parameter_table,
-                        base::size(valid_texture_parameter_table)),
+                        std::size(valid_texture_parameter_table)),
       texture_wrap_mode(valid_texture_wrap_mode_table,
-                        base::size(valid_texture_wrap_mode_table)),
+                        std::size(valid_texture_wrap_mode_table)),
       gfx_buffer_usage(valid_gfx_buffer_usage_table,
-                       base::size(valid_gfx_buffer_usage_table)),
+                       std::size(valid_gfx_buffer_usage_table)),
       viz_resource_format(valid_viz_resource_format_table,
-                          base::size(valid_viz_resource_format_table)) {}
+                          std::size(valid_viz_resource_format_table)) {}
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_CMD_VALIDATION_IMPLEMENTATION_AUTOGEN_H_

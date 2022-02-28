@@ -2245,10 +2245,10 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.gen.Init(base::size(ids), &ids[0]);
+  expected.gen.Init(std::size(ids), &ids[0]);
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
-  gl_->%(name)s(base::size(ids), &ids[0]);
+  gl_->%(name)s(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(k%(types)sStartId, ids[0]);
   EXPECT_EQ(k%(types)sStartId + 1, ids[1]);
@@ -2394,17 +2394,17 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     f.write("  cmds::%s& cmd = *GetBufferAs<cmds::%s>();\n" %
                (func.name, func.name))
     f.write("  void* next_cmd = cmd.Set(\n")
-    f.write("      &cmd, static_cast<GLsizei>(base::size(ids)), ids);\n")
+    f.write("      &cmd, static_cast<GLsizei>(std::size(ids)), ids);\n")
     f.write("  EXPECT_EQ(static_cast<uint32_t>(cmds::%s::kCmdId),\n" %
                func.name)
     f.write("            cmd.header.command);\n")
     f.write("  EXPECT_EQ(sizeof(cmd) +\n")
     f.write("            RoundSizeToMultipleOfEntries(cmd.n * 4u),\n")
     f.write("            cmd.header.size * 4u);\n")
-    f.write("  EXPECT_EQ(static_cast<GLsizei>(base::size(ids)), cmd.n);\n");
+    f.write("  EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);\n");
     f.write("  CheckBytesWrittenMatchesExpectedSize(\n")
     f.write("      next_cmd, sizeof(cmd) +\n")
-    f.write("      RoundSizeToMultipleOfEntries(base::size(ids) * 4u));\n")
+    f.write("      RoundSizeToMultipleOfEntries(std::size(ids) * 4u));\n")
     f.write("  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd),\n")
     f.write("                      sizeof(ids)));\n")
     f.write("}\n")
@@ -2623,10 +2623,10 @@ TEST_F(%(prefix)sImplementationTest, %(name)s) {
     GLuint data[2];
   };
   Cmds expected;
-  expected.del.Init(base::size(ids), &ids[0]);
+  expected.del.Init(std::size(ids), &ids[0]);
   expected.data[0] = k%(types)sStartId;
   expected.data[1] = k%(types)sStartId + 1;
-  gl_->%(name)s(base::size(ids), &ids[0]);
+  gl_->%(name)s(std::size(ids), &ids[0]);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 """
@@ -2830,17 +2830,17 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs) {
     f.write("  cmds::%s& cmd = *GetBufferAs<cmds::%s>();\n" %
                (func.name, func.name))
     f.write("  void* next_cmd = cmd.Set(\n")
-    f.write("      &cmd, static_cast<GLsizei>(base::size(ids)), ids);\n")
+    f.write("      &cmd, static_cast<GLsizei>(std::size(ids)), ids);\n")
     f.write("  EXPECT_EQ(static_cast<uint32_t>(cmds::%s::kCmdId),\n" %
                func.name)
     f.write("            cmd.header.command);\n")
     f.write("  EXPECT_EQ(sizeof(cmd) +\n")
     f.write("            RoundSizeToMultipleOfEntries(cmd.n * 4u),\n")
     f.write("            cmd.header.size * 4u);\n")
-    f.write("  EXPECT_EQ(static_cast<GLsizei>(base::size(ids)), cmd.n);\n");
+    f.write("  EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);\n");
     f.write("  CheckBytesWrittenMatchesExpectedSize(\n")
     f.write("      next_cmd, sizeof(cmd) +\n")
-    f.write("      RoundSizeToMultipleOfEntries(base::size(ids) * 4u));\n")
+    f.write("      RoundSizeToMultipleOfEntries(std::size(ids) * 4u));\n")
     f.write("  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd),\n")
     f.write("                      sizeof(ids)));\n")
     f.write("}\n")
@@ -4139,14 +4139,14 @@ TEST_P(%(test_name)s, %(name)sInvalidHeader) {
   const char kSource0[] = "hello";
   const char* kSource[] = { kSource0 };
   const char kValidStrEnd = 0;
-  const GLsizei kCount = static_cast<GLsizei>(base::size(kSource));
+  const GLsizei kCount = static_cast<GLsizei>(std::size(kSource));
   const GLsizei kTests[] = {
       kCount + 1,
       0,
       std::numeric_limits<GLsizei>::max(),
       -1,
   };
-  for (size_t ii = 0; ii < base::size(kTests); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTests); ++ii) {
     SetBucketAsCStrings(kBucketId, 1, kSource, kTests[ii], kValidStrEnd);
     cmds::%(name)s cmd;
     cmd.Init(%(cmd_args)s);
@@ -7270,7 +7270,7 @@ extern const NameToFunc g_gles2_function_table[] = {
           continue
         if named_type.GetValidValues():
           code = """%(pre)s%(name)s(
-            valid_%(name)s_table, base::size(valid_%(name)s_table))"""
+            valid_%(name)s_table, std::size(valid_%(name)s_table))"""
         else:
           code = "%(pre)s%(name)s()"
         f.write(code % {
@@ -7293,14 +7293,14 @@ extern const NameToFunc g_gles2_function_table[] = {
             continue
           if named_type.GetDeprecatedValuesES3():
             code = """  %(name)s.RemoveValues(
-      deprecated_%(name)s_table_es3, base::size(deprecated_%(name)s_table_es3));
+      deprecated_%(name)s_table_es3, std::size(deprecated_%(name)s_table_es3));
 """
             f.write(code % {
               'name': ToUnderscore(name),
             })
           if named_type.GetValidValuesES3():
             code = """  %(name)s.AddValues(
-      valid_%(name)s_table_es3, base::size(valid_%(name)s_table_es3));
+      valid_%(name)s_table_es3, std::size(valid_%(name)s_table_es3));
 """
             f.write(code % {
               'name': ToUnderscore(name),
@@ -7386,7 +7386,7 @@ const size_t %(p)sUtil::enum_to_string_table_len_ =
               f.write('    { %s, "%s" },\n' % (value, value))
             f.write("""  };
   return %sUtil::GetQualifiedEnumString(
-      string_table, base::size(string_table), value);
+      string_table, std::size(string_table), value);
 }
 
 """ % _prefix)

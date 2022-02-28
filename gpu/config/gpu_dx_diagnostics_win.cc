@@ -9,7 +9,6 @@
 #include <dxdiag.h>
 #include <windows.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/com_init_util.h"
@@ -35,7 +34,7 @@ void RecurseDiagnosticTree(DxDiagNode* output,
   if (SUCCEEDED(hr)) {
     for (DWORD i = 0; i < prop_count; i++) {
       WCHAR prop_name16[256];
-      hr = container->EnumPropNames(i, prop_name16, base::size(prop_name16));
+      hr = container->EnumPropNames(i, prop_name16, std::size(prop_name16));
       if (SUCCEEDED(hr)) {
         std::string prop_name8 = base::WideToUTF8(prop_name16);
 
@@ -72,7 +71,7 @@ void RecurseDiagnosticTree(DxDiagNode* output,
       for (DWORD i = 0; i < child_count; i++) {
         WCHAR child_name16[256];
         hr = container->EnumChildContainerNames(i, child_name16,
-                                                base::size(child_name16));
+                                                std::size(child_name16));
         if (SUCCEEDED(hr)) {
           std::string child_name8 = base::WideToUTF8(child_name16);
           DxDiagNode* output_child = &output->children[child_name8];

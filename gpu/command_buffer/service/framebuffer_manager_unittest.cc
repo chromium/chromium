@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/command_buffer/service/framebuffer_manager.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_mock.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -1087,7 +1087,7 @@ TEST_F(FramebufferInfoTest, DrawBuffers) {
               framebuffer_->GetDrawBuffer(i));
   }
 
-  for (size_t ii = 0; ii < base::size(kTextureClientId); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTextureClientId); ++ii) {
     texture_manager_->CreateTexture(
         kTextureClientId[ii], kTextureServiceId[ii]);
     scoped_refptr<TextureRef> texture(
@@ -1190,7 +1190,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
       GL_FLOAT,
       GL_UNSIGNED_INT};
 
-  for (size_t ii = 0; ii < base::size(kTextureClientId); ++ii) {
+  for (size_t ii = 0; ii < std::size(kTextureClientId); ++ii) {
     texture_manager_->CreateTexture(
         kTextureClientId[ii], kTextureServiceId[ii]);
     scoped_refptr<TextureRef> texture(

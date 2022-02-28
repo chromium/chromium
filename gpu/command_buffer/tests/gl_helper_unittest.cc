@@ -1352,20 +1352,20 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GLHelperPixelReadbackTest,
     ::testing::Combine(
-        ::testing::Range<unsigned int>(0, base::size(kQualities)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes))));
+        ::testing::Range<unsigned int>(0, std::size(kQualities)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes))));
 
 // Validate that all scaling generates valid pipelines.
 TEST_F(GLHelperTest, ValidateScalerPipelines) {
   int sizes[] = {7, 99, 128, 256, 512, 719, 720, 721, 1920, 2011, 3217, 4096};
-  for (size_t q = 0; q < base::size(kQualities); q++) {
-    for (size_t x = 0; x < base::size(sizes); x++) {
-      for (size_t y = 0; y < base::size(sizes); y++) {
-        for (size_t dst_x = 0; dst_x < base::size(sizes); dst_x++) {
-          for (size_t dst_y = 0; dst_y < base::size(sizes); dst_y++) {
+  for (size_t q = 0; q < std::size(kQualities); q++) {
+    for (size_t x = 0; x < std::size(sizes); x++) {
+      for (size_t y = 0; y < std::size(sizes); y++) {
+        for (size_t dst_x = 0; dst_x < std::size(sizes); dst_x++) {
+          for (size_t dst_y = 0; dst_y < std::size(sizes); dst_y++) {
             TestScalerPipeline(q, sizes[x], sizes[y], sizes[dst_x],
                                sizes[dst_y]);
             if (HasFailure()) {

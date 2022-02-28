@@ -10,6 +10,8 @@
 
 #include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
 
+#include <iterator>
+
 #include "content/browser/gpu/gpu_data_manager_testing_arrays_and_structs_autogen.h"
 #include "content/browser/gpu/gpu_data_manager_testing_exceptions_autogen.h"
 

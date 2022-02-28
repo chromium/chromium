@@ -1303,168 +1303,167 @@ bool Validators::WindowRectanglesModeValidator::IsValid(
 }
 
 Validators::Validators()
-    : attachment(valid_attachment_table, base::size(valid_attachment_table)),
+    : attachment(valid_attachment_table, std::size(valid_attachment_table)),
       attachment_query(valid_attachment_query_table,
-                       base::size(valid_attachment_query_table)),
-      bufferfi(valid_bufferfi_table, base::size(valid_bufferfi_table)),
-      bufferuiv(valid_bufferuiv_table, base::size(valid_bufferuiv_table)),
-      capability(valid_capability_table, base::size(valid_capability_table)),
+                       std::size(valid_attachment_query_table)),
+      bufferfi(valid_bufferfi_table, std::size(valid_bufferfi_table)),
+      bufferuiv(valid_bufferuiv_table, std::size(valid_bufferuiv_table)),
+      capability(valid_capability_table, std::size(valid_capability_table)),
       compressed_texture_format(),
       coverage_modulation_components(
           valid_coverage_modulation_components_table,
-          base::size(valid_coverage_modulation_components_table)),
+          std::size(valid_coverage_modulation_components_table)),
       dst_blend_factor(valid_dst_blend_factor_table,
-                       base::size(valid_dst_blend_factor_table)),
-      equation(valid_equation_table, base::size(valid_equation_table)),
+                       std::size(valid_dst_blend_factor_table)),
+      equation(valid_equation_table, std::size(valid_equation_table)),
       framebuffer_attachment_parameter(
           valid_framebuffer_attachment_parameter_table,
-          base::size(valid_framebuffer_attachment_parameter_table)),
+          std::size(valid_framebuffer_attachment_parameter_table)),
       framebuffer_parameter(),
       framebuffer_target(valid_framebuffer_target_table,
-                         base::size(valid_framebuffer_target_table)),
-      g_l_state(valid_g_l_state_table, base::size(valid_g_l_state_table)),
+                         std::size(valid_framebuffer_target_table)),
+      g_l_state(valid_g_l_state_table, std::size(valid_g_l_state_table)),
       get_tex_param_target(valid_get_tex_param_target_table,
-                           base::size(valid_get_tex_param_target_table)),
-      hint_target(valid_hint_target_table, base::size(valid_hint_target_table)),
+                           std::size(valid_get_tex_param_target_table)),
+      hint_target(valid_hint_target_table, std::size(valid_hint_target_table)),
       image_internal_format(valid_image_internal_format_table,
-                            base::size(valid_image_internal_format_table)),
-      index_type(valid_index_type_table, base::size(valid_index_type_table)),
+                            std::size(valid_image_internal_format_table)),
+      index_type(valid_index_type_table, std::size(valid_index_type_table)),
       indexed_g_l_state(valid_indexed_g_l_state_table,
-                        base::size(valid_indexed_g_l_state_table)),
-      pixel_store(valid_pixel_store_table, base::size(valid_pixel_store_table)),
-      pixel_type(valid_pixel_type_table, base::size(valid_pixel_type_table)),
+                        std::size(valid_indexed_g_l_state_table)),
+      pixel_store(valid_pixel_store_table, std::size(valid_pixel_store_table)),
+      pixel_type(valid_pixel_type_table, std::size(valid_pixel_type_table)),
       program_parameter(valid_program_parameter_table,
-                        base::size(valid_program_parameter_table)),
-      read_buffer(valid_read_buffer_table, base::size(valid_read_buffer_table)),
+                        std::size(valid_program_parameter_table)),
+      read_buffer(valid_read_buffer_table, std::size(valid_read_buffer_table)),
       read_pixel_format(valid_read_pixel_format_table,
-                        base::size(valid_read_pixel_format_table)),
+                        std::size(valid_read_pixel_format_table)),
       read_pixel_type(valid_read_pixel_type_table,
-                      base::size(valid_read_pixel_type_table)),
+                      std::size(valid_read_pixel_type_table)),
       render_buffer_format(valid_render_buffer_format_table,
-                           base::size(valid_render_buffer_format_table)),
+                           std::size(valid_render_buffer_format_table)),
       render_buffer_parameter(valid_render_buffer_parameter_table,
-                              base::size(valid_render_buffer_parameter_table)),
+                              std::size(valid_render_buffer_parameter_table)),
       render_buffer_target(valid_render_buffer_target_table,
-                           base::size(valid_render_buffer_target_table)),
+                           std::size(valid_render_buffer_target_table)),
       sampler_parameter(valid_sampler_parameter_table,
-                        base::size(valid_sampler_parameter_table)),
+                        std::size(valid_sampler_parameter_table)),
       shader_binary_format(),
       shader_parameter(valid_shader_parameter_table,
-                       base::size(valid_shader_parameter_table)),
+                       std::size(valid_shader_parameter_table)),
       src_blend_factor(valid_src_blend_factor_table,
-                       base::size(valid_src_blend_factor_table)),
+                       std::size(valid_src_blend_factor_table)),
       sync_flush_flags(valid_sync_flush_flags_table,
-                       base::size(valid_sync_flush_flags_table)),
+                       std::size(valid_sync_flush_flags_table)),
       texture_bind_target(valid_texture_bind_target_table,
-                          base::size(valid_texture_bind_target_table)),
+                          std::size(valid_texture_bind_target_table)),
       texture_compare_mode(valid_texture_compare_mode_table,
-                           base::size(valid_texture_compare_mode_table)),
+                           std::size(valid_texture_compare_mode_table)),
       texture_depth_renderable_internal_format(),
       texture_fbo_target(valid_texture_fbo_target_table,
-                         base::size(valid_texture_fbo_target_table)),
+                         std::size(valid_texture_fbo_target_table)),
       texture_format(valid_texture_format_table,
-                     base::size(valid_texture_format_table)),
+                     std::size(valid_texture_format_table)),
       texture_internal_format(valid_texture_internal_format_table,
-                              base::size(valid_texture_internal_format_table)),
+                              std::size(valid_texture_internal_format_table)),
       texture_internal_format_storage(
           valid_texture_internal_format_storage_table,
-          base::size(valid_texture_internal_format_storage_table)),
+          std::size(valid_texture_internal_format_storage_table)),
       texture_parameter(valid_texture_parameter_table,
-                        base::size(valid_texture_parameter_table)),
+                        std::size(valid_texture_parameter_table)),
       texture_sized_color_renderable_internal_format(
           valid_texture_sized_color_renderable_internal_format_table,
-          base::size(
+          std::size(
               valid_texture_sized_color_renderable_internal_format_table)),
       texture_sized_texture_filterable_internal_format(
           valid_texture_sized_texture_filterable_internal_format_table,
-          base::size(
+          std::size(
               valid_texture_sized_texture_filterable_internal_format_table)),
       texture_stencil_renderable_internal_format(),
       texture_target(valid_texture_target_table,
-                     base::size(valid_texture_target_table)),
+                     std::size(valid_texture_target_table)),
       texture_unsized_internal_format(
           valid_texture_unsized_internal_format_table,
-          base::size(valid_texture_unsized_internal_format_table)),
+          std::size(valid_texture_unsized_internal_format_table)),
       transform_feedback_bind_target(
           valid_transform_feedback_bind_target_table,
-          base::size(valid_transform_feedback_bind_target_table)),
+          std::size(valid_transform_feedback_bind_target_table)),
       vertex_attrib_type(valid_vertex_attrib_type_table,
-                         base::size(valid_vertex_attrib_type_table)),
+                         std::size(valid_vertex_attrib_type_table)),
       vertex_attribute(valid_vertex_attribute_table,
-                       base::size(valid_vertex_attribute_table)),
+                       std::size(valid_vertex_attribute_table)),
       vertex_pointer(valid_vertex_pointer_table,
-                     base::size(valid_vertex_pointer_table)) {}
+                     std::size(valid_vertex_pointer_table)) {}
 
 void Validators::UpdateValuesES3() {
   attachment.AddValues(valid_attachment_table_es3,
-                       base::size(valid_attachment_table_es3));
+                       std::size(valid_attachment_table_es3));
   attachment_query.AddValues(valid_attachment_query_table_es3,
-                             base::size(valid_attachment_query_table_es3));
+                             std::size(valid_attachment_query_table_es3));
   buffer_parameter.SetIsES3(true);
   buffer_target.SetIsES3(true);
   buffer_usage.SetIsES3(true);
   capability.AddValues(valid_capability_table_es3,
-                       base::size(valid_capability_table_es3));
+                       std::size(valid_capability_table_es3));
   dst_blend_factor.AddValues(valid_dst_blend_factor_table_es3,
-                             base::size(valid_dst_blend_factor_table_es3));
+                             std::size(valid_dst_blend_factor_table_es3));
   equation.AddValues(valid_equation_table_es3,
-                     base::size(valid_equation_table_es3));
+                     std::size(valid_equation_table_es3));
   framebuffer_attachment_parameter.AddValues(
       valid_framebuffer_attachment_parameter_table_es3,
-      base::size(valid_framebuffer_attachment_parameter_table_es3));
+      std::size(valid_framebuffer_attachment_parameter_table_es3));
   framebuffer_target.AddValues(valid_framebuffer_target_table_es3,
-                               base::size(valid_framebuffer_target_table_es3));
+                               std::size(valid_framebuffer_target_table_es3));
   g_l_state.AddValues(valid_g_l_state_table_es3,
-                      base::size(valid_g_l_state_table_es3));
+                      std::size(valid_g_l_state_table_es3));
   get_tex_param_target.AddValues(
       valid_get_tex_param_target_table_es3,
-      base::size(valid_get_tex_param_target_table_es3));
+      std::size(valid_get_tex_param_target_table_es3));
   hint_target.AddValues(valid_hint_target_table_es3,
-                        base::size(valid_hint_target_table_es3));
+                        std::size(valid_hint_target_table_es3));
   index_type.AddValues(valid_index_type_table_es3,
-                       base::size(valid_index_type_table_es3));
+                       std::size(valid_index_type_table_es3));
   pixel_store.AddValues(valid_pixel_store_table_es3,
-                        base::size(valid_pixel_store_table_es3));
+                        std::size(valid_pixel_store_table_es3));
   pixel_type.AddValues(valid_pixel_type_table_es3,
-                       base::size(valid_pixel_type_table_es3));
+                       std::size(valid_pixel_type_table_es3));
   program_parameter.AddValues(valid_program_parameter_table_es3,
-                              base::size(valid_program_parameter_table_es3));
+                              std::size(valid_program_parameter_table_es3));
   read_pixel_format.AddValues(valid_read_pixel_format_table_es3,
-                              base::size(valid_read_pixel_format_table_es3));
+                              std::size(valid_read_pixel_format_table_es3));
   read_pixel_type.AddValues(valid_read_pixel_type_table_es3,
-                            base::size(valid_read_pixel_type_table_es3));
+                            std::size(valid_read_pixel_type_table_es3));
   render_buffer_format.AddValues(
       valid_render_buffer_format_table_es3,
-      base::size(valid_render_buffer_format_table_es3));
+      std::size(valid_render_buffer_format_table_es3));
   render_buffer_parameter.AddValues(
       valid_render_buffer_parameter_table_es3,
-      base::size(valid_render_buffer_parameter_table_es3));
-  texture_bind_target.AddValues(
-      valid_texture_bind_target_table_es3,
-      base::size(valid_texture_bind_target_table_es3));
+      std::size(valid_render_buffer_parameter_table_es3));
+  texture_bind_target.AddValues(valid_texture_bind_target_table_es3,
+                                std::size(valid_texture_bind_target_table_es3));
   texture_depth_renderable_internal_format.AddValues(
       valid_texture_depth_renderable_internal_format_table_es3,
-      base::size(valid_texture_depth_renderable_internal_format_table_es3));
+      std::size(valid_texture_depth_renderable_internal_format_table_es3));
   texture_format.AddValues(valid_texture_format_table_es3,
-                           base::size(valid_texture_format_table_es3));
+                           std::size(valid_texture_format_table_es3));
   texture_internal_format.AddValues(
       valid_texture_internal_format_table_es3,
-      base::size(valid_texture_internal_format_table_es3));
+      std::size(valid_texture_internal_format_table_es3));
   texture_internal_format_storage.RemoveValues(
       deprecated_texture_internal_format_storage_table_es3,
-      base::size(deprecated_texture_internal_format_storage_table_es3));
+      std::size(deprecated_texture_internal_format_storage_table_es3));
   texture_internal_format_storage.AddValues(
       valid_texture_internal_format_storage_table_es3,
-      base::size(valid_texture_internal_format_storage_table_es3));
+      std::size(valid_texture_internal_format_storage_table_es3));
   texture_parameter.AddValues(valid_texture_parameter_table_es3,
-                              base::size(valid_texture_parameter_table_es3));
+                              std::size(valid_texture_parameter_table_es3));
   texture_stencil_renderable_internal_format.AddValues(
       valid_texture_stencil_renderable_internal_format_table_es3,
-      base::size(valid_texture_stencil_renderable_internal_format_table_es3));
+      std::size(valid_texture_stencil_renderable_internal_format_table_es3));
   vertex_attrib_type.AddValues(valid_vertex_attrib_type_table_es3,
-                               base::size(valid_vertex_attrib_type_table_es3));
+                               std::size(valid_vertex_attrib_type_table_es3));
   vertex_attribute.AddValues(valid_vertex_attribute_table_es3,
-                             base::size(valid_vertex_attribute_table_es3));
+                             std::size(valid_vertex_attribute_table_es3));
 }
 
 void Validators::UpdateETCCompressedTextureFormats() {

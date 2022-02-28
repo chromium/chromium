@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/command_buffer/client/program_info_manager.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
-#include "gpu/command_buffer/client/program_info_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -102,8 +102,8 @@ class ProgramInfoManagerTest : public testing::Test {
     data->uniform_loc0[0] = 1;
     data->uniform_loc1[0] = 2;
     data->uniform_loc1[1] = 3;
-    memcpy(data->uniform_name0, kName[0], base::size(data->uniform_name0));
-    memcpy(data->uniform_name1, kName[1], base::size(data->uniform_name1));
+    memcpy(data->uniform_name0, kName[0], std::size(data->uniform_name0));
+    memcpy(data->uniform_name1, kName[1], std::size(data->uniform_name1));
   }
 
   void SetupUniformBlocksData(UniformBlocksData* data) {
@@ -117,23 +117,23 @@ class ProgramInfoManagerTest : public testing::Test {
     data->entry[0].binding = 0;
     data->entry[0].data_size = 8;
     data->entry[0].name_offset = ComputeOffset(data, data->name0);
-    data->entry[0].name_length = base::size(data->name0);
-    data->entry[0].active_uniforms = base::size(data->indices0);
+    data->entry[0].name_length = std::size(data->name0);
+    data->entry[0].active_uniforms = std::size(data->indices0);
     data->entry[0].active_uniform_offset = ComputeOffset(data, data->indices0);
     data->entry[0].referenced_by_vertex_shader = static_cast<uint32_t>(true);
     data->entry[0].referenced_by_fragment_shader = static_cast<uint32_t>(false);
     data->entry[1].binding = 1;
     data->entry[1].data_size = 4;
     data->entry[1].name_offset = ComputeOffset(data, data->name1);
-    data->entry[1].name_length = base::size(data->name1);
-    data->entry[1].active_uniforms = base::size(data->indices1);
+    data->entry[1].name_length = std::size(data->name1);
+    data->entry[1].active_uniforms = std::size(data->indices1);
     data->entry[1].active_uniform_offset = ComputeOffset(data, data->indices1);
     data->entry[1].referenced_by_vertex_shader = static_cast<uint32_t>(false);
     data->entry[1].referenced_by_fragment_shader = static_cast<uint32_t>(true);
-    memcpy(data->name0, kName[0], base::size(data->name0));
+    memcpy(data->name0, kName[0], std::size(data->name0));
     data->indices0[0] = kIndices[0][0];
     data->indices0[1] = kIndices[0][1];
-    memcpy(data->name1, kName[1], base::size(data->name1));
+    memcpy(data->name1, kName[1], std::size(data->name1));
     data->indices1[0] = kIndices[1][0];
   }
 
@@ -160,13 +160,13 @@ class ProgramInfoManagerTest : public testing::Test {
     data->entry[0].size = 1;
     data->entry[0].type = GL_FLOAT_VEC2;
     data->entry[0].name_offset = ComputeOffset(data, data->name0);
-    data->entry[0].name_length = base::size(data->name0);
+    data->entry[0].name_length = std::size(data->name0);
     data->entry[1].size = 2;
     data->entry[1].type = GL_FLOAT;
     data->entry[1].name_offset = ComputeOffset(data, data->name1);
-    data->entry[1].name_length = base::size(data->name1);
-    memcpy(data->name0, kName[0], base::size(data->name0));
-    memcpy(data->name1, kName[1], base::size(data->name1));
+    data->entry[1].name_length = std::size(data->name1);
+    memcpy(data->name0, kName[0], std::size(data->name0));
+    memcpy(data->name1, kName[1], std::size(data->name1));
   }
 
   std::unique_ptr<ProgramInfoManager> program_info_manager_;

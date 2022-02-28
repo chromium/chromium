@@ -13,7 +13,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -1016,7 +1015,7 @@ TEST_P(GLCopyTextureCHROMIUMTest, InternalFormatNotSupported) {
 
   // Check unsupported format reports error.
   GLint unsupported_dest_formats[] = {GL_RED, GL_RG};
-  for (size_t dest_index = 0; dest_index < base::size(unsupported_dest_formats);
+  for (size_t dest_index = 0; dest_index < std::size(unsupported_dest_formats);
        dest_index++) {
     if (copy_type == TexImage) {
       glCopyTextureCHROMIUM(textures_[0], 0, GL_TEXTURE_2D, textures_[1], 0,
@@ -1056,7 +1055,7 @@ TEST_F(GLCopyTextureCHROMIUMTest, InternalFormatTypeCombinationNotSupported) {
     {GL_RGB, GL_UNSIGNED_SHORT_5_5_5_1},
     {GL_RGBA, GL_UNSIGNED_SHORT_5_6_5},
   };
-  for (size_t dest_index = 0; dest_index < base::size(unsupported_format_types);
+  for (size_t dest_index = 0; dest_index < std::size(unsupported_format_types);
        dest_index++) {
     glCopyTextureCHROMIUM(textures_[0], 0, GL_TEXTURE_2D, textures_[1], 0,
                           unsupported_format_types[dest_index].format,
@@ -1804,9 +1803,9 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopyTextureBetweenTexture2DAndRectangleArb) {
   uint8_t white[1 * 4] = {255u, 255u, 255u, 255u};
   uint8_t grey[1 * 4] = {199u, 199u, 199u, 255u};
 
-  for (size_t src_index = 0; src_index < base::size(src_targets); src_index++) {
+  for (size_t src_index = 0; src_index < std::size(src_targets); src_index++) {
     GLenum src_target = src_targets[src_index];
-    for (size_t dest_index = 0; dest_index < base::size(dest_targets);
+    for (size_t dest_index = 0; dest_index < std::size(dest_targets);
          dest_index++) {
       GLenum dest_target = dest_targets[dest_index];
 

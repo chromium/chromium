@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/config/gpu_control_list_testing_data.h"
@@ -109,7 +108,7 @@ TEST_F(GpuControlListEntryTest, AllExceptNVidiaOnLinuxEntry) {
   EXPECT_EQ(kOsLinux, entry.conditions.os_type);
   const GpuControlList::OsType os_type[] = {kOsMacosx, kOsWin, kOsLinux,
                                             kOsChromeOS, kOsAndroid};
-  for (size_t i = 0; i < base::size(os_type); ++i)
+  for (size_t i = 0; i < std::size(os_type); ++i)
     EXPECT_FALSE(entry.Contains(os_type[i], "10.6", gpu_info()));
 }
 

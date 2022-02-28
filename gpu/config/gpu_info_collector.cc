@@ -13,7 +13,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -473,7 +472,7 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   if (!gpu_info->gl_vendor.empty()) {
     std::string gl_vendor_lower = base::ToLowerASCII(gpu_info->gl_vendor);
     int index = StringContainsName(gl_vendor_lower, kVendorNames,
-                                   base::size(kVendorNames));
+                                   std::size(kVendorNames));
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
@@ -481,7 +480,7 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   if (active_vendor_id == 0 && !gpu_info->gl_renderer.empty()) {
     std::string gl_renderer_lower = base::ToLowerASCII(gpu_info->gl_renderer);
     int index = StringContainsName(gl_renderer_lower, kVendorNames,
-                                   base::size(kVendorNames));
+                                   std::size(kVendorNames));
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }

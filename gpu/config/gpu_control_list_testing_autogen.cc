@@ -10,6 +10,8 @@
 
 #include "gpu/config/gpu_control_list_testing_autogen.h"
 
+#include <iterator>
+
 #include "gpu/config/gpu_control_list_testing_arrays_and_structs_autogen.h"
 #include "gpu/config/gpu_control_list_testing_exceptions_autogen.h"
 
@@ -19,22 +21,22 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         1,  // id
         "GpuControlListEntryTest.DetailedEntry",
-        base::size(kFeatureListForGpuControlTestingEntry1),  // features size
-        kFeatureListForGpuControlTestingEntry1,              // features
-        base::size(kDisabledExtensionsForEntry1),  // DisabledExtensions size
-        kDisabledExtensionsForEntry1,              // DisabledExtensions
+        std::size(kFeatureListForGpuControlTestingEntry1),  // features size
+        kFeatureListForGpuControlTestingEntry1,             // features
+        std::size(kDisabledExtensionsForEntry1),  // DisabledExtensions size
+        kDisabledExtensionsForEntry1,             // DisabledExtensions
         0,        // DisabledWebGLExtensions size
         nullptr,  // DisabledWebGLExtensions
-        base::size(kCrBugsForGpuControlTestingEntry1),  // CrBugs size
-        kCrBugsForGpuControlTestingEntry1,              // CrBugs
+        std::size(kCrBugsForGpuControlTestingEntry1),  // CrBugs size
+        kCrBugsForGpuControlTestingEntry1,             // CrBugs
         {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kEQ, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, "10.6.4",
-             nullptr},                                       // os_version
-            0x10de,                                          // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry1),  // Devices size
-            kDevicesForGpuControlTestingEntry1,              // Devices
+             nullptr},                                      // os_version
+            0x10de,                                         // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry1),  // Devices size
+            kDevicesForGpuControlTestingEntry1,             // Devices
             GpuControlList::kMultiGpuCategoryNone,   // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,      // multi_gpu_style
             &kDriverInfoForGpuControlTestingEntry1,  // driver info
@@ -53,8 +55,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         2,  // id
         "GpuControlListEntryTest.VendorOnAllOsEntry",
-        base::size(kFeatureListForGpuControlTestingEntry2),  // features size
-        kFeatureListForGpuControlTestingEntry2,              // features
+        std::size(kFeatureListForGpuControlTestingEntry2),  // features size
+        kFeatureListForGpuControlTestingEntry2,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -87,8 +89,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         3,  // id
         "GpuControlListEntryTest.VendorOnLinuxEntry",
-        base::size(kFeatureListForGpuControlTestingEntry3),  // features size
-        kFeatureListForGpuControlTestingEntry3,              // features
+        std::size(kFeatureListForGpuControlTestingEntry3),  // features size
+        kFeatureListForGpuControlTestingEntry3,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -121,8 +123,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         4,  // id
         "GpuControlListEntryTest.AllExceptNVidiaOnLinuxEntry",
-        base::size(kFeatureListForGpuControlTestingEntry4),  // features size
-        kFeatureListForGpuControlTestingEntry4,              // features
+        std::size(kFeatureListForGpuControlTestingEntry4),  // features size
+        kFeatureListForGpuControlTestingEntry4,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -149,14 +151,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                   // intel_gpu_generation
             &kMoreForEntry4_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry4),  // exceptions count
-        kExceptionsForEntry4,              // exceptions
+        std::size(kExceptionsForEntry4),  // exceptions count
+        kExceptionsForEntry4,             // exceptions
     },
     {
         5,  // id
         "GpuControlListEntryTest.AllExceptIntelOnLinuxEntry",
-        base::size(kFeatureListForGpuControlTestingEntry5),  // features size
-        kFeatureListForGpuControlTestingEntry5,              // features
+        std::size(kFeatureListForGpuControlTestingEntry5),  // features size
+        kFeatureListForGpuControlTestingEntry5,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -183,14 +185,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                   // intel_gpu_generation
             &kMoreForEntry5_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry5),  // exceptions count
-        kExceptionsForEntry5,              // exceptions
+        std::size(kExceptionsForEntry5),  // exceptions count
+        kExceptionsForEntry5,             // exceptions
     },
     {
         6,  // id
         "GpuControlListEntryTest.MultipleDevicesEntry",
-        base::size(kFeatureListForGpuControlTestingEntry6),  // features size
-        kFeatureListForGpuControlTestingEntry6,              // features
+        std::size(kFeatureListForGpuControlTestingEntry6),  // features size
+        kFeatureListForGpuControlTestingEntry6,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -201,10 +203,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                       // os_version
-            0x10de,                                          // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry6),  // Devices size
-            kDevicesForGpuControlTestingEntry6,              // Devices
+             nullptr},                                      // os_version
+            0x10de,                                         // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry6),  // Devices size
+            kDevicesForGpuControlTestingEntry6,             // Devices
             GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
             nullptr,                                // driver info
@@ -223,8 +225,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         7,  // id
         "GpuControlListEntryTest.ChromeOSEntry",
-        base::size(kFeatureListForGpuControlTestingEntry7),  // features size
-        kFeatureListForGpuControlTestingEntry7,              // features
+        std::size(kFeatureListForGpuControlTestingEntry7),  // features size
+        kFeatureListForGpuControlTestingEntry7,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -257,8 +259,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         8,  // id
         "GpuControlListEntryTest.GlVersionGLESEntry",
-        base::size(kFeatureListForGpuControlTestingEntry8),  // features size
-        kFeatureListForGpuControlTestingEntry8,              // features
+        std::size(kFeatureListForGpuControlTestingEntry8),  // features size
+        kFeatureListForGpuControlTestingEntry8,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -291,8 +293,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         9,  // id
         "GpuControlListEntryTest.GlVersionANGLEEntry",
-        base::size(kFeatureListForGpuControlTestingEntry9),  // features size
-        kFeatureListForGpuControlTestingEntry9,              // features
+        std::size(kFeatureListForGpuControlTestingEntry9),  // features size
+        kFeatureListForGpuControlTestingEntry9,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -325,8 +327,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         10,  // id
         "GpuControlListEntryTest.GlVersionGLEntry",
-        base::size(kFeatureListForGpuControlTestingEntry10),  // features size
-        kFeatureListForGpuControlTestingEntry10,              // features
+        std::size(kFeatureListForGpuControlTestingEntry10),  // features size
+        kFeatureListForGpuControlTestingEntry10,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -359,8 +361,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         11,  // id
         "GpuControlListEntryTest.GlVendorEqual",
-        base::size(kFeatureListForGpuControlTestingEntry11),  // features size
-        kFeatureListForGpuControlTestingEntry11,              // features
+        std::size(kFeatureListForGpuControlTestingEntry11),  // features size
+        kFeatureListForGpuControlTestingEntry11,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -393,8 +395,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         12,  // id
         "GpuControlListEntryTest.GlVendorWithDot",
-        base::size(kFeatureListForGpuControlTestingEntry12),  // features size
-        kFeatureListForGpuControlTestingEntry12,              // features
+        std::size(kFeatureListForGpuControlTestingEntry12),  // features size
+        kFeatureListForGpuControlTestingEntry12,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -427,8 +429,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         13,  // id
         "GpuControlListEntryTest.GlRendererContains",
-        base::size(kFeatureListForGpuControlTestingEntry13),  // features size
-        kFeatureListForGpuControlTestingEntry13,              // features
+        std::size(kFeatureListForGpuControlTestingEntry13),  // features size
+        kFeatureListForGpuControlTestingEntry13,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -461,8 +463,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         14,  // id
         "GpuControlListEntryTest.GlRendererCaseInsensitive",
-        base::size(kFeatureListForGpuControlTestingEntry14),  // features size
-        kFeatureListForGpuControlTestingEntry14,              // features
+        std::size(kFeatureListForGpuControlTestingEntry14),  // features size
+        kFeatureListForGpuControlTestingEntry14,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -495,8 +497,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         15,  // id
         "GpuControlListEntryTest.GlExtensionsEndWith",
-        base::size(kFeatureListForGpuControlTestingEntry15),  // features size
-        kFeatureListForGpuControlTestingEntry15,              // features
+        std::size(kFeatureListForGpuControlTestingEntry15),  // features size
+        kFeatureListForGpuControlTestingEntry15,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -529,8 +531,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         16,  // id
         "GpuControlListEntryTest.OptimusEntry",
-        base::size(kFeatureListForGpuControlTestingEntry16),  // features size
-        kFeatureListForGpuControlTestingEntry16,              // features
+        std::size(kFeatureListForGpuControlTestingEntry16),  // features size
+        kFeatureListForGpuControlTestingEntry16,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -563,8 +565,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         17,  // id
         "GpuControlListEntryTest.AMDSwitchableEntry",
-        base::size(kFeatureListForGpuControlTestingEntry17),  // features size
-        kFeatureListForGpuControlTestingEntry17,              // features
+        std::size(kFeatureListForGpuControlTestingEntry17),  // features size
+        kFeatureListForGpuControlTestingEntry17,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -597,8 +599,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         18,  // id
         "GpuControlListEntryTest.DriverVendorBeginWith",
-        base::size(kFeatureListForGpuControlTestingEntry18),  // features size
-        kFeatureListForGpuControlTestingEntry18,              // features
+        std::size(kFeatureListForGpuControlTestingEntry18),  // features size
+        kFeatureListForGpuControlTestingEntry18,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -631,8 +633,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         19,  // id
         "GpuControlListEntryTest.LexicalDriverVersionEntry",
-        base::size(kFeatureListForGpuControlTestingEntry19),  // features size
-        kFeatureListForGpuControlTestingEntry19,              // features
+        std::size(kFeatureListForGpuControlTestingEntry19),  // features size
+        kFeatureListForGpuControlTestingEntry19,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -665,8 +667,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         20,  // id
         "GpuControlListEntryTest.NeedsMoreInfoEntry",
-        base::size(kFeatureListForGpuControlTestingEntry20),  // features size
-        kFeatureListForGpuControlTestingEntry20,              // features
+        std::size(kFeatureListForGpuControlTestingEntry20),  // features size
+        kFeatureListForGpuControlTestingEntry20,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -699,8 +701,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         21,  // id
         "GpuControlListEntryTest.NeedsMoreInfoForExceptionsEntry",
-        base::size(kFeatureListForGpuControlTestingEntry21),  // features size
-        kFeatureListForGpuControlTestingEntry21,              // features
+        std::size(kFeatureListForGpuControlTestingEntry21),  // features size
+        kFeatureListForGpuControlTestingEntry21,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -727,14 +729,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry21_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry21),  // exceptions count
-        kExceptionsForEntry21,              // exceptions
+        std::size(kExceptionsForEntry21),  // exceptions count
+        kExceptionsForEntry21,             // exceptions
     },
     {
         22,  // id
         "GpuControlListEntryTest.NeedsMoreInfoForGlVersionEntry",
-        base::size(kFeatureListForGpuControlTestingEntry22),  // features size
-        kFeatureListForGpuControlTestingEntry22,              // features
+        std::size(kFeatureListForGpuControlTestingEntry22),  // features size
+        kFeatureListForGpuControlTestingEntry22,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -767,8 +769,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         23,  // id
         "GpuControlListEntryTest.FeatureTypeAllEntry",
-        base::size(kFeatureListForGpuControlTestingEntry23),  // features size
-        kFeatureListForGpuControlTestingEntry23,              // features
+        std::size(kFeatureListForGpuControlTestingEntry23),  // features size
+        kFeatureListForGpuControlTestingEntry23,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -801,8 +803,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         24,  // id
         "GpuControlListEntryTest.FeatureTypeAllEntryWithExceptions",
-        base::size(kFeatureListForGpuControlTestingEntry24),  // features size
-        kFeatureListForGpuControlTestingEntry24,              // features
+        std::size(kFeatureListForGpuControlTestingEntry24),  // features size
+        kFeatureListForGpuControlTestingEntry24,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -835,8 +837,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         25,  // id
         "GpuControlListEntryTest.SingleActiveGPU",
-        base::size(kFeatureListForGpuControlTestingEntry25),  // features size
-        kFeatureListForGpuControlTestingEntry25,              // features
+        std::size(kFeatureListForGpuControlTestingEntry25),  // features size
+        kFeatureListForGpuControlTestingEntry25,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -847,10 +849,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x10de,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry25),  // Devices size
-            kDevicesForGpuControlTestingEntry25,              // Devices
+             nullptr},                                       // os_version
+            0x10de,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry25),  // Devices size
+            kDevicesForGpuControlTestingEntry25,             // Devices
             GpuControlList::kMultiGpuCategoryActive,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,       // multi_gpu_style
             nullptr,                                  // driver info
@@ -869,8 +871,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         26,  // id
         "GpuControlListEntryTest.MachineModelName",
-        base::size(kFeatureListForGpuControlTestingEntry26),  // features size
-        kFeatureListForGpuControlTestingEntry26,              // features
+        std::size(kFeatureListForGpuControlTestingEntry26),  // features size
+        kFeatureListForGpuControlTestingEntry26,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -903,8 +905,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         27,  // id
         "GpuControlListEntryTest.MachineModelNameException",
-        base::size(kFeatureListForGpuControlTestingEntry27),  // features size
-        kFeatureListForGpuControlTestingEntry27,              // features
+        std::size(kFeatureListForGpuControlTestingEntry27),  // features size
+        kFeatureListForGpuControlTestingEntry27,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -931,14 +933,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry27_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry27),  // exceptions count
-        kExceptionsForEntry27,              // exceptions
+        std::size(kExceptionsForEntry27),  // exceptions count
+        kExceptionsForEntry27,             // exceptions
     },
     {
         28,  // id
         "GpuControlListEntryTest.MachineModelVersion",
-        base::size(kFeatureListForGpuControlTestingEntry28),  // features size
-        kFeatureListForGpuControlTestingEntry28,              // features
+        std::size(kFeatureListForGpuControlTestingEntry28),  // features size
+        kFeatureListForGpuControlTestingEntry28,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -971,8 +973,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         29,  // id
         "GpuControlListEntryTest.MachineModelVersionException",
-        base::size(kFeatureListForGpuControlTestingEntry29),  // features size
-        kFeatureListForGpuControlTestingEntry29,              // features
+        std::size(kFeatureListForGpuControlTestingEntry29),  // features size
+        kFeatureListForGpuControlTestingEntry29,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -999,14 +1001,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry29_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry29),  // exceptions count
-        kExceptionsForEntry29,              // exceptions
+        std::size(kExceptionsForEntry29),  // exceptions count
+        kExceptionsForEntry29,             // exceptions
     },
     {
         30,  // id
         "GpuControlListEntryDualGPUTest.CategoryAny.Intel",
-        base::size(kFeatureListForGpuControlTestingEntry30),  // features size
-        kFeatureListForGpuControlTestingEntry30,              // features
+        std::size(kFeatureListForGpuControlTestingEntry30),  // features size
+        kFeatureListForGpuControlTestingEntry30,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1017,10 +1019,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x8086,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry30),  // Devices size
-            kDevicesForGpuControlTestingEntry30,              // Devices
+             nullptr},                                       // os_version
+            0x8086,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry30),  // Devices size
+            kDevicesForGpuControlTestingEntry30,             // Devices
             GpuControlList::kMultiGpuCategoryAny,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,    // multi_gpu_style
             nullptr,                               // driver info
@@ -1039,8 +1041,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         31,  // id
         "GpuControlListEntryDualGPUTest.CategoryAny.NVidia",
-        base::size(kFeatureListForGpuControlTestingEntry31),  // features size
-        kFeatureListForGpuControlTestingEntry31,              // features
+        std::size(kFeatureListForGpuControlTestingEntry31),  // features size
+        kFeatureListForGpuControlTestingEntry31,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1051,10 +1053,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x10de,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry31),  // Devices size
-            kDevicesForGpuControlTestingEntry31,              // Devices
+             nullptr},                                       // os_version
+            0x10de,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry31),  // Devices size
+            kDevicesForGpuControlTestingEntry31,             // Devices
             GpuControlList::kMultiGpuCategoryAny,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,    // multi_gpu_style
             nullptr,                               // driver info
@@ -1073,8 +1075,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         32,  // id
         "GpuControlListEntryDualGPUTest.CategorySecondary",
-        base::size(kFeatureListForGpuControlTestingEntry32),  // features size
-        kFeatureListForGpuControlTestingEntry32,              // features
+        std::size(kFeatureListForGpuControlTestingEntry32),  // features size
+        kFeatureListForGpuControlTestingEntry32,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1085,10 +1087,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x8086,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry32),  // Devices size
-            kDevicesForGpuControlTestingEntry32,              // Devices
+             nullptr},                                       // os_version
+            0x8086,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry32),  // Devices size
+            kDevicesForGpuControlTestingEntry32,             // Devices
             GpuControlList::kMultiGpuCategorySecondary,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,          // multi_gpu_style
             nullptr,                                     // driver info
@@ -1107,8 +1109,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         33,  // id
         "GpuControlListEntryDualGPUTest.CategoryPrimary",
-        base::size(kFeatureListForGpuControlTestingEntry33),  // features size
-        kFeatureListForGpuControlTestingEntry33,              // features
+        std::size(kFeatureListForGpuControlTestingEntry33),  // features size
+        kFeatureListForGpuControlTestingEntry33,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1119,10 +1121,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x8086,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry33),  // Devices size
-            kDevicesForGpuControlTestingEntry33,              // Devices
+             nullptr},                                       // os_version
+            0x8086,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry33),  // Devices size
+            kDevicesForGpuControlTestingEntry33,             // Devices
             GpuControlList::kMultiGpuCategoryPrimary,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,        // multi_gpu_style
             nullptr,                                   // driver info
@@ -1141,8 +1143,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         34,  // id
         "GpuControlListEntryDualGPUTest.CategoryDefault",
-        base::size(kFeatureListForGpuControlTestingEntry34),  // features size
-        kFeatureListForGpuControlTestingEntry34,              // features
+        std::size(kFeatureListForGpuControlTestingEntry34),  // features size
+        kFeatureListForGpuControlTestingEntry34,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1153,10 +1155,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x8086,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry34),  // Devices size
-            kDevicesForGpuControlTestingEntry34,              // Devices
+             nullptr},                                       // os_version
+            0x8086,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry34),  // Devices size
+            kDevicesForGpuControlTestingEntry34,             // Devices
             GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
             nullptr,                                // driver info
@@ -1175,8 +1177,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         35,  // id
         "GpuControlListEntryDualGPUTest.ActiveSecondaryGPU",
-        base::size(kFeatureListForGpuControlTestingEntry35),  // features size
-        kFeatureListForGpuControlTestingEntry35,              // features
+        std::size(kFeatureListForGpuControlTestingEntry35),  // features size
+        kFeatureListForGpuControlTestingEntry35,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1187,10 +1189,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x8086,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry35),  // Devices size
-            kDevicesForGpuControlTestingEntry35,              // Devices
+             nullptr},                                       // os_version
+            0x8086,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry35),  // Devices size
+            kDevicesForGpuControlTestingEntry35,             // Devices
             GpuControlList::kMultiGpuCategoryActive,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,       // multi_gpu_style
             nullptr,                                  // driver info
@@ -1209,8 +1211,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         36,  // id
         "GpuControlListEntryDualGPUTest.VendorOnlyActiveSecondaryGPU",
-        base::size(kFeatureListForGpuControlTestingEntry36),  // features size
-        kFeatureListForGpuControlTestingEntry36,              // features
+        std::size(kFeatureListForGpuControlTestingEntry36),  // features size
+        kFeatureListForGpuControlTestingEntry36,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1243,8 +1245,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         37,  // id
         "GpuControlListEntryDualGPUTest.ActivePrimaryGPU",
-        base::size(kFeatureListForGpuControlTestingEntry37),  // features size
-        kFeatureListForGpuControlTestingEntry37,              // features
+        std::size(kFeatureListForGpuControlTestingEntry37),  // features size
+        kFeatureListForGpuControlTestingEntry37,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1255,10 +1257,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsMacosx,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x10de,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry37),  // Devices size
-            kDevicesForGpuControlTestingEntry37,              // Devices
+             nullptr},                                       // os_version
+            0x10de,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry37),  // Devices size
+            kDevicesForGpuControlTestingEntry37,             // Devices
             GpuControlList::kMultiGpuCategoryActive,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,       // multi_gpu_style
             nullptr,                                  // driver info
@@ -1277,8 +1279,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         38,  // id
         "GpuControlListEntryDualGPUTest.VendorOnlyActivePrimaryGPU",
-        base::size(kFeatureListForGpuControlTestingEntry38),  // features size
-        kFeatureListForGpuControlTestingEntry38,              // features
+        std::size(kFeatureListForGpuControlTestingEntry38),  // features size
+        kFeatureListForGpuControlTestingEntry38,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1311,8 +1313,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         39,  // id
         "GpuControlListEntryTest.PixelShaderVersion",
-        base::size(kFeatureListForGpuControlTestingEntry39),  // features size
-        kFeatureListForGpuControlTestingEntry39,              // features
+        std::size(kFeatureListForGpuControlTestingEntry39),  // features size
+        kFeatureListForGpuControlTestingEntry39,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1345,8 +1347,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         40,  // id
         "GpuControlListEntryTest.OsVersionZeroLT",
-        base::size(kFeatureListForGpuControlTestingEntry40),  // features size
-        kFeatureListForGpuControlTestingEntry40,              // features
+        std::size(kFeatureListForGpuControlTestingEntry40),  // features size
+        kFeatureListForGpuControlTestingEntry40,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1379,8 +1381,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         41,  // id
         "GpuControlListEntryTest.OsVersionZeroAny",
-        base::size(kFeatureListForGpuControlTestingEntry41),  // features size
-        kFeatureListForGpuControlTestingEntry41,              // features
+        std::size(kFeatureListForGpuControlTestingEntry41),  // features size
+        kFeatureListForGpuControlTestingEntry41,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1413,8 +1415,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         42,  // id
         "GpuControlListEntryTest.OsComparisonAny",
-        base::size(kFeatureListForGpuControlTestingEntry42),  // features size
-        kFeatureListForGpuControlTestingEntry42,              // features
+        std::size(kFeatureListForGpuControlTestingEntry42),  // features size
+        kFeatureListForGpuControlTestingEntry42,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1447,8 +1449,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         43,  // id
         "GpuControlListEntryTest.OsComparisonGE",
-        base::size(kFeatureListForGpuControlTestingEntry43),  // features size
-        kFeatureListForGpuControlTestingEntry43,              // features
+        std::size(kFeatureListForGpuControlTestingEntry43),  // features size
+        kFeatureListForGpuControlTestingEntry43,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1480,8 +1482,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         44,  // id
         "GpuControlListEntryTest.ExceptionWithoutVendorId",
-        base::size(kFeatureListForGpuControlTestingEntry44),  // features size
-        kFeatureListForGpuControlTestingEntry44,              // features
+        std::size(kFeatureListForGpuControlTestingEntry44),  // features size
+        kFeatureListForGpuControlTestingEntry44,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1508,14 +1510,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry44_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry44),  // exceptions count
-        kExceptionsForEntry44,              // exceptions
+        std::size(kExceptionsForEntry44),  // exceptions count
+        kExceptionsForEntry44,             // exceptions
     },
     {
         45,  // id
         "GpuControlListEntryTest.MultiGpuStyleAMDSwitchableDiscrete",
-        base::size(kFeatureListForGpuControlTestingEntry45),  // features size
-        kFeatureListForGpuControlTestingEntry45,              // features
+        std::size(kFeatureListForGpuControlTestingEntry45),  // features size
+        kFeatureListForGpuControlTestingEntry45,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1549,8 +1551,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         46,  // id
         "GpuControlListEntryTest.MultiGpuStyleAMDSwitchableIntegrated",
-        base::size(kFeatureListForGpuControlTestingEntry46),  // features size
-        kFeatureListForGpuControlTestingEntry46,              // features
+        std::size(kFeatureListForGpuControlTestingEntry46),  // features size
+        kFeatureListForGpuControlTestingEntry46,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1584,8 +1586,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         47,  // id
         "GpuControlListEntryTest.InProcessGPU",
-        base::size(kFeatureListForGpuControlTestingEntry47),  // features size
-        kFeatureListForGpuControlTestingEntry47,              // features
+        std::size(kFeatureListForGpuControlTestingEntry47),  // features size
+        kFeatureListForGpuControlTestingEntry47,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1618,8 +1620,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         48,  // id
         "GpuControlListEntryTest.SameGPUTwiceTest",
-        base::size(kFeatureListForGpuControlTestingEntry48),  // features size
-        kFeatureListForGpuControlTestingEntry48,              // features
+        std::size(kFeatureListForGpuControlTestingEntry48),  // features size
+        kFeatureListForGpuControlTestingEntry48,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1652,8 +1654,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         49,  // id
         "GpuControlListEntryTest.NVidiaNumberingScheme",
-        base::size(kFeatureListForGpuControlTestingEntry49),  // features size
-        kFeatureListForGpuControlTestingEntry49,              // features
+        std::size(kFeatureListForGpuControlTestingEntry49),  // features size
+        kFeatureListForGpuControlTestingEntry49,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1686,8 +1688,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         50,  // id
         "GpuControlListTest.NeedsMoreInfo",
-        base::size(kFeatureListForGpuControlTestingEntry50),  // features size
-        kFeatureListForGpuControlTestingEntry50,              // features
+        std::size(kFeatureListForGpuControlTestingEntry50),  // features size
+        kFeatureListForGpuControlTestingEntry50,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1720,8 +1722,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         51,  // id
         "GpuControlListTest.NeedsMoreInfoForExceptions",
-        base::size(kFeatureListForGpuControlTestingEntry51),  // features size
-        kFeatureListForGpuControlTestingEntry51,              // features
+        std::size(kFeatureListForGpuControlTestingEntry51),  // features size
+        kFeatureListForGpuControlTestingEntry51,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1748,14 +1750,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry51_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry51),  // exceptions count
-        kExceptionsForEntry51,              // exceptions
+        std::size(kExceptionsForEntry51),  // exceptions count
+        kExceptionsForEntry51,             // exceptions
     },
     {
         52,  // id
         "GpuControlListTest.IgnorableEntries.0",
-        base::size(kFeatureListForGpuControlTestingEntry52),  // features size
-        kFeatureListForGpuControlTestingEntry52,              // features
+        std::size(kFeatureListForGpuControlTestingEntry52),  // features size
+        kFeatureListForGpuControlTestingEntry52,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1788,8 +1790,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         53,  // id
         "GpuControlListTest.IgnorableEntries.1",
-        base::size(kFeatureListForGpuControlTestingEntry53),  // features size
-        kFeatureListForGpuControlTestingEntry53,              // features
+        std::size(kFeatureListForGpuControlTestingEntry53),  // features size
+        kFeatureListForGpuControlTestingEntry53,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1822,10 +1824,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         54,  // id
         "GpuControlListTest.DisabledExtensionTest.0",
-        0,                                          // feature size
-        nullptr,                                    // features
-        base::size(kDisabledExtensionsForEntry54),  // DisabledExtensions size
-        kDisabledExtensionsForEntry54,              // DisabledExtensions
+        0,                                         // feature size
+        nullptr,                                   // features
+        std::size(kDisabledExtensionsForEntry54),  // DisabledExtensions size
+        kDisabledExtensionsForEntry54,             // DisabledExtensions
         0,        // DisabledWebGLExtensions size
         nullptr,  // DisabledWebGLExtensions
         0,        // CrBugs size
@@ -1856,10 +1858,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         55,  // id
         "GpuControlListTest.DisabledExtensionTest.1",
-        0,                                          // feature size
-        nullptr,                                    // features
-        base::size(kDisabledExtensionsForEntry55),  // DisabledExtensions size
-        kDisabledExtensionsForEntry55,              // DisabledExtensions
+        0,                                         // feature size
+        nullptr,                                   // features
+        std::size(kDisabledExtensionsForEntry55),  // DisabledExtensions size
+        kDisabledExtensionsForEntry55,             // DisabledExtensions
         0,        // DisabledWebGLExtensions size
         nullptr,  // DisabledWebGLExtensions
         0,        // CrBugs size
@@ -1890,8 +1892,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         56,  // id
         "GpuControlListEntryTest.DirectRendering",
-        base::size(kFeatureListForGpuControlTestingEntry56),  // features size
-        kFeatureListForGpuControlTestingEntry56,              // features
+        std::size(kFeatureListForGpuControlTestingEntry56),  // features size
+        kFeatureListForGpuControlTestingEntry56,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1924,8 +1926,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         57,  // id
         "GpuControlListTest.LinuxKernelVersion",
-        base::size(kFeatureListForGpuControlTestingEntry57),  // features size
-        kFeatureListForGpuControlTestingEntry57,              // features
+        std::size(kFeatureListForGpuControlTestingEntry57),  // features size
+        kFeatureListForGpuControlTestingEntry57,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1958,8 +1960,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         58,  // id
         "GpuControlListTest.TestGroup.0",
-        base::size(kFeatureListForGpuControlTestingEntry58),  // features size
-        kFeatureListForGpuControlTestingEntry58,              // features
+        std::size(kFeatureListForGpuControlTestingEntry58),  // features size
+        kFeatureListForGpuControlTestingEntry58,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -1992,8 +1994,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         59,  // id
         "GpuControlListTest.TestGroup.1",
-        base::size(kFeatureListForGpuControlTestingEntry59),  // features size
-        kFeatureListForGpuControlTestingEntry59,              // features
+        std::size(kFeatureListForGpuControlTestingEntry59),  // features size
+        kFeatureListForGpuControlTestingEntry59,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2026,8 +2028,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         60,  // id
         "GpuControlListEntryTest.GpuSeries",
-        base::size(kFeatureListForGpuControlTestingEntry60),  // features size
-        kFeatureListForGpuControlTestingEntry60,              // features
+        std::size(kFeatureListForGpuControlTestingEntry60),  // features size
+        kFeatureListForGpuControlTestingEntry60,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2047,7 +2049,7 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             nullptr,                                // driver info
             nullptr,                                // GL strings
             nullptr,                                // machine model info
-            base::size(kIntelGpuSeriesForEntry60),  // intel_gpu_series size
+            std::size(kIntelGpuSeriesForEntry60),   // intel_gpu_series size
             kIntelGpuSeriesForEntry60,              // intel_gpu_series
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
@@ -2060,8 +2062,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         61,  // id
         "GpuControlListEntryTest.GpuSeriesActive",
-        base::size(kFeatureListForGpuControlTestingEntry61),  // features size
-        kFeatureListForGpuControlTestingEntry61,              // features
+        std::size(kFeatureListForGpuControlTestingEntry61),  // features size
+        kFeatureListForGpuControlTestingEntry61,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2081,7 +2083,7 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             nullptr,                                  // driver info
             nullptr,                                  // GL strings
             nullptr,                                  // machine model info
-            base::size(kIntelGpuSeriesForEntry61),    // intel_gpu_series size
+            std::size(kIntelGpuSeriesForEntry61),     // intel_gpu_series size
             kIntelGpuSeriesForEntry61,                // intel_gpu_series
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
@@ -2094,8 +2096,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         62,  // id
         "GpuControlListEntryTest.GpuSeriesAny",
-        base::size(kFeatureListForGpuControlTestingEntry62),  // features size
-        kFeatureListForGpuControlTestingEntry62,              // features
+        std::size(kFeatureListForGpuControlTestingEntry62),  // features size
+        kFeatureListForGpuControlTestingEntry62,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2106,17 +2108,17 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsAny,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                              // os_version
-            0x00,                                   // vendor_id
-            0,                                      // Devices size
-            nullptr,                                // Devices
-            GpuControlList::kMultiGpuCategoryAny,   // multi_gpu_category
-            GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-            nullptr,                                // driver info
-            nullptr,                                // GL strings
-            nullptr,                                // machine model info
-            base::size(kIntelGpuSeriesForEntry62),  // intel_gpu_series size
-            kIntelGpuSeriesForEntry62,              // intel_gpu_series
+             nullptr},                             // os_version
+            0x00,                                  // vendor_id
+            0,                                     // Devices size
+            nullptr,                               // Devices
+            GpuControlList::kMultiGpuCategoryAny,  // multi_gpu_category
+            GpuControlList::kMultiGpuStyleNone,    // multi_gpu_style
+            nullptr,                               // driver info
+            nullptr,                               // GL strings
+            nullptr,                               // machine model info
+            std::size(kIntelGpuSeriesForEntry62),  // intel_gpu_series size
+            kIntelGpuSeriesForEntry62,             // intel_gpu_series
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
              nullptr},                    // intel_gpu_generation
@@ -2128,8 +2130,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         63,  // id
         "GpuControlListEntryTest.GpuSeriesPrimary",
-        base::size(kFeatureListForGpuControlTestingEntry63),  // features size
-        kFeatureListForGpuControlTestingEntry63,              // features
+        std::size(kFeatureListForGpuControlTestingEntry63),  // features size
+        kFeatureListForGpuControlTestingEntry63,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2149,7 +2151,7 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             nullptr,                                   // driver info
             nullptr,                                   // GL strings
             nullptr,                                   // machine model info
-            base::size(kIntelGpuSeriesForEntry63),     // intel_gpu_series size
+            std::size(kIntelGpuSeriesForEntry63),      // intel_gpu_series size
             kIntelGpuSeriesForEntry63,                 // intel_gpu_series
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
@@ -2162,8 +2164,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         64,  // id
         "GpuControlListEntryTest.GpuSeriesSecondary",
-        base::size(kFeatureListForGpuControlTestingEntry64),  // features size
-        kFeatureListForGpuControlTestingEntry64,              // features
+        std::size(kFeatureListForGpuControlTestingEntry64),  // features size
+        kFeatureListForGpuControlTestingEntry64,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2183,8 +2185,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             nullptr,                                     // driver info
             nullptr,                                     // GL strings
             nullptr,                                     // machine model info
-            base::size(kIntelGpuSeriesForEntry64),  // intel_gpu_series size
-            kIntelGpuSeriesForEntry64,              // intel_gpu_series
+            std::size(kIntelGpuSeriesForEntry64),  // intel_gpu_series size
+            kIntelGpuSeriesForEntry64,             // intel_gpu_series
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
              nullptr},                    // intel_gpu_generation
@@ -2196,8 +2198,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         65,  // id
         "GpuControlListEntryTest.GpuSeriesInException",
-        base::size(kFeatureListForGpuControlTestingEntry65),  // features size
-        kFeatureListForGpuControlTestingEntry65,              // features
+        std::size(kFeatureListForGpuControlTestingEntry65),  // features size
+        kFeatureListForGpuControlTestingEntry65,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2224,14 +2226,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry65_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry65),  // exceptions count
-        kExceptionsForEntry65,              // exceptions
+        std::size(kExceptionsForEntry65),  // exceptions count
+        kExceptionsForEntry65,             // exceptions
     },
     {
         66,  // id
         "GpuControlListEntryTest.MultipleDrivers",
-        base::size(kFeatureListForGpuControlTestingEntry66),  // features size
-        kFeatureListForGpuControlTestingEntry66,              // features
+        std::size(kFeatureListForGpuControlTestingEntry66),  // features size
+        kFeatureListForGpuControlTestingEntry66,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2264,8 +2266,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         67,  // id
         "GpuControlListEntryTest.HardwareOverlay",
-        base::size(kFeatureListForGpuControlTestingEntry67),  // features size
-        kFeatureListForGpuControlTestingEntry67,              // features
+        std::size(kFeatureListForGpuControlTestingEntry67),  // features size
+        kFeatureListForGpuControlTestingEntry67,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2298,8 +2300,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         68,  // id
         "GpuControlListEntryTest.GpuGeneration",
-        base::size(kFeatureListForGpuControlTestingEntry68),  // features size
-        kFeatureListForGpuControlTestingEntry68,              // features
+        std::size(kFeatureListForGpuControlTestingEntry68),  // features size
+        kFeatureListForGpuControlTestingEntry68,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2332,8 +2334,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         69,  // id
         "GpuControlListEntryTest.GpuGenerationActive",
-        base::size(kFeatureListForGpuControlTestingEntry69),  // features size
-        kFeatureListForGpuControlTestingEntry69,              // features
+        std::size(kFeatureListForGpuControlTestingEntry69),  // features size
+        kFeatureListForGpuControlTestingEntry69,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2366,8 +2368,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         70,  // id
         "GpuControlListEntryTest.GpuGenerationAny",
-        base::size(kFeatureListForGpuControlTestingEntry70),  // features size
-        kFeatureListForGpuControlTestingEntry70,              // features
+        std::size(kFeatureListForGpuControlTestingEntry70),  // features size
+        kFeatureListForGpuControlTestingEntry70,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2400,8 +2402,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         71,  // id
         "GpuControlListEntryTest.GpuGenerationPrimary",
-        base::size(kFeatureListForGpuControlTestingEntry71),  // features size
-        kFeatureListForGpuControlTestingEntry71,              // features
+        std::size(kFeatureListForGpuControlTestingEntry71),  // features size
+        kFeatureListForGpuControlTestingEntry71,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2434,8 +2436,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         72,  // id
         "GpuControlListEntryTest.GpuGenerationSecondary",
-        base::size(kFeatureListForGpuControlTestingEntry72),  // features size
-        kFeatureListForGpuControlTestingEntry72,              // features
+        std::size(kFeatureListForGpuControlTestingEntry72),  // features size
+        kFeatureListForGpuControlTestingEntry72,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2468,8 +2470,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         73,  // id
         "GpuControlListEntryTest.SubpixelFontRendering",
-        base::size(kFeatureListForGpuControlTestingEntry73),  // features size
-        kFeatureListForGpuControlTestingEntry73,              // features
+        std::size(kFeatureListForGpuControlTestingEntry73),  // features size
+        kFeatureListForGpuControlTestingEntry73,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2496,14 +2498,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry73_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry73),  // exceptions count
-        kExceptionsForEntry73,              // exceptions
+        std::size(kExceptionsForEntry73),  // exceptions count
+        kExceptionsForEntry73,             // exceptions
     },
     {
         74,  // id
         "GpuControlListEntryTest.SubpixelFontRenderingDontCare",
-        base::size(kFeatureListForGpuControlTestingEntry74),  // features size
-        kFeatureListForGpuControlTestingEntry74,              // features
+        std::size(kFeatureListForGpuControlTestingEntry74),  // features size
+        kFeatureListForGpuControlTestingEntry74,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2536,8 +2538,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         75,  // id
         "GpuControlListEntryTest.IntelDriverVendorEntry",
-        base::size(kFeatureListForGpuControlTestingEntry75),  // features size
-        kFeatureListForGpuControlTestingEntry75,              // features
+        std::size(kFeatureListForGpuControlTestingEntry75),  // features size
+        kFeatureListForGpuControlTestingEntry75,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2570,8 +2572,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         76,  // id
         "GpuControlListEntryTest.IntelDriverVersionEntry",
-        base::size(kFeatureListForGpuControlTestingEntry76),  // features size
-        kFeatureListForGpuControlTestingEntry76,              // features
+        std::size(kFeatureListForGpuControlTestingEntry76),  // features size
+        kFeatureListForGpuControlTestingEntry76,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2604,8 +2606,8 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
     {
         77,  // id
         "GpuControlListEntryTest.DeviceRevisionEntry",
-        base::size(kFeatureListForGpuControlTestingEntry77),  // features size
-        kFeatureListForGpuControlTestingEntry77,              // features
+        std::size(kFeatureListForGpuControlTestingEntry77),  // features size
+        kFeatureListForGpuControlTestingEntry77,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2632,14 +2634,14 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
              nullptr},                    // intel_gpu_generation
             &kMoreForEntry77_1440601243,  // more data
         },
-        base::size(kExceptionsForEntry77),  // exceptions count
-        kExceptionsForEntry77,              // exceptions
+        std::size(kExceptionsForEntry77),  // exceptions count
+        kExceptionsForEntry77,             // exceptions
     },
     {
         78,  // id
         "GpuControlListEntryTest.DeviceRevisionUnspecifiedEntry",
-        base::size(kFeatureListForGpuControlTestingEntry78),  // features size
-        kFeatureListForGpuControlTestingEntry78,              // features
+        std::size(kFeatureListForGpuControlTestingEntry78),  // features size
+        kFeatureListForGpuControlTestingEntry78,             // features
         0,        // DisabledExtensions size
         nullptr,  // DisabledExtensions
         0,        // DisabledWebGLExtensions size
@@ -2650,10 +2652,10 @@ const GpuControlList::Entry kGpuControlListTestingEntries[] = {
             GpuControlList::kOsWin,  // os_type
             {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
              GpuControlList::kVersionSchemaCommon, nullptr,
-             nullptr},                                        // os_version
-            0x1002,                                           // vendor_id
-            base::size(kDevicesForGpuControlTestingEntry78),  // Devices size
-            kDevicesForGpuControlTestingEntry78,              // Devices
+             nullptr},                                       // os_version
+            0x1002,                                          // vendor_id
+            std::size(kDevicesForGpuControlTestingEntry78),  // Devices size
+            kDevicesForGpuControlTestingEntry78,             // Devices
             GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
             GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
             nullptr,                                // driver info
