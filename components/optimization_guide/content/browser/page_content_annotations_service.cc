@@ -118,8 +118,11 @@ PageContentAnnotationsService::PageContentAnnotationsService(
 
   if (features::BatchAnnotationsValidationEnabled()) {
     // Normally the caller would do this, but we are our own caller.
-    RequestAndNotifyWhenModelAvailable(AnnotationType::kContentVisibility,
-                                       base::DoNothing());
+    RequestAndNotifyWhenModelAvailable(
+        features::BatchAnnotationsValidationUsePageTopics()
+            ? AnnotationType::kPageTopics
+            : AnnotationType::kContentVisibility,
+        base::DoNothing());
 
     validation_timer_ = std::make_unique<base::OneShotTimer>(
         base::DefaultTickClock::GetInstance());
@@ -440,7 +443,9 @@ void PageContentAnnotationsService::RunBatchAnnotationValidation() {
       dummy_inputs.size());
 
   BatchAnnotate(base::DoNothing(), dummy_inputs,
-                AnnotationType::kContentVisibility);
+                features::BatchAnnotationsValidationUsePageTopics()
+                    ? AnnotationType::kPageTopics
+                    : AnnotationType::kContentVisibility);
 }
 
 // static

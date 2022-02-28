@@ -541,6 +541,11 @@ size_t BatchAnnotationsValidationBatchSize() {
   return std::max(1, batch_size);
 }
 
+bool BatchAnnotationsValidationUsePageTopics() {
+  return GetFieldTrialParamByFeatureAsBool(kBatchAnnotationsValidation,
+                                           "use_page_topics", false);
+}
+
 size_t MaxVisitAnnotationCacheSize() {
   int batch_size = GetFieldTrialParamByFeatureAsInt(
       kPageContentAnnotations, "max_visit_annotation_cache_size", 50);

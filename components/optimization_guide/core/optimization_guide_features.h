@@ -275,6 +275,10 @@ base::TimeDelta BatchAnnotationValidationStartupDelay();
 // The size of batches to run for validation.
 size_t BatchAnnotationsValidationBatchSize();
 
+// True if the batch annotations feature should use the PageTopics annotation
+// type instead of ContentVisibility.
+bool BatchAnnotationsValidationUsePageTopics();
+
 // The maximum size of the visit annotation cache.
 size_t MaxVisitAnnotationCacheSize();
 
