@@ -626,6 +626,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBasedDisplayArrangementInSettingsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherAppSortEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherFolderRenameKeepsSortOrderEnabled();

@@ -1733,6 +1733,11 @@ bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
       kKeyboardBasedDisplayArrangementInSettings);
 }
 
+bool IsLanguagePacksEnabled() {
+  return base::FeatureList::IsEnabled(kHandwritingLegacyRecognition) ||
+         base::FeatureList::IsEnabled(kHandwritingLegacyRecognitionAllLang);
+}
+
 bool IsLauncherAppSortEnabled() {
   return IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherAppSort);

@@ -452,12 +452,8 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("onDeviceGrammarCheckEnabled",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kOnDeviceGrammarCheck));
-  html_source->AddBoolean(
-      "languagePacksHandwritingEnabled",
-      base::FeatureList::IsEnabled(
-          ::chromeos::features::kHandwritingLegacyRecognition) ||
-          base::FeatureList::IsEnabled(
-              ::chromeos::features::kHandwritingLegacyRecognitionAllLang));
+  html_source->AddBoolean("languagePacksHandwritingEnabled",
+                          ::chromeos::features::IsLanguagePacksEnabled());
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {
