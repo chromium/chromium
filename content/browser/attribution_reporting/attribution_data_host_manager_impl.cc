@@ -9,14 +9,17 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "url/origin.h"
 
@@ -42,6 +45,22 @@ bool IsFilterDataValid(const blink::mojom::AttributionFilterData& filter_data) {
   }
 
   return true;
+}
+
+proto::AttributionAggregatableSources ConvertToProto(
+    const blink::mojom::AttributionAggregatableSources& aggregatable_sources) {
+  proto::AttributionAggregatableSources result;
+
+  for (const auto& [key_id, key_ptr] : aggregatable_sources.sources) {
+    DCHECK(key_ptr);
+    proto::AttributionAggregatableKey key;
+    key.set_high_bits(key_ptr->high_bits);
+    key.set_low_bits(key_ptr->low_bits);
+
+    (*result.mutable_sources())[key_id] = std::move(key);
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -107,6 +126,12 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   if (!IsFilterDataValid(*data->filter_data))
     return;
 
+  absl::optional<AttributionAggregatableSources> aggregatable_sources =
+      AttributionAggregatableSources::Create(
+          ConvertToProto(*data->aggregatable_sources));
+  if (!aggregatable_sources.has_value())
+    return;
+
   StorableSource storable_source(CommonSourceInfo(
       data->source_event_id, context.context_origin, data->destination,
       reporting_origin, source_time,
@@ -114,7 +139,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
                                       context.source_type),
       context.source_type, data->priority,
       data->debug_key ? absl::make_optional(data->debug_key->value)
-                      : absl::nullopt));
+                      : absl::nullopt,
+      std::move(*aggregatable_sources)));
 
   attribution_manager_->HandleSource(std::move(storable_source));
 }

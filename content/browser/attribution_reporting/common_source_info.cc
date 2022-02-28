@@ -30,15 +30,17 @@ base::Time CommonSourceInfo::GetExpiryTime(
          base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
 }
 
-CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
-                                   url::Origin impression_origin,
-                                   url::Origin conversion_origin,
-                                   url::Origin reporting_origin,
-                                   base::Time impression_time,
-                                   base::Time expiry_time,
-                                   SourceType source_type,
-                                   int64_t priority,
-                                   absl::optional<uint64_t> debug_key)
+CommonSourceInfo::CommonSourceInfo(
+    uint64_t source_event_id,
+    url::Origin impression_origin,
+    url::Origin conversion_origin,
+    url::Origin reporting_origin,
+    base::Time impression_time,
+    base::Time expiry_time,
+    SourceType source_type,
+    int64_t priority,
+    absl::optional<uint64_t> debug_key,
+    AttributionAggregatableSources aggregatable_sources)
     : source_event_id_(source_event_id),
       impression_origin_(std::move(impression_origin)),
       conversion_origin_(std::move(conversion_origin)),
@@ -47,7 +49,8 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
       expiry_time_(expiry_time),
       source_type_(source_type),
       priority_(priority),
-      debug_key_(debug_key) {
+      debug_key_(debug_key),
+      aggregatable_sources_(std::move(aggregatable_sources)) {
   // 30 days is the max allowed expiry for an impression.
   DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.

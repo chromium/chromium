@@ -324,12 +324,18 @@ SourceBuilder& SourceBuilder::SetDedupKeys(std::vector<uint64_t> dedup_keys) {
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetAggregatableSources(
+    AttributionAggregatableSources aggregatable_sources) {
+  aggregatable_sources_ = std::move(aggregatable_sources);
+  return *this;
+}
+
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(source_event_id_, impression_origin_,
-                          conversion_origin_, reporting_origin_,
-                          impression_time_,
-                          /*expiry_time=*/impression_time_ + expiry_,
-                          source_type_, priority_, debug_key_);
+  return CommonSourceInfo(
+      source_event_id_, impression_origin_, conversion_origin_,
+      reporting_origin_, impression_time_,
+      /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
+      debug_key_, aggregatable_sources_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -464,6 +470,59 @@ AttributionReport ReportBuilder::Build() const {
                                         randomized_trigger_rate_, report_id_));
 }
 
+AggregatableKeyProtoBuilder::AggregatableKeyProtoBuilder() = default;
+
+AggregatableKeyProtoBuilder::~AggregatableKeyProtoBuilder() = default;
+
+AggregatableKeyProtoBuilder& AggregatableKeyProtoBuilder::SetHighBits(
+    uint64_t high_bits) {
+  key_.set_high_bits(high_bits);
+  return *this;
+}
+
+AggregatableKeyProtoBuilder& AggregatableKeyProtoBuilder::SetLowBits(
+    uint64_t low_bits) {
+  key_.set_low_bits(low_bits);
+  return *this;
+}
+
+proto::AttributionAggregatableKey AggregatableKeyProtoBuilder::Build() const {
+  return key_;
+}
+
+AggregatableSourcesProtoBuilder::AggregatableSourcesProtoBuilder() = default;
+
+AggregatableSourcesProtoBuilder::~AggregatableSourcesProtoBuilder() = default;
+
+AggregatableSourcesProtoBuilder& AggregatableSourcesProtoBuilder::AddKey(
+    std::string key_id,
+    proto::AttributionAggregatableKey key) {
+  (*aggregatable_sources_.mutable_sources())[std::move(key_id)] =
+      std::move(key);
+  return *this;
+}
+
+proto::AttributionAggregatableSources AggregatableSourcesProtoBuilder::Build()
+    const {
+  return aggregatable_sources_;
+}
+
+AggregatableSourcesMojoBuilder::AggregatableSourcesMojoBuilder() = default;
+
+AggregatableSourcesMojoBuilder::~AggregatableSourcesMojoBuilder() = default;
+
+AggregatableSourcesMojoBuilder& AggregatableSourcesMojoBuilder::AddKey(
+    std::string key_id,
+    blink::mojom::AttributionAggregatableKeyPtr key) {
+  sources_.sources.emplace(std::move(key_id), std::move(key));
+  return *this;
+}
+
+blink::mojom::AttributionAggregatableSourcesPtr
+AggregatableSourcesMojoBuilder::Build() const {
+  return sources_.Clone();
+}
+
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
   const auto tie = [](const AttributionTrigger& t) {
     return std::make_tuple(t.trigger_data(), t.conversion_destination(),
@@ -475,11 +534,11 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
-    return std::make_tuple(source.source_event_id(), source.impression_origin(),
-                           source.conversion_origin(),
-                           source.reporting_origin(), source.impression_time(),
-                           source.expiry_time(), source.source_type(),
-                           source.priority(), source.debug_key());
+    return std::make_tuple(
+        source.source_event_id(), source.impression_origin(),
+        source.conversion_origin(), source.reporting_origin(),
+        source.impression_time(), source.expiry_time(), source.source_type(),
+        source.priority(), source.debug_key(), source.aggregatable_sources());
   };
   return tie(a) == tie(b);
 }
@@ -710,6 +769,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
              << ",priority=" << source.priority() << ",debug_key="
              << (source.debug_key() ? base::NumberToString(*source.debug_key())
                                     : "null")
+             << ",aggregatable_sources=" << source.aggregatable_sources()
              << "}";
 }
 
@@ -865,6 +925,65 @@ AttributionFilterSizeTestCase::Map AttributionFilterSizeTestCase::AsMap()
 
   DCHECK_EQ(map.size(), filter_count);
   return map;
+}
+
+namespace proto {
+
+bool operator==(const AttributionAggregatableKey& a,
+                const AttributionAggregatableKey& b) {
+  auto tie = [](const AttributionAggregatableKey& key) {
+    return std::make_tuple(key.has_high_bits(), key.high_bits(),
+                           key.has_low_bits(), key.low_bits());
+  };
+  return tie(a) == tie(b);
+}
+
+bool operator==(const AttributionAggregatableSources& a,
+                const AttributionAggregatableSources& b) {
+  if (a.sources().size() != b.sources().size())
+    return false;
+
+  return base::ranges::all_of(a.sources(), [&](const auto& source) {
+    auto iter = b.sources().find(source.first);
+    return iter != b.sources().end() && iter->second == source.second;
+  });
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AttributionAggregatableKey& key) {
+  return out << "{high_bits="
+             << (key.has_high_bits() ? base::NumberToString(key.high_bits())
+                                     : "null")
+             << ",low_bits="
+             << (key.has_low_bits() ? base::NumberToString(key.low_bits())
+                                    : "null")
+             << "}";
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableSources& aggregatable_sources) {
+  out << "{sources=[";
+
+  const char* separator = "";
+  for (const auto& [key_id, key] : aggregatable_sources.sources()) {
+    out << separator << key_id << ":" << key;
+    separator = ", ";
+  }
+  return out << "]}";
+}
+
+}  // namespace proto
+
+bool operator==(const AttributionAggregatableSources& a,
+                const AttributionAggregatableSources& b) {
+  return a.proto() == b.proto();
+}
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableSources& aggregatable_sources) {
+  return out << "{proto=" << aggregatable_sources.proto() << "}";
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(

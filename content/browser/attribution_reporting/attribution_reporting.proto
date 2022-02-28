@@ -1,0 +1,20 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package content.proto;
+
+// Proto equivalent of `blink::mojom::AttributionAggregatableKey`.
+message AttributionAggregatableKey {
+  optional uint64 high_bits = 1;
+  optional uint64 low_bits = 2;
+}
+
+// Proto equivalent of `blink::mojom::AttributionAggregatableSources`.
+message AttributionAggregatableSources {
+  map<string, AttributionAggregatableKey> sources = 1;
+}

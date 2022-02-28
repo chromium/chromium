@@ -19,12 +19,14 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -356,6 +358,9 @@ class SourceBuilder {
 
   SourceBuilder& SetDedupKeys(std::vector<uint64_t> dedup_keys);
 
+  SourceBuilder& SetAggregatableSources(
+      AttributionAggregatableSources aggregatable_sources);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -379,6 +384,7 @@ class SourceBuilder {
   // Ensure that we don't use uninitialized memory.
   StoredSource::Id source_id_{0};
   std::vector<uint64_t> dedup_keys_;
+  AttributionAggregatableSources aggregatable_sources_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -470,6 +476,56 @@ class ReportBuilder {
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
+// Helper class to construct a `proto::AttributionAggregatableKey` for testing.
+class AggregatableKeyProtoBuilder {
+ public:
+  AggregatableKeyProtoBuilder();
+  ~AggregatableKeyProtoBuilder();
+
+  AggregatableKeyProtoBuilder& SetHighBits(uint64_t high_bits);
+
+  AggregatableKeyProtoBuilder& SetLowBits(uint64_t low_bits);
+
+  proto::AttributionAggregatableKey Build() const;
+
+ private:
+  proto::AttributionAggregatableKey key_;
+};
+
+// Helper class to construct a `proto::AttributionAggregatableSources` for
+// testing.
+class AggregatableSourcesProtoBuilder {
+ public:
+  AggregatableSourcesProtoBuilder();
+  ~AggregatableSourcesProtoBuilder();
+
+  AggregatableSourcesProtoBuilder& AddKey(
+      std::string key_id,
+      proto::AttributionAggregatableKey key);
+
+  proto::AttributionAggregatableSources Build() const;
+
+ private:
+  proto::AttributionAggregatableSources aggregatable_sources_;
+};
+
+// Helper class to construct a `blink::mojom::AttributionAggregatableSources`
+// for testing.
+class AggregatableSourcesMojoBuilder {
+ public:
+  AggregatableSourcesMojoBuilder();
+  ~AggregatableSourcesMojoBuilder();
+
+  AggregatableSourcesMojoBuilder& AddKey(
+      std::string key_id,
+      blink::mojom::AttributionAggregatableKeyPtr key);
+
+  blink::mojom::AttributionAggregatableSourcesPtr Build() const;
+
+ private:
+  blink::mojom::AttributionAggregatableSources sources_;
+};
+
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b);
 
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
@@ -555,6 +611,13 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 
+bool operator==(const AttributionAggregatableSources& a,
+                const AttributionAggregatableSources& b);
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const AttributionAggregatableSources& aggregatable_sources);
+
 std::vector<AttributionReport> GetAttributionReportsForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time);
@@ -602,6 +665,11 @@ MATCHER_P(SourceDebugKeyIs, matcher, "") {
 
 MATCHER_P(DedupKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.dedup_keys(), result_listener);
+}
+
+MATCHER_P(AggregatableSourcesAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().aggregatable_sources(),
+                            result_listener);
 }
 
 // Trigger matchers.

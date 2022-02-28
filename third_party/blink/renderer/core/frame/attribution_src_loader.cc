@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -285,6 +286,13 @@ void AttributionSrcLoader::HandleSourceRegistration(
                                   *source_data->filter_data)) {
     return;
   }
+
+  const AtomicString& aggregatable_sources_json = response.HttpHeaderField(
+      http_names::kAttributionReportingRegisterAggregatableSource);
+  auto aggregatable_sources =
+      attribution_response_parsing::ParseAttributionAggregatableSources(
+          aggregatable_sources_json);
+  source_data->aggregatable_sources = std::move(aggregatable_sources.value);
 
   it->value->SourceDataAvailable(std::move(source_data));
 }

@@ -19,6 +19,18 @@ struct AttributionFilterData {
   map<string, array<string>> filter_values;
 };
 
+// The aggregatable key is a 128-bit unsigned integer.
+struct AttributionAggregatableKey {
+  uint64 high_bits;
+  uint64 low_bits;
+};
+
+// Defines a list of named histogram contributions.
+struct AttributionAggregatableSources {
+  // Map of key id to the key.
+  map<string, AttributionAggregatableKey> sources;
+};
+
 struct AttributionSourceData {
   // Target site where this source will be triggered.
   //
@@ -44,6 +56,9 @@ struct AttributionSourceData {
   AttributionDebugKey? debug_key;
 
   AttributionFilterData filter_data;
+
+  // Contains source-side aggregatable key pieces.
+  AttributionAggregatableSources aggregatable_sources;
 };
 
 // Browser-process interface responsible for processing attribution

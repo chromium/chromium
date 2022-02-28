@@ -1281,6 +1281,7 @@ source_set("unit_tests") {
     "fragment_directive/text_fragment_selector_generator_test.cc",
     "fragment_directive/text_fragment_selector_test.cc",
     "frame/ad_tracker_test.cc",
+    "frame/attribution_response_parsing_test.cc",
     "frame/browser_controls_test.cc",
     "frame/child_frame_compositing_helper_test.cc",
     "frame/csp/content_security_policy_test.cc",

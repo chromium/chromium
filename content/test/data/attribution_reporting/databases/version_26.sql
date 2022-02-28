@@ -48,4 +48,6 @@ CREATE INDEX contribution_aggregation_id_idx ON aggregatable_contributions(aggre
 
 CREATE INDEX contribution_report_time_idx ON aggregatable_contributions(report_time);
 
+INSERT INTO conversions VALUES (1,2,3,4,5,6,7,8,9);
+
 COMMIT;

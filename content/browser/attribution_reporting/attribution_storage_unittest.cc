@@ -24,8 +24,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -1769,6 +1771,23 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
               ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
                                 TriggerDebugKeyIs(33))));
+}
+
+TEST_F(AttributionStorageTest, AttributionAggregatableSources_RoundTrips) {
+  proto::AttributionAggregatableSources proto =
+      AggregatableSourcesProtoBuilder()
+          .AddKey("key", AggregatableKeyProtoBuilder()
+                             .SetHighBits(5)
+                             .SetLowBits(345)
+                             .Build())
+          .Build();
+  absl::optional<AttributionAggregatableSources> aggregatable_sources =
+      AttributionAggregatableSources::Create(std::move(proto));
+  EXPECT_TRUE(aggregatable_sources.has_value());
+  storage()->StoreSource(
+      SourceBuilder().SetAggregatableSources(*aggregatable_sources).Build());
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(AggregatableSourcesAre(*aggregatable_sources)));
 }
 
 // This is tested more thoroughly by the `RateLimitTable` unit tests. Here just

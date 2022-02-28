@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("attribution_reporting_proto") {
+  sources = [ "attribution_reporting.proto" ]
+}
 
 mojom("mojo_bindings") {
   sources = [ "attribution_internals.mojom" ]
@@ -27,6 +32,7 @@ mojom("mojo_bindings") {
         "common_source_info.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
+      traits_deps = [":attribution_reporting_proto"]
     },
   ]
 }

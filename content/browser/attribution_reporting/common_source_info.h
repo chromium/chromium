@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -47,7 +48,8 @@ class CONTENT_EXPORT CommonSourceInfo {
                    base::Time expiry_time,
                    SourceType source_type,
                    int64_t priority,
-                   absl::optional<uint64_t> debug_key);
+                   absl::optional<uint64_t> debug_key,
+                   AttributionAggregatableSources aggregatable_sources);
 
   ~CommonSourceInfo();
 
@@ -75,6 +77,10 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   absl::optional<uint64_t> debug_key() const { return debug_key_; }
 
+  const AttributionAggregatableSources& aggregatable_sources() const {
+    return aggregatable_sources_;
+  }
+
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
   // Returns the schemeful site of |conversion_origin|.
@@ -99,6 +105,7 @@ class CONTENT_EXPORT CommonSourceInfo {
   SourceType source_type_;
   int64_t priority_;
   absl::optional<uint64_t> debug_key_;
+  AttributionAggregatableSources aggregatable_sources_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

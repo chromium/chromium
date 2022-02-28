@@ -39,6 +39,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::UnorderedElementsAre;
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
@@ -201,6 +202,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
   EXPECT_FALSE(source_data.front()->debug_key);
   EXPECT_THAT(source_data.front()->filter_data->filter_values, IsEmpty());
+  EXPECT_THAT(source_data.front()->aggregatable_sources->sources, IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
@@ -242,6 +244,59 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
   EXPECT_THAT(source_data.front()->filter_data->filter_values,
               UnorderedElementsAre(Pair("a", IsEmpty()),
                                    Pair("b", ElementsAre("1", "2"))));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttributionSourceDeclarationBrowserTest,
+    AttributionSrcImg_SourceRegisteredWithAttributionAggregatableSources) {
+  SourceObserver source_observer(web_contents());
+  GURL page_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+
+  MockAttributionHost host(web_contents());
+  std::unique_ptr<MockDataHost> data_host;
+  base::RunLoop loop;
+  EXPECT_CALL(host, RegisterDataHost)
+      .WillOnce(
+          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host) {
+            data_host = GetRegisteredDataHost(std::move(host));
+            loop.Quit();
+          });
+
+  GURL register_url = https_server()->GetURL(
+      "c.test", "/register_aggregatable_source_headers.html");
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace("createAttributionSourceImg($1);", register_url)));
+  if (!data_host)
+    loop.Run();
+  data_host->WaitForSourceData(/*num_source_data=*/1);
+  const auto& source_data = data_host->source_data();
+
+  EXPECT_EQ(source_data.size(), 1u);
+  EXPECT_EQ(source_data.front()->source_event_id, 5UL);
+  EXPECT_EQ(source_data.front()->destination,
+            url::Origin::Create(GURL("https://advertiser.example")));
+  EXPECT_EQ(source_data.front()->priority, 0);
+  EXPECT_EQ(source_data.front()->expiry, absl::nullopt);
+  EXPECT_FALSE(source_data.front()->debug_key);
+  EXPECT_THAT(
+      source_data.front()->aggregatable_sources->sources,
+      UnorderedElementsAre(
+          Pair("key1",
+               Pointee(AllOf(
+                   Field(&blink::mojom::AttributionAggregatableKey::high_bits,
+                         0),
+                   Field(&blink::mojom::AttributionAggregatableKey::low_bits,
+                         5)))),
+          Pair("key2",
+               Pointee(AllOf(
+                   Field(&blink::mojom::AttributionAggregatableKey::high_bits,
+                         0),
+                   Field(&blink::mojom::AttributionAggregatableKey::low_bits,
+                         345))))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
