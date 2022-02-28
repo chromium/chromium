@@ -47,6 +47,9 @@ ci.builder(
     execution_timeout = 4 * time.hour,
     os = os.LINUX_BIONIC_REMOVE,
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -69,6 +72,9 @@ ci.builder(
         },
     },
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -84,6 +90,9 @@ ci.builder(
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
     os = os.LINUX_BIONIC_REMOVE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

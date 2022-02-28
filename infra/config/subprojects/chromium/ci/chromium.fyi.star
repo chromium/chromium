@@ -900,6 +900,9 @@ fyi_coverage_builder(
     schedule = "triggered",
     triggered_by = [],
     use_java_coverage = True,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 fyi_coverage_builder(
@@ -911,6 +914,9 @@ fyi_coverage_builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     use_clang_coverage = True,
     coverage_test_types = ["overall", "unit"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 fyi_coverage_builder(

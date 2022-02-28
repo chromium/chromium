@@ -252,6 +252,9 @@ ci.builder(
     os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.ANDROID,
     tree_closing = False,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
