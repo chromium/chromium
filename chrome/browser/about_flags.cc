@@ -6045,10 +6045,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableHostnameSettingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEnableHostnameSetting)},
 
-    {"webui-dark-mode", flag_descriptions::kWebuiDarkModeName,
-     flag_descriptions::kWebuiDarkModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kWebUIDarkMode)},
-
     {"enable-networking-in-diagnostics-app",
      flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
      flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,

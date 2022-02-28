@@ -3112,9 +3112,6 @@ extern const char kWakeOnWifiAllowedDescription[];
 extern const char kWebAppsCrosapiName[];
 extern const char kWebAppsCrosapiDescription[];
 
-extern const char kWebuiDarkModeName[];
-extern const char kWebuiDarkModeDescription[];
-
 extern const char kWifiConnectMacAddressRandomizationName[];
 extern const char kWifiConnectMacAddressRandomizationDescription[];
 

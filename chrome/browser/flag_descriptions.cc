@@ -5401,11 +5401,6 @@ const char kWebAppsCrosapiName[] = "Web Apps Crosapi";
 const char kWebAppsCrosapiDescription[] =
     "Support web apps publishing from Lacros browser.";
 
-const char kWebuiDarkModeName[] = "WebUI dark mode";
-const char kWebuiDarkModeDescription[] =
-    "Allows dark mode usage in WebUI. Note that this does not necessary enable "
-    "dark mode, which is enabled via the #enable-force-dark flag.";
-
 const char kWifiConnectMacAddressRandomizationName[] =
     "MAC address randomization";
 const char kWifiConnectMacAddressRandomizationDescription[] =
