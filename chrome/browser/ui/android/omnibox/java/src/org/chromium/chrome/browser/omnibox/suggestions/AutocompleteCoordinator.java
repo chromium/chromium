@@ -71,7 +71,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private final @NonNull ObservableSupplier<Profile> mProfileSupplier;
     private final @NonNull Callback<Profile> mProfileChangeCallback;
     private final @NonNull AutocompleteMediator mMediator;
-    private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
 
     public AutocompleteCoordinator(@NonNull ViewGroup parent,
@@ -89,7 +88,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull ExploreIconProvider exploreIconProvider,
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mParent = parent;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
 
         PropertyModel listModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
@@ -417,11 +415,5 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public ModelList getSuggestionModelListForTest() {
         return mMediator.getSuggestionModelListForTest();
-    }
-
-    @VisibleForTesting
-    public @NonNull ModalDialogManager getModalDialogManagerForTest() {
-        assert mModalDialogManagerSupplier.hasValue();
-        return mModalDialogManagerSupplier.get();
     }
 }

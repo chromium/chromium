@@ -290,7 +290,7 @@ void AutocompleteControllerAndroid::ResetSession(JNIEnv* env) {
 
 void AutocompleteControllerAndroid::OnSuggestionSelected(
     JNIEnv* env,
-    jint match_index,
+    jint selected_index,
     const jint j_window_open_disposition,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
@@ -303,7 +303,8 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
+  const auto& match =
+      autocomplete_controller_->result().match_at(selected_index);
   SuggestionAnswer::LogAnswerUsed(match.answer);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -335,7 +336,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
                                                        : input_.text(),
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
-      OmniboxEventProto::INVALID, true, match_index,
+      OmniboxEventProto::INVALID, true, selected_index,
       static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
       sessions::SessionTabHelper::IdForTab(web_contents),
       OmniboxEventProto::PageClassification(j_page_classification),
@@ -350,29 +351,21 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       ->OnOmniboxOpenedUrl(log);
 }
 
-void AutocompleteControllerAndroid::DeleteMatch(JNIEnv* env, jint match_index) {
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
+void AutocompleteControllerAndroid::DeleteSuggestion(JNIEnv* env, jint index) {
+  const auto& match = autocomplete_controller_->result().match_at(index);
   if (match.SupportsDeletion())
     autocomplete_controller_->DeleteMatch(match);
-}
-
-void AutocompleteControllerAndroid::DeleteMatchElement(JNIEnv* env,
-                                                       jint match_index,
-                                                       jint element_index) {
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
-  if (match.SupportsDeletion())
-    autocomplete_controller_->DeleteMatchElement(match, element_index);
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         JNIEnv* env,
-        jint match_index,
+        jint selected_index,
         jlong elapsed_time_since_input_change,
         const JavaParamRef<jstring>& jnew_query_text,
         const JavaParamRef<jobjectArray>& jnew_query_params) {
   AutocompleteMatch match(
-      autocomplete_controller_->result().match_at(match_index));
+      autocomplete_controller_->result().match_at(selected_index));
 
   if (!jnew_query_text.is_null()) {
     std::u16string query =
@@ -402,9 +395,9 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
 
 ScopedJavaLocalRef<jobject>
 AutocompleteControllerAndroid::GetMatchingTabForSuggestion(JNIEnv* env,
-                                                           jint match_index) {
+                                                           jint index) {
   const AutocompleteMatch& match =
-      autocomplete_controller_->result().match_at(match_index);
+      autocomplete_controller_->result().match_at(index);
   return match.GetMatchingJavaTab().get(env);
 }
 

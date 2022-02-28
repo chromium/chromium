@@ -107,12 +107,3 @@ query_tiles::TileService* FakeAutocompleteProviderClient::GetQueryTileService()
 const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
   return fake_tab_matcher_;
 }
-
-scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
-  return top_sites_;
-}
-
-ntp_tiles::MostVisitedSites*
-FakeAutocompleteProviderClient::GetNtpMostVisitedSites() {
-  return ntp_most_visited_sites_;
-}

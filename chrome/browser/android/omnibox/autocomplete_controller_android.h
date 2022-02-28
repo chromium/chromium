@@ -63,25 +63,24 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   void OnSuggestionSelected(
       JNIEnv* env,
-      jint match_index,
+      jint selected_index,
       const jint j_window_open_disposition,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
       const base::android::JavaParamRef<jobject>& j_web_contents);
-  void DeleteMatch(JNIEnv* env, jint match_index);
-  void DeleteMatchElement(JNIEnv* env, jint match_index, jint element_index);
+  void DeleteSuggestion(JNIEnv* env, jint selected_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,
-      jint match_index,
+      jint selected_index,
       jlong elapsed_time_since_input_change,
       const base::android::JavaParamRef<jstring>& jnew_query_text,
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
-      jint match_index);
+      jint index);
 
   // KeyedService:
   void Shutdown() override;

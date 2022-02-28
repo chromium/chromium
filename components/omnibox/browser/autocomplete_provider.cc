@@ -164,12 +164,6 @@ void AutocompleteProvider::DeleteMatch(const AutocompleteMatch& match) {
                 << "' has not implemented DeleteMatch.";
 }
 
-void AutocompleteProvider::DeleteMatchElement(const AutocompleteMatch& match,
-                                              size_t element_index) {
-  DLOG(WARNING) << "The AutocompleteProvider '" << GetName()
-                << "' has not implemented DeleteMatchElement.";
-}
-
 void AutocompleteProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
 }
 
