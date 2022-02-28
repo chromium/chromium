@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.ResourceManager;
@@ -187,7 +188,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
         }
 
         private void updateScrimVisibility(boolean visibility) {
-            if (!isGridTabSwitcherEnabled()) return;
+            if (!isGridTabSwitcherNonPolishEnabled()) return;
 
             if (mScrimFadeAnimation != null) {
                 mScrimFadeAnimation.cancel();
@@ -355,7 +356,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
     }
 
     private void updateStripScrim() {
-        if (!isGridTabSwitcherEnabled()) return;
+        if (!isGridTabSwitcherNonPolishEnabled()) return;
         // Update width
         float scrimWidth = mModelSelectorButton.isVisible()
                 ? mWidth - getModelSelectorButtonWidthWithPadding()
@@ -662,8 +663,9 @@ public class StripLayoutHelperManager implements SceneOverlay {
         }
     }
 
-    private boolean isGridTabSwitcherEnabled() {
-        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+    private boolean isGridTabSwitcherNonPolishEnabled() {
+        return CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
+                && !TabUiFeatureUtilities.GRID_TAB_SWITCHER_FOR_TABLETS_POLISH.getValue();
     }
 
     /**
