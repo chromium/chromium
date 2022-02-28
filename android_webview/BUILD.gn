@@ -788,6 +788,7 @@ android_library("common_java") {
     "//components/metrics:metrics_java",
     "//components/network_session_configurator/android:network_session_configurator_java",
     "//components/power_scheduler:power_scheduler_java",
+    "//components/variations:variations_java",
     "//components/viz:viz_java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
