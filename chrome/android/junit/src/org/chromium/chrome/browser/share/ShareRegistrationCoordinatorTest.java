@@ -36,15 +36,16 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationEntry;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -54,9 +55,13 @@ import org.chromium.url.JUnitTestGURLs;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ShareRegistrationCoordinatorTest {
     @Rule
+    public Features.JUnitProcessor mProcessorRule = new Features.JUnitProcessor();
+    @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Mock
     SendTabToSelfAndroidBridge.Natives mNativeMock;
@@ -69,8 +74,6 @@ public class ShareRegistrationCoordinatorTest {
     private NavigationEntry mNavigationEntry;
     @Mock
     private BottomSheetController mBottomSheetController;
-    @Mock
-    private SyncService mSyncService;
     @Mock
     private Context mContext;
     @Mock
@@ -95,16 +98,13 @@ public class ShareRegistrationCoordinatorTest {
 
     @Test
     @SmallTest
+    @Features.DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
     public void doSendTabToSelfShare() {
         ShareRegistrationCoordinator shareCoordinator = new ShareRegistrationCoordinator(
                 mActivity, mWindowAndroid, mCurrentTabSupplier, mBottomSheetController);
         // Setup the mocked object chain to get to the url, title and timestamp.
         when(mNavigationEntry.getUrl())
                 .thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
-
-        // Setup the mocked object for sync settings.
-        when(mSyncService.isSyncRequested()).thenReturn(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncService));
 
         shareCoordinator.doSendTabToSelfShare(
                 mActivity, mWindowAndroid, mNavigationEntry, mBottomSheetController);

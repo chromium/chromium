@@ -19,10 +19,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.DeviceInfoSpecifics;
@@ -60,10 +63,34 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    public void testShowFeatureUnavailablePromptIfSignedOut() {
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
+    public void testShowFeatureUnavailablePromptIfSignedOutAndFeatureDisabled() {
+        // Set up a user satisfying all the preconditions for a sign-in promo, except having the
+        // feature enabled.
+        mSyncTestRule.addTestAccount();
         buildAndShowCoordinator();
 
         waitForViewShown(R.id.send_tab_to_self_feature_unavailable_prompt);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
+    public void testShowSigninPromoIfSignedOutAndFeatureEnabled() {
+        // An account must be added to the device so the promo is offered.
+        mSyncTestRule.addTestAccount();
+        buildAndShowCoordinator();
+
+        // Check the promo is displayed, in particular the sign-in button.
+        waitForViewShown(R.id.account_picker_continue_as_button);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getBottomSheetView()
+                    .findViewById(R.id.account_picker_continue_as_button)
+                    .performClick();
+        });
+
+        waitForViewShown(R.id.device_picker_list);
     }
 
     private void addTargetDeviceToSyncServer() {
