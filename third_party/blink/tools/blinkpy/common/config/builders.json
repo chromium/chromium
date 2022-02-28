@@ -75,13 +75,15 @@
         "master": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "is_try_builder": true
+        "is_try_builder": true,
+        "step_name": "wpt_tests_suite (with patch)"
     },
     "linux-wpt-input-fyi-rel": {
         "master": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "is_try_builder": true
+        "is_try_builder": true,
+        "step_name": "wpt_tests_suite (with patch, experimental)"
     },
     "linux-blink-rel": {
         "master": "tryserver.blink",
