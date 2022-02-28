@@ -570,6 +570,44 @@ const char kExpectedStructTreeJSON[] = R"({
 }
 )";
 
+const char kExpectedFigureOnlyStructTreeJSON[] = R"({
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "alt": "Figure 1: The caption",
+      "type": "Figure",
+      "~children": [ {
+         "alt": "Sample SVG image",
+         "type": "Figure"
+      }, {
+         "type": "NonStruct",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}
+)";
+
+const char kExpectedFigureRoleOnlyStructTreeJSON[] = R"({
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "alt": "Text that describes the figure.",
+      "type": "Figure",
+      "~children": [ {
+         "alt": "Sample SVG image",
+         "type": "Figure"
+      }, {
+         "type": "P",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}
+)";
+
 const char kExpectedImageOnlyStructTreeJSON[] = R"({
    "lang": "en",
    "type": "Document",
@@ -583,6 +621,22 @@ const char kExpectedImageOnlyStructTreeJSON[] = R"({
 }
 )";
 
+const char kExpectedImageRoleOnlyStructTreeJSON[] = R"({
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "alt": "That cat is so cute",
+      "type": "Figure",
+      "~children": [ {
+         "type": "P",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      } ]
+   } ]
+}
+)";
+
 struct TaggedPDFTestData {
   const char* url;
   const char* expected_json;
@@ -590,7 +644,12 @@ struct TaggedPDFTestData {
 
 constexpr TaggedPDFTestData kTaggedPDFTestData[] = {
     {"/structured_doc.html", kExpectedStructTreeJSON},
+    {"/structured_doc_only_figure.html", kExpectedFigureOnlyStructTreeJSON},
+    {"/structured_doc_only_figure_role.html",
+     kExpectedFigureRoleOnlyStructTreeJSON},
     {"/structured_doc_only_image.html", kExpectedImageOnlyStructTreeJSON},
+    {"/structured_doc_only_image_role.html",
+     kExpectedImageRoleOnlyStructTreeJSON},
 };
 
 class HeadlessWebContentsTaggedPDFTest
