@@ -245668,10 +245668,6 @@
       "2d9a1380b3889a446356725b75db485e55992cc1",
       []
      ],
-     "color-resolving-hwb-expected.txt": [
-      "3f4cd36c61ca232f4f9a412c201b8f8bf6d84c4b",
-      []
-     ],
      "composited-filters-under-opacity-ref.html": [
       "73b420189ec8bc073e8b6a2e4bfd628653bd4a78",
       []
@@ -245810,7 +245806,7 @@
      ],
      "parsing": {
       "color-computed-expected.txt": [
-       "d2901735005c041eb9c8d85d4383387641a05632",
+       "feeafdc509c35115fcbf815a0ba85a5702d4ad4e",
        []
       ],
       "color-contrast-computed-expected.txt": [
@@ -245830,7 +245826,7 @@
        []
       ],
       "color-valid-expected.txt": [
-       "f1e4105202864b39ace6e8695bf82c5bf639e457",
+       "8d9c22d91e1d59c10c62e863b11f20f39f36332a",
        []
       ],
       "relative-color-computed-expected.txt": [
@@ -273311,7 +273307,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "d44f50e2d83edfdc897b29ec54bb02d4c3ca2acd",
+      "9d6e7e91410b6536d9503ce44cffb14dd201abb6",
       []
      ],
      "resources": {
@@ -321901,7 +321897,7 @@
         []
        ],
        "keys.py": [
-        "9e87ebfac1d7b631c752e099c7be57f156577585",
+        "34d3a5b125eb5a86761bf5a275172869b000bfb0",
         []
        ],
        "mouse.py": [
@@ -363674,7 +363670,7 @@
      ],
      "parsing": {
       "color-computed.html": [
-       "88de9dfe4a7dba96e8716377dfd579803dc479c5",
+       "34aa059ed347ea7769e96b62973200f8326bcf77",
        [
         null,
         {}
@@ -382256,7 +382252,7 @@
      },
      "stylevalue-subclasses": {
       "cssColorValue.html": [
-       "d57023fa9de4704562eead5db32e8c0fadf2f499",
+       "f86948d7aefb5ae1e831b1072f7b999d9f32b9f2",
        [
         null,
         {}
@@ -382264,6 +382260,13 @@
       ],
       "cssHSL.html": [
        "732d06e164b7ef28cb85cd69fc00330627237076",
+       [
+        null,
+        {}
+       ]
+      ],
+      "cssHWB.html": [
+       "192db5181c79d24d1808e4021a87f543dcdefe16",
        [
         null,
         {}
