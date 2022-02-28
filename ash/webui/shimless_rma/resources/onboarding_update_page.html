@@ -1,9 +1,4 @@
 <style include="cr-shared-style shimless-rma-shared">
-  .small-icon {
-    height: 20px;
-    width: 20px;
-  }
-
   #performUpdateButton {
     border-color: var(--google-blue-600);
   }
@@ -23,7 +18,7 @@
       <iron-icon id="updateIcon" class="small-icon"
           icon="[[getUpdateNoticeIcon_(updateAvailable_)]]">
       </iron-icon>
-      <div class="instructions">[[currentVersionText_]]</div>
+      <span class="instructions">[[currentVersionText_]]</span>
     </div>
     <div id="progressMessage">
       <paper-spinner-lite hidden$="[[!updateInProgress_]]" active>
