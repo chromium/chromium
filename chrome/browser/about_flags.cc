@@ -5717,6 +5717,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kVaapiWebPImageDecodeAcceleration)},
 #endif
 
+#if BUILDFLAG(IS_WIN)
+    {"calculate-native-win-occlusion",
+     flag_descriptions::kCalculateNativeWinOcclusionName,
+     flag_descriptions::kCalculateNativeWinOcclusionDescription, kOsWin,
+     FEATURE_VALUE_TYPE(features::kCalculateNativeWinOcclusion)},
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"happiness-tracking-surveys-for-desktop-demo",
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoName,

@@ -3881,6 +3881,12 @@ const char kSharingDesktopScreenshotsEditDescription[] =
 
 #if BUILDFLAG(IS_WIN)
 
+const char kCalculateNativeWinOcclusionName[] =
+    "Calculate window occlusion on Windows";
+const char kCalculateNativeWinOcclusionDescription[] =
+    "Calculate window occlusion on Windows will be used in the future "
+    "to throttle and potentially unload foreground tabs in occluded windows";
+
 const char kEnableIncognitoShortcutOnDesktopName[] =
     "Enable Incognito Desktop Shortcut";
 const char kEnableIncognitoShortcutOnDesktopDescription[] =
