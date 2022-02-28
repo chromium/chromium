@@ -392,6 +392,9 @@ void PaintOpWriter::Write(const sk_sp<GrSlug>& slug) {
 
   AlignMemory(4);
   uint64_t* size_memory = WriteSize(0u);
+  if (!valid_)
+    return;
+
   size_t bytes_written = 0;
   if (slug) {
     // TODO(penghuang): should we use a unique id to avoid sending the same
