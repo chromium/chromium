@@ -39,7 +39,7 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   virtual void OnMarkerPressed();
   // Sets the annotator tool.
   virtual void SetAnnotatorTool(const AnnotatorTool& tool);
-  // Reset and disable the annotator tools.
+  // Resets and disables the annotator tools and clears the canvas.
   void ResetTools();
 
   bool is_annotator_enabled() { return annotator_enabled_; }

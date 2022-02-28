@@ -90,6 +90,10 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   // Enable marker.
   controller_->OnMarkerPressed();
   EXPECT_TRUE(controller_->is_annotator_enabled());
+
+  EXPECT_CALL(projector_client_, Clear());
+  controller_->ResetTools();
+  EXPECT_FALSE(controller_->is_annotator_enabled());
 }
 
 TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {

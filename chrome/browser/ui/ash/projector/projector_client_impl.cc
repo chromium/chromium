@@ -193,5 +193,6 @@ void ProjectorClientImpl::Undo() {}
 // TODO(b/220202359): Implement redo.
 void ProjectorClientImpl::Redo() {}
 
-// TODO(b/220202359): Implement clear.
-void ProjectorClientImpl::Clear() {}
+void ProjectorClientImpl::Clear() {
+  message_handler_->Clear();
+}

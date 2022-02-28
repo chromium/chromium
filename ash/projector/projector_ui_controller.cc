@@ -153,6 +153,7 @@ void ProjectorUiController::ResetTools() {
   if (annotator_enabled_) {
     ToggleAnnotator();
     annotator_enabled_ = false;
+    ash::ProjectorAnnotatorController::Get()->Clear();
   }
 }
 
