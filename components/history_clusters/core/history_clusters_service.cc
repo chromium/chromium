@@ -276,6 +276,9 @@ void HistoryClustersService::QueryClusters(
     QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
   NotifyDebugMessage("HistoryClustersService::QueryClusters()");
+  NotifyDebugMessage(
+      "  begin_time = " +
+      (begin_time.is_null() ? "null" : base::TimeToISO8601(begin_time)));
   NotifyDebugMessage("  end_time = " + (end_time.is_null()
                                             ? "null"
                                             : base::TimeToISO8601(end_time)));
@@ -289,13 +292,6 @@ void HistoryClustersService::QueryClusters(
   }
 
   DCHECK(history_service_);
-
-  NotifyDebugMessage("Starting History Query:");
-  NotifyDebugMessage("  end_time = " + (end_time.is_null()
-                                            ? "null"
-                                            : base::TimeToISO8601(end_time)));
-
-  // TODO(crbug/1243049) : Add timing metrics for the history service DB query.
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
@@ -336,29 +332,17 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // (The cache_query_task_tracker_ should also do this.)
     all_keywords_cache_timestamp_ = base::Time::Now();
 
-    // Query for 30 days of clusters since older visits won't have keywords.
-    const auto begin_time = base::Time::Now() - base::Days(30);
-    // TODO(tommycli): This `QueryClusters()` correctly returns only clusters
-    //  with `should_show_on_prominent_ui_surfaces` set to true because the
-    //  `query` parameter is set to empty. However, it would be nice if this
-    //  was more explicit, rather than just a happy coincidence. Likely the real
-    //  solution will be to explicitly ask the backend for this bag of keywords.
     NotifyDebugMessage("Starting all_keywords_cache_ generation.");
     QueryClusters(
-        ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
+        ClusteringRequestSource::kKeywordCacheGeneration,
+        /*begin_time=*/base::Time(),
         /*end_time=*/base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
-                       weak_ptr_factory_.GetWeakPtr(), begin_time,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       /*begin_time=*/base::Time(),
                        std::make_unique<std::vector<std::u16string>>(),
                        &all_keywords_cache_),
         &cache_query_task_tracker_);
-
-    // Once `all_keywords_cache_` has been updated, we could clear
-    // `short_keyword_cache_` as its keywords will be contained in
-    // `all_keywords_cache_`. However, since `all_keywords_cache_` is updated
-    // asynchronously, we don't clear `short_keyword_cache_` to avoid
-    // introducing another layer of callbacks.
-
   } else if (!cache_query_task_tracker_.HasTrackedTasks() &&
              (base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
                  10 &&
@@ -370,8 +354,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     NotifyDebugMessage("Starting short_keywords_cache_ generation.");
     QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration,
-        /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
-        base::Time(),
+        /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),
                        all_keywords_cache_timestamp_,
