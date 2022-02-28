@@ -610,6 +610,9 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kCanvas:
         disabled_web_apps_.insert(web_app::kCanvasAppId);
         break;
+      case policy::SystemFeature::kCrosh:
+        disabled_system_apps_.insert(SystemAppType::CROSH);
+        break;
     }
   }
 

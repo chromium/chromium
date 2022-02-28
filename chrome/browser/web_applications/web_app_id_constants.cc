@@ -25,6 +25,10 @@ const char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 const char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
+//     "chrome-untrusted://crosh/"))
+const char kCroshAppId[] = "cgfnfgkafmcdkdgilmojlnaadileaach";
+
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(
 //     "https://cursive.apps.chrome/"))
 const char kCursiveAppId[] = "apignacaigpffemhdbhmnajajaccbckh";
 

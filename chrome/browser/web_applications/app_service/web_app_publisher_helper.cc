@@ -1658,6 +1658,7 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
     DCHECK(system_app);
     app.show_in_launcher = system_app->ShouldShowInLauncher();
     app.show_in_search = system_app->ShouldShowInSearch();
+    app.show_in_shelf = app.show_in_search;
   }
 #endif
 }
@@ -1686,6 +1687,7 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
     app->show_in_search = system_app->ShouldShowInSearch()
                               ? apps::mojom::OptionalBool::kTrue
                               : apps::mojom::OptionalBool::kFalse;
+    app->show_in_shelf = app->show_in_search;
   }
 #endif
 }

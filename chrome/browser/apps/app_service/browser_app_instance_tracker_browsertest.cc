@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
@@ -721,8 +722,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
   web_app::WebAppProvider::GetForSystemWebApps(profile)
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
-  std::string app_id = web_app::GenerateAppId(
-      absl::nullopt, GURL(chrome::kChromeUIUntrustedCroshURL));
 
   Browser* browser = nullptr;
   aura::Window* window = nullptr;
@@ -732,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     Recorder recorder(*tracker_);
 
     // Open an app window (crosh) and insert a tab.
-    browser = CreateAppBrowser(app_id);
+    browser = CreateAppBrowser(web_app::kCroshAppId);
     chrome::NewTab(browser);
     content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(0);
     NavigateActiveTab(browser, chrome::kChromeUIUntrustedCroshURL);
@@ -745,8 +744,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     EXPECT_EQ(GetId(tab), 1u);
     window = browser->window()->GetNativeWindow();
     recorder.Verify({
-        {"added", 1, kAppWindow, app_id, window, "", kActive, kActive},
-        {"updated", 1, kAppWindow, app_id, window, "crosh1", kActive, kActive},
+        {"added", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive,
+         kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh1",
+         kActive, kActive},
     });
   }
 
@@ -764,8 +765,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     // Only title of the existing app instance should be updated.
     EXPECT_EQ(GetId(tab), 1u);
     recorder.Verify({
-        {"updated", 1, kAppWindow, app_id, window, "", kActive, kActive},
-        {"updated", 1, kAppWindow, app_id, window, "crosh2", kActive, kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive,
+         kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
+         kActive, kActive},
     });
   }
 
@@ -777,7 +780,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
 
     // The app instance disappars with the window.
     recorder.Verify({
-        {"removed", 1, kAppWindow, app_id, window, "crosh2", kActive, kActive},
+        {"removed", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
+         kActive, kActive},
     });
   }
 }

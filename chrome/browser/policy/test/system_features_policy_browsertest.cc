@@ -54,7 +54,8 @@ class SystemFeaturesPolicyTest : public PolicyTest {
  public:
   SystemFeaturesPolicyTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::kCroshSWA},
         /*disabled_features=*/{});
   }
 
@@ -336,52 +337,59 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   system_features.Append(kScanningFeature);
   system_features.Append(kWebStoreFeature);
   system_features.Append(kCanvasFeature);
+  system_features.Append(kCroshFeature);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
-  VisibilityFlags camera_expected_visibility =
-      GetVisibilityFlags(true /* is_hidden */);
-  VisibilityFlags scanning_expected_visibility =
-      GetVisibilityFlags(true /* is_hidden */);
-  VisibilityFlags web_store_expected_visibility =
-      GetVisibilityFlags(true /* is_hidden */);
-  VisibilityFlags canvas_expected_visibility =
+
+  VisibilityFlags expected_visibility =
       GetVisibilityFlags(true /* is_hidden */);
   VerifyAppState(web_app::kCameraAppId, apps::Readiness::kDisabledByPolicy,
-                 true, camera_expected_visibility);
+                 true, expected_visibility);
   VerifyAppState(web_app::kScanningAppId, apps::Readiness::kDisabledByPolicy,
-                 true, scanning_expected_visibility);
+                 true, expected_visibility);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
-                          web_store_expected_visibility);
+                          expected_visibility);
   VerifyAppState(web_app::kCanvasAppId, apps::Readiness::kDisabledByPolicy,
-                 true, canvas_expected_visibility);
+                 true, expected_visibility);
+  VerifyAppState(web_app::kCroshAppId, apps::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+
   // Disable and block apps.
-  camera_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
-  scanning_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  expected_visibility = GetVisibilityFlags(false /* is_hidden */);
   // We never show scanning in the launcher.
+  VisibilityFlags scanning_expected_visibility =
+      GetVisibilityFlags(false /* is_hidden */);
   scanning_expected_visibility.show_in_launcher =
       apps::mojom::OptionalBool::kFalse;
-  web_store_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
-  canvas_expected_visibility = GetVisibilityFlags(false /* is_hidden */);
+  // Crosh is never shown.
+  VisibilityFlags crosh_expected_visibility =
+      GetVisibilityFlags(true /* is_hidden */);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kBlockedDisableMode);
+
   VerifyAppState(web_app::kCameraAppId, apps::Readiness::kDisabledByPolicy,
-                 true, camera_expected_visibility);
+                 true, expected_visibility);
   VerifyAppState(web_app::kScanningAppId, apps::Readiness::kDisabledByPolicy,
                  true, scanning_expected_visibility);
   VerifyExtensionAppState(extensions::kWebStoreAppId,
                           apps::Readiness::kDisabledByPolicy, true,
-                          web_store_expected_visibility);
+                          expected_visibility);
   VerifyAppState(web_app::kCanvasAppId, apps::Readiness::kDisabledByPolicy,
-                 true, canvas_expected_visibility);
+                 true, expected_visibility);
+  VerifyAppState(web_app::kCroshAppId, apps::Readiness::kDisabledByPolicy, true,
+                 crosh_expected_visibility);
+
   // Enable apps.
   UpdateSystemFeaturesDisableList(base::Value(), nullptr);
   VerifyAppState(web_app::kCameraAppId, apps::Readiness::kReady, false,
-                 camera_expected_visibility);
+                 expected_visibility);
   VerifyAppState(web_app::kScanningAppId, apps::Readiness::kReady, false,
                  scanning_expected_visibility);
   VerifyExtensionAppState(extensions::kWebStoreAppId, apps::Readiness::kReady,
-                          false, web_store_expected_visibility);
+                          false, expected_visibility);
   VerifyAppState(web_app::kCanvasAppId, apps::Readiness::kReady, false,
-                 canvas_expected_visibility);
+                 expected_visibility);
+  VerifyAppState(web_app::kCroshAppId, apps::Readiness::kReady, false,
+                 crosh_expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
@@ -391,6 +399,7 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
   system_features.Append(kScanningFeature);
   system_features.Append(kWebStoreFeature);
   system_features.Append(kCanvasFeature);
+  system_features.Append(kCroshFeature);
   UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
 
   InstallSWAs();
@@ -409,6 +418,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                           expected_visibility);
   VerifyAppState(web_app::kCanvasAppId, apps::Readiness::kDisabledByPolicy,
                  true, expected_visibility);
+  VerifyAppState(web_app::kCroshAppId, apps::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
