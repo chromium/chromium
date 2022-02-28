@@ -133,8 +133,7 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
       [&allow_app_info, &allow_uninstall](const apps::AppUpdate& update) {
         allow_app_info =
             update.ShowInManagement() == apps::mojom::OptionalBool::kTrue;
-        allow_uninstall =
-            update.AllowUninstall() == apps::mojom::OptionalBool::kTrue;
+        allow_uninstall = update.AllowUninstall().value_or(false);
       });
 
   std::string sync_id =

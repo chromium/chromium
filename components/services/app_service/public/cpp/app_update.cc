@@ -828,19 +828,12 @@ bool AppUpdate::HandlesIntentsChanged() const {
           (mojom_delta_->handles_intents != mojom_state_->handles_intents));
 }
 
-apps::mojom::OptionalBool AppUpdate::AllowUninstall() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->allow_uninstall != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->allow_uninstall;
+absl::optional<bool> AppUpdate::AllowUninstall() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(allow_uninstall, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->allow_uninstall;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetAllowUninstall() const {
-  GET_VALUE_WITH_FALLBACK(allow_uninstall, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(allow_uninstall)
 }
 
 bool AppUpdate::AllowUninstallChanged() const {
@@ -1066,7 +1059,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "ShowInSearch: " << app.ShowInSearch() << std::endl;
   out << "ShowInManagement: " << app.ShowInManagement() << std::endl;
   out << "HandlesIntents: " << app.HandlesIntents() << std::endl;
-  out << "AllowUninstall: " << app.AllowUninstall() << std::endl;
+  out << "AllowUninstall: " << PRINT_OPTIONAL_VALUE(AllowUninstall)
+      << std::endl;
   out << "HasBadge: " << app.HasBadge() << std::endl;
   out << "Paused: " << app.Paused() << std::endl;
   out << "IntentFilters: " << std::endl;

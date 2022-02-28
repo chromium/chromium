@@ -93,7 +93,7 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::OptionalBool expect_handles_intents_;
   bool expect_handles_intents_changed_;
 
-  apps::mojom::OptionalBool expect_allow_uninstall_;
+  absl::optional<bool> expect_allow_uninstall_;
   bool expect_allow_uninstall_changed_;
 
   apps::mojom::OptionalBool expect_has_badge_;
@@ -281,7 +281,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_show_in_search_ = apps::mojom::OptionalBool::kUnknown;
     expect_show_in_management_ = apps::mojom::OptionalBool::kUnknown;
     expect_handles_intents_ = apps::mojom::OptionalBool::kUnknown;
-    expect_allow_uninstall_ = apps::mojom::OptionalBool::kUnknown;
+    expect_allow_uninstall_ = absl::nullopt;
     expect_has_badge_ = apps::mojom::OptionalBool::kUnknown;
     expect_paused_ = apps::mojom::OptionalBool::kUnknown;
     expect_intent_filters_.clear();
@@ -757,14 +757,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->allow_uninstall = apps::mojom::OptionalBool::kFalse;
-      expect_allow_uninstall_ = apps::mojom::OptionalBool::kFalse;
+      expect_allow_uninstall_ = false;
       expect_allow_uninstall_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->allow_uninstall = apps::mojom::OptionalBool::kTrue;
-      expect_allow_uninstall_ = apps::mojom::OptionalBool::kTrue;
+      expect_allow_uninstall_ = true;
       expect_allow_uninstall_changed_ = true;
       CheckExpects(u);
     }
