@@ -34,6 +34,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
@@ -48,15 +49,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "url/gurl.h"
 
 namespace blink {
 
-static Mutex& GetMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+static base::Lock& GetLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 static network::cors::OriginAccessList& GetOriginAccessList() {
@@ -158,7 +158,7 @@ Referrer SecurityPolicy::GenerateReferrer(
 bool SecurityPolicy::IsOriginAccessAllowed(
     const SecurityOrigin* active_origin,
     const SecurityOrigin* target_origin) {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   return GetOriginAccessList().CheckAccessState(
              active_origin->ToUrlOrigin(),
              target_origin->ToUrlOrigin().GetURL()) ==
@@ -168,7 +168,7 @@ bool SecurityPolicy::IsOriginAccessAllowed(
 bool SecurityPolicy::IsOriginAccessToURLAllowed(
     const SecurityOrigin* active_origin,
     const KURL& url) {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   return GetOriginAccessList().CheckAccessState(active_origin->ToUrlOrigin(),
                                                 url) ==
          network::cors::OriginAccessList::AccessState::kAllowed;
@@ -182,7 +182,7 @@ void SecurityPolicy::AddOriginAccessAllowListEntry(
     const network::mojom::CorsDomainMatchMode domain_match_mode,
     const network::mojom::CorsPortMatchMode port_match_mode,
     const network::mojom::CorsOriginAccessMatchPriority priority) {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   GetOriginAccessList().AddAllowListEntryForOrigin(
       source_origin.ToUrlOrigin(), destination_protocol.Utf8(),
       destination_domain.Utf8(), port, domain_match_mode, port_match_mode,
@@ -197,7 +197,7 @@ void SecurityPolicy::AddOriginAccessBlockListEntry(
     const network::mojom::CorsDomainMatchMode domain_match_mode,
     const network::mojom::CorsPortMatchMode port_match_mode,
     const network::mojom::CorsOriginAccessMatchPriority priority) {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   GetOriginAccessList().AddBlockListEntryForOrigin(
       source_origin.ToUrlOrigin(), destination_protocol.Utf8(),
       destination_domain.Utf8(), port, domain_match_mode, port_match_mode,
@@ -206,12 +206,12 @@ void SecurityPolicy::AddOriginAccessBlockListEntry(
 
 void SecurityPolicy::ClearOriginAccessListForOrigin(
     const SecurityOrigin& source_origin) {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   GetOriginAccessList().ClearForOrigin(source_origin.ToUrlOrigin());
 }
 
 void SecurityPolicy::ClearOriginAccessList() {
-  MutexLocker lock(GetMutex());
+  base::AutoLock locker(GetLock());
   GetOriginAccessList().Clear();
 }
 

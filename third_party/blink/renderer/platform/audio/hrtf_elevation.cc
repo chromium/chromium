@@ -34,10 +34,10 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
@@ -71,9 +71,9 @@ static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
     int subject_resource_id) {
   typedef HashMap<int, scoped_refptr<AudioBus>> AudioBusMap;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioBusMap, audio_bus_map, ());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
 
-  MutexLocker locker(mutex);
+  base::AutoLock locker(lock);
   scoped_refptr<AudioBus> bus;
   AudioBusMap::iterator iterator = audio_bus_map.find(subject_resource_id);
   if (iterator == audio_bus_map.end()) {

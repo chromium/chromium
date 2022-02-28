@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -42,7 +43,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -97,9 +97,9 @@ typedef HashMap<const char*, const char*, TextEncodingNameHash>
     TextEncodingNameMap;
 typedef HashMap<const char*, TextCodecFactory> TextCodecMap;
 
-static Mutex& EncodingRegistryMutex() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
-  return mutex;
+static base::Lock& EncodingRegistryLock() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
+  return lock;
 }
 
 static TextEncodingNameMap* g_text_encoding_name_map;
@@ -124,7 +124,7 @@ static inline void checkExistingName(const char*, const char*) {}
 #else
 
 static void CheckExistingName(const char* alias, const char* atomic_name) {
-  EncodingRegistryMutex().AssertAcquired();
+  EncodingRegistryLock().AssertAcquired();
   const auto it = g_text_encoding_name_map->find(alias);
   if (it == g_text_encoding_name_map->end())
     return;
@@ -160,7 +160,7 @@ static bool IsUndesiredAlias(const char* alias) {
 
 static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   DCHECK_LE(strlen(alias), kMaxEncodingNameLength);
-  EncodingRegistryMutex().AssertAcquired();
+  EncodingRegistryLock().AssertAcquired();
   if (IsUndesiredAlias(alias))
     return;
   const auto it = g_text_encoding_name_map->find(name);
@@ -174,7 +174,7 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
 static void AddToTextCodecMap(const char* name,
                               NewTextCodecFunction function,
                               const void* additional_data) {
-  EncodingRegistryMutex().AssertAcquired();
+  EncodingRegistryLock().AssertAcquired();
   const char* atomic_name = g_text_encoding_name_map->at(name);
   DCHECK(atomic_name);
   g_text_codec_map->insert(atomic_name,
@@ -185,7 +185,7 @@ static void AddToTextCodecMap(const char* name,
 static void BuildBaseTextCodecMaps() {
   DCHECK(!g_text_codec_map);
   DCHECK(!g_text_encoding_name_map);
-  EncodingRegistryMutex().AssertAcquired();
+  EncodingRegistryLock().AssertAcquired();
 
   g_text_codec_map = new TextCodecMap;
   g_text_encoding_name_map = new TextEncodingNameMap;
@@ -212,7 +212,7 @@ static void ExtendTextCodecMaps() {
 }
 
 std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
-  MutexLocker lock(EncodingRegistryMutex());
+  base::AutoLock lock(EncodingRegistryLock());
 
   DCHECK(g_text_codec_map);
   TextCodecFactory factory = g_text_codec_map->at(encoding.GetName());
@@ -223,7 +223,7 @@ std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding& encoding) {
 const char* AtomicCanonicalTextEncodingName(const char* name) {
   if (!name || !name[0])
     return nullptr;
-  MutexLocker lock(EncodingRegistryMutex());
+  base::AutoLock lock(EncodingRegistryLock());
 
   if (!g_text_encoding_name_map)
     BuildBaseTextCodecMaps();
@@ -278,7 +278,7 @@ bool NoExtendedTextEncodingNameUsed() {
 Vector<String> TextEncodingAliasesForTesting() {
   Vector<String> results;
   {
-    MutexLocker lock(EncodingRegistryMutex());
+    base::AutoLock lock(EncodingRegistryLock());
     if (!g_text_encoding_name_map)
       BuildBaseTextCodecMaps();
     if (!AtomicDidExtendTextCodecMaps()) {
@@ -295,7 +295,7 @@ void DumpTextEncodingNameMap() {
   unsigned size = g_text_encoding_name_map->size();
   fprintf(stderr, "Dumping %u entries in WTF::TextEncodingNameMap...\n", size);
 
-  MutexLocker lock(EncodingRegistryMutex());
+  base::AutoLock lock(EncodingRegistryLock());
 
   for (const auto& it : *g_text_encoding_name_map)
     fprintf(stderr, "'%s' => '%s'\n", it.key, it.value);

@@ -6,11 +6,11 @@
 
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/pffft/src/pffft.h"
 namespace blink {
 
@@ -52,14 +52,14 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(FFTHashMap_t, fft_setups, ());
 
   if (first_call) {
-    DEFINE_STATIC_LOCAL(Mutex, setup_lock, ());
+    DEFINE_STATIC_LOCAL(base::Lock, setup_lock, ());
 
     // Make sure we construct the fft_setups vector below on the main thread.
     // Once constructed, we can access it from any thread.
     DCHECK(IsMainThread());
     first_call = false;
 
-    MutexLocker locker(setup_lock);
+    base::AutoLock locker(setup_lock);
 
     // Initialize the hash map with all the possible keys (FFT sizes), with a
     // value of nullptr because we want to initialize the setup data lazily. The
@@ -94,7 +94,7 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
   DCHECK(setup.Contains(fft_size));
 
   if (setup.find(fft_size)->value == nullptr) {
-    DEFINE_STATIC_LOCAL(Mutex, setup_lock, ());
+    DEFINE_STATIC_LOCAL(base::Lock, setup_lock, ());
 
     // Make sure allocation of a new setup only occurs on the main thread so we
     // don't have a race condition with multiple threads trying to write to the
@@ -102,7 +102,7 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
     DCHECK(IsMainThread());
 
     auto fft_data = std::make_unique<FFTSetup>(fft_size);
-    MutexLocker locker(setup_lock);
+    base::AutoLock locker(setup_lock);
     setup.find(fft_size)->value = std::move(fft_data);
   }
 }
