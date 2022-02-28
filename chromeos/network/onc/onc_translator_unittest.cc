@@ -75,6 +75,7 @@ INSTANTIATE_TEST_SUITE_P(
                        "shill_openvpn_compression_algorithm_lzo.json"),
         std::make_pair("openvpn_compression_algorithm_none.onc",
                        "shill_openvpn_compression_algorithm_none.json"),
+        std::make_pair("openvpn_advanced.onc", "shill_openvpn_advanced.json"),
         std::make_pair("vpn_ipsec_clientcert_pkcs11.onc",
                        "shill_vpn_ipsec_clientcert_pkcs11.json"),
         std::make_pair("cellular.onc", "shill_cellular.json"),
