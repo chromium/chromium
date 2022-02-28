@@ -622,6 +622,10 @@ bool AppUpdate::InstallSourceChanged() const {
 }
 
 const std::string& AppUpdate::PolicyId() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(policy_id, base::EmptyString())
+  }
+
   if (mojom_delta_ && mojom_delta_->policy_id.has_value()) {
     return mojom_delta_->policy_id.value();
   }
@@ -629,10 +633,6 @@ const std::string& AppUpdate::PolicyId() const {
     return mojom_state_->policy_id.value();
   }
   return base::EmptyString();
-}
-
-const std::string& AppUpdate::GetPolicyId() const {
-  GET_VALUE_WITH_FALLBACK(policy_id, base::EmptyString())
 }
 
 bool AppUpdate::PolicyIdChanged() const {
