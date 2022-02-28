@@ -95,7 +95,7 @@ const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
 
 // Enables fast API calls in TurboFan.
 const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Artificially delays script execution.
 const base::Feature kV8ScriptAblation{"V8ScriptAblation",
