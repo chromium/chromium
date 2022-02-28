@@ -26,6 +26,8 @@ VIZ_COMMON_EXPORT bool CompositorRenderPassListFromDict(
     CompositorRenderPassList* render_pass_list);
 
 VIZ_COMMON_EXPORT const char* BlendModeToString(SkBlendMode blend_mode);
+VIZ_COMMON_EXPORT const char* DrawQuadMaterialToString(
+    DrawQuad::Material material);
 
 // Represents the important information used for (de)serialization of
 // `CompositorFrame`s on a given surface.

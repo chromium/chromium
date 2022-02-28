@@ -949,30 +949,6 @@ int GetSharedQuadStateIndex(const SharedQuadStateList& shared_quad_state_list,
   return -1;
 }
 
-#define MAP_MATERIAL_TO_STRING(NAME) \
-  case DrawQuad::Material::NAME:     \
-    return #NAME;
-const char* DrawQuadMaterialToString(DrawQuad::Material material) {
-  switch (material) {
-    MAP_MATERIAL_TO_STRING(kInvalid)
-    MAP_MATERIAL_TO_STRING(kDebugBorder)
-    MAP_MATERIAL_TO_STRING(kPictureContent)
-    MAP_MATERIAL_TO_STRING(kCompositorRenderPass)
-    MAP_MATERIAL_TO_STRING(kSharedElement)
-    MAP_MATERIAL_TO_STRING(kSolidColor)
-    MAP_MATERIAL_TO_STRING(kStreamVideoContent)
-    MAP_MATERIAL_TO_STRING(kSurfaceContent)
-    MAP_MATERIAL_TO_STRING(kTextureContent)
-    MAP_MATERIAL_TO_STRING(kTiledContent)
-    MAP_MATERIAL_TO_STRING(kYuvVideoContent)
-    MAP_MATERIAL_TO_STRING(kVideoHole)
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-#undef MAP_MATERIAL_TO_STRING
-
 #define MAP_STRING_TO_MATERIAL(NAME) \
   if (str == #NAME)                  \
     return static_cast<int>(DrawQuad::Material::NAME);
@@ -1883,6 +1859,30 @@ const char* BlendModeToString(SkBlendMode blend_mode) {
   }
 }
 #undef MAP_BLEND_MODE_TO_STRING
+
+#define MAP_MATERIAL_TO_STRING(NAME) \
+  case DrawQuad::Material::NAME:     \
+    return #NAME;
+const char* DrawQuadMaterialToString(DrawQuad::Material material) {
+  switch (material) {
+    MAP_MATERIAL_TO_STRING(kInvalid)
+    MAP_MATERIAL_TO_STRING(kDebugBorder)
+    MAP_MATERIAL_TO_STRING(kPictureContent)
+    MAP_MATERIAL_TO_STRING(kCompositorRenderPass)
+    MAP_MATERIAL_TO_STRING(kSharedElement)
+    MAP_MATERIAL_TO_STRING(kSolidColor)
+    MAP_MATERIAL_TO_STRING(kStreamVideoContent)
+    MAP_MATERIAL_TO_STRING(kSurfaceContent)
+    MAP_MATERIAL_TO_STRING(kTextureContent)
+    MAP_MATERIAL_TO_STRING(kTiledContent)
+    MAP_MATERIAL_TO_STRING(kYuvVideoContent)
+    MAP_MATERIAL_TO_STRING(kVideoHole)
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+#undef MAP_MATERIAL_TO_STRING
 
 base::Value CompositorRenderPassToDict(
     const CompositorRenderPass& render_pass) {

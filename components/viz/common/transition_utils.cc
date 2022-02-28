@@ -14,6 +14,8 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/render_pass_io.h"
 #include "components/viz/common/quads/shared_element_draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace viz {
 
@@ -35,6 +37,13 @@ struct StackFrame {
   bool first_pass_visit = true;
 };
 
+std::string SkColorToRGBAString(SkColor color) {
+  std::ostringstream str;
+  str << "rgba(" << SkColorGetR(color) << ", " << SkColorGetG(color) << ", "
+      << SkColorGetB(color) << ", " << SkColorGetA(color) << ")";
+  return str.str();
+}
+
 std::unordered_set<uint64_t> ProcessStack(
     std::ostringstream& str,
     std::vector<StackFrame>& stack,
@@ -44,18 +53,25 @@ std::unordered_set<uint64_t> ProcessStack(
       str << " ";
   };
   auto write_render_pass = [&str](const CompositorRenderPass* pass) {
-    str << "(" << pass << ") render pass id=" << pass->id.GetUnsafeValue();
+    str << "(" << pass << ") render pass id=" << pass->id.GetUnsafeValue()
+        << " output_rect=" << pass->output_rect.ToString();
     if (pass->shared_element_resource_id.IsValid())
       str << " " << pass->shared_element_resource_id.ToString();
     str << "\n";
   };
   auto write_sqs = [&str](const SharedQuadState* sqs) {
-    str << "(" << sqs << ") switched to sqs with opacity " << sqs->opacity
-        << " and blend mode " << BlendModeToString(sqs->blend_mode) << "\n";
+    str << "(" << sqs << ") switched to sqs with opacity=" << sqs->opacity
+        << ", blend_mode=" << BlendModeToString(sqs->blend_mode)
+        << " quad_layer_rect=" << sqs->quad_layer_rect.ToString() << "\n";
   };
   auto write_shared_element_quad = [&str](const SharedElementDrawQuad* quad) {
     str << "(" << quad << ") SharedElementDrawQuad "
         << quad->resource_id.ToString() << "\n";
+  };
+  auto write_solid_color_quad = [&str](const SolidColorDrawQuad* quad) {
+    str << "(" << quad
+        << ") SolidColorDrawQuad color=" << SkColorToRGBAString(quad->color)
+        << "\n";
   };
   auto write_compositor_render_pass_quad =
       [&str](const CompositorRenderPassDrawQuad* quad) {
@@ -116,8 +132,14 @@ std::unordered_set<uint64_t> ProcessStack(
         write_shared_element_quad(quad);
         break;
       }
+      case DrawQuad::Material::kSolidColor: {
+        auto* quad = SolidColorDrawQuad::MaterialCast((*frame.quad_iter));
+        write_solid_color_quad(quad);
+        break;
+      }
       default:
-        str << "(other quad type)\n";
+        str << "DrawQuad, material: "
+            << DrawQuadMaterialToString((*frame.quad_iter)->material) << "\n";
         break;
     }
   }
