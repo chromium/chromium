@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 
-#include <algorithm>
 #include <set>
 
 #include "base/format_macros.h"

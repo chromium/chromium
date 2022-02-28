@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SESSIONS_HELPER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SESSIONS_HELPER_H_
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>

@@ -1177,14 +1177,13 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
       actual_specifics = entity.specifics().bookmark();
     }
 
-    auto it =
-        std::find_if(expected.begin(), expected.end(),
-                     [actual_specifics](const ExpectedBookmark& bookmark) {
-                       return actual_specifics.legacy_canonicalized_title() ==
-                                  bookmark.title &&
-                              actual_specifics.full_title() == bookmark.title &&
-                              actual_specifics.url() == bookmark.url;
-                     });
+    auto it = base::ranges::find_if(
+        expected, [actual_specifics](const ExpectedBookmark& bookmark) {
+          return actual_specifics.legacy_canonicalized_title() ==
+                     bookmark.title &&
+                 actual_specifics.full_title() == bookmark.title &&
+                 actual_specifics.url() == bookmark.url;
+        });
     if (it != expected.end()) {
       expected.erase(it);
     } else {
@@ -1279,8 +1278,8 @@ bool BookmarkModelMatchesFakeServerChecker::IsExitConditionSatisfied(
     auto parent_iter =
         server_guids_by_parent_id.find(server_entity.parent_id_string());
     DCHECK(parent_iter != server_guids_by_parent_id.end());
-    auto server_position_iter = std::find(
-        parent_iter->second.begin(), parent_iter->second.end(), node->guid());
+    auto server_position_iter =
+        base::ranges::find(parent_iter->second, node->guid());
     DCHECK(server_position_iter != parent_iter->second.end());
     const size_t server_position =
         server_position_iter - parent_iter->second.begin();
