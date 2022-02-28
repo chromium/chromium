@@ -1,10 +1,20 @@
+# For changes to specific OS Settings sections in subfolders, prefer have
+# subfolder OWNERS review.
+
+# For changes to general OS Settings app, framework/infra changes, or anything
+# that does not have a more specific OWNERS, please select a "main" reviewer,
+# if none available, please select a "backup" reviewer.
+
+# Main reviewers
+xiaohuic@chromium.org
+
+# Backup reviewers
+cowmoo@chromium.org
 hsuregan@chromium.org
-jamescook@chromium.org
 jimmyxgong@chromium.org
 jonmann@chromium.org
 khorimoto@chromium.org
 michaelpg@chromium.org
-xiaohuic@chromium.org
 zentaro@chromium.org
 
 # For APAC timezone build file related changes only.
