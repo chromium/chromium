@@ -544,9 +544,8 @@ class SessionRestoreImpl : public BrowserListObserver {
       //    created browser.
       Browser* browser = nullptr;
       if (i == windows->begin() &&
-          (*i)->type == sessions::SessionWindow::TYPE_NORMAL && browser_ &&
-          browser_->is_type_normal() &&
-          !browser_->profile()->IsOffTheRecord()) {
+          (*i)->type == sessions::SessionWindow::TYPE_NORMAL &&
+          ShouldRestoreToExistingBrowser()) {
         // The first set of tabs is added to the existing browser.
         browser = browser_;
       } else {
@@ -940,6 +939,17 @@ class SessionRestoreImpl : public BrowserListObserver {
       service->TabRestored(tab_strip->GetWebContentsAt(i),
                            tab_strip->IsTabPinned(i));
     }
+  }
+
+  // Returns true if the first set of tabs should be restored the Browser
+  // supplied to the constructor.
+  bool ShouldRestoreToExistingBrowser() const {
+    // Assume that if the window is not-visible the browser is about to
+    // be deleted. This is necessitated by browser destruction first hiding
+    // the window, and then asynchronously deleting it.
+    return browser_ && browser_->is_type_normal() &&
+           !browser_->profile()->IsOffTheRecord() &&
+           browser_->window()->IsVisible();
   }
 
   // The profile to create the sessions for.
