@@ -1577,8 +1577,8 @@ TEST_F(PowerMetricsReporterUnitTest, ResourceCoalitionHistograms) {
        {"PerformanceMonitor.ResourceCoalition."
         "PlatformIdleWakeupsPerSecond",
         11000},
-       {"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond", 12000},
-       {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond", 13000},
+       {"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond2", 12},
+       {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond2", 13},
        // EI is reported in centi-EI so the data needs to be multiplied by
        // 100.0.
        {"PerformanceMonitor.ResourceCoalition.EnergyImpact", 1500},

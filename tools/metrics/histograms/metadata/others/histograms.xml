@@ -9061,13 +9061,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond{UsageScenario}"
-    units="milliBytesPerSecond" expires_after="2022-11-30">
+    name="PerformanceMonitor.ResourceCoalition.BytesReadPerSecond2{UsageScenario}"
+    units="BytesPerSecond" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The IO reads reported by the resource coalition mechanism on macOS. The data
-    is reported as the rate per second during this interval with a millibyte
+    is reported as the rate per second during this interval with a byte
     granularity. This is recorded for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
@@ -9077,14 +9077,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond{UsageScenario}"
-    units="milliBytesPerSecond" expires_after="2022-11-30">
+    name="PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond2{UsageScenario}"
+    units="BytesPerSecond" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The IO writes reported by the resource coalition mechanism on macOS. The
-    data is reported as the rate per second during this interval with a
-    millibyte granularity. This is recorded for {UsageScenario} (see
+    data is reported as the rate per second during this interval with a byte
+    granularity. This is recorded for {UsageScenario} (see
     go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->

@@ -480,14 +480,15 @@ void PowerMetricsReporter::ReportResourceCoalitionHistograms(
                       scenario_suffix}),
         scale_sample(rate.platform_idle_wakeups_per_second));
     base::UmaHistogramCounts10M(
-        base::StrCat({"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond",
-                      scenario_suffix}),
-        scale_sample(rate.bytesread_per_second));
+        base::StrCat(
+            {"PerformanceMonitor.ResourceCoalition.BytesReadPerSecond2",
+             scenario_suffix}),
+        rate.bytesread_per_second);
     base::UmaHistogramCounts10M(
         base::StrCat(
-            {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond",
+            {"PerformanceMonitor.ResourceCoalition.BytesWrittenPerSecond2",
              scenario_suffix}),
-        scale_sample(rate.byteswritten_per_second));
+        rate.byteswritten_per_second);
 
     // EnergyImpact is reported in centi-EI, so scaled up by a factor of 100
     // for the histogram recording.
