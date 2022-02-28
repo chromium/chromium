@@ -46,12 +46,31 @@ enum BuiltinModelId {
   [MinVersion=1] ADAPTIVE_CHARGING_20211105 = 7,
 };
 
+// Graphics API to use with the GPU delegate.
+[Stable, Extensible]
+enum GpuDelegateApi {
+  // Unknown value or not specified.
+  [Default] UNKNOWN = 0,
+
+  // Use OpenGL.
+  OPENGL = 1,
+
+  // Use OpenCL.
+  OPENCL = 2,
+};
+
 // Options for creating the executor.  Options are used for testing and
 // development. They are not typically used in normal, production code.
 [Stable]
 struct GraphExecutorOptions {
+  // Use NNAPI delegate.
   bool use_nnapi = false;
+
+  // Use GPU delegate.
   [MinVersion=1] bool use_gpu = false;
+
+  // Graphics API to use with GPU delegate.
+  [MinVersion=2] GpuDelegateApi gpu_delegate_api = OPENGL;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
