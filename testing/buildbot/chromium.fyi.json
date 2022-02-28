@@ -24578,9 +24578,9 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
-          "0",
+          "1ae0",
           "--expected-device-id",
-          "0"
+          "c0de"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
@@ -25048,10 +25048,10 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
-          "0",
+          "1ae0",
+          "--custom-image=workstation.qemu-x64-release",
           "--expected-device-id",
-          "0",
-          "--custom-image=workstation.qemu-x64-release"
+          "c0de"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
