@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_descriptor.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_service.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {

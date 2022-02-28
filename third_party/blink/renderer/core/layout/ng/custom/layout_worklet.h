@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/document_layout_definition.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/pending_layout_registry.h"
 #include "third_party/blink/renderer/core/workers/worklet.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 

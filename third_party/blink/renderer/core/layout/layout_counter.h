@@ -25,6 +25,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 

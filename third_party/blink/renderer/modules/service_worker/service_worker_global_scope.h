@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/modules/service_worker/cross_origin_resource_policy_checker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"

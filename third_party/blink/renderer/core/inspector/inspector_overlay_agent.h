@@ -31,6 +31,7 @@
 
 #include <v8-inspector.h>
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/overlay.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

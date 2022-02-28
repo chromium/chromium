@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

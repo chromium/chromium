@@ -23,8 +23,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_PATTERN_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/svg/pattern_attributes.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/skia/include/core/SkRefCnt.h"

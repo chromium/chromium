@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_GRID_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/layout/grid.h"
 #include "third_party/blink/renderer/core/layout/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid_track_sizing_algorithm.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid_interface.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
 

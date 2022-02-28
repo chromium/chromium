@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

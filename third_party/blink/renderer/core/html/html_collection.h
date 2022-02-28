@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 #include "third_party/blink/renderer/core/html/collection_items_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
