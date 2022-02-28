@@ -10,14 +10,12 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
 #include "components/pdf/browser/mock_url_loader_client.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -44,30 +42,12 @@ class PdfURLLoaderRequestInterceptorTest
         main_rfh()->GetFrameTreeNodeId(), std::move(stream_delegate_));
   }
 
-  base::test::ScopedFeatureList features_;
-
   std::unique_ptr<FakePdfStreamDelegate> stream_delegate_ =
       std::make_unique<FakePdfStreamDelegate>();
 
   network::ResourceRequest resource_request_;
   base::MockCallback<content::URLLoaderRequestInterceptor::LoaderCallback>
       loader_callback_;
-};
-
-class PdfURLLoaderRequestInterceptorUnseasonedDisabledTest
-    : public PdfURLLoaderRequestInterceptorTest {
- protected:
-  PdfURLLoaderRequestInterceptorUnseasonedDisabledTest() {
-    features_.InitAndDisableFeature(chrome_pdf::features::kPdfUnseasoned);
-  }
-};
-
-class PdfURLLoaderRequestInterceptorUnseasonedEnabledTest
-    : public PdfURLLoaderRequestInterceptorTest {
- protected:
-  PdfURLLoaderRequestInterceptorUnseasonedEnabledTest() {
-    features_.InitAndEnableFeature(chrome_pdf::features::kPdfUnseasoned);
-  }
 };
 
 void RunRequestHandler(
@@ -88,14 +68,7 @@ void RunRequestHandler(
 
 }  // namespace
 
-TEST_F(PdfURLLoaderRequestInterceptorUnseasonedDisabledTest,
-       MaybeCreateInterceptor) {
-  EXPECT_FALSE(PdfURLLoaderRequestInterceptor::MaybeCreateInterceptor(
-      main_rfh()->GetFrameTreeNodeId(), std::move(stream_delegate_)));
-}
-
-TEST_F(PdfURLLoaderRequestInterceptorUnseasonedEnabledTest,
-       MaybeCreateInterceptor) {
+TEST_F(PdfURLLoaderRequestInterceptorTest, MaybeCreateInterceptor) {
   EXPECT_TRUE(PdfURLLoaderRequestInterceptor::MaybeCreateInterceptor(
       main_rfh()->GetFrameTreeNodeId(), std::move(stream_delegate_)));
 }

@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
@@ -36,16 +35,8 @@
 
 namespace content {
 
-class PdfFindRequestManagerTest : public base::test::WithFeatureOverride,
-                                  public InProcessBrowserTest {
+class PdfFindRequestManagerTest : public InProcessBrowserTest {
  public:
-  PdfFindRequestManagerTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-  PdfFindRequestManagerTest(const PdfFindRequestManagerTest&) = delete;
-  PdfFindRequestManagerTest& operator=(const PdfFindRequestManagerTest&) =
-      delete;
-  ~PdfFindRequestManagerTest() override = default;
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -108,11 +99,6 @@ class PdfFindRequestManagerTestWithPdfPartialLoading
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PdfFindRequestManagerTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PdfFindRequestManagerTestWithPdfPartialLoading);
-
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
@@ -120,7 +106,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 #else
 #define MAYBE_FindInPDF FindInPDF
 #endif
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, MAYBE_FindInPDF) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, MAYBE_FindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -180,7 +166,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTestWithPdfPartialLoading,
                        FindInChunkedPDF) {
   constexpr uint32_t kStalledResponseSize =
       chrome_pdf::DocumentLoaderImpl::kDefaultRequestSize + 123;
@@ -277,7 +263,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTestWithPdfPartialLoading,
 // TODO(paulmeyer): Note that this is left disabled for now since
 // EnsurePDFHasLoaded() currently does not work for embedded PDFs. This will be
 // fixed and enabled in a subsequent patch.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_embedded_pdf_page.html");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -297,7 +283,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DISABLED_FindInEmbeddedPDFs) {
   EXPECT_EQ(11, results.active_match_ordinal);
 }
 
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, FindMissingStringInPDF) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, FindMissingStringInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
@@ -314,7 +300,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, FindMissingStringInPDF) {
 
 // Tests searching for a word character-by-character, as would typically be
 // done by a user typing into the find bar.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest,
                        CharacterByCharacterFindInPDF) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
@@ -347,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest,
 
 // Tests that find-in-page results only come for the PDF contents, and not from
 // the PDF Viewer's UI.
-IN_PROC_BROWSER_TEST_P(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
+IN_PROC_BROWSER_TEST_F(PdfFindRequestManagerTest, DoesNotSearchPdfViewerUi) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadAndWait("/find_in_pdf_page.pdf");
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));

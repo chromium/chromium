@@ -8917,7 +8917,6 @@ if (!is_android && !is_fuchsia) {
       deps += [
         "//components/optimization_guide/core:test_support",
         "//components/optimization_guide/proto:optimization_guide_proto",
-        "//pdf:features",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",
         "//ui/views",

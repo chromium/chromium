@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
@@ -74,18 +73,8 @@ void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
 
 }  // namespace
 
-class PrintPreviewDialogControllerBrowserTest
-    : public base::test::WithFeatureOverride,
-      public InProcessBrowserTest {
+class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
  public:
-  PrintPreviewDialogControllerBrowserTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-  PrintPreviewDialogControllerBrowserTest(
-      const PrintPreviewDialogControllerBrowserTest&) = delete;
-  PrintPreviewDialogControllerBrowserTest& operator=(
-      const PrintPreviewDialogControllerBrowserTest&) = delete;
-  ~PrintPreviewDialogControllerBrowserTest() override = default;
-
   WebContents* initiator() {
     return initiator_;
   }
@@ -157,7 +146,7 @@ class PrintPreviewDialogControllerBrowserTest
 
 // Test to verify that when a initiator navigates, we can create a new preview
 // dialog for the new tab contents.
-IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        NavigateFromInitiatorTab) {
   // Print for the first time.
   PrintPreview();
@@ -192,7 +181,7 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after reloading the initiator, it creates a new print
 // preview dialog.
-IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        ReloadInitiatorTab) {
   // Print for the first time.
   PrintPreview();
@@ -230,7 +219,7 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
 
 // Test to verify that after print preview works even when the PDF plugin is
 // disabled for webpages.
-IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        PdfPluginDisabled) {
   // Make sure plugins are loaded.
   {
@@ -263,9 +252,9 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
   ASSERT_NE(initiator(), preview_dialog);
 
   // Wait until all the frames in the Print Preview renderer have loaded.
-  // `frame_count` should be 2 (or 3, if in unseasoned mode): the main frame,
-  // the viewer's <iframe>, and the plugin frame (in unseasoned mode).
-  const int kExpectedFrameCount = IsParamFeatureEnabled() ? 3 : 2;
+  // `frame_count` should be 3: the main frame, the viewer's <iframe>, and the
+  // plugin frame.
+  const int kExpectedFrameCount = 3;
   int frame_count;
   do {
     base::RunLoop run_loop;
@@ -302,7 +291,7 @@ const std::vector<task_manager::WebContentsTag*>& GetTrackedTags() {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        TaskManagementTest) {
   // This test starts with two tabs open.
   EXPECT_EQ(2U, GetTrackedTags().size());
@@ -347,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
   PrintPreviewDone();
 }
 
-IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        PrintPreviewPdfAccessibility) {
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -358,6 +347,3 @@ IN_PROC_BROWSER_TEST_P(PrintPreviewDialogControllerBrowserTest,
 
   PrintPreviewDone();
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PrintPreviewDialogControllerBrowserTest);

@@ -9,7 +9,6 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
@@ -19,7 +18,6 @@
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -69,46 +67,21 @@ class PdfNavigationThrottleTest : public content::RenderViewHostTestHarness {
     return GURL(FakePdfStreamDelegate::kDefaultOriginalUrl);
   }
 
-  base::test::ScopedFeatureList features_;
-
   std::unique_ptr<FakePdfStreamDelegate> stream_delegate_ =
       std::make_unique<FakePdfStreamDelegate>();
 
   std::unique_ptr<NiceMock<content::MockNavigationHandle>> navigation_handle_;
 };
 
-class PdfNavigationThrottleUnseasonedDisabledTest
-    : public PdfNavigationThrottleTest {
- protected:
-  PdfNavigationThrottleUnseasonedDisabledTest() {
-    features_.InitAndDisableFeature(chrome_pdf::features::kPdfUnseasoned);
-  }
-};
-
-class PdfNavigationThrottleUnseasonedEnabledTest
-    : public PdfNavigationThrottleTest {
- protected:
-  PdfNavigationThrottleUnseasonedEnabledTest() {
-    features_.InitAndEnableFeature(chrome_pdf::features::kPdfUnseasoned);
-  }
-};
-
 }  // namespace
 
-TEST_F(PdfNavigationThrottleUnseasonedDisabledTest, MaybeCreateThrottleFor) {
-  InitializeNavigationHandle(stream_url(), CreateChildFrame());
-  EXPECT_FALSE(PdfNavigationThrottle::MaybeCreateThrottleFor(
-      navigation_handle_.get(), std::move(stream_delegate_)));
-}
-
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest, MaybeCreateThrottleFor) {
+TEST_F(PdfNavigationThrottleTest, MaybeCreateThrottleFor) {
   InitializeNavigationHandle(stream_url(), CreateChildFrame());
   EXPECT_TRUE(PdfNavigationThrottle::MaybeCreateThrottleFor(
       navigation_handle_.get(), std::move(stream_delegate_)));
 }
 
-TEST_F(PdfNavigationThrottleUnseasonedEnabledTest,
-       MaybeCreateThrottleForMainFrame) {
+TEST_F(PdfNavigationThrottleTest, MaybeCreateThrottleForMainFrame) {
   InitializeNavigationHandle(stream_url(), main_rfh());
   EXPECT_FALSE(PdfNavigationThrottle::MaybeCreateThrottleFor(
       navigation_handle_.get(), std::move(stream_delegate_)));
