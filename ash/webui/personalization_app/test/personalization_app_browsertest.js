@@ -38,11 +38,6 @@ class PersonalizationAppBrowserTest extends testing.Test {
   }
 
   /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
-
-  /** @override */
   get typedefCppFixture() {
     return 'PersonalizationAppBrowserTestFixture';
   }

@@ -16,11 +16,6 @@ var DemoModeAppUIBrowserTest = class extends testing.Test {
   }
 
   /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
-
-  /** @override */
   get featureList() {
     return {enabled: ['ash::features::kDemoModeSWA']};
   }

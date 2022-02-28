@@ -36,11 +36,6 @@ var MediaAppUIGtestBrowserTest = class extends testing.Test {
   }
 
   /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
-
-  /** @override */
   get typedefCppFixture() {
     return 'MediaAppUiBrowserTest';
   }

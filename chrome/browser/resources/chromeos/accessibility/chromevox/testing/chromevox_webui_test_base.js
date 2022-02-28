@@ -119,12 +119,5 @@ ChromeVoxWebUITestBase = class extends testing.Test {
 /** @override */
 ChromeVoxWebUITestBase.prototype.isAsync = false;
 
-/**
- * @override
- * It doesn't make sense to run the accessibility audit on these tests,
- * since many of them are deliberately testing inaccessible html.
- */
-ChromeVoxWebUITestBase.prototype.runAccessibilityChecks = false;
-
 /** @override */
 ChromeVoxWebUITestBase.prototype.browsePreload = DUMMY_URL;

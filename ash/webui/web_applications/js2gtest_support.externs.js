@@ -30,7 +30,6 @@ const testing = {
     get extraLibraries() {}
     get isAsync() {}
     get featureList() {}
-    get runAccessibilityChecks() {}
     get typedefCppFixture() {}
     setUp() {}
   }

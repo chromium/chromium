@@ -162,12 +162,6 @@ AwesomeUnitTest = class extends testing.Test {
   get browsePreload() {
     return DUMMY_URL;
   }
-
-  // No need to run these checks unless you are testing an actual user interface.
-  /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
 }
 ```
 

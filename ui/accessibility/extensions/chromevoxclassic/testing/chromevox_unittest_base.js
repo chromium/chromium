@@ -52,13 +52,6 @@ ChromeVoxUnitTestBase.prototype = {
   browsePreload: DUMMY_URL,
 
   /**
-   * @override
-   * It doesn't make sense to run the accessibility audit on these tests,
-   * since many of them are deliberately testing inaccessible html.
-   */
-  runAccessibilityChecks: false,
-
-  /**
    * Loads some inlined html into the body of the current document, replacing
    * whatever was there previously.
    * @param {string} html The html to load as a string.

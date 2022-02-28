@@ -23,12 +23,6 @@ SyncInternalsWebUITest.prototype = {
   browsePreload: 'chrome://sync-internals',
 
   /**
-   * Disable accessibility testing for this page.
-   * @override
-   */
-  runAccessibilityChecks: false,
-
-  /**
    * Checks aboutInfo's details section for the specified field.
    * @param {boolean} isValid Whether the field is valid.
    * @param {string} key The name of the key to search for in details.

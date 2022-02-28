@@ -31,11 +31,6 @@ var SystemExtensionsInternalsUIBrowserTest = class extends testing.Test {
   }
 
   /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
-
-  /** @override */
   get isAsync() {
     return true;
   }

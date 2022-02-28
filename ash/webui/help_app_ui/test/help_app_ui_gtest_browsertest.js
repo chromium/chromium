@@ -43,11 +43,6 @@ var HelpAppUIGtestBrowserTest = class extends testing.Test {
   get typedefCppFixture() {
     return 'HelpAppUiBrowserTest';
   }
-
-  /** @override */
-  get runAccessibilityChecks() {
-    return false;
-  }
 };
 
 // js2gtest fixtures require var here (https://crbug.com/1033337).

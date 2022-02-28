@@ -14,9 +14,6 @@ SamlTimestampsUnitTest.prototype = {
 
   browsePreload: DUMMY_URL,
 
-  // No need to run these checks - see comment in SamlPasswordAttributesTest.
-  runAccessibilityChecks: false,
-
   /** @override */
   testGenCppIncludes() {
     GEN(`#include "content/public/test/browser_test.h"`);

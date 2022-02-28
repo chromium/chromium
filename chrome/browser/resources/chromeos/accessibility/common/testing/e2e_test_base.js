@@ -325,8 +325,3 @@ E2ETestBase = class extends testing.Test {
 
 /** @override */
 E2ETestBase.prototype.isAsync = true;
-/**
- * @override
- * No UI in the background context.
- */
-E2ETestBase.prototype.runAccessibilityChecks = false;

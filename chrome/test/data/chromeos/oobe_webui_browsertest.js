@@ -26,12 +26,6 @@ OobeWebUITest.prototype = {
   browsePreload: 'chrome://oobe/oobe',
 
   /** @override */
-  runAccessibilityChecks: true,
-
-  /** @override */
-  accessibilityIssuesAreErrors: true,
-
-  /** @override */
   testGenPreamble: function() {
     // OobeWebUI should run in fullscreen.
     GEN('FullscreenNotificationObserver fullscreen_observer(browser());');
