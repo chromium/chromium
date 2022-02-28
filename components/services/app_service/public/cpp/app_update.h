@@ -157,8 +157,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> GetShowInSearch() const;
   bool ShowInSearchChanged() const;
 
-  apps::mojom::OptionalBool ShowInManagement() const;
-  absl::optional<bool> GetShowInManagement() const;
+  absl::optional<bool> ShowInManagement() const;
   bool ShowInManagementChanged() const;
 
   apps::mojom::OptionalBool HandlesIntents() const;

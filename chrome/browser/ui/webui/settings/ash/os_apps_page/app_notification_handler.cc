@@ -43,7 +43,7 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
 
 bool ShouldIncludeApp(const apps::AppUpdate& update) {
   // Only apps that can be shown in management are supported.
-  if (update.ShowInManagement() != apps::mojom::OptionalBool::kTrue) {
+  if (!update.ShowInManagement().value_or(false)) {
     return false;
   }
 

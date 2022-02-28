@@ -184,7 +184,7 @@ void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForEachApp([this, &apps](const apps::AppUpdate& update) {
-        if (update.ShowInManagement() == apps::mojom::OptionalBool::kTrue &&
+        if (update.ShowInManagement().value_or(false) &&
             apps_util::IsInstalled(update.Readiness())) {
           apps.push_back(CreateUIAppPtr(update));
         }
@@ -411,12 +411,12 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
 void AppManagementPageHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
-    if (update.ShowInManagement() == apps::mojom::OptionalBool::kTrue &&
+    if (update.ShowInManagement().value_or(false) &&
         update.Readiness() == apps::Readiness::kReady) {
       page_->OnAppAdded(CreateUIAppPtr(update));
     }
 
-    if (update.ShowInManagement() == apps::mojom::OptionalBool::kFalse ||
+    if (update.ShowInManagement().value_or(true) ||
         !apps_util::IsInstalled(update.Readiness())) {
       page_->OnAppRemoved(update.AppId());
     }

@@ -132,7 +132,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, Install) {
       .ForOneApp(app_id, [](const apps::AppUpdate& update) {
         EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInLauncher());
         EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.ShowInSearch());
-        EXPECT_EQ(apps::mojom::OptionalBool::kFalse, update.ShowInManagement());
+        ASSERT_TRUE(update.ShowInManagement().has_value());
+        EXPECT_FALSE(update.ShowInManagement().value());
         EXPECT_EQ(apps::Readiness::kReady, update.Readiness());
       });
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

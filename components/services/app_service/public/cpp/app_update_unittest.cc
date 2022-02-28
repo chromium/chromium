@@ -235,7 +235,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_show_in_search_, u.GetShowInSearch());
     EXPECT_EQ(expect_show_in_search_changed_, u.ShowInSearchChanged());
 
-    EXPECT_EQ(expect_show_in_management_, u.GetShowInManagement());
+    EXPECT_EQ(expect_show_in_management_, u.ShowInManagement());
     EXPECT_EQ(expect_show_in_management_changed_, u.ShowInManagementChanged());
 
     EXPECT_EQ(expect_handles_intents_, u.GetHandlesIntents());

@@ -778,19 +778,12 @@ bool AppUpdate::ShowInSearchChanged() const {
           (mojom_delta_->show_in_search != mojom_state_->show_in_search));
 }
 
-apps::mojom::OptionalBool AppUpdate::ShowInManagement() const {
-  if (mojom_delta_ && (mojom_delta_->show_in_management !=
-                       apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->show_in_management;
+absl::optional<bool> AppUpdate::ShowInManagement() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(show_in_management, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->show_in_management;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetShowInManagement() const {
-  GET_VALUE_WITH_FALLBACK(show_in_management, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(show_in_management)
 }
 
 bool AppUpdate::ShowInManagementChanged() const {
@@ -1057,7 +1050,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "ShowInLauncher: " << app.ShowInLauncher() << std::endl;
   out << "ShowInShelf: " << app.ShowInShelf() << std::endl;
   out << "ShowInSearch: " << app.ShowInSearch() << std::endl;
-  out << "ShowInManagement: " << app.ShowInManagement() << std::endl;
+  out << "ShowInManagement: " << PRINT_OPTIONAL_VALUE(ShowInManagement)
+      << std::endl;
   out << "HandlesIntents: " << app.HandlesIntents() << std::endl;
   out << "AllowUninstall: " << PRINT_OPTIONAL_VALUE(AllowUninstall)
       << std::endl;
