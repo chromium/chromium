@@ -471,12 +471,41 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
 
-  if (!gin::ConvertFromV8(isolate, score_ad_result, &score) ||
-      std::isnan(score) || !std::isfinite(score)) {
-    errors_out.push_back(
-        base::StrCat({decision_logic_url_.spec(),
-                      " scoreAd() did not return a valid number."}));
+  // Try to parse the result as a number. On success, it's the desirability
+  // score.
+  if (!gin::ConvertFromV8(isolate, score_ad_result, &score)) {
+    // Otherwise, try it must be an object with the desireability score, and
+    // potentially other fields as well.
+    if (!score_ad_result->IsObject()) {
+      errors_out.push_back(
+          base::StrCat({decision_logic_url_.spec(),
+                        " scoreAd() did not return an object or a number."}));
+      PostScoreAdCallbackToUserThread(
+          std::move(callback), /*score=*/0,
+          /*scoring_signals_data_version=*/absl::nullopt,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
+      return;
+    }
 
+    gin::Dictionary result_dict(isolate, score_ad_result.As<v8::Object>());
+    if (!result_dict.Get("desirability", &score)) {
+      errors_out.push_back(
+          base::StrCat({decision_logic_url_.spec(),
+                        " scoreAd() return value has incorrect structure."}));
+      PostScoreAdCallbackToUserThread(
+          std::move(callback), /*score=*/0,
+          /*scoring_signals_data_version=*/absl::nullopt,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, std::move(errors_out));
+      return;
+    }
+  }
+
+  // Fail if the score is invalid.
+  if (std::isnan(score) || !std::isfinite(score)) {
+    errors_out.push_back(base::StrCat(
+        {decision_logic_url_.spec(), " scoreAd() returned an invalid score."}));
     PostScoreAdCallbackToUserThread(
         std::move(callback), /*score=*/0,
         /*scoring_signals_data_version=*/absl::nullopt,

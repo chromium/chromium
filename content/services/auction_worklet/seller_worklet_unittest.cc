@@ -541,29 +541,61 @@ TEST_F(SellerWorkletTest, ScoreAd) {
   // CreateBasicSellAdScript() does indeed work.
   RunScoreAdWithJavascriptExpectingResult(CreateBasicSellAdScript(), 1);
 
+  // Test returning results with the object format.
+  RunScoreAdWithReturnValueExpectingResult("{desirability:3}", 3);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:0.5}", 0.5);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:0}", 0);
+  RunScoreAdWithReturnValueExpectingResult("{desirability:-10}", 0);
+
+  // Test returning a number, which is interpreted as a score.
   RunScoreAdWithReturnValueExpectingResult("3", 3);
   RunScoreAdWithReturnValueExpectingResult("0.5", 0.5);
   RunScoreAdWithReturnValueExpectingResult("0", 0);
   RunScoreAdWithReturnValueExpectingResult("-10", 0);
 
+  // Unknown fields should be ignored.
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:3, snore:1/0, smore:[15], shore:{desirability:2}}", 3);
+
   // No return value.
   RunScoreAdWithReturnValueExpectingResult(
-      "", 0, {"https://url.test/ scoreAd() did not return a valid number."});
+      "", 0,
+      {"https://url.test/ scoreAd() did not return an object or a number."});
 
   // Wrong return type / invalid values.
   RunScoreAdWithReturnValueExpectingResult(
+      "{hats:15}", 0,
+      {"https://url.test/ scoreAd() return value has incorrect structure."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:[15]}", 0,
+      {"https://url.test/ scoreAd() return value has incorrect structure."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1/0}", 0,
+      {"https://url.test/ scoreAd() returned an invalid score."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:0/0}", 0,
+      {"https://url.test/ scoreAd() returned an invalid score."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:1/0}", 0,
+      {"https://url.test/ scoreAd() returned an invalid score."});
+  RunScoreAdWithReturnValueExpectingResult(
+      "{desirability:true}", 0,
+      {"https://url.test/ scoreAd() return value has incorrect structure."});
+
+  // Same tests as the previous block, but returning the value directly instead
+  // of in an object.
+  RunScoreAdWithReturnValueExpectingResult(
       "[15]", 0,
-      {"https://url.test/ scoreAd() did not return a valid number."});
+      {"https://url.test/ scoreAd() return value has incorrect structure."});
   RunScoreAdWithReturnValueExpectingResult(
-      "1/0", 0, {"https://url.test/ scoreAd() did not return a valid number."});
+      "1/0", 0, {"https://url.test/ scoreAd() returned an invalid score."});
   RunScoreAdWithReturnValueExpectingResult(
-      "0/0", 0, {"https://url.test/ scoreAd() did not return a valid number."});
+      "0/0", 0, {"https://url.test/ scoreAd() returned an invalid score."});
   RunScoreAdWithReturnValueExpectingResult(
-      "-1/0", 0,
-      {"https://url.test/ scoreAd() did not return a valid number."});
+      "-1/0", 0, {"https://url.test/ scoreAd() returned an invalid score."});
   RunScoreAdWithReturnValueExpectingResult(
       "true", 0,
-      {"https://url.test/ scoreAd() did not return a valid number."});
+      {"https://url.test/ scoreAd() did not return an object or a number."});
 
   // Throw exception.
   RunScoreAdWithReturnValueExpectingResult(
@@ -1871,12 +1903,13 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   decision_logic_url_ = GURL(kUrl2);
   auto worklet2 = CreateWorklet(true /* pause_for_debugger_on_start */);
   base::RunLoop run_loop2;
-  RunScoreAdOnWorkletAsync(
-      worklet2.get(), 0,
-      {"http://example.org/second.js scoreAd() did not return a valid number."},
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt, run_loop2.QuitClosure());
+  RunScoreAdOnWorkletAsync(worklet2.get(), 0,
+                           {"http://example.org/second.js scoreAd() did not "
+                            "return an object or a number."},
+                           /*expected_data_version=*/absl::nullopt,
+                           /*expected_debug_loss_report_url=*/absl::nullopt,
+                           /*expected_debug_win_report_url=*/absl::nullopt,
+                           run_loop2.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
   worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver());
@@ -2256,7 +2289,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           "\"invalid_score\"",
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      0, {"https://url.test/ scoreAd() did not return a valid number."},
+      0, {"https://url.test/ scoreAd() did not return an object or a number."},
       /*expected_data_version=*/absl::nullopt,
       /*expected_debug_loss_report_url=*/absl::nullopt,
       /*expected_debug_win_report_url=*/absl::nullopt);
