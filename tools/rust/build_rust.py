@@ -108,6 +108,8 @@ def CheckoutRust(commit, dir):
     # git diff-index --quiet returns success when there is no diff.
     # Also check that the first commit is reachable.
     if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
+        and RunCommand(['git', 'fetch'], fail_hard=False)
+        and RunCommand(['git', 'checkout', commit], fail_hard=False)
         and UpdateSubmodules()):
       return
 
