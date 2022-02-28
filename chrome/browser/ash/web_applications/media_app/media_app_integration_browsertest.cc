@@ -47,6 +47,8 @@
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/gfx/color_palette.h"
 
 using platform_util::OpenOperationResult;
@@ -718,10 +720,10 @@ startxref
 %EOF`;
     const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
     const blobUrl = URL.createObjectURL(pdfBlob);
-    const blobUuid = encodeURIComponent(
-        (new URL(blobUrl.substring(5))).pathname.substring(1));
+    const blobUuid =
+        (new URL(blobUrl.substring(5))).pathname.substring(1);
     document.querySelector('backlight-app').delegate.openInSandboxedViewer(
-        'TestPdfTitle', blobUuid);
+        'PDF Accessibility Mode - TestPdfTitle.pdf', blobUuid);
   )";
 
   content::WebContents* web_ui = LaunchWithNoFiles();
@@ -735,10 +737,31 @@ startxref
   content::WebContents* popup_ui =
       popup_browser->tab_strip_model()->GetActiveWebContents();
 
-  content::TitleWatcher watcher(popup_ui, u"TestPdfTitle");
+  content::TitleWatcher watcher(popup_ui,
+                                u"PDF Accessibility Mode - TestPdfTitle.pdf");
 
-  EXPECT_EQ(u"TestPdfTitle", watcher.WaitAndGetTitle());
-  EXPECT_EQ(u"TestPdfTitle", popup_ui->GetTitle());
+  EXPECT_EQ(u"PDF Accessibility Mode - TestPdfTitle.pdf",
+            watcher.WaitAndGetTitle());
+  EXPECT_EQ(u"PDF Accessibility Mode - TestPdfTitle.pdf", popup_ui->GetTitle());
+
+  const char16_t kExpectedWindowTitle[] =
+      u"Gallery - PDF Accessibility Mode - TestPdfTitle.pdf";
+  aura::Window* popup_window = popup_ui->GetTopLevelNativeWindow();
+
+  // The NativeWindow title change may happen asynchronously.
+  if (popup_window->GetTitle() != kExpectedWindowTitle) {
+    struct NativeWindowTitleWatcher : public aura::WindowObserver {
+      base::RunLoop run_loop;
+      void OnWindowTitleChanged(aura::Window* window) override {
+        run_loop.Quit();
+      }
+    } wait_for_title_change;
+    popup_window->AddObserver(&wait_for_title_change);
+    wait_for_title_change.run_loop.Run();
+    popup_window->RemoveObserver(&wait_for_title_change);
+  }
+
+  EXPECT_EQ(kExpectedWindowTitle, popup_window->GetTitle());
 
   EXPECT_TRUE(content::WaitForLoadStop(popup_ui));
   content::RenderFrameHost* untrusted_ui = ChildFrameAt(popup_ui, 0);
