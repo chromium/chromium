@@ -132,11 +132,6 @@ gfx::Size ScrollableAppsGridView::GetTileGridSize() const {
   return grid.size();
 }
 
-int ScrollableAppsGridView::GetPaddingBetweenPages() const {
-  // The scrollable apps grid does not use pages.
-  return 0;
-}
-
 int ScrollableAppsGridView::GetTotalPages() const {
   return 1;
 }

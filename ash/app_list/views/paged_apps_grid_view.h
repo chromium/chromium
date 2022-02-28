@@ -111,7 +111,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Size GetTileViewSize() const override;
   gfx::Insets GetTilePadding(int page) const override;
   gfx::Size GetTileGridSize() const override;
-  int GetPaddingBetweenPages() const override;
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
   bool IsScrollAxisVertical() const override;
@@ -262,6 +261,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   // Update the padding of tile view based on the contents bounds.
   void UpdateTilePadding();
+
+  // Returns the padding between each page of the apps grid, or zero if the grid
+  // does not use pages.
+  int GetPaddingBetweenPages() const;
 
   // Created by AppListMainView, owned by views hierarchy.
   ContentsView* const contents_view_;

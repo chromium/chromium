@@ -89,6 +89,7 @@ constexpr int kPaddingBetweenPages = 48;
 
 // Vertical padding between the apps grid pages in cardified state.
 constexpr int kCardifiedPaddingBetweenPages = 12;
+constexpr int kCardifiedPaddingBetweenPagesProdLauncher = 8;
 
 // Horizontal padding of the apps grid page in cardified state.
 constexpr int kCardifiedHorizontalPadding = 16;
@@ -110,6 +111,14 @@ constexpr int kMinVerticalPaddingBetweenTiles = 8;
 // The maximum amount of space that should exist vetically between two app
 // tiles in the root grid.
 constexpr int kMaxVerticalPaddingBetweenTiles = 96;
+
+// The amount of vetical space between the edge of the background card and the
+// closest app tile.
+constexpr int kBackgroundCardVerticalPadding = 8;
+
+// The amount of horizontal space between the edge of the background card and
+// the closest app tile.
+constexpr int kBackgroundCardHorizontalPadding = 16;
 
 int GetFadeoutMaskHeight() {
   // The fadeout mask layer is shown only if background blur is enabled - if
@@ -519,6 +528,12 @@ gfx::Size PagedAppsGridView::GetTileGridSize() const {
 }
 
 int PagedAppsGridView::GetPaddingBetweenPages() const {
+  if (features::IsProductivityLauncherEnabled()) {
+    return cardified_state_ ? kCardifiedPaddingBetweenPagesProdLauncher +
+                                  2 * kBackgroundCardVerticalPadding
+                            : kPaddingBetweenPages;
+  }
+
   // In cardified state, padding between pages should be fixed and it should
   // include background card padding.
   return cardified_state_
@@ -593,13 +608,18 @@ int PagedAppsGridView::GetMaxRowsInPage(int page) const {
 }
 
 gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
-  const int y_offset = page == 0 ? GetTotalTopPaddingOnFirstPage() : 0;
+  int y_offset = page == 0 ? GetTotalTopPaddingOnFirstPage() : 0;
   if (!cardified_state_)
     return gfx::Vector2d(0, y_offset);
-  const gfx::Rect bounds = GetContentsBounds();
+
+  // The grid's y is set to start below the gradient mask, so subtract
+  // this in centering the cardified state between gradient masks.
+  y_offset -= margin_for_gradient_mask_;
+  const gfx::Rect contents_bounds = GetContentsBounds();
   const gfx::Size grid_size = GetTileGridSizeForPage(page);
-  return gfx::Vector2d((bounds.width() - grid_size.width()) / 2,
-                       (bounds.height() + y_offset - grid_size.height()) / 2);
+  return gfx::Vector2d(
+      (contents_bounds.width() - grid_size.width()) / 2,
+      (contents_bounds.height() + y_offset - grid_size.height()) / 2);
 }
 
 void PagedAppsGridView::UpdatePaging() {
@@ -1198,33 +1218,49 @@ void PagedAppsGridView::RecenterItemsContainer() {
 gfx::Rect PagedAppsGridView::BackgroundCardBounds(int new_page_index) {
   // The size of the grid excluding the outer padding.
   const gfx::Size grid_size = GetTileGridSizeForPage(new_page_index);
+
   // The size for the background card that will be displayed. The outer padding
-  // of the grid need to be added.
-  const int vertical_tile_padding = new_page_index == 0
-                                        ? first_page_vertical_tile_padding_
-                                        : vertical_tile_padding_;
-  const gfx::Size background_card_size =
-      grid_size + gfx::Size(2 * horizontal_tile_padding_,
-                            2 * std::max(kMinVerticalPaddingBetweenTiles,
-                                         vertical_tile_padding));
+  // of the grid needs to be added.
+  gfx::Size background_card_size;
+  if (features::IsProductivityLauncherEnabled()) {
+    background_card_size =
+        grid_size + gfx::Size(2 * kBackgroundCardHorizontalPadding,
+                              2 * kBackgroundCardVerticalPadding);
+  } else {
+    const int vertical_tile_padding = new_page_index == 0
+                                          ? first_page_vertical_tile_padding_
+                                          : vertical_tile_padding_;
+    background_card_size =
+        grid_size + gfx::Size(2 * horizontal_tile_padding_,
+                              2 * std::max(kMinVerticalPaddingBetweenTiles,
+                                           vertical_tile_padding));
+  }
 
   // Add a padding on the sides to make space for pagination preview, but make
   // sure the padding doesn't exceed the tile padding (otherwise the background
   // bounds would clip the apps grid bounds).
   const int extra_padding_for_cardified_state =
-      std::min(horizontal_tile_padding_, kCardifiedHorizontalPadding);
+      features::IsProductivityLauncherEnabled()
+          ? 0
+          : std::min(horizontal_tile_padding_, kCardifiedHorizontalPadding);
   const int horizontal_padding =
       (GetContentsBounds().width() - background_card_size.width()) / 2 +
       extra_padding_for_cardified_state;
 
-  int y_offset =
-      std::max(new_page_index == 0 ? GetTotalTopPaddingOnFirstPage() : 0,
-               GetFadeoutMaskHeight());
-  // The vertical padding should account for the fadeout mask.
-  const int vertical_padding =
-      y_offset + (GetContentsBounds().height() - y_offset -
-                  background_card_size.height()) /
-                     2;
+  int y_offset = new_page_index == 0 ? GetTotalTopPaddingOnFirstPage() : 0;
+  if (features::IsProductivityLauncherEnabled()) {
+    // Subtract the amount that the apps grid view is offset by to accommodate
+    // for the top gradient mask. This will visually center the background card
+    // between the top and bottom gradient masks.
+    y_offset -= margin_for_gradient_mask_;
+  } else {
+    y_offset = std::max(y_offset, GetFadeoutMaskHeight());
+  }
+
+  int vertical_padding = y_offset + (GetContentsBounds().height() - y_offset -
+                                     background_card_size.height()) /
+                                        2;
+
   const int padding_between_pages = GetPaddingBetweenPages();
   // The space that each page occupies in the items container. This is the size
   // of the grid without outer padding plus the padding between pages.
