@@ -37,6 +37,11 @@
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "extensions/browser/extension_registry.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_CHROMEOS)
 namespace {
 // Use manual mapping for launch container and window open disposition because
@@ -359,7 +364,20 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
     const apps::AppLaunchParams& params,
     Profile* profile) {
   auto crosapi_params = crosapi::mojom::LaunchParams::New();
-  crosapi_params->app_id = params.app_id;
+
+  std::string id = params.app_id;
+  // In Lacros, all platform apps must be converted to use a muxed id.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  const extensions::Extension* extension =
+      registry->GetExtensionById(id, extensions::ExtensionRegistry::ENABLED);
+  if (extension && extension->is_platform_app()) {
+    id = lacros_extensions_util::MuxId(profile, extension);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  crosapi_params->app_id = id;
   crosapi_params->launch_source = params.launch_source;
 
   // Both launch_files and override_url will be represent by intent in crosapi
