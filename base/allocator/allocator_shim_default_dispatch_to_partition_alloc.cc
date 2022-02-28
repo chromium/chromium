@@ -258,19 +258,43 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
 namespace base {
 namespace internal {
 
+namespace {
+#if BUILDFLAG(IS_APPLE)
+int g_alloc_flags = 0;
+#else
+constexpr int g_alloc_flags = 0;
+#endif
+}  // namespace
+
+void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value) {
+#if BUILDFLAG(IS_APPLE)
+  // We generally prefer to always crash rather than returning nullptr for
+  // OOM. However, on some macOS releases, we have to locally allow it due to
+  // weirdness in OS code. See https://crbug.com/654695 for details.
+  //
+  // Apple only since it's not needed elsewhere, and there is a performance
+  // penalty.
+
+  if (value)
+    g_alloc_flags = 0;
+  else
+    g_alloc_flags = PartitionAllocReturnNull;
+#endif
+}
+
 void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
   ScopedDisallowAllocations guard{};
-  return Allocator()->AllocFlagsNoHooks(0, MaybeAdjustSize(size),
-                                        PartitionPageSize());
+  return Allocator()->AllocFlagsNoHooks(
+      0 | g_alloc_flags, MaybeAdjustSize(size), PartitionPageSize());
 }
 
 void* PartitionMallocUnchecked(const AllocatorDispatch*,
                                size_t size,
                                void* context) {
   ScopedDisallowAllocations guard{};
-  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocReturnNull,
-                                        MaybeAdjustSize(size),
-                                        PartitionPageSize());
+  return Allocator()->AllocFlagsNoHooks(
+      base::PartitionAllocReturnNull | g_alloc_flags, MaybeAdjustSize(size),
+      PartitionPageSize());
 }
 
 void* PartitionCalloc(const AllocatorDispatch*,
@@ -279,8 +303,8 @@ void* PartitionCalloc(const AllocatorDispatch*,
                       void* context) {
   ScopedDisallowAllocations guard{};
   const size_t total = base::CheckMul(n, MaybeAdjustSize(size)).ValueOrDie();
-  return Allocator()->AllocFlagsNoHooks(base::PartitionAllocZeroFill, total,
-                                        PartitionPageSize());
+  return Allocator()->AllocFlagsNoHooks(
+      base::PartitionAllocZeroFill | g_alloc_flags, total, PartitionPageSize());
 }
 
 void* PartitionMemalign(const AllocatorDispatch*,
@@ -352,8 +376,8 @@ void* PartitionRealloc(const AllocatorDispatch*,
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
-  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks, address,
-                                   MaybeAdjustSize(size), "");
+  return Allocator()->ReallocFlags(base::PartitionAllocNoHooks | g_alloc_flags,
+                                   address, MaybeAdjustSize(size), "");
 }
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)

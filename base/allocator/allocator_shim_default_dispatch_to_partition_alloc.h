@@ -12,6 +12,8 @@
 namespace base {
 namespace internal {
 
+void PartitionAllocSetCallNewHandlerOnMallocFailure(bool value);
+
 class BASE_EXPORT PartitionAllocMalloc {
  public:
   static ThreadSafePartitionRoot* Allocator();

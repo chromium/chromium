@@ -29,6 +29,10 @@
 #include "base/mac/mach_logging.h"
 #endif
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
+#endif
+
 // No calls to malloc / new in this file. They would would cause re-entrancy of
 // the shim, which is hard to deal with. Keep this code as simple as possible
 // and don't use any external C++ object here, not even //base ones. Even if
@@ -75,6 +79,10 @@ namespace allocator {
 
 void SetCallNewHandlerOnMallocFailure(bool value) {
   g_call_new_handler_on_malloc_failure = value;
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::internal::PartitionAllocSetCallNewHandlerOnMallocFailure(value);
+#endif
 }
 
 void* UncheckedAlloc(size_t size) {
