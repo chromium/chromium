@@ -25,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace {
@@ -182,6 +183,10 @@ void WebAppNavigationBrowserTest::SetUp() {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+        if (blink::features::IsFencedFramesEnabled() &&
+            blink::features::IsFencedFramesMPArchBased()) {
+          response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
+        }
         return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
             std::move(response));
       }));

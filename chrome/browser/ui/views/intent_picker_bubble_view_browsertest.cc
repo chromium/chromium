@@ -23,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
@@ -360,6 +361,52 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewPrerenderingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewPrerenderingBrowserTest,
+    testing::Values("", "noopener", "noreferrer", "nofollow"));
+
+class IntentPickerBubbleViewFencedFrameBrowserTest
+    : public IntentPickerBubbleViewBrowserTest {
+ public:
+  IntentPickerBubbleViewFencedFrameBrowserTest() = default;
+  ~IntentPickerBubbleViewFencedFrameBrowserTest() override = default;
+  IntentPickerBubbleViewFencedFrameBrowserTest(
+      const IntentPickerBubbleViewFencedFrameBrowserTest&) = delete;
+
+  IntentPickerBubbleViewFencedFrameBrowserTest& operator=(
+      const IntentPickerBubbleViewFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewFencedFrameBrowserTest,
+                       ShouldShowIntentPickerInFencedFrame) {
+  InstallTestWebApp();
+
+  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
+
+  const GURL initial_url =
+      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+  OpenNewTab(initial_url);
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+
+  const GURL fenced_frame_url = https_server().GetURL(
+      GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
+  // Create a fenced frame.
+  ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      fenced_frame_url));
+
+  EXPECT_FALSE(intent_picker_view->GetVisible());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerBubbleViewFencedFrameBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
 
 class IntentPickerDialogTest : public DialogBrowserTest {
