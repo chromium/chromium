@@ -19,6 +19,7 @@
     <dimen name="toolbar_hairline_height">1dp</dimen>
 
     <!-- Alpha values for various things -->
+    <item name="icon_animated_faded_alpha" format="float" type="dimen">0.3</item>
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
     <item name="switch_track_disabled_alpha" format="float" type="dimen">0.12</item>

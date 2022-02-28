@@ -14,11 +14,11 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -798,7 +798,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private Drawable createDrawable(DownloadProgressMessageUiData info) {
         switch (info.iconType) {
             case IconType.DRAWABLE:
-                return ApiCompatibilityUtils.getDrawable(getContext().getResources(), info.icon);
+                return AppCompatResources.getDrawable(getContext(), info.icon);
             case IconType.VECTOR_DRAWABLE:
                 return VectorDrawableCompat.create(
                         getContext().getResources(), info.icon, getContext().getTheme());
