@@ -137,6 +137,7 @@
     "libs/org_pcollections_pcollections",
     "libs/org_robolectric_annotations",
     "libs/org_robolectric_junit",
+    "libs/org_robolectric_nativeruntime",
     "libs/org_robolectric_pluginapi",
     "libs/org_robolectric_plugins_maven_dependency_resolver",
     "libs/org_robolectric_resources",
