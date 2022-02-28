@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWindowSizeControlsTest,
 class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     : public ash::LoginManagerTest {
  public:
-  SystemWebAppManagerMultiDesktopLaunchBrowserTest() : ash::LoginManagerTest() {
+  SystemWebAppManagerMultiDesktopLaunchBrowserTest() {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
@@ -860,7 +860,7 @@ class SystemWebAppOpenInAshFromLacrosTests
     url_handler_ = std::make_unique<crosapi::UrlHandlerAsh>();
   }
 
-  ~SystemWebAppOpenInAshFromLacrosTests() {
+  ~SystemWebAppOpenInAshFromLacrosTests() override {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
   }
 
