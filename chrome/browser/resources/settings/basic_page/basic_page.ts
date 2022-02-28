@@ -254,7 +254,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
    */
   containsRoute(route: Route|null): boolean {
     return !route || routes.BASIC.contains(route) ||
-        routes.ADVANCED.contains(route);
+        (routes.ADVANCED && routes.ADVANCED.contains(route));
   }
 
   private showPage_(visibility?: boolean): boolean {
