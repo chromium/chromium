@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
@@ -172,6 +173,49 @@ TEST_F(CrostiniUtilTest, DuplicateContainerNamesInPrefsAreRemoved) {
   EXPECT_EQ(result[0], dictionary1);
   EXPECT_EQ(result[1], dictionary2);
   EXPECT_EQ(result[2], dictionary3);
+}
 
-}  // namespace crostini
+TEST_F(CrostiniUtilTest, ShouldStopVm) {
+  CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
+  ContainerId containera("apple", "banana");
+  ContainerId containerb("potato", "strawberry");
+  base::Value containers(base::Value::Type::LIST);
+  containers.Append(containera.ToDictValue().Clone());
+  containers.Append(containerb.ToDictValue().Clone());
+
+  manager->AddRunningVmForTesting("apple");
+  manager->AddRunningVmForTesting("potato");
+  manager->AddRunningContainerForTesting(
+      "apple", ContainerInfo("banana", "bo", "home", "1.2.3.4"));
+  manager->AddRunningContainerForTesting(
+      "potato", ContainerInfo("strawberry", "bo", "home", "1.2.3.4"));
+
+  ASSERT_TRUE(manager->IsVmRunning("apple"));
+  ASSERT_TRUE(manager->IsVmRunning("potato"));
+
+  profile_->GetPrefs()->Set(prefs::kCrostiniContainers, std::move(containers));
+
+  EXPECT_TRUE(ShouldStopVm(profile_.get(), containera));
+}
+
+TEST_F(CrostiniUtilTest, ShouldNotStopVm) {
+  CrostiniManager* manager = CrostiniManager::GetForProfile(profile_.get());
+  ContainerId containera("apple", "banana");
+  ContainerId containerb("apple", "strawberry");
+  base::Value containers(base::Value::Type::LIST);
+  containers.Append(containera.ToDictValue().Clone());
+  containers.Append(containerb.ToDictValue().Clone());
+
+  manager->AddRunningVmForTesting("apple");
+  manager->AddRunningContainerForTesting(
+      "apple", ContainerInfo("banana", "bo", "home", "1.2.3.4"));
+  manager->AddRunningContainerForTesting(
+      "apple", ContainerInfo("strawberry", "bo", "home", "1.2.3.4"));
+
+  ASSERT_TRUE(manager->IsVmRunning("apple"));
+
+  profile_->GetPrefs()->Set(prefs::kCrostiniContainers, std::move(containers));
+
+  EXPECT_FALSE(ShouldStopVm(profile_.get(), containera));
+}
 }  // namespace crostini

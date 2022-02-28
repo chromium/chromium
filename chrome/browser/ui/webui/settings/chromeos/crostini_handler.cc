@@ -811,9 +811,13 @@ void CrostiniHandler::HandleStopContainer(base::Value::ConstListView args) {
   }
 
   crostini::ContainerId container_id(args[0]);
-  // For now, we only can stop the whole VM.
-  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
-      container_id.vm_name, base::DoNothing());
+  if (crostini::ShouldStopVm(profile_, container_id)) {
+    crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
+        container_id.vm_name, base::DoNothing());
+  } else {
+    crostini::CrostiniManager::GetForProfile(profile_)->StopLxdContainer(
+        container_id, base::DoNothing());
+  }
 }
 
 }  // namespace settings

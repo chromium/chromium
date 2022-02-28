@@ -247,6 +247,10 @@ void RecordAppLaunchHistogram(CrostiniAppLaunchAppType app_type);
 void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
                                     crostini::CrostiniResult reason);
 
+// Tests whether or not the specified Container is the last one running on it's
+// VM. Returns true if the VM should be stopped.
+bool ShouldStopVm(Profile* profile, const ContainerId& container_id);
+
 }  // namespace crostini
 
 #endif  // CHROME_BROWSER_ASH_CROSTINI_CROSTINI_UTIL_H_

@@ -655,4 +655,24 @@ void RecordAppLaunchResultHistogram(CrostiniAppLaunchAppType type,
   }
 }
 
+bool ShouldStopVm(Profile* profile, const ContainerId& container_id) {
+  bool is_last_container = true;
+  base::Value::ConstListView containers =
+      profile->GetPrefs()
+          ->GetList(prefs::kCrostiniContainers)
+          ->GetListDeprecated();
+  for (const auto& dict : containers) {
+    ContainerId container(dict);
+    if (container.container_name != container_id.container_name &&
+        container.vm_name == container_id.vm_name) {
+      if (CrostiniManager::GetForProfile(profile)->GetContainerInfo(
+              container)) {
+        is_last_container = false;
+        break;
+      }
+    }
+  }
+  return is_last_container;
+}
+
 }  // namespace crostini

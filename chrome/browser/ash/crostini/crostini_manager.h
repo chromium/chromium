@@ -841,6 +841,9 @@ class CrostiniManager : public KeyedService,
   // metric logging the type. Mostly happens async and best-effort.
   void EmitVmDiskTypeMetric(const std::string vm_name);
 
+  // Removes specified container id from running_containers list.
+  void RemoveStoppedContainer(const ContainerId& container_id);
+
   Profile* profile_;
   std::string owner_id_;
 

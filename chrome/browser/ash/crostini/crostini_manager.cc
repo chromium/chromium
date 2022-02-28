@@ -2597,9 +2597,6 @@ void CrostiniManager::OnContainerShutdown(
   if (signal.owner_id() != owner_id_)
     return;
   ContainerId container_id(signal.vm_name(), signal.container_name());
-  for (auto& observer : container_shutdown_observers_) {
-    observer.OnContainerShutdown(container_id);
-  }
   // Find the callbacks to call, then erase them from the map.
   auto range_callbacks =
       shutdown_container_callbacks_.equal_range(container_id);
@@ -2608,23 +2605,7 @@ void CrostiniManager::OnContainerShutdown(
   }
   shutdown_container_callbacks_.erase(range_callbacks.first,
                                       range_callbacks.second);
-
-  // Remove from running containers multimap.
-  auto range_containers = running_containers_.equal_range(signal.vm_name());
-  for (auto it = range_containers.first; it != range_containers.second; ++it) {
-    if (it->second.name == signal.container_name()) {
-      running_containers_.erase(it);
-      break;
-    }
-  }
-  if (running_containers_.empty()) {
-    auto* engagement_metrics_service =
-        CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
-    // This is null in unit tests.
-    if (engagement_metrics_service) {
-      engagement_metrics_service->SetBackgroundActive(false);
-    }
-  }
+  RemoveStoppedContainer(container_id);
 }
 
 void CrostiniManager::OnInstallLinuxPackageProgress(
@@ -2899,6 +2880,7 @@ void CrostiniManager::OnStopLxdContainer(
       break;
 
     case vm_tools::cicerone::StopLxdContainerResponse::STOPPED:
+      RemoveStoppedContainer(container_id);
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
 
@@ -3140,6 +3122,7 @@ void CrostiniManager::OnLxdContainerStopping(
       result = CrostiniResult::CONTAINER_STOP_CANCELLED;
       break;
     case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED:
+      RemoveStoppedContainer(container_id);
       result = CrostiniResult::SUCCESS;
       break;
     case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPING:
@@ -3801,4 +3784,28 @@ void CrostiniManager::CallRestarterStartLxdContainerFinishedForTesting(
   DCHECK(restarter_it != restarters_by_id_.end());
   restarter_it->second->StartLxdContainerFinished(result);
 }
+
+void CrostiniManager::RemoveStoppedContainer(const ContainerId& container_id) {
+  // Run all ContainerShutdown observers
+  for (auto& observer : container_shutdown_observers_) {
+    observer.OnContainerShutdown(container_id);
+  }
+  // Remove from running containers multimap.
+  auto range_containers = running_containers_.equal_range(container_id.vm_name);
+  for (auto it = range_containers.first; it != range_containers.second; ++it) {
+    if (it->second.name == container_id.container_name) {
+      running_containers_.erase(it);
+      break;
+    }
+  }
+  if (running_containers_.empty()) {
+    auto* engagement_metrics_service =
+        CrostiniEngagementMetricsService::Factory::GetForProfile(profile_);
+    // This is null in unit tests.
+    if (engagement_metrics_service) {
+      engagement_metrics_service->SetBackgroundActive(false);
+    }
+  }
+}
+
 }  // namespace crostini
