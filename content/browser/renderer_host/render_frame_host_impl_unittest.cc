@@ -112,6 +112,64 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
   EXPECT_EQ(initial_rfh, main_rfh());
 }
 
+// Ensures that IsolationInfo's SiteForCookies is empty and
+// that it correctly generates a StorageKey with a kCrossSite
+// AncestorChainBit when frames are nested in an A->B->A
+// configuration.
+TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
+  // Enable 3p partitioning to accurately test AncestorChainBit.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kThirdPartyStoragePartitioning);
+
+  // Load site A into the main frame.
+  GURL parent_url = GURL("https://parent.example.test/");
+  NavigationSimulator::CreateRendererInitiated(parent_url, main_rfh())
+      ->Commit();
+
+  // Create a child RenderFrameHost and navigate it to site B to establish A->B.
+  auto* child_rfh_1 = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child:a->b"));
+  GURL child_url_1 = GURL("https://child.example.com");
+  child_rfh_1 = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(child_url_1,
+                                                         child_rfh_1));
+
+  // Create a child RenderFrameHost in the existing child RenderFrameHost and
+  // navigate it to site A to establish A->B->A.
+  auto* child_rfh_2 = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(child_rfh_1)
+          ->AppendChild("child:a->b->a"));
+  child_rfh_2 = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(parent_url,
+                                                         child_rfh_2));
+
+  // Constructing expected values.
+  url::Origin expected_final_origin = url::Origin::Create(parent_url);
+  blink::StorageKey expected_final_storage_key =
+      blink::StorageKey::CreateWithOptionalNonce(
+          expected_final_origin, net::SchemefulSite(expected_final_origin),
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+  // Set should contain the set of sites between the current and top frame.
+  std::set<net::SchemefulSite> party_context = {
+      net::SchemefulSite(child_url_1)};
+  net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, expected_final_origin,
+      expected_final_origin, net::SiteForCookies(), party_context);
+
+  EXPECT_EQ(expected_final_origin, child_rfh_2->GetLastCommittedOrigin());
+  EXPECT_EQ(expected_final_storage_key, child_rfh_2->storage_key());
+  EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
+      child_rfh_2->GetIsolationInfoForSubresources()));
+  EXPECT_EQ(expected_final_isolation_info.network_isolation_key(),
+            child_rfh_2->GetNetworkIsolationKey());
+  EXPECT_TRUE(expected_final_isolation_info.site_for_cookies().IsEquivalent(
+      child_rfh_2->ComputeSiteForCookies()));
+  EXPECT_TRUE(expected_final_isolation_info.IsEqualForTesting(
+      child_rfh_2->GetPendingIsolationInfoForSubresources()));
+}
+
 // Test the IsolationInfo and related fields of a request during the various
 // phases of a commit, when a RenderFrameHost is reused. Once RenderDocument
 // ships, this test may no longer be needed.
