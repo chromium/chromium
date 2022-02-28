@@ -78,7 +78,6 @@ source_set("unit_tests") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository:repository",
     "//ash/quick_pair/repository:test_support",
-    "//ash/quick_pair/repository:test_support",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair:test_support",
     "//ash/services/quick_pair/public/cpp",
