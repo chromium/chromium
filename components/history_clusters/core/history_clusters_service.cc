@@ -30,7 +30,6 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
@@ -191,9 +190,10 @@ HistoryClustersService::HistoryClustersService(
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
-    : history_service_(history_service), visit_deletion_observer_(this) {
-  InitializeConfig(application_locale);
-
+    : is_journeys_enabled_(
+          ::history_clusters::IsJourneysEnabled(application_locale)),
+      history_service_(history_service),
+      visit_deletion_observer_(this) {
   DCHECK(history_service_);
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
@@ -207,21 +207,11 @@ HistoryClustersService::HistoryClustersService(
 
 HistoryClustersService::~HistoryClustersService() = default;
 
-// static
-void HistoryClustersService::InitializeConfig(
-    const std::string& application_locale) {
-  OverrideWithFinch(application_locale);
-}
-
 base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 void HistoryClustersService::Shutdown() {}
-
-bool HistoryClustersService::IsJourneysEnabled() const {
-  return GetConfig().is_journeys_enabled;
-}
 
 void HistoryClustersService::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);

@@ -13,6 +13,23 @@ namespace history_clusters {
 
 // Params & helpers functions
 
+// Returns true if Journeys in the Chrome History WebUI is enabled.
+// Callers with access to `HistoryClustersService` should use
+// `HistoryClustersService::IsJourneysEnabled` which has precomputed this value
+// with the g_browser_process locale. Renderer process callers will have to
+// use this function directly.
+bool IsJourneysEnabled(const std::string& application_locale);
+
+// A comma (or colon) separated list of allowed locales and languages for which
+// Journeys is enabled. If this string is empty, any application locale or
+// language is allowed. If this string is non-empty, then the either the user's
+// system locale or primary language subtag must match one of the elements for
+// Journeys to be enabled.
+//
+// For example, "en,zh-TW" would mark English language users from any country,
+// and Chinese language users from Taiwan as on the allowlist.
+extern const base::FeatureParam<std::string> kLocaleOrLanguageAllowlist;
+
 // The max number of visits to use for each clustering iteration. This limits
 // the number of visits sent to the clustering backend per batch.
 extern const base::FeatureParam<int> kMaxVisitsToCluster;
