@@ -2822,8 +2822,8 @@ void HWNDMessageHandler::OnWindowPosChanging(WINDOWPOS* window_pos) {
       // (Win+Shift+Arrows). See crbug.com/656001.
       window_rect.left = window_pos->x;
       window_rect.top = window_pos->y;
-      window_rect.right = window_pos->x + window_pos->cx - 1;
-      window_rect.bottom = window_pos->y + window_pos->cy - 1;
+      window_rect.right = window_pos->x + window_pos->cx;
+      window_rect.bottom = window_pos->y + window_pos->cy;
     }
 
     HMONITOR monitor;
