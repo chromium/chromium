@@ -36,8 +36,6 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
     protected final int mSelectedLevel;
     protected final AnimatedVectorDrawableCompat mCheckDrawable;
 
-    protected int mStartIconViewSize;
-
     /**
      * The LinearLayout containing the rest of the views for the selectable item.
      */
@@ -119,9 +117,8 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
         return mVisualRefreshEnabled;
     }
 
-    protected void enableVisualRefresh(int startIconViewSize) {
+    protected void enableVisualRefresh() {
         mVisualRefreshEnabled = true;
-        mStartIconViewSize = startIconViewSize;
 
         mStartIconBackgroundRes = R.drawable.list_item_icon_modern_bg_rect;
         mLayoutRes = R.layout.modern_list_item_view_v2;
@@ -156,9 +153,6 @@ public abstract class SelectableItemView<E> extends SelectableItemViewBase<E> {
         if (isVisualRefreshEnabled()) {
             mEndStartButtonView = findViewById(R.id.optional_button);
             mCustomContentContainer = findViewById(R.id.custom_content_container);
-            mStartIconView.getLayoutParams().width = mStartIconViewSize;
-            mStartIconView.getLayoutParams().height = mStartIconViewSize;
-            mStartIconView.requestLayout();
         }
     }
 
