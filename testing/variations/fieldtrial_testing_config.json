@@ -5838,6 +5838,41 @@
             ]
         }
     ],
+    "SharedHighlightingIphClank": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_SharedHighlightingBuilder",
+                        "IPH_SharedHighlightingReceiver"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SharedHighlightingIphDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_DesktopSharedHighlighting"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedHighlightingTimeout": [
         {
             "platforms": [
