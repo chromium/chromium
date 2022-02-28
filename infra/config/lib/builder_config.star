@@ -4,6 +4,8 @@
 
 """Library for defining chromium_tests_builder_config properties."""
 
+load("@stdlib//internal/graph.star", "graph")
+load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
 load("./args.star", "args")
 load("./nodes.star", "nodes")
 
@@ -201,7 +203,6 @@ def _skylab_upload_location(*, gs_bucket, gs_extra = None):
 def _builder_spec(
         *,
         execution_mode = _execution_mode.COMPILE_AND_TEST,
-        parent = None,
         gclient_config,
         chromium_config,
         android_config = None,
@@ -217,8 +218,6 @@ def _builder_spec(
 
     Args:
         execution_mode: (execution_mode) The execution mode of the builder.
-        parent: (str) A string identifying the parent builder, will be added to
-            the triggered_by value for the builder.
         gclient_config: (gclient_config) The gclient config for the builder.
         chromium_config: (chromium_config) The chromium config for the builder.
         android_config: (android_config) The android config for the builder.
@@ -261,12 +260,6 @@ def _builder_spec(
     """
     if execution_mode not in _execution_mode._values:
         fail("unknown execution_mode: {}".format(execution_mode))
-    if execution_mode == _execution_mode.COMPILE_AND_TEST and parent != None:
-        fail("parent cannot be provided for execution mode {}"
-            .format(_execution_mode.COMPILE_AND_TEST))
-    elif execution_mode == _execution_mode.TEST and parent == None:
-        fail("parent must be specified for execution mode {}"
-            .format(_execution_mode.TEST))
     if not gclient_config:
         fail("gclient_config must be provided")
     if not chromium_config:
@@ -274,7 +267,6 @@ def _builder_spec(
 
     return _struct_with_non_none_values(
         execution_mode = execution_mode,
-        parent = parent,
         gclient_config = gclient_config,
         chromium_config = chromium_config,
         android_config = android_config,
@@ -383,13 +375,6 @@ builder_config = struct(
 # Nodes containing the builder config details for a builder
 _BUILDER_CONFIG = nodes.create_node_type_with_builder_ref("builder_config")
 
-# Nodes representing a link to a parent builder
-_BUILDER_CONFIG_PARENT = nodes.create_link_node_type(
-    "builder_config_parent",
-    _BUILDER_CONFIG,
-    _BUILDER_CONFIG,
-)
-
 # Nodes representing a link to a mirrored builder
 _BUILDER_CONFIG_MIRROR = nodes.create_link_node_type(
     "builder_config_mirror",
@@ -433,8 +418,6 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
     else:
         include_all_triggered_testers = not mirrors
     builder_config_key = _BUILDER_CONFIG.add(bucket, name, props = dict(
-        bucket = bucket,
-        name = name,
         builder_group = builder_group,
         builder_spec = _struct_to_dict(builder_spec),
         mirrors = mirrors,
@@ -442,46 +425,112 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
         try_settings = try_settings,
     ))
 
-    parent = getattr(builder_spec, "parent", None)
-    if parent:
-        _BUILDER_CONFIG_PARENT.link(builder_config_key, parent)
-
     for m in mirrors or []:
         _BUILDER_CONFIG_MIRROR.link(builder_config_key, m)
 
+    graph.add_edge(builder_config_key, keys.builder(bucket, name))
+
 def _builder_name(node):
-    return "{}/{}".format(node.props.bucket, node.props.name)
+    key = node.key
+    container = key.container
+    if not container or container.kind != kinds.BUCKET:
+        fail("got {}, expecting a node with a bucket-scoped key".format(node))
+    return "{}/{}".format(container.id, key.id)
 
 def _get_parent_node(node):
-    nodes = _BUILDER_CONFIG_PARENT.children(node.key)
+    builder_nodes = graph.children(node.key, kinds.BUILDER)
+    if len(builder_nodes) != 1:
+        fail(
+            "internal error: builder_config node should have edge to exactly 1 builder node",
+            node.trace,
+        )
+
+    # To find the builder config of the parent builder, we need to find the
+    # builder that triggers the builder we're looking at, then the builder
+    # config node will be the parent node of that builder.
+    #
+    # To find the parent builder, we traverse parent nodes of the builder node.
+    # The builder node will have builder_ref nodes as parents, which abstract
+    # being able to refer to a builder by bucket-qualified name (ci/foo-builder)
+    # or simple name (foo-builder). The builder_ref nodes will have triggerer
+    # nodes as parents, which abstract things that can trigger builders (pollers
+    # or builders). Finally, the triggerer nodes for builders will have a
+    # builder node as a parent.
+    triggerers = set()
+    parents = set()
+    for ref in graph.parents(builder_nodes[0].key, kinds.BUILDER_REF):
+        for t in graph.parents(ref.key, kinds.TRIGGERER):
+            triggerers = triggerers.union([t])
+            for b in graph.parents(t.key, kinds.BUILDER):
+                builder_configs = graph.parents(b.key, _BUILDER_CONFIG.kind)
+                if len(builder_configs) > 1:
+                    fail(
+                        "internal error: multiple builder_config parents for {}: {}"
+                            .format(b, builder_configs),
+                        b.trace,
+                    )
+                parents = parents.union(builder_configs)
+
+    if len(parents) > 1:
+        fail("{} has multiple parents: {}".format(
+            _builder_name(node),
+            sorted([_builder_name(p) for p in parents]),
+        ))
+
+    parent = list(parents)[0] if parents else None
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
-    if not nodes:
-        if execution_mode == _execution_mode.TEST:
-            fail("internal error: builder {} has execution_mode {} and has no parent"
-                .format(_builder_name(node), execution_mode))
-        return None
+    if execution_mode == _execution_mode.TEST:
+        if len(triggerers) > 1:
+            fail(
+                "builder {} has execution_mode {} and has multiple triggerers: {}"
+                    .format(_builder_name(node), execution_mode, [t.key.id for t in triggerers]),
+                node.trace,
+            )
+        elif not triggerers:
+            fail(
+                "builder {} has execution_mode {} and has no parent"
+                    .format(_builder_name(node), execution_mode),
+                node.trace,
+            )
+        elif not parent:
+            fail(
+                "builder {} is triggered by {} which does not have a builder spec"
+                    .format(_builder_name(node), triggerers[0]),
+                node.trace,
+            )
+    elif execution_mode == _execution_mode.COMPILE_AND_TEST:
+        if parent:
+            fail(
+                "builder {} has execution_mode {} and has a parent: {}"
+                    .format(_builder_name(node), execution_mode, _builder_name(parent)),
+                node.trace,
+            )
 
-    if len(nodes) > 1:
-        fail("internal error: builder {} has multiple parents: {}"
-            .format(_builder_name(node), sorted([_builder_name(t) for t in nodes])))
-    if execution_mode != _execution_mode.TEST:
-        fail("internal error: builder {} has execution_mode {} and has a parent: {}"
-            .format(_builder_name(node), execution_mode, _builder_name(nodes[0])))
-
-    return nodes[0]
+    return parent
 
 def _get_child_nodes(node):
-    nodes = _BUILDER_CONFIG_PARENT.parents(node.key)
+    builder_nodes = graph.children(node.key, kinds.BUILDER)
+    if len(builder_nodes) != 1:
+        fail("internal error: builder_config node should have edge to exactly 1 builder node", node.trace)
+
+    children = set()
+    for b in triggerer.targets(builder_nodes[0]):
+        b_children = graph.parents(b.key, _BUILDER_CONFIG.kind)
+        if not b_children:
+            fail("{} is triggered by {}, but does not have a builder spec".format(_builder_name(b), _builder_name(node)), b.trace)
+        if len(b_children) > 1:
+            fail("internal error: builder node should be the target of exactly 1 edge from a builder_config node", b.trace)
+        children = children.union(b_children)
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
-    if execution_mode != _execution_mode.COMPILE_AND_TEST and nodes:
+    if execution_mode != _execution_mode.COMPILE_AND_TEST and children:
         fail("internal error: builder {} has execution_mode {} and has children: {}"
-            .format(_builder_name(node), execution_mode, sorted([_builder_name(n) for n in nodes])))
+            .format(_builder_name(node), execution_mode, sorted([_builder_name(c) for c in children])))
 
-    return nodes
+    return children
 
 def _get_mirrored_builders(node):
     nodes = _BUILDER_CONFIG_MIRROR.children(node.key)
@@ -515,8 +564,8 @@ def _builder_id(node):
         # migrated src-side, switch this to settings.project and remove the use
         # of project_trigger_override within the starlark
         project = "chromium",
-        bucket = node.props.bucket,
-        builder = node.props.name,
+        bucket = node.key.container.id,
+        builder = node.key.id,
     )
 
 def _entry(node, parent = None):
@@ -583,7 +632,7 @@ def _set_builder_config_property(ctx):
                 encountered = {}
 
                 def add(node, parent = None):
-                    node_id = (node.props.bucket, node.props.name)
+                    node_id = (node.key.container.id, node.key.id)
                     if node_id not in encountered:
                         entries.append(_entry(node, parent))
                         if node.props.builder_spec["execution_mode"] == _execution_mode.COMPILE_AND_TEST:
@@ -625,7 +674,7 @@ def _set_builder_config_property(ctx):
             if mirroring_builders:
                 builder_config["mirroring_builder_group_and_names"] = [
                     dict(group = group, builder = builder)
-                    for group, builder in sorted([(b.props.builder_group, b.props.name) for b in mirroring_builders])
+                    for group, builder in sorted([(b.props.builder_group, b.key.id) for b in mirroring_builders])
                 ]
 
             builder_properties = json.decode(builder.properties)

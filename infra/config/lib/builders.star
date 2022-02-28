@@ -29,7 +29,7 @@ load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./bootstrap.star", "register_bootstrap")
-load("./builder_config.star", "builder_config", "register_builder_config")
+load("./builder_config.star", "register_builder_config")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
 
 ################################################################################
@@ -736,11 +736,6 @@ def builder(
         history_options = resultdb.history_options(
             by_timestamp = resultdb_index_by_timestamp,
         )
-
-    if builder_spec and builder_spec.execution_mode == builder_config.execution_mode.TEST:
-        if triggered_by != args.DEFAULT:
-            fail("triggered testers cannot specify triggered_by")
-        triggered_by = [builder_spec.parent]
 
     kwargs["notifies"] = defaults.get_value("notifies", notifies, merge = args.MERGE_LIST)
 
