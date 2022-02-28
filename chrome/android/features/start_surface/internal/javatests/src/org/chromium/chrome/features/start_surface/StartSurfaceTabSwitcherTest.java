@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.feed.FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_TEST_BASE_PARAMS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.sClassParamsForStartSurfaceTest;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -369,7 +370,8 @@ public class StartSurfaceTabSwitcherTest {
     @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
-        "/show_tabs_in_mru_order/true/show_last_active_tab_only/true"})
+        "/show_tabs_in_mru_order/true/show_last_active_tab_only/true",
+        DISABLE_ANIMATION_SWITCH})
     public void testShowV2_GridTabSwitcher_AlwaysShowTabsInCreationOrder() {
         // clang-format on
         tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
