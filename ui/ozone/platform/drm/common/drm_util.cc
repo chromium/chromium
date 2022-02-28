@@ -737,9 +737,10 @@ std::vector<const char*> GetPreferredDrmDrivers() {
   const auto sys_vendor = ReadFileAndTrim(dmi_dir.Append("sys_vendor"));
   const auto product_name = ReadFileAndTrim(dmi_dir.Append("product_name"));
 
-  // The iMac 12,1 has an integrated Intel GPU that isn't connected to
-  // any real outputs. Prefer the Radeon card instead.
-  if (sys_vendor == "Apple Inc." && product_name == "iMac12,1")
+  // The iMac 12.1 and 12.2 have an integrated Intel GPU that isn't connected
+  // to any real outputs. Prefer the Radeon card instead.
+  if (sys_vendor == "Apple Inc." &&
+      (product_name == "iMac12,1" || product_name == "iMac12,2"))
     return {"radeon"};
 
   // Default order.
