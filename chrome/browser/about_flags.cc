@@ -2628,19 +2628,30 @@ const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
 
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};
+const FeatureEntry::FeatureParam kBookmarksRefreshCompactVisuals[] = {
+    {"bookmark_visuals_enabled", "true"},
+    {"bookmark_compact_visuals_enabled", "true"}};
 const FeatureEntry::FeatureParam kBookmarksRefreshAppMenu[] = {
     {"bookmark_in_app_menu", "true"}};
-const FeatureEntry::FeatureParam kBookmarksRefreshWithEverything[] = {
+const FeatureEntry::FeatureParam kBookmarksRefreshNormal[] = {
     {"bookmark_visuals_enabled", "true"},
+    {"bookmark_in_app_menu", "true"}};
+const FeatureEntry::FeatureParam kBookmarksRefreshCompact[] = {
+    {"bookmark_visuals_enabled", "true"},
+    {"bookmark_compact_visuals_enabled", "true"},
     {"bookmark_in_app_menu", "true"}};
 
 const FeatureEntry::FeatureVariation kBookmarksRefreshVariations[] = {
-    {"(manager visuals only)", kBookmarksRefreshVisuals,
-     std::size(kBookmarksRefreshVisuals), nullptr},
+    {"(enabled w/ visuals)", kBookmarksRefreshNormal,
+     base::size(kBookmarksRefreshNormal), nullptr},
+    {"(enabled w/ compact visuals)", kBookmarksRefreshCompact,
+     base::size(kBookmarksRefreshCompact), nullptr},
+    {"(visuals only)", kBookmarksRefreshVisuals,
+     base::size(kBookmarksRefreshVisuals), nullptr},
+    {"(compact visuals only)", kBookmarksRefreshCompactVisuals,
+     base::size(kBookmarksRefreshCompactVisuals), nullptr},
     {"(app menu item only)", kBookmarksRefreshAppMenu,
-     std::size(kBookmarksRefreshAppMenu), nullptr},
-    {"(everything)", kBookmarksRefreshWithEverything,
-     std::size(kBookmarksRefreshWithEverything), nullptr}};
+     base::size(kBookmarksRefreshAppMenu), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {

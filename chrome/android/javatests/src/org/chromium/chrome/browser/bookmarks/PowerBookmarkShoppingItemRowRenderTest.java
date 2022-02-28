@@ -87,7 +87,7 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
-    public void setupFeatureOverrides() {
+    public void enableBookmarksVisualRefresh() {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, true);
         testValuesOverride.addFieldTrialParamOverride(ChromeFeatureList.BOOKMARKS_REFRESH,
@@ -95,12 +95,21 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
         FeatureList.setTestValues(testValuesOverride);
     }
 
+    public void setupFeatureVariations(boolean useCompactVisuals) {
+        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+        testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, true);
+        testValuesOverride.addFieldTrialParamOverride(ChromeFeatureList.BOOKMARKS_REFRESH,
+                BookmarkFeatures.BOOKMARK_VISUALS_ENABLED, "true");
+        testValuesOverride.addFieldTrialParamOverride(ChromeFeatureList.BOOKMARKS_REFRESH,
+                BookmarkFeatures.BOOKMARK_COMPACT_VISUALS_ENABLED,
+                useCompactVisuals ? "true" : "false");
+        FeatureList.setTestValues(testValuesOverride);
+    }
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        setupFeatureOverrides();
-
         mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
@@ -119,6 +128,7 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
                 .when(mCurrencyFormatter)
                 .format(currencyCaptor.capture());
 
+        enableBookmarksVisualRefresh();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContentView = new LinearLayout(getActivity());
             mContentView.setBackgroundColor(Color.WHITE);
@@ -148,8 +158,10 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
     @MediumTest
     @Feature({"RenderTest"})
     public void testShoppingNormalPriceWithTrackingEnabled() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true, 100, 100);
+            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
+                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
         });
         mRenderTestRule.render(mContentView, "shopping_normal_price_with_tracking_enabled");
     }
@@ -157,7 +169,21 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testShoppingNormalPriceWithTrackingEnabled_compactVisuals() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
+                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
+        });
+        mRenderTestRule.render(
+                mContentView, "shopping_normal_price_with_tracking_enabled_compact_visuals");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testShoppingNormalPriceWithTrackingDisabled() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
                     100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
@@ -168,7 +194,21 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testShoppingNormalPriceWithTrackingDisabled_compactVisuals() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
+                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
+        });
+        mRenderTestRule.render(
+                mContentView, "shopping_normal_price_with_tracking_disabled_compact_visuals");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testShoppingPriceDrop() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
                     100 * CURRENCY_MUTLIPLIER, 50 * CURRENCY_MUTLIPLIER);
@@ -179,7 +219,20 @@ public class PowerBookmarkShoppingItemRowRenderTest extends BlankUiTestActivityT
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testShoppingPriceDrop_compactVisuals() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
+                    100 * CURRENCY_MUTLIPLIER, 50 * CURRENCY_MUTLIPLIER);
+        });
+        mRenderTestRule.render(mContentView, "shopping_price_drop_compact_visuals");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testShoppingRebindUI() throws IOException {
+        setupFeatureVariations(/*useCompactVisuals=*/false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
                     100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
