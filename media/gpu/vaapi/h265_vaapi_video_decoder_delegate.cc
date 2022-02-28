@@ -4,7 +4,6 @@
 
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 
-#include "base/cxx17_backports.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/decode_surface_handler.h"
@@ -198,7 +197,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   FillVAPicture(&pic_param.CurrPic, std::move(pic));
 
   // Init reference pictures' array.
-  for (size_t i = 0; i < base::size(pic_param.ReferenceFrames); ++i)
+  for (size_t i = 0; i < std::size(pic_param.ReferenceFrames); ++i)
     InitVAPicture(&pic_param.ReferenceFrames[i]);
 
   // And fill it with picture info from DPB.
@@ -224,26 +223,26 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   // We need another one of these since we can't use |scaling_list| above in
   // the static_assert checks below.
   H265ScalingListData checker;
-  static_assert((base::size(checker.scaling_list_4x4) ==
-                 base::size(iq_matrix_buf.ScalingList4x4)) &&
-                    (base::size(checker.scaling_list_4x4[0]) ==
-                     base::size(iq_matrix_buf.ScalingList4x4[0])) &&
-                    (base::size(checker.scaling_list_8x8) ==
-                     base::size(iq_matrix_buf.ScalingList8x8)) &&
-                    (base::size(checker.scaling_list_8x8[0]) ==
-                     base::size(iq_matrix_buf.ScalingList8x8[0])) &&
-                    (base::size(checker.scaling_list_16x16) ==
-                     base::size(iq_matrix_buf.ScalingList16x16)) &&
-                    (base::size(checker.scaling_list_16x16[0]) ==
-                     base::size(iq_matrix_buf.ScalingList16x16[0])) &&
-                    (base::size(checker.scaling_list_32x32) / 3 ==
-                     base::size(iq_matrix_buf.ScalingList32x32)) &&
-                    (base::size(checker.scaling_list_32x32[0]) ==
-                     base::size(iq_matrix_buf.ScalingList32x32[0])) &&
-                    (base::size(checker.scaling_list_dc_coef_16x16) ==
-                     base::size(iq_matrix_buf.ScalingListDC16x16)) &&
-                    (base::size(checker.scaling_list_dc_coef_32x32) / 3 ==
-                     base::size(iq_matrix_buf.ScalingListDC32x32)),
+  static_assert((std::size(checker.scaling_list_4x4) ==
+                 std::size(iq_matrix_buf.ScalingList4x4)) &&
+                    (std::size(checker.scaling_list_4x4[0]) ==
+                     std::size(iq_matrix_buf.ScalingList4x4[0])) &&
+                    (std::size(checker.scaling_list_8x8) ==
+                     std::size(iq_matrix_buf.ScalingList8x8)) &&
+                    (std::size(checker.scaling_list_8x8[0]) ==
+                     std::size(iq_matrix_buf.ScalingList8x8[0])) &&
+                    (std::size(checker.scaling_list_16x16) ==
+                     std::size(iq_matrix_buf.ScalingList16x16)) &&
+                    (std::size(checker.scaling_list_16x16[0]) ==
+                     std::size(iq_matrix_buf.ScalingList16x16[0])) &&
+                    (std::size(checker.scaling_list_32x32) / 3 ==
+                     std::size(iq_matrix_buf.ScalingList32x32)) &&
+                    (std::size(checker.scaling_list_32x32[0]) ==
+                     std::size(iq_matrix_buf.ScalingList32x32[0])) &&
+                    (std::size(checker.scaling_list_dc_coef_16x16) ==
+                     std::size(iq_matrix_buf.ScalingListDC16x16)) &&
+                    (std::size(checker.scaling_list_dc_coef_32x32) / 3 ==
+                     std::size(iq_matrix_buf.ScalingListDC32x32)),
                 "Mismatched HEVC scaling list matrix sizes");
 
   for (int i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
@@ -327,17 +326,17 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitSlice(
   const auto ref_pic_list0_size = ref_pic_list0.size();
   const auto ref_pic_list1_size = ref_pic_list1.size();
   // Fill in ref pic lists.
-  if (ref_pic_list0_size > base::size(slice_param_.RefPicList[0]) ||
-      ref_pic_list1_size > base::size(slice_param_.RefPicList[1])) {
+  if (ref_pic_list0_size > std::size(slice_param_.RefPicList[0]) ||
+      ref_pic_list1_size > std::size(slice_param_.RefPicList[1])) {
     DLOG(ERROR) << "Error, slice reference picture list is larger than 15";
     return DecodeStatus::kFail;
   }
 
   constexpr int kVaInvalidRefPicIndex = 0xFF;
-  std::fill_n(slice_param_.RefPicList[0],
-              base::size(slice_param_.RefPicList[0]), kVaInvalidRefPicIndex);
-  std::fill_n(slice_param_.RefPicList[1],
-              base::size(slice_param_.RefPicList[1]), kVaInvalidRefPicIndex);
+  std::fill_n(slice_param_.RefPicList[0], std::size(slice_param_.RefPicList[0]),
+              kVaInvalidRefPicIndex);
+  std::fill_n(slice_param_.RefPicList[1], std::size(slice_param_.RefPicList[1]),
+              kVaInvalidRefPicIndex);
   // There may be null entries in |ref_pic_list0| or |ref_pic_list1| for missing
   // reference pictures, just leave those marked as 0xFF and the accelerator
   // will do the right thing to deal with missing reference pictures.

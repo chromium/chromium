@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <vector>
 
-#include <stdint.h>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -320,9 +319,8 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
     const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
     buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
         std::string(reinterpret_cast<const char*>(kFakeKeyId),
-                    base::size(kFakeKeyId)),
-        std::string(reinterpret_cast<const char*>(kFakeIv),
-                    base::size(kFakeIv)),
+                    std::size(kFakeKeyId)),
+        std::string(reinterpret_cast<const char*>(kFakeIv), std::size(kFakeIv)),
         {}));
 
     return buffer;

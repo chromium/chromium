@@ -4,14 +4,14 @@
 
 #include "media/gpu/v4l2/v4l2_video_decoder_delegate_vp9_legacy.h"
 
-#include <type_traits>
-
+// Must come before linux/media/vp9-ctrls-legacy.h.
 #include <linux/videodev2.h>
-#include <string.h>
 
 #include <linux/media/vp9-ctrls-legacy.h>
+#include <string.h>
 
-#include "base/cxx17_backports.h"
+#include <type_traits>
+
 #include "base/logging.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -82,8 +82,8 @@ void FillV4L2VP9SegmentationParams(
           std::extent<decltype(v4l2_segm_params->feature_enabled[0])>() ==
               std::extent<decltype(vp9_segm_params.feature_enabled[0])>(),
       "feature_enabled arrays must be of same size");
-  for (size_t i = 0; i < base::size(v4l2_segm_params->feature_enabled); ++i) {
-    for (size_t j = 0; j < base::size(v4l2_segm_params->feature_enabled[i]);
+  for (size_t i = 0; i < std::size(v4l2_segm_params->feature_enabled); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_segm_params->feature_enabled[i]);
          ++j) {
       v4l2_segm_params->feature_enabled[i][j] =
           vp9_segm_params.feature_enabled[i][j];
@@ -278,7 +278,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
 
   struct v4l2_ctrl_vp9_decode_param v4l2_decode_param;
   memset(&v4l2_decode_param, 0, sizeof(v4l2_decode_param));
-  DCHECK_EQ(kVp9NumRefFrames, base::size(v4l2_decode_param.ref_frames));
+  DCHECK_EQ(kVp9NumRefFrames, std::size(v4l2_decode_param.ref_frames));
 
   std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces;
   for (size_t i = 0; i < kVp9NumRefFrames; ++i) {
@@ -298,7 +298,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Legacy::SubmitDecode(
                     std::extent<decltype(frame_hdr->ref_frame_idx)>(),
                 "active reference frame array sizes mismatch");
 
-  for (size_t i = 0; i < base::size(frame_hdr->ref_frame_idx); ++i) {
+  for (size_t i = 0; i < std::size(frame_hdr->ref_frame_idx); ++i) {
     uint8_t idx = frame_hdr->ref_frame_idx[i];
     if (idx >= kVp9NumRefFrames)
       return DecodeStatus::kFail;

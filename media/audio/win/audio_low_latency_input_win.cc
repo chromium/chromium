@@ -14,7 +14,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1189,7 +1188,7 @@ HRESULT WASAPIAudioInputStream::GetAudioCaptureEffects(
   ABI::Windows::Media::AudioProcessing audio_processing_mode[] = {
       ABI::Windows::Media::AudioProcessing::AudioProcessing_Default,
       ABI::Windows::Media::AudioProcessing::AudioProcessing_Raw};
-  for (size_t i = 0; i < base::size(audio_processing_mode); ++i) {
+  for (size_t i = 0; i < std::size(audio_processing_mode); ++i) {
     // Create an AudioCaptureEffectsManager manager which can be used to
     // discover the audio processing chain on a device for a specific media
     // category and audio processing mode. The media category is fixed and set

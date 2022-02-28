@@ -208,7 +208,7 @@ V4L2Buffer::V4L2Buffer(scoped_refptr<V4L2Device> device,
                        size_t buffer_id)
     : device_(device), format_(format) {
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(type));
-  DCHECK_LE(format.fmt.pix_mp.num_planes, base::size(v4l2_planes_));
+  DCHECK_LE(format.fmt.pix_mp.num_planes, std::size(v4l2_planes_));
 
   memset(&v4l2_buffer_, 0, sizeof(v4l2_buffer_));
   memset(v4l2_planes_, 0, sizeof(v4l2_planes_));
@@ -216,7 +216,7 @@ V4L2Buffer::V4L2Buffer(scoped_refptr<V4L2Device> device,
   // Just in case we got more planes than we want.
   v4l2_buffer_.length =
       std::min(static_cast<size_t>(format.fmt.pix_mp.num_planes),
-               base::size(v4l2_planes_));
+               std::size(v4l2_planes_));
   v4l2_buffer_.index = buffer_id;
   v4l2_buffer_.type = type;
   v4l2_buffer_.memory = memory;
@@ -452,7 +452,7 @@ V4L2BufferRefBase::V4L2BufferRefBase(const struct v4l2_buffer& v4l2_buffer,
     : queue_(std::move(queue)), return_to_(queue_->free_buffers_) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(v4l2_buffer.type));
-  DCHECK_LE(v4l2_buffer.length, base::size(v4l2_planes_));
+  DCHECK_LE(v4l2_buffer.length, std::size(v4l2_planes_));
   DCHECK(return_to_);
 
   memcpy(&v4l2_buffer_, &v4l2_buffer, sizeof(v4l2_buffer_));

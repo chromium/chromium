@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
@@ -160,7 +159,7 @@ class MojoCdmTest : public ::testing::Test {
     // order to verify that the data is passed properly.
     const CdmSessionType session_type = CdmSessionType::kTemporary;
     const EmeInitDataType data_type = EmeInitDataType::WEBM;
-    const std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+    const std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
     std::string created_session_id;
 
     if (expected_result == CONNECTION_ERROR_BEFORE) {

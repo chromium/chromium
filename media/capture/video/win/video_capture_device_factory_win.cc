@@ -18,7 +18,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -98,7 +97,7 @@ const char* const kBlockedCameraNames[] = {
     "CyberLink Webcam Splitter",
     "EpocCam",
 };
-static_assert(base::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
+static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
               "kBlockedCameraNames should be same size as "
               "BlockedCameraNames enum");
 
@@ -190,7 +189,7 @@ bool LoadMediaFoundationDlls() {
 
   for (const wchar_t* kMfDLL : kMfDLLs) {
     wchar_t path[MAX_PATH] = {0};
-    ExpandEnvironmentStringsW(kMfDLL, path, base::size(path));
+    ExpandEnvironmentStringsW(kMfDLL, path, std::size(path));
     if (!LoadLibraryExW(path, nullptr, LOAD_WITH_ALTERED_SEARCH_PATH))
       return false;
   }
@@ -222,8 +221,8 @@ bool PrepareVideoCaptureAttributesMediaFoundation(
 
 bool IsDeviceBlocked(const std::string& name) {
   DCHECK_EQ(BLOCKED_CAMERA_MAX + 1,
-            static_cast<int>(base::size(kBlockedCameraNames)));
-  for (size_t i = 0; i < base::size(kBlockedCameraNames); ++i) {
+            static_cast<int>(std::size(kBlockedCameraNames)));
+  for (size_t i = 0; i < std::size(kBlockedCameraNames); ++i) {
     if (base::StartsWith(name, kBlockedCameraNames[i],
                          base::CompareCase::INSENSITIVE_ASCII)) {
       DVLOG(1) << "Enumerated blocked device: " << name;

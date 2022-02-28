@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/ffmpeg_demuxer.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,7 +13,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -35,7 +36,6 @@
 #include "media/base/test_helpers.h"
 #include "media/base/timestamp_constants.h"
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/file_data_source.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/bitstream_converter.h"
@@ -473,12 +473,12 @@ TEST_F(FFmpegDemuxerTest, Initialize_Multitrack) {
 #endif
 
 TEST_F(FFmpegDemuxerTest, Initialize_Encrypted) {
-  EXPECT_CALL(
-      *this, OnEncryptedMediaInitData(
-                 EmeInitDataType::WEBM,
-                 std::vector<uint8_t>(kEncryptedMediaInitData,
-                                      kEncryptedMediaInitData +
-                                          base::size(kEncryptedMediaInitData))))
+  EXPECT_CALL(*this,
+              OnEncryptedMediaInitData(
+                  EmeInitDataType::WEBM,
+                  std::vector<uint8_t>(kEncryptedMediaInitData,
+                                       kEncryptedMediaInitData +
+                                           std::size(kEncryptedMediaInitData))))
       .Times(Exactly(2));
 
   CreateDemuxer("bear-320x240-av_enc-av.webm");
@@ -754,7 +754,7 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusDiscard_Sync) {
 
   // Run the test twice with a seek in between.
   for (int i = 0; i < 2; ++i) {
-    for (size_t j = 0; j < base::size(kTestExpectations); ++j) {
+    for (size_t j = 0; j < std::size(kTestExpectations); ++j) {
       Read(audio, FROM_HERE, kTestExpectations[j][0], kTestExpectations[j][1],
            true);
     }
@@ -816,7 +816,7 @@ TEST_F(FFmpegDemuxerTest,
     Read(audio, FROM_HERE, 408, 0, true, DemuxerStream::Status::kOk,
          base::Microseconds(6500));
 
-    for (size_t j = 0; j < base::size(kTestExpectations); ++j) {
+    for (size_t j = 0; j < std::size(kTestExpectations); ++j) {
       Read(audio, FROM_HERE, kTestExpectations[j][0], kTestExpectations[j][1],
            true);
     }
@@ -1210,7 +1210,7 @@ TEST_F(FFmpegDemuxerTest, IsValidAnnexB) {
   const char* files[] = {"bear-1280x720-av_frag.mp4",
                          "bear-1280x720-av_with-aud-nalus_frag.mp4"};
 
-  for (size_t i = 0; i < base::size(files); ++i) {
+  for (size_t i = 0; i < std::size(files); ++i) {
     DVLOG(1) << "Testing " << files[i];
     CreateDemuxer(files[i]);
     InitializeDemuxer();
@@ -1553,7 +1553,7 @@ TEST_F(FFmpegDemuxerTest, UTCDateToTime_Invalid) {
       "2012-11-1012:34:56",
   };
 
-  for (size_t i = 0; i < base::size(invalid_date_strings); ++i) {
+  for (size_t i = 0; i < std::size(invalid_date_strings); ++i) {
     const char* date_string = invalid_date_strings[i];
     base::Time result;
     EXPECT_FALSE(base::Time::FromUTCString(date_string, &result))

@@ -9,7 +9,6 @@
 
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -17,11 +16,11 @@ namespace media {
 namespace {
 
 const uint8_t kUnalignedData[] = "XXXhello";
-const size_t kUnalignedDataSize = base::size(kUnalignedData);
+const size_t kUnalignedDataSize = std::size(kUnalignedData);
 const off_t kUnalignedOffset = 3;
 
 const uint8_t kData[] = "hello";
-const size_t kDataSize = base::size(kData);
+const size_t kDataSize = std::size(kData);
 
 base::UnsafeSharedMemoryRegion CreateRegion(const uint8_t* data, size_t size) {
   auto region = base::UnsafeSharedMemoryRegion::Create(size);

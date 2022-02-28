@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -88,7 +87,7 @@ void TestSnappedFrameSizes(CaptureResolutionChooser* chooser,
 
   // Test the "find Nth lower size" logic.
   for (size_t skips = 1; skips < 4; ++skips) {
-    for (size_t i = skips; i < base::size(kSizes); ++i) {
+    for (size_t i = skips; i < std::size(kSizes); ++i) {
       EXPECT_EQ(
           gfx::Size(kSizes[i][0], kSizes[i][1]),
           chooser->FindSmallerFrameSize(
@@ -99,7 +98,7 @@ void TestSnappedFrameSizes(CaptureResolutionChooser* chooser,
 
   // Test the "find Nth higher size" logic.
   for (size_t skips = 1; skips < 4; ++skips) {
-    for (size_t i = skips; i < base::size(kSizes); ++i) {
+    for (size_t i = skips; i < std::size(kSizes); ++i) {
       EXPECT_EQ(gfx::Size(kSizes[i - skips][0], kSizes[i - skips][1]),
                 chooser->FindLargerFrameSize(
                     gfx::Size(kSizes[i][0], kSizes[i][1]).GetArea(), skips));
@@ -107,7 +106,7 @@ void TestSnappedFrameSizes(CaptureResolutionChooser* chooser,
   }
 
   // Test the "find nearest size" logic.
-  for (size_t i = 1; i < base::size(kSizes) - 1; ++i) {
+  for (size_t i = 1; i < std::size(kSizes) - 1; ++i) {
     const gfx::Size size(kSizes[i][0], kSizes[i][1]);
     const int a_somewhat_smaller_area =
         gfx::Size((kSizes[i - 1][0] + 3 * kSizes[i][0]) / 4,

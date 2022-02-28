@@ -219,7 +219,7 @@ VideoPixelFormat V4L2CaptureDelegate::V4l2FourCcToChromiumPixelFormat(
 std::vector<uint32_t> V4L2CaptureDelegate::GetListOfUsableFourCcs(
     bool prefer_mjpeg) {
   std::vector<uint32_t> supported_formats;
-  supported_formats.reserve(base::size(kSupportedFormatsAndPlanarity));
+  supported_formats.reserve(std::size(kSupportedFormatsAndPlanarity));
 
   // Duplicate MJPEG on top of the list depending on |prefer_mjpeg|.
   if (prefer_mjpeg)

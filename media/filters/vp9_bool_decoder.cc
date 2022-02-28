@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 
@@ -113,7 +112,7 @@ bool Vp9BoolDecoder::ReadBool(int prob) {
 
   // Need to fill |count| bits next time in order to make |bool_range_| >=
   // 128.
-  DCHECK_LT(bool_range_, base::size(kCountToShiftTo128));
+  DCHECK_LT(bool_range_, std::size(kCountToShiftTo128));
   DCHECK_GT(bool_range_, 0u);
   int count = kCountToShiftTo128[bool_range_];
   bool_range_ <<= count;

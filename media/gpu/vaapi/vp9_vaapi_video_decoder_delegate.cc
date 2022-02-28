@@ -6,7 +6,6 @@
 
 #include <type_traits>
 
-#include "base/cxx17_backports.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
@@ -113,8 +112,8 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
   pic_param.frame_width = base::checked_cast<uint16_t>(frame_hdr->frame_width);
   pic_param.frame_height =
       base::checked_cast<uint16_t>(frame_hdr->frame_height);
-  CHECK_EQ(kVp9NumRefFrames, base::size(pic_param.reference_frames));
-  for (size_t i = 0; i < base::size(pic_param.reference_frames); ++i) {
+  CHECK_EQ(kVp9NumRefFrames, std::size(pic_param.reference_frames));
+  for (size_t i = 0; i < std::size(pic_param.reference_frames); ++i) {
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       pic_param.reference_frames[i] =
@@ -177,7 +176,7 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
       std::extent<decltype(Vp9SegmentationParams::feature_enabled)>() ==
           std::extent<decltype(slice_param.seg_param)>(),
       "seg_param array of incorrect size");
-  for (size_t i = 0; i < base::size(slice_param.seg_param); ++i) {
+  for (size_t i = 0; i < std::size(slice_param.seg_param); ++i) {
     VASegmentParameterVP9& seg_param = slice_param.seg_param[i];
 #define SEG_TO_SP_SF(a, b) seg_param.segment_flags.fields.a = b
     SEG_TO_SP_SF(

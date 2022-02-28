@@ -5,12 +5,12 @@
 #include "media/cdm/cdm_adapter.h"
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -391,7 +391,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, BadLibraryPath) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateWebmSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 }
 
@@ -400,7 +400,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateKeyIdsSession) {
 
   // Don't include the trailing /0 from the string in the data passed in.
   std::vector<uint8_t> key_id(kKeyIdAsJWK,
-                              kKeyIdAsJWK + base::size(kKeyIdAsJWK) - 1);
+                              kKeyIdAsJWK + std::size(kKeyIdAsJWK) - 1);
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, SUCCESS);
 }
 
@@ -408,7 +408,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateCencSession) {
   InitializeAndExpect(SUCCESS);
 
   std::vector<uint8_t> key_id(kKeyIdAsPssh,
-                              kKeyIdAsPssh + base::size(kKeyIdAsPssh));
+                              kKeyIdAsPssh + std::size(kKeyIdAsPssh));
   CreateSessionAndExpect(EmeInitDataType::CENC, key_id, SUCCESS);
 }
 
@@ -416,7 +416,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
   // Use |kKeyId| but specify KEYIDS format.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
@@ -424,14 +424,14 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, LoadSession) {
   InitializeAndExpect(SUCCESS);
 
   // LoadSession() is not supported by AesDecryptor.
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, FAILURE);
 }
 
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), kKeyAsJWK, SUCCESS, true);
@@ -440,7 +440,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, UpdateSessionWithBadData) {
   InitializeAndExpect(SUCCESS);
 
-  std::vector<uint8_t> key_id(kKeyId, kKeyId + base::size(kKeyId));
+  std::vector<uint8_t> key_id(kKeyId, kKeyId + std::size(kKeyId));
   CreateSessionAndExpect(EmeInitDataType::WEBM, key_id, SUCCESS);
 
   UpdateSessionAndExpect(SessionId(), "random data", FAILURE, true);

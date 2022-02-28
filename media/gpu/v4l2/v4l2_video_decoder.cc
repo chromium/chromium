@@ -87,7 +87,7 @@ V4L2VideoDecoder::GetSupportedConfigs() {
     return absl::nullopt;
 
   auto configs = device->GetSupportedDecodeProfiles(
-      base::size(kSupportedInputFourccs), kSupportedInputFourccs);
+      std::size(kSupportedInputFourccs), kSupportedInputFourccs);
 
   if (configs.empty())
     return absl::nullopt;

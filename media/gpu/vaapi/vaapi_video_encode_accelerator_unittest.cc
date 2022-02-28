@@ -477,8 +477,8 @@ class VaapiVideoEncodeAcceleratorTest
   void EncodeSequenceForVP9MultipleSpatialLayers(size_t num_spatial_layers) {
     constexpr int32_t kBitstreamIds[] = {12, 13, 14};
     constexpr uint64_t kEncodedChunkSizes[] = {1234, 1235, 1236};
-    ASSERT_LE(num_spatial_layers, base::size(kBitstreamIds));
-    ASSERT_LE(num_spatial_layers, base::size(kEncodedChunkSizes));
+    ASSERT_LE(num_spatial_layers, std::size(kBitstreamIds));
+    ASSERT_LE(num_spatial_layers, std::size(kEncodedChunkSizes));
     base::RunLoop run_loop;
     // BitstreamBufferReady() is called in |child_task_runner_|, which is the
     // different thread of executing other mock calls. Therefore, guaranteeing

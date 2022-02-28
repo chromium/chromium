@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/mp2t/timestamp_unroller.h"
+
 #include <stddef.h>
 #include <stdint.h>
+
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/test/perf_test_suite.h"
-#include "media/formats/mp2t/timestamp_unroller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -51,7 +52,7 @@ TEST(TimestampUnrollerTest, SingleStream) {
   };
 
   std::vector<int64_t> timestamps_vector(timestamps,
-                                         timestamps + base::size(timestamps));
+                                         timestamps + std::size(timestamps));
   RunUnrollTest(timestamps_vector);
 }
 

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/midi/usb_midi_device.h"
@@ -101,7 +100,7 @@ TEST_F(UsbMidiInputStreamTest, UnknownMessage) {
       0x40, 0xff, 0xff, 0xff, 0x41, 0xff, 0xff, 0xff,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("", delegate_.received_data());
 }
 
@@ -110,7 +109,7 @@ TEST_F(UsbMidiInputStreamTest, SystemCommonMessage) {
       0x45, 0xf8, 0x00, 0x00, 0x42, 0xf3, 0x22, 0x00, 0x43, 0xf2, 0x33, 0x44,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n"
             "0xf3 0x22 \n"
             "0xf2 0x33 0x44 \n", delegate_.received_data());
@@ -122,7 +121,7 @@ TEST_F(UsbMidiInputStreamTest, SystemExclusiveMessage) {
       0x46, 0xf0, 0xf7, 0x00, 0x47, 0xf0, 0x33, 0xf7,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf0 0x11 0x22 \n"
             "0xf7 \n"
             "0xf0 0xf7 \n"
@@ -136,7 +135,7 @@ TEST_F(UsbMidiInputStreamTest, ChannelMessage) {
       0x4d, 0xd0, 0xaa, 0x00, 0x4e, 0xe0, 0xbb, 0xcc,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0x80 0x11 0x22 \n"
             "0x90 0x33 0x44 \n"
             "0xa0 0x55 0x66 \n"
@@ -151,7 +150,7 @@ TEST_F(UsbMidiInputStreamTest, SingleByteMessage) {
       0x4f, 0xf8, 0x00, 0x00,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n", delegate_.received_data());
 }
 
@@ -160,14 +159,14 @@ TEST_F(UsbMidiInputStreamTest, DispatchForMultipleCables) {
       0x4f, 0xf8, 0x00, 0x00, 0x5f, 0xfa, 0x00, 0x00, 0x6f, 0xfb, 0x00, 0x00,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n0xfa \n", delegate_.received_data());
 }
 
 TEST_F(UsbMidiInputStreamTest, DispatchForDevice2) {
   uint8_t data[] = {0x4f, 0xf8, 0x00, 0x00};
 
-  stream_->OnReceivedData(&device2_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device2_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n", delegate_.received_data());
 }
 

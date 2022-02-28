@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
@@ -47,7 +46,7 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, base::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->num_channels(),
@@ -70,7 +69,7 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x00\x01\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(base::StringPiece(kData, base::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->num_channels(),
@@ -93,7 +92,7 @@ TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x01\x00\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(base::StringPiece(kData, base::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->num_channels(),
@@ -152,7 +151,7 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, base::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
@@ -174,7 +173,7 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(base::StringPiece(kData, base::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::StringPiece(kData, std::size(kData) - 1), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooSmallFormatSizeIsNotValid) {

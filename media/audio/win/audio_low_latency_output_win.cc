@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -527,7 +526,7 @@ void WASAPIAudioOutputStream::Run() {
   // is signaled. An error event can also break the main thread loop.
   while (playing && !error) {
     // Wait for a close-down event, stream-switch event or a new render event.
-    DWORD wait_result = WaitForMultipleObjects(base::size(wait_array),
+    DWORD wait_result = WaitForMultipleObjects(std::size(wait_array),
                                                wait_array, FALSE, INFINITE);
 
     switch (wait_result) {

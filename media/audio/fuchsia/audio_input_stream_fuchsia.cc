@@ -77,7 +77,7 @@ AudioInputStream::OpenOutcome AudioInputStreamFuchsia::Open() {
   ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
 
   constexpr char kName[] = "cr-audio-capturer";
-  status = buffer_vmo.set_property(ZX_PROP_NAME, kName, base::size(kName) - 1);
+  status = buffer_vmo.set_property(ZX_PROP_NAME, kName, std::size(kName) - 1);
   ZX_DCHECK(status == ZX_OK, status);
 
   bool mapped =

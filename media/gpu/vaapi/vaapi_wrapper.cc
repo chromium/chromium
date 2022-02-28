@@ -26,7 +26,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/cpu.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
@@ -42,16 +41,13 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
-#include "media/media_buildflags.h"
-
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
-
+#include "media/media_buildflags.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -814,7 +810,7 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
      VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
     {VAEntrypointVideoProc}    // kVideoProcess.
   };
-  static_assert(base::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
+  static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
                 "");
 
   std::vector<VAEntrypoint> entrypoints;
@@ -1049,7 +1045,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
     VaapiWrapper::kEncodeConstantQuantizationParameter,
     VaapiWrapper::kVideoProcess
   };
-  static_assert(base::size(kWrapperModes) == VaapiWrapper::kCodecModeMax, "");
+  static_assert(std::size(kWrapperModes) == VaapiWrapper::kCodecModeMax, "");
 
   for (VaapiWrapper::CodecMode mode : kWrapperModes) {
     std::vector<ProfileInfo> supported_profile_infos;

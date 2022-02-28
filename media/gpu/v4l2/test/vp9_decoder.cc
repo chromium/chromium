@@ -513,7 +513,7 @@ void Vp9Decoder::SetupFrameParams(
 
   constexpr uint64_t kInvalidSurface = std::numeric_limits<uint32_t>::max();
 
-  for (size_t i = 0; i < base::size(frame_hdr.ref_frame_idx); ++i) {
+  for (size_t i = 0; i < std::size(frame_hdr.ref_frame_idx); ++i) {
     const auto idx = frame_hdr.ref_frame_idx[i];
 
     LOG_ASSERT(idx < kVp9NumRefFrames) << "Invalid reference frame index.\n";

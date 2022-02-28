@@ -146,7 +146,7 @@ class SupportedResolutionResolverTest : public ::testing::Test {
     const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
         mock_d3d11_device_, gpu_workarounds_);
     AssertDefaultSupport(supported_resolutions,
-                         base::size(kSupportedH264Profiles) + 1);
+                         std::size(kSupportedH264Profiles) + 1);
 
     auto it = supported_resolutions.find(profile);
     ASSERT_NE(it, supported_resolutions.end());
@@ -294,7 +294,7 @@ TEST_F(SupportedResolutionResolverTest, MultipleCodecs) {
   const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
       mock_d3d11_device_, gpu_workarounds_);
 
-  ASSERT_EQ(base::size(kSupportedH264Profiles) + 1,
+  ASSERT_EQ(std::size(kSupportedH264Profiles) + 1,
             supported_resolutions.size());
   for (const auto profile : kSupportedH264Profiles) {
     auto it = supported_resolutions.find(profile);

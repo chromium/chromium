@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
@@ -29,19 +28,19 @@ constexpr size_t kBlockSize = 16;
 // Keys and IV have to be 128 bits.
 const uint8_t kKey1[] = {0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
                          0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13};
-static_assert(base::size(kKey1) == 128 / 8, "kKey1 must be 128 bits");
+static_assert(std::size(kKey1) == 128 / 8, "kKey1 must be 128 bits");
 
 const uint8_t kKey2[] = {0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13,
                          0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b};
-static_assert(base::size(kKey2) == 128 / 8, "kKey2 must be 128 bits");
+static_assert(std::size(kKey2) == 128 / 8, "kKey2 must be 128 bits");
 
 const uint8_t kIv[] = {0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-static_assert(base::size(kIv) == 128 / 8, "kIv must be 128 bits");
+static_assert(std::size(kIv) == 128 / 8, "kIv must be 128 bits");
 
 const uint8_t kOneBlock[] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
                              'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'};
-static_assert(base::size(kOneBlock) == kBlockSize, "kOneBlock not block sized");
+static_assert(std::size(kOneBlock) == kBlockSize, "kOneBlock not block sized");
 
 std::string MakeString(const std::vector<uint8_t>& chars) {
   return std::string(chars.begin(), chars.end());

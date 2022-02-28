@@ -283,7 +283,7 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
   std::unique_ptr<WebMTracksParser> parser(
       new WebMTracksParser(&media_log_, false));
 
-  for (size_t i = 0; i < base::size(kCappingCases); ++i) {
+  for (size_t i = 0; i < std::size(kCappingCases); ++i) {
     InSequence s;
     int64_t scale_ns = kCappingCases[i].scale_ns;
     int64_t duration_ns = kCappingCases[i].duration_ns;

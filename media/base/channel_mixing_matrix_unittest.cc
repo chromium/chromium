@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/channel_mixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,7 +160,7 @@ TEST(ChannelMixingMatrixTest, DiscreteToDiscrete) {
     {2, 2}, {2, 5}, {5, 2},
   };
 
-  for (size_t n = 0; n < base::size(test_case); n++) {
+  for (size_t n = 0; n < std::size(test_case); n++) {
     int input_channels = test_case[n].input_channels;
     int output_channels = test_case[n].output_channels;
     ChannelMixingMatrix matrix_builder(CHANNEL_LAYOUT_DISCRETE,

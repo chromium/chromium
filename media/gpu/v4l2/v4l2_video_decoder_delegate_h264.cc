@@ -72,7 +72,7 @@ V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
   memset(priv_->v4l2_decode_param.dpb, 0, sizeof(priv_->v4l2_decode_param.dpb));
   size_t i = 0;
   for (const auto& pic : dpb) {
-    if (i >= base::size(priv_->v4l2_decode_param.dpb)) {
+    if (i >= std::size(priv_->v4l2_decode_param.dpb)) {
       VLOGF(1) << "Invalid DPB size";
       break;
     }
@@ -142,7 +142,7 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
   static_assert(std::extent<decltype(v4l2_sps.offset_for_ref_frame)>() ==
                     std::extent<decltype(sps->offset_for_ref_frame)>(),
                 "offset_for_ref_frame arrays must be same size");
-  for (size_t i = 0; i < base::size(v4l2_sps.offset_for_ref_frame); ++i) {
+  for (size_t i = 0; i < std::size(v4l2_sps.offset_for_ref_frame); ++i) {
     v4l2_sps.offset_for_ref_frame[i] = sps->offset_for_ref_frame[i];
   }
   SPS_TO_V4L2SPS(max_num_ref_frames);
@@ -243,16 +243,14 @@ V4L2VideoDecoderDelegateH264::SubmitFrameMetadata(
     scaling_list8x8 = &pps->scaling_list8x8[0];
   }
 
-  for (size_t i = 0; i < base::size(v4l2_scaling_matrix.scaling_list_4x4);
-       ++i) {
-    for (size_t j = 0; j < base::size(v4l2_scaling_matrix.scaling_list_4x4[i]);
+  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_4x4); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_4x4[i]);
          ++j) {
       v4l2_scaling_matrix.scaling_list_4x4[i][j] = scaling_list4x4[i][j];
     }
   }
-  for (size_t i = 0; i < base::size(v4l2_scaling_matrix.scaling_list_8x8);
-       ++i) {
-    for (size_t j = 0; j < base::size(v4l2_scaling_matrix.scaling_list_8x8[i]);
+  for (size_t i = 0; i < std::size(v4l2_scaling_matrix.scaling_list_8x8); ++i) {
+    for (size_t j = 0; j < std::size(v4l2_scaling_matrix.scaling_list_8x8[i]);
          ++j) {
       v4l2_scaling_matrix.scaling_list_8x8[i][j] = scaling_list8x8[i][j];
     }

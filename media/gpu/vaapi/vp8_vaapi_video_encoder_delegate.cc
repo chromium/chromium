@@ -50,11 +50,11 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
       82, 85, 88, 91, 94, 97, 100, 103, 106, 109, 112, 115, 118, 121, 124, 127,
   };
 
-  for (size_t q = 0; q < base::size(kQuantizerToQindex); ++q) {
+  for (size_t q = 0; q < std::size(kQuantizerToQindex); ++q) {
     if (kQuantizerToQindex[q] >= q_index)
       return q;
   }
-  return base::size(kQuantizerToQindex) - 1;
+  return std::size(kQuantizerToQindex) - 1;
 }
 
 // The return value is expressed as a percentage of the average. For example,
@@ -599,7 +599,7 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
                             frame_header->loopfilter_hdr.mb_mode_delta)>(),
                 "Invalid loop filter array sizes");
 
-  for (size_t i = 0; i < base::size(pic_param.loop_filter_level); ++i) {
+  for (size_t i = 0; i < std::size(pic_param.loop_filter_level); ++i) {
     pic_param.loop_filter_level[i] = frame_header->loopfilter_hdr.level;
     pic_param.ref_lf_delta[i] = frame_header->loopfilter_hdr.ref_frame_delta[i];
     pic_param.mode_lf_delta[i] = frame_header->loopfilter_hdr.mb_mode_delta[i];

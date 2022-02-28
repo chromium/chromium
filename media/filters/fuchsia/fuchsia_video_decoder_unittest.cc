@@ -404,7 +404,7 @@ scoped_refptr<DecoderBuffer> GetH264Frame(size_t frame_num) {
       ReadTestDataFile("h264-320x180-frame-1"),
       ReadTestDataFile("h264-320x180-frame-2"),
       ReadTestDataFile("h264-320x180-frame-3")};
-  CHECK_LT(frame_num, base::size(frames));
+  CHECK_LT(frame_num, std::size(frames));
   return frames[frame_num];
 }
 

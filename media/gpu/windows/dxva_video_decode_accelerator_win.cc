@@ -4,9 +4,6 @@
 
 #include "media/gpu/windows/dxva_video_decode_accelerator_win.h"
 
-#include <algorithm>
-#include <memory>
-
 #include <codecapi.h>
 #include <dxgi1_2.h>
 #include <ks.h>
@@ -18,13 +15,15 @@
 #include <string.h>
 #include <wmcodecdsp.h>
 
+#include <algorithm>
+#include <memory>
+
 #include "base/atomicops.h"
 #include "base/base_paths_win.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -1031,7 +1030,7 @@ bool DXVAVideoDecodeAccelerator::CreateDX11DevManager() {
     flags |= D3D11_CREATE_DEVICE_DEBUG;
 
     hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags,
-                           feature_levels, base::size(feature_levels),
+                           feature_levels, std::size(feature_levels),
                            D3D11_SDK_VERSION, &d3d11_device_,
                            &feature_level_out, &d3d11_device_context_);
     if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
@@ -1045,7 +1044,7 @@ bool DXVAVideoDecodeAccelerator::CreateDX11DevManager() {
     using_debug_device_ = !!d3d11_device_context_;
     if (!d3d11_device_context_) {
       hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags,
-                             feature_levels, base::size(feature_levels),
+                             feature_levels, std::size(feature_levels),
                              D3D11_SDK_VERSION, &d3d11_device_,
                              &feature_level_out, &d3d11_device_context_);
       RETURN_ON_HR_FAILURE(hr, "Failed to create DX11 device", false);

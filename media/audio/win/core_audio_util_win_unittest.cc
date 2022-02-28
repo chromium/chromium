@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -159,7 +158,7 @@ TEST_F(CoreAudioUtilWinTest, CreateDefaultDevice) {
 
   // Create default devices for all flow/role combinations above.
   ComPtr<IMMDevice> audio_device;
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     audio_device = CoreAudioUtil::CreateDevice(
         AudioDeviceDescription::kDefaultDeviceId, data[i].flow, data[i].role);
     EXPECT_TRUE(audio_device.Get());
@@ -212,7 +211,7 @@ TEST_F(CoreAudioUtilWinTest, GetDefaultDeviceName) {
   // Get name and ID of default devices for all flow/role combinations above.
   ComPtr<IMMDevice> audio_device;
   AudioDeviceName device_name;
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     audio_device = CoreAudioUtil::CreateDevice(
         AudioDeviceDescription::kDefaultDeviceId, data[i].flow, data[i].role);
     EXPECT_TRUE(SUCCEEDED(
@@ -232,7 +231,7 @@ TEST_F(CoreAudioUtilWinTest, GetAudioControllerID) {
   // Enumerate all active input and output devices and fetch the ID of
   // the associated device.
   EDataFlow flows[] = { eRender , eCapture };
-  for (size_t i = 0; i < base::size(flows); ++i) {
+  for (size_t i = 0; i < std::size(flows); ++i) {
     ComPtr<IMMDeviceCollection> collection;
     ASSERT_TRUE(SUCCEEDED(enumerator->EnumAudioEndpoints(
         flows[i], DEVICE_STATE_ACTIVE, &collection)));
@@ -279,7 +278,7 @@ TEST_F(CoreAudioUtilWinTest, CreateClient) {
 
   EDataFlow data[] = {eRender, eCapture};
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     ComPtr<IAudioClient> client = CoreAudioUtil::CreateClient(
         AudioDeviceDescription::kDefaultDeviceId, data[i], eConsole);
     EXPECT_TRUE(client.Get());
@@ -292,7 +291,7 @@ TEST_F(CoreAudioUtilWinTest, CreateClient3) {
 
   EDataFlow data[] = {eRender, eCapture};
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     ComPtr<IAudioClient3> client3 = CoreAudioUtil::CreateClient3(
         AudioDeviceDescription::kDefaultDeviceId, data[i], eConsole);
     EXPECT_TRUE(client3.Get());
@@ -301,7 +300,7 @@ TEST_F(CoreAudioUtilWinTest, CreateClient3) {
   // Use ComPtr notation to achieve the same thing as above. ComPtr::As wraps
   // QueryInterface calls on existing COM objects. In this case we use an
   // existing IAudioClient to obtain the IAudioClient3 interface.
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     ComPtr<IAudioClient> client = CoreAudioUtil::CreateClient(
         AudioDeviceDescription::kDefaultDeviceId, data[i], eConsole);
     EXPECT_TRUE(client.Get());
@@ -368,7 +367,7 @@ TEST_F(CoreAudioUtilWinTest, GetDevicePeriod) {
 
   // Verify that the device periods are valid for the default render and
   // capture devices.
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     ComPtr<IAudioClient> client;
     REFERENCE_TIME shared_time_period = 0;
     REFERENCE_TIME exclusive_time_period = 0;
@@ -392,7 +391,7 @@ TEST_F(CoreAudioUtilWinTest, GetPreferredAudioParameters) {
 
   // Verify that the preferred audio parameters are OK for the default render
   // and capture devices.
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     AudioParameters params;
     const bool is_output_device = (data[i] == eRender);
     EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
@@ -508,7 +507,7 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
   WAVEFORMATEXTENSIBLE format;
   uint32_t endpoint_buffer_size = 0;
 
-  for (size_t i = 0; i < base::size(data); ++i) {
+  for (size_t i = 0; i < std::size(data); ++i) {
     ComPtr<IAudioClient> client;
     ComPtr<IAudioRenderClient> render_client;
     ComPtr<IAudioCaptureClient> capture_client;

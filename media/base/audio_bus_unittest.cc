@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/audio_bus.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <limits>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -333,7 +333,7 @@ static const int kTestVectorFrameCount = kTestVectorSize / 2;
 static const float kTestVectorResult[][kTestVectorFrameCount] = {
     {-1.0f, 1.0f, 0.5f, 0.0f, 0.0f},
     {0.0f, -1.0f, -0.5f, 1.0f, 0.0f}};
-static const int kTestVectorChannelCount = base::size(kTestVectorResult);
+static const int kTestVectorChannelCount = std::size(kTestVectorResult);
 
 // Verify FromInterleaved() deinterleaves audio in supported formats correctly.
 TEST_F(AudioBusTest, FromInterleaved) {
@@ -424,26 +424,26 @@ TEST_F(AudioBusTest, ToInterleaved) {
 
   {
     SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
-    uint8_t test_array[base::size(kTestVectorUint8)];
+    uint8_t test_array[std::size(kTestVectorUint8)];
     bus->ToInterleaved<UnsignedInt8SampleTypeTraits>(bus->frames(), test_array);
     ASSERT_EQ(0,
               memcmp(test_array, kTestVectorUint8, sizeof(kTestVectorUint8)));
   }
   {
     SCOPED_TRACE("SignedInt16SampleTypeTraits");
-    int16_t test_array[base::size(kTestVectorInt16)];
+    int16_t test_array[std::size(kTestVectorInt16)];
     bus->ToInterleaved<SignedInt16SampleTypeTraits>(bus->frames(), test_array);
     ASSERT_EQ(0,
               memcmp(test_array, kTestVectorInt16, sizeof(kTestVectorInt16)));
   }
   {
     SCOPED_TRACE("SignedInt32SampleTypeTraits");
-    int32_t test_array[base::size(kTestVectorInt32)];
+    int32_t test_array[std::size(kTestVectorInt32)];
     bus->ToInterleaved<SignedInt32SampleTypeTraits>(bus->frames(), test_array);
 
     // Some compilers get better precision than others on the half-max test, so
     // let the test pass with an off by one check on the half-max.
-    int32_t alternative_acceptable_result[base::size(kTestVectorInt32)];
+    int32_t alternative_acceptable_result[std::size(kTestVectorInt32)];
     memcpy(alternative_acceptable_result, kTestVectorInt32,
            sizeof(kTestVectorInt32));
     ASSERT_EQ(alternative_acceptable_result[4],
@@ -457,7 +457,7 @@ TEST_F(AudioBusTest, ToInterleaved) {
   }
   {
     SCOPED_TRACE("Float32SampleTypeTraits");
-    float test_array[base::size(kTestVectorFloat32)];
+    float test_array[std::size(kTestVectorFloat32)];
     bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array);
     ASSERT_EQ(
         0, memcmp(test_array, kTestVectorFloat32, sizeof(kTestVectorFloat32)));
@@ -471,9 +471,9 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
                                                 bus->frames());
   // Verify FromInterleaved applied no sanity.
   ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
-  float test_array[base::size(kTestVectorFloat32Sanitized)];
+  float test_array[std::size(kTestVectorFloat32Sanitized)];
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array);
-  for (size_t i = 0; i < base::size(kTestVectorFloat32Sanitized); ++i)
+  for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i)
     ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]);
 
   // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
@@ -531,7 +531,7 @@ TEST_F(AudioBusTest, ToInterleavedPartial) {
 
   {
     SCOPED_TRACE("Float32SampleTypeTraits");
-    float test_array[base::size(kTestVectorFloat32)];
+    float test_array[std::size(kTestVectorFloat32)];
     expected->ToInterleavedPartial<Float32SampleTypeTraits>(
         kPartialStart, kPartialFrames, test_array);
     ASSERT_EQ(0, memcmp(test_array, kTestVectorFloat32 +

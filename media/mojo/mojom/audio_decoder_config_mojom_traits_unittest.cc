@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -17,7 +16,7 @@ namespace media {
 TEST(AudioDecoderConfigStructTraitsTest, Normal) {
   const uint8_t kExtraData[] = "input extra data";
   const std::vector<uint8_t> kExtraDataVector(
-      &kExtraData[0], &kExtraData[0] + base::size(kExtraData));
+      &kExtraData[0], &kExtraData[0] + std::size(kExtraData));
 
   AudioDecoderConfig input;
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
@@ -92,7 +91,7 @@ TEST(AudioDecoderConfigStructTraitsTest, TargetOutputChannelLayout) {
 TEST(AudioDecoderConfigStructTraitsTest, AacExtraData) {
   const uint8_t kAacExtraData[] = "aac extra data";
   const std::vector<uint8_t> kAacExtraDataVector(
-      kAacExtraData, kAacExtraData + base::size(kAacExtraData));
+      kAacExtraData, kAacExtraData + std::size(kAacExtraData));
 
   AudioDecoderConfig input;
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,

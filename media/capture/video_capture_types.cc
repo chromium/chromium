@@ -5,7 +5,6 @@
 #include "media/capture/video_capture_types.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 
@@ -54,11 +53,11 @@ bool VideoCaptureFormat::ComparePixelFormatPreference(
     const VideoPixelFormat& rhs) {
   auto* format_lhs = std::find(
       kSupportedCapturePixelFormats,
-      kSupportedCapturePixelFormats + base::size(kSupportedCapturePixelFormats),
+      kSupportedCapturePixelFormats + std::size(kSupportedCapturePixelFormats),
       lhs);
   auto* format_rhs = std::find(
       kSupportedCapturePixelFormats,
-      kSupportedCapturePixelFormats + base::size(kSupportedCapturePixelFormats),
+      kSupportedCapturePixelFormats + std::size(kSupportedCapturePixelFormats),
       rhs);
   return format_lhs < format_rhs;
 }

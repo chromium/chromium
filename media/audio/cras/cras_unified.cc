@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
@@ -186,7 +185,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that does not present in params_.channel_layout().
-  for (size_t i = 0; i < base::size(kChannelMap); ++i)
+  for (size_t i = 0; i < std::size(kChannelMap); ++i)
     layout[kChannelMap[i]] = ChannelOrder(params_.channel_layout(),
                                           static_cast<Channels>(i));
 

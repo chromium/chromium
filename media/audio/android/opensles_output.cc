@@ -5,7 +5,6 @@
 #include "media/audio/android/opensles_output.h"
 
 #include "base/android/build_info.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -280,7 +279,7 @@ bool OpenSLESOutputStream::CreatePlayer() {
   LOG_ON_FAILURE_AND_RETURN(
       (*engine)->CreateAudioPlayer(
           engine, player_object_.Receive(), &audio_source, &audio_sink,
-          base::size(interface_id), interface_id, interface_required),
+          std::size(interface_id), interface_id, interface_required),
       false);
 
   // Create AudioPlayer and specify SL_IID_ANDROIDCONFIGURATION.

@@ -671,7 +671,7 @@ bool V4L2StatelessVideoDecoderBackend::IsSupportedProfile(
     };
     scoped_refptr<V4L2Device> device = V4L2Device::Create();
     VideoDecodeAccelerator::SupportedProfiles profiles =
-        device->GetSupportedDecodeProfiles(base::size(kSupportedInputFourccs),
+        device->GetSupportedDecodeProfiles(std::size(kSupportedInputFourccs),
                                            kSupportedInputFourccs);
     for (const auto& entry : profiles)
       supported_profiles_.push_back(entry.profile);

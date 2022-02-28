@@ -138,7 +138,7 @@ const int16_t kAcQLookup[][kQIndexRange] = {
 };
 // clang-format on
 
-static_assert(base::size(kDcQLookup[0]) == base::size(kAcQLookup[0]),
+static_assert(std::size(kDcQLookup[0]) == std::size(kAcQLookup[0]),
               "quantizer lookup arrays of incorrect size");
 
 size_t ClampQ(int64_t q) {
@@ -518,27 +518,27 @@ void Vp9Parser::Context::Reset() {
 }
 
 void Vp9Parser::Context::MarkFrameContextForUpdate(size_t frame_context_idx) {
-  DCHECK_LT(frame_context_idx, base::size(frame_context_managers_));
+  DCHECK_LT(frame_context_idx, std::size(frame_context_managers_));
   frame_context_managers_[frame_context_idx].SetNeedsClientUpdate();
 }
 
 void Vp9Parser::Context::UpdateFrameContext(
     size_t frame_context_idx,
     const Vp9FrameContext& frame_context) {
-  DCHECK_LT(frame_context_idx, base::size(frame_context_managers_));
+  DCHECK_LT(frame_context_idx, std::size(frame_context_managers_));
   frame_context_managers_[frame_context_idx].Update(frame_context);
 }
 
 const Vp9Parser::ReferenceSlot& Vp9Parser::Context::GetRefSlot(
     size_t ref_type) const {
-  DCHECK_LT(ref_type, base::size(ref_slots_));
+  DCHECK_LT(ref_type, std::size(ref_slots_));
   return ref_slots_[ref_type];
 }
 
 void Vp9Parser::Context::UpdateRefSlot(
     size_t ref_type,
     const Vp9Parser::ReferenceSlot& ref_slot) {
-  DCHECK_LT(ref_type, base::size(ref_slots_));
+  DCHECK_LT(ref_type, std::size(ref_slots_));
   ref_slots_[ref_type] = ref_slot;
 }
 
@@ -748,7 +748,7 @@ Vp9Parser::Result Vp9Parser::ParseNextFrame(
 
 Vp9Parser::ContextRefreshCallback Vp9Parser::GetContextRefreshCb(
     size_t frame_context_idx) {
-  DCHECK_LT(frame_context_idx, base::size(context_.frame_context_managers_));
+  DCHECK_LT(frame_context_idx, std::size(context_.frame_context_managers_));
   auto& frame_context_manager =
       context_.frame_context_managers_[frame_context_idx];
 

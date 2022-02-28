@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/nix/xdg_util.h"
@@ -579,7 +578,7 @@ void AudioManagerChromeOS::GetSystemApmEffectsSupportedOnMainThread(
 
 void AudioManagerChromeOS::WaitEventOrShutdown(base::WaitableEvent* event) {
   base::WaitableEvent* waitables[] = {event, &on_shutdown_};
-  base::WaitableEvent::WaitMany(waitables, base::size(waitables));
+  base::WaitableEvent::WaitMany(waitables, std::size(waitables));
 }
 
 enum CRAS_CLIENT_TYPE AudioManagerChromeOS::GetClientType() {

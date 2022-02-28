@@ -4,7 +4,6 @@
 
 #include "media/formats/ac3/ac3_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 
@@ -121,9 +120,9 @@ int GetAc3SyncFrameSampleCount() {
 
 // Returns the size in bytes of the given AC3 synchronization frame.
 int ParseAc3SyncFrameSize(Ac3Header& header) {
-  if (header.sample_rate_code() >= base::size(kSampleRate) ||
+  if (header.sample_rate_code() >= std::size(kSampleRate) ||
       header.ac3_frame_size_code() >=
-          base::size(kSyncFrameSizeInWordsFor44kHz)) {
+          std::size(kSyncFrameSizeInWordsFor44kHz)) {
     DVLOG(2) << __func__ << " Invalid frame header."
              << " fscod:" << header.sample_rate_code()
              << " frmsizecod:" << header.ac3_frame_size_code();

@@ -6,7 +6,6 @@
 
 #include <va/va.h>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/cdm_context.h"
@@ -177,7 +176,7 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitFrameMetadata(
 
   // And fill it with picture info from DPB.
   FillVARefFramesFromDPB(dpb, pic_param.ReferenceFrames,
-                         base::size(pic_param.ReferenceFrames));
+                         std::size(pic_param.ReferenceFrames));
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 
@@ -520,23 +519,23 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitSlice(
     }
   }
 
-  static_assert(base::size(slice_param.RefPicList0) ==
-                    base::size(slice_param.RefPicList1),
-                "Invalid RefPicList sizes");
+  static_assert(
+      std::size(slice_param.RefPicList0) == std::size(slice_param.RefPicList1),
+      "Invalid RefPicList sizes");
 
-  for (size_t i = 0; i < base::size(slice_param.RefPicList0); ++i) {
+  for (size_t i = 0; i < std::size(slice_param.RefPicList0); ++i) {
     InitVAPicture(&slice_param.RefPicList0[i]);
     InitVAPicture(&slice_param.RefPicList1[i]);
   }
 
   for (size_t i = 0;
-       i < ref_pic_list0.size() && i < base::size(slice_param.RefPicList0);
+       i < ref_pic_list0.size() && i < std::size(slice_param.RefPicList0);
        ++i) {
     if (ref_pic_list0[i])
       FillVAPicture(&slice_param.RefPicList0[i], ref_pic_list0[i]);
   }
   for (size_t i = 0;
-       i < ref_pic_list1.size() && i < base::size(slice_param.RefPicList1);
+       i < ref_pic_list1.size() && i < std::size(slice_param.RefPicList1);
        ++i) {
     if (ref_pic_list1[i])
       FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);

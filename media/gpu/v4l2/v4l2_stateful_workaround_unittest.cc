@@ -37,7 +37,7 @@ TEST(V4L2StatefulWorkaroundTest, CheckSuperFrameIndexSize) {
       0x01020304  // 4 byte
   };
 
-  constexpr size_t kNumFrames = base::size(kFrameSizes);
+  constexpr size_t kNumFrames = std::size(kFrameSizes);
   for (size_t mask = 1; mask < (1 << kNumFrames) - 1; mask++) {
     size_t buffer_size = 0;
     size_t expected_bytes_per_framesize = 0;

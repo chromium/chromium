@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/vaapi/vaapi_utils.h"
+
 #include <va/va.h>
 
 #include <memory>
 #include <vector>
 
-// This has to be included first.
-// See http://code.google.com/p/googletest/issues/detail?id=371
-#include "testing/gtest/include/gtest/gtest.h"
-
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/test/gtest_util.h"
-#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -65,7 +62,7 @@ TEST_F(VaapiUtilsTest, ScopedVABuffer) {
   };
   constexpr gfx::Size kCodedSize(64, 64);
   ASSERT_TRUE(vaapi_wrapper_->CreateContext(kCodedSize));
-  for (size_t i = 0; i < base::size(kBufferParameters); i++) {
+  for (size_t i = 0; i < std::size(kBufferParameters); i++) {
     const VABufferType buffer_type = kBufferParameters[i].first;
     const size_t buffer_size = kBufferParameters[i].second;
     auto scoped_va_buffer =

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/audio_hash.h"
+
 #include <cmath>
 #include <sstream>
 
-#include "media/base/audio_hash.h"
-
-#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
@@ -29,7 +28,7 @@ void AudioHash::Update(const AudioBus* audio_bus, int frames) {
     for (uint32_t i = 0; i < static_cast<uint32_t>(frames); ++i) {
       const uint32_t kSampleIndex = sample_count_ + i;
       const uint32_t kHashIndex =
-          (kSampleIndex * (ch + 1)) % base::size(audio_hash_);
+          (kSampleIndex * (ch + 1)) % std::size(audio_hash_);
 
       // Mix in a sine wave with the result so we ensure that sequences of empty
       // buffers don't result in an empty hash.
@@ -48,7 +47,7 @@ void AudioHash::Update(const AudioBus* audio_bus, int frames) {
 
 std::string AudioHash::ToString() const {
   std::string result;
-  for (size_t i = 0; i < base::size(audio_hash_); ++i)
+  for (size_t i = 0; i < std::size(audio_hash_); ++i)
     result += base::StringPrintf("%.2f,", audio_hash_[i]);
   return result;
 }
@@ -58,7 +57,7 @@ bool AudioHash::IsEquivalent(const std::string& other, double tolerance) const {
   char comma;
 
   std::stringstream is(other);
-  for (size_t i = 0; i < base::size(audio_hash_); ++i) {
+  for (size_t i = 0; i < std::size(audio_hash_); ++i) {
     is >> other_hash >> comma;
     if (std::fabs(audio_hash_[i] - other_hash) > tolerance)
       return false;

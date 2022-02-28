@@ -1853,7 +1853,7 @@ HRESULT VideoCaptureDeviceMFWin::WaitOnCaptureEvent(GUID capture_event_guid) {
   }
 
   DWORD wait_result =
-      ::WaitForMultipleObjects(base::size(events), events, FALSE, INFINITE);
+      ::WaitForMultipleObjects(std::size(events), events, FALSE, INFINITE);
   switch (wait_result) {
     case WAIT_OBJECT_0:
       break;

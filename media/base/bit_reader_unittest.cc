@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -97,7 +96,7 @@ TEST(BitReaderTest, VariableSkipBitsTest) {
   // Set bits to one only for the first and last bit of each read
   // in the pattern.
   size_t pos = 0;
-  for (size_t k = 0; k < base::size(pattern_read_skip); ++k) {
+  for (size_t k = 0; k < std::size(pattern_read_skip); ++k) {
     const size_t read_bit_count = pattern_read_skip[k][0];
     if (read_bit_count > 0) {
       SetBit(buffer, sizeof(buffer), pos);
@@ -110,7 +109,7 @@ TEST(BitReaderTest, VariableSkipBitsTest) {
   // Run the test.
   BitReader bit_reader(buffer, sizeof(buffer));
   EXPECT_EQ(bit_reader.bits_available(), static_cast<int>(sizeof(buffer) * 8));
-  for (size_t k = 0; k < base::size(pattern_read_skip); ++k) {
+  for (size_t k = 0; k < std::size(pattern_read_skip); ++k) {
     const size_t read_bit_count = pattern_read_skip[k][0];
     if (read_bit_count > 0) {
       int value;

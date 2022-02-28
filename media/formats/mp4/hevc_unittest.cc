@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "media/formats/mp4/hevc.h"
-#include "base/cxx17_backports.h"
+
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +21,7 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
       {"AUD SPS P", false}, {"AUD,I", true},   {"AUD,SPS,I", true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
@@ -65,7 +65,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);

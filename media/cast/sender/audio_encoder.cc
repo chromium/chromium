@@ -293,7 +293,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
     out->resize(kOpusMaxPayloadSize);
     const opus_int32 result = opus_encode_float(
         opus_encoder_, buffer_.get(), samples_per_frame_,
-        reinterpret_cast<uint8_t*>(base::data(*out)), kOpusMaxPayloadSize);
+        reinterpret_cast<uint8_t*>(std::data(*out)), kOpusMaxPayloadSize);
     if (result > 1) {
       out->resize(result);
       return true;

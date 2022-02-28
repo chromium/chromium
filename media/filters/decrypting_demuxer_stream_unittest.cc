@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/filters/decrypting_demuxer_stream.h"
+
 #include <stdint.h>
 
 #include <string>
@@ -9,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -20,7 +21,6 @@
 #include "media/base/mock_filters.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
-#include "media/filters/decrypting_demuxer_stream.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::RunCallback;
@@ -50,11 +50,11 @@ static scoped_refptr<DecoderBuffer> CreateFakeEncryptedStreamBuffer(
   std::string iv = is_clear
                        ? std::string()
                        : std::string(reinterpret_cast<const char*>(kFakeIv),
-                                     base::size(kFakeIv));
+                                     std::size(kFakeIv));
   if (!is_clear) {
     buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
         std::string(reinterpret_cast<const char*>(kFakeKeyId),
-                    base::size(kFakeKeyId)),
+                    std::size(kFakeKeyId)),
         iv, {}));
   }
   return buffer;

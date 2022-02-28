@@ -9,7 +9,6 @@
 #include <random>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -56,9 +55,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   for (const auto& input_type : kVideoAudioInputTypes) {
     const auto video_codec =
-        kSupportedVideoCodecs[rng() % base::size(kSupportedVideoCodecs)];
+        kSupportedVideoCodecs[rng() % std::size(kSupportedVideoCodecs)];
     const auto audio_codec =
-        kSupportedAudioCodecs[rng() % base::size(kSupportedAudioCodecs)];
+        kSupportedAudioCodecs[rng() % std::size(kSupportedAudioCodecs)];
     media::WebmMuxer muxer(audio_codec, input_type.has_video,
                            input_type.has_audio,
                            std::make_unique<media::LiveWebmMuxerDelegate>(
@@ -87,7 +86,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                                 ? media::CHANNEL_LAYOUT_STEREO
                                                 : media::CHANNEL_LAYOUT_MONO;
         const int sample_rate =
-            kSampleRatesInKHz[rng() % base::size(kSampleRatesInKHz)];
+            kSampleRatesInKHz[rng() % std::size(kSampleRatesInKHz)];
 
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,

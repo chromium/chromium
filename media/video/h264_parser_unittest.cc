@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/video/h264_parser.h"
+
 #include <limits>
 #include <memory>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/test_data_util.h"
-#include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -199,7 +199,7 @@ TEST(H264ParserTest, GetCurrentSubsamplesNormal) {
   subsamples.emplace_back(5u, 20u);
   subsamples.emplace_back(10u, 0u);
   H264Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
 
   H264NALU nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));
@@ -247,7 +247,7 @@ TEST(H264ParserTest, GetCurrentSubsamplesSubsampleNotStartingAtNaluBoundary) {
   subsamples.emplace_back(4u, 24u);
   subsamples.emplace_back(18, 0);
   H264Parser parser;
-  parser.SetEncryptedStream(kStream, base::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
 
   H264NALU nalu;
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&nalu));

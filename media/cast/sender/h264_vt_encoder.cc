@@ -13,7 +13,6 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
@@ -234,14 +233,14 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
   CFTypeRef buffer_attributes_keys[] = {kCVPixelBufferPixelFormatTypeKey,
                                         kCVBufferPropagatedAttachmentsKey};
   CFTypeRef buffer_attributes_values[] = {
-      video_toolbox::ArrayWithIntegers(format, base::size(format)).release(),
+      video_toolbox::ArrayWithIntegers(format, std::size(format)).release(),
       video_toolbox::DictionaryWithKeysAndValues(
-          attachments_keys, attachments_values, base::size(attachments_keys))
+          attachments_keys, attachments_values, std::size(attachments_keys))
           .release()};
   const base::ScopedCFTypeRef<CFDictionaryRef> buffer_attributes =
       video_toolbox::DictionaryWithKeysAndValues(
           buffer_attributes_keys, buffer_attributes_values,
-          base::size(buffer_attributes_keys));
+          std::size(buffer_attributes_keys));
   for (auto* v : buffer_attributes_values)
     CFRelease(v);
 

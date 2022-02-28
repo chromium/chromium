@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/cast/test/receiver/audio_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,14 +11,12 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/cast/cast_config.h"
-#include "media/cast/test/receiver/audio_decoder.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "media/cast/test/utility/standalone_cast_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -205,7 +205,7 @@ TEST_P(AudioDecoderTest, DecodesFramesWithVaryingDuration) {
   const int kFrameDurationMs[] = {5, 10, 20, 40, 60};
 
   const int kNumFrames = 10;
-  for (size_t i = 0; i < base::size(kFrameDurationMs); ++i)
+  for (size_t i = 0; i < std::size(kFrameDurationMs); ++i)
     for (int j = 0; j < kNumFrames; ++j)
       FeedMoreAudio(base::Milliseconds(kFrameDurationMs[i]), 0);
   WaitForAllAudioToBeDecoded();

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/ffmpeg/ffmpeg_common.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <cstring>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "media/base/audio_decoder_config.h"
@@ -16,7 +17,6 @@
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
-#include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +53,7 @@ void TestConfigConvertExtraData(
 
   // Valid combination: extra_data = non-nullptr && size > 0.
   codec_parameters->extradata = &kExtraData[0];
-  codec_parameters->extradata_size = base::size(kExtraData);
+  codec_parameters->extradata_size = std::size(kExtraData);
   EXPECT_TRUE(converter_fn.Run(stream, decoder_config));
   EXPECT_EQ(static_cast<size_t>(codec_parameters->extradata_size),
             decoder_config->extra_data().size());
@@ -198,7 +198,7 @@ TEST_F(FFmpegCommonTest, TimeBaseConversions) {
       {1, 2, 1, 500000, 1}, {1, 3, 1, 333333, 1}, {1, 3, 2, 666667, 2},
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(i);
 
     AVRational time_base;

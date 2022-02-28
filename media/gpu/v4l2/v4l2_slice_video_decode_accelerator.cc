@@ -20,7 +20,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -2201,8 +2200,8 @@ V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles() {
   if (!device)
     return SupportedProfiles();
 
-  return device->GetSupportedDecodeProfiles(
-      base::size(supported_input_fourccs_), supported_input_fourccs_);
+  return device->GetSupportedDecodeProfiles(std::size(supported_input_fourccs_),
+                                            supported_input_fourccs_);
 }
 
 bool V4L2SliceVideoDecodeAccelerator::IsSupportedProfile(
@@ -2412,10 +2411,10 @@ bool V4L2SliceVideoDecodeAccelerator::OnMemoryDump(
       memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
       struct v4l2_plane v4l2_planes[VIDEO_MAX_PLANES];
       memset(v4l2_planes, 0, sizeof(v4l2_planes));
-      DCHECK_LT(output_planes_count_, base::size(v4l2_planes));
+      DCHECK_LT(output_planes_count_, std::size(v4l2_planes));
       v4l2_buffer.m.planes = v4l2_planes;
       v4l2_buffer.length =
-          std::min(output_planes_count_, base::size(v4l2_planes));
+          std::min(output_planes_count_, std::size(v4l2_planes));
       v4l2_buffer.index = index;
       v4l2_buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
       v4l2_buffer.memory = V4L2_MEMORY_MMAP;

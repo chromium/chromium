@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/video/h264_poc.h"
+
 #include <stddef.h>
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/video/h264_parser.h"
-#include "media/video/h264_poc.h"
 
 namespace media {
 
@@ -25,7 +25,7 @@ bool HasMMCO5(const media::H264SliceHeader& slice_hdr) {
     return false;
   }
 
-  for (size_t i = 0; i < base::size(slice_hdr.ref_pic_marking); i++) {
+  for (size_t i = 0; i < std::size(slice_hdr.ref_pic_marking); i++) {
     int32_t op = slice_hdr.ref_pic_marking[i].memory_mgmnt_control_operation;
     if (op == 5)
       return true;

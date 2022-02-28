@@ -4,8 +4,9 @@
 
 #include "media/audio/win/avrt_wrapper_win.h"
 
+#include <iterator>
+
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 
 namespace avrt {
 
@@ -24,7 +25,7 @@ bool Initialize() {
     // The avrt.dll is available on Windows Vista and later.
     wchar_t path[MAX_PATH] = {0};
     ExpandEnvironmentStrings(L"%SystemRoot%\\system32\\avrt.dll", path,
-                             base::size(path));
+                             std::size(path));
     g_avrt = LoadLibraryExW(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
     if (!g_avrt)
       return false;

@@ -4,7 +4,6 @@
 
 #include "media/filters/vp9_compressed_header_parser.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 
 namespace media {
@@ -48,7 +47,7 @@ Vp9Prob InvRemapProb(uint8_t delta_prob, uint8_t prob) {
   uint8_t v = delta_prob;
   DCHECK_GE(m, 1);
   DCHECK_LE(m, kVp9MaxProb);
-  DCHECK_LT(v, base::size(inv_map_table));
+  DCHECK_LT(v, std::size(inv_map_table));
   v = inv_map_table[v];
   m--;
   if ((m << 1) <= kVp9MaxProb) {

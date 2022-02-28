@@ -55,10 +55,10 @@ void FillQMatrix(VAQMatrixBufferJPEG* q_matrix) {
   static_assert(std::extent<decltype(luminance.value)>() ==
                     std::extent<decltype(q_matrix->lum_quantiser_matrix)>(),
                 "Luminance quantization table size mismatch.");
-  static_assert(base::size(kZigZag8x8) == base::size(luminance.value),
+  static_assert(std::size(kZigZag8x8) == std::size(luminance.value),
                 "Luminance quantization table size mismatch.");
   q_matrix->load_lum_quantiser_matrix = 1;
-  for (size_t i = 0; i < base::size(kZigZag8x8); i++) {
+  for (size_t i = 0; i < std::size(kZigZag8x8); i++) {
     q_matrix->lum_quantiser_matrix[i] = luminance.value[kZigZag8x8[i]];
   }
 
@@ -66,23 +66,23 @@ void FillQMatrix(VAQMatrixBufferJPEG* q_matrix) {
   static_assert(std::extent<decltype(chrominance.value)>() ==
                     std::extent<decltype(q_matrix->chroma_quantiser_matrix)>(),
                 "Chrominance quantization table size mismatch.");
-  static_assert(base::size(kZigZag8x8) == base::size(chrominance.value),
+  static_assert(std::size(kZigZag8x8) == std::size(chrominance.value),
                 "Chrominance quantization table size mismatch.");
   q_matrix->load_chroma_quantiser_matrix = 1;
-  for (size_t i = 0; i < base::size(kZigZag8x8); i++) {
+  for (size_t i = 0; i < std::size(kZigZag8x8); i++) {
     q_matrix->chroma_quantiser_matrix[i] = chrominance.value[kZigZag8x8[i]];
   }
 }
 
 void FillHuffmanTableParameters(
     VAHuffmanTableBufferJPEGBaseline* huff_table_param) {
-  static_assert(base::size(kDefaultDcTable) == base::size(kDefaultAcTable),
+  static_assert(std::size(kDefaultDcTable) == std::size(kDefaultAcTable),
                 "DC table and AC table size mismatch.");
-  static_assert(base::size(kDefaultDcTable) ==
+  static_assert(std::size(kDefaultDcTable) ==
                     std::extent<decltype(huff_table_param->huffman_table)>(),
                 "DC table and destination table size mismatch.");
 
-  for (size_t i = 0; i < base::size(kDefaultDcTable); ++i) {
+  for (size_t i = 0; i < std::size(kDefaultDcTable); ++i) {
     const JpegHuffmanTable& dcTable = kDefaultDcTable[i];
     const JpegHuffmanTable& acTable = kDefaultAcTable[i];
     huff_table_param->load_huffman_table[i] = true;

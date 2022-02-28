@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -231,26 +230,26 @@ INSTANTIATE_TEST_SUITE_P(
     AudioEncoderTestScenarios,
     AudioEncoderTest,
     ::testing::Values(
-        TestScenario(kOneCall_3Millis, base::size(kOneCall_3Millis)),
-        TestScenario(kOneCall_10Millis, base::size(kOneCall_10Millis)),
-        TestScenario(kOneCall_13Millis, base::size(kOneCall_13Millis)),
-        TestScenario(kOneCall_20Millis, base::size(kOneCall_20Millis)),
-        TestScenario(kTwoCalls_3Millis, base::size(kTwoCalls_3Millis)),
-        TestScenario(kTwoCalls_10Millis, base::size(kTwoCalls_10Millis)),
-        TestScenario(kTwoCalls_Mixed1, base::size(kTwoCalls_Mixed1)),
-        TestScenario(kTwoCalls_Mixed2, base::size(kTwoCalls_Mixed2)),
-        TestScenario(kTwoCalls_Mixed3, base::size(kTwoCalls_Mixed3)),
-        TestScenario(kTwoCalls_Mixed4, base::size(kTwoCalls_Mixed4)),
-        TestScenario(kManyCalls_3Millis, base::size(kManyCalls_3Millis)),
-        TestScenario(kManyCalls_10Millis, base::size(kManyCalls_10Millis)),
-        TestScenario(kManyCalls_Mixed1, base::size(kManyCalls_Mixed1)),
-        TestScenario(kManyCalls_Mixed2, base::size(kManyCalls_Mixed2)),
-        TestScenario(kManyCalls_Mixed3, base::size(kManyCalls_Mixed3)),
-        TestScenario(kManyCalls_Mixed4, base::size(kManyCalls_Mixed4)),
-        TestScenario(kManyCalls_Mixed5, base::size(kManyCalls_Mixed5)),
-        TestScenario(kOneBigUnderrun, base::size(kOneBigUnderrun)),
-        TestScenario(kTwoBigUnderruns, base::size(kTwoBigUnderruns)),
-        TestScenario(kMixedUnderruns, base::size(kMixedUnderruns))));
+        TestScenario(kOneCall_3Millis, std::size(kOneCall_3Millis)),
+        TestScenario(kOneCall_10Millis, std::size(kOneCall_10Millis)),
+        TestScenario(kOneCall_13Millis, std::size(kOneCall_13Millis)),
+        TestScenario(kOneCall_20Millis, std::size(kOneCall_20Millis)),
+        TestScenario(kTwoCalls_3Millis, std::size(kTwoCalls_3Millis)),
+        TestScenario(kTwoCalls_10Millis, std::size(kTwoCalls_10Millis)),
+        TestScenario(kTwoCalls_Mixed1, std::size(kTwoCalls_Mixed1)),
+        TestScenario(kTwoCalls_Mixed2, std::size(kTwoCalls_Mixed2)),
+        TestScenario(kTwoCalls_Mixed3, std::size(kTwoCalls_Mixed3)),
+        TestScenario(kTwoCalls_Mixed4, std::size(kTwoCalls_Mixed4)),
+        TestScenario(kManyCalls_3Millis, std::size(kManyCalls_3Millis)),
+        TestScenario(kManyCalls_10Millis, std::size(kManyCalls_10Millis)),
+        TestScenario(kManyCalls_Mixed1, std::size(kManyCalls_Mixed1)),
+        TestScenario(kManyCalls_Mixed2, std::size(kManyCalls_Mixed2)),
+        TestScenario(kManyCalls_Mixed3, std::size(kManyCalls_Mixed3)),
+        TestScenario(kManyCalls_Mixed4, std::size(kManyCalls_Mixed4)),
+        TestScenario(kManyCalls_Mixed5, std::size(kManyCalls_Mixed5)),
+        TestScenario(kOneBigUnderrun, std::size(kOneBigUnderrun)),
+        TestScenario(kTwoBigUnderruns, std::size(kTwoBigUnderruns)),
+        TestScenario(kMixedUnderruns, std::size(kMixedUnderruns))));
 
 }  // namespace cast
 }  // namespace media

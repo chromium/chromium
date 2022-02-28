@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace midi {
@@ -24,7 +23,7 @@ TEST(UsbMidiDescriptorParserTest, InvalidSize) {
   UsbMidiDescriptorParser parser;
   std::vector<UsbMidiJack> jacks;
   uint8_t data[] = {0x04};
-  EXPECT_FALSE(parser.Parse(nullptr, data, base::size(data), &jacks));
+  EXPECT_FALSE(parser.Parse(nullptr, data, std::size(data), &jacks));
   EXPECT_TRUE(jacks.empty());
 }
 
@@ -37,7 +36,7 @@ TEST(UsbMidiDescriptorParserTest, NonExistingJackIsAssociated) {
       0x09, 0x04, 0x01, 0x00, 0x02, 0x01, 0x03, 0x00, 0x00, 0x07, 0x24,
       0x01, 0x00, 0x01, 0x07, 0x00, 0x05, 0x25, 0x01, 0x01, 0x01,
   };
-  EXPECT_FALSE(parser.Parse(nullptr, data, base::size(data), &jacks));
+  EXPECT_FALSE(parser.Parse(nullptr, data, std::size(data), &jacks));
   EXPECT_TRUE(jacks.empty());
 }
 
@@ -51,7 +50,7 @@ TEST(UsbMidiDescriptorParserTest,
       0x09, 0x04, 0x01, 0x00, 0x02, 0x01, 0x02, 0x00, 0x00, 0x07, 0x24,
       0x01, 0x00, 0x01, 0x07, 0x00, 0x05, 0x25, 0x01, 0x01, 0x01,
   };
-  EXPECT_TRUE(parser.Parse(nullptr, data, base::size(data), &jacks));
+  EXPECT_TRUE(parser.Parse(nullptr, data, std::size(data), &jacks));
   EXPECT_TRUE(jacks.empty());
 }
 
@@ -73,7 +72,7 @@ TEST(UsbMidiDescriptorParserTest, Parse) {
       0x03, 0x09, 0x05, 0x82, 0x02, 0x20, 0x00, 0x00, 0x00, 0x00, 0x05, 0x25,
       0x01, 0x01, 0x07,
   };
-  EXPECT_TRUE(parser.Parse(nullptr, data, base::size(data), &jacks));
+  EXPECT_TRUE(parser.Parse(nullptr, data, std::size(data), &jacks));
   ASSERT_EQ(3u, jacks.size());
 
   EXPECT_EQ(2u, jacks[0].jack_id);
@@ -108,7 +107,7 @@ TEST(UsbMidiDescriptorParserTest, ParseDeviceInfo) {
       0x12, 0x01, 0x10, 0x01, 0x00, 0x00, 0x00, 0x08, 0x01,
       0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x00, 0x0a,
   };
-  EXPECT_TRUE(parser.ParseDeviceInfo(data, base::size(data), &info));
+  EXPECT_TRUE(parser.ParseDeviceInfo(data, std::size(data), &info));
 
   EXPECT_EQ(0x2301, info.vendor_id);
   EXPECT_EQ(0x6745, info.product_id);

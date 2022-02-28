@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 
@@ -165,7 +164,7 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
 };
 
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
-  DCHECK_LT(static_cast<size_t>(layout), base::size(kLayoutToChannels));
+  DCHECK_LT(static_cast<size_t>(layout), std::size(kLayoutToChannels));
   DCHECK_LE(kLayoutToChannels[layout], kMaxConcurrentChannels);
   return kLayoutToChannels[layout];
 }
@@ -196,8 +195,8 @@ ChannelLayout GuessChannelLayout(int channels) {
 }
 
 int ChannelOrder(ChannelLayout layout, Channels channel) {
-  DCHECK_LT(static_cast<size_t>(layout), base::size(kChannelOrderings));
-  DCHECK_LT(static_cast<size_t>(channel), base::size(kChannelOrderings[0]));
+  DCHECK_LT(static_cast<size_t>(layout), std::size(kChannelOrderings));
+  DCHECK_LT(static_cast<size_t>(channel), std::size(kChannelOrderings[0]));
   return kChannelOrderings[layout][channel];
 }
 

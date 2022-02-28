@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -95,7 +94,7 @@ bool GetKeyIdsForCommonSystemId(const std::vector<uint8_t>& pssh_boxes,
   KeyIdList result;
   std::vector<uint8_t> common_system_id(
       kCencCommonSystemId,
-      kCencCommonSystemId + base::size(kCencCommonSystemId));
+      kCencCommonSystemId + std::size(kCencCommonSystemId));
   for (const auto& child : children) {
     if (child.system_id == common_system_id) {
       key_ids->assign(child.key_ids.begin(), child.key_ids.end());

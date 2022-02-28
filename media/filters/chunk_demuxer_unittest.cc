@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -717,7 +716,7 @@ class ChunkDemuxerTest : public ::testing::Test {
                              std::vector<uint8_t>(
                                  kEncryptedMediaInitData,
                                  kEncryptedMediaInitData +
-                                     base::size(kEncryptedMediaInitData))))
+                                     std::size(kEncryptedMediaInitData))))
           .Times(Exactly(need_key_count));
     }
 
@@ -2865,7 +2864,7 @@ TEST_F(ChunkDemuxerTest, CodecIDsThatAreNotRFC6381Compliant) {
                        base::BindOnce(&ChunkDemuxerTest::DemuxerInitialized,
                                       base::Unretained(this)));
 
-  for (size_t i = 0; i < base::size(codec_ids); ++i) {
+  for (size_t i = 0; i < std::size(codec_ids); ++i) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     expected = ChunkDemuxer::kOk;
 #else
@@ -3367,9 +3366,9 @@ TEST_F(ChunkDemuxerTest, WebMIsParsingMediaSegmentDetection) {
       true, true, true, true, false,
   };
 
-  static_assert(base::size(kBuffer) == base::size(kExpectedReturnValues),
+  static_assert(std::size(kBuffer) == std::size(kExpectedReturnValues),
                 "test arrays out of sync");
-  static_assert(base::size(kBuffer) == sizeof(kBuffer),
+  static_assert(std::size(kBuffer) == sizeof(kBuffer),
                 "there should be one byte per index");
 
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO));

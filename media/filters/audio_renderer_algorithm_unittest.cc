@@ -20,7 +20,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -828,7 +827,7 @@ TEST_F(AudioRendererAlgorithmTest, FillBufferOffset) {
   // filled appropriately at normal, above normal, and below normal.
   const int kHalfSize = kFrameSize / 2;
   const float kAudibleRates[] = {1.0f, 2.0f, 0.5f, 5.0f, 0.25f};
-  for (size_t i = 0; i < base::size(kAudibleRates); ++i) {
+  for (size_t i = 0; i < std::size(kAudibleRates); ++i) {
     SCOPED_TRACE(kAudibleRates[i]);
     bus->Zero();
 

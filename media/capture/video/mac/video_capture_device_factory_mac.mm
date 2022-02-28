@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -84,7 +83,7 @@ namespace media {
 static bool IsDeviceBlocked(const VideoCaptureDeviceDescriptor& descriptor) {
   bool is_device_blocked = false;
   for (size_t i = 0;
-       !is_device_blocked && i < base::size(kBlockedCamerasIdSignature); ++i) {
+       !is_device_blocked && i < std::size(kBlockedCamerasIdSignature); ++i) {
     is_device_blocked =
         base::EndsWith(descriptor.device_id, kBlockedCamerasIdSignature[i],
                        base::CompareCase::INSENSITIVE_ASCII);

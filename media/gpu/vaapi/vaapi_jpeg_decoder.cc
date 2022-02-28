@@ -10,7 +10,6 @@
 #include <iostream>
 #include <type_traits>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_types.h"
@@ -54,7 +53,7 @@ static void FillIQMatrix(const JpegQuantizationTable* q_table,
     if (!q_table[i].valid)
       continue;
     iq_matrix->load_quantiser_table[i] = 1;
-    for (size_t j = 0; j < base::size(q_table[i].value); j++)
+    for (size_t j = 0; j < std::size(q_table[i].value); j++)
       iq_matrix->quantiser_table[i][j] = q_table[i].value[j];
   }
 }

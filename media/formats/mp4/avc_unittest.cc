@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/formats/mp4/avc.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <ostream>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/stream_parser_buffer.h"
-#include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/nalu_test_helper.h"
@@ -321,7 +321,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"SDC I", false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
@@ -369,7 +369,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
@@ -417,7 +417,7 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
   expected.is_conformant = true;
   expected.is_keyframe = true;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
 

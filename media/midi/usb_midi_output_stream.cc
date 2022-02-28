@@ -4,7 +4,6 @@
 
 #include "media/midi/usb_midi_output_stream.h"
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/midi/message_util.h"
 #include "media/midi/usb_midi_device.h"
@@ -82,7 +81,7 @@ bool UsbMidiOutputStream::PushSysExMessage(const std::vector<uint8_t>& data,
       *current = index;
       data_to_send->push_back((jack_.cable_number << 4) | 0x4);
       data_to_send->insert(data_to_send->end(), message,
-                           message + base::size(message));
+                           message + std::size(message));
       is_sending_sysex_ = true;
       return true;
     }
@@ -100,7 +99,7 @@ bool UsbMidiOutputStream::PushSysExMessage(const std::vector<uint8_t>& data,
       DCHECK(code_index == 0x5 || code_index == 0x6 || code_index == 0x7);
       data_to_send->push_back((jack_.cable_number << 4) | code_index);
       data_to_send->insert(data_to_send->end(), message,
-                           message + base::size(message));
+                           message + std::size(message));
       *current = index + 1;
       is_sending_sysex_ = false;
       return true;

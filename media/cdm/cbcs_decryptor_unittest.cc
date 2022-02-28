@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -39,7 +38,7 @@ const std::array<uint8_t, kBlockSize> kOneBlock = {'a', 'b', 'c', 'd', 'e', 'f',
                                                    'm', 'n', 'o', 'p'};
 
 const std::array<uint8_t, 6> kPartialBlock = {'a', 'b', 'c', 'd', 'e', 'f'};
-static_assert(base::size(kPartialBlock) != kBlockSize, "kPartialBlock wrong");
+static_assert(std::size(kPartialBlock) != kBlockSize, "kPartialBlock wrong");
 
 std::string MakeString(const std::vector<uint8_t>& chars) {
   return std::string(chars.begin(), chars.end());
@@ -274,7 +273,7 @@ TEST_F(CbcsDecryptorTest, InvalidKey) {
   // Use a different key for decryption. Call should succeed, but return
   // something other than the original data.
   std::unique_ptr<crypto::SymmetricKey> bad_key = crypto::SymmetricKey::Import(
-      crypto::SymmetricKey::AES, std::string(base::size(kKey), 'b'));
+      crypto::SymmetricKey::AES, std::string(std::size(kKey), 'b'));
   auto encrypted_buffer = CreateEncryptedBuffer(
       encrypted_block, iv_, subsamples, EncryptionPattern(1, 0));
   EXPECT_NE(one_block_, DecryptWithKey(encrypted_buffer, *bad_key));

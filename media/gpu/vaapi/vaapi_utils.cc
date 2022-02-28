@@ -200,11 +200,11 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                            VASliceParameterBufferVP8* slice_param) {
   const Vp8SegmentationHeader& sgmnt_hdr = frame_header.segmentation_hdr;
   const Vp8QuantizationHeader& quant_hdr = frame_header.quantization_hdr;
-  static_assert(base::size(decltype(iq_matrix_buf->quantization_index){}) ==
+  static_assert(std::size(decltype(iq_matrix_buf->quantization_index){}) ==
                     kMaxMBSegments,
                 "incorrect quantization matrix segment size");
   static_assert(
-      base::size(decltype(iq_matrix_buf->quantization_index){}[0]) == 6,
+      std::size(decltype(iq_matrix_buf->quantization_index){}[0]) == 6,
       "incorrect quantization matrix Q index size");
   for (size_t i = 0; i < kMaxMBSegments; ++i) {
     int q = quant_hdr.y_ac_qi;
@@ -289,7 +289,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   static_assert(std::extent<decltype(sgmnt_hdr.lf_update_value)>() ==
                     std::extent<decltype(pic_param->loop_filter_level)>(),
                 "loop filter level arrays mismatch");
-  for (size_t i = 0; i < base::size(sgmnt_hdr.lf_update_value); ++i) {
+  for (size_t i = 0; i < std::size(sgmnt_hdr.lf_update_value); ++i) {
     int lf_level = lf_hdr.level;
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
@@ -313,7 +313,7 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
   static_assert(std::extent<decltype(lf_hdr.ref_frame_delta)>() ==
                     std::extent<decltype(lf_hdr.mb_mode_delta)>(),
                 "loop filter deltas arrays size mismatch");
-  for (size_t i = 0; i < base::size(lf_hdr.ref_frame_delta); ++i) {
+  for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
     pic_param->loop_filter_deltas_ref_frame[i] = lf_hdr.ref_frame_delta[i];
     pic_param->loop_filter_deltas_mode[i] = lf_hdr.mb_mode_delta[i];
   }

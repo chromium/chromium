@@ -11,7 +11,6 @@
 #include <cstring>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
@@ -42,7 +41,7 @@ constexpr int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
                                   80, 18, 15, 64, 160, 4,  3,  2};
 constexpr int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
                                    33, 11, 11, 33, 99, 3,  2,  1};
-static_assert(base::size(kTableSarWidth) == base::size(kTableSarHeight),
+static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 
 void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
@@ -1465,7 +1464,7 @@ H265Parser::Result H265Parser::ParseVuiParameters(const H265SPS& sps,
       READ_BITS_OR_RETURN(16, &vui->sar_width);
       READ_BITS_OR_RETURN(16, &vui->sar_height);
     } else {
-      const int max_aspect_ratio_idc = base::size(kTableSarWidth) - 1;
+      const int max_aspect_ratio_idc = std::size(kTableSarWidth) - 1;
       IN_RANGE_OR_RETURN(aspect_ratio_idc, 0, max_aspect_ratio_idc);
       vui->sar_width = kTableSarWidth[aspect_ratio_idc];
       vui->sar_height = kTableSarHeight[aspect_ratio_idc];

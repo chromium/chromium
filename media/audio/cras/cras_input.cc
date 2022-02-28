@@ -5,9 +5,9 @@
 #include "media/audio/cras/cras_input.h"
 
 #include <math.h>
+
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -165,7 +165,7 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     CRAS_CH_SL,
     CRAS_CH_SR
   };
-  static_assert(base::size(kChannelMap) == CHANNELS_MAX + 1,
+  static_assert(std::size(kChannelMap) == CHANNELS_MAX + 1,
                 "kChannelMap array size should match");
 
   // If already playing, stop before re-starting.
@@ -209,12 +209,12 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   // Initialize channel layout to all -1 to indicate that none of
   // the channels is set in the layout.
   int8_t layout[CRAS_CH_MAX];
-  for (size_t i = 0; i < base::size(layout); ++i)
+  for (size_t i = 0; i < std::size(layout); ++i)
     layout[i] = -1;
 
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that are not present in params_.channel_layout().
-  for (size_t i = 0; i < base::size(kChannelMap); ++i) {
+  for (size_t i = 0; i < std::size(kChannelMap); ++i) {
     layout[kChannelMap[i]] = ChannelOrder(params_.channel_layout(),
                                           static_cast<Channels>(i));
   }

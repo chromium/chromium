@@ -73,8 +73,8 @@ VideoBitrateAllocation AllocateBitrateForDefaultEncodingWithBitrates(
   };
 
   CHECK_GT(num_temporal_layers, 0u);
-  CHECK_LE(num_temporal_layers, base::size(kTemporalLayersBitrateScaleFactors));
-  DCHECK_EQ(base::size(kTemporalLayersBitrateScaleFactors), kMaxTemporalLayers);
+  CHECK_LE(num_temporal_layers, std::size(kTemporalLayersBitrateScaleFactors));
+  DCHECK_EQ(std::size(kTemporalLayersBitrateScaleFactors), kMaxTemporalLayers);
 
   VideoBitrateAllocation bitrate_allocation;
   for (size_t spatial_id = 0; spatial_id < sl_bitrates.size(); ++spatial_id) {
@@ -187,8 +187,8 @@ VideoBitrateAllocation AllocateDefaultBitrateForTesting(
   };
 
   CHECK_GT(num_spatial_layers, 0u);
-  CHECK_LE(num_spatial_layers, base::size(kSpatialLayersBitrateScaleFactors));
-  DCHECK_EQ(base::size(kSpatialLayersBitrateScaleFactors), kMaxSpatialLayers);
+  CHECK_LE(num_spatial_layers, std::size(kSpatialLayersBitrateScaleFactors));
+  DCHECK_EQ(std::size(kSpatialLayersBitrateScaleFactors), kMaxSpatialLayers);
 
   std::vector<uint32_t> bitrates(num_spatial_layers);
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {

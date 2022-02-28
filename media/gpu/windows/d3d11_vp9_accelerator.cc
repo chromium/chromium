@@ -166,7 +166,7 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
   D3D11_TEXTURE2D_DESC texture_descriptor;
   pic.picture_buffer()->Texture()->GetDesc(&texture_descriptor);
 
-  for (size_t i = 0; i < base::size(pic_params->ref_frame_map); i++) {
+  for (size_t i = 0; i < std::size(pic_params->ref_frame_map); i++) {
     auto ref_pic = ref_frames.GetFrame(i);
     if (ref_pic) {
       scoped_refptr<D3D11VP9Picture> our_ref_pic(
@@ -184,12 +184,12 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
 
 void D3D11VP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
                                         const D3D11VP9Picture& pic) {
-  for (size_t i = 0; i < base::size(pic_params->frame_refs); i++) {
+  for (size_t i = 0; i < std::size(pic_params->frame_refs); i++) {
     pic_params->frame_refs[i] =
         pic_params->ref_frame_map[pic.frame_hdr->ref_frame_idx[i]];
   }
 
-  for (size_t i = 0; i < base::size(pic_params->ref_frame_sign_bias); i++) {
+  for (size_t i = 0; i < std::size(pic_params->ref_frame_sign_bias); i++) {
     pic_params->ref_frame_sign_bias[i] = pic.frame_hdr->ref_frame_sign_bias[i];
   }
 }
@@ -204,17 +204,17 @@ void D3D11VP9Accelerator::CopyLoopFilterParams(
   SET_PARAM(mode_ref_delta_update, delta_update);
 #undef SET_PARAM
 
-  // base::size(...) doesn't work well in an array initializer.
-  DCHECK_EQ(4lu, base::size(pic_params->ref_deltas));
-  for (size_t i = 0; i < base::size(pic_params->ref_deltas); i++) {
+  // std::size(...) doesn't work well in an array initializer.
+  DCHECK_EQ(4lu, std::size(pic_params->ref_deltas));
+  for (size_t i = 0; i < std::size(pic_params->ref_deltas); i++) {
     // The update_ref_deltas[i] is _only_ for parsing! it allows omission of the
     // 6 bytes that would otherwise be needed for a new value to overwrite the
     // global one. It has nothing to do with setting the ref_deltas here.
     pic_params->ref_deltas[i] = loop_filter_params.ref_deltas[i];
   }
 
-  DCHECK_EQ(2lu, base::size(pic_params->mode_deltas));
-  for (size_t i = 0; i < base::size(pic_params->mode_deltas); i++) {
+  DCHECK_EQ(2lu, std::size(pic_params->mode_deltas));
+  for (size_t i = 0; i < std::size(pic_params->mode_deltas); i++) {
     pic_params->mode_deltas[i] = loop_filter_params.mode_deltas[i];
   }
 }
@@ -239,11 +239,11 @@ void D3D11VP9Accelerator::CopySegmentationParams(
   COPY_PARAM(temporal_update);
   SET_PARAM(abs_delta, abs_or_delta_update);
 
-  for (size_t i = 0; i < base::size(segmentation_params.tree_probs); i++) {
+  for (size_t i = 0; i < std::size(segmentation_params.tree_probs); i++) {
     COPY_PARAM(tree_probs[i]);
   }
 
-  for (size_t i = 0; i < base::size(segmentation_params.pred_probs); i++) {
+  for (size_t i = 0; i < std::size(segmentation_params.pred_probs); i++) {
     COPY_PARAM(pred_probs[i]);
   }
 

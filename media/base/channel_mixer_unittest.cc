@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/channel_mixer.h"
+
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/channel_mixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -166,35 +166,35 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(ChannelMixerTestData(CHANNEL_LAYOUT_STEREO,
                                          CHANNEL_LAYOUT_MONO,
                                          kStereoToMonoValues,
-                                         base::size(kStereoToMonoValues),
+                                         std::size(kStereoToMonoValues),
                                          0.5f),
                     ChannelMixerTestData(CHANNEL_LAYOUT_MONO,
                                          CHANNEL_LAYOUT_STEREO,
                                          kMonoToStereoValues,
-                                         base::size(kMonoToStereoValues),
+                                         std::size(kMonoToStereoValues),
                                          1.0f),
                     ChannelMixerTestData(CHANNEL_LAYOUT_5_1,
                                          CHANNEL_LAYOUT_MONO,
                                          kFiveOneToMonoValues,
-                                         base::size(kFiveOneToMonoValues),
+                                         std::size(kFiveOneToMonoValues),
                                          ChannelMixer::kHalfPower),
                     ChannelMixerTestData(CHANNEL_LAYOUT_DISCRETE,
                                          2,
                                          CHANNEL_LAYOUT_DISCRETE,
                                          2,
                                          kStereoToMonoValues,
-                                         base::size(kStereoToMonoValues)),
+                                         std::size(kStereoToMonoValues)),
                     ChannelMixerTestData(CHANNEL_LAYOUT_DISCRETE,
                                          2,
                                          CHANNEL_LAYOUT_DISCRETE,
                                          5,
                                          kStereoToMonoValues,
-                                         base::size(kStereoToMonoValues)),
+                                         std::size(kStereoToMonoValues)),
                     ChannelMixerTestData(CHANNEL_LAYOUT_DISCRETE,
                                          5,
                                          CHANNEL_LAYOUT_DISCRETE,
                                          2,
                                          kFiveDiscreteValues,
-                                         base::size(kFiveDiscreteValues))));
+                                         std::size(kFiveDiscreteValues))));
 
 }  // namespace media

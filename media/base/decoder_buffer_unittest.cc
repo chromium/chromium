@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_util.h"
@@ -38,7 +37,7 @@ TEST(DecoderBufferTest, CreateEOSBuffer) {
 
 TEST(DecoderBufferTest, CopyFrom) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer2(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize));
@@ -65,7 +64,7 @@ TEST(DecoderBufferTest, CopyFrom) {
 
 TEST(DecoderBufferTest, FromArray) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   std::unique_ptr<uint8_t[]> ptr(new uint8_t[kDataSize]);
   memcpy(ptr.get(), kData, kDataSize);
 
@@ -80,7 +79,7 @@ TEST(DecoderBufferTest, FromArray) {
 
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
@@ -100,7 +99,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion) {
 
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   const off_t kDataOffset = 3;
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
@@ -122,7 +121,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_Unaligned) {
 
 TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   auto region = base::UnsafeSharedMemoryRegion::Create(kDataSize);
   auto mapping = region.Map();
@@ -138,7 +137,7 @@ TEST(DecoderBufferTest, FromPlatformSharedMemoryRegion_ZeroSize) {
 
 TEST(DecoderBufferTest, FromSharedMemoryRegion) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   ASSERT_TRUE(mapping_region.IsValid());
@@ -155,7 +154,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion) {
 
 TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
   const uint8_t kData[] = "XXXhello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   const off_t kDataOffset = 3;
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
@@ -175,7 +174,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_Unaligned) {
 
 TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
   const uint8_t kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   auto mapping_region = base::ReadOnlySharedMemoryRegion::Create(kDataSize);
   memcpy(mapping_region.mapping.GetMemoryAs<uint8_t>(), kData, kDataSize);
@@ -188,7 +187,7 @@ TEST(DecoderBufferTest, FromSharedMemoryRegion_ZeroSize) {
 
 TEST(DecoderBufferTest, ReadingWriting) {
   const char kData[] = "hello";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(kDataSize));
   ASSERT_TRUE(buffer.get());

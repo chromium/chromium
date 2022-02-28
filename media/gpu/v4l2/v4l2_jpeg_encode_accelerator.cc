@@ -493,7 +493,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestInputBuffers() {
     buffer.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     buffer.memory = V4L2_MEMORY_MMAP;
     buffer.m.planes = planes;
-    buffer.length = base::size(planes);
+    buffer.length = std::size(planes);
     IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERYBUF, &buffer);
 
     if (input_buffer_num_planes_ != buffer.length) {
@@ -544,7 +544,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::RequestOutputBuffers() {
     buffer.index = i;
     buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     buffer.m.planes = planes;
-    buffer.length = base::size(planes);
+    buffer.length = std::size(planes);
     buffer.memory = V4L2_MEMORY_MMAP;
     IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QUERYBUF, &buffer);
     if (buffer.length != kMaxJpegPlane) {
@@ -727,7 +727,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueInputRecord() {
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   qbuf.memory = V4L2_MEMORY_MMAP;
-  qbuf.length = base::size(planes);
+  qbuf.length = std::size(planes);
   for (size_t i = 0; i < input_buffer_num_planes_; i++) {
     // sets this to 0 means the size of the plane.
     planes[i].bytesused = 0;
@@ -757,7 +757,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstance::EnqueueOutputRecord() {
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   qbuf.memory = V4L2_MEMORY_MMAP;
-  qbuf.length = base::size(planes);
+  qbuf.length = std::size(planes);
   qbuf.m.planes = planes;
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QBUF, &qbuf);
   output_record.at_device = true;
@@ -851,7 +851,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::Dequeue() {
     memset(planes, 0, sizeof(planes));
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     dqbuf.memory = V4L2_MEMORY_MMAP;
-    dqbuf.length = base::size(planes);
+    dqbuf.length = std::size(planes);
     dqbuf.m.planes = planes;
     if (device_->Ioctl(VIDIOC_DQBUF, &dqbuf) != 0) {
       if (errno == EAGAIN) {
@@ -886,7 +886,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::Dequeue() {
     memset(planes, 0, sizeof(planes));
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     dqbuf.memory = V4L2_MEMORY_MMAP;
-    dqbuf.length = base::size(planes);
+    dqbuf.length = std::size(planes);
     dqbuf.m.planes = planes;
     if (device_->Ioctl(VIDIOC_DQBUF, &dqbuf) != 0) {
       if (errno == EAGAIN) {
@@ -1517,7 +1517,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
   qbuf.memory = V4L2_MEMORY_DMABUF;
-  qbuf.length = base::size(planes);
+  qbuf.length = std::size(planes);
   qbuf.m.planes = planes;
 
   const auto& frame = job_record->input_frame;
@@ -1560,7 +1560,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutputRecord() {
   qbuf.index = index;
   qbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
   qbuf.memory = V4L2_MEMORY_DMABUF;
-  qbuf.length = base::size(planes);
+  qbuf.length = std::size(planes);
   qbuf.m.planes = planes;
 
   auto& job_record = running_job_queue_.back();
@@ -1737,7 +1737,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
     memset(planes, 0, sizeof(planes));
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
     dqbuf.memory = V4L2_MEMORY_DMABUF;
-    dqbuf.length = base::size(planes);
+    dqbuf.length = std::size(planes);
     dqbuf.m.planes = planes;
     if (device_->Ioctl(VIDIOC_DQBUF, &dqbuf) != 0) {
       if (errno == EAGAIN) {
@@ -1769,7 +1769,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
     memset(planes, 0, sizeof(planes));
     dqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
     dqbuf.memory = V4L2_MEMORY_DMABUF;
-    dqbuf.length = base::size(planes);
+    dqbuf.length = std::size(planes);
     dqbuf.m.planes = planes;
     if (device_->Ioctl(VIDIOC_DQBUF, &dqbuf) != 0) {
       if (errno == EAGAIN) {

@@ -736,7 +736,7 @@ bool D3D11H265Accelerator::SubmitSliceData() {
 
   hr = video_context_->SubmitDecoderBuffers(
       video_decoder_.Get(),
-      use_scaling_lists_ ? base::size(buffers) : base::size(buffers) - 1,
+      use_scaling_lists_ ? std::size(buffers) : std::size(buffers) - 1,
       buffers);
   current_offset_ = 0;
   slice_info_.clear();

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -64,8 +63,8 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_Normal) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
   const uint8_t kSideData[] = "sideshow bob";
-  const size_t kDataSize = base::size(kData);
-  const size_t kSideDataSize = base::size(kSideData);
+  const size_t kDataSize = std::size(kData);
+  const size_t kSideDataSize = std::size(kSideData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize,
@@ -100,7 +99,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_ZeroByteBuffer) {
 TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_KeyFrame) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
 
   scoped_refptr<DecoderBuffer> buffer(DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(&kData), kDataSize));
@@ -114,7 +113,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_KeyFrame) {
 TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EncryptedBuffer) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   const char kKeyId[] = "00112233445566778899aabbccddeeff";
   const char kIv[] = "0123456789abcdef";
 
@@ -153,7 +152,7 @@ TEST(MojoDecoderBufferConverterTest, ConvertDecoderBuffer_EncryptedBuffer) {
 TEST(MojoDecoderBufferConverterTest, Chunked) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -166,7 +165,7 @@ TEST(MojoDecoderBufferConverterTest, Chunked) {
 TEST(MojoDecoderBufferConverterTest, WriterSidePipeError) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -201,7 +200,7 @@ TEST(MojoDecoderBufferConverterTest, ConcurrentDecoderBuffers) {
 
   // Three buffers: normal, EOS, normal.
   const uint8_t kData[] = "Hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer1 =
       DecoderBuffer::CopyFrom(kData, kDataSize);
   scoped_refptr<DecoderBuffer> media_buffer2(DecoderBuffer::CreateEOSBuffer());
@@ -255,7 +254,7 @@ TEST(MojoDecoderBufferConverterTest, FlushAfterRead) {
   base::RunLoop run_loop;
 
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -276,7 +275,7 @@ TEST(MojoDecoderBufferConverterTest, FlushBeforeRead) {
   base::RunLoop run_loop;
 
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -304,7 +303,7 @@ TEST(MojoDecoderBufferConverterTest, FlushBeforeChunkedRead) {
   base::RunLoop run_loop;
 
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -333,7 +332,7 @@ TEST(MojoDecoderBufferConverterTest, FlushDuringChunkedRead) {
   base::RunLoop run_loop;
 
   const uint8_t kData[] = "Lorem ipsum dolor sit amet, consectetur cras amet";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   scoped_refptr<DecoderBuffer> media_buffer =
       DecoderBuffer::CopyFrom(kData, kDataSize);
 
@@ -369,7 +368,7 @@ TEST(MojoDecoderBufferConverterTest, FlushDuringConcurrentReads) {
 
   // Three buffers: normal, EOS, normal.
   const uint8_t kData[] = "Hello, world";
-  const size_t kDataSize = base::size(kData);
+  const size_t kDataSize = std::size(kData);
   auto media_buffer1 = DecoderBuffer::CopyFrom(kData, kDataSize);
   auto media_buffer2 = DecoderBuffer::CreateEOSBuffer();
   auto media_buffer3 = DecoderBuffer::CopyFrom(kData, kDataSize);
@@ -405,7 +404,7 @@ TEST(MojoDecoderBufferConverterTest, FlushDuringConcurrentReads) {
 TEST(MojoDecoderBufferConverterTest, WriterWithInvalidHandle) {
   base::test::SingleThreadTaskEnvironment task_environment;
   const uint8_t kData[] = "Hello, world";
-  auto media_buffer = DecoderBuffer::CopyFrom(kData, base::size(kData));
+  auto media_buffer = DecoderBuffer::CopyFrom(kData, std::size(kData));
 
   auto writer = std::make_unique<MojoDecoderBufferWriter>(
       mojo::ScopedDataPipeProducerHandle());
@@ -418,7 +417,7 @@ TEST(MojoDecoderBufferConverterTest, ReaderWithInvalidHandle) {
 
   // Write a real buffer for testing.
   const uint8_t kData[] = "Hello, world";
-  auto media_buffer = DecoderBuffer::CopyFrom(kData, base::size(kData));
+  auto media_buffer = DecoderBuffer::CopyFrom(kData, std::size(kData));
   MojoDecoderBufferConverter converter;
   auto mojo_buffer = converter.writer->WriteDecoderBuffer(media_buffer);
   DCHECK(mojo_buffer);

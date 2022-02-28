@@ -7,7 +7,6 @@
 #include <cstring>
 
 #include "base/big_endian.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 
 using base::BigEndianReader;
@@ -151,7 +150,7 @@ static bool ParseSOF(const uint8_t* buffer,
     return false;
   }
   if (!InRange(frame_header->num_components, 1,
-               base::size(frame_header->components))) {
+               std::size(frame_header->components))) {
     DLOG(ERROR) << "num_components="
                 << static_cast<int>(frame_header->num_components)
                 << " is not supported";
@@ -270,7 +269,7 @@ static bool ParseDHT(const uint8_t* buffer,
     size_t count = 0;
     if (!reader.ReadBytes(&table->code_length, sizeof(table->code_length)))
       return false;
-    for (size_t i = 0; i < base::size(table->code_length); i++)
+    for (size_t i = 0; i < std::size(table->code_length); i++)
       count += table->code_length[i];
 
     if (!InRange(count, 0, sizeof(table->code_value))) {

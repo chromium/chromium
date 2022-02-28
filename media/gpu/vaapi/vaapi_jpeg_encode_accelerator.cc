@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
@@ -319,12 +318,12 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     constexpr uint8_t kJpegSoiAndApp0Header[] = {
         0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
     };
-    if (encoded_size < base::size(kJpegSoiAndApp0Header)) {
+    if (encoded_size < std::size(kJpegSoiAndApp0Header)) {
       VLOGF(1) << "Unexpected JPEG data size received from encoder";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
-    for (size_t i = 0; i < base::size(kJpegSoiAndApp0Header); ++i) {
+    for (size_t i = 0; i < std::size(kJpegSoiAndApp0Header); ++i) {
       if (frame_content[i] != kJpegSoiAndApp0Header[i]) {
         VLOGF(1) << "Unexpected JPEG header received from encoder";
         notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
@@ -340,15 +339,15 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
         static_cast<uint8_t>((exif_buffer_size + 2) / 256),
         static_cast<uint8_t>((exif_buffer_size + 2) % 256),
     };
-    CHECK_GE(output_size, base::size(jpeg_soi_and_app1_header));
-    if (exif_buffer_size > output_size - base::size(jpeg_soi_and_app1_header)) {
+    CHECK_GE(output_size, std::size(jpeg_soi_and_app1_header));
+    if (exif_buffer_size > output_size - std::size(jpeg_soi_and_app1_header)) {
       VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
     memcpy(output_memory, jpeg_soi_and_app1_header,
-           base::size(jpeg_soi_and_app1_header));
-    memcpy(output_memory + base::size(jpeg_soi_and_app1_header), exif_buffer,
+           std::size(jpeg_soi_and_app1_header));
+    memcpy(output_memory + std::size(jpeg_soi_and_app1_header), exif_buffer,
            exif_buffer_size);
     encoded_size += output_offset;
   }

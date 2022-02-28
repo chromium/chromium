@@ -9,7 +9,6 @@
 
 #include <cstdlib>
 
-#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "media/base/data_buffer.h"
 #include "media/base/timestamp_constants.h"
@@ -337,7 +336,7 @@ TEST_F(SeekableBufferTest, GetTime) {
 
   scoped_refptr<DataBuffer> buffer = DataBuffer::CopyFrom(data_, kWriteSize);
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     buffer->set_timestamp(base::Microseconds(tests[i].first_time_useconds));
     buffer->set_duration(base::Microseconds(tests[i].duration_useconds));
     buffer_.Append(buffer.get());

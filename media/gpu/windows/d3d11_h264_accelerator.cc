@@ -565,7 +565,7 @@ bool D3D11H264Accelerator::SubmitSliceData() {
   }
 
   hr = video_context_->SubmitDecoderBuffers(video_decoder_.Get(),
-                                            base::size(buffers), buffers);
+                                            std::size(buffers), buffers);
   current_offset_ = 0;
   slice_info_.clear();
   bitstream_buffer_bytes_ = nullptr;

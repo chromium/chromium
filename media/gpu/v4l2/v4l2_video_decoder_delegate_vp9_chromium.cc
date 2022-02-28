@@ -266,7 +266,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Chromium::SubmitDecode(
   v4l2_frame_params.render_height_minus_1 = frame_hdr->render_height - 1;
 
   // Reference frames
-  for (size_t i = 0; i < base::size(frame_hdr->ref_frame_idx); i++) {
+  for (size_t i = 0; i < std::size(frame_hdr->ref_frame_idx); i++) {
     uint8_t idx = frame_hdr->ref_frame_idx[i];
     if (idx >= kVp9NumRefFrames) {
       VLOGF(1) << "Invalid reference frame index!";

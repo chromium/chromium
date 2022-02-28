@@ -22,7 +22,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -656,7 +655,7 @@ MidiManagerWin::PortManager::HandleMidiInCallback(HMIDIIN hmi,
         static_cast<uint8_t>((param1 >> 16) & 0xff);
     const uint8_t kData[] = {status_byte, first_data_byte, second_data_byte};
     const size_t len = GetMessageLength(status_byte);
-    DCHECK_LE(len, base::size(kData));
+    DCHECK_LE(len, std::size(kData));
     std::vector<uint8_t> data;
     data.assign(kData, kData + len);
     manager->PostReplyTask(base::BindOnce(

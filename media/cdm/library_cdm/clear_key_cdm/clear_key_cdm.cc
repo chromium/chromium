@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -846,7 +845,7 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
   }
   const uint8_t kDummyKeyId[] = {'d', 'u', 'm', 'm', 'y'};
   std::vector<cdm::KeyInformation> keys_vector = {
-      {kDummyKeyId, base::size(kDummyKeyId), key_status, 0}};
+      {kDummyKeyId, std::size(kDummyKeyId), key_status, 0}};
   cdm_host_proxy_->OnSessionKeysChange(last_session_id_.data(),
                                        last_session_id_.length(), false,
                                        keys_vector.data(), keys_vector.size());

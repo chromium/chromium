@@ -512,7 +512,7 @@ TEST_F(AV1DecoderTest, ConfigChange) {
   constexpr gfx::Size kRenderSizes[] = {{320, 240}, {480, 360}};
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;
-  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleStreams); ++i) {
     std::vector<scoped_refptr<DecoderBuffer>> buffers =
         ReadWebm(kSimpleStreams[i]);
     ASSERT_FALSE(buffers.empty());
@@ -611,7 +611,7 @@ TEST_F(AV1DecoderTest, ResetAndConfigChange) {
   std::vector<DecodeResult> expected;
   std::vector<DecodeResult> results;
 
-  for (size_t i = 0; i < base::size(kSimpleStreams); ++i) {
+  for (size_t i = 0; i < std::size(kSimpleStreams); ++i) {
     std::vector<scoped_refptr<DecoderBuffer>> buffers =
         ReadWebm(kSimpleStreams[i]);
     ASSERT_FALSE(buffers.empty());

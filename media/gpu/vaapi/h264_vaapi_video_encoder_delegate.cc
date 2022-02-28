@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bits.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
@@ -682,7 +681,7 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
       packed_sps_->AppendBits(4, current_sps_.bit_rate_scale);
       packed_sps_->AppendBits(4, current_sps_.cpb_size_scale);
       CHECK_LT(base::checked_cast<size_t>(current_sps_.cpb_cnt_minus1),
-               base::size(current_sps_.bit_rate_value_minus1));
+               std::size(current_sps_.bit_rate_value_minus1));
       for (int i = 0; i <= current_sps_.cpb_cnt_minus1; ++i) {
         packed_sps_->AppendUE(current_sps_.bit_rate_value_minus1[i]);
         packed_sps_->AppendUE(current_sps_.cpb_size_value_minus1[i]);

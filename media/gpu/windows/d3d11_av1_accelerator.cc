@@ -812,10 +812,10 @@ void D3D11AV1Accelerator::FillPicParams(
       pp->film_grain.scaling_points_cr[i][0] = fg.point_v_value[i];
       pp->film_grain.scaling_points_cr[i][1] = fg.point_v_scaling[i];
     }
-    for (size_t i = 0; i < base::size(fg.auto_regression_coeff_y); ++i) {
+    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_y); ++i) {
       pp->film_grain.ar_coeffs_y[i] = fg.auto_regression_coeff_y[i] + 128;
     }
-    for (size_t i = 0; i < base::size(fg.auto_regression_coeff_u); ++i) {
+    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_u); ++i) {
       pp->film_grain.ar_coeffs_cb[i] = fg.auto_regression_coeff_u[i] + 128;
       pp->film_grain.ar_coeffs_cr[i] = fg.auto_regression_coeff_v[i] + 128;
     }

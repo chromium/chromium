@@ -382,7 +382,7 @@ static const ElementIdInfo kSimpleTagIds[] = {
 };
 
 #define LIST_ELEMENT_INFO(id, level, id_info) \
-  { (id), (level), (id_info), base::size(id_info) }
+  { (id), (level), (id_info), std::size(id_info) }
 
 static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdCluster, 1, kClusterIds),
@@ -557,7 +557,7 @@ static ElementType FindIdType(int id,
 
 // Finds ListElementInfo for a specific ID.
 static const ListElementInfo* FindListInfo(int id) {
-  for (size_t i = 0; i < base::size(kListElementInfo); ++i) {
+  for (size_t i = 0; i < std::size(kListElementInfo); ++i) {
     if (id == kListElementInfo[i].id_)
       return &kListElementInfo[i];
   }
@@ -982,7 +982,7 @@ bool WebMListParser::OnListEnd() {
 bool WebMListParser::IsSiblingOrAncestor(int id_a, int id_b) const {
   if (id_a == kWebMIdCluster) {
     // kWebMIdCluster siblings.
-    for (size_t i = 0; i < base::size(kSegmentIds); i++) {
+    for (size_t i = 0; i < std::size(kSegmentIds); i++) {
       if (kSegmentIds[i].id_ == id_b)
         return true;
     }
