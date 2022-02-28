@@ -27,31 +27,30 @@ std::unique_ptr<PublicKey> TestKey() {
       test_data::kX962UncompressedPublicKey);
 }
 
-base::Time g_fake_now;
+static base::Time g_fake_now;
 
 TEST(MakeAuthenticatorDataTest, TestTimestampSignatureCounter) {
-  g_fake_now = base::Time::UnixEpoch();
+  ASSERT_TRUE(base::Time::FromUTCExploded({2106, 1, 0, 1}, &g_fake_now));
   base::subtle::ScopedTimeClockOverrides time_clock_overrides(
       []() { return g_fake_now; }, nullptr, nullptr);
+
   const std::string rp_id = "example.com";
   const std::vector<uint8_t> credential_id = {1, 2, 3, 4, 5};
   auto opt_attested_cred_data =
       MakeAttestedCredentialData(credential_id, TestKey());
   ASSERT_TRUE(opt_attested_cred_data);
-  // Epoch equals zero.
-  auto auth_data =
-      MakeAuthenticatorData(rp_id, std::move(opt_attested_cred_data));
-  EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x00, 0x00));
-  // Time counter increments in seconds.
-  g_fake_now += base::Seconds(1);
-  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
-  EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x00, 0x01));
-  g_fake_now += base::Seconds(1024);
-  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
-  EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x04, 0x01));
-  ASSERT_TRUE(base::Time::FromUTCExploded({2106, 1, 0, 1}, &g_fake_now));
-  auth_data = MakeAuthenticatorData(rp_id, absl::nullopt);
-  EXPECT_THAT(auth_data.counter(), ElementsAre(0xff, 0xce, 0xdd, 0x80));
+  for (auto version :
+       {CredentialMetadata::Version::kV0, CredentialMetadata::Version::kV1,
+        CredentialMetadata::Version::kV2}) {
+    auto auth_data = MakeAuthenticatorData(version, rp_id,
+                                           std::move(opt_attested_cred_data));
+    // The counter should be timestamp-based pre-V2, and then fixed at 0.
+    if (version < CredentialMetadata::Version::kV2) {
+      EXPECT_THAT(auth_data.counter(), ElementsAre(0xff, 0xce, 0xdd, 0x80));
+    } else {
+      EXPECT_THAT(auth_data.counter(), ElementsAre(0x00, 0x00, 0x00, 0x00));
+    }
+  }
 }
 
 }  // namespace

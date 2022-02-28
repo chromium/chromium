@@ -18,6 +18,7 @@
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/mac/credential_metadata.h"
 #include "device/fido/p256_public_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,6 +39,7 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
 // which may be |absl::nullopt| in GetAssertion operations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 AuthenticatorData MakeAuthenticatorData(
+    CredentialMetadata::Version version,
     const std::string& rp_id,
     absl::optional<AttestedCredentialData> attested_credential_data);
 

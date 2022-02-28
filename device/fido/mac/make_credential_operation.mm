@@ -131,8 +131,9 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
                              absl::nullopt);
     return;
   }
-  AuthenticatorData authenticator_data = MakeAuthenticatorData(
-      request_.rp.id, std::move(*attested_credential_data));
+  AuthenticatorData authenticator_data =
+      MakeAuthenticatorData(CredentialMetadata::kCurrentVersion, request_.rp.id,
+                            std::move(*attested_credential_data));
   absl::optional<std::vector<uint8_t>> signature =
       GenerateSignature(authenticator_data, request_.client_data_hash,
                         credential->first.private_key);

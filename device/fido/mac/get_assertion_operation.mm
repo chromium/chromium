@@ -131,8 +131,9 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential) {
     return absl::nullopt;
   }
 
-  AuthenticatorData authenticator_data = MakeAuthenticatorData(
-      request_.rp_id, /*attested_credential_data=*/absl::nullopt);
+  AuthenticatorData authenticator_data =
+      MakeAuthenticatorData(metadata->version, request_.rp_id,
+                            /*attested_credential_data=*/absl::nullopt);
   absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
       authenticator_data, request_.client_data_hash, credential.private_key);
   if (!signature) {
