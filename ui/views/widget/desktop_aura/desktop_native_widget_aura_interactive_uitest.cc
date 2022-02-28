@@ -96,4 +96,64 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   widget2->CloseNow();
 }
 
+// Tests to make sure that a widget that shows an active child has activation
+// correctly propagate to the child's content window. This also tests to make
+// sure that when this child window is closed, and the desktop widget's window
+// tree host remains active, the widget's content window has its activation
+// state restored. This tests against a regression where the desktop widget
+// would not receive activation when it's child bubbles were closed (see
+// crbug.com/1294404).
+TEST_F(DesktopNativeWidgetAuraTest,
+       DesktopWidgetsRegainFocusWhenChildWidgetClosed) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = GetContext();
+  params.native_widget = new DesktopNativeWidgetAura(widget.get());
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(std::move(params));
+
+  auto widget_child = std::make_unique<Widget>();
+  Widget::InitParams params_child(Widget::InitParams::TYPE_BUBBLE);
+  params_child.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params_child.parent = widget->GetNativeView();
+  params_child.native_widget =
+      CreatePlatformNativeWidgetImpl(widget_child.get(), kDefault, nullptr);
+  widget_child->Init(std::move(params_child));
+  widget_child->widget_delegate()->SetCanActivate(true);
+
+  auto* activation_client =
+      wm::GetActivationClient(widget->GetNativeView()->GetRootWindow());
+  auto* activation_client_child =
+      wm::GetActivationClient(widget_child->GetNativeView()->GetRootWindow());
+
+  // All widgets belonging to the same tree host should share an activation
+  // client.
+  ASSERT_EQ(activation_client, activation_client_child);
+
+  widget->Show();
+  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
+  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(widget_child->IsActive());
+  EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());
+
+  widget_child->Show();
+  views::test::WidgetActivationWaiter(widget.get(), false).Wait();
+  views::test::WidgetActivationWaiter(widget_child.get(), true).Wait();
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_TRUE(widget_child->IsActive());
+  EXPECT_EQ(activation_client->GetActiveWindow(),
+            widget_child->GetNativeView());
+
+  widget_child->Close();
+  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
+  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(widget_child->IsActive());
+  EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());
+
+  widget_child->CloseNow();
+  widget->CloseNow();
+}
+
 }  // namespace views::test

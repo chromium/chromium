@@ -321,7 +321,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // change event in `HandleActivationChanged()`.This is needed as the widget
   // may not have propagated its new activation state to its delegate before the
   // activation client decides which window to activate next.
-  bool should_activate_ = true;
+  absl::optional<bool> should_activate_;
 
   gfx::NativeCursor cursor_;
   // We must manually reference count the number of users of |cursor_manager_|
