@@ -26,8 +26,7 @@ def do_latest():
         return
     maven_metadata_url = '{}/{}/{}/maven-metadata.xml'.format(
         _REPO_URL, _GROUP_NAME, _MODULE_NAME)
-    metadata = urllib.request.urlopen(maven_metadata_url).read().decode(
-        'utf-8')
+    metadata = urllib.request.urlopen(maven_metadata_url).read().decode('utf-8')
     # Do not parse xml with the python included parser since it is susceptible
     # to maliciously crafted xmls. Only use regular expression parsing to be
     # safe. RE should be enough to handle what we need to extract.
