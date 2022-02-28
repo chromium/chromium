@@ -1385,6 +1385,12 @@ component("net") {
       "base/network_interfaces_getifaddrs.cc",
       "base/network_interfaces_getifaddrs.h",
     ]
+    if (is_android) {
+      sources += [
+        "base/network_interfaces_getifaddrs_android.cc",
+        "base/network_interfaces_getifaddrs_android.h",
+      ]
+    }
   }
 
   if (chrome_root_store_supported) {
@@ -4705,8 +4711,8 @@ test("net_unittests") {
     ]
   }
 
-  # Use getifaddrs() on POSIX platforms, except Linux and Android.
-  if (is_posix && !is_linux && !is_chromeos && !is_android) {
+  # Use getifaddrs() on POSIX platforms, except Linux.
+  if (is_posix && !is_linux && !is_chromeos) {
     sources += [ "base/network_interfaces_getifaddrs_unittest.cc" ]
   }
 
