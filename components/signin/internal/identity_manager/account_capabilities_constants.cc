@@ -9,6 +9,3 @@ const char kIsSubjectToParentalControlsCapabilityName[] =
 
 const char kCanOfferExtendedChromeSyncPromosCapabilityName[] =
     "accountcapabilities/gi2tklldmfya";
-
-const char kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath[] =
-    "accountcapabilities.can_offer_extended_chrome_sync_promos";

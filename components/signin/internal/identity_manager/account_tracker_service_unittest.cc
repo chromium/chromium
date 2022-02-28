@@ -1779,3 +1779,60 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
       tester.GetAllSamples("Signin.AccountTracker.CountOfLoadedAccounts"),
       testing::ElementsAre(base::Bucket(1, 1)));
 }
+
+TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(switches::kAccountIdMigration);
+#endif
+  base::ScopedTempDir scoped_user_data_dir;
+  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
+
+  // Create a tracker and add an account. This should cause the account to be
+  // saved to persistence.
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+
+  // The capability is unknown, and none of the capability-related keys should
+  // be set.
+  EXPECT_EQ(signin::Tribool::kUnknown,
+            account_tracker()
+                ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
+                .capabilities.can_offer_extended_chrome_sync_promos());
+  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ASSERT_FALSE(update->GetListDeprecated().empty());
+  base::Value& dict = update->GetListDeprecated()[0];
+  ASSERT_TRUE(dict.is_dict());
+  const char kDeprecatedCapabilityKey[] =
+      "accountcapabilities.can_offer_extended_chrome_sync_promos";
+  const char kNewCapabilityKey[] =
+      "accountcapabilities.accountcapabilities/gi2tklldmfya";
+  // The deprecated key is not set.
+  EXPECT_FALSE(dict.FindIntPath(kDeprecatedCapabilityKey));
+  EXPECT_TRUE(dict.FindIntPath(kNewCapabilityKey));
+
+  // Set the capability using the deprecated key, and reload the account.
+  dict.SetIntPath(kDeprecatedCapabilityKey, 1);
+  dict.RemovePath(kNewCapabilityKey);
+  ClearAccountTrackerEvents();
+  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
+  EXPECT_TRUE(CheckAccountTrackerEvents(
+      {TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyAlpha),
+                     AccountKeyToGaiaId(kAccountKeyAlpha),
+                     AccountKeyToEmail(kAccountKeyAlpha))}));
+
+  // Check that the migration happened.
+  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
+  ASSERT_EQ(1u, infos.size());
+  CheckAccountDetails(kAccountKeyAlpha, infos[0]);
+  // The deprecated key has been read.
+  EXPECT_EQ(signin::Tribool::kTrue,
+            infos[0].capabilities.can_offer_extended_chrome_sync_promos());
+  // The deprecated key has been removed.
+  EXPECT_FALSE(dict.FindIntPath(kDeprecatedCapabilityKey));
+  // The new key has been written.
+  absl::optional<int> new_key = dict.FindIntPath(kNewCapabilityKey);
+  ASSERT_TRUE(new_key.has_value());
+  EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
+}

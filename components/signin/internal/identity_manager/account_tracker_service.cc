@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -59,6 +60,12 @@ const char kAdvancedProtectionAccountStatusPath[] =
 // This key is deprecated since 2021/07 and should be removed after migration.
 // It was replaced by kAccountChildAttributePath.
 const char kDeprecatedChildStatusPath[] = "is_child_account";
+
+// This key is deprecated since 2022/02 and should be removed after migration.
+// It was replaced by GetCapabilityPrefPath(capability_name) method that derives
+// pref name based on the Capabilities service key.
+const char kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath[] =
+    "accountcapabilities.can_offer_extended_chrome_sync_promos";
 
 // Account folders used for storing account related data at disk.
 const base::FilePath::CharType kAccountsFolder[] =
@@ -108,18 +115,22 @@ void RemoveImage(const base::FilePath& image_path) {
     LOG(ERROR) << "Failed to delete image.";
 }
 
-void SetAccountCapabilityPath(base::Value* value,
-                              base::StringPiece path,
-                              signin::Tribool state) {
-  value->SetIntPath(path, static_cast<int>(state));
+// Converts the capability service name into a nested Chrome pref path.
+std::string GetCapabilityPrefPath(const std::string& capability_name) {
+  return base::StrCat({"accountcapabilities.", capability_name});
 }
 
-signin::Tribool FindAccountCapabilityPath(const base::Value& value,
-                                          base::StringPiece path) {
-  absl::optional<int> capability = value.FindIntPath(path);
-  if (!capability.has_value())
+void SetAccountCapabilityState(base::Value* value,
+                               const std::string& capability_name,
+                               signin::Tribool state) {
+  value->SetIntPath(GetCapabilityPrefPath(capability_name),
+                    static_cast<int>(state));
+}
+
+signin::Tribool ParseTribool(absl::optional<int> int_value) {
+  if (!int_value.has_value())
     return signin::Tribool::kUnknown;
-  switch (capability.value()) {
+  switch (int_value.value()) {
     case static_cast<int>(signin::Tribool::kTrue):
       return signin::Tribool::kTrue;
     case static_cast<int>(signin::Tribool::kFalse):
@@ -127,10 +138,16 @@ signin::Tribool FindAccountCapabilityPath(const base::Value& value,
     case static_cast<int>(signin::Tribool::kUnknown):
       return signin::Tribool::kUnknown;
     default:
-      LOG(ERROR) << "Unexpected capability value (" << capability.value()
-                 << ") for path: " << path;
+      LOG(ERROR) << "Unexpected tribool value (" << int_value.value() << ")";
       return signin::Tribool::kUnknown;
   }
+}
+
+signin::Tribool FindAccountCapabilityState(const base::Value& value,
+                                           const std::string& name) {
+  absl::optional<int> capability =
+      value.FindIntPath(GetCapabilityPrefPath(name));
+  return ParseTribool(capability);
 }
 
 void GetString(const base::Value& dict,
@@ -599,12 +616,13 @@ void AccountTrackerService::LoadFromPrefs() {
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
           base::Value* update_dict = &update->GetListDeprecated()[i];
           DCHECK(update_dict->is_dict());
-          SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
-                                   account_info.is_child_account);
+          update_dict->SetIntPath(
+              kAccountChildAttributePath,
+              static_cast<int>(account_info.is_child_account));
           update_dict->RemoveKey(kDeprecatedChildStatusPath);
         } else {
           account_info.is_child_account =
-              FindAccountCapabilityPath(dict, kAccountChildAttributePath);
+              ParseTribool(dict.FindIntPath(kAccountChildAttributePath));
         }
 
         absl::optional<bool> is_under_advanced_protection =
@@ -614,8 +632,22 @@ void AccountTrackerService::LoadFromPrefs() {
               is_under_advanced_protection.value();
         }
 
-        switch (FindAccountCapabilityPath(
-            dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath)) {
+        if (absl::optional<int> can_offer_extended_chrome_sync_promos =
+                dict.FindIntPath(
+                    kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath)) {
+          // Migrate to Capability names based pref paths.
+          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+          base::Value* update_dict = &update->GetListDeprecated()[i];
+          DCHECK(update_dict->is_dict());
+          SetAccountCapabilityState(
+              update_dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
+              ParseTribool(can_offer_extended_chrome_sync_promos));
+          update_dict->RemovePath(
+              kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
+        }
+
+        switch (FindAccountCapabilityState(
+            dict, kCanOfferExtendedChromeSyncPromosCapabilityName)) {
           case signin::Tribool::kUnknown:
             break;
           case signin::Tribool::kTrue:
@@ -692,15 +724,15 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   dict->SetString(kAccountGivenNamePath, account_info.given_name);
   dict->SetString(kAccountLocalePath, account_info.locale);
   dict->SetString(kAccountPictureURLPath, account_info.picture_url);
-  SetAccountCapabilityPath(dict, kAccountChildAttributePath,
-                           account_info.is_child_account);
+  dict->SetIntPath(kAccountChildAttributePath,
+                   static_cast<int>(account_info.is_child_account));
   dict->SetBoolean(kAdvancedProtectionAccountStatusPath,
                    account_info.is_under_advanced_protection);
   // |kLastDownloadedImageURLWithSizePath| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizePath| matches the picture on disk.
-  SetAccountCapabilityPath(
-      dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath,
+  SetAccountCapabilityState(
+      dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
       account_info.capabilities.can_offer_extended_chrome_sync_promos());
 }
 
