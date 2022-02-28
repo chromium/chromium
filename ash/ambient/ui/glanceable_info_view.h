@@ -29,7 +29,7 @@ class GlanceableInfoView : public views::View,
  public:
   METADATA_HEADER(GlanceableInfoView);
 
-  explicit GlanceableInfoView(AmbientViewDelegate* delegate);
+  GlanceableInfoView(AmbientViewDelegate* delegate, int time_font_size_dip);
   GlanceableInfoView(const GlanceableInfoView&) = delete;
   GlanceableInfoView& operator=(const GlanceableInfoView&) = delete;
   ~GlanceableInfoView() override;
@@ -56,6 +56,8 @@ class GlanceableInfoView : public views::View,
 
   // Owned by |AmbientController|.
   AmbientViewDelegate* const delegate_ = nullptr;
+
+  const int time_font_size_dip_;
 
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       scoped_backend_model_observer_{this};

@@ -16,11 +16,13 @@
 #include "ash/ambient/ui/ambient_animation_resizer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/ui/glanceable_info_view.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/skottie_color_map.h"
@@ -29,8 +31,10 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/lottie/animation.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -48,6 +52,12 @@ constexpr JitterCalculator::Config kAnimationJitterConfig = {
     /*y_max_translation=*/10};
 
 constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
+
+// Amount of x and y padding there should be from the top-left of the
+// AmbientAnimationView to the top-left of the weather/time content views.
+constexpr int kWeatherTimeBorderPaddingDip = 28;
+
+constexpr int kTimeFontSizeDip = 32;
 
 // TODO(esum): Record throughput metrics to track animation performance in the
 // field. We can use ash::metrics_util::CalculateSmoothness().
@@ -77,23 +87,35 @@ int GetPaddingForAnimationJitter() {
                    abs(kAnimationJitterConfig.y_max_translation)});
 }
 
+// The border serves as padding between the GlanceableInfoView and its
+// parent view's bounds.
+std::unique_ptr<views::Border> CreateGlanceableInfoBorder(
+    const gfx::Vector2d& jitter = gfx::Vector2d()) {
+  int top_padding = kWeatherTimeBorderPaddingDip + jitter.y();
+  int left_padding = kWeatherTimeBorderPaddingDip + jitter.x();
+  DCHECK_GE(top_padding, 0);
+  DCHECK_GE(left_padding, 0);
+  return views::CreateEmptyBorder(top_padding, left_padding,
+                                  /*bottom=*/0, /*right=*/0);
+}
+
 }  // namespace
 
 AmbientAnimationView::AmbientAnimationView(
-    const AmbientBackendModel* model,
-    AmbientViewEventHandler* event_handler,
+    AmbientViewDelegate* view_delegate,
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources)
-    : event_handler_(event_handler),
+    : event_handler_(view_delegate->GetAmbientViewEventHandler()),
       static_resources_(std::move(static_resources)),
-      animation_photo_provider_(static_resources_.get(), model),
+      animation_photo_provider_(static_resources_.get(),
+                                view_delegate->GetAmbientBackendModel()),
       animation_jitter_calculator_(kAnimationJitterConfig) {
   SetID(AmbientViewID::kAmbientAnimationView);
-  Init();
+  Init(view_delegate);
 }
 
 AmbientAnimationView::~AmbientAnimationView() = default;
 
-void AmbientAnimationView::Init() {
+void AmbientAnimationView::Init(AmbientViewDelegate* view_delegate) {
   SetUseDefaultFillLayout(true);
   animated_image_view_ =
       AddChildView(std::make_unique<views::AnimatedImageView>());
@@ -110,6 +132,57 @@ void AmbientAnimationView::Init() {
   animation->SetAnimationObserver(this);
   animated_image_view_->SetAnimatedImage(std::move(animation));
   animated_image_view_observer_.Observe(animated_image_view_);
+
+  // The set of weather/time views embedded within GlanceableInfoView should
+  // appear in the top-left of the the AmbientAnimationView's boundaries with
+  // |kWeatherTimeBorderPaddingDip| from the top-left corner. However, the
+  // weather/time components must be bottom-aligned like so:
+  // +-------------------------------------------------------------------------+
+  // |                                                                         |
+  // |  +----+     +--+                                                        |
+  // |  |    |+---+|  |                                                        |
+  // |  |    ||   ||  |                                                        |
+  // |  +----++---++--+                                                        |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // +-------------------------------------------------------------------------+
+  // As opposed to top-aligned :
+  // +-------------------------------------------------------------------------+
+  // |                                                                         |
+  // |  +----++---++--+                                                        |
+  // |  |    ||   ||  |                                                        |
+  // |  |    |+---+|  |                                                        |
+  // |  +----+     +--+                                                        |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // |                                                                         |
+  // +-------------------------------------------------------------------------+
+  //
+  // To accomplish this, a "container" view is first created that is top-aligned
+  // and has no actual content. GlanceableInfoView is then added as a child of
+  // the container view and bottom-aligns its contents within the container.
+  glanceable_info_container_ =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  glanceable_info_container_->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  glanceable_info_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  glanceable_info_container_->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder());
+  glanceable_info_container_->AddChildView(
+      std::make_unique<GlanceableInfoView>(view_delegate, kTimeFontSizeDip));
 }
 
 void AmbientAnimationView::AnimationWillStartPlaying(
@@ -123,9 +196,13 @@ void AmbientAnimationView::AnimationCycleEnded(
   event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_jitter_timestamp_ >= kAnimationJitterPeriod) {
-    gfx::Vector2d jitter = animation_jitter_calculator_.Calculate();
-    DVLOG(4) << "Applying jitter to animation: " << jitter.ToString();
-    animated_image_view_->SetAdditionalTranslation(std::move(jitter));
+    // AnimationCycleEnded() may be called while a ui "paint" operation is still
+    // in progress. Changing translation properties of the UI while a paint
+    // operation is in progress results in a fatal error deep in the UI stack.
+    // Thus, post a task to apply jitter rather than invoking it synchronously.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&AmbientAnimationView::ApplyJitter,
+                                  weak_factory_.GetWeakPtr()));
     last_jitter_timestamp_ = now;
   }
 }
@@ -172,6 +249,15 @@ void AmbientAnimationView::RestartThroughputTracking() {
   throughput_tracker_ = compositor->RequestNewThroughputTracker();
   throughput_tracker_->Start(base::BindOnce(
       &LogCompositorThroughput, /*logging_start_time=*/base::TimeTicks::Now()));
+}
+
+void AmbientAnimationView::ApplyJitter() {
+  gfx::Vector2d jitter = animation_jitter_calculator_.Calculate();
+  DVLOG(4) << "Applying jitter to animation: " << jitter.ToString();
+  // Sharing the same jitter between the animation and glanceable info keeps the
+  // spacing between the weather/time and animation features consistent.
+  animated_image_view_->SetAdditionalTranslation(jitter);
+  glanceable_info_container_->SetBorder(CreateGlanceableInfoBorder(jitter));
 }
 
 BEGIN_METADATA(AmbientAnimationView, views::View)

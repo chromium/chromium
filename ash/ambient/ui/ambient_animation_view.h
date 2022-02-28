@@ -10,6 +10,7 @@
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
 #include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -21,12 +22,13 @@
 
 namespace views {
 class AnimatedImageView;
+class BoxLayoutView;
 }  // namespace views
 
 namespace ash {
 
 class AmbientAnimationStaticResources;
-class AmbientBackendModel;
+class AmbientViewDelegate;
 class AmbientViewEventHandler;
 
 class ASH_EXPORT AmbientAnimationView : public views::View,
@@ -36,15 +38,14 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   METADATA_HEADER(AmbientAnimationView);
 
   AmbientAnimationView(
-      const AmbientBackendModel* model,
-      AmbientViewEventHandler* event_handler,
+      AmbientViewDelegate* view_delegate,
       std::unique_ptr<const AmbientAnimationStaticResources> static_resources);
   AmbientAnimationView(const AmbientAnimationView&) = delete;
   AmbientAnimationView& operator=(AmbientAnimationView&) = delete;
   ~AmbientAnimationView() override;
 
  private:
-  void Init();
+  void Init(AmbientViewDelegate* view_delegate);
 
   void AnimationWillStartPlaying(const lottie::Animation* animation) override;
   void AnimationCycleEnded(const lottie::Animation* animation) override;
@@ -53,6 +54,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   void StartThroughputTracking();
   void RestartThroughputTracking();
+  void ApplyJitter();
 
   AmbientViewEventHandler* const event_handler_;
 
@@ -61,6 +63,7 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
   AmbientAnimationPhotoProvider animation_photo_provider_;
 
   views::AnimatedImageView* animated_image_view_ = nullptr;
+  views::BoxLayoutView* glanceable_info_container_ = nullptr;
   base::ScopedObservation<View, ViewObserver> animated_image_view_observer_{
       this};
 
@@ -69,6 +72,8 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   JitterCalculator animation_jitter_calculator_;
   base::TimeTicks last_jitter_timestamp_;
+
+  base::WeakPtrFactory<AmbientAnimationView> weak_factory_{this};
 };
 
 }  // namespace ash

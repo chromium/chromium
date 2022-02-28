@@ -48,8 +48,12 @@ constexpr int kDefaultFontSizeDip = 64;
 constexpr int kWeatherTemperatureFontSizeDip = 32;
 
 // Returns the fontlist used for the time text.
-const gfx::FontList& GetTimeFontList() {
-  return ambient::util::GetDefaultFontlist();
+gfx::FontList GetTimeFontList(int font_size_dip) {
+  int font_size_delta = font_size_dip - kDefaultFontSizeDip;
+  return font_size_delta == 0
+             ? ambient::util::GetDefaultFontlist()
+             : ambient::util::GetDefaultFontlist().DeriveWithSizeDelta(
+                   font_size_delta);
 }
 
 // Returns the fontlist used for the temperature text.
@@ -60,8 +64,8 @@ gfx::FontList GetWeatherTemperatureFontList() {
       temperature_font_size_delta);
 }
 
-int GetTimeFontDescent() {
-  return GetTimeFontList().GetHeight() - GetTimeFontList().GetBaseline();
+int GetFontDescent(const gfx::FontList& font_list) {
+  return font_list.GetHeight() - font_list.GetBaseline();
 }
 
 int GetTemperatureFontDescent() {
@@ -71,9 +75,11 @@ int GetTemperatureFontDescent() {
 
 }  // namespace
 
-GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate)
-    : delegate_(delegate) {
+GlanceableInfoView::GlanceableInfoView(AmbientViewDelegate* delegate,
+                                       int time_font_size_dip)
+    : delegate_(delegate), time_font_size_dip_(time_font_size_dip) {
   DCHECK(delegate);
+  DCHECK_GT(time_font_size_dip_, 0);
   SetID(AmbientViewID::kAmbientGlanceableInfoView);
   auto* backend_model = delegate_->GetAmbientBackendModel();
   scoped_backend_model_observer_.Observe(backend_model);
@@ -148,7 +154,8 @@ void GlanceableInfoView::InitLayout() {
   time_view_ = AddChildView(std::make_unique<tray::TimeView>(
       ash::tray::TimeView::ClockLayout::HORIZONTAL_CLOCK,
       Shell::Get()->system_tray_model()->clock()));
-  time_view_->SetTextFont(GetTimeFontList());
+  gfx::FontList time_font_list = GetTimeFontList(time_font_size_dip_);
+  time_view_->SetTextFont(time_font_list);
   time_view_->SetTextColor(
       ambient::util::GetContentLayerColor(
           AshColorProvider::ContentLayerType::kTextColorPrimary),
@@ -166,7 +173,8 @@ void GlanceableInfoView::InitLayout() {
   constexpr int kIconInternalPaddingDip = 4;
   weather_condition_icon_->SetBorder(views::CreateEmptyBorder(
       0, 0,
-      GetTimeFontDescent() - shadow_insets.bottom() - kIconInternalPaddingDip,
+      GetFontDescent(time_font_list) - shadow_insets.bottom() -
+          kIconInternalPaddingDip,
       kSpacingBetweenWeatherIconAndTempDip + shadow_insets.left()));
 
   // Inits the temp view.
@@ -176,7 +184,7 @@ void GlanceableInfoView::InitLayout() {
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   temperature_->SetFontList(GetWeatherTemperatureFontList());
   temperature_->SetBorder(views::CreateEmptyBorder(
-      0, 0, GetTimeFontDescent() - GetTemperatureFontDescent(), 0));
+      0, 0, GetFontDescent(time_font_list) - GetTemperatureFontDescent(), 0));
 }
 
 BEGIN_METADATA(GlanceableInfoView, views::View)

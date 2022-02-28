@@ -42,9 +42,7 @@ AmbientContainerView::AmbientContainerView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   if (animation_static_resources) {
     AddChildView(std::make_unique<AmbientAnimationView>(
-        delegate->GetAmbientBackendModel(),
-        delegate->GetAmbientViewEventHandler(),
-        std::move(animation_static_resources)));
+        delegate, std::move(animation_static_resources)));
   } else {
     AddChildView(std::make_unique<PhotoView>(delegate));
   }

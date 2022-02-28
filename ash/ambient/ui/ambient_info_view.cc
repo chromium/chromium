@@ -28,6 +28,7 @@ constexpr int kSpacingDip = 8;
 // Typography
 constexpr int kDefaultFontSizeDip = 64;
 constexpr int kDetailsFontSizeDip = 13;
+constexpr int kTimeFontSizeDip = 64;
 
 views::Label* AddLabel(views::View* parent) {
   auto* label = parent->AddChildView(std::make_unique<views::Label>());
@@ -95,8 +96,8 @@ void AmbientInfoView::InitLayout() {
   layout->set_between_child_spacing(kSpacingDip + shadow_insets.top() +
                                     shadow_insets.bottom());
 
-  glanceable_info_view_ =
-      AddChildView(std::make_unique<GlanceableInfoView>(delegate_));
+  glanceable_info_view_ = AddChildView(
+      std::make_unique<GlanceableInfoView>(delegate_, kTimeFontSizeDip));
   glanceable_info_view_->SetPaintToLayer();
 
   details_label_ = AddLabel(this);

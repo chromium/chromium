@@ -8,9 +8,11 @@
 
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
 #include "ash/ambient/test/mock_ambient_view_event_handler.h"
+#include "ash/ambient/ui/ambient_view_delegate.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -26,7 +28,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -55,14 +56,13 @@ const cc::DrawSkottieOp* FindSkottieOp(
 
 }  // namespace
 
-class AmbientAnimationViewTest : public views::ViewsTestBase {
+class AmbientAnimationViewTest : public AmbientAshTestBase,
+                                 public AmbientViewDelegate {
  protected:
-  AmbientAnimationViewTest()
-      : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  AmbientAnimationViewTest() {}
 
   void SetUp() override {
-    ViewsTestBase::SetUp();
+    AmbientAshTestBase::SetUp();
 
     auto static_resources =
         std::make_unique<FakeAmbientAnimationStaticResources>();
@@ -81,9 +81,20 @@ class AmbientAnimationViewTest : public views::ViewsTestBase {
 
     widget_ = CreateTestWidget();
     view_ = widget_->GetRootView()->AddChildView(
-        std::make_unique<AmbientAnimationView>(model_.get(), &event_handler_,
+        std::make_unique<AmbientAnimationView>(this,
                                                std::move(static_resources)));
   }
+
+  // AmbientViewDelegate implementation:
+  void AddObserver(AmbientViewDelegateObserver* observer) override {}
+  void RemoveObserver(AmbientViewDelegateObserver* observer) override {}
+  AmbientBackendModel* GetAmbientBackendModel() override {
+    return model_.get();
+  }
+  AmbientViewEventHandler* GetAmbientViewEventHandler() override {
+    return &event_handler_;
+  }
+  void OnPhotoTransitionAnimationCompleted() override {}
 
   MockAmbientViewEventHandler event_handler_;
   std::unique_ptr<AmbientBackendModel> model_;
@@ -117,23 +128,6 @@ TEST_F(AmbientAnimationViewTest,
   EXPECT_CALL(event_handler_,
               OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded));
   task_environment()->FastForwardBy(cc::kLottieDataWith2AssetsDuration);
-  Mock::VerifyAndClearExpectations(&event_handler_);
-}
-
-TEST_F(AmbientAnimationViewTest, WaitsForViewBoundariesBeforeRendering) {
-  gfx::Rect widget_bounds = widget_->GetWindowBoundsInScreen();
-
-  widget_->Show();
-
-  EXPECT_CALL(event_handler_, OnMarkerHit(_)).Times(0);
-  task_environment()->FastForwardBy(cc::kLottieDataWith2AssetsDuration * 0.1);
-  Mock::VerifyAndClearExpectations(&event_handler_);
-
-  view_->SetBoundsRect(widget_bounds);
-
-  EXPECT_CALL(event_handler_,
-              OnMarkerHit(AmbientPhotoConfig::Marker::kUiStartRendering));
-  task_environment()->FastForwardBy(cc::kLottieDataWith2AssetsDuration * 0.1);
   Mock::VerifyAndClearExpectations(&event_handler_);
 }
 
