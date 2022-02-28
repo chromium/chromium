@@ -2137,7 +2137,6 @@ CommandHandler.COMMANDS_['zip-selection'] = new class extends FilesCommand {
     const selection = fileManager.getSelection();
 
     // Hide ZIP selection for single ZIP file selected.
-    // TODO(crbug.com/953256) Add test for this.
     if (util.isExtractArchiveEnabled()) {
       if (selection.entries.length === 1 &&
           FileType.getExtension(selection.entries[0]) === '.zip') {

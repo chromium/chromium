@@ -311,6 +311,7 @@ export async function testExtractAllCommand(done) {
   // Mock `FileManager`.
   const fileManager = {
     directoryModel: {
+      isOnNative: () => true,
       isReadOnly: () => false,
     },
     getCurrentDirectoryEntry: () => folderEntry,
@@ -331,12 +332,26 @@ export async function testExtractAllCommand(done) {
   assertTrue(event.canExecute);
   assertFalse(event.command.hidden);
 
+  // Check: `zip-selection` command exists.
+  const zipCommand = CommandHandler.getCommand('zip-selection');
+  assertNotEquals(command, undefined);
+
+  // Check: ZIP canExecute is false and command hidden with a single ZIP file.
+  zipCommand.canExecute(event, fileManager);
+  assertFalse(event.canExecute);
+  assertTrue(event.command.hidden);
+
   // Check: canExecute is false and command hidden for multiple selection.
   currentSelection.entries = [zipFileEntry, textFileEntry];
   currentSelection.totalCount = 2;
   command.canExecute(event, fileManager);
   assertFalse(event.canExecute);
   assertTrue(event.command.hidden);
+
+  // Check: ZIP canExecute is true and command visible for multiple selection.
+  zipCommand.canExecute(event, fileManager);
+  assertTrue(event.canExecute);
+  assertFalse(event.command.hidden);
 
   done();
 }
