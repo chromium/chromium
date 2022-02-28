@@ -35,11 +35,6 @@ void CloneIntentFilters(
   }
 }
 
-absl::optional<apps::IconKey> CloneIconKey(const apps::IconKey& icon_key) {
-  return apps::IconKey(icon_key.timeline, icon_key.resource_id,
-                       icon_key.icon_effects);
-}
-
 absl::optional<apps::RunOnOsLogin> CloneRunOnOsLogin(
     const apps::RunOnOsLogin& login_data) {
   return apps::RunOnOsLogin(login_data.login_mode, login_data.is_managed);
@@ -197,7 +192,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   }
 
   if (delta->icon_key.has_value()) {
-    state->icon_key = CloneIconKey(delta->icon_key.value());
+    state->icon_key = std::move(*delta->icon_key->Clone());
   }
 
   SET_OPTIONAL_VALUE(last_launch_time);
@@ -472,10 +467,10 @@ apps::mojom::IconKeyPtr AppUpdate::IconKey() const {
 
 absl::optional<apps::IconKey> AppUpdate::GetIconKey() const {
   if (delta_ && delta_->icon_key.has_value()) {
-    return CloneIconKey(delta_->icon_key.value());
+    return absl::optional<apps::IconKey>(std::move(*delta_->icon_key->Clone()));
   }
   if (state_ && state_->icon_key.has_value()) {
-    return CloneIconKey(state_->icon_key.value());
+    return absl::optional<apps::IconKey>(std::move(*state_->icon_key->Clone()));
   }
   return absl::nullopt;
 }

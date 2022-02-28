@@ -24,6 +24,10 @@ bool IconKey::operator!=(const IconKey& other) const {
   return !(*this == other);
 }
 
+IconKeyPtr IconKey::Clone() const {
+  return std::make_unique<IconKey>(timeline, resource_id, icon_effects);
+}
+
 constexpr uint64_t IconKey::kDoesNotChangeOverTime = 0;
 const int32_t IconKey::kInvalidResourceId = 0;
 

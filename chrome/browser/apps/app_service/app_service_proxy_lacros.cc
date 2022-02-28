@@ -85,10 +85,8 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     std::move(callback).Run(std::make_unique<IconValue>());
   } else {
     service->GetRemote<crosapi::mojom::AppServiceProxy>()->LoadIcon(
-        app_id,
-        std::make_unique<IconKey>(icon_key.timeline, icon_key.resource_id,
-                                  icon_key.icon_effects),
-        icon_type, size_hint_in_dip, std::move(callback));
+        app_id, icon_key.Clone(), icon_type, size_hint_in_dip,
+        std::move(callback));
   }
   return nullptr;
 }
