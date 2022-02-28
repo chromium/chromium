@@ -161,7 +161,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
                            ->GetMainFrame()
                            ->GetLastCommittedOrigin();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
-    has_focus = frame_host->GetView()->HasFocus();
+    has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
 
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
     is_background =
