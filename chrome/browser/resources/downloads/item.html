@@ -345,7 +345,8 @@
       <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
         <a is="action-link" id="show" on-click="onShowTap_"
             focus-row-control
-            focus-type="show">[[data.showInFolderText]]</a>
+            focus-type="show"
+            title="[[data.filePath]]">[[data.showInFolderText]]</a>
       </span>
       <template is="dom-if" if="[[data.retry]]">
         <span role="gridcell">
