@@ -199,10 +199,10 @@ class AppUpdateTest : public testing::Test {
     }
     EXPECT_EQ(expect_icon_key_changed_, u.IconKeyChanged());
 
-    EXPECT_EQ(expect_last_launch_time_, u.GetLastLaunchTime());
+    EXPECT_EQ(expect_last_launch_time_, u.LastLaunchTime());
     EXPECT_EQ(expect_last_launch_time_changed_, u.LastLaunchTimeChanged());
 
-    EXPECT_EQ(expect_install_time_, u.GetInstallTime());
+    EXPECT_EQ(expect_install_time_, u.InstallTime());
     EXPECT_EQ(expect_install_time_changed_, u.InstallTimeChanged());
 
     EXPECT_TRUE(IsEqual(expect_permissions_, u.GetPermissions()));

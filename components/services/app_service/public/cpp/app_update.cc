@@ -489,6 +489,10 @@ bool AppUpdate::IconKeyChanged() const {
 }
 
 base::Time AppUpdate::LastLaunchTime() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(last_launch_time, base::Time())
+  }
+
   if (mojom_delta_ && mojom_delta_->last_launch_time.has_value()) {
     return mojom_delta_->last_launch_time.value();
   }
@@ -496,10 +500,6 @@ base::Time AppUpdate::LastLaunchTime() const {
     return mojom_state_->last_launch_time.value();
   }
   return base::Time();
-}
-
-base::Time AppUpdate::GetLastLaunchTime() const {
-  GET_VALUE_WITH_FALLBACK(last_launch_time, base::Time())
 }
 
 bool AppUpdate::LastLaunchTimeChanged() const {
@@ -511,6 +511,10 @@ bool AppUpdate::LastLaunchTimeChanged() const {
 }
 
 base::Time AppUpdate::InstallTime() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(install_time, base::Time())
+  }
+
   if (mojom_delta_ && mojom_delta_->install_time.has_value()) {
     return mojom_delta_->install_time.value();
   }
@@ -518,10 +522,6 @@ base::Time AppUpdate::InstallTime() const {
     return mojom_state_->install_time.value();
   }
   return base::Time();
-}
-
-base::Time AppUpdate::GetInstallTime() const {
-  GET_VALUE_WITH_FALLBACK(install_time, base::Time())
 }
 
 bool AppUpdate::InstallTimeChanged() const {
