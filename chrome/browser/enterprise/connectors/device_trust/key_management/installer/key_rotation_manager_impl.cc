@@ -4,6 +4,10 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager_impl.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
@@ -11,17 +15,20 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "crypto/unexportable_key.h"
-#include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
-using BPKUP = enterprise_management::BrowserPublicKeyUploadResponse;
 
 namespace enterprise_connectors {
 
 namespace {
 
-const int kMaxRetryCount = 10;
+// Status of the network delegates upload key request.
+enum class UploadKeyStatus {
+  SUCCEEDED,
+  FAILED,
+  FAILED_MAX_RETRIES,
+};
 
 BPKUR::KeyType AlgorithmToType(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
@@ -46,12 +53,6 @@ void RecordRotationStatus(const std::string& nonce,
   }
 }
 
-void RecordRotationTryCount(int count) {
-  base::UmaHistogramCustomCounts(
-      "Enterprise.DeviceTrust.RotateSigningKey.Tries", count, 1, kMaxRetryCount,
-      kMaxRetryCount + 1);
-}
-
 void RecordUploadCode(const std::string& nonce, int status_code) {
   if (nonce.empty()) {
     base::UmaHistogramSparse(
@@ -68,11 +69,9 @@ void RecordUploadCode(const std::string& nonce, int status_code) {
 
 KeyRotationManagerImpl::KeyRotationManagerImpl(
     std::unique_ptr<KeyNetworkDelegate> network_delegate,
-    std::unique_ptr<KeyPersistenceDelegate> persistence_delegate,
-    bool sleep_during_backoff)
+    std::unique_ptr<KeyPersistenceDelegate> persistence_delegate)
     : network_delegate_(std::move(network_delegate)),
-      persistence_delegate_(std::move(persistence_delegate)),
-      sleep_during_backoff_(sleep_during_backoff) {
+      persistence_delegate_(std::move(persistence_delegate)) {
   DCHECK(network_delegate_);
   DCHECK(persistence_delegate_);
 
@@ -128,51 +127,26 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
   std::string request_str;
   request.SerializeToString(&request_str);
 
-  const net::BackoffEntry::Policy kBackoffPolicy{
-      .num_errors_to_ignore = 0,
-      .initial_delay_ms = 1000,
-      .multiply_factor = 2.0,
-      .jitter_factor = 0.1,
-      .maximum_backoff_ms = 5 * 60 * 1000,  // 5 min.
-      .entry_lifetime_ms = -1,
-      .always_use_initial_delay = false};
+  auto rc = UploadKeyStatus::FAILED;
 
-  auto rc = BPKUP::UNDEFINED;
-  net::BackoffEntry boe(&kBackoffPolicy);
-  int try_count = 0;
-  for (; rc == BPKUP::UNDEFINED && boe.failure_count() < kMaxRetryCount;
-       ++try_count) {
-    // Wait before trying to send again, if needed.  This will not block on
-    // the first request.
-    if (sleep_during_backoff_ && boe.ShouldRejectRequest())
-      base::PlatformThread::Sleep(boe.GetTimeUntilRelease());
+  // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
+  // being returned by the server.
+  KeyNetworkDelegate::HttpResponseCode response_code =
+      network_delegate_->SendPublicKeyToDmServerSync(dm_server_url, dm_token,
+                                                     request_str);
 
-    // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
-    // being returned by the server.  This will cause the loop to break early.
-    KeyNetworkDelegate::HttpResponseCode response_code =
-        network_delegate_->SendPublicKeyToDmServerSync(dm_server_url, dm_token,
-                                                       request_str);
+  RecordUploadCode(nonce, response_code);
 
-    RecordUploadCode(nonce, response_code);
-
-    int status_leading_digit = response_code / 100;
-    if (status_leading_digit == 2) {
-      // 2xx response codes are treated as success.
-      rc = BPKUP::SUCCESS;
-    } else if (status_leading_digit == 4) {
-      // 4xx response codes are treated as hard fails (no retries).
-      rc = BPKUP::INVALID_SIGNATURE;
-    } else {
-      // The rest are treated as retriable errors.
-      rc = BPKUP::UNDEFINED;
-    }
-
-    boe.InformOfRequest(rc == BPKUP::SUCCESS);
+  int status_leading_digit = response_code / 100;
+  if (status_leading_digit == 2) {
+    // 2xx response codes are treated as success.
+    rc = UploadKeyStatus::SUCCEEDED;
+  } else if (status_leading_digit == 5) {
+    // 5xx response codes are treated as retriable errors.
+    rc = UploadKeyStatus::FAILED_MAX_RETRIES;
   }
 
-  RecordRotationTryCount(try_count);
-
-  if (rc != BPKUP::SUCCESS) {
+  if (rc != UploadKeyStatus::SUCCEEDED) {
     // Unable to send to DM server, so restore the old key if there was one.
     bool able_to_restore = true;
     if (key_pair_ && key_pair_->key()) {
@@ -186,13 +160,13 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
 
     RotationStatus status =
         able_to_restore
-            ? (try_count < kMaxRetryCount
-                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY
-                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED)
-            : (try_count < kMaxRetryCount
-                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED
-                   : RotationStatus::
-                         FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED);
+            ? ((rc == UploadKeyStatus::FAILED_MAX_RETRIES)
+                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED
+                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY)
+            : ((rc == UploadKeyStatus::FAILED_MAX_RETRIES)
+                   ? RotationStatus::
+                         FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED
+                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
     RecordRotationStatus(nonce, status);
     return false;
   }

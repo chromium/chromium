@@ -36,7 +36,8 @@ class KeyRotationManager {
 
   virtual ~KeyRotationManager() = default;
 
-  static std::unique_ptr<KeyRotationManager> Create();
+  static std::unique_ptr<KeyRotationManager> Create(
+      std::unique_ptr<KeyNetworkDelegate> network_delegate);
 
   static std::unique_ptr<KeyRotationManager> CreateForTesting(
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
@@ -47,7 +48,7 @@ class KeyRotationManager {
   // the DM server.  This function will fail if not called with admin rights.
   //
   // This function makes network requests and will block until those requests
-  // complete successfully or fail (after some retrying).  This function is
+  // complete successfully or fail (after some retrying). This function is
   // not meant to be called from the chrome browser but from a background
   // utility process that does not block the user in the browser.
   [[nodiscard]] virtual bool RotateWithAdminRights(
