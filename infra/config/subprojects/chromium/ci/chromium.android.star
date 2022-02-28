@@ -623,6 +623,9 @@ ci.builder(
         category = "builder|weblayer_with_aosp_webview",
         short_name = "x86",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -631,4 +634,7 @@ ci.builder(
         category = "builder|weblayer",
         short_name = "x86",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )

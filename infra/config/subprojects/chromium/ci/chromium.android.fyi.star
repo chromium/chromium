@@ -56,6 +56,9 @@ ci.builder(
         category = "builder_tester|web-platform",
         short_name = "P",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -74,6 +77,9 @@ ci.builder(
         category = "builder_tester|weblayer",
         short_name = "P",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -82,6 +88,9 @@ ci.builder(
         category = "builder_tester|weblayer",
         short_name = "P",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -90,6 +99,9 @@ ci.builder(
         category = "builder_tester|webview",
         short_name = "P",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -98,6 +110,9 @@ ci.builder(
         category = "builder|weblayer_with_aosp_webview",
         short_name = "x86",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -160,6 +175,9 @@ ci.builder(
     # vs 1h on Android-11 (For example ci.chromium.org/b/8841899947736889024)
     # TODO(crbug.com/1229245): Look into ways to improve the compile time.
     execution_timeout = 6 * time.hour,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -169,6 +187,9 @@ ci.builder(
         short_name = "and",
     ),
     notifies = ["annotator-rel"],
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
@@ -177,6 +198,9 @@ ci.builder(
         category = "builder|x86",
         short_name = "x86",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 # TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.

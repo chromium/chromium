@@ -403,7 +403,8 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-backuprefptr-arm64-fyi-rel": {
@@ -420,7 +421,8 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-code-coverage": {

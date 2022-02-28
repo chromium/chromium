@@ -548,7 +548,8 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-weblayer-x86-rel": {
@@ -566,7 +567,8 @@
       "target_cpu": "x86",
       "target_os": "android",
       "use_errorprone_java_compiler": false,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   }
 }
