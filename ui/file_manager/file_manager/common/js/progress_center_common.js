@@ -21,10 +21,12 @@ Object.freeze(ProgressItemState);
 export const ProgressItemType = {
   // The item is file copy operation.
   COPY: 'copy',
-  // The item is file move operation.
-  MOVE: 'move',
   // The item is file delete operation.
   DELETE: 'delete',
+  // The item is file extract operation.
+  EXTRACT: 'extract',
+  // The item is file move operation.
+  MOVE: 'move',
   // The item is file zip operation.
   ZIP: 'zip',
   // The item is drive sync operation.

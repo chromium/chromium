@@ -2082,8 +2082,22 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['extract-all'] = new class extends FilesCommand {
   execute(event, fileManager) {
-    // TODO(crbug.com/953256) wire up IOTask for extraction.
+    const dirEntry = fileManager.getCurrentDirectoryEntry();
+    if (!dirEntry ||
+        !fileManager.getSelection().entries.every(
+            CommandUtil.shouldShowMenuItemsForEntry.bind(
+                null, fileManager.volumeManager))) {
+      return;
+    }
+
+    const selectionEntries = fileManager.getSelection().entries;
+    if (util.isExtractArchiveEnabled()) {
+      chrome.fileManagerPrivate.startIOTask(
+          chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
+          {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
+    }
   }
+
   /** @override */
   canExecute(event, fileManager) {
     if (!util.isExtractArchiveEnabled()) {

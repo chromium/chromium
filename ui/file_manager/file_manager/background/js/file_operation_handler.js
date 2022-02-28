@@ -419,12 +419,14 @@ function getTypeFromIOTaskType_(type) {
   switch (type) {
     case chrome.fileManagerPrivate.IOTaskType.COPY:
       return ProgressItemType.COPY;
+    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      return ProgressItemType.DELETE;
+    case chrome.fileManagerPrivate.IOTaskType.EXTRACT:
+      return ProgressItemType.EXTRACT;
     case chrome.fileManagerPrivate.IOTaskType.MOVE:
       return ProgressItemType.MOVE;
     case chrome.fileManagerPrivate.IOTaskType.ZIP:
       return ProgressItemType.ZIP;
-    case chrome.fileManagerPrivate.IOTaskType.DELETE:
-      return ProgressItemType.DELETE;
     default:
       console.error('Unknown operation type: ' + type);
       return ProgressItemType.TRANSFER;
