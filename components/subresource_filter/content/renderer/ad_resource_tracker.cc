@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
+#include "base/observer_list.h"
 
 namespace subresource_filter {
 

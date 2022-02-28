@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/metrics/histogram.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/url_translator.h"

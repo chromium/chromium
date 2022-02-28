@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 #include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "components/services/app_service/public/cpp/features.h"
 
 #include <utility>

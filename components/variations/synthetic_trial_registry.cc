@@ -8,6 +8,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/variations/hashing.h"
 #include "components/variations/variations_associated_data.h"

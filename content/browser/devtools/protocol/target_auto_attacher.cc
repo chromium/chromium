@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 
+#include "base/observer_list.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/translate/core/browser/translate_driver.h"
+#include "base/observer_list.h"
 
 namespace translate {
 

@@ -4,6 +4,7 @@
 
 #include "components/permissions/bluetooth_delegate_impl.h"
 
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "content/public/browser/render_frame_host.h"

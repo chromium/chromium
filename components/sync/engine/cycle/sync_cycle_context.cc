@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 
+#include "base/observer_list.h"
 #include "components/sync/base/extensions_activity.h"
 
 namespace syncer {

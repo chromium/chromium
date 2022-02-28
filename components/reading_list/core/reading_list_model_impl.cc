@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_service.h"

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "base/observer_list.h"
 
 namespace apps {
 

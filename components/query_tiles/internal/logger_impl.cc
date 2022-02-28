@@ -4,6 +4,7 @@
 
 #include "components/query_tiles/internal/logger_impl.h"
 
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 

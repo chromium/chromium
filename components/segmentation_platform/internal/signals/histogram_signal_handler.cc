@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/observer_list.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 
 namespace segmentation_platform {

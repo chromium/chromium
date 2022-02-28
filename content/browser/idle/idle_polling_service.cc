@@ -5,6 +5,7 @@
 #include "content/browser/idle/idle_polling_service.h"
 
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "content/public/browser/idle_time_provider.h"
 #include "ui/base/idle/idle.h"
 

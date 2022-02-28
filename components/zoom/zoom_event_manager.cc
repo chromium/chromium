@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "components/zoom/zoom_event_manager_observer.h"
 #include "content/public/browser/browser_context.h"
 

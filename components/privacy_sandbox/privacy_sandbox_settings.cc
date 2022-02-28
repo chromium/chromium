@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"

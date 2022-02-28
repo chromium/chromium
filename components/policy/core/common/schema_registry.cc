@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace policy {

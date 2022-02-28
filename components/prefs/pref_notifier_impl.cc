@@ -8,6 +8,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
 

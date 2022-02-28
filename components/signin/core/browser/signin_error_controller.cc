@@ -4,6 +4,7 @@
 
 #include "components/signin/core/browser/signin_error_controller.h"
 
+#include "base/observer_list.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 SigninErrorController::SigninErrorController(

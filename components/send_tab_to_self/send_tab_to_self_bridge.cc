@@ -12,6 +12,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

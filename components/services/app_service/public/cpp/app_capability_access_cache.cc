@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 
 #include <utility>
+#include "base/observer_list.h"
 
 namespace apps {
 

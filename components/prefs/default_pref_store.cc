@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/observer_list.h"
 
 using base::Value;
 

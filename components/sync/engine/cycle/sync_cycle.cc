@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "components/sync/engine/update_handler.h"
 
 namespace syncer {

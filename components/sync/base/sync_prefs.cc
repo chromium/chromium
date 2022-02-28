@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/values.h"
 #include "build/build_config.h"

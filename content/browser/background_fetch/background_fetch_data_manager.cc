@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"

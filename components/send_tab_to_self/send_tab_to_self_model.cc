@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
+#include "base/observer_list.h"
 
 namespace send_tab_to_self {
 

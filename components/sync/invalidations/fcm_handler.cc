@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"

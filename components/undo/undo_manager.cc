@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/undo_manager_observer.h"
 #include "components/undo/undo_operation.h"

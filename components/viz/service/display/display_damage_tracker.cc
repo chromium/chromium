@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display/display_damage_tracker.h"
 
+#include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/service/display/surface_aggregator.h"

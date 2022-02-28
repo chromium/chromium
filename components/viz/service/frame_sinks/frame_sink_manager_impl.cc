@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"

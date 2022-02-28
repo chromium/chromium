@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"

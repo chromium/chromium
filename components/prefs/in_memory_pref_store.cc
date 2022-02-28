@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/observer_list.h"
 #include "base/values.h"
 
 InMemoryPrefStore::InMemoryPrefStore() {}

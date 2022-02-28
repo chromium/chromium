@@ -10,6 +10,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/in_memory_pref_store.h"
 
