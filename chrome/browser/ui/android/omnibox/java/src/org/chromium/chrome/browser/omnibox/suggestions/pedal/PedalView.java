@@ -40,7 +40,7 @@ public class PedalView extends SimpleHorizontalLayoutView {
 
         setFocusable(true);
 
-        mPedal = new ChipView(context, null);
+        mPedal = new ChipView(context, R.style.OmniboxPedalChipThemeOverlay);
         mPedal.setLayoutParams(LayoutParams.forDynamicView());
 
         final int baseColor = MaterialColors.getColor(context, R.attr.colorSurface, TAG);
