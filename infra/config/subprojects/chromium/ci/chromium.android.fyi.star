@@ -45,6 +45,9 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "P-WPT",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
