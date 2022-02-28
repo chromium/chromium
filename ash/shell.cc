@@ -606,6 +606,12 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
 
 Shell::~Shell() {
   TRACE_EVENT0("shutdown", "ash::Shell::Destructor");
+#if DCHECK_IS_ON()
+  // All WindowEventDispatchers should be shutdown before the Shell is
+  // destroyed.
+  for (RootWindowController* rwc : GetAllRootWindowControllers())
+    DCHECK(rwc->GetHost()->dispatcher()->in_shutdown());
+#endif
   login_unlock_throughput_recorder_.reset();
 
   hud_display::HUDDisplayView::Destroy();

@@ -66,6 +66,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
 
   // Stops dispatching/synthesizing mouse events.
   void Shutdown();
+  bool in_shutdown() const { return in_shutdown_; }
 
   WindowTreeHost* host() { return host_; }
 
