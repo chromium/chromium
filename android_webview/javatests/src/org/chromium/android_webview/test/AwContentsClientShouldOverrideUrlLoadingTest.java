@@ -837,6 +837,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         class ReloadInCallbackClient extends TestAwContentsClient {
             @Override
             public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+                super.shouldOverrideUrlLoading(request);
                 mAwContents.loadUrl(request.url);
                 return true;
             }
@@ -844,6 +845,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
         setupWithProvidedContentsClient(new ReloadInCallbackClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
+        int shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
 
         final String linkUrl =
                 addPageToTestServer("/foo.html", "<html><body>hello world</body></html>");
@@ -855,6 +857,9 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         int pageFinishedCount = onPageFinishedHelper.getCallCount();
         clickOnLinkUsingJs();
         onPageFinishedHelper.waitForCallback(pageFinishedCount);
+        mShouldOverrideUrlLoadingHelper.waitForCallback(shouldOverrideUrlLoadingCallCount);
+        Assert.assertEquals(
+                linkUrl, mShouldOverrideUrlLoadingHelper.getShouldOverrideUrlLoadingUrl());
 
         Assert.assertEquals(new GURL(linkUrl), mAwContents.getUrl());
         Assert.assertTrue("Should have a navigation history", mAwContents.canGoBack());
@@ -864,8 +869,11 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         Assert.assertEquals(linkUrl, navHistory.getEntryAtIndex(1).getUrl().getSpec());
 
         pageFinishedCount = onPageFinishedHelper.getCallCount();
+        shouldOverrideUrlLoadingCallCount = mShouldOverrideUrlLoadingHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mAwContents.goBack());
         onPageFinishedHelper.waitForCallback(pageFinishedCount);
+        Assert.assertEquals("Should not invoke shouldOverrideUrlLoading() for history navigation",
+                shouldOverrideUrlLoadingCallCount, mShouldOverrideUrlLoadingHelper.getCallCount());
 
         Assert.assertFalse("Should not be able to navigate backward", mAwContents.canGoBack());
         Assert.assertEquals(new GURL(firstUrl), mAwContents.getUrl());
