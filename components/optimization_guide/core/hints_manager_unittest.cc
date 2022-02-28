@@ -23,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -192,7 +193,7 @@ class TestHintsFetcher : public HintsFetcher {
       : HintsFetcher(url_loader_factory,
                      optimization_guide_service_url,
                      pref_service,
-                     optimization_guide_logger),
+                     &optimization_guide_logger_),
         fetch_states_(fetch_states) {
     DCHECK(!fetch_states_.empty());
   }
@@ -253,6 +254,7 @@ class TestHintsFetcher : public HintsFetcher {
   std::string locale_requested_;
   proto::RequestContext request_context_requested_ =
       proto::RequestContext::CONTEXT_UNSPECIFIED;
+  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 // A mock class of HintsFetcherFactory that returns instances of
@@ -326,8 +328,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
         /*is_off_the_record=*/false, /*application_locale=*/"en-US",
         pref_service(), hint_store_->AsWeakPtr(), top_host_provider,
         tab_url_provider_.get(), url_loader_factory_,
-        /*push_notification_manager=*/nullptr,
-        /*optimization_guide_logger=*/nullptr);
+        /*push_notification_manager=*/nullptr, &optimization_guide_logger_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the HintsManager is ready to
@@ -490,6 +491,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {

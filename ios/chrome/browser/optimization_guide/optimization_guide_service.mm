@@ -12,6 +12,7 @@
 #import "components/optimization_guide/core/hints_processing_util.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/optimization_guide/core/optimization_guide_store.h"
@@ -66,11 +67,13 @@ OptimizationGuideService::OptimizationGuideService(
                     {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
           : nullptr;
 
+  optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
   hints_manager_ = std::make_unique<optimization_guide::IOSChromeHintsManager>(
       browser_state, chrome_browser_state->GetPrefs(),
       hint_store_ ? hint_store_->AsWeakPtr() : nullptr,
       top_host_provider_.get(), tab_url_provider_.get(),
-      browser_state->GetSharedURLLoaderFactory());
+      browser_state->GetSharedURLLoaderFactory(),
+      optimization_guide_logger_.get());
 
   bool optimization_guide_fetching_enabled =
       optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(

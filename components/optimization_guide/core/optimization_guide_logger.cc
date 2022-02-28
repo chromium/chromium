@@ -4,7 +4,10 @@
 
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
+#include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
+#include "components/optimization_guide/core/hints_processing_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace {
@@ -15,6 +18,80 @@ namespace {
 constexpr size_t kMaxRecentLogMessages = 100;
 
 }  // namespace
+
+OptimizationGuideLogger::LogMessageBuilder::LogMessageBuilder(
+    const std::string& source_file,
+    int source_line,
+    OptimizationGuideLogger* optimization_guide_logger)
+    : source_file_(source_file),
+      source_line_(source_line),
+      optimization_guide_logger_(optimization_guide_logger) {}
+
+OptimizationGuideLogger::LogMessageBuilder::~LogMessageBuilder() {
+  std::string message = base::StrCat(messages_);
+  optimization_guide_logger_->OnLogMessageAdded(base::Time::Now(), source_file_,
+                                                source_line_, message);
+  DVLOG(0) << source_file_ << "(" << source_line_ << ") " << message;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(const char* message) {
+  messages_.push_back(message);
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    const std::string& message) {
+  messages_.push_back(message);
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(const GURL& url) {
+  messages_.push_back(url.possibly_invalid_spec());
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::proto::RequestContext request_context) {
+  messages_.push_back(
+      optimization_guide::proto::RequestContext_Name(request_context));
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::proto::OptimizationType optimization_type) {
+  messages_.push_back(
+      optimization_guide::GetStringNameForOptimizationType(optimization_type));
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::OptimizationTypeDecision optimization_type_decision) {
+  messages_.push_back(
+      base::NumberToString(static_cast<int>(optimization_type_decision)));
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::OptimizationGuideDecision optimization_guide_decision) {
+  messages_.push_back(
+      GetStringForOptimizationGuideDecision(optimization_guide_decision));
+  return *this;
+}
+
+OptimizationGuideLogger::LogMessageBuilder&
+OptimizationGuideLogger::LogMessageBuilder::operator<<(
+    optimization_guide::proto::OptimizationTarget optimization_target) {
+  messages_.push_back(
+      optimization_guide::proto::OptimizationTarget_Name(optimization_target));
+  return *this;
+}
 
 OptimizationGuideLogger::LogMessage::LogMessage(base::Time event_time,
                                                 const std::string& source_file,

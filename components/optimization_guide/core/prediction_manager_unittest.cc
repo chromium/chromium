@@ -22,6 +22,7 @@
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -348,11 +349,14 @@ class TestPredictionManager : public PredictionManager {
             off_the_record,
             application_locale,
             models_dir_path,
-            /*optimization_guide_logger=*/nullptr,
+            &optimization_guide_logger_,
             /*background_download_service_provider=*/
             base::OnceCallback<download::BackgroundDownloadService*()>()) {}
 
   ~TestPredictionManager() override = default;
+
+ private:
+  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {

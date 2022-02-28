@@ -22,6 +22,7 @@ class OptimizationGuideStore;
 class HintsManager;
 }  // namespace optimization_guide
 
+class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 
 namespace web {
@@ -103,6 +104,8 @@ class OptimizationGuideService : public KeyedService {
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
+
+  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

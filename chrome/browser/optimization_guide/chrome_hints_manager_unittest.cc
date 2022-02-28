@@ -14,6 +14,7 @@
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -106,7 +107,7 @@ class ChromeHintsManagerFetchingTest
         url_loader_factory_,
         OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
             &testing_profile_),
-        /*optimization_guide_logger=*/nullptr);
+        &optimization_guide_logger_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the ChromeHintsManager is ready
@@ -178,6 +179,7 @@ class ChromeHintsManagerFetchingTest
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_DuplicatesRemoved) {

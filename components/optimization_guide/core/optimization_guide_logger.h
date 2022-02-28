@@ -11,6 +11,13 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "url/gurl.h"
+
+#define OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger)     \
+  OptimizationGuideLogger::LogMessageBuilder(__FILE__, __LINE__, \
+                                             optimization_guide_logger)
 
 // Interface to record the debug logs and send it to be shown in the
 // optimization guide internals page.
@@ -38,6 +45,36 @@ class OptimizationGuideLogger {
 
   // Whether debug logs should allowed to be recorded.
   bool ShouldEnableDebugLogs() const;
+
+  // Class that builds the log message and used when debugging is enabled via
+  // command-line switch or the internals page.
+  class LogMessageBuilder {
+   public:
+    LogMessageBuilder(const std::string& source_file,
+                      int source_line,
+                      OptimizationGuideLogger* optimization_guide_logger);
+    ~LogMessageBuilder();
+
+    LogMessageBuilder& operator<<(const char* message);
+    LogMessageBuilder& operator<<(const std::string& message);
+    LogMessageBuilder& operator<<(const GURL& url);
+    LogMessageBuilder& operator<<(
+        optimization_guide::proto::RequestContext request_context);
+    LogMessageBuilder& operator<<(
+        optimization_guide::proto::OptimizationType optimization_type);
+    LogMessageBuilder& operator<<(optimization_guide::OptimizationTypeDecision
+                                      optimization_type_decision);
+    LogMessageBuilder& operator<<(optimization_guide::OptimizationGuideDecision
+                                      optimization_guide_decision);
+    LogMessageBuilder& operator<<(
+        optimization_guide::proto::OptimizationTarget optimization_target);
+
+   private:
+    std::string source_file_;
+    int source_line_;
+    std::vector<std::string> messages_;
+    OptimizationGuideLogger* optimization_guide_logger_;
+  };
 
  private:
   struct LogMessage {

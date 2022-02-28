@@ -20,7 +20,8 @@ IOSChromeHintsManager::IOSChromeHintsManager(
     base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    OptimizationGuideLogger* optimization_guide_logger)
     : HintsManager(browser_state->IsOffTheRecord(),
                    GetApplicationContext()->GetApplicationLocale(),
                    pref_service,
@@ -29,6 +30,6 @@ IOSChromeHintsManager::IOSChromeHintsManager(
                    tab_url_provider,
                    url_loader_factory,
                    /*push_notification_manager=*/nullptr,
-                   /*optimization_guide_logger=*/nullptr) {}
+                   optimization_guide_logger) {}
 
 }  // namespace optimization_guide

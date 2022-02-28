@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -18,7 +17,6 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -262,27 +260,21 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
 
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);
-  if (switches::IsDebugLogsEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_logger_,
-        base::StrCat(
-            {"OptimizationGuide: Observer added for OptimizationTarget: ",
-             proto::OptimizationTarget_Name(optimization_target)}));
+  if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+        << "Observer added for OptimizationTarget: " << optimization_target;
   }
 
   // Notify observer of existing model file path.
   auto model_it = optimization_target_model_info_map_.find(optimization_target);
   if (model_it != optimization_target_model_info_map_.end()) {
     observer->OnModelUpdated(optimization_target, *model_it->second);
-    if (switches::IsDebugLogsEnabled()) {
-      std::string debug_msg =
-          "OptimizationGuide: OnModelFileUpdated for OptimizationTarget: ";
-      debug_msg += proto::OptimizationTarget_Name(optimization_target);
-      debug_msg += "\nFile path: ";
-      debug_msg += (*model_it->second).GetModelFilePath().AsUTF8Unsafe();
-      debug_msg += "\nHas metadata: ";
-      debug_msg += (model_metadata ? "True" : "False");
-      OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
+    if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          << "OnModelFileUpdated for OptimizationTarget: "
+          << optimization_target << "\nFile path: "
+          << (*model_it->second).GetModelFilePath().AsUTF8Unsafe()
+          << "\nHas metadata: " << (model_metadata ? "True" : "False");
     }
   }
 
@@ -296,11 +288,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
 
   registered_optimization_targets_and_metadata_.emplace(optimization_target,
                                                         model_metadata);
-  if (switches::IsDebugLogsEnabled()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_logger_,
-        base::StrCat({"OptimizationGuide: Registered new OptimizationTarget: ",
-                      proto::OptimizationTarget_Name(optimization_target)}));
+  if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+        << "Registered new OptimizationTarget: " << optimization_target;
   }
 
   // Before loading/fetching models and features, the store must be ready.
@@ -425,7 +415,6 @@ void PredictionManager::FetchModels() {
   std::vector<proto::ModelInfo> models_info = std::vector<proto::ModelInfo>();
   models_info.reserve(registered_optimization_targets_and_metadata_.size());
 
-  std::string debug_msg;
   // For now, we will fetch for all registered optimization targets.
   for (const auto& optimization_target_and_metadata :
        registered_optimization_targets_and_metadata_) {
@@ -442,18 +431,11 @@ void PredictionManager::FetchModels() {
       model_info.set_version(model_it->second.get()->GetVersion());
 
     models_info.push_back(model_info);
-    if (switches::IsDebugLogsEnabled()) {
-      debug_msg +=
-          "\nOptimization Target: " +
-          proto::OptimizationTarget_Name(model_info.optimization_target());
+    if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          << "Fetching models for Optimization Target "
+          << model_info.optimization_target();
     }
-  }
-  if (switches::IsDebugLogsEnabled() && !debug_msg.empty()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_logger_,
-        base::StrCat(
-            {"OptimizationGuide: Fetching models for Optimization Targets: ",
-             debug_msg}));
   }
 
   bool fetch_initiated =
@@ -503,7 +485,6 @@ void PredictionManager::UpdatePredictionModels(
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
           clock_->Now() + features::StoredModelsValidDuration());
   bool has_models_to_update = false;
-  std::string debug_msg;
   for (const auto& model : prediction_models) {
     if (model.has_model() && !model.model().download_url().empty()) {
       if (prediction_model_download_manager_) {
@@ -516,11 +497,10 @@ void PredictionManager::UpdatePredictionModels(
                 GetStringNameForOptimizationTarget(
                     model.model_info().optimization_target()),
             download_url.is_valid());
-        if (switches::IsDebugLogsEnabled() && download_url.is_valid()) {
-          debug_msg += "\nOptimization Target: " +
-                       proto::OptimizationTarget_Name(
-                           model.model_info().optimization_target());
-          debug_msg += "\nModel Download Was Required.";
+        if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+          OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+              << "Model download required for Optimization Target: "
+              << model.model_info().optimization_target();
         }
       }
 
@@ -540,24 +520,15 @@ void PredictionManager::UpdatePredictionModels(
     RecordModelUpdateVersion(model.model_info());
     OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
 
-    if (switches::IsDebugLogsEnabled()) {
-      debug_msg += "\nOptimization Target: " +
-                   proto::OptimizationTarget_Name(
-                       model.model_info().optimization_target());
-      debug_msg += "\nNew Version: " +
-                   base::NumberToString(model.model_info().version());
-      debug_msg += "\nModel Download Not Required.";
+    if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          << "Model Download Not Required for target: "
+          << model.model_info().optimization_target() << "\nNew Version: "
+          << base::NumberToString(model.model_info().version());
     }
   }
 
   if (has_models_to_update) {
-    if (switches::IsDebugLogsEnabled() && !debug_msg.empty()) {
-      OPTIMIZATION_GUIDE_LOG(
-          optimization_guide_logger_,
-          base::StrCat(
-              {"OptimizationGuide: Models Fetched for Optimzation Targets: ",
-               debug_msg}));
-    }
     model_and_features_store_->UpdatePredictionModels(
         std::move(prediction_model_update_data),
         base::BindOnce(&PredictionManager::OnPredictionModelsStored,
@@ -576,14 +547,12 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
          model.model_info().has_optimization_target());
 
   RecordModelUpdateVersion(model.model_info());
-  if (switches::IsDebugLogsEnabled()) {
-    std::string debug_msg = "Optimization Guide: Model Files Downloaded: ";
-    debug_msg += "\nOptimization Target: " +
-                 proto::OptimizationTarget_Name(
-                     model.model_info().optimization_target());
-    debug_msg +=
-        "\nNew Version: " + base::NumberToString(model.model_info().version());
-    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
+  if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+        << "Model Files Downloaded target: "
+        << model.model_info().optimization_target()
+        << "\nNew Version: " +
+               base::NumberToString(model.model_info().version());
   }
 
   // Store the received model in the store.
@@ -612,15 +581,12 @@ void PredictionManager::NotifyObserversOfNewModel(
 
   for (auto& observer : observers_it->second) {
     observer.OnModelUpdated(optimization_target, model_info);
-    if (switches::IsDebugLogsEnabled()) {
-      std::string debug_msg =
-          "OptimizationGuide: OnModelFileUpdated for OptimizationTarget: ";
-      debug_msg += proto::OptimizationTarget_Name(optimization_target);
-      debug_msg += "\nFile path: ";
-      debug_msg += model_info.GetModelFilePath().AsUTF8Unsafe();
-      debug_msg += "\nHas metadata: ";
-      debug_msg += (model_info.GetModelMetadata() ? "True" : "False");
-      OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_, debug_msg);
+    if (optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
+          << "OnModelFileUpdated for target: " << optimization_target
+          << "\nFile path: " << model_info.GetModelFilePath().AsUTF8Unsafe()
+          << "\nHas metadata: "
+          << (model_info.GetModelMetadata() ? "True" : "False");
     }
   }
 }
