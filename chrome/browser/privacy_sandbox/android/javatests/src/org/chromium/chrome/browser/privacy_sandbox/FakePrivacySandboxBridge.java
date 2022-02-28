@@ -11,8 +11,9 @@ import java.util.Set;
 /**
  * Java implementation of PrivacySandboxBridge for testing.
  */
-class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
+public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxEnabled = true;
+    private boolean mIsPrivacySandboxRestricted /* = false*/;
 
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new HashSet<>();
@@ -20,7 +21,7 @@ class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private @DialogType int mDialogType = DialogType.NONE;
     private Integer mLastDialogAction;
 
-    FakePrivacySandboxBridge() {
+    public FakePrivacySandboxBridge() {
         setCurrentTopTopics("Foo", "Bar");
         setBlockedTopics("BlockedFoo", "BlockedBar");
     }
@@ -59,8 +60,17 @@ class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
+    public boolean isPrivacySandboxRestricted() {
+        return mIsPrivacySandboxRestricted;
+    }
+
+    @Override
     public void setPrivacySandboxEnabled(boolean enabled) {
         mIsPrivacySandboxEnabled = enabled;
+    }
+
+    public void setPrivacySandboxRestricted(boolean restricted) {
+        mIsPrivacySandboxRestricted = restricted;
     }
 
     @Override

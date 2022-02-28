@@ -242,8 +242,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public void maybeDisplayPrivacySandboxSnackbar() {
         // Only show the snackbar when the Privacy Sandbox APIs are enabled.
-        if (mPrivacySandboxController != null
-                && PrivacySandboxBridge.isPrivacySandboxEnabled()) {
+        if (mPrivacySandboxController != null && PrivacySandboxBridge.isPrivacySandboxEnabled()
+                && !PrivacySandboxBridge.isPrivacySandboxRestricted()) {
             mPrivacySandboxController.showSnackbar();
         }
     }

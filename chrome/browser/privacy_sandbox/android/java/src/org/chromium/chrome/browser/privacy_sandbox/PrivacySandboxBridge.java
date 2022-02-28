@@ -21,6 +21,10 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().isPrivacySandboxManaged();
     }
 
+    public static boolean isPrivacySandboxRestricted() {
+        return PrivacySandboxBridgeJni.get().isPrivacySandboxRestricted();
+    }
+
     public static void setPrivacySandboxEnabled(boolean enabled) {
         PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
     }
@@ -93,9 +97,10 @@ public class PrivacySandboxBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isPrivacySandboxEnabled();
         boolean isPrivacySandboxManaged();
+        boolean isPrivacySandboxRestricted();
         void setPrivacySandboxEnabled(boolean enabled);
         boolean isFlocEnabled();
         void setFlocEnabled(boolean enabled);

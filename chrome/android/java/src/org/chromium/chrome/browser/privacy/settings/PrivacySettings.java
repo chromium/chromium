@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragmentV3;
@@ -79,13 +80,19 @@ public class PrivacySettings
         getActivity().setTitle(R.string.prefs_privacy_security);
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        sandboxPreference.setSummary(PrivacySandboxSettingsFragment.getStatusString(getContext()));
-        // Overwrite the click listener to pass a correct referrer to the fragment.
-        sandboxPreference.setOnPreferenceClickListener(preference -> {
-            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(getContext(),
-                    new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
-            return true;
-        });
+        // Hide the Privacy Sandbox if it is restricted.
+        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
+            getPreferenceScreen().removePreference(sandboxPreference);
+        } else {
+            sandboxPreference.setSummary(
+                    PrivacySandboxSettingsFragment.getStatusString(getContext()));
+            // Overwrite the click listener to pass a correct referrer to the fragment.
+            sandboxPreference.setOnPreferenceClickListener(preference -> {
+                PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(getContext(),
+                        new SettingsLauncherImpl(), PrivacySandboxReferrer.PRIVACY_SETTINGS);
+                return true;
+            });
+        }
 
         Preference privacyReviewPreference = findPreference(PREF_PRIVACY_REVIEW);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REVIEW)) {
