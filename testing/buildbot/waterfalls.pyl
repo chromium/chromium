@@ -2941,7 +2941,6 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '1ae0:c0de',
               'kvm': '1',
             },
           ],
@@ -2963,7 +2962,6 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '1ae0:c0de',
               'kvm': '1',
             },
           ],
