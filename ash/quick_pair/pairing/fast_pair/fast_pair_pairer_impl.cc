@@ -249,6 +249,7 @@ void FastPairPairerImpl::OnGattClientInitializedCallback(
 
 void FastPairPairerImpl::OnPairConnected(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  QP_LOG(INFO) << __func__;
   RecordPairDeviceResult(/*success=*/!error.has_value());
 
   if (error) {
@@ -261,12 +262,11 @@ void FastPairPairerImpl::OnPairConnected(
   }
 
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
-  QP_LOG(VERBOSE) << "Pair to device successful.";
 }
 
 void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
+  QP_LOG(INFO) << __func__;
   ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
-  QP_LOG(VERBOSE) << "Connect device successful.";
   RecordConnectDeviceResult(/*success=*/true);
   // The device ID can change between device discovery and connection, so
   // ensure that device images are mapped to the current device ID.
@@ -274,14 +274,14 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
 }
 
 void FastPairPairerImpl::OnConnectError() {
-  QP_LOG(WARNING) << "Failed to start pairing procedure by connecting to "
-                     "device address.";
+  QP_LOG(WARNING) << __func__;
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
 }
 
 void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
+  QP_LOG(INFO) << __func__;
   RecordConfirmPasskeyAskTime(base::TimeTicks::Now() -
                               ask_confirm_passkey_initial_time_);
   confirm_passkey_initial_time_ = base::TimeTicks::Now();
@@ -298,9 +298,12 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
 void FastPairPairerImpl::OnPasskeyResponse(
     std::vector<uint8_t> response_bytes,
     absl::optional<PairFailure> failure) {
+  QP_LOG(INFO) << __func__;
   RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
 
   if (failure) {
+    QP_LOG(WARNING) << __func__
+                    << ": Failed to write passkey. Error: " << failure.value();
     RecordWritePasskeyCharacteristicPairFailure(failure.value());
     std::move(pair_failed_callback_).Run(device_, failure.value());
     return;
@@ -359,6 +362,7 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     return;
   }
 
+  QP_LOG(INFO) << __func__ << ": Passkeys match, confirming pairing";
   pairing_device->ConfirmPairing();
   std::move(paired_callback_).Run(device_);
   adapter_->RemovePairingDelegate(this);
@@ -366,11 +370,14 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
 }
 
 void FastPairPairerImpl::AttemptSendAccountKey() {
+  QP_LOG(INFO) << __func__;
   // We only send the account key if we're doing an initial or retroactive
   // pairing. For other FastPair protocols, we can consider the paring
   // procedure complete at this point.
   if (device_->protocol != Protocol::kFastPairInitial &&
       device_->protocol != Protocol::kFastPairRetroactive) {
+    QP_LOG(INFO) << __func__ << ": Igorning due to incorrect protocol: "
+                 << device_->protocol;
     std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
@@ -417,7 +424,9 @@ void FastPairPairerImpl::OnWriteAccountKey(
   FastPairRepository::Get()->AssociateAccountKey(
       device_, std::vector<uint8_t>(account_key.begin(), account_key.end()));
 
-  QP_LOG(INFO) << "Account key written to device. Pairing procedure complete.";
+  QP_LOG(INFO)
+      << __func__
+      << ": Account key written to device. Pairing procedure complete.";
   std::move(pairing_procedure_complete_).Run(device_);
 }
 
@@ -458,6 +467,7 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
   // Bluetooth pairing dialog to do it.
   if (device->GetAddress() == device_->ble_address ||
       device->GetAddress() == device_->classic_address()) {
+    QP_LOG(INFO) << __func__ << ": Completing pairing procedure";
     std::move(paired_callback_).Run(device_);
 
     if (pairing_procedure_complete_) {

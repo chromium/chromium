@@ -105,6 +105,7 @@ void FastPairDiscoverableScannerImpl::OnDeviceFound(
 
   model_id_parse_attempts_[device->GetAddress()] = 1;
 
+  QP_LOG(INFO) << __func__ << ": Attempting to get model ID";
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
       base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,
@@ -171,7 +172,7 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
   auto device = base::MakeRefCounted<Device>(model_id, address,
                                              Protocol::kFastPairInitial);
 
-  QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
+  QP_LOG(INFO) << __func__ << ": Id: " << model_id;
 
   // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
   // available then the device is v1.
@@ -219,6 +220,7 @@ void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
     return;
   }
 
+  QP_LOG(INFO) << __func__ << ": Running found callback";
   notified_devices_[device->ble_address] = device;
   found_callback_.Run(device);
 }
@@ -240,6 +242,7 @@ void FastPairDiscoverableScannerImpl::OnDeviceLost(
   if (it == notified_devices_.end())
     return;
 
+  QP_LOG(INFO) << __func__ << ": Running lost callback";
   scoped_refptr<Device> notified_device = it->second;
   notified_devices_.erase(it);
   lost_callback_.Run(std::move(notified_device));
@@ -271,6 +274,7 @@ void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
   const std::vector<uint8_t>* fast_pair_service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
+  QP_LOG(INFO) << __func__ << ": Retrying call to get model ID";
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
       base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,

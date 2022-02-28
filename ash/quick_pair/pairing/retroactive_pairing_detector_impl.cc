@@ -151,8 +151,7 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
     return;
   }
 
-  QP_LOG(VERBOSE) << __func__ << ":  Storing Fast Pair device address: "
-                  << device->classic_address().value();
+  QP_LOG(INFO) << __func__ << ": Storing Fast Pair device address";
   fast_pair_addresses_.insert(device->classic_address().value());
 }
 
@@ -309,8 +308,8 @@ void RetroactivePairingDetectorImpl::NotifyDeviceFound(
   auto device = base::MakeRefCounted<Device>(model_id, ble_address,
                                              Protocol::kFastPairRetroactive);
   device->set_classic_address(classic_address);
-  QP_LOG(VERBOSE) << __func__ << ": Found device for Retroactive Pairing "
-                  << device;
+  QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing "
+               << device;
 
   FastPairHandshakeLookup::GetInstance()->Create(
       adapter_, std::move(device),

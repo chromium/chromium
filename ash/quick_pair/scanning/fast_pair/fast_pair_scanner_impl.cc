@@ -233,6 +233,7 @@ void FastPairScannerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
 }
 
 void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
+  QP_LOG(INFO) << __func__;
   for (auto& observer : observers_)
     observer.OnDeviceFound(device);
 }
@@ -240,6 +241,8 @@ void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
 void FastPairScannerImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
+  QP_LOG(INFO) << __func__;
+
   FastPairHandshake* handshake =
       FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
 
@@ -253,6 +256,7 @@ void FastPairScannerImpl::OnDeviceLost(
     return;
   }
 
+  QP_LOG(INFO) << __func__ << ": Notifying observers";
   device_address_advertisement_data_map_.erase(device->GetAddress());
   for (auto& observer : observers_)
     observer.OnDeviceLost(device);
