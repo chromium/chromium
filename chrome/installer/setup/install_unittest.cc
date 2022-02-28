@@ -140,7 +140,7 @@ constexpr char kExpectedPrimaryManifest[] =
     "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogo.png'\r\n"
     "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogo.png'\r\n"
     "      ForegroundText='light'\r\n"
-    "      BackgroundColor='transparent'/>\r\n"
+    "      BackgroundColor='#5F6368'/>\r\n"
     "</Application>\r\n";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -152,7 +152,7 @@ constexpr char kExpectedBetaManifest[] =
     "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoBeta.png'\r\n"
     "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoBeta.png'\r\n"
     "      ForegroundText='light'\r\n"
-    "      BackgroundColor='transparent'/>\r\n"
+    "      BackgroundColor='#5F6368'/>\r\n"
     "</Application>\r\n";
 
 constexpr char kExpectedDevManifest[] =
@@ -163,7 +163,7 @@ constexpr char kExpectedDevManifest[] =
     "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoDev.png'\r\n"
     "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoDev.png'\r\n"
     "      ForegroundText='light'\r\n"
-    "      BackgroundColor='transparent'/>\r\n"
+    "      BackgroundColor='#5F6368'/>\r\n"
     "</Application>\r\n";
 
 constexpr char kExpectedCanaryManifest[] =
@@ -174,7 +174,7 @@ constexpr char kExpectedCanaryManifest[] =
     "      Square70x70Logo='0.0.0.0\\VisualElements\\SmallLogoCanary.png'\r\n"
     "      Square44x44Logo='0.0.0.0\\VisualElements\\SmallLogoCanary.png'\r\n"
     "      ForegroundText='light'\r\n"
-    "      BackgroundColor='transparent'/>\r\n"
+    "      BackgroundColor='#5F6368'/>\r\n"
     "</Application>\r\n";
 
 INSTANTIATE_TEST_SUITE_P(
