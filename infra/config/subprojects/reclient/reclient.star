@@ -34,7 +34,6 @@ ci.defaults.set(
     executable = "recipe:chromium",
     execution_timeout = 3 * time.hour,
     goma_backend = None,
-    os = os.LINUX_DEFAULT,
     pool = "luci.chromium.ci",
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
@@ -52,13 +51,14 @@ consoles.console_view(
 def fyi_reclient_staging_builder(
         *,
         name,
+        console_view_category,
         reclient_instance = "rbe-chromium-trusted",
         **kwargs):
     return ci.builder(
         name = name,
         reclient_instance = reclient_instance,
         console_view_entry = consoles.console_view_entry(
-            category = "rbe|linux",
+            category = "rbe|" + console_view_category,
             short_name = "rcs",
         ),
         **kwargs
@@ -67,17 +67,37 @@ def fyi_reclient_staging_builder(
 def fyi_reclient_test_builder(
         *,
         name,
+        console_view_category,
         **kwargs):
     return fyi_reclient_staging_builder(
         name = name,
+        console_view_category = console_view_category,
         reclient_instance = "goma-foundry-experiments",
         **kwargs
     )
 
 fyi_reclient_staging_builder(
     name = "Linux Builder reclient staging",
+    console_view_category = "linux",
+    os = os.LINUX_DEFAULT,
 )
 
 fyi_reclient_test_builder(
     name = "Linux Builder reclient test",
+    console_view_category = "linux",
+    os = os.LINUX_DEFAULT,
+)
+
+fyi_reclient_staging_builder(
+    name = "Win x64 Builder reclient staging",
+    console_view_category = "win",
+    cores = 32,
+    os = os.WINDOWS_ANY,
+)
+
+fyi_reclient_test_builder(
+    name = "Win x64 Builder reclient test",
+    console_view_category = "win",
+    cores = 32,
+    os = os.WINDOWS_ANY,
 )
