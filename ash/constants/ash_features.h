@@ -206,6 +206,8 @@ extern const base::Feature kEnableHostnameSetting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableIdleInhibit;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableIkev2Vpn;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableKeyboardBacklightToggle;

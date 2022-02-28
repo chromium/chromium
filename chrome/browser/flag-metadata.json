@@ -2252,6 +2252,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-ikev2-vpn",
+    "owners": [ "jiejiang", "taoyl", "cros-networking@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-image-reader",
     "owners": [ "vikassoni", "liberato" ],
     "expiry_milestone": 115

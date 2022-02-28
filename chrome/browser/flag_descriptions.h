@@ -2703,6 +2703,9 @@ extern const char kEcheSWAInBackgroundDescription[];
 extern const char kEnableIdleInhibitName[];
 extern const char kEnableIdleInhibitDescription[];
 
+extern const char kEnableIkev2VpnName[];
+extern const char kEnableIkev2VpnDescription[];
+
 extern const char kEnableNetworkingInDiagnosticsAppName[];
 extern const char kEnableNetworkingInDiagnosticsAppDescription[];
 
