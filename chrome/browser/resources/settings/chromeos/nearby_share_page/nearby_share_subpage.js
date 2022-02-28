@@ -25,7 +25,7 @@ import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {Route, Router} from '../../router.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.m.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';

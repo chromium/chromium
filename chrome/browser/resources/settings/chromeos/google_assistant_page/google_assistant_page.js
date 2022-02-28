@@ -55,7 +55,7 @@ import '../../prefs/pref_util.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
 import {routes} from '../os_route.m.js';
 import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';

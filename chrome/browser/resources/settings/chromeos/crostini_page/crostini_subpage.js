@@ -28,7 +28,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, CrostiniPortProtocol, CrostiniPortSetting, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniBrowserProxy, CrostiniBrowserProxyImpl, PortState, MIN_VALID_PORT_NUMBER, MAX_VALID_PORT_NUMBER} from './crostini_browser_proxy.js';
 import './crostini_confirmation_dialog.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.m.js';
 import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';

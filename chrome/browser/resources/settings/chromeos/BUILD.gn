@@ -256,7 +256,7 @@ preprocess_if_expr("preprocess_v3") {
   out_folder = "$target_gen_dir/$preprocess_folder_v3"
   out_manifest = "$target_gen_dir/$preprocess_v3_manifest"
   in_files = [
-    "chromeos/deep_linking_behavior.m.js",
+    "chromeos/deep_linking_behavior.js",
     "chromeos/metrics_recorder.m.js",
     "chromeos/os_settings_routes.m.js",
     "chromeos/route_origin_behavior.m.js",
@@ -686,7 +686,6 @@ js_library("lazy_load") {
 }
 
 js_library("deep_linking_behavior") {
-  sources = [ "deep_linking_behavior.m.js" ]
   deps = [
     "..:router",
     "..:setting_id_param_util",

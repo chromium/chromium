@@ -26,7 +26,7 @@ import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import {FingerprintInfo, FingerprintBrowserProxy, FingerprintResultType, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
 import './setup_fingerprint_dialog.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import {routes} from '../os_route.m.js';
 import {Router, Route} from '../../router.js';

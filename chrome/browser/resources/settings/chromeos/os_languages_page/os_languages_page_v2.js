@@ -34,7 +34,7 @@ import './os_add_languages_dialog.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import '../../controls/settings_toggle_button.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.m.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {Router, Route} from '../../router.js';

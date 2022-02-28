@@ -25,7 +25,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
 import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from '../os_people_page/lock_state_behavior.m.js';
 import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
