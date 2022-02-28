@@ -59,8 +59,14 @@ enum class ANGLEImplementation {
 };
 
 struct GL_EXPORT GLImplementationParts {
-  explicit GLImplementationParts(const ANGLEImplementation angle_impl);
-  explicit GLImplementationParts(const GLImplementation gl_impl);
+  constexpr explicit GLImplementationParts(const ANGLEImplementation angle_impl)
+      : gl(kGLImplementationEGLANGLE),
+        angle(MakeANGLEImplementation(kGLImplementationEGLANGLE, angle_impl)) {}
+
+  constexpr explicit GLImplementationParts(const GLImplementation gl_impl)
+      : gl(gl_impl),
+        angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kDefault)) {
+  }
 
   GLImplementation gl = kGLImplementationNone;
   ANGLEImplementation angle = ANGLEImplementation::kNone;
@@ -80,6 +86,21 @@ struct GL_EXPORT GLImplementationParts {
   bool IsValid() const;
   bool IsAllowed(const std::vector<GLImplementationParts>& allowed_impls) const;
   std::string ToString() const;
+
+ private:
+  static constexpr ANGLEImplementation MakeANGLEImplementation(
+      const GLImplementation gl_impl,
+      const ANGLEImplementation angle_impl) {
+    if (gl_impl == kGLImplementationEGLANGLE) {
+      if (angle_impl == ANGLEImplementation::kNone) {
+        return ANGLEImplementation::kDefault;
+      } else {
+        return angle_impl;
+      }
+    } else {
+      return ANGLEImplementation::kNone;
+    }
+  }
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {

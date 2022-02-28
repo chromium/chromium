@@ -26,29 +26,6 @@
 
 namespace gl {
 
-ANGLEImplementation MakeANGLEImplementation(
-    const GLImplementation gl_impl,
-    const ANGLEImplementation angle_impl) {
-  if (gl_impl == kGLImplementationEGLANGLE) {
-    if (angle_impl == ANGLEImplementation::kNone) {
-      return ANGLEImplementation::kDefault;
-    } else {
-      return angle_impl;
-    }
-  } else {
-    return ANGLEImplementation::kNone;
-  }
-}
-
-GLImplementationParts::GLImplementationParts(
-    const ANGLEImplementation angle_impl)
-    : gl(kGLImplementationEGLANGLE),
-      angle(MakeANGLEImplementation(kGLImplementationEGLANGLE, angle_impl)) {}
-
-GLImplementationParts::GLImplementationParts(const GLImplementation gl_impl)
-    : gl(gl_impl),
-      angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kDefault)) {}
-
 bool GLImplementationParts::IsValid() const {
   if (angle == ANGLEImplementation::kNone) {
     return (gl != kGLImplementationEGLANGLE);
