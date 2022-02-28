@@ -26,6 +26,7 @@ void RecursiveMutex::lock() {
     lock_.Acquire();
     DCHECK_EQ(lock_depth_, 0u);
   }
+  lock_.AssertAcquired();
   UpdateStateAfterLockAcquired(thread_id);
 }
 
