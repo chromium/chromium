@@ -132,6 +132,10 @@ protocol::String BuildCookieWarningReason(
         kWarnSameSiteLaxCrossDowngradeLax:
       return protocol::Audits::CookieWarningReasonEnum::
           WarnSameSiteLaxCrossDowngradeLax;
+    case blink::mojom::blink::CookieWarningReason::
+        kWarnAttributeValueExceedsMaxSize:
+      return protocol::Audits::CookieWarningReasonEnum::
+          WarnAttributeValueExceedsMaxSize;
   }
 }
 

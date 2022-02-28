@@ -1053,6 +1053,11 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
     net::CookieInclusionStatus status) {
   auto warning_reasons = std::make_unique<protocol::Array<protocol::String>>();
   if (status.HasWarningReason(
+          net::CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE)) {
+    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
+                                   WarnAttributeValueExceedsMaxSize);
+  }
+  if (status.HasWarningReason(
           net::CookieInclusionStatus::
               WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::

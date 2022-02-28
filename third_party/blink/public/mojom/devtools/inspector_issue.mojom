@@ -127,6 +127,7 @@ enum CookieWarningReason {
   kWarnSameSiteStrictCrossDowngradeLax,
   kWarnSameSiteLaxCrossDowngradeStrict,
   kWarnSameSiteLaxCrossDowngradeLax,
+  kWarnAttributeValueExceedsMaxSize,
 };
 
 // Specific information about |kCookieIssue| type issues.

@@ -490,6 +490,7 @@ experimental domain Audits
       WarnSameSiteStrictCrossDowngradeLax
       WarnSameSiteLaxCrossDowngradeStrict
       WarnSameSiteLaxCrossDowngradeLax
+      WarnAttributeValueExceedsMaxSize
 
   type CookieOperation extends string
     enum
