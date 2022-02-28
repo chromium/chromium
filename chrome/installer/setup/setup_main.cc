@@ -1169,15 +1169,14 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     // threaded task runner so creating one here.
     base::SingleThreadTaskExecutor executor;
 
-    *exit_code = token && nonce && dm_server_url.is_valid() &&
-                         is_valid_command &&
-                         dm_server_url.SchemeIsHTTPOrHTTPS() &&
-                         installer::RotateDeviceTrustKey(
-                             enterprise_connectors::KeyRotationManager::Create(
-                                 std::make_unique<WinKeyNetworkDelegate>()),
-                             dm_server_url, *token, *nonce)
-                     ? installer::ROTATE_DTKEY_SUCCESS
-                     : installer::ROTATE_DTKEY_FAILED;
+    *exit_code =
+        token && nonce && dm_server_url.is_valid() && is_valid_command &&
+                dm_server_url.SchemeIsHTTPOrHTTPS() &&
+                installer::RotateDeviceTrustKey(
+                    enterprise_connectors::KeyRotationManager::Create(),
+                    dm_server_url, *token, *nonce)
+            ? installer::ROTATE_DTKEY_SUCCESS
+            : installer::ROTATE_DTKEY_FAILED;
 #endif
   } else {
     handled = false;

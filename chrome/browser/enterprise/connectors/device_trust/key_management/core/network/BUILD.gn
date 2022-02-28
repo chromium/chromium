@@ -3,17 +3,22 @@
 # found in the LICENSE file.
 
 source_set("network") {
-  public = [ "key_network_delegate.h" ]
+  public = [
+    "key_network_delegate.h",
+    "key_network_delegate_factory.h",
+  ]
+
+  sources = [ "key_network_delegate_factory.cc" ]
+
   deps = [ "//base" ]
 
   if (is_win) {
-    public += [ "win_key_network_delegate.h" ]
-
-    sources = [ "win_key_network_delegate.cc" ]
-
+    sources += [
+      "win_key_network_delegate.cc",
+      "win_key_network_delegate.h",
+    ]
     deps += [
       "//components/winhttp",
-      "//net",
       "//url",
     ]
   }
@@ -21,7 +26,7 @@ source_set("network") {
   if (is_linux) {
     public += [ "linux_key_network_delegate.h" ]
 
-    sources = [ "linux_key_network_delegate.cc" ]
+    sources += [ "linux_key_network_delegate.cc" ]
 
     deps += [
       "//mojo/core:shared_library",
@@ -49,20 +54,6 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-
-  if (is_win) {
-    sources = [ "win_key_network_delegate_unittest.cc" ]
-
-    deps = [
-      ":network",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//net",
-      "//services/network:test_support",
-      "//testing/gtest",
-    ]
-  }
 
   if (is_linux) {
     sources = [ "linux_key_network_delegate_unittest.cc" ]
