@@ -167,6 +167,15 @@ static const MockPermissionConfiguration kPermissionNoop{absl::nullopt, "",
 static const MockClientIdConfiguration kSuccessfulClientId{
     FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
 
+static const MockClientIdConfiguration kClientMetadataHttpNotFound{
+    FetchStatus::kHttpNotFoundError, "", ""};
+
+static const MockClientIdConfiguration kClientMetadataNoResponse{
+    FetchStatus::kNoResponseError, "", ""};
+
+static const MockClientIdConfiguration kClientMetadataInvalidResponse{
+    FetchStatus::kInvalidResponseError, "", ""};
+
 static const AuthRequestTestCase kPermissionTestCases[]{
     {"Successful run with the IdP page loaded",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
@@ -364,6 +373,33 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       kClientMetadataEndpoint,
       kPermissionNoop,
       {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}},
+
+    {"Client metadata file not found",
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
+      kEmptyToken},
+     {kToken, absl::nullopt, FetchStatus::kSuccess, kClientMetadataHttpNotFound,
+      "", kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kPermissionNoop, kMediatedNoop}},
+
+    {"Client metadata empty response",
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
+      kEmptyToken},
+     {kToken, absl::nullopt, FetchStatus::kSuccess, kClientMetadataNoResponse,
+      "", kAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
+      kPermissionNoop, kMediatedNoop}},
+
+    {"Client metadata invalid response",
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {RequestIdTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorFetchingClientMetadataInvalidResponse,
+      kEmptyToken},
+     {kToken, absl::nullopt, FetchStatus::kSuccess,
+      kClientMetadataInvalidResponse, "", kAccountsEndpoint, kTokenEndpoint,
+      kClientMetadataEndpoint, kPermissionNoop, kMediatedNoop}},
 };
 
 // Helper class for receiving the mojo method callback.
@@ -928,7 +964,15 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
            "The response body is empty when fetching the provider's accounts "
            "list."},
           {FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
-           "Provider's accounts list is invalid."}};
+           "Provider's accounts list is invalid."},
+          {FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
+           "The provider's client metadata endpoint cannot be found."},
+          {FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
+           "The response body is empty when fetching the provider's client "
+           "metadata."},
+          {FederatedAuthRequestResult::
+               kErrorFetchingClientMetadataInvalidResponse,
+           "Provider's client metadata is invalid."}};
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   absl::optional<std::string> expected_message =

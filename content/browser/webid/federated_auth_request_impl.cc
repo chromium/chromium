@@ -651,13 +651,47 @@ void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     IdentityProviderMetadata idp_metadata,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata data) {
-  // We purposefully do not check status; client metadata is optional.
-  client_metadata_ = data;
+  switch (status) {
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataHttpNotFound,
+                                 render_frame_host_->GetPageUkmSourceId());
+      CompleteRequest(
+          FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound,
+          "",
+          /*should_call_callback=*/false);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataNoResponse,
+                                 render_frame_host_->GetPageUkmSourceId());
+      CompleteRequest(
+          FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse,
+          "",
+          /*should_call_callback=*/false);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kClientMetadataInvalidResponse,
+                                 render_frame_host_->GetPageUkmSourceId());
+      CompleteRequest(FederatedAuthRequestResult::
+                          kErrorFetchingClientMetadataInvalidResponse,
+                      "",
+                      /*should_call_callback=*/false);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+      client_metadata_ = data;
 
-  network_manager_->SendAccountsRequest(
-      endpoints_.accounts, client_id_,
-      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+      network_manager_->SendAccountsRequest(
+          endpoints_.accounts, client_id_,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr(), idp_metadata));
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      NOTREACHED();
+    }
+  }
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
