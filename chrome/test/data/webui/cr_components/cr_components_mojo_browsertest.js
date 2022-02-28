@@ -24,7 +24,7 @@ var CrComponentsCustomizeThemesTest =
     class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/customize_themes_test.js&host=webui-test';
   }
 };
 

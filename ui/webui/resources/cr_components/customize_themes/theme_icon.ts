@@ -22,4 +22,10 @@ export class ThemeIconElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-theme-icon': ThemeIconElement;
+  }
+}
+
 customElements.define(ThemeIconElement.is, ThemeIconElement);
