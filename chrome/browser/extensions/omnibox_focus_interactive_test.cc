@@ -5,7 +5,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
@@ -368,14 +367,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
 }
 
 // Tab focus should not be stolen by the omnibox - https://crbug.com/1127220.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-// Flaky on Linux/Mac, crbug.com/1254186.
-#define MAYBE_TabFocusStealingFromOopif DISABLED_TabFocusStealingFromOopif
-#else
-#define MAYBE_TabFocusStealingFromOopif TabFocusStealingFromOopif
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
-                       MAYBE_TabFocusStealingFromOopif) {
+IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // CSP of the NTP page enforces that only HTTPS subframes may be used.
