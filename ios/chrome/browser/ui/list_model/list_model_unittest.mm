@@ -118,7 +118,8 @@ TEST_F(ListModelTest, SingleSection) {
   EXPECT_EQ(3, [model numberOfItemsInSection:0]);
 
   // Check the section identifier <-> section correspondance methods.
-  EXPECT_EQ(SectionIdentifierCheese, [model sectionIdentifierForSection:0]);
+  EXPECT_EQ(SectionIdentifierCheese,
+            [model sectionIdentifierForSectionIndex:0]);
   EXPECT_EQ(0, [model sectionForSectionIdentifier:SectionIdentifierCheese]);
 
   // Check the item type <-> item correspondance methods.
@@ -172,9 +173,11 @@ TEST_F(ListModelTest, MultipleSections) {
   EXPECT_EQ(2, [model numberOfItemsInSection:1]);
 
   // Check the section identifier <-> section correspondance methods.
-  EXPECT_EQ(SectionIdentifierCheese, [model sectionIdentifierForSection:0]);
+  EXPECT_EQ(SectionIdentifierCheese,
+            [model sectionIdentifierForSectionIndex:0]);
   EXPECT_EQ(0, [model sectionForSectionIdentifier:SectionIdentifierCheese]);
-  EXPECT_EQ(SectionIdentifierWeasley, [model sectionIdentifierForSection:1]);
+  EXPECT_EQ(SectionIdentifierWeasley,
+            [model sectionIdentifierForSectionIndex:1]);
   EXPECT_EQ(1, [model sectionForSectionIdentifier:SectionIdentifierWeasley]);
 
   // Check the item type <-> item correspondance methods.

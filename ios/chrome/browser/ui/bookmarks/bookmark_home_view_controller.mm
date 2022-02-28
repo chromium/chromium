@@ -2028,9 +2028,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (BOOL)canShowContextMenuFor:(NSIndexPath*)indexPath {
-  if (indexPath == nil || [self.sharedState.tableViewModel
-                              sectionIdentifierForSection:indexPath.section] !=
-                              BookmarkHomeSectionIdentifierBookmarks) {
+  if (indexPath == nil ||
+      [self.sharedState.tableViewModel
+          sectionIdentifierForSectionIndex:indexPath.section] !=
+          BookmarkHomeSectionIdentifierBookmarks) {
     return NO;
   }
 
@@ -2247,7 +2248,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger sectionIdentifier = [self.sharedState.tableViewModel
-      sectionIdentifierForSection:indexPath.section];
+      sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionIdentifier == BookmarkHomeSectionIdentifierBookmarks) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
     DCHECK(node);
@@ -2285,7 +2286,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger sectionIdentifier = [self.sharedState.tableViewModel
-      sectionIdentifierForSection:indexPath.section];
+      sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionIdentifier == BookmarkHomeSectionIdentifierBookmarks &&
       self.sharedState.currentlyInEditMode) {
     const BookmarkNode* node = [self nodeAtIndexPath:indexPath];

@@ -236,7 +236,7 @@ void ChromeTableViewControllerTest::DeleteItem(
     // Delete data in the model.
     TableViewModel* model = strong_controller.tableViewModel;
     NSInteger section_ID =
-        [model sectionIdentifierForSection:index_path.section];
+        [model sectionIdentifierForSectionIndex:index_path.section];
     NSInteger item_type = [model itemTypeForIndexPath:index_path];
     NSUInteger index = [model indexInItemTypeForIndexPath:index_path];
     [model removeItemWithType:item_type

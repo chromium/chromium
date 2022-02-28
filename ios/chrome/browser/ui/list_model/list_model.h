@@ -119,7 +119,7 @@ const NSInteger kItemTypeEnumZero = 100;
 #pragma mark Query model coordinates from index paths
 
 // Returns the section identifier for the given section.
-- (NSInteger)sectionIdentifierForSection:(NSInteger)section;
+- (NSInteger)sectionIdentifierForSectionIndex:(NSInteger)sectionIndex;
 
 // Returns the item type for the given index path.
 - (NSInteger)itemTypeForIndexPath:(NSIndexPath*)indexPath;

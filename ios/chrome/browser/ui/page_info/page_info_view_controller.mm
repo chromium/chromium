@@ -181,7 +181,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   switch (sectionIdentifier) {
     case SectionIdentifierSecurityContent: {
       TableViewLinkHeaderFooterView* linkView =

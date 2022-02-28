@@ -153,7 +153,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
   if (sectionIdentifier != SectionIdentifierOptions)
     return NO;
   return YES;
@@ -163,7 +163,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
 
   if (sectionIdentifier == SectionIdentifierOptions) {
     // Store the user choice.

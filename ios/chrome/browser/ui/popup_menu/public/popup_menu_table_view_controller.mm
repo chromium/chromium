@@ -185,7 +185,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   for (NSInteger section = 0; section < [self.tableViewModel numberOfSections];
        section++) {
     NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:section];
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
     for (TableViewItem<PopupMenuItem>* item in
          [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier]) {
       CGSize sizeForCell = [item cellSizeForWidth:self.view.bounds.size.width];

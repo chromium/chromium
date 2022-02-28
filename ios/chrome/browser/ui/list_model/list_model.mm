@@ -145,10 +145,10 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 #pragma mark Query model coordinates from index paths
 
-- (NSInteger)sectionIdentifierForSection:(NSInteger)section {
-  DCHECK_LT(base::checked_cast<NSUInteger>(section),
+- (NSInteger)sectionIdentifierForSectionIndex:(NSInteger)sectionIndex {
+  DCHECK_LT(base::checked_cast<NSUInteger>(sectionIndex),
             [_sectionIdentifiers count]);
-  return [[_sectionIdentifiers objectAtIndex:section] integerValue];
+  return [[_sectionIdentifiers objectAtIndex:sectionIndex] integerValue];
 }
 
 - (NSInteger)itemTypeForIndexPath:(NSIndexPath*)indexPath {
@@ -190,13 +190,13 @@ typedef NSMutableArray<ListItem*> SectionItems;
 }
 
 - (ListItem*)headerForSection:(NSInteger)section {
-  NSInteger sectionIdentifier = [self sectionIdentifierForSection:section];
+  NSInteger sectionIdentifier = [self sectionIdentifierForSectionIndex:section];
   NSNumber* key = [NSNumber numberWithInteger:sectionIdentifier];
   return [_headers objectForKey:key];
 }
 
 - (ListItem*)footerForSection:(NSInteger)section {
-  NSInteger sectionIdentifier = [self sectionIdentifierForSection:section];
+  NSInteger sectionIdentifier = [self sectionIdentifierForSectionIndex:section];
   NSNumber* key = [NSNumber numberWithInteger:sectionIdentifier];
   return [_footers objectForKey:key];
 }
@@ -336,7 +336,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 - (NSInteger)numberOfItemsInSection:(NSInteger)section {
   DCHECK_LT(base::checked_cast<NSUInteger>(section), [_sections count]);
-  NSInteger sectionIdentifier = [self sectionIdentifierForSection:section];
+  NSInteger sectionIdentifier = [self sectionIdentifierForSectionIndex:section];
   SectionItems* items = [_sections objectAtIndex:section];
   if ([self sectionIsCollapsed:sectionIdentifier]) {
     switch (self.collapsableMode) {

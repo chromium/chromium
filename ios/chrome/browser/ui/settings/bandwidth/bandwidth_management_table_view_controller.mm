@@ -122,7 +122,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UIView* footerView = [super tableView:tableView
                  viewForFooterInSection:section];
   if (SectionIdentifierActions ==
-      [self.tableViewModel sectionIdentifierForSection:section]) {
+      [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* footer =
         base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
     footer.delegate = self;

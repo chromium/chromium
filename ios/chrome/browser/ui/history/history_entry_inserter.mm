@@ -142,7 +142,7 @@
 
 - (void)removeSection:(NSInteger)sectionIndex {
   NSUInteger sectionIdentifier =
-      [_listModel sectionIdentifierForSection:sectionIndex];
+      [_listModel sectionIdentifierForSectionIndex:sectionIndex];
 
   // Sections should not be removed unless there are no items in that section.
   DCHECK(![[_listModel itemsInSectionWithIdentifier:sectionIdentifier] count]);

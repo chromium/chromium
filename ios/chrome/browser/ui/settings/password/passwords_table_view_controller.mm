@@ -1855,7 +1855,7 @@ bool IsFaviconEnabled() {
       break;
     case ItemTypeSavedPassword: {
       DCHECK_EQ(SectionIdentifierSavedPasswords,
-                [model sectionIdentifierForSection:indexPath.section]);
+                [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::PasswordForm form =
           IsFaviconEnabled()
               ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
@@ -1869,7 +1869,7 @@ bool IsFaviconEnabled() {
     }
     case ItemTypeBlocked: {
       DCHECK_EQ(SectionIdentifierBlocked,
-                [model sectionIdentifierForSection:indexPath.section]);
+                [model sectionIdentifierForSectionIndex:indexPath.section]);
       password_manager::PasswordForm form =
           IsFaviconEnabled()
               ? base::mac::ObjCCastStrict<PasswordFormContentItem>(
@@ -1883,7 +1883,7 @@ bool IsFaviconEnabled() {
     }
     case ItemTypeExportPasswordsButton:
       DCHECK_EQ(SectionIdentifierExportPasswordsButton,
-                [model sectionIdentifierForSection:indexPath.section]);
+                [model sectionIdentifierForSectionIndex:indexPath.section]);
       if (_exportReady) {
         [self startPasswordsExportFlow];
       }
@@ -1952,7 +1952,7 @@ bool IsFaviconEnabled() {
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForHeaderInSection:section];
-  switch ([self.tableViewModel sectionIdentifierForSection:section]) {
+  switch ([self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     case SectionIdentifierSavePasswordsSwitch: {
       TableViewLinkHeaderFooterView* linkView =
           base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);

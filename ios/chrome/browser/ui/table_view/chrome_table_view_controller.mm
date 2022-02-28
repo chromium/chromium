@@ -192,8 +192,8 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   NSArray* sortedIndexPaths =
       [indexPaths sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+    NSInteger sectionIdentifier = [self.tableViewModel
+        sectionIdentifierForSectionIndex:indexPath.section];
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
     NSUInteger index =
         [self.tableViewModel indexInItemTypeForIndexPath:indexPath];

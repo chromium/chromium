@@ -98,7 +98,7 @@ const CGFloat kCardBorderRadius = 11;
   }
 
   NSInteger sectionIdentifier =
-      [self.collectionViewModel sectionIdentifierForSection:section];
+      [self.collectionViewModel sectionIdentifierForSectionIndex:section];
 
   [self.collectionView
       performBatchUpdates:^{
@@ -575,7 +575,7 @@ const CGFloat kCardBorderRadius = 11;
 
 - (BOOL)shouldUseCustomStyleForSection:(NSInteger)section {
   NSNumber* identifier =
-      @([self.collectionViewModel sectionIdentifierForSection:section]);
+      @([self.collectionViewModel sectionIdentifierForSectionIndex:section]);
   ContentSuggestionsSectionInformation* sectionInformation =
       self.sectionInfoBySectionIdentifier[identifier];
   return sectionInformation.layout == ContentSuggestionsSectionLayoutCustom;
@@ -675,7 +675,8 @@ const CGFloat kCardBorderRadius = 11;
 
 - (NSIndexPath*)addEmptyItemForSection:(NSInteger)section {
   CSCollectionViewModel* model = self.collectionViewModel;
-  NSInteger sectionIdentifier = [model sectionIdentifierForSection:section];
+  NSInteger sectionIdentifier =
+      [model sectionIdentifierForSectionIndex:section];
   ContentSuggestionsSectionInformation* sectionInfo =
       self.sectionInfoBySectionIdentifier[@(sectionIdentifier)];
 
@@ -687,27 +688,27 @@ const CGFloat kCardBorderRadius = 11;
 }
 
 - (BOOL)isReturnToRecentTabSection:(NSInteger)section {
-  return [self.collectionViewModel sectionIdentifierForSection:section] ==
+  return [self.collectionViewModel sectionIdentifierForSectionIndex:section] ==
          SectionIdentifierReturnToRecentTab;
 }
 
 - (BOOL)isMostVisitedSection:(NSInteger)section {
-  return [self.collectionViewModel sectionIdentifierForSection:section] ==
+  return [self.collectionViewModel sectionIdentifierForSectionIndex:section] ==
          SectionIdentifierMostVisited;
 }
 
 - (BOOL)isHeaderSection:(NSInteger)section {
-  return [self.collectionViewModel sectionIdentifierForSection:section] ==
+  return [self.collectionViewModel sectionIdentifierForSectionIndex:section] ==
          SectionIdentifierLogo;
 }
 
 - (BOOL)isPromoSection:(NSInteger)section {
-  return [self.collectionViewModel sectionIdentifierForSection:section] ==
+  return [self.collectionViewModel sectionIdentifierForSectionIndex:section] ==
          SectionIdentifierPromo;
 }
 
 - (BOOL)isSingleCellSection:(NSInteger)section {
-  return [self.collectionViewModel sectionIdentifierForSection:section] ==
+  return [self.collectionViewModel sectionIdentifierForSectionIndex:section] ==
          SectionIdentifierSingleCell;
 }
 

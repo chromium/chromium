@@ -354,8 +354,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   }
   if (self.editing) {
     // Update the selected item counts and the toolbar buttons.
-    NSInteger sectionID =
-        [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+    NSInteger sectionID = [self.tableViewModel
+        sectionIdentifierForSectionIndex:indexPath.section];
     if (sectionID == SectionIdentifierUnread)
       self.selectedUnreadItemCount++;
     if (sectionID == SectionIdentifierRead)
@@ -372,8 +372,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
   if (self.editing) {
     // Update the selected item counts and the toolbar buttons.
-    NSInteger sectionID =
-        [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+    NSInteger sectionID = [self.tableViewModel
+        sectionIdentifierForSectionIndex:indexPath.section];
     if (sectionID == SectionIdentifierUnread)
       self.selectedUnreadItemCount--;
     if (sectionID == SectionIdentifierRead)
@@ -923,7 +923,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   // Move the item in |model|.
   [self deleteItemAtIndexPathFromModel:modelIndex];
   NSInteger toSectionID =
-      [model sectionIdentifierForSection:toIndexPath.section];
+      [model sectionIdentifierForSectionIndex:toIndexPath.section];
   [model insertItem:item
       inSectionWithIdentifier:toSectionID
                       atIndex:toIndexPath.row];
@@ -1013,7 +1013,8 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 // Deletes the ListItem corresponding to |indexPath| in the model.
 - (void)deleteItemAtIndexPathFromModel:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
-  NSInteger sectionID = [model sectionIdentifierForSection:indexPath.section];
+  NSInteger sectionID =
+      [model sectionIdentifierForSectionIndex:indexPath.section];
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
   NSUInteger index = [model indexInItemTypeForIndexPath:indexPath];
   [model removeItemWithType:itemType

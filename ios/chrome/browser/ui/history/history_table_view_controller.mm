@@ -560,7 +560,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
-  if ([self.tableViewModel sectionIdentifierForSection:section] ==
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
       kEntriesStatusSectionIdentifier)
     return 0;
   return kSeparationSpaceBetweenSections;
@@ -569,7 +569,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   // Hide the status header if the currentStatusMessage is nil.
-  if ([self.tableViewModel sectionIdentifierForSection:section] ==
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
           kEntriesStatusSectionIdentifier &&
       [self.currentStatusMessage length] == 0)
     return 0;
@@ -643,7 +643,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     viewForHeaderInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForHeaderInSection:section];
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   switch (sectionIdentifier) {
     case kEntriesStatusSectionIdentifier: {
       // Might be a different type of header.
@@ -851,8 +851,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   NSArray* sortedIndexPaths =
       [indexArray sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
-    NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:indexPath.section];
+    NSInteger sectionIdentifier = [self.tableViewModel
+        sectionIdentifierForSectionIndex:indexPath.section];
     NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
     NSUInteger index =
         [self.tableViewModel indexInItemTypeForIndexPath:indexPath];
@@ -881,7 +881,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   for (int section = 1; section < [self.tableViewModel numberOfSections];
        ++section) {
     NSInteger sectionIdentifier =
-        [self.tableViewModel sectionIdentifierForSection:section];
+        [self.tableViewModel sectionIdentifierForSectionIndex:section];
     if ([self.tableViewModel
             hasSectionForSectionIdentifier:sectionIdentifier]) {
       NSArray* items =

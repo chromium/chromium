@@ -240,7 +240,8 @@ using bookmarks::BookmarkNode;
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  switch ([self.tableViewModel sectionIdentifierForSection:indexPath.section]) {
+  switch ([self.tableViewModel
+      sectionIdentifierForSectionIndex:indexPath.section]) {
     case SectionIdentifierAddFolder:
       [self pushFolderAddViewController];
       break;

@@ -158,7 +158,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   UIView* footerView =
       [super tableView:tableView viewForFooterInSection:section];
   if (SectionIdentifierTranslate ==
-      [self.tableViewModel sectionIdentifierForSection:section]) {
+      [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* footer =
         base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(footerView);
     footer.delegate = self;

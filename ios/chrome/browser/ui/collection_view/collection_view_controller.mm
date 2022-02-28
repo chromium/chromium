@@ -118,7 +118,7 @@
       [indexPaths sortedArrayUsingSelector:@selector(compare:)];
   for (NSIndexPath* indexPath in [sortedIndexPaths reverseObjectEnumerator]) {
     NSInteger sectionIdentifier = [self.collectionViewModel
-        sectionIdentifierForSection:indexPath.section];
+        sectionIdentifierForSectionIndex:indexPath.section];
     NSInteger itemType =
         [self.collectionViewModel itemTypeForIndexPath:indexPath];
     NSUInteger index =
@@ -142,8 +142,8 @@
       [self.collectionViewModel itemAtIndexPath:indexPath];
 
   // Item coordinates.
-  NSInteger sectionIdentifier =
-      [self.collectionViewModel sectionIdentifierForSection:indexPath.section];
+  NSInteger sectionIdentifier = [self.collectionViewModel
+      sectionIdentifierForSectionIndex:indexPath.section];
   NSInteger itemType =
       [self.collectionViewModel itemTypeForIndexPath:indexPath];
   NSUInteger indexInItemType =
@@ -154,7 +154,7 @@
                      fromSectionWithIdentifier:sectionIdentifier
                                        atIndex:indexInItemType];
   NSInteger section = [self.collectionViewModel
-      sectionIdentifierForSection:newIndexPath.section];
+      sectionIdentifierForSectionIndex:newIndexPath.section];
   [self.collectionViewModel insertItem:item
                inSectionWithIdentifier:section
                                atIndex:newIndexPath.item];

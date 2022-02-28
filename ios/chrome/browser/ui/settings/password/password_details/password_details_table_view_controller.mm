@@ -634,7 +634,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (sectionIdentifier == SectionIdentifierFooter ||
       sectionIdentifier == SectionIdentifierTLDFooter) {
@@ -646,7 +646,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
   if (sectionIdentifier == SectionIdentifierSite) {
     return 0;
   }

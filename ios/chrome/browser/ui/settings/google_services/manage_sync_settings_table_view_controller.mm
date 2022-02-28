@@ -96,7 +96,7 @@
   }
 
   NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSection:section];
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
   if (sectionIdentifier == SignOutSectionIdentifier) {
     TableViewLinkHeaderFooterView* linkView =

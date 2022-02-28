@@ -207,7 +207,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Only when items are in SectionIdentifierExceptions and are not set by the
   // policy are editable.
   return
-      [self.tableViewModel sectionIdentifierForSection:indexPath.section] ==
+      [self.tableViewModel
+          sectionIdentifierForSectionIndex:indexPath.section] ==
           SectionIdentifierExceptions &&
       [self.tableViewModel itemAtIndexPath:indexPath].type == ItemTypeException;
 }

@@ -285,7 +285,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     viewForFooterInSection:(NSInteger)section {
   UIView* view = [super tableView:tableView viewForFooterInSection:section];
   if (SectionIdentifierPassphrase ==
-      [self.tableViewModel sectionIdentifierForSection:section]) {
+      [self.tableViewModel sectionIdentifierForSectionIndex:section]) {
     TableViewLinkHeaderFooterView* linkView =
         base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
