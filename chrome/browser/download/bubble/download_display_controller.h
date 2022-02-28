@@ -44,9 +44,8 @@ class DownloadDisplayController
   ProgressInfo GetProgress();
 
   // Asks `display_` to show the toolbar button. Does nothing if the toolbar
-  // button is already showing. If `show_details` is true, `display_` will
-  // show a dialog alongside with the button.
-  void ShowToolbarButton(bool show_details);
+  // button is already showing.
+  void ShowToolbarButton();
   // Asks `display_` to hide the toolbar button. Does nothing if the toolbar
   // button is already hidden.
   void HideToolbarButton();
@@ -56,6 +55,8 @@ class DownloadDisplayController
   }
 
  private:
+  friend class DownloadDisplayControllerTest;
+
   // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
   // be hidden after the `interval`.
   void ScheduleToolbarDisappearance(base::TimeDelta interval);

@@ -54,6 +54,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   void ShowDetails() override { detail_shown_ = true; }
 
   bool IsDetailsShown() { return detail_shown_; }
+  void SetDetailsShown(bool detail_shown) { detail_shown_ = detail_shown; }
 
   DownloadIconState GetDownloadIconState() { return icon_state_; }
 
@@ -63,6 +64,8 @@ class FakeDownloadDisplay : public DownloadDisplay {
   DownloadIconState icon_state_ = DownloadIconState::kComplete;
   bool detail_shown_ = false;
 };
+
+}  // namespace
 
 class DownloadDisplayControllerTest : public testing::Test {
  public:
@@ -119,7 +122,9 @@ class DownloadDisplayControllerTest : public testing::Test {
         .WillRepeatedly(Return(received_bytes));
     EXPECT_CALL(item(index), GetTotalBytes()).WillRepeatedly(Return(100));
     EXPECT_CALL(item(index), IsDone()).WillRepeatedly(Return(false));
-    in_progress_count_++;
+    if (state == DownloadState::IN_PROGRESS) {
+      in_progress_count_++;
+    }
     EXPECT_CALL(manager(), InProgressCount())
         .WillRepeatedly(Return(in_progress_count_));
 
@@ -130,7 +135,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(*manager_.get(), GetAllDownloads(_))
         .WillRepeatedly(SetArgPointee<0>(items));
     item(index).AddObserver(&controller().get_download_notifier_for_testing());
-    item(index).NotifyObserversDownloadUpdated();
+    controller().OnDownloadCreated(&manager(), &item(index));
   }
 
   void UpdateDownloadItem(int item_index, DownloadState state) {
@@ -210,7 +215,8 @@ TEST_F(DownloadDisplayControllerTest, GetProgressItemsAllComplete) {
 }
 
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {
-  EXPECT_FALSE(display().IsShowing());
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
@@ -236,26 +242,48 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {
 
 TEST_F(DownloadDisplayControllerTest,
        UpdateToolbarButtonState_MultipleDownloads) {
-  EXPECT_FALSE(display().IsShowing());
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress));
 
+  // Reset details_shown before the second download starts. This can happen if
+  // the user clicks somewhere else to dismiss the download bubble.
+  display().SetDetailsShown(false);
+
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::IN_PROGRESS);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress));
 
+  // Reset details_shown while the downloads are in progress. This can happen if
+  // the user clicks somewhere else to dismiss the download bubble.
+  display().SetDetailsShown(false);
+
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
   // The download icon state is still kProgress because not all downloads are
-  // completed.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  // completed. details_shown is still false, because the details are only
+  // popped up when the download is created.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress));
 
   UpdateDownloadItem(/*item_index=*/1, DownloadState::COMPLETE);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       UpdateToolbarButtonState_OnCompleteItemCreated) {
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::COMPLETE);
+  // Don't show the button if the new download is already completed.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete));
 }
 
@@ -293,4 +321,3 @@ TEST_F(DownloadDisplayControllerTest, InitialState_NoLastDownload) {
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete));
 }
-}  // namespace

@@ -33,6 +33,10 @@ void DownloadDisplayController::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* item) {
   UpdateToolbarButtonState();
+  // Only show details if the created download is in progress.
+  if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
+    display_->ShowDetails();
+  }
 }
 
 void DownloadDisplayController::OnDownloadUpdated(
@@ -53,13 +57,10 @@ void DownloadDisplayController::OnManagerGoingDown(
   }
 }
 
-void DownloadDisplayController::ShowToolbarButton(bool show_details) {
+void DownloadDisplayController::ShowToolbarButton() {
   if (!display_->IsShowing()) {
     display_->Enable();
     display_->Show();
-    if (show_details) {
-      display_->ShowDetails();
-    }
   }
 }
 
@@ -73,7 +74,7 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
   download::DownloadIconState icon_state;
 
   if (download_manager_->InProgressCount() > 0) {
-    ShowToolbarButton(/*show_details=*/true);
+    ShowToolbarButton();
     icon_state = download::DownloadIconState::kProgress;
   } else {
     icon_state = download::DownloadIconState::kComplete;
@@ -102,7 +103,7 @@ void DownloadDisplayController::MaybeShowButtonWhenCreated() {
   // this can happen if the system clock has moved backward.
   if (time_since_last_completion < kToolbarIconVisibilityTimeInterval &&
       current_time >= last_complete_time) {
-    ShowToolbarButton(/*show_details=*/false);
+    ShowToolbarButton();
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval -
                                  time_since_last_completion);
   }
