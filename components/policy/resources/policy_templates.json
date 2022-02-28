@@ -1333,7 +1333,7 @@
     },
     {
       'name': 'FirstPartySets',
-      'owners': ['kaklilu@chromium.com', 'chrome-first-party-sets@chromium.org'],
+      'owners': ['kaklilu@chromium.org', 'chrome-first-party-sets@chromium.org'],
       'type': 'group',
       'caption': '''First-Party Sets Settings''',
       'desc': '''Controls policies for the First-Party Sets feature.''',
@@ -30132,7 +30132,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
     },
     {
       'name': 'FirstPartySetsEnabled',
-      'owners': ['kaklilu@chromium.com', 'chrome-first-party-sets@chromium.org'],
+      'owners': ['kaklilu@chromium.org', 'chrome-first-party-sets@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'features' : {
