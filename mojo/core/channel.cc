@@ -36,6 +36,14 @@ namespace {
 
 std::atomic_bool g_use_trivial_messages{false};
 
+// To ensure amortized O(1) appends, need to be >1. Most STL implementations
+// use 2, but it may be too much for us, and we do see OOM crashes in the
+// reallocation.
+//
+// TODO(1301294): Consider asking the memory allocator for a
+// suitable size.
+constexpr float kGrowthFactor = 1.5;
+
 static_assert(
     IsAlignedForChannelMessage(sizeof(Channel::Message::LegacyHeader)),
     "Invalid LegacyHeader size.");
@@ -524,7 +532,9 @@ bool ComplexMessage::ExtendPayload(size_t new_payload_size) {
   size_t header_size = capacity_ - capacity_without_header;
   if (new_payload_size > capacity_without_header) {
     size_t new_capacity =
-        std::max(capacity_without_header * 2, new_payload_size) + header_size;
+        std::max(static_cast<size_t>(capacity_without_header * kGrowthFactor),
+                 new_payload_size) +
+        header_size;
     Channel::AlignedBuffer new_data = MakeAlignedBuffer(new_capacity);
     memcpy(new_data.get(), data_.get(), capacity_);
     data_ = std::move(new_data);
@@ -721,7 +731,8 @@ class Channel::ReadBuffer {
   // |num_bytes| more bytes; returns the address of the first available byte.
   char* Reserve(size_t num_bytes) {
     if (num_occupied_bytes_ + num_bytes > size_) {
-      size_ = std::max(size_ * 2, num_occupied_bytes_ + num_bytes);
+      size_ = std::max(static_cast<size_t>(size_ * kGrowthFactor),
+                       num_occupied_bytes_ + num_bytes);
       AlignedBuffer new_data = MakeAlignedBuffer(size_);
       memcpy(new_data.get(), data_.get(), num_occupied_bytes_);
       data_ = std::move(new_data);
