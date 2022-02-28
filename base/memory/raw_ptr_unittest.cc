@@ -11,16 +11,21 @@
 #include <utility>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+using testing::AllOf;
+using testing::HasSubstr;
 using testing::Test;
 
 static_assert(sizeof(raw_ptr<void>) == sizeof(void*),
@@ -84,7 +89,8 @@ static void ClearCounters() {
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-using CountingSuperClass = base::internal::BackupRefPtrImpl;
+using CountingSuperClass =
+    base::internal::BackupRefPtrImpl</*AllowDangling=*/false>;
 #else
 using CountingSuperClass = base::internal::RawPtrNoOpImpl;
 #endif
@@ -1163,6 +1169,158 @@ TEST(BackupRefPtrImpl, ReinterpretCast) {
   EXPECT_DEATH_IF_SUPPORTED(*wrapped_ptr = nullptr, "");
 }
 #endif
+
+namespace {
+
+// Install dangling raw_ptr handlers and restore them when going out of scope.
+class ScopedInstallDanglingRawPtrChecks {
+ public:
+  ScopedInstallDanglingRawPtrChecks() {
+    old_detected_fn_ = partition_alloc::GetDanglingRawPtrDetectedFn();
+    old_dereferenced_fn_ = partition_alloc::GetDanglingRawPtrReleasedFn();
+    allocator::InstallDanglingRawPtrChecks();
+  }
+  ~ScopedInstallDanglingRawPtrChecks() {
+    partition_alloc::SetDanglingRawPtrDetectedFn(old_detected_fn_);
+    partition_alloc::SetDanglingRawPtrReleasedFn(old_dereferenced_fn_);
+  }
+
+ private:
+  partition_alloc::DanglingRawPtrDetectedFn* old_detected_fn_;
+  partition_alloc::DanglingRawPtrReleasedFn* old_dereferenced_fn_;
+};
+
+}  // namespace
+
+TEST(BackupRefPtrImpl, RawPtrMayDangle) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  void* ptr = allocator.root()->Alloc(16, "");
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr = ptr;
+  allocator.root()->Free(ptr);  // No dangling raw_ptr reported.
+  dangling_ptr = nullptr;       // No dangling raw_ptr reported.
+}
+
+TEST(BackupRefPtrImpl, RawPtrNotDangling) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  void* ptr = allocator.root()->Alloc(16, "");
+  raw_ptr<void> dangling_ptr = ptr;
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        allocator.root()->Free(ptr);  // Dangling raw_ptr detected.
+        dangling_ptr = nullptr;       // Dangling raw_ptr released.
+      },
+      AllOf(HasSubstr("Detected dangling raw_ptr"),
+            HasSubstr("The memory was freed at:"),
+            HasSubstr("The dangling raw_ptr was released at:")));
+#endif
+}
+
+// Check the comparator operators work, even across raw_ptr with different
+// dangling policies.
+TEST(BackupRefPtrImpl, DanglingPtrComparison) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  void* ptr_1 = allocator.root()->Alloc(16, "");
+  void* ptr_2 = allocator.root()->Alloc(16, "");
+
+  if (ptr_1 > ptr_2)
+    std::swap(ptr_1, ptr_2);
+
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1 = ptr_1;
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2 = ptr_2;
+  raw_ptr<void> not_dangling_ptr_1 = ptr_1;
+  raw_ptr<void> not_dangling_ptr_2 = ptr_2;
+
+  EXPECT_EQ(dangling_ptr_1, not_dangling_ptr_1);
+  EXPECT_EQ(dangling_ptr_2, not_dangling_ptr_2);
+  EXPECT_NE(dangling_ptr_1, not_dangling_ptr_2);
+  EXPECT_NE(dangling_ptr_2, not_dangling_ptr_1);
+  EXPECT_LT(dangling_ptr_1, not_dangling_ptr_2);
+  EXPECT_GT(dangling_ptr_2, not_dangling_ptr_1);
+  EXPECT_LT(not_dangling_ptr_1, dangling_ptr_2);
+  EXPECT_GT(not_dangling_ptr_2, dangling_ptr_1);
+
+  not_dangling_ptr_1 = nullptr;
+  not_dangling_ptr_2 = nullptr;
+
+  allocator.root()->Free(ptr_1);
+  allocator.root()->Free(ptr_2);
+}
+
+// Check the assignment operator works, even across raw_ptr with different
+// dangling policies.
+TEST(BackupRefPtrImpl, DanglingPtrAssignment) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  void* ptr = allocator.root()->Alloc(16, "");
+
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1;
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2;
+  raw_ptr<void> not_dangling_ptr;
+
+  dangling_ptr_1 = ptr;
+
+  not_dangling_ptr = dangling_ptr_1;
+  dangling_ptr_1 = nullptr;
+
+  dangling_ptr_2 = not_dangling_ptr;
+  not_dangling_ptr = nullptr;
+
+  allocator.root()->Free(ptr);
+
+  dangling_ptr_1 = dangling_ptr_2;
+  dangling_ptr_2 = nullptr;
+
+  not_dangling_ptr = dangling_ptr_1;
+  dangling_ptr_1 = nullptr;
+}
+
+// Check the copy constructor works, even across raw_ptr with different dangling
+// policies.
+TEST(BackupRefPtrImpl, DanglingPtrCopyContructor) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  PartitionAllocGlobalInit(HandleOOM);
+  PartitionAllocator<ThreadSafe> allocator;
+  allocator.init(kOpts);
+  ScopedInstallDanglingRawPtrChecks enable_dangling_raw_ptr_checks;
+
+  void* ptr = allocator.root()->Alloc(16, "");
+
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_1(ptr);
+  raw_ptr<void> not_dangling_ptr_1(ptr);
+
+  raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr_2(not_dangling_ptr_1);
+  raw_ptr<void> not_dangling_ptr_2(dangling_ptr_1);
+
+  not_dangling_ptr_1 = nullptr;
+  not_dangling_ptr_2 = nullptr;
+
+  allocator.root()->Free(ptr);
+}
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

@@ -135,6 +135,7 @@ BASE_EXPORT void CheckThatAddressIsntWithinFirstPartitionPage(
     uintptr_t address);
 #endif
 
+template <bool AllowDangling = false>
 struct BackupRefPtrImpl {
   // Note that `BackupRefPtrImpl` itself is not thread-safe. If multiple threads
   // modify the same smart pointer object without synchronization, a data race
@@ -495,14 +496,19 @@ struct IsSupportedType<T,
 // non-default move constructor/assignment. Thus, it's possible to get an error
 // where the pointer is not actually dangling, and have to work around the
 // compiler. We have not managed to construct such an example in Chromium yet.
-template <typename T,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-          typename Impl = internal::BackupRefPtrImpl>
+using RawPtrMayDangle = internal::BackupRefPtrImpl</*AllowDangling=*/true>;
+using RawPtrBanDanglingIfSupported =
+    internal::BackupRefPtrImpl</*AllowDangling=*/false>;
 #elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-          typename Impl = internal::AsanBackupRefPtrImpl>
+using RawPtrMayDangle = internal::AsanBackupRefPtrImpl;
+using RawPtrBanDanglingIfSupported = internal::AsanBackupRefPtrImpl;
 #else
-          typename Impl = internal::RawPtrNoOpImpl>
+using RawPtrMayDangle = internal::RawPtrNoOpImpl;
+using RawPtrBanDanglingIfSupported = internal::RawPtrNoOpImpl;
 #endif
+
+template <typename T, typename Impl = RawPtrBanDanglingIfSupported>
 class TRIVIAL_ABI GSL_POINTER raw_ptr {
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
@@ -896,6 +902,17 @@ RAW_PTR_FUNC_ATTRIBUTES bool operator>=(const raw_ptr<U, I>& lhs,
 }  // namespace base
 
 using base::raw_ptr;
+
+// DisableDanglingPtrDetection option for raw_ptr annotates
+// "intentional-and-safe" dangling pointers. It is meant to be used at the
+// margin, only if there is no better way to re-architecture the code.
+//
+// Usage:
+// raw_ptr<T, DisableDanglingPtrDetection> dangling_ptr;
+//
+// When using it, please provide a justification about what guarantees it will
+// never be dereferenced after becoming dangling.
+using DisableDanglingPtrDetection = base::RawPtrMayDangle;
 
 namespace std {
 

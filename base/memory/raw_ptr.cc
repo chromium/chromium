@@ -20,24 +20,35 @@
 
 namespace base::internal {
 
-void BackupRefPtrImpl::AcquireInternal(uintptr_t address) {
+template <bool AllowDangling>
+void BackupRefPtrImpl<AllowDangling>::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
   uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
-  PartitionRefCountPointer(slot_start)->Acquire();
+  if constexpr (AllowDangling)
+    PartitionRefCountPointer(slot_start)->AcquireFromUnprotectedPtr();
+  else
+    PartitionRefCountPointer(slot_start)->Acquire();
 }
 
-void BackupRefPtrImpl::ReleaseInternal(uintptr_t address) {
+template <bool AllowDangling>
+void BackupRefPtrImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
   uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
-  if (PartitionRefCountPointer(slot_start)->Release())
-    PartitionAllocFreeForRefCounting(slot_start);
+  if constexpr (AllowDangling) {
+    if (PartitionRefCountPointer(slot_start)->ReleaseFromUnprotectedPtr())
+      PartitionAllocFreeForRefCounting(slot_start);
+  } else {
+    if (PartitionRefCountPointer(slot_start)->Release())
+      PartitionAllocFreeForRefCounting(slot_start);
+  }
 }
 
-bool BackupRefPtrImpl::IsPointeeAlive(uintptr_t address) {
+template <bool AllowDangling>
+bool BackupRefPtrImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
@@ -45,10 +56,16 @@ bool BackupRefPtrImpl::IsPointeeAlive(uintptr_t address) {
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 
-bool BackupRefPtrImpl::IsValidDelta(uintptr_t address,
-                                    ptrdiff_t delta_in_bytes) {
+template <bool AllowDangling>
+bool BackupRefPtrImpl<AllowDangling>::IsValidDelta(uintptr_t address,
+                                                   ptrdiff_t delta_in_bytes) {
   return PartitionAllocIsValidPtrDelta(address, delta_in_bytes);
 }
+
+// Explicitly instantiates the two BackupRefPtr variants in the .cc. This
+// ensures the definitions not visible from the .h are available in the binary.
+template struct BackupRefPtrImpl</*AllowDangling=*/false>;
+template struct BackupRefPtrImpl</*AllowDangling=*/true>;
 
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
