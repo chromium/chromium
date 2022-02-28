@@ -85,6 +85,10 @@ class TestNoOverrideCustomizeOptions(unittest.TestCase):
           benchmark.Name())
 
 
+class BenchmarkOptionsTest(unittest.TestCase):
+  pass
+
+
 def _AddBenchmarkOptionsTests(suite):
   # Using |index_by_class_name=True| allows returning multiple benchmarks
   # from a module.
@@ -94,8 +98,6 @@ def _AddBenchmarkOptionsTests(suite):
       # No need to test benchmarks that have not defined options.
       continue
 
-    class BenchmarkOptionsTest(unittest.TestCase):
-      pass
     setattr(BenchmarkOptionsTest, benchmark.Name(),
             _BenchmarkOptionsTestGenerator(benchmark))
     suite.addTest(BenchmarkOptionsTest(benchmark.Name()))

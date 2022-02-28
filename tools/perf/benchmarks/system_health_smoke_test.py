@@ -12,8 +12,6 @@ stories as memory ones, only with fewer actions (no memory dumping).
 import collections
 import unittest
 
-import six
-
 from chrome_telemetry_build import chromium_config
 
 from core import perf_benchmark
@@ -112,6 +110,10 @@ _DISABLED_TESTS = frozenset({
 MAX_VALUES_PER_TEST_CASE = 1000
 
 
+class SystemHealthBenchmarkSmokeTest(unittest.TestCase):
+  pass
+
+
 def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
 
   # NOTE TO SHERIFFS: DO NOT DISABLE THIS TEST.
@@ -139,14 +141,8 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
       options = GenerateBenchmarkOptions(
           output_dir=temp_dir,
           benchmark_cls=SinglePageBenchmark)
-      # The ID signature changes based on Python version.
-      if six.PY2:
-        replacement_string = ('benchmarks.system_health_smoke_test.'
-                              'SystemHealthBenchmarkSmokeTest.')
-      else:
-        replacement_string = ('benchmarks.system_health_smoke_test.'
-                              '_GenerateSmokeTestCase.<locals>.'
-                              'SystemHealthBenchmarkSmokeTest.')
+      replacement_string = ('benchmarks.system_health_smoke_test.'
+                            'SystemHealthBenchmarkSmokeTest.')
       simplified_test_name = self.id().replace(replacement_string, '')
       # Sanity check to ensure that that substring removal was effective.
       assert len(simplified_test_name) < len(self.id())
@@ -173,9 +169,6 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   # '<benchmark class name>/<story name>'.
   test_method_name = '%s/%s' % (
       benchmark_class.Name(), story_to_smoke_test.name)
-
-  class SystemHealthBenchmarkSmokeTest(unittest.TestCase):
-    pass
 
   # Set real_test_func as benchmark_class to make typ
   # write benchmark_class source filepath to trace instead of
