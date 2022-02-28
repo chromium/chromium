@@ -506,12 +506,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   provider()->sync_bridge().SetAppFileHandlerApprovalState(
       app_id(), ApiApprovalState::kAllowed);
 
-  // Tangentially: make sure the outparam for
-  // `GetFileTypeAssociationsHandledByWebAppsForDisplay` is properly set.
-  bool plural = false;
-  GetFileTypeAssociationsHandledByWebAppForDisplay(profile(), app_id(),
-                                                   &plural);
-  EXPECT_TRUE(plural);
+  auto [file_associations, association_count] =
+      GetFileTypeAssociationsHandledByWebAppForDisplay(profile(), app_id());
+  EXPECT_EQ(3u, association_count);
 
   // Installing a different app should have no impact.
   GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");

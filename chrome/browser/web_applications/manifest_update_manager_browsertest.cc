@@ -2419,10 +2419,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
 
-  std::u16string associations_list =
+  auto [associations_list, association_count] =
       GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
                                                        app_id);
   EXPECT_EQ(u"TXT", associations_list);
+  EXPECT_EQ(1U, association_count);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2449,10 +2450,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
 
-  std::u16string associations_list =
+  auto [associations_list, association_count] =
       GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
                                                        app_id);
   EXPECT_EQ(u"MD, TXT", associations_list);
+  EXPECT_EQ(2U, association_count);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
@@ -2486,10 +2488,11 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
 
-  std::u16string associations_list =
+  auto [associations_list, association_count] =
       GetFileTypeAssociationsHandledByWebAppForDisplay(browser()->profile(),
                                                        app_id);
   EXPECT_EQ(u"LONGTYPE, TXT", associations_list);
+  EXPECT_EQ(2U, association_count);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

@@ -396,9 +396,10 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
             app->id) &&
         !provider->registrar().GetAppFileHandlers(app->id)->empty()) {
       // TODO(crbug/1245293): elide types and add clickable link.
-      file_handling_types = base::UTF16ToUTF8(
+      auto [file_handling_types16, count] =
           web_app::GetFileTypeAssociationsHandledByWebAppForDisplay(profile_,
-                                                                    app->id));
+                                                                    app->id);
+      file_handling_types = base::UTF16ToUTF8(file_handling_types16);
     }
     // TODO(crbug/1252505): add file handling policy support.
     app->file_handling_state = app_management::mojom::FileHandlingState::New(

@@ -32,10 +32,4 @@
   <message name="IDS_REGISTER_PROTOCOL_HANDLER_IGNORE" desc="Text to show for an ignore prompt for a register protocol handler registration request.">
     Ignore
   </message>
-  <!-- Protocol Handling intent prompt -->
-  <if expr="not is_android">
-    <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION" desc="Label on the protocol handler intent picker.">
-      Allow app to open <ph name="PROTOCOL_SCHEME">$1<ex>mailto</ex></ph> links?
-    </message>
-  </if>
 </grit-part>

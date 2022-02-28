@@ -285,10 +285,9 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
   return true;
 }
 
-std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
-    Profile* profile,
-    const AppId& app_id,
-    bool* found_multiple) {
+std::tuple<std::u16string, size_t>
+GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
+                                                 const AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return {};
@@ -308,12 +307,11 @@ std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
                    return base::ToUpperASCII(extension.substr(1));
                  });
 
-  if (found_multiple)
-    *found_multiple = extensions_for_display.size() > 1;
-
-  return base::UTF8ToUTF16(base::JoinString(
-      extensions_for_display,
-      l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
+  return {
+      base::UTF8ToUTF16(base::JoinString(
+          extensions_for_display,
+          l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR))),
+      extensions_for_display.size()};
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
