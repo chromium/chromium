@@ -89,6 +89,12 @@ bool CompareCapability(const VideoCaptureFormat& requested,
     }
   }
 
+  // Deprioritize fake formats to avoid extra conversions.
+  if (lhs.source_pixel_format == rhs.source_pixel_format &&
+      (lhs.maybe_fake ^ rhs.maybe_fake)) {
+    return rhs.maybe_fake;
+  }
+
   return VideoCaptureFormat::ComparePixelFormatPreference(
       lhs.supported_format.pixel_format, rhs.supported_format.pixel_format);
 }

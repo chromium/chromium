@@ -49,6 +49,13 @@ constexpr long kVideoProcAmpStep = 1;
 
 constexpr uint32_t kMFSampleBufferLength = 1;
 
+// Arbitrary random guid for test metadata.
+constexpr GUID GUID_MEDIA_TYPE_INDEX = {
+    0x12345678,
+    0xaaaa,
+    0xbbbb,
+    {0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7}};
+
 class MockClient : public VideoCaptureDevice::Client {
  public:
   void OnIncomingCapturedData(const uint8_t* data,
@@ -627,11 +634,13 @@ class StubMFMediaType : public MockInterface<IMFMediaType> {
  public:
   StubMFMediaType(GUID major_type,
                   GUID sub_type,
+                  int media_type_index,
                   int frame_width,
                   int frame_height,
                   int frame_rate)
       : major_type_(major_type),
         sub_type_(sub_type),
+        media_type_index_(media_type_index),
         frame_width_(frame_width),
         frame_height_(frame_height),
         frame_rate_(frame_rate) {}
@@ -676,6 +685,10 @@ class StubMFMediaType : public MockInterface<IMFMediaType> {
   IFACEMETHODIMP GetUINT32(REFGUID key, UINT32* value) override {
     if (key == MF_MT_INTERLACE_MODE) {
       *value = MFVideoInterlace_Progressive;
+      return S_OK;
+    }
+    if (key == GUID_MEDIA_TYPE_INDEX) {
+      *value = media_type_index_;
       return S_OK;
     }
     return E_NOTIMPL;
@@ -804,6 +817,7 @@ class StubMFMediaType : public MockInterface<IMFMediaType> {
 
   const GUID major_type_;
   const GUID sub_type_;
+  const uint32_t media_type_index_;
   const int frame_width_;
   const int frame_height_;
   const int frame_rate_;
@@ -1089,7 +1103,7 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
             return MF_E_NO_MORE_TYPES;
 
           *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                            kArbitraryValidVideoWidth,
+                                            0, kArbitraryValidVideoWidth,
                                             kArbitraryValidVideoHeight, 30);
           (*media_type)->AddRef();
 
@@ -1109,11 +1123,60 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
         .WillRepeatedly(Invoke([mf_video_subtype](DWORD stream_index,
                                                   IMFMediaType** media_type) {
           *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                            kArbitraryValidVideoWidth,
+                                            0, kArbitraryValidVideoWidth,
                                             kArbitraryValidVideoHeight, 30);
           (*media_type)->AddRef();
           return S_OK;
         }));
+  }
+
+  void PrepareMFDeviceWithVideoStreams(std::vector<GUID> mf_video_subtypes) {
+    EXPECT_CALL(*capture_source_, DoGetDeviceStreamCount(_))
+        .WillRepeatedly(Invoke([](DWORD* stream_count) {
+          *stream_count = 1;
+          return S_OK;
+        }));
+    EXPECT_CALL(*capture_source_, DoGetDeviceStreamCategory(0, _))
+        .WillRepeatedly(Invoke([](DWORD stream_index,
+                                  MF_CAPTURE_ENGINE_STREAM_CATEGORY* category) {
+          *category = MF_CAPTURE_ENGINE_STREAM_CATEGORY_VIDEO_PREVIEW;
+          return S_OK;
+        }));
+
+    EXPECT_CALL(*capture_source_, DoGetAvailableDeviceMediaType(0, _, _))
+        .WillRepeatedly(Invoke([mf_video_subtypes](DWORD stream_index,
+                                                   DWORD media_type_index,
+                                                   IMFMediaType** media_type) {
+          if (media_type_index >= mf_video_subtypes.size())
+            return MF_E_NO_MORE_TYPES;
+
+          *media_type = new StubMFMediaType(
+              MFMediaType_Video, mf_video_subtypes[media_type_index],
+              media_type_index, kArbitraryValidVideoWidth,
+              kArbitraryValidVideoHeight, 30);
+          (*media_type)->AddRef();
+
+          return S_OK;
+        }));
+
+    EXPECT_CALL(*(engine_.Get()),
+                DoGetSink(MF_CAPTURE_ENGINE_SINK_TYPE_PREVIEW, _))
+        .WillRepeatedly(Invoke([this](MF_CAPTURE_ENGINE_SINK_TYPE sink_type,
+                                      IMFCaptureSink** sink) {
+          *sink = this->capture_preview_sink_.get();
+          this->capture_preview_sink_->AddRef();
+          return S_OK;
+        }));
+
+    EXPECT_CALL(*capture_source_, DoGetCurrentDeviceMediaType(_, _))
+        .WillRepeatedly(Invoke(
+            [mf_video_subtypes](DWORD stream_index, IMFMediaType** media_type) {
+              *media_type = new StubMFMediaType(
+                  MFMediaType_Video, mf_video_subtypes[0], 0,
+                  kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
+              (*media_type)->AddRef();
+              return S_OK;
+            }));
   }
 
   void PrepareMFDeviceWithOneVideoStreamAndOnePhotoStream(
@@ -1140,13 +1203,13 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
                                                     IMFMediaType** media_type) {
       if (stream_index == 0) {
         *media_type = new StubMFMediaType(MFMediaType_Video, mf_video_subtype,
-                                          kArbitraryValidVideoWidth,
+                                          0, kArbitraryValidVideoWidth,
                                           kArbitraryValidVideoHeight, 30);
         (*media_type)->AddRef();
         return S_OK;
       } else if (stream_index == 1) {
         *media_type = new StubMFMediaType(
-            MFMediaType_Image, GUID_ContainerFormatJpeg,
+            MFMediaType_Image, GUID_ContainerFormatJpeg, 0,
             kArbitraryValidPhotoWidth, kArbitraryValidPhotoHeight, 0);
         (*media_type)->AddRef();
         return S_OK;
@@ -1203,13 +1266,13 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
                                           IMFMediaType** media_type) {
       if (stream_index == 0) {
         *media_type = new StubMFMediaType(
-            MFMediaType_Video, params.depth_video_stream_subtype,
+            MFMediaType_Video, params.depth_video_stream_subtype, 0,
             kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
         (*media_type)->AddRef();
         return S_OK;
       } else if (stream_index == 1 && params.additional_i420_video_stream) {
         *media_type = new StubMFMediaType(MFMediaType_Video, MFVideoFormat_I420,
-                                          kArbitraryValidVideoWidth,
+                                          0, kArbitraryValidVideoWidth,
                                           kArbitraryValidVideoHeight, 30);
         (*media_type)->AddRef();
         return S_OK;
@@ -1225,7 +1288,7 @@ class VideoCaptureDeviceMFWinTest : public ::testing::Test {
               params.additional_i420_formats_in_depth_stream &&
               media_type_index == 1) {
             *media_type = new StubMFMediaType(
-                MFMediaType_Video, MFVideoFormat_I420,
+                MFMediaType_Video, MFVideoFormat_I420, 0,
                 kArbitraryValidVideoWidth, kArbitraryValidVideoHeight, 30);
             (*media_type)->AddRef();
             return S_OK;
@@ -1436,7 +1499,7 @@ TEST_F(VideoCaptureDeviceMFWinTest, AllocateAndStartWithFlakyInvalidRequest) {
           return MF_E_NO_MORE_TYPES;
 
         *media_type = new StubMFMediaType(MFMediaType_Video, MFVideoFormat_MJPG,
-                                          kArbitraryValidVideoWidth,
+                                          0, kArbitraryValidVideoWidth,
                                           kArbitraryValidVideoHeight, 30);
         (*media_type)->AddRef();
 
@@ -1811,6 +1874,35 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNV12SinkSubtype) {
         GUID sink_video_media_subtype;
         media_type->GetGUID(MF_MT_SUBTYPE, &sink_video_media_subtype);
         EXPECT_EQ(sink_video_media_subtype, expected_subtype);
+        return S_OK;
+      }));
+
+  VideoCaptureFormat format(gfx::Size(640, 480), 30, media::PIXEL_FORMAT_NV12);
+  VideoCaptureParams video_capture_params;
+  video_capture_params.requested_format = format;
+  device_->AllocateAndStart(video_capture_params, std::move(client_));
+  capture_preview_sink_->sample_callback->OnSample(nullptr);
+}
+
+TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, EnsureNoFakeNV12MediaType) {
+  if (ShouldSkipTest())
+    return;
+
+  PrepareMFDeviceWithVideoStreams(
+      {MFVideoFormat_NV12, MFVideoFormat_MJPG, MFVideoFormat_NV12});
+  // First NV12 format should be ignored as fake (MJPG backed).
+  uint32_t kExpectedMediaTypeIndex = 2;
+  EXPECT_CALL(*(engine_.Get()), OnStartPreview());
+  EXPECT_CALL(*client_, OnStarted());
+
+  EXPECT_CALL(*(capture_source_.get()), DoSetCurrentDeviceMediaType(0, _))
+      .WillOnce(Invoke([kExpectedMediaTypeIndex](DWORD stream_index,
+                                                 IMFMediaType* media_type) {
+        GUID source_video_media_subtype;
+        media_type->GetGUID(MF_MT_SUBTYPE, &source_video_media_subtype);
+        uint32_t media_type_index;
+        media_type->GetUINT32(GUID_MEDIA_TYPE_INDEX, &media_type_index);
+        EXPECT_EQ(media_type_index, kExpectedMediaTypeIndex);
         return S_OK;
       }));
 

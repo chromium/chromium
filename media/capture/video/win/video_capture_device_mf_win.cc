@@ -866,6 +866,24 @@ HRESULT VideoCaptureDeviceMFWin::FillCapabilities(
     }
   }
 
+  // Usually windows inserts fake NV12 stream before each MJPEG
+  // stream. The fake stream has the same resolution and framerate.
+  // This is observed but undocumented behavior, which might change.
+  // |maybe_fake| is used as a tie breaker between otherwise identical
+  // formats.
+  auto prev_capability = capabilities->begin();
+  auto cur_capability = prev_capability;
+  ++cur_capability;
+  while (cur_capability != capabilities->end()) {
+    if (cur_capability->source_pixel_format == PIXEL_FORMAT_MJPEG &&
+        prev_capability->source_pixel_format == PIXEL_FORMAT_NV12 &&
+        prev_capability->supported_format == cur_capability->supported_format) {
+      prev_capability->maybe_fake = true;
+    }
+    prev_capability = cur_capability;
+    ++cur_capability;
+  }
+
   return hr;
 }
 
