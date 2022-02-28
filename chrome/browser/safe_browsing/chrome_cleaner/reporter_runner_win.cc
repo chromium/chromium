@@ -31,7 +31,7 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -872,7 +872,7 @@ bool ReporterTerminatesOnBrowserExit() {
 // interrupted by a shutdown at any time, so it shouldn't depend on anything
 // external that could be shut down beforehand.
 int LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
-  TRACE_EVENT0("safe_browsing", "ReporterRunner::LaunchAndWaitForExit");
+  TRACE_EVENT("safe_browsing", "ReporterRunner::LaunchAndWaitForExit");
 
   // This exit code is used to identify that a reporter run didn't happen, so
   // the result should be ignored and a rerun scheduled for the usual delay.
@@ -915,11 +915,19 @@ int LaunchAndWaitForExit(const SwReporterInvocation& invocation) {
     return exit_code;
   }
 
-  if (g_testing_delegate_) {
-    exit_code = g_testing_delegate_->WaitForReporterExit(reporter_process);
-  } else {
-    bool success = reporter_process.WaitForExit(&exit_code);
-    DCHECK(success);
+  constexpr base::TimeDelta kPollingTime = base::Seconds(10);
+  bool exited = false;
+  while (!exited) {
+    TRACE_EVENT("safe_browsing", "ReporterRunning");
+    if (g_testing_delegate_) {
+      exited = g_testing_delegate_->WaitForReporterExit(
+          reporter_process, kPollingTime, &exit_code);
+    } else {
+      exited =
+          reporter_process.WaitForExitWithTimeout(kPollingTime, &exit_code);
+      // Wait should only fail on a timeout.
+      DCHECK(exited || reporter_process.IsRunning());
+    }
   }
 
   // After the reporter process has exited the job object is no longer needed.

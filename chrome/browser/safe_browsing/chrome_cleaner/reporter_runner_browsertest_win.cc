@@ -259,9 +259,18 @@ class ReporterRunnerTest
     return base::Process::Current();
   }
 
-  int WaitForReporterExit([
-      [maybe_unused]] const base::Process& reporter_process) const {
-    return exit_code_to_report_;
+  bool WaitForReporterExit(
+      [[maybe_unused]] const base::Process& reporter_process,
+      base::TimeDelta timeout,
+      int* exit_code) {
+    if (reporter_wait_count_++ < 2 * reporter_launch_count_) {
+      // Simulate a timeout to test the path where ReporterRunner waits more
+      // than once.
+      return false;
+    }
+    if (exit_code)
+      *exit_code = exit_code_to_report_;
+    return true;
   }
 
   // Returns the test's idea of the current time.
@@ -290,6 +299,7 @@ class ReporterRunnerTest
   void ResetReporterRuns(int exit_code_to_report) {
     exit_code_to_report_ = exit_code_to_report;
     reporter_launch_count_ = 0;
+    reporter_wait_count_ = 0;
     reporter_launch_parameters_.clear();
     dialog_controller_created_ = false;
   }
@@ -584,6 +594,7 @@ class ReporterRunnerTest
 
   bool dialog_controller_created_ = false;
   int reporter_launch_count_ = 0;
+  int reporter_wait_count_ = 0;
   std::vector<SwReporterInvocation> reporter_launch_parameters_;
   int exit_code_to_report_ = kReporterNotLaunchedExitCode;
 

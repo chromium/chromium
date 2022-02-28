@@ -109,10 +109,10 @@ class LaunchReporterDelegate : public internal::SwReporterTestingDelegate {
     return grandchild;
   }
 
-  int WaitForReporterExit(const base::Process& process) const override {
-    int exit_code;
-    process.WaitForExit(&exit_code);
-    return exit_code;
+  int WaitForReporterExit(const base::Process& process,
+                          base::TimeDelta timeout,
+                          int* exit_code) override {
+    return process.WaitForExitWithTimeout(timeout, exit_code);
   }
 
   base::Time Now() const override {

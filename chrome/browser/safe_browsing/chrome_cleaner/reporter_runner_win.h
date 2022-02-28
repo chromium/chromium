@@ -37,9 +37,10 @@ class SwReporterTestingDelegate {
       const SwReporterInvocation& invocation,
       const base::LaunchOptions& options) = 0;
 
-  // Invoked by tests in place of base::Process::WaitForExit.
-  virtual int WaitForReporterExit(
-      const base::Process& reporter_process) const = 0;
+  // Invoked by tests in place of base::Process::WaitForExitWithTimeout.
+  virtual bool WaitForReporterExit(const base::Process& reporter_process,
+                                   base::TimeDelta timeout,
+                                   int* exit_code) = 0;
 
   // Invoked by tests to override the current time.
   // See Now() in reporter_runner_win.cc.
