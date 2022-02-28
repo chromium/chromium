@@ -11,6 +11,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "cert_db_initializer_io_impl.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/chaps_support.h"
@@ -18,6 +19,9 @@
 #include "crypto/nss_util_internal.h"
 
 namespace {
+
+constexpr int kOnCertsChangedInLacrosMinVersion = static_cast<int>(
+    crosapi::mojom::CertDatabase::kOnCertsChangedInLacrosMinVersion);
 
 // Loads software NSS database a returns a slot referencing it (a.k.a. public
 // slot). Should be called on a worked thread because it performs blocking
@@ -133,6 +137,22 @@ void LegacyInitializeCertDbOnWorkerThread(
   }
 }
 
+void NotifyCertsChangedInLacrosOnUIThread() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service ||
+      (service->GetInterfaceVersion(crosapi::mojom::CertDatabase::Uuid_) <
+       kOnCertsChangedInLacrosMinVersion)) {
+    // Can happen if Ash is too old or in tests.
+    return;
+  }
+
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::CertDatabase>()
+      ->OnCertsChangedInLacros();
+}
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -141,6 +161,10 @@ CertDbInitializerIOImpl::CertDbInitializerIOImpl() = default;
 
 CertDbInitializerIOImpl::~CertDbInitializerIOImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (nss_cert_database_) {
+    nss_cert_database_->RemoveObserver(this);
+  }
 }
 
 net::NSSCertDatabase* CertDbInitializerIOImpl::GetNssCertDatabase(
@@ -209,6 +233,7 @@ void CertDbInitializerIOImpl::DidLoadSlots(base::OnceClosure init_callback,
   nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
       std::move(pending_public_slot_), std::move(private_slot));
   nss_cert_database_->SetSystemSlot(std::move(system_slot));
+  nss_cert_database_->AddObserver(this);
 
   std::move(init_callback).Run();
   ready_callback_list_.Notify(nss_cert_database_.get());
@@ -252,4 +277,9 @@ void CertDbInitializerIOImpl::InitializeLegacyNssCertDatabase(
 void CertDbInitializerIOImpl::DidLegacyInitialize(
     base::OnceClosure init_callback) {
   InitializeReadOnlyNssCertDatabase(std::move(init_callback));
+}
+
+void CertDbInitializerIOImpl::OnCertDBChanged() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(NotifyCertsChangedInLacrosOnUIThread));
 }

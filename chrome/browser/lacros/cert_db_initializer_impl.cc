@@ -26,6 +26,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+using CrosapiCertDb = crosapi::mojom::CertDatabase;
+
+constexpr int kAddAshCertDatabaseObserverMinVersion =
+    CrosapiCertDb::kAddAshCertDatabaseObserverMinVersion;
+
 // This object is split between UI and IO threads:
 // * CertDbInitializerImpl - is the outer layer that implements the KeyedService
 // interface, implicitly tracks lifetime of its profile, triggers the
@@ -37,8 +42,6 @@
 CertDbInitializerImpl::CertDbInitializerImpl(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
-  DCHECK(chromeos::LacrosService::Get()
-             ->IsAvailable<crosapi::mojom::CertDatabase>());
   cert_db_initializer_io_ = std::make_unique<CertDbInitializerIOImpl>();
 }
 
@@ -53,10 +56,10 @@ CertDbInitializerImpl::~CertDbInitializerImpl() {
 
 void CertDbInitializerImpl::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
 
-  if (!profile_->IsMainProfile() || !chromeos::LacrosService::Get() ||
-      !chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::CertDatabase>()) {
+  if (!profile_->IsMainProfile() || !lacros_service ||
+      !lacros_service->IsAvailable<CrosapiCertDb>()) {
     // TODO(b/191336028): Implement fully functional and separated certificate
     // database for secondary profiles when NSS library is replaced with
     // something more flexible.
@@ -65,9 +68,14 @@ void CertDbInitializerImpl::Start() {
 
   // TODO(b/200784079): This is backwards compatibility code. It can be
   // removed in ChromeOS-M100.
-  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
-          crosapi::mojom::CertDatabase::Uuid_) == 0) {
+  if (lacros_service->GetInterfaceVersion(CrosapiCertDb::Uuid_) == 0) {
     return LegacyInitializeForMainProfile();
+  }
+
+  if (lacros_service->GetInterfaceVersion(CrosapiCertDb::Uuid_) >=
+      kAddAshCertDatabaseObserverMinVersion) {
+    lacros_service->GetRemote<CrosapiCertDb>()->AddAshCertDatabaseObserver(
+        receiver_.BindNewPipeAndPassRemote());
   }
 
   InitializeForMainProfile();
@@ -163,6 +171,11 @@ CertDbInitializerImpl::CreateNssCertDatabaseGetterForIOThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return base::BindOnce(&CertDbInitializerIOImpl::GetNssCertDatabase,
                         base::Unretained(cert_db_initializer_io_.get()));
+}
+
+void CertDbInitializerImpl::OnCertsChangedInAsh() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
 }
 
 // ======================= Backwards compatibility code ========================

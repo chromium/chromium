@@ -17,6 +17,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/crosapi/cert_database_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -143,11 +146,20 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
       &StartTPMSlotInitializationOnIOThread, account_id, username_hash));
 }
 
+void NotifyCertsChangedInAshOnUIThread() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->cert_database_ash()
+      ->NotifyCertsChangedInAsh();
+}
+
 }  // namespace
 
 // Creates and manages a NSSCertDatabaseChromeOS. Created on the UI thread, but
 // all other calls are made on the IO thread.
-class NssService::NSSCertDatabaseChromeOSManager {
+class NssService::NSSCertDatabaseChromeOSManager
+    : public net::NSSCertDatabase::Observer {
  public:
   using GetNSSCertDatabaseCallback =
       base::OnceCallback<void(net::NSSCertDatabase*)>;
@@ -164,7 +176,12 @@ class NssService::NSSCertDatabaseChromeOSManager {
   NSSCertDatabaseChromeOSManager& operator=(
       const NSSCertDatabaseChromeOSManager&) = delete;
 
-  ~NSSCertDatabaseChromeOSManager() { DCHECK_CURRENTLY_ON(BrowserThread::IO); }
+  ~NSSCertDatabaseChromeOSManager() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    if (nss_cert_database_) {
+      nss_cert_database_->RemoveObserver(this);
+    }
+  }
 
   net::NSSCertDatabase* GetNSSCertDatabase(
       GetNSSCertDatabaseCallback callback) {
@@ -185,6 +202,12 @@ class NssService::NSSCertDatabaseChromeOSManager {
     }
 
     return nullptr;
+  }
+
+  // net::NSSCertDatabase::Observer
+  void OnCertDBChanged() override {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&NotifyCertsChangedInAshOnUIThread));
   }
 
  private:
@@ -223,6 +246,7 @@ class NssService::NSSCertDatabaseChromeOSManager {
 
     if (system_slot)
       nss_cert_database_->SetSystemSlot(std::move(system_slot));
+    nss_cert_database_->AddObserver(this);
 
     ready_callback_list_.Notify(nss_cert_database_.get());
   }

@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "crypto/scoped_nss_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cert/cert_database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -52,7 +53,9 @@ class Profile;
 //
 // - If Ash does not provide a path, this is an unexpected/invalid
 //   state, but Lacros will fail into read-only mode.
-class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
+class CertDbInitializerImpl : public CertDbInitializer,
+                              public KeyedService,
+                              public crosapi::mojom::AshCertDatabaseObserver {
  public:
   explicit CertDbInitializerImpl(Profile* profile);
   ~CertDbInitializerImpl() override;
@@ -66,6 +69,10 @@ class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
   base::CallbackListSubscription WaitUntilReady(
       base::OnceClosure callback) override;
   NssCertDatabaseGetter CreateNssCertDatabaseGetterForIOThread() override;
+
+  // Called when there's a change in certificate database in Ash.
+  // Forwards the notification to the CertDatabase.
+  void OnCertsChangedInAsh() override;
 
  private:
   void InitializeForMainProfile();
@@ -123,6 +130,9 @@ class CertDbInitializerImpl : public CertDbInitializer, public KeyedService {
   // pointers to this object into IO thread tasks because the earliest it can be
   // destroyed is in the following task posted from the destructor.
   std::unique_ptr<CertDbInitializerIOImpl> cert_db_initializer_io_;
+
+  // Receives mojo messages from ash-chrome (under Streaming mode).
+  mojo::Receiver<crosapi::mojom::AshCertDatabaseObserver> receiver_{this};
 
   base::WeakPtrFactory<CertDbInitializerImpl> weak_factory_{this};
 };

@@ -19,6 +19,9 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ash/crosapi/cert_database_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
@@ -88,6 +91,14 @@ base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
   return std::min(last_delay * 2, kMaxRequestDelay);
 }
 
+void NotifyCertsChangedInAshOnUIThread() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->cert_database_ash()
+      ->NotifyCertsChangedInAsh();
+}
+
 }  // namespace
 
 constexpr base::TimeDelta
@@ -114,6 +125,10 @@ SystemTokenCertDBInitializer::~SystemTokenCertDBInitializer() {
   // Notify consumers of SystemTokenCertDbStorage that the database is not
   // usable anymore.
   SystemTokenCertDbStorage::Get()->ResetDatabase();
+
+  if (system_token_cert_database_) {
+    system_token_cert_database_->RemoveObserver(this);
+  }
 
   // Destroy the NSSCertDatabase on the IO thread because consumers could be
   // accessing it there.
@@ -236,11 +251,17 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
       /*public_slot=*/std::move(system_slot),
       /*private_slot=*/crypto::ScopedPK11Slot());
   database->SetSystemSlot(std::move(system_slot_copy));
+  database->AddObserver(this);
   system_token_cert_database_ = std::move(database);
 
   auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
   DCHECK(system_token_cert_db_storage);
   system_token_cert_db_storage->SetDatabase(system_token_cert_database_.get());
+}
+
+void SystemTokenCertDBInitializer::OnCertDBChanged() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&NotifyCertsChangedInAshOnUIThread));
 }
 
 }  // namespace ash

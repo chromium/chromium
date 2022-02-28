@@ -274,6 +274,18 @@ class NET_EXPORT NSSCertDatabase {
   // behind it.
   static bool IsHardwareBacked(const CERTCertificate* cert);
 
+  // Registers |observer| to receive notifications of certificate changes.  The
+  // thread on which this is called is the thread on which |observer| will be
+  // called back with notifications.
+  // NOTE: Observers registered here will only receive notifications generated
+  // directly through the NSSCertDatabase, but not those from the CertDatabase.
+  // CertDatabase observers will receive all certificate notifications.
+  void AddObserver(Observer* observer);
+
+  // Unregisters |observer| from receiving notifications.  This must be called
+  // on the same thread on which AddObserver() was called.
+  void RemoveObserver(Observer* observer);
+
  protected:
   // Returns a list of certificates extracted from |certs_info| list ignoring
   // additional information.
@@ -298,18 +310,6 @@ class NET_EXPORT NSSCertDatabase {
   void NotifyObserversCertDBChanged();
 
  private:
-  // Registers |observer| to receive notifications of certificate changes.  The
-  // thread on which this is called is the thread on which |observer| will be
-  // called back with notifications.
-  // NOTE: Observers registered here will only receive notifications generated
-  // directly through the NSSCertDatabase, but not those from the CertDatabase.
-  // CertDatabase observers will receive all certificate notifications.
-  void AddObserver(Observer* observer);
-
-  // Unregisters |observer| from receiving notifications.  This must be called
-  // on the same thread on which AddObserver() was called.
-  void RemoveObserver(Observer* observer);
-
   // Notifies observers of the removal of a cert and calls |callback| with
   // |success| as argument.
   void NotifyCertRemovalAndCallBack(DeleteCertCallback callback, bool success);

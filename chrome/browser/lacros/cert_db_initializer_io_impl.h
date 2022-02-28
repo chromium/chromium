@@ -20,13 +20,13 @@
 // All the methods (except for the constructor) must be called on the IO thread.
 // The main purpose of the class is to create NSSCertDatabase and provide
 // access to it.
-class CertDbInitializerIOImpl {
+class CertDbInitializerIOImpl : public net::NSSCertDatabase::Observer {
  public:
   using GetNSSCertDatabaseCallback =
       base::OnceCallback<void(net::NSSCertDatabase*)>;
 
   CertDbInitializerIOImpl();
-  ~CertDbInitializerIOImpl();
+  ~CertDbInitializerIOImpl() override;
 
   // If `nss_cert_database_` is already created, returns a pointer to it and
   // never calls the `callback`. Otherwise, returns nullptr and will call the
@@ -83,6 +83,9 @@ class CertDbInitializerIOImpl {
   void InitializeLegacyNssCertDatabase(
       crosapi::mojom::GetCertDatabaseInfoResultPtr cert_db_info,
       base::OnceClosure init_callback);
+
+  // net::NSSCertDatabase::Observer
+  void OnCertDBChanged() override;
 
  private:
   void DidLoadSoftwareNssDb(base::OnceClosure load_callback,

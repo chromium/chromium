@@ -276,6 +276,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return keystore_service_ash_.get();
   }
 
+  CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
+
   LoginAsh* login_ash() { return login_ash_.get(); }
 
   LoginScreenStorageAsh* login_screen_storage_ash() {

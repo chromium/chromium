@@ -22,6 +22,13 @@ struct GetCertDatabaseInfoResult {
   uint32 system_slot_id@4;
 };
 
+// This interface is implemented by Lacros-Chrome.
+[Stable, Uuid="e48d9c66-98b4-4049-9b85-dc98c854d54c"]
+interface AshCertDatabaseObserver {
+  // Ash calls this to notify Lacros about new changes to certificates.
+  OnCertsChangedInAsh@0();
+};
+
 // This interface is implemented by Ash-Chrome.
 [Stable, Uuid="e7f924bf-0e10-4aef-98d3-6e2f216dc914"]
 interface CertDatabase {
@@ -29,4 +36,15 @@ interface CertDatabase {
   // returns necessary data for Lacros-Chrome to connect to it.
   [MinVersion=1]
   GetCertDatabaseInfo@0() => (GetCertDatabaseInfoResult? result);
+
+  // Lacros calls this to notify Ash about new changes to certificates.
+  [MinVersion=2]
+  OnCertsChangedInLacros@1();
+
+  // Adds a new observer about certificate changes in Ash. The interface is not
+  // symmetrical because Lacros can assume that Ash always exists, but not the
+  // other way around.
+  [MinVersion=2]
+  AddAshCertDatabaseObserver@2(
+    pending_remote<AshCertDatabaseObserver> observer);
 };
