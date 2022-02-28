@@ -6,27 +6,25 @@
 //
 // WHAT ARE FILE TASKS?
 //
-// File tasks are representation of actions that can be performed over the
-// currently selected files from the Files app. A task can be either of:
+// File tasks are actions that can be performed over the currently selected
+// files from the Files app. A task can be one of:
 //
-// 1) Chrome extension or app, registered via "file_handlers" or
-// "file_browser_handlers" in manifest.json (ex. Text.app). This information
-// comes from FileBrowserHandler::GetHandlers()
+// 1) A Chrome Extension or App, registered via "file_handlers" or
+//    "file_browser_handlers" in manifest.json (ex. Text.app). This information
+//    comes from FileBrowserHandler::GetHandlers()
 //
-// See also:
-// https://developer.chrome.com/extensions/manifest.html#file_handlers
+// See also: https://developer.chrome.com/extensions/manifest.html#file_handlers
 // https://developer.chrome.com/extensions/fileBrowserHandler.html
 //
-// 2) Built-in handlers provided from the Files app. The Files app provides
-// lots of file_browser_handlers, such as "play", "mount-archive".  These
-// built-in handlers are often handled in special manners inside the Files
-// app. This information also comes from FileBrowserHandler::GetHandlers().
+// 2) Built-in handlers provided by the Files app. The Files app provides lots
+//    of file_browser_handlers, such as "play", "mount-archive". These built-in
+//    handlers are often handled specially inside the Files app. This
+//    information also comes from FileBrowserHandler::GetHandlers().
 //
-// See also:
-// ui/file_manager/file_manager/manifest.json
+// See also: ui/file_manager/file_manager/manifest.json
 //
-// For example, if the user is now selecting a JPEG file, the Files app will
-// receive file tasks represented as a JSON object via
+// For example, if the user selects a JPEG file, the Files app will receive file
+// tasks represented as a JSON object via
 // chrome.fileManagerPrivate.getFileTasks() API, which look like:
 //
 // [
@@ -58,7 +56,7 @@
 //
 // The "TaskId" format encoding is as follows:
 //
-//     <app-id>|<task-type>|<task-action-id>
+//     <app-id>|<task-type>|<action-id>
 //
 // <app-id> is a Chrome Extension/App ID.
 //
@@ -69,23 +67,27 @@
 // - "arc" - ARC App
 // - "crostini" - Crostini App
 //
-// <task-action-id> is an ID string used for identifying actions provided
-// from a single Chrome Extension/App. In other words, a single
-// Chrome/Extension can provide multiple file handlers hence each of them
-// needs to have a unique action ID. For Crostini apps, <task-action-id> is
-// always "open-with".
+// <action-id> is an ID string used for identifying actions provided from a
+// single Chrome Extension/App. In other words, a single Chrome/Extension can
+// provide multiple file handlers hence each of them needs to have a unique
+// action ID. For Crostini apps, <action-id> is always "open-with".
 //
-// HOW TASKS ARE EXECUTED?
+// HOW ARE TASKS EXECUTED?
 //
-// chrome.fileManagerPrivate.executeTask() is used to open a file with a
-// handler (Chrome Extension/App), and to open files directly in the browser
-// without any handler, e.g. PDF.
+// chrome.fileManagerPrivate.executeTask() is used to open a file with a handler
+// (Chrome Extension/App), and to open files directly in the browser without any
+// handler, e.g. PDF.
 //
-// Some built-in handlers such as "play" are handled internally in the Files
-// app. "mount-archive" is handled very differently.
+// Files app also has "internal tasks" which we can split into three categories:
+//  1. Tasks that open in the browser. The JS-side calls executeTask(), and we
+//     spawn a new browser tab here on the C++ side. e.g. "view-in-browser",
+//     "view-pdf" and "open-hosted-*".
+//  2. Tasks that are handled internally by Files app JS. e.g. "mount-archive",
+//     "install-linux-package" and "import-crostini-image".
+//  3. Tasks where the browser process opens Files app to a folder or file, e.g.
+//     "open" and "select", through file_manager::util::OpenItem().
 //
-// See also:
-// ui/file_manager/file_manager/foreground/js/file_tasks.js
+// See also: ui/file_manager/file_manager/foreground/js/file_tasks.js
 //
 
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_

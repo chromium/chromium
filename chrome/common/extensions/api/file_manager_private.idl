@@ -368,9 +368,8 @@ dictionary FileTaskDescriptor {
 };
 
 // A file task represents an action that the file manager can perform over the
-// currently selected files. See
-// chrome/browser/chromeos/extensions/file_manager/file_tasks.h for details
-// about how file tasks are handled.
+// currently selected files. See chrome/browser/ash/file_manager/file_tasks.h
+// for details about how file tasks are handled.
 dictionary FileTask {
   // Unique identifier for the task.
   FileTaskDescriptor descriptor;
