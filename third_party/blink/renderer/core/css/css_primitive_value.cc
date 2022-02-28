@@ -92,6 +92,7 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
     UnitType type) {
   switch (type) {
     case UnitType::kNumber:
+    case UnitType::kInteger:
       return CSSPrimitiveValue::kUNumber;
     case UnitType::kPercentage:
       return CSSPrimitiveValue::kUPercent;

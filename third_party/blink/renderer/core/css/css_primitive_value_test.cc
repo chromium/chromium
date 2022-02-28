@@ -49,6 +49,11 @@ CSSPrimitiveValue* CreateNonNegativeSubtraction(UnitValue a, UnitValue b) {
       CSSPrimitiveValue::ValueRange::kNonNegative);
 }
 
+UnitType ToCanonicalUnit(CSSPrimitiveValue::UnitType unit) {
+  return CSSPrimitiveValue::CanonicalUnitTypeForCategory(
+      CSSPrimitiveValue::UnitTypeToUnitCategory(unit));
+}
+
 TEST_F(CSSPrimitiveValueTest, IsTime) {
   EXPECT_FALSE(Create({5.0, UnitType::kNumber})->IsTime());
   EXPECT_FALSE(Create({5.0, UnitType::kDegrees})->IsTime());
@@ -201,6 +206,14 @@ TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
   EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
+}
+
+TEST_F(CSSPrimitiveValueTest, TestCanonicalizingNumberUnitCategory) {
+  UnitType canonicalized_from_num = ToCanonicalUnit(UnitType::kNumber);
+  EXPECT_EQ(canonicalized_from_num, UnitType::kNumber);
+
+  UnitType canonicalized_from_int = ToCanonicalUnit(UnitType::kInteger);
+  EXPECT_EQ(canonicalized_from_int, UnitType::kNumber);
 }
 }  // namespace
 }  // namespace blink
