@@ -19,15 +19,14 @@
 namespace blink {
 
 WTF::AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
-    const StringView& name) const {
+    const AtomicString& name) const {
   if (LIKELY(IsHTMLElement() && IsA<HTMLDocument>(GetDocument()))) {
-    StringImpl* impl = name.SharedImpl();
-    if (impl && impl->IsAtomic() && impl->IsLowerASCII())
-      return WTF::AtomicStringTable::WeakResult(impl);
-    return WTF::AtomicStringTable::Instance().WeakFindLowercased(name);
+    if (name.IsEmpty() || name.IsLowerASCII())
+      return WTF::AtomicStringTable::WeakResult(name);
+    return WTF::AtomicStringTable::Instance().WeakFindLowercase(name);
   }
 
-  return WTF::AtomicStringTable::Instance().WeakFind(name);
+  return WTF::AtomicStringTable::WeakResult(name);
 }
 
 // Note, SynchronizeAttributeHinted is safe to call between a WeakFind() and

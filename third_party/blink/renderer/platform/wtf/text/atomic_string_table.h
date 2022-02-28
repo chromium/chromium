@@ -48,8 +48,8 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> AddUTF8(const char* characters_start,
                                     const char* characters_end);
 
-  // Returned as part of the WeakFind() APIs below. Represents the result of
-  // the non-creating lookup within the AtomicStringTable. See the WeakFind()
+  // Returned as part of the WeakFind*() APIs below. Represents the result of
+  // the non-creating lookup within the AtomicStringTable. See the WeakFind*()
   // documentation for a description of how it can be used.
   class WeakResult {
    public:
@@ -58,6 +58,9 @@ class WTF_EXPORT AtomicStringTable final {
         : ptr_value_(reinterpret_cast<uintptr_t>(str)) {
       CHECK(!str || str->IsAtomic() || str == StringImpl::empty_);
     }
+
+    explicit WeakResult(const AtomicString& str)
+        : ptr_value_((reinterpret_cast<uintptr_t>(str.Impl()))) {}
 
     bool IsNull() const { return ptr_value_ == 0; }
 
@@ -74,25 +77,15 @@ class WTF_EXPORT AtomicStringTable final {
   // unnecessarily creating an AtomicString. Useful to optimize fast-path
   // non-existence checks inside collections of AtomicStrings.
   //
-  // Specifically, if WeakFind() returns an IsNull() WeakResult, then a
+  // Specifically, if WeakFind*() returns an IsNull() WeakResult, then a
   // collection search can be skipped because the AtomicString cannot exist
-  // in the collection. If WeakFind() returns a non-null WeakResult, then
+  // in the collection. If WeakFind*() returns a non-null WeakResult, then
   // assuming the target collection has no concurrent access, this lookup
   // can be reused to check for existence in the collection without
   // requiring either an AtomicString collection or another lookup within
   // the AtomicStringTable.
-  WeakResult WeakFind(StringImpl* string) {
-    // Mirror the empty logic in Add().
-    if (UNLIKELY(!string->length()))
-      return WeakResult(StringImpl::empty_);
 
-    if (LIKELY(string->IsAtomic()))
-      return WeakResult(string);
-
-    return WeakFindSlow(string);
-  }
-
-  WeakResult WeakFind(const StringView& string) {
+  WeakResult WeakFindForTesting(const StringView& string) {
     // Mirror the empty logic in Add().
     if (UNLIKELY(!string.length()))
       return WeakResult(StringImpl::empty_);
@@ -100,23 +93,10 @@ class WTF_EXPORT AtomicStringTable final {
     if (LIKELY(string.IsAtomic()))
       return WeakResult(string.SharedImpl());
 
-    return WeakFindSlow(string);
+    return WeakFindSlowForTesting(string);
   }
 
-  WeakResult WeakFind(const LChar* chars, unsigned length);
-  WeakResult WeakFind(const UChar* chars, unsigned length);
-
-  WeakResult WeakFindLowercased(const StringView& string) {
-    // Mirror the empty logic in Add().
-    if (UNLIKELY(!string.length()))
-      return WeakResult(StringImpl::empty_);
-
-    if (LIKELY(string.IsAtomic() && string.IsLowerASCII()))
-      return WeakResult(string.SharedImpl());
-
-    return WeakFindLowercasedSlow(string);
-  }
-
+  WeakResult WeakFindLowercase(const AtomicString& string);
   // This is for ~StringImpl to unregister a string before destruction since
   // the table is holding weak pointers. It should not be used directly.
   bool ReleaseAndRemoveIfNeeded(StringImpl*);
@@ -127,9 +107,7 @@ class WTF_EXPORT AtomicStringTable final {
 
   StringImpl* AddNoLock(StringImpl*);
 
-  WeakResult WeakFindSlow(StringImpl*);
-  WeakResult WeakFindSlow(const StringView&);
-  WeakResult WeakFindLowercasedSlow(const StringView& string);
+  WeakResult WeakFindSlowForTesting(const StringView&);
 
   HashSet<StringImpl*> table_;
 };

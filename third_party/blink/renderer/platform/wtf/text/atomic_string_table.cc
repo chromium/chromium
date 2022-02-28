@@ -168,50 +168,68 @@ struct StringViewLookupTranslator {
 
 // Allows lookups of the ASCII-lowercase version of a string without actually
 // allocating memory to store it. Instead, the translator computes the results
-// of hash and equality computations as if we had done so.
-struct LowercaseStringViewLookupTranslator {
+// of hash and equality computations as if we had done so. Strings reaching
+// these methods are expected to not be lowercase.
+
+class HashTranslatorLowercaseBuffer {
+ public:
+  explicit HashTranslatorLowercaseBuffer(const StringImpl* impl) : impl_(impl) {
+    // We expect already lowercase strings to take another path in
+    // Element::WeakLowercaseIfNecessary.
+    DCHECK(!impl_->IsLowerASCII());
+    if (impl_->Is8Bit()) {
+      hash_ =
+          StringHasher::ComputeHashAndMaskTop8Bits<LChar,
+                                                   ToASCIILowerUChar<LChar>>(
+              impl_->Characters8(), impl_->length());
+    } else {
+      hash_ =
+          StringHasher::ComputeHashAndMaskTop8Bits<UChar,
+                                                   ToASCIILowerUChar<UChar>>(
+              impl_->Characters16(), impl_->length());
+    }
+  }
+
+  const StringImpl* impl() const { return impl_; }
+  unsigned hash() const { return hash_; }
+
+ private:
   template <typename CharType>
   static UChar ToASCIILowerUChar(CharType ch) {
     return ToASCIILower(ch);
   }
 
+  const StringImpl* impl_;
+  unsigned hash_;
+};
+struct LowercaseLookupTranslator {
   // Computes the hash that |query| would have if it were first converted to
   // ASCII lowercase.
-  static unsigned GetHash(const StringView& query) {
-    // If possible, use cached hash if the string is lowercased.
-    StringImpl* shared_impl = query.SharedImpl();
-    if (LIKELY(shared_impl && query.IsLowerASCII()))
-      return shared_impl->GetHash();
-
-    if (query.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits<LChar,
-                                                      ToASCIILowerUChar<LChar>>(
-          query.Characters8(), query.length());
-    } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits<UChar,
-                                                      ToASCIILowerUChar<UChar>>(
-          query.Characters16(), query.length());
-    }
+  static unsigned GetHash(const HashTranslatorLowercaseBuffer& buf) {
+    return buf.hash();
   }
 
   // Returns true if the hashtable |bucket| contains a string which is the ASCII
   // lowercase version of |query|.
-  static bool Equal(StringImpl* const& bucket, const StringView& query) {
+  static bool Equal(StringImpl* const& bucket,
+                    const HashTranslatorLowercaseBuffer& buf) {
     // This is similar to EqualIgnoringASCIICase, but not the same.
     // In particular, it validates that |bucket| is a lowercase version of
-    // |query|.
+    // |buf.impl()|.
     //
     // Unlike EqualIgnoringASCIICase, it returns false if they are equal
     // ignoring ASCII case but |bucket| contains an uppercase ASCII character.
     //
     // However, similar optimizations are used here as there, so these should
     // have generally similar correctness and performance constraints.
-    if (bucket->length() != query.length())
+    const StringImpl* query = buf.impl();
+    if (bucket->length() != query->length())
       return false;
-    if (bucket->Bytes() == query.Bytes() && bucket->Is8Bit() == query.Is8Bit())
-      return query.IsLowerASCII();
+    if (bucket->Bytes() == query->Bytes() &&
+        bucket->Is8Bit() == query->Is8Bit())
+      return query->IsLowerASCII();
     return WTF::VisitCharacters(*bucket, [&](const auto* bch, wtf_size_t) {
-      return WTF::VisitCharacters(query, [&](const auto* qch, wtf_size_t len) {
+      return WTF::VisitCharacters(*query, [&](const auto* qch, wtf_size_t len) {
         for (wtf_size_t i = 0; i < len; ++i) {
           if (bch[i] != ToASCIILower(qch[i]))
             return false;
@@ -339,16 +357,7 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
                           HashAndUTF8CharactersTranslator>(buffer);
 }
 
-AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlow(
-    StringImpl* string) {
-  DCHECK(string->length());
-  const auto& it = table_.find(string);
-  if (it == table_.end())
-    return WeakResult();
-  return WeakResult(*it);
-}
-
-AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlow(
+AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlowForTesting(
     const StringView& string) {
   DCHECK(string.length());
   const auto& it = table_.Find<StringViewLookupTranslator>(string);
@@ -357,48 +366,17 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlow(
   return WeakResult(*it);
 }
 
-AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercasedSlow(
-    const StringView& string) {
+AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
+    const AtomicString& string) {
+  DCHECK(!string.IsEmpty());
+  DCHECK(!string.IsLowerASCII());
   DCHECK(string.length());
-  const auto& it = table_.Find<LowercaseStringViewLookupTranslator>(string);
+  HashTranslatorLowercaseBuffer buffer(string.Impl());
+  const auto& it = table_.Find<LowercaseLookupTranslator>(buffer);
   if (it == table_.end())
     return WeakResult();
   DCHECK(StringView(*it).IsLowerASCII());
   DCHECK(EqualIgnoringASCIICase(*it, string));
-  return WeakResult(*it);
-}
-
-AtomicStringTable::WeakResult AtomicStringTable::WeakFind(const LChar* chars,
-                                                          unsigned length) {
-  if (!chars)
-    return WeakResult();
-
-  // Mirror the empty logic in Add().
-  if (!length)
-    return WeakResult(StringImpl::empty_);
-
-  LCharBuffer buffer(chars, length);
-  const auto& it = table_.Find<LCharBufferTranslator>(buffer);
-  if (it == table_.end())
-    return WeakResult();
-
-  return WeakResult(*it);
-}
-
-AtomicStringTable::WeakResult AtomicStringTable::WeakFind(const UChar* chars,
-                                                          unsigned length) {
-  if (!chars)
-    return WeakResult();
-
-  // Mirror the empty logic in Add().
-  if (!length)
-    return WeakResult(StringImpl::empty_);
-
-  UCharBuffer buffer(chars, length);
-  const auto& it = table_.Find<UCharBufferTranslator>(buffer);
-  if (it == table_.end())
-    return WeakResult();
-
   return WeakResult(*it);
 }
 
