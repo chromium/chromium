@@ -154,10 +154,6 @@ void ReportScheduler::RegisterPrefObserver() {
       reporting_pref_name_,
       base::BindRepeating(&ReportScheduler::OnReportEnabledPrefChanged,
                           base::Unretained(this)));
-  pref_change_registrar_.Add(
-      kCloudReportingUploadFrequency,
-      base::BindRepeating(&ReportScheduler::RestartReportTimer,
-                          base::Unretained(this)));
   // Trigger first pref check during launch process.
   OnReportEnabledPrefChanged();
 }
@@ -180,6 +176,12 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
 
   // Start the periodic report timer.
   RestartReportTimer();
+  if (!pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency)) {
+    pref_change_registrar_.Add(
+        kCloudReportingUploadFrequency,
+        base::BindRepeating(&ReportScheduler::RestartReportTimer,
+                            base::Unretained(this)));
+  }
 
   // Only device report generator support real time partial version report with
   // DM Server. With longer term, this should use `real_time_report_generator_`
@@ -202,6 +204,8 @@ void ReportScheduler::Stop() {
     delegate_->StopWatchingUpdates();
   delegate_->StopWatchingExtensionRequest();
   extension_request_uploader_.reset();
+  if (pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency))
+    pref_change_registrar_.Remove(kCloudReportingUploadFrequency);
 }
 
 void ReportScheduler::RestartReportTimer() {

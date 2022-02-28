@@ -362,6 +362,26 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
+TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
+  Init(false, kDMToken, kClientId);
+  CreateScheduler();
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kUploadFrequency);
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Toggle reporting on and off.
+  EXPECT_CALL_SetupRegistration();
+  ToggleCloudReport(true);
+  ToggleCloudReport(false);
+
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  SetReportFrequency(kNewUploadFrequency);
+
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+}
+
 TEST_F(ReportSchedulerIOSTest,
        ReportingIsDisabledWhileNewReportIsScheduledButNotPosted) {
   EXPECT_CALL_SetupRegistration();

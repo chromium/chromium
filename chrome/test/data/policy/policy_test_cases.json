@@ -15131,7 +15131,6 @@
     ]
   },
   "CloudReportingUploadFrequency": {
-    "reason_for_missing_test": "TODO(http://crbug.com/1300521): flaky test on windows -> fix and remove this comment, which causes the test to be skipped",
     "os": [
       "win",
       "linux",
