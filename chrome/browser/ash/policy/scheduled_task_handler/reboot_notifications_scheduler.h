@@ -9,9 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
@@ -28,17 +26,15 @@ class RebootNotificationsScheduler {
   // Schedules timers for showing notification and dialog or shows them right
   // away if the scheduled reboot time is soon. Notifications are not shown when
   // grace time applies.
-  void ScheduleNotifications(
-      base::OnceClosure reboot_callback,
-      const ScheduledTaskExecutor::ScheduledTaskData& data);
+  void ScheduleNotifications(base::OnceClosure reboot_callback,
+                             const base::Time& reboot_time);
 
   // Resets timers and closes notification and dialog if open.
   void ResetState();
 
   // Grace time applies if the reboot is scheduled in less then an hour from the
   // last device reboot.
-  bool ShouldApplyGraceTime(
-      const ScheduledTaskExecutor::ScheduledTaskData& data) const;
+  bool ShouldApplyGraceTime(const base::Time& reboot_time) const;
 
  protected:
   RebootNotificationsScheduler(const base::Clock* clock,
@@ -55,14 +51,11 @@ class RebootNotificationsScheduler {
   // Returns current time.
   virtual const base::Time GetCurrentTime() const;
 
-  // Returns the current time zone.
-  virtual const icu::TimeZone& GetTimeZone() const;
-
   // Returns time since last reboot.
   virtual const base::TimeDelta GetSystemUptime() const;
 
-  base::TimeDelta GetRebootDelay(
-      const ScheduledTaskExecutor::ScheduledTaskData& data) const;
+  // Returns delay from now until |reboot_time|.
+  base::TimeDelta GetRebootDelay(const base::Time& reboot_time) const;
 
   // Timers for scheduling notification or dialog displaying.
   base::WallClockTimer notification_timer_, dialog_timer_;

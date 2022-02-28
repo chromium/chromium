@@ -4,21 +4,16 @@
 
 #include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
 
-#include <memory>
-
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
 FakeRebootNotificationsScheduler::FakeRebootNotificationsScheduler(
     const base::Clock* clock,
-    const base::TickClock* tick_clock,
-    std::unique_ptr<icu::TimeZone> time_zone)
+    const base::TickClock* tick_clock)
     : RebootNotificationsScheduler(clock, tick_clock),
       clock_(clock),
-      time_zone_(std::move(time_zone)),
       uptime_(base::Hours(10)) {}
 
 FakeRebootNotificationsScheduler::~FakeRebootNotificationsScheduler() = default;
@@ -47,10 +42,6 @@ void FakeRebootNotificationsScheduler::MaybeShowDialog() {
 
 const base::Time FakeRebootNotificationsScheduler::GetCurrentTime() const {
   return clock_->Now();
-}
-
-const icu::TimeZone& FakeRebootNotificationsScheduler::GetTimeZone() const {
-  return *time_zone_;
 }
 
 const base::TimeDelta FakeRebootNotificationsScheduler::GetSystemUptime()
