@@ -15,6 +15,10 @@ namespace policy_prefs {
 // that it is loaded faster at sartup.
 const char kAzureActiveDirectoryManagement[] =
     "management.platform.azure_active_directory";
+#elif BUILDFLAG(IS_MAC)
+// Integer pref that stores the Mac enterprise MDM management authority.
+const char kEnterpriseMDMManagementMac[] =
+    "management.platform.enterprise_mdm_mac";
 #endif
 
 // 64-bit serialization of the time last policy usage statistics were collected

@@ -210,6 +210,13 @@ source_set("internal") {
     "//components/policy:generated",
   ]
 
+  if (is_mac) {
+    sources += [
+      "management/platform_management_status_provider_mac.cc",
+      "management/platform_management_status_provider_mac.h",
+    ]
+  }
+
   if (is_win) {
     sources += [
       "management/platform_management_status_provider_win.cc",

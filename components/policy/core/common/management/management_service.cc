@@ -173,6 +173,8 @@ void ManagementService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(policy_prefs::kAzureActiveDirectoryManagement,
                                 NONE);
+#elif BUILDFLAG(IS_MAC)
+  registry->RegisterIntegerPref(policy_prefs::kEnterpriseMDMManagementMac, 0);
 #endif
 }
 

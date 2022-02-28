@@ -18,6 +18,9 @@ POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
 POLICY_EXPORT extern const char kDlpClipboardCheckSizeLimit[];
 POLICY_EXPORT extern const char kDlpReportingEnabled[];
 POLICY_EXPORT extern const char kDlpRulesList[];
+#if BUILDFLAG(IS_MAC)
+POLICY_EXPORT extern const char kEnterpriseMDMManagementMac[];
+#endif
 POLICY_EXPORT extern const char kLastPolicyStatisticsUpdate[];
 POLICY_EXPORT extern const char kNativeWindowOcclusionEnabled[];
 POLICY_EXPORT extern const char kSafeSitesFilterBehavior[];

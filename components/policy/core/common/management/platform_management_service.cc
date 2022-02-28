@@ -14,8 +14,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/features.h"
-
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+#include "components/policy/core/common/management/platform_management_status_provider_mac.h"
+#elif BUILDFLAG(IS_WIN)
 #include "components/policy/core/common/management/platform_management_status_provider_win.h"
 #endif
 
@@ -25,12 +26,14 @@ namespace {
 std::vector<std::unique_ptr<ManagementStatusProvider>>
 GetPlatformManagementSatusProviders() {
   std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   providers.emplace_back(std::make_unique<DomainEnrollmentStatusProvider>());
   providers.emplace_back(
-      std::make_unique<AzureActiveDirectoryStatusProvider>());
-  providers.emplace_back(
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
+#endif
+#if BUILDFLAG(IS_WIN)
+  providers.emplace_back(
+      std::make_unique<AzureActiveDirectoryStatusProvider>());
 #endif
   return providers;
 }
