@@ -5,7 +5,8 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-archive-rel": {
@@ -16,14 +17,16 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "android-official": {
     "gn_args": {
       "is_official_build": true,
       "target_os": "android",
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "fuchsia-official": {

@@ -246,6 +246,9 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -254,8 +257,10 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "M proguard",
     ),
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     execution_timeout = 6 * time.hour,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -264,6 +269,9 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -487,6 +495,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     tree_closing = True,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -495,6 +506,9 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "M_non-cq",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -519,6 +533,9 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "p-cov",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -531,6 +548,9 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     execution_timeout = 4 * time.hour,
     tree_closing = True,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -539,6 +559,9 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "P",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 # TODO(crbug.com/1137474): Update the console view config once on CQ
@@ -549,6 +572,9 @@ ci.builder(
         short_name = "11",
     ),
     tree_closing = True,
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
