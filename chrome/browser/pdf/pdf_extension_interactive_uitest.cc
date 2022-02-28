@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
@@ -47,6 +49,7 @@ namespace {
 
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
 using ::pdf_extension_test_util::EnsurePDFHasLoaded;
+using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
                                       public extensions::ExtensionApiTest {
@@ -104,7 +107,68 @@ class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
   }
 };
 
+class TabChangedWaiter : public TabStripModelObserver {
+ public:
+  explicit TabChangedWaiter(Browser* browser) {
+    browser->tab_strip_model()->AddObserver(this);
+  }
+  TabChangedWaiter(const TabChangedWaiter&) = delete;
+  TabChangedWaiter& operator=(const TabChangedWaiter&) = delete;
+  ~TabChangedWaiter() override = default;
+
+  void Wait() { run_loop_.Run(); }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() == TabStripModelChange::kSelectionOnly)
+      run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 }  // namespace
+
+// For crbug.com/1038918
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest,
+                       CtrlPageUpDownSwitchesTabs) {
+  content::WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+
+  auto* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(1, tab_strip_model->active_index());
+
+  SetInputFocusOnPlugin(guest_contents);
+
+  {
+    TabChangedWaiter tab_changed_waiter(browser());
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_NEXT,
+                                                /*control=*/true,
+                                                /*shift=*/false,
+                                                /*alt=*/false,
+                                                /*command=*/false));
+    tab_changed_waiter.Wait();
+  }
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(0, tab_strip_model->active_index());
+
+  {
+    TabChangedWaiter tab_changed_waiter(browser());
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_PRIOR,
+                                                /*control=*/true,
+                                                /*shift=*/false,
+                                                /*alt=*/false,
+                                                /*command=*/false));
+    tab_changed_waiter.Wait();
+  }
+  ASSERT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(1, tab_strip_model->active_index());
+}
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
   content::WebContents* guest_contents = LoadPdfGetGuestContents(

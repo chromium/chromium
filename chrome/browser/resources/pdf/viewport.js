@@ -1198,8 +1198,13 @@ export class Viewport {
   handleDirectionalKeyEvent(e, formFieldFocused) {
     switch (e.key) {
       case ' ':
+        this.pageUpDownSpaceHandler_(e, formFieldFocused);
+        return true;
       case 'PageUp':
       case 'PageDown':
+        if (hasKeyModifiers(e)) {
+          return false;
+        }
         this.pageUpDownSpaceHandler_(e, formFieldFocused);
         return true;
       case 'ArrowLeft':

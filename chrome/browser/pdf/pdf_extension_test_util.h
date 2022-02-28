@@ -34,6 +34,10 @@ namespace pdf_extension_test_util {
 gfx::Point ConvertPageCoordToScreenCoord(content::WebContents* contents,
                                          const gfx::Point& point);
 
+// Synchronously sets the input focus on the plugin frame by clicking on the
+// top-left corner of a PDF document.
+void SetInputFocusOnPlugin(content::WebContents* guest_contents);
+
 }  // namespace pdf_extension_test_util
 
 #endif  // CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_UTIL_H_

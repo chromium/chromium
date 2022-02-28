@@ -171,8 +171,10 @@ document.addEventListener('keydown', e => {
       break;
     case 'PageDown':
     case 'PageUp':
-      // Always prevent PageDown/PageUp.
-      e.preventDefault();
+      // Prevent PageDown/PageUp when there are no modifier keys.
+      if (!hasKeyModifiers(e)) {
+        e.preventDefault();
+      }
       break;
 
     case 'ArrowDown':
