@@ -7,16 +7,14 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/policy_pref_names.h"
 
 namespace policy {
 DomainEnrollmentStatusProvider::DomainEnrollmentStatusProvider() = default;
 
-DomainEnrollmentStatusProvider::~DomainEnrollmentStatusProvider() = default;
-
 EnterpriseManagementAuthority DomainEnrollmentStatusProvider::FetchAuthority() {
-  return DomainEnrollmentStatusProvider::IsEnrolledToDomain()
-             ? EnterpriseManagementAuthority::DOMAIN_LOCAL
-             : EnterpriseManagementAuthority::NONE;
+  return DomainEnrollmentStatusProvider::IsEnrolledToDomain() ? DOMAIN_LOCAL
+                                                              : NONE;
 }
 
 bool DomainEnrollmentStatusProvider::IsEnrolledToDomain() {
@@ -26,16 +24,21 @@ bool DomainEnrollmentStatusProvider::IsEnrolledToDomain() {
 EnterpriseMDMManagementStatusProvider::EnterpriseMDMManagementStatusProvider() =
     default;
 
-EnterpriseMDMManagementStatusProvider::
-    ~EnterpriseMDMManagementStatusProvider() = default;
-
 EnterpriseManagementAuthority
 EnterpriseMDMManagementStatusProvider::FetchAuthority() {
   return base::win::OSInfo::GetInstance()->version_type() !=
                      base::win::SUITE_HOME &&
                  base::win::IsDeviceRegisteredWithManagement()
-             ? EnterpriseManagementAuthority::CLOUD
-             : EnterpriseManagementAuthority::NONE;
+             ? CLOUD
+             : NONE;
+}
+
+AzureActiveDirectoryStatusProvider::AzureActiveDirectoryStatusProvider()
+    : ManagementStatusProvider(policy_prefs::kAzureActiveDirectoryManagement) {}
+
+EnterpriseManagementAuthority
+AzureActiveDirectoryStatusProvider::FetchAuthority() {
+  return base::win::IsJoinedToAzureAD() ? CLOUD_DOMAIN : NONE;
 }
 
 }  // namespace policy

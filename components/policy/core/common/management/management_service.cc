@@ -11,8 +11,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/features.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/persistent_pref_store.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
@@ -163,6 +166,14 @@ void ManagementService::SetManagementAuthoritiesForTesting(
 void ManagementService::ClearManagementAuthoritiesForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   management_authorities_for_testing_.reset();
+}
+
+// static
+void ManagementService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+#if BUILDFLAG(IS_WIN)
+  registry->RegisterIntegerPref(policy_prefs::kAzureActiveDirectoryManagement,
+                                NONE);
+#endif
 }
 
 bool ManagementService::IsManaged() {

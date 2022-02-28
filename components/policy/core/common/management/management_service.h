@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace policy {
 
@@ -51,6 +52,11 @@ using CacheRefreshCallback =
 class POLICY_EXPORT ManagementStatusProvider {
  public:
   ManagementStatusProvider();
+
+  // `cache_pref_name` is an optional that is the name of the pref used to store
+  // the management authority from this provider. If this is empty, the provider
+  // always returns the up-to-date management authority, otherwise returns the
+  // value from the prefs.
   explicit ManagementStatusProvider(const std::string& cache_pref_name);
   virtual ~ManagementStatusProvider();
 
@@ -115,6 +121,8 @@ class POLICY_EXPORT ManagementService {
   void ClearManagementAuthoritiesForTesting();
   void SetManagementStatusProviderForTesting(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  protected:
   // Sets the management status providers to be used by the service.

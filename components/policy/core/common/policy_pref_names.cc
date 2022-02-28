@@ -9,6 +9,14 @@
 namespace policy {
 namespace policy_prefs {
 
+#if BUILDFLAG(IS_WIN)
+// Boolean pref that stores if the OS is actively managed by
+// Azure Active Directory. This will be used to cache the management status so
+// that it is loaded faster at sartup.
+const char kAzureActiveDirectoryManagement[] =
+    "management.platform.azure_active_directory";
+#endif
+
 // 64-bit serialization of the time last policy usage statistics were collected
 // by UMA_HISTOGRAM_ENUMERATION.
 const char kLastPolicyStatisticsUpdate[] = "policy.last_statistics_update";

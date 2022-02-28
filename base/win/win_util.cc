@@ -7,6 +7,7 @@
 #include <aclapi.h>
 #include <cfgmgr32.h>
 #include <initguid.h>
+#include <lm.h>
 #include <powrprof.h>
 #include <shobjidl.h>  // Must be before propkey.
 
@@ -33,11 +34,13 @@
 
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
@@ -45,6 +48,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/win/access_token.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/propvarutil.h"
@@ -182,6 +186,47 @@ bool* GetRegisteredWithManagementStateStorage() {
     return SUCCEEDED(hr) && is_managed;
   }();
 
+  return &state;
+}
+
+// TODO (crbug/1300219): return a DSREG_JOIN_TYPE* instead of bool*.
+bool* GetAzureADJoinStateStorage() {
+  static bool state = []() {
+    base::ElapsedTimer timer;
+
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
+    ScopedNativeLibrary netapi32(
+        base::LoadSystemLibrary(FILE_PATH_LITERAL("netapi32.dll")));
+    if (!netapi32.is_valid())
+      return false;
+
+    const auto net_get_aad_join_information_function =
+        reinterpret_cast<decltype(&::NetGetAadJoinInformation)>(
+            netapi32.GetFunctionPointer("NetGetAadJoinInformation"));
+    if (!net_get_aad_join_information_function)
+      return false;
+
+    const auto net_free_aad_join_information_function =
+        reinterpret_cast<decltype(&::NetFreeAadJoinInformation)>(
+            netapi32.GetFunctionPointer("NetFreeAadJoinInformation"));
+    DPCHECK(net_free_aad_join_information_function);
+
+    DSREG_JOIN_INFO* join_info = nullptr;
+    HRESULT hr = net_get_aad_join_information_function(/*pcszTenantId=*/nullptr,
+                                                       &join_info);
+    const bool is_aad_joined =
+        SUCCEEDED(hr) && join_info && join_info->joinType != DSREG_UNKNOWN_JOIN;
+    if (join_info) {
+      net_free_aad_join_information_function(join_info);
+    }
+
+    base::UmaHistogramTimes("EnterpriseCheck.AzureADJoinStatusCheckTime",
+                            timer.Elapsed());
+    return is_aad_joined;
+  }();
   return &state;
 }
 
@@ -599,6 +644,10 @@ bool IsDeviceRegisteredWithManagement() {
   return *GetRegisteredWithManagementStateStorage();
 }
 
+bool IsJoinedToAzureAD() {
+  return *GetAzureADJoinStateStorage();
+}
+
 bool IsUser32AndGdi32Available() {
   static auto is_user32_and_gdi32_available = []() {
     // If win32k syscalls aren't disabled, then user32 and gdi32 are available.
@@ -833,6 +882,13 @@ ScopedDeviceRegisteredWithManagementForTesting::
 ScopedDeviceRegisteredWithManagementForTesting::
     ~ScopedDeviceRegisteredWithManagementForTesting() {
   *GetRegisteredWithManagementStateStorage() = initial_state_;
+}
+
+ScopedAzureADJoinStateForTesting::ScopedAzureADJoinStateForTesting(bool state)
+    : initial_state_(std::exchange(*GetAzureADJoinStateStorage(), state)) {}
+
+ScopedAzureADJoinStateForTesting::~ScopedAzureADJoinStateForTesting() {
+  *GetAzureADJoinStateStorage() = initial_state_;
 }
 
 }  // namespace win

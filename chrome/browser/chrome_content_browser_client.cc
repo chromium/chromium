@@ -218,6 +218,7 @@
 #include "components/permissions/quota_permission_context_impl.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -1034,21 +1035,14 @@ mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
   return canceler;
 }
 
-// Encapculates logic to determine if enterprise policies should be honored.
-// This is a copy of the code in policy_loader_win.cc but it's ok to duplicate
-// as a new central class to replace those checks is in the making.
 bool ShouldHonorPolicies() {
 #if BUILDFLAG(IS_WIN)
-  bool is_enterprise_version =
-      base::win::OSInfo::GetInstance()->version_type() != base::win::SUITE_HOME;
-  return base::win::IsEnrolledToDomain() ||
-         (base::win::IsDeviceRegisteredWithManagement() &&
-          is_enterprise_version);
-#else   // BUILDFLAG(IS_WIN)
-  // TODO(pastarmovj): Replace this with check for MacOS and the new management
-  // service once it is ready.
+  return policy::ManagementServiceFactory::GetForPlatform()
+             ->GetManagementAuthorityTrustworthiness() >=
+         policy::ManagementAuthorityTrustworthiness::TRUSTED;
+#else
   return true;
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 }
 
 // Used by Enterprise policy. Disable blocking of navigations toward external

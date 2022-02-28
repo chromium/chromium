@@ -11,6 +11,9 @@
 namespace policy {
 namespace policy_prefs {
 
+#if BUILDFLAG(IS_WIN)
+POLICY_EXPORT extern const char kAzureActiveDirectoryManagement[];
+#endif
 POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
 POLICY_EXPORT extern const char kDlpClipboardCheckSizeLimit[];
 POLICY_EXPORT extern const char kDlpReportingEnabled[];

@@ -1985,6 +1985,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
+    expires_after="2022-12-12">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Time elapsed for checking the Azure AD join status. This is only recorded
+    once during the first successful join status check.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.InDomain" enum="BooleanEnabled"
     expires_after="2022-04-30">
   <owner>pastarmovj@chromium.org</owner>
@@ -2061,6 +2074,20 @@ chromium-metrics-reviews@google.com.
     On Android (OS version Lollipop+): Whether the device has a &quot;device
     owner&quot; app installed. This check is performed once on application
     start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsJoinedToAzureAD" enum="BooleanEnabled"
+    expires_after="2022-12-12">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is joined to an Azure AD domain or the user has added
+    one or more work/school accounts to their login session. This check is
+    performed once at start-up on Windows.
   </summary>
 </histogram>
 

@@ -28,6 +28,8 @@ GetPlatformManagementSatusProviders() {
 #if BUILDFLAG(IS_WIN)
   providers.emplace_back(std::make_unique<DomainEnrollmentStatusProvider>());
   providers.emplace_back(
+      std::make_unique<AzureActiveDirectoryStatusProvider>());
+  providers.emplace_back(
       std::make_unique<EnterpriseMDMManagementStatusProvider>());
 #endif
   return providers;
