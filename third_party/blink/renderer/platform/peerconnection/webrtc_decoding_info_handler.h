@@ -43,7 +43,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   void DecodingInfo(
       const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
-      const absl::optional<String> video_scalability_mode,
+      const bool video_spatial_scalability,
       OnMediaCapabilitiesDecodingInfoCallback callback) const;
 
  private:

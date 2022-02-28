@@ -9,32 +9,6 @@
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 
 namespace blink {
-namespace {
-struct ScalabilityModeSpatialLayers {
-  const char* name;
-  int spatial_layers;
-  int dependent_spatial_layers;
-};
-
-constexpr ScalabilityModeSpatialLayers kSvcSpatialLayers[] = {
-    // See https://www.w3.org/TR/webrtc-svc/ for a list of scalability modes.
-    {"L1T2", 1, 1},           {"L1T3", 1, 1},
-    {"L2T1", 2, 2},           {"L2T2", 2, 2},
-    {"L2T3", 2, 2},           {"L2T1h", 2, 2},
-    {"L2T2h", 2, 2},          {"L2T3h", 2, 2},
-    {"S2T1", 2, 1},           {"S2T2", 2, 1},
-    {"S2T3", 2, 1},           {"S2T1h", 2, 1},
-    {"S2T2h", 2, 1},          {"S2T3h", 2, 1},
-    {"L3T1", 3, 3},           {"L3T2", 3, 3},
-    {"L3T3", 3, 3},           {"S3T1", 3, 1},
-    {"S3T2", 3, 1},           {"S3T3", 3, 1},
-    {"S3T1h", 3, 1},          {"S3T2h", 3, 1},
-    {"S3T3h", 3, 1},          {"L2T2_KEY", 2, 2},
-    {"L2T2_KEY_SHIFT", 2, 2}, {"L2T3_KEY", 2, 2},
-    {"L2T3_KEY_SHIFT", 2, 2}, {"L3T2_KEY", 3, 3},
-    {"L3T2_KEY_SHIFT", 3, 3}, {"L3T3_KEY", 3, 3}};
-
-}  // namespace
 
 media::VideoRotation WebRtcToMediaVideoRotation(
     webrtc::VideoRotation rotation) {
@@ -267,23 +241,4 @@ media::VideoColorSpace WebRtcToMediaVideoColorSpace(
   return media::VideoColorSpace(primaries, transfer, matrix, range);
 }
 
-absl::optional<int> WebRtcScalabilityModeSpatialLayers(
-    const std::string& scalability_mode) {
-  for (const auto& entry : kSvcSpatialLayers) {
-    if (entry.name == scalability_mode) {
-      return entry.spatial_layers;
-    }
-  }
-  return absl::nullopt;
-}
-
-absl::optional<int> WebRtcScalabilityModeDependentSpatialLayers(
-    const std::string& scalability_mode) {
-  for (const auto& entry : kSvcSpatialLayers) {
-    if (entry.name == scalability_mode) {
-      return entry.dependent_spatial_layers;
-    }
-  }
-  return absl::nullopt;
-}
 }  // namespace blink

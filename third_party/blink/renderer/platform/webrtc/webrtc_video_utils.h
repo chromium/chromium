@@ -32,18 +32,6 @@ WebRtcVideoFormatToMediaVideoCodecProfile(const webrtc::SdpVideoFormat& format);
 media::VideoColorSpace PLATFORM_EXPORT
 WebRtcToMediaVideoColorSpace(const webrtc::ColorSpace& color_space);
 
-// Returns the number of spatial layers that is used in the specified
-// scalability mode. An empty return value means that the specified scalability
-// mode is unsupported.
-absl::optional<int> PLATFORM_EXPORT
-WebRtcScalabilityModeSpatialLayers(const std::string& scalability_mode);
-
-// Returns the number of dependent spatial layers that is used in the specified
-// scalability mode. An empty return value means that the specified scalability
-// mode is unsupported.
-absl::optional<int> PLATFORM_EXPORT WebRtcScalabilityModeDependentSpatialLayers(
-    const std::string& scalability_mode);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEBRTC_WEBRTC_VIDEO_UTILS_H_
