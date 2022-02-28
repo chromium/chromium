@@ -21,10 +21,6 @@
 
 namespace storage {
 
-// TODO(crbug.com/586174): Use disk_cache::EntryResult for better lifetime
-// management of disk cache entries. Using EntryResult will eliminate allocating
-// raw pointers and static methods in service worker resource readers/writers.
-
 class ServiceWorkerDiskCache;
 
 // Thin wrapper around disk_cache::Entry.
