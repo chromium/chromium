@@ -642,14 +642,14 @@ let reportTableModel = null;
  * @return {string}
  */
 function OriginToText(origin) {
-  if (origin.host.length == 0) {
+  if (origin.host.length === 0) {
     return 'Null';
   }
 
   let result = origin.scheme + '://' + origin.host;
 
-  if ((origin.scheme == 'https' && origin.port != '443') ||
-      (origin.scheme == 'http' && origin.port != '80')) {
+  if ((origin.scheme === 'https' && origin.port !== 443) ||
+      (origin.scheme === 'http' && origin.port !== 80)) {
     result += ':' + origin.port;
   }
   return result;

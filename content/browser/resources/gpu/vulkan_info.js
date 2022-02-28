@@ -60,7 +60,7 @@ export class VulkanInfo {
     let result = '';
     for (let i = 0; i < 16; ++i) {
       const value = uuid[i];
-      if (i == 4 || i == 6 || i == 8 || i == 10) {
+      if (i === 4 || i === 6 || i === 8 || i === 10) {
         result += '-';
       }
       if (value < 0x10) {

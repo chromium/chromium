@@ -92,9 +92,9 @@ function frameToTreeItem(frame) {
   // Compose the string which will appear in the entry for this frame.
   let itemLabel = `Frame[${frame.processId}:${frame.routingId}:${
     frame.agentSchedulingGroupId}]:`;
-  if (frame.type == FrameInfo_Type.kBackForwardCache) {
+  if (frame.type === FrameInfo_Type.kBackForwardCache) {
     itemLabel += ` bfcached`;
-  } else if (frame.type == FrameInfo_Type.kPrerender) {
+  } else if (frame.type === FrameInfo_Type.kPrerender) {
     itemLabel += ` prerender`;
   }
 
@@ -178,7 +178,7 @@ function webContentsToTreeItem(webContents) {
   // buildCountString(1, 'frame') => "1 frame"
   // buildCountString(2, 'frame') => "2 frames"
   const buildCountString = ((count, name) => {
-    return `${count} ${name}` + (count != 1 ? 's' : '');
+    return `${count} ${name}` + (count !== 1 ? 's' : '');
   });
 
   itemLabel += buildCountString(activeCount, 'active frame');
