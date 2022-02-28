@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
@@ -104,12 +103,7 @@ public class PriceMessageCardViewModel {
 
     private static Drawable getIconDrawable(Context context, @PriceMessageType int type) {
         if (type == PriceMessageType.PRICE_ALERTS) {
-            Drawable drawable =
-                    AppCompatResources.getDrawable(context, R.drawable.price_tracking_disabled);
-            DrawableCompat.setTintList(drawable,
-                    AppCompatResources.getColorStateList(
-                            context, R.color.default_icon_color_accent1_baseline));
-            return drawable;
+            return AppCompatResources.getDrawable(context, R.drawable.ic_price_alert_blue);
         }
         return null;
     }

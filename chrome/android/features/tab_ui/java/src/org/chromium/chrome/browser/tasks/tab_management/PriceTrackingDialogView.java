@@ -9,13 +9,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SwitchCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -39,10 +36,6 @@ public class PriceTrackingDialogView extends LinearLayout {
         mPriceAlertsArrow = (ChromeImageButton) findViewById(R.id.price_alerts_arrow);
         mPriceAnnotationsRowMenu = (ViewGroup) findViewById(R.id.price_annotations_row_menu_id);
         mPriceAlertsRowMenu = (ViewGroup) findViewById(R.id.price_alerts_row_menu_id);
-
-        ApiCompatibilityUtils.setImageTintList((ImageView) findViewById(R.id.price_alerts_icon),
-                AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_accent1_baseline));
     }
 
     /**

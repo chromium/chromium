@@ -35,6 +35,7 @@ android_resources("java_resources") {
     "java/res/drawable/hovered_tab_grid_card_background.xml",
     "java/res/drawable/ic_check_googblue_20dp_animated.xml",
     "java/res/drawable/ic_group_icon_16dp.xml",
+    "java/res/drawable/ic_price_alert_blue.xml",
     "java/res/drawable/ic_rating_star_full.xml",
     "java/res/drawable/ic_rating_star_half.xml",
     "java/res/drawable/ic_rating_star_outline.xml",
