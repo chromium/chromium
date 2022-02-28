@@ -186,7 +186,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Initialize this frame as the root of a new FrameTree.
   void InitRoot(SiteInstance* site_instance,
                 bool renderer_initiated_creation,
-                blink::FramePolicy initial_main_frame_policy);
+                blink::FramePolicy initial_main_frame_policy,
+                const std::string& name);
 
   // Initialize this frame as the child of another frame.
   void InitChild(SiteInstance* site_instance,
@@ -391,11 +392,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // is responsible for has started or stopped loading a document.
   void OnDidStartLoading();
   void OnDidStopLoading();
-
-  // OnDidUpdateName gets called when a frame changes its name - it gets the new
-  // |name| and the recalculated |unique_name| and replicates them into all
-  // frame proxies.
-  void OnDidUpdateName(const std::string& name, const std::string& unique_name);
 
   // Called when the client changes whether the frame's owner element in the
   // embedder document should be collapsed, that is, remove from the layout as

@@ -30,8 +30,9 @@ BrowsingContextStateImplementationType GetBrowsingContextMode() {
 namespace content {
 
 BrowsingContextState::BrowsingContextState(
-    blink::mojom::FrameReplicationStatePtr replication_state)
-    : replication_state_(std::move(replication_state)) {}
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    raw_ptr<RenderFrameHostImpl> parent)
+    : replication_state_(std::move(replication_state)), parent_(parent) {}
 
 BrowsingContextState::~BrowsingContextState() = default;
 
@@ -110,6 +111,32 @@ bool BrowsingContextState::CommitFramePolicy(
                            replication_state_->permissions_policy_header);
   return did_change_flags || did_change_container_policy ||
          did_change_required_document_policy;
+}
+
+void BrowsingContextState::SetFrameName(const std::string& name,
+                                        const std::string& unique_name) {
+  if (name == replication_state_->name) {
+    // |unique_name| shouldn't change unless |name| changes.
+    DCHECK_EQ(unique_name, replication_state_->unique_name);
+    return;
+  }
+
+  if (parent_) {
+    // Non-main frames should have a non-empty unique name.
+    DCHECK(!unique_name.empty());
+  } else {
+    // Unique name of main frames should always stay empty.
+    DCHECK(unique_name.empty());
+  }
+
+  // Note the unique name should only be able to change before the first real
+  // load is committed, but that's not strongly enforced here.
+  for (const auto& pair : proxy_hosts_) {
+    pair.second->GetAssociatedRemoteFrame()->SetReplicatedName(name,
+                                                               unique_name);
+  }
+  replication_state_->unique_name = unique_name;
+  replication_state_->name = name;
 }
 
 void BrowsingContextState::SetCurrentOrigin(

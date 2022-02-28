@@ -73,8 +73,8 @@ class CONTENT_EXPORT BrowsingContextState
                          std::unique_ptr<RenderFrameProxyHost>,
                          SiteInstanceGroupId::Hasher>;
 
-  explicit BrowsingContextState(
-      blink::mojom::FrameReplicationStatePtr replication_state);
+  BrowsingContextState(blink::mojom::FrameReplicationStatePtr replication_state,
+                       raw_ptr<RenderFrameHostImpl> parent);
 
   // Returns a const reference to the map of proxy hosts. The keys are
   // SiteInstanceGroup IDs, the values are RenderFrameProxyHosts.
@@ -127,6 +127,9 @@ class CONTENT_EXPORT BrowsingContextState
 
   // Returns the number of RenderFrameProxyHosts for this frame.
   size_t GetProxyCount();
+
+  // Set the current name and notify proxies about the update.
+  void SetFrameName(const std::string& name, const std::string& unique_name);
 
   // Set the current origin and notify proxies about the update.
   void SetCurrentOrigin(const url::Origin& origin,
@@ -207,6 +210,10 @@ class CONTENT_EXPORT BrowsingContextState
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.
   blink::mojom::FrameReplicationStatePtr replication_state_;
+
+  // Parent document of this BrowsingContextState, might be null if this is a
+  // main frame BrowsingContextState.
+  const raw_ptr<RenderFrameHostImpl> parent_;
 };
 
 }  // namespace content

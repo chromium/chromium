@@ -5378,6 +5378,8 @@ void RenderFrameHostImpl::DidAccessInitialMainDocument() {
   frame_tree_->DidAccessInitialMainDocument();
 }
 
+// TODO(crbug.com/1270671): Avoid duplicating name when RenderFrameHostImpl is
+// not current in its FrameTreeNode.
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
                                         const std::string& unique_name) {
   if (GetParent() != nullptr) {
@@ -5388,7 +5390,7 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
                "render_frame_host", this, "name", name);
 
   std::string old_name = browsing_context_state_->frame_name();
-  frame_tree_node()->SetFrameName(name, unique_name);
+  browsing_context_state_->SetFrameName(name, unique_name);
   if (old_name.empty() && !name.empty())
     frame_tree_node_->render_manager()->CreateProxiesForNewNamedFrame(
         browsing_context_state_);

@@ -297,7 +297,8 @@ RenderFrameHostManager::RenderFrameHostManager(
               false /* has_potentially_trustworthy_unique_origin */,
               false /* has_active_user_gesture */,
               false /* has_received_user_gesture_before_nav */,
-              false /* is_ad_subframe */))) {
+              false /* is_ad_subframe */),
+          frame_tree_node_->parent())) {
   DCHECK(frame_tree_node_);
 }
 
@@ -318,10 +319,10 @@ RenderFrameHostManager::~RenderFrameHostManager() {
 void RenderFrameHostManager::InitRoot(
     SiteInstance* site_instance,
     bool renderer_initiated_creation,
-    blink::FramePolicy initial_main_frame_policy) {
-  // TODO(crbug.com/1270671) - replication state and frame policy will need
-  // to both be updated here.
+    blink::FramePolicy initial_main_frame_policy,
+    const std::string& name) {
   browsing_context_state_->CommitFramePolicy(initial_main_frame_policy);
+  browsing_context_state_->SetFrameName(name, "");
   SetRenderFrameHost(CreateRenderFrameHost(
       CreateFrameCase::kInitRoot, site_instance,
       /*frame_routing_id=*/MSG_ROUTING_NONE,
@@ -1353,14 +1354,6 @@ void RenderFrameHostManager::OnDidStartLoading() {
 void RenderFrameHostManager::OnDidStopLoading() {
   for (const auto& pair : browsing_context_state_->proxy_hosts())
     pair.second->GetAssociatedRemoteFrame()->DidStopLoading();
-}
-
-void RenderFrameHostManager::OnDidUpdateName(const std::string& name,
-                                             const std::string& unique_name) {
-  for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    pair.second->GetAssociatedRemoteFrame()->SetReplicatedName(name,
-                                                               unique_name);
-  }
 }
 
 void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
@@ -2706,12 +2699,15 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
     // the entire FrameReplicationState to match the old behaviour of storing
     // FrameReplicationState on FrameTreeNode. We should consider splitting
     // FrameReplicationState into multiple structs with different lifetimes.
+    // TODO(crbug.com/1270671): conditionally avoid copying the frame name here
+    // if DidChangeName arrives after DidCommitNavigation.
     browsing_context_state =
         render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
             new_instance)
             ? render_frame_host_->browsing_context_state()
             : base::MakeRefCounted<BrowsingContextState>(
-                  browsing_context_state_->current_replication_state().Clone());
+                  browsing_context_state_->current_replication_state().Clone(),
+                  frame_tree_node_->parent());
   }
 
   CreateProxiesForNewRenderFrameHost(old_instance, new_instance,

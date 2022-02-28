@@ -858,9 +858,9 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
-  root_->SetFrameName(main_frame_name, unique_name);
   root_->render_manager()->InitRoot(main_frame_site_instance,
-                                    renderer_initiated_creation, frame_policy);
+                                    renderer_initiated_creation, frame_policy,
+                                    main_frame_name);
   root_->SetFencedFrameNonceIfNeeded();
 
   // The initial empty document should inherit the origin of its opener (the

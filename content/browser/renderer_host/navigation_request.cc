@@ -5697,8 +5697,13 @@ void NavigationRequest::DidCommitNavigation(
   if (should_clear_browsing_instance_name) {
     std::string name, unique_name;
     // The "swap" only affect main frames, that have an empty unique name.
-    DCHECK(frame_tree_node_->unique_name().empty());
-    frame_tree_node_->SetFrameName(name, unique_name);
+    if (features::GetBrowsingContextMode() ==
+        features::BrowsingContextStateImplementationType::
+            kLegacyOneToOneWithFrameTreeNode) {
+      DCHECK(frame_tree_node_->unique_name().empty());
+      GetRenderFrameHost()->browsing_context_state()->SetFrameName(name,
+                                                                   unique_name);
+    }
   }
 
   // Record metrics for the time it took to commit the navigation if it was to

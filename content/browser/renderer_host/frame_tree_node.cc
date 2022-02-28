@@ -414,29 +414,6 @@ void FrameTreeNode::SetFrameTree(FrameTree& frame_tree) {
     speculative_frame_host->SetFrameTree(frame_tree);
 }
 
-void FrameTreeNode::SetFrameName(const std::string& name,
-                                 const std::string& unique_name) {
-  if (name == render_manager_.current_replication_state().name) {
-    // |unique_name| shouldn't change unless |name| changes.
-    DCHECK_EQ(unique_name,
-              render_manager_.current_replication_state().unique_name);
-    return;
-  }
-
-  if (parent()) {
-    // Non-main frames should have a non-empty unique name.
-    DCHECK(!unique_name.empty());
-  } else {
-    // Unique name of main frames should always stay empty.
-    DCHECK(unique_name.empty());
-  }
-
-  // Note the unique name should only be able to change before the first real
-  // load is committed, but that's not strongly enforced here.
-  render_manager_.OnDidUpdateName(name, unique_name);
-  render_manager_.browsing_context_state()->set_frame_name(unique_name, name);
-}
-
 void FrameTreeNode::SetPendingFramePolicy(blink::FramePolicy frame_policy) {
   // The |is_fenced| bit should never be able to transition from what its
   // initial value was. Since we never expect to be in a position where it can
