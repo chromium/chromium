@@ -24,12 +24,6 @@ RebootNotificationsScheduler::RebootNotificationsScheduler()
     : RebootNotificationsScheduler(base::DefaultClock::GetInstance(),
                                    base::DefaultTickClock::GetInstance()) {}
 
-RebootNotificationsScheduler::RebootNotificationsScheduler(
-    const base::Clock* clock,
-    const base::TickClock* tick_clock)
-    : notification_timer_(clock, tick_clock),
-      dialog_timer_(clock, tick_clock) {}
-
 RebootNotificationsScheduler::~RebootNotificationsScheduler() = default;
 
 void RebootNotificationsScheduler::ScheduleNotifications(
@@ -82,6 +76,17 @@ bool RebootNotificationsScheduler::ShouldApplyGraceTime(
   return ((delay + GetSystemUptime()) <= kGraceTime);
 }
 
+RebootNotificationsScheduler::RebootNotificationsScheduler(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : notification_timer_(clock, tick_clock),
+      dialog_timer_(clock, tick_clock) {}
+
+void RebootNotificationsScheduler::OnRebootButtonClicked() {
+  DCHECK(reboot_callback_);
+  std::move(reboot_callback_).Run();
+}
+
 void RebootNotificationsScheduler::MaybeShowNotification() {
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time_,
@@ -94,11 +99,6 @@ void RebootNotificationsScheduler::MaybeShowDialog() {
       reboot_time_,
       base::BindOnce(&RebootNotificationsScheduler::OnRebootButtonClicked,
                      base::Unretained(this)));
-}
-
-void RebootNotificationsScheduler::OnRebootButtonClicked() {
-  DCHECK(reboot_callback_);
-  std::move(reboot_callback_).Run();
 }
 
 const base::Time RebootNotificationsScheduler::GetCurrentTime() const {

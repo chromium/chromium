@@ -4552,6 +4552,8 @@ source_set("unit_tests") {
     "../ash/policy/rsu/lookup_key_uploader_unittest.cc",
     "../ash/policy/scheduled_task_handler/test/device_scheduled_reboot_handler_unittest.cc",
     "../ash/policy/scheduled_task_handler/test/device_scheduled_update_checker_unittest.cc",
+    "../ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.cc",
+    "../ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h",
     "../ash/policy/scheduled_task_handler/test/fake_scheduled_task_executor.cc",
     "../ash/policy/scheduled_task_handler/test/fake_scheduled_task_executor.h",
     "../ash/policy/scheduled_task_handler/test/reboot_notifications_scheduler_unittest.cc",

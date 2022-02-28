@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
-
 #include <memory>
 #include <string>
 
@@ -12,63 +10,25 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/test/fake_reboot_notifications_scheduler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
-
 namespace {
 // Time zone that will be used in tests.
 constexpr char kUTCTimezone[] = "UTC";
 }  // namespace
 
-class RebootNotificationsSchedulerForTest
-    : public RebootNotificationsScheduler {
- public:
-  RebootNotificationsSchedulerForTest(const base::Clock* clock,
-                                      const base::TickClock* tick_clock)
-      : RebootNotificationsScheduler(clock, tick_clock),
-        clock_(clock),
-        uptime_(base::Hours(10)) {
-    time_zone_ = base::WrapUnique(icu::TimeZone::createTimeZone(
-        icu::UnicodeString::fromUTF8(kUTCTimezone)));
-  }
-
-  RebootNotificationsSchedulerForTest(
-      const RebootNotificationsSchedulerForTest&) = delete;
-  RebootNotificationsSchedulerForTest& operator=(
-      const RebootNotificationsSchedulerForTest&) = delete;
-
-  ~RebootNotificationsSchedulerForTest() = default;
-
-  int GetShowDialogCalls() const { return show_dialog_calls_; }
-  int GetShowNotificationCalls() const { return show_notification_calls_; }
-  void SetUptime(base::TimeDelta uptime) { uptime_ = uptime; }
-
- private:
-  void MaybeShowNotification() override { ++show_notification_calls_; }
-
-  void MaybeShowDialog() override { ++show_dialog_calls_; }
-
-  const base::Time GetCurrentTime() const override { return clock_->Now(); }
-
-  const icu::TimeZone& GetTimeZone() const override { return *time_zone_; }
-
-  const base::TimeDelta GetSystemUptime() const override { return uptime_; }
-
-  int show_dialog_calls_ = 0, show_notification_calls_ = 0;
-  const base::Clock* clock_;
-  std::unique_ptr<icu::TimeZone> time_zone_;
-  // Default uptime for test is 10h.
-  base::TimeDelta uptime_;
-};
-
 class RebootNotificationsSchedulerTest : public testing::Test {
  public:
   RebootNotificationsSchedulerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        notifications_scheduler_(task_environment_.GetMockClock(),
-                                 task_environment_.GetMockTickClock()) {}
+        notifications_scheduler_(
+            task_environment_.GetMockClock(),
+            task_environment_.GetMockTickClock(),
+            base::WrapUnique(icu::TimeZone::createTimeZone(
+                icu::UnicodeString::fromUTF8(kUTCTimezone)))) {}
 
   ~RebootNotificationsSchedulerTest() override = default;
 
@@ -86,7 +46,7 @@ class RebootNotificationsSchedulerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  RebootNotificationsSchedulerForTest notifications_scheduler_;
+  FakeRebootNotificationsScheduler notifications_scheduler_;
 };
 
 TEST_F(RebootNotificationsSchedulerTest, ApplyingGraceTime) {

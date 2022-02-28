@@ -23,7 +23,7 @@ class RebootNotificationsScheduler {
   RebootNotificationsScheduler(const RebootNotificationsScheduler&) = delete;
   RebootNotificationsScheduler& operator=(const RebootNotificationsScheduler&) =
       delete;
-  ~RebootNotificationsScheduler();
+  virtual ~RebootNotificationsScheduler();
 
   // Schedules timers for showing notification and dialog or shows them right
   // away if the scheduled reboot time is soon. Notifications are not shown when
@@ -44,13 +44,13 @@ class RebootNotificationsScheduler {
   RebootNotificationsScheduler(const base::Clock* clock,
                                const base::TickClock* tick_clock);
 
- private:
-  virtual void MaybeShowNotification();
-  virtual void MaybeShowDialog();
-
   // Runs |reboot_callback_| when user clicks on "Reboot now" button of the
   // dialog or notification.
   void OnRebootButtonClicked();
+
+ private:
+  virtual void MaybeShowNotification();
+  virtual void MaybeShowDialog();
 
   // Returns current time.
   virtual const base::Time GetCurrentTime() const;
