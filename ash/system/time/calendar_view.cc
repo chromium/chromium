@@ -1165,7 +1165,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
     return;
   }
 
-  set_should_months_animate(false);
+  SetShouldMonthsAnimateAndScrollEnabled(false);
   set_should_header_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
       0, previous_month_->GetPreferredSize().height() +
@@ -1204,6 +1204,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
             if (!calendar_view)
               return;
             calendar_view->set_should_header_animate(true);
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(true);
             calendar_view->ScrollOneMonthAndAutoScroll(scroll_up);
           },
           weak_factory_.GetWeakPtr(), scroll_up))
@@ -1211,6 +1212,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
           [](base::WeakPtr<CalendarView> calendar_view, bool scroll_up) {
             if (!calendar_view)
               return;
+            calendar_view->SetShouldMonthsAnimateAndScrollEnabled(true);
             calendar_view->ScrollOneMonthAndAutoScroll(scroll_up);
           },
           weak_factory_.GetWeakPtr(), scroll_up))
