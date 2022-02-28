@@ -281,6 +281,7 @@ void SellerWorklet::SendPendingSignalsRequests() {
 void SellerWorklet::ReportResult(
     blink::mojom::AuctionAdConfigNonSharedParamsPtr
         auction_ad_config_non_shared_params,
+    mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -296,6 +297,8 @@ void SellerWorklet::ReportResult(
 
   report_result_task->auction_ad_config_non_shared_params =
       std::move(auction_ad_config_non_shared_params);
+  report_result_task->browser_signals_other_seller =
+      std::move(browser_signals_other_seller);
   report_result_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
   report_result_task->browser_signal_render_url = browser_signal_render_url;
@@ -501,6 +504,7 @@ void SellerWorklet::V8State::ScoreAd(
 void SellerWorklet::V8State::ReportResult(
     blink::mojom::AuctionAdConfigNonSharedParamsPtr
         auction_ad_config_non_shared_params,
+    mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
@@ -534,6 +538,8 @@ void SellerWorklet::V8State::ReportResult(
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
+      !AddOtherSeller(browser_signals_other_seller.get(),
+                      browser_signals_dict) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
@@ -754,6 +760,7 @@ void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
           &SellerWorklet::V8State::ReportResult,
           base::Unretained(v8_state_.get()),
           std::move(task->auction_ad_config_non_shared_params),
+          std::move(task->browser_signals_other_seller),
           std::move(task->browser_signal_interest_group_owner),
           std::move(task->browser_signal_render_url), task->browser_signal_bid,
           task->browser_signal_desirability, task->scoring_signals_data_version,

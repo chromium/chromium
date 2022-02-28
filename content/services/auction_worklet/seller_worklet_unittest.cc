@@ -358,6 +358,7 @@ class SellerWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
         auction_ad_config_non_shared_params_.Clone(),
+        browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_, browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
@@ -382,6 +383,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ReportResult(
         auction_ad_config_non_shared_params_.Clone(),
+        browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_, browser_signal_data_version_.value_or(0),
         browser_signal_data_version_.has_value(),
@@ -1339,6 +1341,54 @@ TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
       absl::nullopt /* expected_report_url */);
 }
 
+TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
+  browser_signals_other_seller_.reset();
+  RunReportResultCreatedScriptExpectingResult(
+      R"("topLevelSeller" in browserSignals ? 0 : 1)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.topLevelSeller === "https://top.seller.test" ? 2 : 0)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+          url::Origin::Create(GURL("https://component.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      R"("topLevelSeller" in browserSignals ? 0 : 3)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
+      /*expected_report_url=*/absl::nullopt);
+}
+
+TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
+  browser_signals_other_seller_.reset();
+  RunReportResultCreatedScriptExpectingResult(
+      R"("componentSeller" in browserSignals ? 0 : 1)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      R"("componentSeller" in browserSignals ? 0 : 2)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
+      /*expected_report_url=*/absl::nullopt);
+
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewComponentSeller(
+          url::Origin::Create(GURL("https://component.test")));
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.componentSeller === "https://component.test" ? 3 : 0)",
+      /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
+      /*expected_report_url=*/absl::nullopt);
+}
+
 TEST_F(SellerWorkletTest, ReportResultInterestGroupOwner) {
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://foo.test/"));
@@ -1525,6 +1575,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
       base::RunLoop run_loop;
       seller_worklet->ReportResult(
           auction_ad_config_non_shared_params_.Clone(),
+          browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           bid_, browser_signal_desireability_,
           browser_signal_data_version_.value_or(0),
@@ -1579,6 +1630,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ReportResult(
       auction_ad_config_non_shared_params_.Clone(),
+      browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
       browser_signal_desireability_, browser_signal_data_version_.value_or(0),
       browser_signal_data_version_.has_value(),

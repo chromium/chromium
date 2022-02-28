@@ -942,8 +942,8 @@ void AuctionRunner::Auction::ReportSellerResult() {
 
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
       config_->auction_ad_config_non_shared_params.Clone(),
-      top_bid_->bid->interest_group->owner, top_bid_->bid->render_url,
-      top_bid_->bid->bid, top_bid_->score,
+      GetOtherSellerParam(*top_bid_->bid), top_bid_->bid->interest_group->owner,
+      top_bid_->bid->render_url, top_bid_->bid->bid, top_bid_->score,
       top_bid_->scoring_signals_data_version.value_or(0),
       top_bid_->scoring_signals_data_version.has_value(),
       base::BindOnce(&Auction::OnReportSellerResultComplete,

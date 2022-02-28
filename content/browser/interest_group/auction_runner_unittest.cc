@@ -263,6 +263,7 @@ constexpr char kReportWinExpectNullAuctionSignals[] = R"(
 std::string MakeDecisionScript(
     const GURL& decision_logic_url,
     absl::optional<GURL> send_report_url = absl::nullopt,
+    bool bid_from_component_auction_wins = false,
     const std::string& debug_loss_report_url = "",
     const std::string& debug_win_report_url = "") {
   constexpr char kCheckingAuctionScript[] = R"(
@@ -271,6 +272,7 @@ std::string MakeDecisionScript(
     const debugLossReportUrl = "%s";
     const debugWinReportUrl = "%s";
     const topLevelSeller = "https://adstuff.publisher1.com";
+    const bidFromComponentAuctionWins = %s;
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                      browserSignals) {
       if (adMetadata.bidKey !== ("data for " + bid)) {
@@ -366,6 +368,27 @@ std::string MakeDecisionScript(
         throw new Error("wrong decisionLogicUrl in auctionConfig");
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname in browserSignals");
+
+      if (decisionLogicUrl.startsWith(topLevelSeller)) {
+        // Top-level sellers should receive component sellers, but only for
+        // bids received from component auctions.
+          if ("topLevelSeller" in browserSignals)
+            throw new Error("Expected no topLevelSeller in browserSignals.");
+        if (bidFromComponentAuctionWins) {
+          if (!browserSignals.componentSeller.includes("component"))
+            throw new Error("Incorrect componentSeller in browserSignals.");
+        } else {
+          if ("componentSeller" in browserSignals)
+            throw new Error("Expected no componentSeller in browserSignals.");
+        }
+      } else {
+        // Component sellers should receive only the top-level seller.
+        if (browserSignals.topLevelSeller !== topLevelSeller)
+          throw new Error("Incorrect topLevelSeller in browserSignals.");
+        if ("componentSeller" in browserSignals)
+          throw new Error("Expected no componentSeller in browserSignals.");
+      }
+
       if (browserSignals.desirability != computeScore(browserSignals.bid))
         throw new Error("wrong bid or desirability in browserSignals");
       if (browserSignals.dataVersion !== undefined)
@@ -391,7 +414,8 @@ std::string MakeDecisionScript(
   return base::StringPrintf(
       kCheckingAuctionScript, decision_logic_url.spec().c_str(),
       send_report_url ? send_report_url->spec().c_str() : "",
-      debug_loss_report_url.c_str(), debug_win_report_url.c_str());
+      debug_loss_report_url.c_str(), debug_win_report_url.c_str(),
+      bid_from_component_auction_wins ? "true" : "false");
 }
 
 std::string MakeAuctionScript(const GURL& decision_logic_url = GURL(
@@ -401,7 +425,8 @@ std::string MakeAuctionScript(const GURL& decision_logic_url = GURL(
   return MakeDecisionScript(
       decision_logic_url,
       /*send_report_url=*/GURL("https://reporting.example.com"),
-      debug_loss_report_url, debug_win_report_url);
+      /*bid_from_component_auction_wins=*/false, debug_loss_report_url,
+      debug_win_report_url);
 }
 
 std::string MakeAuctionScriptNoReportUrl(
@@ -411,6 +436,7 @@ std::string MakeAuctionScriptNoReportUrl(
     const std::string& debug_win_report_url = "") {
   return MakeDecisionScript(decision_logic_url,
                             /*send_report_url=*/absl::nullopt,
+                            /*bid_from_component_auction_wins=*/false,
                             debug_loss_report_url, debug_win_report_url);
 }
 
@@ -721,6 +747,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   void ReportResult(blink::mojom::AuctionAdConfigNonSharedParamsPtr
                         auction_ad_config_non_shared_params,
+                    auction_worklet::mojom::ComponentAuctionOtherSellerPtr
+                        browser_signals_other_seller,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
@@ -1476,7 +1504,8 @@ class AuctionRunnerTest : public testing::Test,
   // kComponentSeller2 is only added to the auction if one of the bidders uses
   // it as a seller.
   void SetUpComponentAuctionAndResponses(const url::Origin& bidder1_seller,
-                                         const url::Origin& bidder2_seller) {
+                                         const url::Origin& bidder2_seller,
+                                         bool bid_from_component_auction_wins) {
     interest_group_buyers_.emplace();
     std::vector<url::Origin> component1_buyers;
     std::vector<url::Origin> component2_buyers;
@@ -1539,8 +1568,12 @@ class AuctionRunnerTest : public testing::Test,
              "?hostname=publisher1.com&keys=l1,l2"),
         R"({"l1":"a", "l2": "b", "extra": "c"})");
 
-    auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                           MakeAuctionScript());
+    auction_worklet::AddJavascriptResponse(
+        &url_loader_factory_, kSellerUrl,
+        MakeDecisionScript(
+            kSellerUrl,
+            /*send_report_url=*/GURL("https://reporting.example.com"),
+            bid_from_component_auction_wins));
   }
 
   const url::Origin top_frame_origin_ =
@@ -1962,7 +1995,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
         "id":3,
         "method":"Debugger.setBreakpointByUrl",
         "params": {
-          "lineNumber": 6,
+          "lineNumber": 7,
           "url": "%s",
           "columnNumber": 0,
           "condition": ""
@@ -1989,7 +2022,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           hit_breakpoints->GetListDeprecated();
       ASSERT_EQ(1u, hit_breakpoints_list.size());
       ASSERT_TRUE(hit_breakpoints_list[0].is_string());
-      EXPECT_EQ(base::StringPrintf("1:6:0:%s", debug_url.spec().c_str()),
+      EXPECT_EQ(base::StringPrintf("1:7:0:%s", debug_url.spec().c_str()),
                 hit_breakpoints_list[0].GetString());
 
       // Just resume execution.
@@ -2142,7 +2175,8 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
 // A component auction with two successful bids from different components.
 TEST_F(AuctionRunnerTest, ComponentAuction) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
@@ -2168,7 +2202,8 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
 // seller has no buyers.
 TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
-                                    /*bidder2_seller=*/kSeller);
+                                    /*bidder2_seller=*/kSeller,
+                                    /*bid_from_component_auction_wins=*/false);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
@@ -2193,7 +2228,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
 // auction have one buyer. The top-level seller worklet has the winning buyer.
 TEST_F(AuctionRunnerTest, ComponentAuctionTopLeverSellerBidWins) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kSeller);
+                                    /*bidder2_seller=*/kSeller,
+                                    /*bid_from_component_auction_wins=*/false);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
@@ -2218,7 +2254,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionTopLeverSellerBidWins) {
 // auction have one buyer. The component seller worklet has the winning buyer.
 TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBidWins) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kSeller,
-                                    /*bidder2_seller=*/kComponentSeller1);
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
@@ -2381,7 +2418,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
 // scoring function, which favors kBidder1's lower bid.
 TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller1);
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true);
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
@@ -2463,7 +2501,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSeller) {
 // other is not.
 TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true);
 
   // Bidder 2 bids more, so would win the auction if component seller 2 were
   // allowed to participate.
@@ -2597,7 +2636,8 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
 // A component auction in which a single buyer is disallowed.
 TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true);
 
   disallowed_buyers_.insert(kBidder2);
 
@@ -2717,7 +2757,8 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
 // the auction succeeds.
 TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true);
   url_loader_factory_.AddResponse(kComponentSeller2Url.spec(), "",
                                   net::HTTP_NOT_FOUND);
 
@@ -3457,7 +3498,8 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
 // delaying worklet creation.
 TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/true);
 
   // For both worklet types, in addition to testing the cases with no processes
   // and at the process limit, also test the case where we're one below the
@@ -3684,8 +3726,12 @@ TEST_F(AuctionRunnerTest,
                                    R"({"l1":"a", "l2": "b", "extra": "c"})");
 
   // Top-level seller uses the default script.
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         MakeAuctionScript());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeDecisionScript(
+          kSellerUrl,
+          /*send_report_url=*/GURL("https://reporting.example.com"),
+          /*bid_from_component_auction_wins=*/true));
 
   auction_process_manager_ =
       std::make_unique<SameProcessAuctionProcessManager>();
@@ -4169,7 +4215,8 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
 
 TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/false);
   StartStandardAuctionWithMockService();
 
   EXPECT_FALSE(auction_complete_);
@@ -4204,7 +4251,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAllBiddersCrashBeforeBidding) {
 // failing.
 TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller1);
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true);
   StartStandardAuctionWithMockService();
 
   EXPECT_FALSE(auction_complete_);
@@ -4301,7 +4349,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
   // It's simpler to start a two bidder auction and throw away one of the
   // bidders rather than start a one-bidder auction.
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller1);
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true);
 
   enum class TestCase { kCrash, kLoadError, kScriptError };
 
@@ -4437,7 +4486,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
 // Test the case that all component sellers crash.
 TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersAllCrash) {
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                    /*bidder2_seller=*/kComponentSeller2);
+                                    /*bidder2_seller=*/kComponentSeller2,
+                                    /*bid_from_component_auction_wins=*/false);
   StartStandardAuctionWithMockService();
 
   EXPECT_FALSE(auction_complete_);
@@ -4842,8 +4892,10 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
 // component seller worklet. Bad report URLs should be rejected in the Mojo
 // process, so these are treated as security errors.
 TEST_F(AuctionRunnerTest, BadComponentSellerReportUrl) {
-  this->SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
-                                          /*bidder2_seller=*/kComponentSeller1);
+  this->SetUpComponentAuctionAndResponses(
+      /*bidder1_seller=*/kComponentSeller1,
+      /*bidder2_seller=*/kComponentSeller1,
+      /*bid_from_component_auction_wins=*/true);
   StartStandardAuctionWithMockService();
 
   auto component_seller_worklet =
@@ -5324,6 +5376,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeDecisionScript(
           kComponentSeller1Url,
           /*send_report_url=*/GURL("https://component1-report.test/"),
+          /*bid_from_component_auction_wins=*/true,
           /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component1-win-reporting.test/"));
   auction_worklet::AddJavascriptResponse(
@@ -5344,6 +5397,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeDecisionScript(
           kComponentSeller2Url,
           /*send_report_url=*/GURL("https://component2-report.test/"),
+          /*bid_from_component_auction_wins=*/true,
           /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component2-win-reporting.test/"));
   auction_worklet::AddJavascriptResponse(
@@ -5359,8 +5413,10 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
-      MakeAuctionScript(
+      MakeDecisionScript(
           kSellerUrl,
+          /*send_report_url=*/GURL("https://reporting.example.com"),
+          /*bid_from_component_auction_wins=*/true,
           /*debug_loss_report_url=*/"https://top-seller-loss-reporting.test/",
           /*debug_win_report_url=*/"https://top-seller-win-reporting.test/"));
 
@@ -5396,6 +5452,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeDecisionScript(
           kComponentSeller1Url,
           /*send_report_url=*/GURL("https://component-report.test/"),
+          /*bid_from_component_auction_wins=*/true,
           /*debug_loss_report_url=*/"https://component-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component-win-reporting.test/"));
   auction_worklet::AddJavascriptResponse(
@@ -5421,8 +5478,10 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kSellerUrl,
-      MakeAuctionScript(
+      MakeDecisionScript(
           kSellerUrl,
+          /*send_report_url=*/GURL("https://reporting.example.com"),
+          /*bid_from_component_auction_wins=*/true,
           /*debug_loss_report_url=*/"https://top-seller-loss-reporting.test/",
           /*debug_win_report_url=*/"https://top-seller-win-reporting.test/"));
 
@@ -5459,6 +5518,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeDecisionScript(
           kComponentSeller1Url,
           /*send_report_url=*/GURL("https://component1-report.test/"),
+          /*bid_from_component_auction_wins=*/false,
           /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component1-win-reporting.test/"));
   auction_worklet::AddJavascriptResponse(
@@ -5479,6 +5539,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeDecisionScript(
           kComponentSeller2Url,
           /*send_report_url=*/GURL("https://component2-report.test/"),
+          /*bid_from_component_auction_wins=*/false,
           /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component2-win-reporting.test/"));
   auction_worklet::AddJavascriptResponse(
@@ -5798,6 +5859,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     auction_worklet::AddJavascriptResponse(
         &url_loader_factory_, kSellerInfo[i].seller_url,
         MakeDecisionScript(kSellerInfo[i].seller_url, send_report_url,
+                           /*bid_from_component_auction_wins=*/true,
                            debug_loss_report_url.spec(),
                            debug_win_report_url.spec()));
 
