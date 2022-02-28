@@ -175,8 +175,6 @@ void AppPlatformInputMetrics::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void AppPlatformInputMetrics::OnFiveMinutes() {
-  app_id_to_event_count_per_five_minutes_.clear();
-
   // For the first five minutes, since the saved input events in pref haven't
   // been recorded yet, read the input events saved in the user pref, and record
   // the input events UKM, then save the new input events to the user pref.
@@ -340,8 +338,6 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
     return;
   }
 
-  ++app_id_to_event_count_per_five_minutes_[it->second.app_id][event_source]
-                                           [it->second.app_type_name];
   ++app_id_to_event_count_per_two_hours_[it->second.app_id][event_source]
                                         [it->second.app_type_name];
 }

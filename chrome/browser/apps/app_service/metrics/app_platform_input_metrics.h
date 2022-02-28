@@ -144,10 +144,6 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   // Arc_app_id3: {
   //   mouse:   { Arc: 5}
   // },
-  //
-  // TODO(crbug.com/1299978): Remove `app_id_to_event_count_per_five_minutes_`.
-  std::map<std::string, EventSourceToCounts>
-      app_id_to_event_count_per_five_minutes_;
   std::map<std::string, EventSourceToCounts>
       app_id_to_event_count_per_two_hours_;
 };
