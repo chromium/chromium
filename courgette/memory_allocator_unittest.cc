@@ -8,14 +8,13 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(MemoryAllocatorTest, NoThrowBuffer) {
   const size_t size_list[] = {0U, 1U, 2U, 11U, 15U, 16U};
 
   // Repeat test for different sizes.
-  for (size_t idx = 0; idx < base::size(size_list); ++idx) {
+  for (size_t idx = 0; idx < std::size(size_list); ++idx) {
     size_t size = size_list[idx];
 
     courgette::NoThrowBuffer<size_t> buf1;
