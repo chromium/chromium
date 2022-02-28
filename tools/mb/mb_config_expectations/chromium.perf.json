@@ -57,6 +57,21 @@
       "use_goma": true
     }
   },
+  "android_arm64-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "clang_use_default_sample_profile": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
   "chromecast-linux-builder-perf": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -96,6 +111,17 @@
       "use_goma": true
     }
   },
+  "linux-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true
+    }
+  },
   "linux-builder-perf-rel": {
     "gn_args": {
       "chrome_pgo_phase": 0,
@@ -120,9 +146,34 @@
       "use_goma": true
     }
   },
+  "mac-arm-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 2,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "mac-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 2,
+      "use_goma": true
+    }
+  },
+  "mac-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
       "enable_keystone_registration_framework": false,
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
@@ -143,9 +194,30 @@
       "use_goma": true
     }
   },
+  "win32-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
   "win64-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win64-builder-perf-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
       "is_chrome_branded": true,
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
