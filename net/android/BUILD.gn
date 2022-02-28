@@ -19,7 +19,6 @@ android_library("net_java") {
     "java/src/org/chromium/net/HttpUtil.java",
     "java/src/org/chromium/net/MimeTypeFilter.java",
     "java/src/org/chromium/net/NetStringUtil.java",
-    "java/src/org/chromium/net/NetworkActivationRequest.java",
     "java/src/org/chromium/net/NetworkActiveNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
