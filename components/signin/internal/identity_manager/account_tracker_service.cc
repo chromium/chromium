@@ -116,12 +116,12 @@ void RemoveImage(const base::FilePath& image_path) {
 }
 
 // Converts the capability service name into a nested Chrome pref path.
-std::string GetCapabilityPrefPath(const std::string& capability_name) {
+std::string GetCapabilityPrefPath(base::StringPiece capability_name) {
   return base::StrCat({"accountcapabilities.", capability_name});
 }
 
 void SetAccountCapabilityState(base::Value* value,
-                               const std::string& capability_name,
+                               base::StringPiece capability_name,
                                signin::Tribool state) {
   value->SetIntPath(GetCapabilityPrefPath(capability_name),
                     static_cast<int>(state));
@@ -144,7 +144,7 @@ signin::Tribool ParseTribool(absl::optional<int> int_value) {
 }
 
 signin::Tribool FindAccountCapabilityState(const base::Value& value,
-                                           const std::string& name) {
+                                           base::StringPiece name) {
   absl::optional<int> capability =
       value.FindIntPath(GetCapabilityPrefPath(name));
   return ParseTribool(capability);
