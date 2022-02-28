@@ -129,14 +129,21 @@ int GetIndexOfTabWithId(WebStateList* web_state_list, NSString* identifier) {
   return WebStateList::kInvalidIndex;
 }
 
-// Returns the WebState with |identifier| in |web_state_list|. Returns |nullptr|
+// Returns the WebState with |identifier| in |browser_state|. Returns |nullptr|
 // if not found.
-web::WebState* GetWebStateWithId(WebStateList* web_state_list,
+web::WebState* GetWebStateWithId(ChromeBrowserState* browser_state,
                                  NSString* identifier) {
-  for (int i = 0; i < web_state_list->count(); i++) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([identifier isEqualToString:web_state->GetStableIdentifier()])
-      return web_state;
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(browser_state);
+  std::set<Browser*> browsers = browser_state->IsOffTheRecord()
+                                    ? browser_list->AllIncognitoBrowsers()
+                                    : browser_list->AllRegularBrowsers();
+  for (Browser* browser : browsers) {
+    WebStateList* web_state_list = browser->GetWebStateList();
+    int index = GetIndexOfTabWithId(web_state_list, identifier);
+    if (index != WebStateList::kInvalidIndex) {
+      return web_state_list->GetWebStateAt(index);
+    }
   }
   return nullptr;
 }
@@ -352,7 +359,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
     didUpdateSnapshotForIdentifier:(NSString*)identifier {
   [self.appearanceCache removeObjectForKey:identifier];
-  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
   if (webState) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
@@ -646,7 +653,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 #pragma mark - GridDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
-  web::WebState* webState = GetWebStateWithId(self.webStateList, itemID);
+  web::WebState* webState = GetWebStateWithId(self.browserState, itemID);
   return CreateTabDragItem(webState);
 }
 
@@ -741,7 +748,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     completion(self.appearanceCache[identifier]);
     return;
   }
-  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
   if (webState) {
     SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
         ^(UIImage* image) {
@@ -752,7 +759,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion {
-  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
   if (!webState) {
     return;
   }
@@ -796,7 +803,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 #pragma mark - GridMenuActionsDataSource
 
 - (GridItem*)gridItemForCellIdentifier:(NSString*)identifier {
-  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
+
   GridItem* item =
       [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
                                   url:webState->GetVisibleURL()];
@@ -813,7 +821,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 #pragma mark - GridShareableItemsProvider
 
 - (BOOL)isItemWithIdentifierSharable:(NSString*)identifier {
-  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  web::WebState* webState = GetWebStateWithId(self.browserState, identifier);
   const GURL& URL = webState->GetVisibleURL();
   return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
 }
