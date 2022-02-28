@@ -6,11 +6,6 @@
  * @fileoverview Handles automation events on the currently focused node.
  */
 
-goog.provide('FocusAutomationHandler');
-
-goog.require('BaseAutomationHandler');
-
-goog.scope(function() {
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
@@ -18,8 +13,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-
-FocusAutomationHandler = class extends BaseAutomationHandler {
+export class FocusAutomationHandler extends BaseAutomationHandler {
   constructor() {
     super(null);
 
@@ -150,6 +144,4 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
       return;
     }
   }
-};
-
-});  // goog.scope
+}

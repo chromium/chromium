@@ -7,7 +7,7 @@
  * notifications in ChromeVox.
  */
 
-goog.provide('DownloadHandler');
+export class DownloadHandler {}
 
 /**
  * Maps download item ID to an object containing its file name and progress

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {InstanceChecker} from '../../common/instance_checker.js';
-
+import {DownloadHandler} from './download_handler.js';
 import {Earcons} from './earcons.js';
 import {FindHandler} from './find_handler.js';
+import {FocusAutomationHandler} from './focus_automation_handler.js';
 import {LiveRegions} from './live_regions.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
 import {PageLoadSoundHandler} from './page_load_sound_handler.js';

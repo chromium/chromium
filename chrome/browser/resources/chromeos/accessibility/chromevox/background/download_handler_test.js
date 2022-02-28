@@ -38,6 +38,12 @@ ChromeVoxDownloadTest = class extends ChromeVoxNextE2ETest {
     window.simulateEvent = this.simulateEvent.bind(this);
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await importModule(
+        'DownloadHandler', '/chromevox/background/download_handler.js');
+  }
+
   /**
    * Simulates a chrome.downloads.onChanged event with the given parameters.
    */
