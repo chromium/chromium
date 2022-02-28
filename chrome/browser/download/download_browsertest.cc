@@ -5515,6 +5515,38 @@ IN_PROC_BROWSER_TEST_F(
                   ->serilized_download_report()
                   .empty());
 }
+
+IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
+                       NoUncommonDownloadReportIfIncognito) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  incognito_browser->profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingEnabled, true);
+  // Make a dangerous file.
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+
+  std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
+      DangerousDownloadWaiter(
+          incognito_browser, 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, download_url));
+  dangerous_observer->WaitForFinished();
+
+  std::vector<DownloadItem*> downloads;
+  DownloadManagerForBrowser(incognito_browser)->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  DownloadItem* download = downloads[0];
+  DownloadItemModel model(download);
+  DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
+
+  EXPECT_TRUE(test_safe_browsing_factory_->fake_safe_browsing_service()
+                  ->serilized_download_report()
+                  .empty());
+
+  download->Cancel(true);
+}
+
 #endif  // FULL_SAFE_BROWSING
 
 // The rest of these tests rely on the download shelf, which ChromeOS doesn't
