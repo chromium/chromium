@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,7 +15,9 @@ import android.os.Build;
 import android.text.TextUtils;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -25,10 +29,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -36,8 +42,11 @@ import java.util.List;
 
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.M)
 public class StripLayoutHelperTest {
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
     private Activity mActivity;
@@ -50,6 +59,7 @@ public class StripLayoutHelperTest {
     private static final String IDENTIFIER_SELECTED = "Selected Tab";
     private static final String INCOGNITO_IDENTIFIER = "Incognito Tab";
     private static final String INCOGNITO_IDENTIFIER_SELECTED = "Selected Incognito Tab";
+    private static final int SCREEN_BUCKET_TABLET = 2;
 
     /** Reset the environment before each test. */
     @Before
@@ -112,6 +122,27 @@ public class StripLayoutHelperTest {
         initializeTest(false, true, 0);
 
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    @Config(qualifiers = "sw800dp")
+    public void testStripStacker_TabStripImprovementsEnabled_Scroll() {
+        initializeTest(false, true, 0);
+
+        // Assert
+        assertFalse(mStripLayoutHelper.shouldCascadeTabs());
+    }
+
+    @Test
+    @Feature("Tab Strip Improvements")
+    @Config(qualifiers = "sw800dp")
+    @Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)
+    public void testStripStacker_TabStripImprovementsDisabled_Cascade() {
+        initializeTest(false, true, 0);
+
+        // Assert
+        assertTrue(mStripLayoutHelper.shouldCascadeTabs());
     }
 
     private void initializeTest(boolean rtl, boolean incognito, int tabIndex) {

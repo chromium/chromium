@@ -36,6 +36,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -220,7 +222,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mTabMenu.setWidth(menuWidth);
         mTabMenu.setModal(true);
 
-        mShouldCascadeTabs = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+        boolean tabStripImprovementsEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        mShouldCascadeTabs = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && !tabStripImprovementsEnabled;
         mStripStacker = mShouldCascadeTabs ? mCascadingStripStacker : mScrollingStripStacker;
         mIsFirstLayoutPass = true;
     }
@@ -373,7 +378,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         if (widthChanged) {
             computeAndUpdateTabWidth(false);
-            setShouldCascadeTabs(width >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP);
+            boolean tabStripImprovementsEnabled =
+                    CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+            boolean shouldCascade = width >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP
+                    && !tabStripImprovementsEnabled;
+            setShouldCascadeTabs(shouldCascade);
         }
         if (mStripTabs.length > 0) mUpdateHost.requestUpdate();
 
