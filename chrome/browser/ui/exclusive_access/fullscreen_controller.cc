@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"

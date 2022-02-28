@@ -7,11 +7,9 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -22,7 +20,6 @@
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
@@ -36,10 +33,10 @@
 
 namespace base {
 class DictionaryValue;
-class Version;
 }
 
 namespace extensions {
+class HashedExtensionId;
 class PermissionSet;
 class PermissionsData;
 class PermissionsParser;
