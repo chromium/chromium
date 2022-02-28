@@ -77,11 +77,10 @@ FirstPartySetsLoader::~FirstPartySetsLoader() {
 void FirstPartySetsLoader::SetManuallySpecifiedSet(
     const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  manually_specified_set_ = CanonicalizeSet(base::SplitString(
-      flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  manually_specified_set_ = {CanonicalizeSet(base::SplitString(
+      flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY))};
 
   ApplyManuallySpecifiedSet();
-  manual_sets_ready_ = true;
   MaybeFinishLoading();
 }
 
@@ -134,12 +133,15 @@ void FirstPartySetsLoader::DisposeFile(base::File sets_file) {
 
 void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!manually_specified_set_)
+  if (!manually_specified_set_.has_value() ||
+      !manually_specified_set_.value().has_value()) {
     return;
+  }
 
-  const net::SchemefulSite& manual_owner = manually_specified_set_->first;
+  const net::SchemefulSite& manual_owner =
+      manually_specified_set_.value()->first;
   const base::flat_set<net::SchemefulSite>& manual_members =
-      manually_specified_set_->second;
+      manually_specified_set_.value()->second;
 
   const auto was_manually_provided =
       [&manual_members, &manual_owner](const net::SchemefulSite& site) {
@@ -175,7 +177,7 @@ void FirstPartySetsLoader::ApplyManuallySpecifiedSet() {
 void FirstPartySetsLoader::MaybeFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (component_sets_parse_progress_ != Progress::kFinished ||
-      !manual_sets_ready_)
+      !manually_specified_set_.has_value())
     return;
   std::move(on_load_complete_).Run(std::move(sets_));
 }
