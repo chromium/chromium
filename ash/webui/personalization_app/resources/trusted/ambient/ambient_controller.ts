@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientProviderInterface, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientProviderInterface, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabledAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
@@ -42,4 +42,10 @@ export function setTemperatureUnit(
   store.dispatch(setTemperatureUnitAction(temperatureUnit));
 
   provider.setTemperatureUnit(temperatureUnit);
+}
+
+// Set one album as selected or not.
+export function setAlbumSelected(
+    album: AmbientModeAlbum, provider: AmbientProviderInterface): void {
+  provider.setAlbumSelected(album.id, album.topicSource, album.checked);
 }

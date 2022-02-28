@@ -46,6 +46,9 @@ class FakePersonalizationAppAmbientProvider
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override {}
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override {}
+  void SetAlbumSelected(const std::string& id,
+                        ash::AmbientModeTopicSource topic_source,
+                        bool selected) override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

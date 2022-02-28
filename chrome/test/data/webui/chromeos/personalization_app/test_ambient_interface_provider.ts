@@ -14,6 +14,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'setAmbientModeEnabled',
       'setTopicSource',
       'setTemperatureUnit',
+      'setAlbumSelected',
     ]);
   }
 
@@ -92,5 +93,9 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setTemperatureUnit(temperature_unit: TemperatureUnit) {
     this.methodCalled('setTemperatureUnit', temperature_unit);
+  }
+
+  setAlbumSelected(id: string, topic_source: TopicSource, selected: boolean) {
+    this.methodCalled('setAlbumSelected', id, topic_source, selected);
   }
 }

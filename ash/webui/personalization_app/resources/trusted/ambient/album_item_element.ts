@@ -16,6 +16,9 @@ import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isRecentHighlightsAlbum} from '../utils.js';
 
+import {setAlbumSelected} from './ambient_controller.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
+
 export class AlbumItem extends WithPersonalizationStore {
   static get is() {
     return 'album-item';
@@ -38,14 +41,14 @@ export class AlbumItem extends WithPersonalizationStore {
         reflectToAttribute: true,
         notify: true,
       },
+      ariaLabel: {
+        type: String,
+        computed: 'computeAriaLabel_(album, checked, topicSource)',
+        reflectToAttribute: true,
+      },
       itemDescription_: {
         type: String,
         computed: 'computeItemDescription_(album.*, topicSource)',
-      },
-      ariaLabel: {
-        type: String,
-        computed: 'computeAriaLabel_(album.*, checked, topicSource)',
-        reflectToAttribute: true,
       },
     };
   }
@@ -116,6 +119,10 @@ export class AlbumItem extends WithPersonalizationStore {
   }
 
   private onItemSelected_(event: Event) {
+    if (!this.album) {
+      return;
+    }
+
     if (!isSelectionEvent(event)) {
       return;
     }
@@ -123,7 +130,7 @@ export class AlbumItem extends WithPersonalizationStore {
     event.preventDefault();
     event.stopPropagation();
     this.checked = !this.checked;
-    // TODO(b/217282564): Set the selected album.
+    setAlbumSelected(this.album, getAmbientProvider());
   }
 }
 

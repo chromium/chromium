@@ -50,6 +50,9 @@ class PersonalizationAppAmbientProviderImpl
   void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
   void SetTemperatureUnit(
       ash::AmbientModeTemperatureUnit temperature_unit) override;
+  void SetAlbumSelected(const std::string& id,
+                        ash::AmbientModeTopicSource topic_source,
+                        bool selected) override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();

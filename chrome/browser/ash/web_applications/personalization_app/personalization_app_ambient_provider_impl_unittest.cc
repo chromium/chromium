@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_ambient_provider_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -141,6 +143,10 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
 
   content::TestWebUI* web_ui() { return &web_ui_; }
 
+  const base::HistogramTester& histogram_tester() const {
+    return histogram_tester_;
+  }
+
   void SetAmbientObserver() {
     ambient_provider_remote_->SetAmbientObserver(
         test_ambient_observer_.pending_remote());
@@ -189,11 +195,21 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     ambient_provider_->SetTopicSource(topic_source);
   }
 
+  void SetAlbumSelected(const std::string& id,
+                        ash::AmbientModeTopicSource topic_source,
+                        bool selected) {
+    ambient_provider_->SetAlbumSelected(id, topic_source, selected);
+  }
+
   ash::AmbientModeTopicSource TopicSource() {
     return ambient_provider_->settings_->topic_source;
   }
 
-  void SetSelectedAlbums(const std::vector<std::string>& ids) {
+  std::vector<std::string> SelectedAlbumIds() {
+    return ambient_provider_->settings_->selected_album_ids;
+  }
+
+  void SetSelectedAlbumIds(const std::vector<std::string>& ids) {
     ambient_provider_->settings_->selected_album_ids = ids;
   }
 
@@ -203,6 +219,10 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
 
   ash::AmbientModeTemperatureUnit TemperatureUnit() {
     return ambient_provider_->settings_->temperature_unit;
+  }
+
+  std::vector<ash::ArtSetting> ArtSettings() {
+    return ambient_provider_->settings_->art_settings;
   }
 
   bool HasPendingFetchRequestAtProvider() const {
@@ -266,6 +286,7 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   std::unique_ptr<ash::AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
       fake_backend_controller_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, IsAmbientModeEnabled) {
@@ -310,7 +331,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
-       ShouldCallOnAmbientModeEnabledChanged) {
+       houldCallOnAmbientModeEnabledChanged) {
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_TRUE(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
@@ -373,11 +394,11 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
 
   // If `settings_->selected_album_ids` is empty, will fallback to kArtGallery.
-  SetSelectedAlbums(/*ids=*/{});
+  SetSelectedAlbumIds(/*ids=*/{});
   SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
   EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, TopicSource());
 
-  SetSelectedAlbums(/*ids=*/{"1"});
+  SetSelectedAlbumIds(/*ids=*/{"1"});
   SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
   EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
 }
@@ -613,6 +634,92 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   FetchSettings();
   EXPECT_TRUE(HasPendingFetchRequestAtProvider());
   EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestSetSelectedGooglePhotosAlbum) {
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  // The fake data has album '1' as selected.
+  std::vector<std::string> selected_ids = SelectedAlbumIds();
+  auto it = std::find(selected_ids.begin(), selected_ids.end(), "1");
+  EXPECT_NE(it, selected_ids.end());
+
+  ash::personalization_app::mojom::AmbientModeAlbumPtr album =
+      ash::personalization_app::mojom::AmbientModeAlbum::New();
+  album->id = '1';
+  album->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
+  album->checked = false;
+  SetAlbumSelected(album->id, album->topic_source, album->checked);
+
+  selected_ids = SelectedAlbumIds();
+  EXPECT_TRUE(selected_ids.empty());
+  // Will fallback to Art topic source if no selected Google Photos.
+  EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, TopicSource());
+
+  album = ash::personalization_app::mojom::AmbientModeAlbum::New();
+  album->id = '1';
+  album->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
+  album->checked = true;
+  SetAlbumSelected(album->id, album->topic_source, album->checked);
+
+  selected_ids = SelectedAlbumIds();
+  EXPECT_EQ(1u, selected_ids.size());
+  it = std::find(selected_ids.begin(), selected_ids.end(), "1");
+  EXPECT_NE(it, selected_ids.end());
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, TestSetSelectedArtAlbum) {
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  // The fake data has art setting '0' as enabled.
+  std::vector<ash::ArtSetting> art_settings = ArtSettings();
+  auto it = std::find_if(art_settings.begin(), art_settings.end(),
+                         [](const auto& setting) { return setting.enabled; });
+  EXPECT_NE(it, art_settings.end());
+  EXPECT_EQ(it->album_id, "0");
+
+  ash::personalization_app::mojom::AmbientModeAlbumPtr album =
+      ash::personalization_app::mojom::AmbientModeAlbum::New();
+  album->id = '0';
+  album->topic_source = ash::AmbientModeTopicSource::kArtGallery;
+  album->checked = false;
+  SetAlbumSelected(album->id, album->topic_source, album->checked);
+
+  art_settings = ArtSettings();
+  it = std::find_if(art_settings.begin(), art_settings.end(),
+                    [](const auto& setting) { return setting.enabled; });
+  EXPECT_EQ(it, art_settings.end());
+
+  album = ash::personalization_app::mojom::AmbientModeAlbum::New();
+  album->id = '1';
+  album->topic_source = ash::AmbientModeTopicSource::kArtGallery;
+  album->checked = true;
+  SetAlbumSelected(album->id, album->topic_source, album->checked);
+
+  art_settings = ArtSettings();
+  it = std::find_if(art_settings.begin(), art_settings.end(),
+                    [](const auto& setting) { return setting.enabled; });
+  EXPECT_NE(it, art_settings.end());
+  EXPECT_EQ(it->album_id, "1");
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, TestAlbumNumbersAreRecorded) {
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  ash::personalization_app::mojom::AmbientModeAlbumPtr album =
+      ash::personalization_app::mojom::AmbientModeAlbum::New();
+  album->id = '0';
+  album->topic_source = ash::AmbientModeTopicSource::kGooglePhotos;
+  SetAlbumSelected(album->id, album->topic_source, album->checked);
+  histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
+                                      /*count=*/1);
+  histogram_tester().ExpectTotalCount("Ash.AmbientMode.SelectedNumberOfAlbums",
+                                      /*count=*/1);
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
