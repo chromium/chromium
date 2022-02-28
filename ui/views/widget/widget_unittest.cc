@@ -4122,6 +4122,37 @@ TEST_F(WidgetTest, MouseWheelEvent) {
   EXPECT_EQ(1, event_count_view->GetEventCount(ui::ET_MOUSEWHEEL));
 }
 
+class CloseFromClosingObserver : public WidgetObserver {
+ public:
+  ~CloseFromClosingObserver() override {
+    EXPECT_TRUE(was_on_widget_closing_called_);
+  }
+  // WidgetObserver:
+  void OnWidgetClosing(Widget* widget) override {
+    // OnWidgetClosing() should only be called once, even if Close() is called
+    // after CloseNow().
+    ASSERT_FALSE(was_on_widget_closing_called_);
+    was_on_widget_closing_called_ = true;
+    widget->Close();
+  }
+
+ private:
+  bool was_on_widget_closing_called_ = false;
+};
+
+TEST_F(WidgetTest, CloseNowFollowedByCloseDoesntCallOnWidgetClosingTwice) {
+  CloseFromClosingObserver observer;
+  std::unique_ptr<Widget> widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget->Init(std::move(params));
+  widget->AddObserver(&observer);
+  widget->CloseNow();
+  widget->RemoveObserver(&observer);
+  widget.reset();
+  // Assertions are in CloseFromClosingObserver.
+}
+
 class WidgetShadowTest : public WidgetTest {
  public:
   WidgetShadowTest() = default;

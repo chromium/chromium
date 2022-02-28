@@ -694,6 +694,10 @@ void Widget::Close() {
 }
 
 void Widget::CloseNow() {
+  // Set this so that Widget::Close() early outs. In general this operation is
+  // a one-way and can't be undone.
+  widget_closed_ = true;
+
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetClosing(this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
