@@ -75,18 +75,19 @@ void AttributionReportNetworkSender::SendReport(
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("conversion_measurement_report", R"(
         semantics {
-          sender: "Event-level Conversion Measurement API"
+          sender: "Attribution Reporting API"
           description:
-            "The Conversion Measurement API allows sites to measure "
-            "conversions (e.g. purchases) and attribute them to clicked ads, "
-            "without using cross-site persistent identifiers like third party "
-            "cookies."
+            "The Attribution Reporting API supports measurement of clicks and "
+            "views with event-level and aggregatable reports without using "
+            "cross-site persistent identifiers like third-party cookies."
           trigger:
-            "When a registered conversion has become eligible for reporting."
+            "When a triggered attribution has become eligible for reporting."
           data:
-            "A high-entropy identifier declared by the site in which the user "
-            "clicked on an impression. A noisy low-entropy data value declared "
-            "on the conversion site."
+            "Event-level reports include a high-entropy identifier declared "
+            "by the site on which the user clicked on or viewed a source and "
+            "a noisy low-entropy data value declared on the destination site."
+            "Aggregatable reports include encrypted information generated "
+            "from both source-side and trigger-side registrations."
           destination:OTHER
         }
         policy {

@@ -49,7 +49,7 @@ Refer to README.md for content description and update process.
  <item id="client_download_request" added_in_milestone="62" content_hash_code="04bc89c5" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
  <item id="content_hash_verification_job" added_in_milestone="62" content_hash_code="079fc9db" os_list="linux,windows,chromeos" file_path="extensions/browser/content_hash_fetcher.cc" />
  <item id="content_suggestion_get_favicon" added_in_milestone="62" content_hash_code="0800f6e5" os_list="linux,windows,chromeos,android" file_path="components/ntp_snippets/content_suggestions_service.cc" />
- <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="06161a36" os_list="linux,windows,chromeos,android" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
+ <item id="conversion_measurement_report" added_in_milestone="84" content_hash_code="07884f7e" os_list="linux,windows,chromeos,android" file_path="content/browser/attribution_reporting/attribution_report_network_sender.cc" />
  <item id="credenential_avatar" added_in_milestone="62" content_hash_code="06bcc86b" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/passwords/account_avatar_fetcher.cc" />
  <item id="cros_recovery_image_download" added_in_milestone="62" content_hash_code="00a7d792" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/api/image_writer_private/write_from_url_operation.cc" />
  <item id="desktop_screenshot_save" added_in_milestone="94" content_hash_code="019480c9" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc" />
