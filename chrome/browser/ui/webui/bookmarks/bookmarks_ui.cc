@@ -128,10 +128,6 @@ content::WebUIDataSource* CreateBookmarksUIHTMLSource(Profile* profile) {
   for (const auto& str : kStrings)
     AddLocalizedString(source, str.name, str.id);
 
-  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
-  // need this attribute.
-  source->AddString("enableBrandingUpdateAttribute", "enable-branding-update");
-
   return source;
 }
 

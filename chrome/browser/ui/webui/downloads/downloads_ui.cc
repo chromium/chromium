@@ -165,10 +165,6 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
 
-  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
-  // need this attribute.
-  source->AddString("enableBrandingUpdateAttribute", "enable-branding-update");
-
   return source;
 }
 

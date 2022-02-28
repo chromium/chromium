@@ -204,20 +204,18 @@ export class SettingsUiElement extends SettingsUiElementBase {
   }
 
   currentRouteChanged(route: Route) {
-    if (document.documentElement.hasAttribute('enable-branding-update')) {
-      if (route === routes.PRIVACY_GUIDE) {
-        // Privacy guide has a multi-card layout, which only needs shadows to
-        // show when there is more content to scroll.
-        this.enableShadowBehavior(true);
-      } else if (route.depth <= 1) {
-        // Main page uses scroll position to determine whether a shadow should
-        // be shown.
-        this.enableShadowBehavior(true);
-      } else if (!route.isNavigableDialog) {
-        // Sub-pages always show the top shadow, regardless of scroll position.
-        this.enableShadowBehavior(false);
-        this.showDropShadows();
-      }
+    if (route === routes.PRIVACY_GUIDE) {
+      // Privacy guide has a multi-card layout, which only needs shadows to
+      // show when there is more content to scroll.
+      this.enableShadowBehavior(true);
+    } else if (route.depth <= 1) {
+      // Main page uses scroll position to determine whether a shadow should
+      // be shown.
+      this.enableShadowBehavior(true);
+    } else if (!route.isNavigableDialog) {
+      // Sub-pages always show the top shadow, regardless of scroll position.
+      this.enableShadowBehavior(false);
+      this.showDropShadows();
     }
 
     const urlSearchQuery =
