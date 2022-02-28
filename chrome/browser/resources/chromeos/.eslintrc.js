@@ -7,6 +7,7 @@ module.exports = {
     // TODO(dbeam): convert curly style to match doc (https://crbug.com/916782).
     'brace-style': 'off',
     'curly': 'off',
+    'eqeqeq': 'off',
     'no-var': 'off',
     'prefer-const': 'off',
   },

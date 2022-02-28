@@ -6,6 +6,5 @@ module.exports = {
   'rules': {
     'no-var': 'error',
     'prefer-const': 'error',
-    'eqeqeq': ['error', 'always', {'null': 'ignore'}],
   },
 };
