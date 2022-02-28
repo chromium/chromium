@@ -60,6 +60,9 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1257474
   "shelf.OpenCloseSwitchApps",
 
+  # crbug.com/1239838
+  "graphics.FPS",
+
   # crbug.com/1186991
   "launcher.SearchBuiltInApps",
 
