@@ -28,6 +28,10 @@ class BlinkGCPluginAction : public PluginASTAction {
     return std::make_unique<BlinkGCPluginConsumer>(instance, options_);
   }
 
+  PluginASTAction::ActionType getActionType() override {
+    return CmdlineBeforeMainAction;
+  }
+
   bool ParseArgs(const CompilerInstance&,
                  const std::vector<std::string>& args) override {
     for (const auto& arg : args) {
