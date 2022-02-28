@@ -80,7 +80,7 @@ ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
     : chromeos::SystemWebDialogDelegate(GURL(url),
                                         /*title=*/std::u16string()) {}
 
-ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() {}
+ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() = default;
 
 ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
     const {
@@ -129,7 +129,7 @@ bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 
-ChromeCameraAppUIDelegate::FileMonitor::FileMonitor() {}
+ChromeCameraAppUIDelegate::FileMonitor::FileMonitor() = default;
 
 ChromeCameraAppUIDelegate::FileMonitor::~FileMonitor() = default;
 

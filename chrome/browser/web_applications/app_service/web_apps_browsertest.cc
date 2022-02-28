@@ -34,7 +34,7 @@ namespace web_app {
 
 class WebAppsBrowserTest : public InProcessBrowserTest {
  public:
-  WebAppsBrowserTest() {}
+  WebAppsBrowserTest() = default;
   ~WebAppsBrowserTest() override = default;
 };
 

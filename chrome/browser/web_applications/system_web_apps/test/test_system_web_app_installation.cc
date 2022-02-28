@@ -59,7 +59,7 @@ std::string GetDataSourceNameFromSystemAppInstallUrl(const GURL& url) {
   DCHECK_EQ("://", spec.substr(p, 3));
   p += 3;
 
-  size_t pos_after_host = spec.find("/", p);
+  size_t pos_after_host = spec.find('/', p);
   DCHECK(pos_after_host != std::string::npos);
 
   return spec.substr(p, pos_after_host - p);
@@ -76,7 +76,7 @@ std::string GetChromeUntrustedDataSourceNameFromInstallUrl(const GURL& url) {
   DCHECK_EQ("://", spec.substr(p, 3));
   p += 3;
 
-  size_t pos_after_host = spec.find("/", p);
+  size_t pos_after_host = spec.find('/', p);
   DCHECK(pos_after_host != std::string::npos);
 
   // The Data Source name must include "/" after the host.
@@ -92,7 +92,7 @@ UnittestingSystemAppDelegate::UnittestingSystemAppDelegate(
     const GURL& url,
     WebAppInstallInfoFactory info_factory)
     : web_app::SystemWebAppDelegate(type, name, url, nullptr),
-      info_factory_(info_factory) {}
+      info_factory_(std::move(info_factory)) {}
 
 UnittestingSystemAppDelegate::~UnittestingSystemAppDelegate() = default;
 

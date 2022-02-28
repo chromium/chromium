@@ -171,9 +171,9 @@ NavigateParams NavigateParamsForShareTarget(
     names.push_back(shared_field.name);
     values.push_back(shared_field.value);
     is_value_file_uris.push_back(false);
-    filenames.push_back(std::string());
+    filenames.emplace_back(std::string());
     types.push_back("text/plain");
-    data_pipe_getters.push_back(
+    data_pipe_getters.emplace_back(
         mojo::PendingRemote<network::mojom::DataPipeGetter>());
   }
 

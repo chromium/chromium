@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
 class WebAppFileHandlingDisabledTest : public WebAppFileHandlingBrowserTest {
  public:
-  WebAppFileHandlingDisabledTest() : WebAppFileHandlingBrowserTest() {
+  WebAppFileHandlingDisabledTest() {
     feature_list_.InitWithFeatures({}, {blink::features::kFileHandlingAPI});
   }
 

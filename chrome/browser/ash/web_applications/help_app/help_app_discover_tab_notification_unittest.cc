@@ -22,7 +22,7 @@ namespace ash {
 
 class HelpAppDiscoverTabNotificationTest : public BrowserWithTestWindowTest {
  public:
-  HelpAppDiscoverTabNotificationTest() {}
+  HelpAppDiscoverTabNotificationTest() = default;
   ~HelpAppDiscoverTabNotificationTest() override = default;
 
   HelpAppDiscoverTabNotificationTest(
