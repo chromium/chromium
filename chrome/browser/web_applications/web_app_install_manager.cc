@@ -693,7 +693,8 @@ void WebAppInstallManager::NotifyWebAppInstalledWithOsHooks(
 
 WebAppInstallManager::PendingTask::PendingTask() = default;
 
-WebAppInstallManager::PendingTask::PendingTask(PendingTask&&) = default;
+WebAppInstallManager::PendingTask::PendingTask(PendingTask&&) noexcept =
+    default;
 
 WebAppInstallManager::PendingTask::~PendingTask() = default;
 

@@ -212,7 +212,7 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   // FIFO. This is a subset of |tasks_|.
   struct PendingTask {
     PendingTask();
-    PendingTask(PendingTask&&);
+    PendingTask(PendingTask&&) noexcept;
     ~PendingTask();
 
     raw_ptr<const WebAppInstallTask> task = nullptr;

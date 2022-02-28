@@ -338,7 +338,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
             filter_(filter) {
         FilterAndSkipApps();
       }
-      Iter(Iter&&) = default;
+      Iter(Iter&&) noexcept = default;
       Iter(const Iter&) = delete;
       Iter& operator=(const Iter&) = delete;
       ~Iter() = default;

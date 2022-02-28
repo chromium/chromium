@@ -116,7 +116,7 @@ struct WebAppShortcutsMenuItemInfo {
   struct Icon {
     Icon();
     Icon(const Icon&);
-    Icon(Icon&&);
+    Icon(Icon&&) noexcept;
     ~Icon();
     Icon& operator=(const Icon&);
     Icon& operator=(Icon&&);

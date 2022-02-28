@@ -94,7 +94,7 @@ ScopedTestingPreinstalledAppData::~ScopedTestingPreinstalledAppData() {
 
 PreinstalledWebAppMigration::PreinstalledWebAppMigration() = default;
 PreinstalledWebAppMigration::PreinstalledWebAppMigration(
-    PreinstalledWebAppMigration&&) = default;
+    PreinstalledWebAppMigration&&) noexcept = default;
 PreinstalledWebAppMigration::~PreinstalledWebAppMigration() = default;
 
 std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(

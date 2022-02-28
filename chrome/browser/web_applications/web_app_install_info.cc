@@ -127,8 +127,8 @@ WebAppShortcutsMenuItemInfo::Icon::Icon() = default;
 WebAppShortcutsMenuItemInfo::Icon::Icon(
     const WebAppShortcutsMenuItemInfo::Icon&) = default;
 
-WebAppShortcutsMenuItemInfo::Icon::Icon(WebAppShortcutsMenuItemInfo::Icon&&) =
-    default;
+WebAppShortcutsMenuItemInfo::Icon::Icon(
+    WebAppShortcutsMenuItemInfo::Icon&&) noexcept = default;
 
 WebAppShortcutsMenuItemInfo::Icon::~Icon() = default;
 

@@ -21,7 +21,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
 // A subset of ExternalInstallOptions pertaining to web app migration.
 struct PreinstalledWebAppMigration {
   PreinstalledWebAppMigration();
-  PreinstalledWebAppMigration(PreinstalledWebAppMigration&&);
+  PreinstalledWebAppMigration(PreinstalledWebAppMigration&&) noexcept;
   ~PreinstalledWebAppMigration();
 
   GURL install_url;
