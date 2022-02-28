@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -294,6 +296,42 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithPrefDisabledBrowserTest,
 
   profile->GetPrefs()->SetBoolean(prefs::kDisableDrive, true);
   EXPECT_FALSE(drive_service->is_enabled());
+}
+
+class DriveIntegrationBrowserTestWithMirrorSyncEnabled
+    : public DriveIntegrationServiceBrowserTest {
+ public:
+  DriveIntegrationBrowserTestWithMirrorSyncEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kDriveFsMirroring}, {});
+  }
+
+  DriveIntegrationBrowserTestWithMirrorSyncEnabled(
+      const DriveIntegrationBrowserTestWithMirrorSyncEnabled&) = delete;
+  DriveIntegrationBrowserTestWithMirrorSyncEnabled& operator=(
+      const DriveIntegrationBrowserTestWithMirrorSyncEnabled&) = delete;
+
+  ~DriveIntegrationBrowserTestWithMirrorSyncEnabled() override {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
+                       EnableMirrorSync) {
+  auto* drive_service =
+      DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
+
+  // Ensure the mirror syncing service is disabled.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kDriveFsEnableMirrorSync));
+  EXPECT_FALSE(drive_service->IsMirroringEnabled());
+
+  // Enable mirroring and ensure the integration service has it enabled.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDriveFsEnableMirrorSync,
+                                               true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(drive_service->IsMirroringEnabled());
 }
 
 }  // namespace drive

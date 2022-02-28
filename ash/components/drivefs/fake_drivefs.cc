@@ -510,4 +510,9 @@ void FakeDriveFs::GetQuotaUsage(
                           mojom::QuotaUsage::New());
 }
 
+void FakeDriveFs::EnableMirroring(
+    drivefs::mojom::DriveFs::EnableMirroringCallback callback) {
+  std::move(callback).Run(drivefs::mojom::MirrorSyncStatus::kSuccess);
+}
+
 }  // namespace drivefs

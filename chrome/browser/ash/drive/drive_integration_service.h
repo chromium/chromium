@@ -232,6 +232,12 @@ class DriveIntegrationService : public KeyedService,
                     bool crop_to_square,
                     GetThumbnailCallback callback);
 
+  // Enable Mirroring for the current device.
+  void EnableMirroring(
+      drivefs::mojom::DriveFs::EnableMirroringCallback callback);
+
+  bool IsMirroringEnabled();
+
  private:
   enum State {
     NOT_INITIALIZED,
@@ -315,6 +321,8 @@ class DriveIntegrationService : public KeyedService,
       drive::FileError error,
       absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
+  void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
+
   friend class DriveIntegrationServiceFactory;
 
   Profile* profile_;
@@ -324,6 +332,8 @@ class DriveIntegrationService : public KeyedService,
   bool in_clear_cache_ = false;
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;
+
+  bool mirroring_enabled_ = false;
 
   base::FilePath cache_root_directory_;
   std::unique_ptr<EventLogger> logger_;

@@ -1580,6 +1580,10 @@ bool IsDragWindowToNewDeskEnabled() {
   return base::FeatureList::IsEnabled(kDragWindowToNewDesk);
 }
 
+bool IsDriveFsMirroringEnabled() {
+  return base::FeatureList::IsEnabled(kDriveFsMirroring);
+}
+
 bool IsEchePhoneHubPermissionsOnboarding() {
   return base::FeatureList::IsEnabled(kEchePhoneHubPermissionsOnboarding);
 }
