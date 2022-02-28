@@ -1494,6 +1494,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter hasBeenActive
 [Worker]     getter isActive
 [Worker]     method constructor
+[Worker] interface VideoTrackGenerator
+[Worker]     attribute @@toStringTag
+[Worker]     getter muted
+[Worker]     getter track
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker]     setter muted
 [Worker] interface WebGL2RenderingContext
 [Worker]     attribute @@toStringTag
 [Worker]     attribute ACTIVE_ATTRIBUTES

@@ -2394,6 +2394,18 @@
       name: "VideoRotateToFullscreen",
     },
     {
+      name: "VideoTrackGenerator",
+      status: "test",
+    },
+    {
+      name: "VideoTrackGeneratorInWindow",
+      status: "test",
+    },
+    {
+      name: "VideoTrackGeneratorInWorker",
+      status: "test",
+    },
+    {
       name: "VideoWakeLockOptimisationHiddenMuted",
       status: "stable",
     },

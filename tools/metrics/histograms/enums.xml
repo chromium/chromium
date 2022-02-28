@@ -37325,6 +37325,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4170" label="BlobStoreAccessUnknownTopLevelSite"/>
   <int value="4171" label="CrossOriginAccessBasedOnDocumentDomain"/>
   <int value="4172" label="CookieWithTruncatingChar"/>
+  <int value="4173" label="VideoTrackGenerator"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

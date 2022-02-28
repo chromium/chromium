@@ -3491,6 +3491,7 @@ enum WebFeature {
   kBlobStoreAccessUnknownTopLevelSite = 4170,
   kCrossOriginAccessBasedOnDocumentDomain = 4171,
   kCookieWithTruncatingChar = 4172,
+  kVideoTrackGenerator = 4173,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -1615,6 +1615,13 @@ interface UserActivation
     getter hasBeenActive
     getter isActive
     method constructor
+interface VideoTrackGenerator
+    attribute @@toStringTag
+    getter muted
+    getter track
+    getter writable
+    method constructor
+    setter muted
 interface WebGL2RenderingContext
     attribute @@toStringTag
     attribute ACTIVE_ATTRIBUTES

@@ -9270,6 +9270,13 @@ interface VideoTrack
     getter sourceBuffer
     method constructor
     setter selected
+interface VideoTrackGenerator
+    attribute @@toStringTag
+    getter muted
+    getter track
+    getter writable
+    method constructor
+    setter muted
 interface VideoTrackList : EventTarget
     attribute @@toStringTag
     getter length

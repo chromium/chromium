@@ -31,6 +31,8 @@ blink_modules_sources("breakout_box") {
     "pushable_media_stream_video_source.h",
     "transferred_frame_queue_underlying_source.cc",
     "transferred_frame_queue_underlying_source.h",
+    "video_track_generator.cc",
+    "video_track_generator.h",
   ]
   deps = [
     "//third_party/blink/renderer/modules/mediastream:mediastream",

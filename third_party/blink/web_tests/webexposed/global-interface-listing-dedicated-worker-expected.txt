@@ -1841,6 +1841,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method copyTo
+[Worker] interface VideoTrackGenerator
+[Worker]     attribute @@toStringTag
+[Worker]     getter muted
+[Worker]     getter track
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker]     setter muted
 [Worker] interface WakeLock
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
