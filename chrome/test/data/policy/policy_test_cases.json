@@ -10790,7 +10790,7 @@
           "authfactors.restrictions.webauthn": {
             "value": []
           },
-          "quick_unlock_mode_whitelist": {
+          "quick_unlock_mode_allowlist": {
             "value": []
           }
         }
