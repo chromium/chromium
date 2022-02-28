@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/file_system/obfuscated_file_util.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,7 +16,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -33,7 +34,6 @@
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/file_system/obfuscated_file_util.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/sandbox_directory_database.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
@@ -372,7 +372,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
     EXPECT_EQ(!is_incognito(), FileExists(data_path));
 
     const char data[] = "test data";
-    const int length = base::size(data) - 1;
+    const int length = std::size(data) - 1;
 
     base::File file = ofu()->CreateOrOpen(
         context.get(), url, base::File::FLAG_WRITE | base::File::FLAG_OPEN);
@@ -1342,7 +1342,7 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileSuccess) {
   const int64_t kSourceLength = 5;
   const int64_t kDestLength = 50;
 
-  for (size_t i = 0; i < base::size(kCopyMoveTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kCopyMoveTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "kCopyMoveTestCase " << i);
     const CopyMoveTestCaseRecord& test_case = kCopyMoveTestCases[i];
     SCOPED_TRACE(testing::Message()
@@ -1588,7 +1588,7 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   std::set<blink::StorageKey> storage_keys_expected;
   storage_keys_expected.insert(storage_key());
 
-  for (size_t i = 0; i < base::size(kOriginEnumerationTestRecords); ++i) {
+  for (size_t i = 0; i < std::size(kOriginEnumerationTestRecords); ++i) {
     SCOPED_TRACE(testing::Message()
                  << "Validating kOriginEnumerationTestRecords " << i);
     const OriginEnumerationTestRecord& record =
@@ -1802,7 +1802,7 @@ TEST_P(ObfuscatedFileUtilTest, TestIncompleteDirectoryReading) {
   EXPECT_EQ(base::File::FILE_OK,
             AsyncFileTestHelper::ReadDirectory(file_system_context(),
                                                empty_path, &entries));
-  EXPECT_EQ(base::size(kPath) - 1, entries.size());
+  EXPECT_EQ(std::size(kPath) - 1, entries.size());
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestDirectoryTimestampForCreation) {

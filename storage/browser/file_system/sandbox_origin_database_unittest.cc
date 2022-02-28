@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/file_system/sandbox_origin_database.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -11,12 +13,10 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "storage/browser/file_system/sandbox_origin_database.h"
 #include "storage/browser/test/sandbox_database_test_helper.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -208,7 +208,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryTest) {
   };
 
   auto database = std::make_unique<SandboxOriginDatabase>(kFSDir, nullptr);
-  for (size_t i = 0; i < base::size(kOrigins); ++i) {
+  for (size_t i = 0; i < std::size(kOrigins); ++i) {
     base::FilePath path;
     EXPECT_FALSE(database->HasOriginPath(kOrigins[i]));
     EXPECT_TRUE(database->GetPathForOrigin(kOrigins[i], &path));
@@ -242,7 +242,7 @@ TEST(SandboxOriginDatabaseTest, DatabaseRecoveryTest) {
 
   // Expect all but last added origin will be repaired back, and kOrigins[1]
   // should be dropped due to absence of backing directory.
-  EXPECT_EQ(base::size(kOrigins) - 2, origins_in_db.size());
+  EXPECT_EQ(std::size(kOrigins) - 2, origins_in_db.size());
 
   const std::string kOrigin("piyo.example.org");
   EXPECT_FALSE(database->HasOriginPath(kOrigin));

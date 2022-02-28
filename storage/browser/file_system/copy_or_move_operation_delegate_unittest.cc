@@ -659,7 +659,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest,
   };
 
   helper.VerifyTestCaseFiles(dest, kMoveDirResultCases,
-                             base::size(kMoveDirResultCases));
+                             std::size(kMoveDirResultCases));
 }
 
 TEST(LocalFileSystemCopyOrMoveOperationTest, CopySingleFileNoValidator) {

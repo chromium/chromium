@@ -13,7 +13,6 @@
 #include <set>
 
 #include "base/containers/stack.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -305,8 +304,8 @@ bool DatabaseCheckHelper::ScanDirectory() {
       if (!path_.AppendRelativePath(absolute_file_path, &relative_file_path))
         return false;
 
-      if (std::find(kExcludes, kExcludes + base::size(kExcludes),
-                    relative_file_path) != kExcludes + base::size(kExcludes))
+      if (std::find(kExcludes, kExcludes + std::size(kExcludes),
+                    relative_file_path) != kExcludes + std::size(kExcludes))
         continue;
 
       if (find_info.IsDirectory()) {

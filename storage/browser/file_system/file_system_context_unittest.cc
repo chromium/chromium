@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -260,7 +259,7 @@ TEST_F(FileSystemContextTest, CrackFileSystemURL) {
        kFileSystemTypeUnknown, kFileSystemTypeUnknown, FPL(""), std::string()},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     const base::FilePath virtual_path =
         base::FilePath::FromASCII(kTestCases[i].root)
             .Append(kVirtualPathNoRoot);

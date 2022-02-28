@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/file_system/isolated_context.h"
+
 #include <stddef.h>
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -91,7 +91,7 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
   // See if the name of each registered kTestPaths (that is what we
   // register in SetUp() by RegisterDraggedFileSystem) is properly cracked as
   // a valid virtual path in the isolated filesystem.
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
     base::FilePath virtual_path =
         isolated_context()->CreateVirtualRootPath(id_).AppendASCII(names_[i]);
     std::string cracked_id;
@@ -191,8 +191,8 @@ TEST_F(IsolatedContextTest, CrackWithRelativePaths) {
     {FPL("foo/..\\baz"), SHOULD_FAIL_WITH_WIN_SEPARATORS},
   };
 
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
-    for (size_t j = 0; j < base::size(relatives); ++j) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
+    for (size_t j = 0; j < std::size(relatives); ++j) {
       SCOPED_TRACE(testing::Message() << "Testing " << kTestPaths[i].value()
                                       << " " << relatives[j].path);
       base::FilePath virtual_path = isolated_context()
@@ -244,8 +244,8 @@ TEST_F(IsolatedContextTest, CrackURLWithRelativePaths) {
     {FPL("foo/..\\baz"), SHOULD_FAIL_WITH_WIN_SEPARATORS},
   };
 
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
-    for (size_t j = 0; j < base::size(relatives); ++j) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
+    for (size_t j = 0; j < std::size(relatives); ++j) {
       SCOPED_TRACE(testing::Message() << "Testing " << kTestPaths[i].value()
                                       << " " << relatives[j].path);
       base::FilePath virtual_path = isolated_context()

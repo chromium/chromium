@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "url/url_canon.h"
@@ -116,7 +115,7 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   if (identifier.find("..") != std::string::npos)
     return DatabaseIdentifier();
   static const char kForbidden[] = {'\\', '/', ':', '\0'};
-  if (identifier.find_first_of(kForbidden, 0, base::size(kForbidden)) !=
+  if (identifier.find_first_of(kForbidden, 0, std::size(kForbidden)) !=
       std::string::npos) {
     return DatabaseIdentifier();
   }

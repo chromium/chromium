@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -173,8 +172,8 @@ TEST_P(SandboxFileSystemBackendTest, EnumerateOrigins) {
       "http://www.foo.com:8080/",
       "http://www.foo.com:80/",
   };
-  size_t temporary_size = base::size(temporary_origins);
-  size_t persistent_size = base::size(persistent_origins);
+  size_t temporary_size = std::size(temporary_origins);
+  size_t persistent_size = std::size(persistent_origins);
   std::set<blink::StorageKey> temporary_set, persistent_set;
   for (size_t i = 0; i < temporary_size; ++i) {
     CreateOriginTypeDirectory(temporary_origins[i], kFileSystemTypeTemporary);
@@ -211,12 +210,11 @@ TEST_P(SandboxFileSystemBackendTest, EnumerateOrigins) {
 }
 
 TEST_P(SandboxFileSystemBackendTest, GetRootPathCreateAndExamine) {
-  std::vector<base::FilePath> returned_root_path(
-      base::size(kRootPathTestCases));
+  std::vector<base::FilePath> returned_root_path(std::size(kRootPathTestCases));
   SetUpNewBackend(CreateAllowFileAccessOptions());
 
   // Create a new root directory.
-  for (size_t i = 0; i < base::size(kRootPathTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "RootPath (create) #" << i << " "
                                     << kRootPathTestCases[i].expected_path);
 
@@ -235,7 +233,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathCreateAndExamine) {
 
   // Get the root directory with create=false and see if we get the
   // same directory.
-  for (size_t i = 0; i < base::size(kRootPathTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "RootPath (get) #" << i << " "
                                     << kRootPathTestCases[i].expected_path);
 
@@ -250,8 +248,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathCreateAndExamine) {
 
 TEST_P(SandboxFileSystemBackendTest,
        GetRootPathCreateAndExamineWithNewBackend) {
-  std::vector<base::FilePath> returned_root_path(
-      base::size(kRootPathTestCases));
+  std::vector<base::FilePath> returned_root_path(std::size(kRootPathTestCases));
   SetUpNewBackend(CreateAllowFileAccessOptions());
 
   base::FilePath root_path1;
@@ -270,7 +267,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathGetWithoutCreate) {
   SetUpNewBackend(CreateDisallowFileAccessOptions());
 
   // Try to get a root directory without creating.
-  for (size_t i = 0; i < base::size(kRootPathTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "RootPath (create=false) #" << i << " "
                                     << kRootPathTestCases[i].expected_path);
     EXPECT_FALSE(GetRootPath(kRootPathTestCases[i].origin_url,
@@ -283,7 +280,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathInIncognito) {
   SetUpNewBackend(CreateIncognitoFileSystemOptions());
 
   // Try to get a root directory.
-  for (size_t i = 0; i < base::size(kRootPathTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "RootPath (incognito) #" << i << " "
                                     << kRootPathTestCases[i].expected_path);
     EXPECT_EQ(IsPersistentFileSystemEnabledIncognito() ||
@@ -296,7 +293,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathInIncognito) {
 
 TEST_P(SandboxFileSystemBackendTest, GetRootPathFileURI) {
   SetUpNewBackend(CreateDisallowFileAccessOptions());
-  for (size_t i = 0; i < base::size(kRootPathFileURITestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathFileURITestCases); ++i) {
     SCOPED_TRACE(testing::Message()
                  << "RootPathFileURI (disallow) #" << i << " "
                  << kRootPathFileURITestCases[i].expected_path);
@@ -308,7 +305,7 @@ TEST_P(SandboxFileSystemBackendTest, GetRootPathFileURI) {
 
 TEST_P(SandboxFileSystemBackendTest, GetRootPathFileURIWithAllowFlag) {
   SetUpNewBackend(CreateAllowFileAccessOptions());
-  for (size_t i = 0; i < base::size(kRootPathFileURITestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRootPathFileURITestCases); ++i) {
     SCOPED_TRACE(testing::Message()
                  << "RootPathFileURI (allow) #" << i << " "
                  << kRootPathFileURITestCases[i].expected_path);

@@ -88,7 +88,7 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      " last_modified INTEGER NOT NULL,"
      " expiration INTEGER NOT NULL,"
      " quota INTEGER NOT NULL)"}};
-const size_t QuotaDatabase::kTableCount = base::size(QuotaDatabase::kTables);
+const size_t QuotaDatabase::kTableCount = std::size(QuotaDatabase::kTables);
 
 // static
 const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
@@ -98,7 +98,7 @@ const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
     {"buckets_by_last_modified", kBucketTable, "(type, last_modified)", false},
     {"buckets_by_expiration", kBucketTable, "(expiration)", false},
 };
-const size_t QuotaDatabase::kIndexCount = base::size(QuotaDatabase::kIndexes);
+const size_t QuotaDatabase::kIndexCount = std::size(QuotaDatabase::kIndexes);
 
 QuotaDatabase::BucketTableEntry::BucketTableEntry() = default;
 

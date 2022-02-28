@@ -9,7 +9,6 @@
 #include <limits>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -39,7 +38,7 @@ const FileSystemTestCaseRecord kRegularFileSystemTestCases[] = {
 };
 
 const size_t kRegularFileSystemTestCaseSize =
-    base::size(kRegularFileSystemTestCases);
+    std::size(kRegularFileSystemTestCases);
 
 void SetUpOneFileSystemTestCase(const base::FilePath& root_path,
                                 const FileSystemTestCaseRecord& test_case) {
@@ -60,7 +59,7 @@ void SetUpOneFileSystemTestCase(const base::FilePath& root_path,
 }
 
 void SetUpRegularFileSystemTestCases(const base::FilePath& root_path) {
-  for (size_t i = 0; i < base::size(kRegularFileSystemTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRegularFileSystemTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Creating kRegularTestCases " << i);
     SetUpOneFileSystemTestCase(root_path, kRegularFileSystemTestCases[i]);
   }
