@@ -28,26 +28,26 @@ struct BLINK_COMMON_EXPORT
 
   static int y(const blink::UntrustworthyContextMenuParams& r) { return r.y; }
 
-  static const GURL link_url(const blink::UntrustworthyContextMenuParams& r) {
+  static const GURL& link_url(const blink::UntrustworthyContextMenuParams& r) {
     return r.link_url;
   }
 
-  static std::u16string link_text(
+  static const std::u16string& link_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.link_text;
   }
 
-  static absl::optional<blink::Impression> impression(
+  static const absl::optional<blink::Impression>& impression(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.impression;
   }
 
-  static const GURL unfiltered_link_url(
+  static const GURL& unfiltered_link_url(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.unfiltered_link_url;
   }
 
-  static const GURL src_url(const blink::UntrustworthyContextMenuParams& r) {
+  static const GURL& src_url(const blink::UntrustworthyContextMenuParams& r) {
     return r.src_url;
   }
 
@@ -60,32 +60,32 @@ struct BLINK_COMMON_EXPORT
     return r.media_flags;
   }
 
-  static std::u16string selection_text(
+  static const std::u16string& selection_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.selection_text;
   }
 
-  static std::u16string title_text(
+  static const std::u16string& title_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.title_text;
   }
 
-  static std::u16string alt_text(
+  static const std::u16string& alt_text(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.alt_text;
   }
 
-  static std::u16string suggested_filename(
+  static const std::u16string& suggested_filename(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.suggested_filename;
   }
 
-  static std::u16string misspelled_word(
+  static const std::u16string& misspelled_word(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.misspelled_word;
   }
 
-  static std::vector<std::u16string> dictionary_suggestions(
+  static const std::vector<std::u16string>& dictionary_suggestions(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.dictionary_suggestions;
   }
@@ -118,7 +118,7 @@ struct BLINK_COMMON_EXPORT
     return r.edit_flags;
   }
 
-  static std::string frame_charset(
+  static const std::string& frame_charset(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.frame_charset;
   }
@@ -148,7 +148,7 @@ struct BLINK_COMMON_EXPORT
     return r.input_field_type;
   }
 
-  static gfx::Rect selection_rect(
+  static const gfx::Rect& selection_rect(
       const blink::UntrustworthyContextMenuParams& r) {
     return r.selection_rect;
   }

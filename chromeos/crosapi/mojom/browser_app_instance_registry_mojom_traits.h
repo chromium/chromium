@@ -18,12 +18,12 @@ struct StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
   static bool Read(crosapi::mojom::BrowserWindowInstanceUpdateDataView input,
                    apps::BrowserWindowInstanceUpdate* output);
 
-  static base::UnguessableToken id(
+  static const base::UnguessableToken& id(
       const apps::BrowserWindowInstanceUpdate& update) {
     return update.id;
   }
 
-  static std::string window_id(
+  static const std::string& window_id(
       const apps::BrowserWindowInstanceUpdate& update) {
     return update.window_id;
   }
@@ -49,7 +49,7 @@ struct StructTraits<crosapi::mojom::BrowserAppInstanceUpdateDataView,
   static bool Read(crosapi::mojom::BrowserAppInstanceUpdateDataView input,
                    apps::BrowserAppInstanceUpdate* output);
 
-  static base::UnguessableToken id(
+  static const base::UnguessableToken& id(
       const apps::BrowserAppInstanceUpdate& update) {
     return update.id;
   }
@@ -59,15 +59,17 @@ struct StructTraits<crosapi::mojom::BrowserAppInstanceUpdateDataView,
     return update.type;
   }
 
-  static std::string app_id(const apps::BrowserAppInstanceUpdate& update) {
+  static const std::string& app_id(
+      const apps::BrowserAppInstanceUpdate& update) {
     return update.app_id;
   }
 
-  static std::string window_id(const apps::BrowserAppInstanceUpdate& update) {
+  static const std::string& window_id(
+      const apps::BrowserAppInstanceUpdate& update) {
     return update.window_id;
   }
 
-  static absl::optional<std::string> title(
+  static const std::string& title(
       const apps::BrowserAppInstanceUpdate& update) {
     return update.title;
   }

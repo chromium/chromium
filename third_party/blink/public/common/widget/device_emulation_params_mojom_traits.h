@@ -25,7 +25,7 @@ struct BLINK_COMMON_EXPORT
     return r.screen_size;
   }
 
-  static absl::optional<gfx::Point> view_position(
+  static const absl::optional<gfx::Point>& view_position(
       const blink::DeviceEmulationParams& r) {
     return r.view_position;
   }

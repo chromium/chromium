@@ -48,7 +48,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.compositor_viewport_pixel_rect;
   }
 
-  static absl::optional<cc::BrowserControlsParams> browser_controls_params(
+  static const cc::BrowserControlsParams& browser_controls_params(
       const blink::VisualProperties& r) {
     return r.browser_controls_params;
   }
@@ -57,7 +57,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.scroll_focused_node_into_view;
   }
 
-  static absl::optional<viz::LocalSurfaceId> local_surface_id(
+  static const absl::optional<viz::LocalSurfaceId>& local_surface_id(
       const blink::VisualProperties& r) {
     return r.local_surface_id;
   }

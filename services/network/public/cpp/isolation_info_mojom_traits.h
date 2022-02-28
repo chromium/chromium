@@ -55,7 +55,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.site_for_cookies();
   }
 
-  static const absl::optional<std::set<net::SchemefulSite>> party_context(
+  static const absl::optional<std::set<net::SchemefulSite>>& party_context(
       const net::IsolationInfo& input) {
     return input.party_context_;
   }

@@ -84,7 +84,7 @@ struct BLINK_COMMON_EXPORT
     return r.local_frame_size;
   }
 
-  static absl::optional<viz::LocalSurfaceId> local_surface_id(
+  static const viz::LocalSurfaceId& local_surface_id(
       const blink::FrameVisualProperties& r) {
     return r.local_surface_id;
   }

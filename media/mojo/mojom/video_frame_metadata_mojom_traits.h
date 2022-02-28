@@ -83,7 +83,7 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
       copy_mode,
       media::VideoFrameMetadata::CopyMode::kCopyToNewTexture)
 
-  static absl::optional<media::VideoTransformation> transformation(
+  static const absl::optional<media::VideoTransformation>& transformation(
       const media::VideoFrameMetadata& input) {
     return input.transformation;
   }
@@ -96,17 +96,17 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
   GENERATE_OPT_SERIALIZATION(double, frame_rate, 0.0)
   GENERATE_OPT_SERIALIZATION(double, rtp_timestamp, 0.0)
 
-  static absl::optional<gfx::Rect> capture_update_rect(
+  static const absl::optional<gfx::Rect>& capture_update_rect(
       const media::VideoFrameMetadata& input) {
     return input.capture_update_rect;
   }
 
-  static absl::optional<gfx::Rect> region_capture_rect(
+  static const absl::optional<gfx::Rect>& region_capture_rect(
       const media::VideoFrameMetadata& input) {
     return input.region_capture_rect;
   }
 
-  static absl::optional<base::UnguessableToken> overlay_plane_id(
+  static const absl::optional<base::UnguessableToken>& overlay_plane_id(
       const media::VideoFrameMetadata& input) {
     return input.overlay_plane_id;
   }

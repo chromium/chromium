@@ -48,7 +48,7 @@ struct VisualProperties {
 
   // Browser controls params such as top and bottom controls heights, whether
   // controls shrink blink size etc.
-  cc.mojom.BrowserControlsParams? browser_controls_params;
+  cc.mojom.BrowserControlsParams browser_controls_params;
 
   // Whether or not the focused node should be scrolled into view after the
   // resize.

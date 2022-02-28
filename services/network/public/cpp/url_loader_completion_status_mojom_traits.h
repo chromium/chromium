@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.ssl_info;
   }
 
-  static absl::optional<network::mojom::BlockedByResponseReason>
+  static const absl::optional<network::mojom::BlockedByResponseReason>&
   blocked_by_response_reason(const network::URLLoaderCompletionStatus& status) {
     return status.blocked_by_response_reason;
   }
