@@ -5,11 +5,10 @@
 #include "skia/ext/skia_utils_ios.h"
 
 #import <ImageIO/ImageIO.h>
+#import <UIKit/UIKit.h>
 #include <stddef.h>
 #include <stdint.h>
-#import <UIKit/UIKit.h>
 
-#include "base/cxx17_backports.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -21,10 +20,10 @@ const uint8_t kICOHeaderMagic[4] = {0x00, 0x00, 0x01, 0x00};
 
 // Returns whether the data encodes an ico image.
 bool EncodesIcoImage(NSData* image_data) {
-  if (image_data.length < base::size(kICOHeaderMagic))
+  if (image_data.length < std::size(kICOHeaderMagic))
     return false;
   return memcmp(kICOHeaderMagic, image_data.bytes,
-                base::size(kICOHeaderMagic)) == 0;
+                std::size(kICOHeaderMagic)) == 0;
 }
 
 }  // namespace

@@ -19,7 +19,6 @@
 #include <stdio.h>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -51,7 +50,7 @@ const StringMethodPair resize_methods[] = {
 // Returns true on success, false otherwise.
 bool StringToMethod(const std::string& arg,
                     skia::ImageOperations::ResizeMethod* method) {
-  for (size_t i = 0; i < base::size(resize_methods); ++i) {
+  for (size_t i = 0; i < std::size(resize_methods); ++i) {
     if (base::EqualsCaseInsensitiveASCII(arg, resize_methods[i].name)) {
       *method = resize_methods[i].method;
       return true;
@@ -61,7 +60,7 @@ bool StringToMethod(const std::string& arg,
 }
 
 const char* MethodToString(skia::ImageOperations::ResizeMethod method) {
-  for (size_t i = 0; i < base::size(resize_methods); ++i) {
+  for (size_t i = 0; i < std::size(resize_methods); ++i) {
     if (method == resize_methods[i].method) {
       return resize_methods[i].name;
     }
@@ -72,7 +71,7 @@ const char* MethodToString(skia::ImageOperations::ResizeMethod method) {
 // Prints all supported resize methods
 void PrintMethods() {
   bool print_comma = false;
-  for (size_t i = 0; i < base::size(resize_methods); ++i) {
+  for (size_t i = 0; i < std::size(resize_methods); ++i) {
     if (print_comma) {
       printf(",");
     } else {
