@@ -48,6 +48,7 @@ include_rules = [
   "+components/services/unzip",
   "+google_apis",
   "+ios/components/credential_provider_extension",
+  "+ios/components/security_interstitials",
   "+ios/components/io_thread",
   "+ios/components/webui",
   "+ios/net",

@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVDownloadTask;
+@class CWVLookalikeURLHandler;
 @class CWVSSLErrorHandler;
 @class CWVWebView;
 
@@ -57,6 +58,13 @@ NS_ASSUME_NONNULL_BEGIN
 // potentially override and ignore it.
 - (void)webView:(CWVWebView*)webView
     handleSSLErrorWithHandler:(CWVSSLErrorHandler*)handler;
+
+// Notifies the delegate of an attempt to load a lookalike URL.
+// |handler| used to communicate the attempt to the user, and allow them to
+// override if desired.
+// If this method is not implemented, the lookalike URL will load normally.
+- (void)webView:(CWVWebView*)webView
+    handleLookalikeURLWithHandler:(CWVLookalikeURLHandler*)handler;
 
 // Called when the web view requests to start downloading a file.
 //
