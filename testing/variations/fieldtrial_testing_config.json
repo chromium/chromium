@@ -694,6 +694,22 @@
             ]
         }
     ],
+    "AutofillEnableAugmentedPhoneCountryCodeOnWebView": [
+        {
+            "platforms": [
+                "android_webview",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableAugmentedPhoneCountryCode"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableLabelPrecedenceForTurkishAddresses": [
         {
             "platforms": [
