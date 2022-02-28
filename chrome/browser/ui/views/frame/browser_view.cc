@@ -2171,18 +2171,10 @@ BrowserView::ShowQRCodeGeneratorBubble(
     qrcode_generator::QRCodeGeneratorBubbleController* controller,
     const GURL& url,
     bool show_back_button) {
-  base::OnceClosure on_closing = base::BindOnce(
-      &qrcode_generator::QRCodeGeneratorBubbleController::OnBubbleClosed,
-      // Unretained is safe: controller is a WebContentsUserData, owned by
-      // WebContents, and the bubble can't outlive the WebContents.
-      base::Unretained(controller));
+  base::OnceClosure on_closing = controller->GetOnBubbleClosedCallback();
   base::OnceClosure on_back_button_pressed;
   if (show_back_button) {
-    on_back_button_pressed = base::BindOnce(
-        &qrcode_generator::QRCodeGeneratorBubbleController::OnBackButtonPressed,
-        // Unretained is safe: controller is a WebContentsUserData, owned by
-        // WebContents, and the bubble can't outlive the WebContents.
-        base::Unretained(controller));
+    on_back_button_pressed = controller->GetOnBackButtonPressedCallback();
   }
 
   PageActionIconType icon_type =
