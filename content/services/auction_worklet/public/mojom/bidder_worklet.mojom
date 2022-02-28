@@ -207,6 +207,10 @@ interface BidderWorklet {
   // `browser_signal_seller_origin` The origin of the seller script running
   //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
+  // `browser_signals_top_level_seller_origin` The top-level seller origin,
+  //  if this worklet is running as part of a component (nested) Auction.
+  //  Null, otherwise.
+  //
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
   //
@@ -231,6 +235,7 @@ interface BidderWorklet {
             url.mojom.Url browser_signal_render_url,
             double browser_signal_bid,
             url.mojom.Origin browser_signal_seller_origin,
+            url.mojom.Origin? browser_signal_top_level_seller_origin,
             uint32 bidding_signals_data_version,
             bool has_bidding_signals_data_version) => (
                 url.mojom.Url? report_url,

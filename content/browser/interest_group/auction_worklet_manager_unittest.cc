@@ -143,16 +143,18 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     }
   }
 
-  void ReportWin(const std::string& interest_group_name,
-                 const absl::optional<std::string>& auction_signals_json,
-                 const absl::optional<std::string>& per_buyer_signals_json,
-                 const std::string& seller_signals_json,
-                 const GURL& browser_signal_render_url,
-                 double browser_signal_bid,
-                 const url::Origin& browser_signal_seller_origin,
-                 uint32_t browser_signal_data_version,
-                 bool browser_signal_has_data_version,
-                 ReportWinCallback report_win_callback) override {
+  void ReportWin(
+      const std::string& interest_group_name,
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const std::string& seller_signals_json,
+      const GURL& browser_signal_render_url,
+      double browser_signal_bid,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+      uint32_t browser_signal_data_version,
+      bool browser_signal_has_data_version,
+      ReportWinCallback report_win_callback) override {
     NOTREACHED();
   }
 

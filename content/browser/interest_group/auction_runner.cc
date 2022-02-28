@@ -1023,6 +1023,7 @@ void AuctionRunner::Auction::ReportBidWin(
       config_->auction_ad_config_non_shared_params->auction_signals,
       PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner_arg,
       top_bid_->bid->render_url, top_bid_->bid->bid, config_->seller,
+      parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       top_bid_->bid->bidding_signals_data_version.value_or(0),
       top_bid_->bid->bidding_signals_data_version.has_value(),
       base::BindOnce(&Auction::OnReportBidWinComplete,

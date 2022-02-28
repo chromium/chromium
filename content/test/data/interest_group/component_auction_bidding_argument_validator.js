@@ -97,14 +97,14 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if (!browserSignals.seller.startsWith('https://d.test'))
     throw 'Wrong seller ' + browserSignals.seller;
+  if (!browserSignals.topLevelSeller.startsWith('https://b.test'))
+    throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
 
   if (isGenerateBid) {
     if (Object.keys(browserSignals).length !== 6) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
-    if (!browserSignals.topLevelSeller.startsWith('https://b.test'))
-      throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
     if (browserSignals.joinCount !== 1)
       throw 'Wrong joinCount ' + browserSignals.joinCount;
     if (browserSignals.bidCount !== 0)
@@ -112,7 +112,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 6) {
+    if (Object.keys(browserSignals).length !== 7) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

@@ -77,16 +77,18 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
     ADD_FAILURE() << "GenerateBid shouldn't be called on DebugConnector";
   }
 
-  void ReportWin(const std::string& interest_group_name,
-                 const absl::optional<std::string>& auction_signals_json,
-                 const absl::optional<std::string>& per_buyer_signals_json,
-                 const std::string& seller_signals_json,
-                 const GURL& browser_signal_render_url,
-                 double browser_signal_bid,
-                 const url::Origin& browser_signal_seller_origin,
-                 uint32_t bidding_data_version,
-                 bool has_biding_data_version,
-                 ReportWinCallback report_win_callback) override {
+  void ReportWin(
+      const std::string& interest_group_name,
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const std::string& seller_signals_json,
+      const GURL& browser_signal_render_url,
+      double browser_signal_bid,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+      uint32_t bidding_data_version,
+      bool has_biding_data_version,
+      ReportWinCallback report_win_callback) override {
     ADD_FAILURE() << "ReportWin shouldn't be called on DebugConnector";
   }
 

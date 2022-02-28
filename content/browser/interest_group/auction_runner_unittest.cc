@@ -207,6 +207,15 @@ std::string MakeBidScript(const url::Origin& seller,
 
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong browserSignals.topWindowHostname");
+      if (browserSignals.seller !== seller)
+         throw new Error("wrong seller");
+      if (browserSignals.seller === topLevelSeller) {
+        if ("topLevelSeller" in browserSignals)
+          throw new Error("expected no browserSignals.topLevelSeller");
+      } else {
+        if (browserSignals.topLevelSeller !== topLevelSeller)
+          throw new Error("wrong browserSignals.topLevelSeller");
+      }
       if ("desirability" in browserSignals)
         throw new Error("why is desirability here?");
       if (browserSignals.interestGroupName !== interestGroupName)
@@ -503,16 +512,18 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     send_pending_signals_requests_called_ = true;
   }
 
-  void ReportWin(const std::string& interest_group_name,
-                 const absl::optional<std::string>& auction_signals_json,
-                 const absl::optional<std::string>& per_buyer_signals_json,
-                 const std::string& seller_signals_json,
-                 const GURL& browser_signal_render_url,
-                 double browser_signal_bid,
-                 const url::Origin& browser_signal_seller_origin,
-                 uint32_t bidding_signals_data_version,
-                 bool has_bidding_signals_data_version,
-                 ReportWinCallback report_win_callback) override {
+  void ReportWin(
+      const std::string& interest_group_name,
+      const absl::optional<std::string>& auction_signals_json,
+      const absl::optional<std::string>& per_buyer_signals_json,
+      const std::string& seller_signals_json,
+      const GURL& browser_signal_render_url,
+      double browser_signal_bid,
+      const url::Origin& browser_signal_seller_origin,
+      const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+      uint32_t bidding_signals_data_version,
+      bool has_bidding_signals_data_version,
+      ReportWinCallback report_win_callback) override {
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
     DCHECK(!report_win_callback_);
