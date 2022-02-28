@@ -52071,6 +52071,7 @@ from previous Chrome versions.
   <int value="-1649778035" label="disable-clear-browsing-data-counters"/>
   <int value="-1648216169" label="NewOmniboxAnswerTypes:disabled"/>
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
+  <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
@@ -53905,6 +53906,7 @@ from previous Chrome versions.
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-392813122" label="LibinputHandleTouchpad"/>
   <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
+  <int value="-390734327" label="WallpaperGooglePhotosIntegration:disabled"/>
   <int value="-390624541" label="RestrictedApiOrigins:disabled"/>
   <int value="-389664522"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRefOnInteraction:enabled"/>

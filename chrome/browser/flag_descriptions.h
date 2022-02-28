@@ -1526,6 +1526,9 @@ extern const char kWalletServiceUseSandboxDescription[];
 extern const char kWallpaperFullScreenPreviewName[];
 extern const char kWallpaperFullScreenPreviewDescription[];
 
+extern const char kWallpaperGooglePhotosIntegrationName[];
+extern const char kWallpaperGooglePhotosIntegrationDescription[];
+
 extern const char kWallpaperPerDeskName[];
 extern const char kWallpaperPerDeskDescription[];
 

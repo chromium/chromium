@@ -2556,6 +2556,8 @@ constexpr char kAmbientModeAnimationInternalName[] = "ambient-mode-animation";
 constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
+constexpr char kWallpaperGooglePhotosIntegrationInternalName[] =
+    "wallpaper-google-photos-integration";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -7242,6 +7244,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWallpaperFullScreenPreviewName,
      flag_descriptions::kWallpaperFullScreenPreviewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperFullScreenPreview)},
+    {kWallpaperGooglePhotosIntegrationInternalName,
+     flag_descriptions::kWallpaperGooglePhotosIntegrationName,
+     flag_descriptions::kWallpaperGooglePhotosIntegrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWallpaperGooglePhotosIntegration)},
     {kWallpaperPerDeskName, flag_descriptions::kWallpaperPerDeskName,
      flag_descriptions::kWallpaperPerDeskDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperPerDesk)},
@@ -8250,6 +8256,17 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Only show full screen preview flag if wallpaper flag is enabled.
   if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
     return !ash::features::IsWallpaperWebUIEnabled();
+
+  // Only show Google Photos wallpaper integration flag if:
+  // * channel is one of Dev/Canary/Unknown, and
+  // * wallpaper Web UI flag is enabled.
+  if (!strcmp(kWallpaperGooglePhotosIntegrationInternalName,
+              entry.internal_name)) {
+    return (channel != version_info::Channel::DEV &&
+            channel != version_info::Channel::CANARY &&
+            channel != version_info::Channel::UNKNOWN) ||
+           !ash::features::IsWallpaperWebUIEnabled();
+  }
 
   // Features that are only available for Unknown/Canary/Dev channels.
   bool is_ambient_mode_animation_feature = false;

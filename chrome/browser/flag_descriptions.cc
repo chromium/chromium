@@ -2686,6 +2686,11 @@ const char kWallpaperFullScreenPreviewDescription[] =
     "Allows users to minimize all active windows to preview their current "
     "wallpaper";
 
+const char kWallpaperGooglePhotosIntegrationName[] =
+    "Enable Google Photos wallpaper integration";
+const char kWallpaperGooglePhotosIntegrationDescription[] =
+    "Allows users to select their wallpaper from Google Photos";
+
 const char kWallpaperPerDeskName[] =
     "Enable setting different wallpapers per desk";
 const char kWallpaperPerDeskDescription[] =

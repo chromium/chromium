@@ -6036,6 +6036,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "wallpaper-google-photos-integration",
+    "owners": ["dmblack@google.com", "assistive-eng@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "web-apps-crosapi",
     "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 98
