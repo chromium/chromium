@@ -126,6 +126,11 @@
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "chrome/browser/ui/startup/web_app_url_handling_startup_utils.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/startup/web_app_info_recorder_utils.h"
 #endif
@@ -512,6 +517,37 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
   return false;
 }
 
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+bool MaybeLaunchUrlHandlerWebAppFromCmd(
+    const base::CommandLine& command_line,
+    const base::FilePath& cur_dir,
+    chrome::startup::IsProcessStartup process_startup,
+    chrome::startup::IsFirstRun is_first_run,
+    StartupProfileInfo profile_info,
+    const std::vector<Profile*>& last_opened_profiles) {
+  auto on_urls_unhandled_cb = base::BindOnce(
+      [](const base::CommandLine& command_line, const base::FilePath& cur_dir,
+         chrome::startup::IsProcessStartup process_startup,
+         chrome::startup::IsFirstRun is_first_run,
+         StartupProfileInfo profile_info,
+         const std::vector<Profile*>& last_opened_profiles) {
+        // TODO(crbug.com/1208199): Refactor StartupBrowserCreator and use the
+        // state struct here.
+        StartupBrowserCreator startup_browser_creator;
+        startup_browser_creator.LaunchBrowserForLastProfiles(
+            command_line, cur_dir, process_startup, is_first_run, profile_info,
+            last_opened_profiles);
+      },
+      command_line, cur_dir, process_startup, is_first_run, profile_info,
+      last_opened_profiles);
+
+  return web_app::startup::MaybeLaunchUrlHandlerWebAppFromCmd(
+      command_line, cur_dir, std::move(on_urls_unhandled_cb),
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt,
+                     command_line, is_first_run));
+}
+#endif
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Updates need to be reflected in
 // enum IncognitoForcedStart in tools/metrics/histograms/enums.xml.
@@ -797,6 +833,24 @@ void StartupBrowserCreator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kNaviOnboardGroup, "");
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
+#if BUILDFLAG(IS_MAC)
+// static
+void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
+    const std::vector<GURL>& urls,
+    base::OnceCallback<void()> on_urls_unhandled_cb) {
+  chrome::startup::IsFirstRun is_first_run =
+      first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
+                                    : chrome::startup::IsFirstRun::kNo;
+
+  // Web app URL handling.
+  web_app::startup::MaybeLaunchUrlHandlerWebAppFromUrls(
+      urls, std::move(on_urls_unhandled_cb),
+      base::BindOnce(&web_app::startup::FinalizeWebAppLaunch, absl::nullopt,
+                     base::CommandLine(base::CommandLine::NO_PROGRAM),
+                     is_first_run));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 bool StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
@@ -1160,9 +1214,22 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     return true;
   }
 
-  // Try a web app launch (--app-id is present).
-  if (web_app::startup::MaybeHandleWebAppLaunch(
-          command_line, cur_dir, privacy_safe_profile, is_first_run))
+  bool handled_as_app =
+      // Try a web app launch (--app-id is present).
+      web_app::startup::MaybeHandleWebAppLaunch(
+          command_line, cur_dir, privacy_safe_profile, is_first_run);
+
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  handled_as_app = handled_as_app ||
+                   // Give web apps a chance to handle a URL.
+                   MaybeLaunchUrlHandlerWebAppFromCmd(
+                       command_line, cur_dir, process_startup, is_first_run,
+                       profile_info, last_opened_profiles);
+#endif
+
+  // If the app launch succeeded, we don't need to continue with a browser
+  // launch.
+  if (handled_as_app)
     return true;
 
   LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,

@@ -3879,6 +3879,8 @@ static_library("ui") {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
+      "startup/web_app_url_handling_startup_utils.cc",
+      "startup/web_app_url_handling_startup_utils.h",
     ]
   }
 
@@ -4995,6 +4997,15 @@ static_library("ui") {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",
+      ]
+    }
+
+    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+      sources += [
+        "views/web_apps/web_app_url_handler_hover_button.cc",
+        "views/web_apps/web_app_url_handler_hover_button.h",
+        "views/web_apps/web_app_url_handler_intent_picker_dialog_view.cc",
+        "views/web_apps/web_app_url_handler_intent_picker_dialog_view.h",
       ]
     }
 
