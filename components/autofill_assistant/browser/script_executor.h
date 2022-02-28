@@ -39,7 +39,6 @@ namespace autofill_assistant {
 class ElementStore;
 class UserModel;
 class WaitForDomOperation;
-class WaitForDocumentOperation;
 class WebController;
 
 // Class to execute an assistant script.
@@ -341,6 +340,9 @@ class ScriptExecutor : public ActionDelegate,
   // state and client settings.
   bool MaybeShowSlowWarning(const std::string& message, bool enabled);
 
+  // Returns the current ActionData, or nullptr if there is no current action.
+  Action::ActionData* GetCurrentActionData();
+
   const std::string script_path_;
   std::unique_ptr<TriggerContext> additional_context_;
   std::string last_global_payload_;
@@ -385,24 +387,7 @@ class ScriptExecutor : public ActionDelegate,
   // Callback called the next time |expected_navigation_step_| becomes DONE.
   base::OnceCallback<void(bool)> on_expected_navigation_done_;
 
-  // Data only relevant to the currently running action. It is cleared before an
-  // action is run.
-  struct CurrentActionData {
-    CurrentActionData();
-    ~CurrentActionData();
-    CurrentActionData& operator=(CurrentActionData&& other);
-
-    // Navigation information relevant to the current action.
-    NavigationInfoProto navigation_info;
-
-    std::unique_ptr<WaitForDomOperation> wait_for_dom;
-    std::unique_ptr<WaitForDocumentOperation> wait_for_document;
-
-    // This callback is set when a navigation event should terminate an ongoing
-    // prompt action. Only a prompt action will set a valid callback here.
-    base::OnceCallback<void()> end_prompt_on_navigation_callback;
-  };
-  CurrentActionData current_action_data_;
+  // Only set while an action is being executed.
   absl::optional<size_t> current_action_index_;
 
   raw_ptr<const UserData> user_data_ = nullptr;

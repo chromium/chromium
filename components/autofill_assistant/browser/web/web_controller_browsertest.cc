@@ -49,6 +49,7 @@
 #include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -85,6 +86,8 @@ using ::testing::_;
 using ::testing::AnyOf;
 using ::testing::IsEmpty;
 using ::testing::Return;
+using ::testing::SaveArg;
+using ::testing::WithArgs;
 
 class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
  public:
@@ -250,11 +253,8 @@ class WebControllerBrowserTest : public autofill_assistant::BaseBrowserTest,
     std::move(done_callback).Run();
   }
 
-  void OnProcessedAction(
-      base::OnceClosure done_callback,
-      ClientStatus* status_output,
-      std::unique_ptr<ProcessedActionProto> processed_action) {
-    *status_output = ClientStatus(processed_action->status());
+  void OnScriptFinished(base::OnceClosure done_callback,
+                        const ScriptExecutor::Result& result) {
     std::move(done_callback).Run();
   }
 
@@ -931,26 +931,53 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
           base::flat_map<std::string, std::string>{
               {"ENABLE_OBSERVER_WAIT_FOR_DOM", "true"}}));
     }
+
+    MockService mock_service;
+    ActionsResponseProto actions_response;
+    *actions_response.add_actions() = wait_for_dom_action;
+    std::string serialized_actions_response;
+    actions_response.SerializeToString(&serialized_actions_response);
+    EXPECT_CALL(mock_service, OnGetActions)
+        .WillOnce(RunOnceCallback<5>(200, serialized_actions_response));
+
+    std::vector<ProcessedActionProto> captured_processed_actions;
+    EXPECT_CALL(mock_service, OnGetNextActions)
+        .WillOnce(WithArgs<3, 5>(
+            [&captured_processed_actions](
+                const std::vector<ProcessedActionProto>& processed_actions,
+                Service::ResponseCallback& callback) {
+              captured_processed_actions = processed_actions;
+
+              // Send empty response to stop the script executor.
+              std::move(callback).Run(200, std::string());
+            }));
     ON_CALL(mock_script_executor_delegate, GetTriggerContext())
         .WillByDefault(Return(&trigger_context));
+    ON_CALL(mock_script_executor_delegate, GetService())
+        .WillByDefault(Return(&mock_service));
+    GURL test_script_url("https://example.com");
+    ON_CALL(mock_script_executor_delegate, GetScriptURL())
+        .WillByDefault(testing::ReturnRef(test_script_url));
     std::vector<std::unique_ptr<Script>> ordered_interrupts;
     FakeScriptExecutorUiDelegate fake_script_executor_ui_delegate;
+    UserData fake_user_data;
     ScriptExecutor script_executor(
-        /* script_path= */ std::string(), /* additional_context= */ nullptr,
+        /* script_path= */ std::string(),
+        /* additional_context= */ std::make_unique<TriggerContext>(),
         /* global_payload= */ std::string(),
         /* script_payload= */ std::string(),
         /* listener= */ nullptr, &ordered_interrupts,
         &mock_script_executor_delegate, &fake_script_executor_ui_delegate);
-
-    WaitForDomAction action(&script_executor, wait_for_dom_action);
     base::RunLoop run_loop;
-    ClientStatus status;
-    action.ProcessAction(base::BindOnce(
-        &WebControllerBrowserTest::OnProcessedAction, base::Unretained(this),
-        run_loop.QuitClosure(), &status));
+    script_executor.Run(
+        &fake_user_data,
+        base::BindOnce(&WebControllerBrowserTest::OnScriptFinished,
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     std::move(run_expectations).Run(&script_executor);
-    return status;
+
+    CHECK(captured_processed_actions.size() == 1);
+    return ClientStatus(captured_processed_actions[0].status());
   }
 
  protected:
