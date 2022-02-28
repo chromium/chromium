@@ -324,7 +324,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
                                               const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()) ||
           (update.ShowInSearch() != apps::mojom::OptionalBool::kTrue &&
-           !(update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
+           !(update.Recommendable().value_or(false) &&
              update.AppType() == apps::mojom::AppType::kBuiltIn))) {
         return;
       }
@@ -346,7 +346,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
           update.InstallTime(),
           update.InstalledInternally() == apps::mojom::OptionalBool::kTrue));
       apps_vector->back()->set_recommendable(
-          update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
+          update.Recommendable().value_or(false) &&
           update.Paused() != apps::mojom::OptionalBool::kTrue &&
           update.Readiness() != apps::Readiness::kDisabledByPolicy);
       apps_vector->back()->set_searchable(update.Searchable() ==

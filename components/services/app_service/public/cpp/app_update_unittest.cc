@@ -220,7 +220,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_is_platform_app_, u.IsPlatformApp());
     EXPECT_EQ(expect_is_platform_app_changed_, u.IsPlatformAppChanged());
 
-    EXPECT_EQ(expect_recommendable_, u.GetRecommendable());
+    EXPECT_EQ(expect_recommendable_, u.Recommendable());
     EXPECT_EQ(expect_recommendable_changed_, u.RecommendableChanged());
 
     EXPECT_EQ(expect_searchable_, u.GetSearchable());

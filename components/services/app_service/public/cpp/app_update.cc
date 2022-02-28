@@ -675,19 +675,12 @@ bool AppUpdate::IsPlatformAppChanged() const {
           (mojom_delta_->is_platform_app != mojom_state_->is_platform_app));
 }
 
-apps::mojom::OptionalBool AppUpdate::Recommendable() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->recommendable != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->recommendable;
+absl::optional<bool> AppUpdate::Recommendable() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(recommendable, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->recommendable;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetRecommendable() const {
-  GET_VALUE_WITH_FALLBACK(recommendable, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(recommendable)
 }
 
 bool AppUpdate::RecommendableChanged() const {
@@ -1078,7 +1071,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "PolicyId: " << app.PolicyId() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;
-  out << "Recommendable: " << app.Recommendable() << std::endl;
+  out << "Recommendable: " << PRINT_OPTIONAL_VALUE(Recommendable) << std::endl;
   out << "Searchable: " << app.Searchable() << std::endl;
   out << "ShowInLauncher: " << app.ShowInLauncher() << std::endl;
   out << "ShowInShelf: " << app.ShowInShelf() << std::endl;

@@ -139,8 +139,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> IsPlatformApp() const;
   bool IsPlatformAppChanged() const;
 
-  apps::mojom::OptionalBool Recommendable() const;
-  absl::optional<bool> GetRecommendable() const;
+  absl::optional<bool> Recommendable() const;
   bool RecommendableChanged() const;
 
   apps::mojom::OptionalBool Searchable() const;
