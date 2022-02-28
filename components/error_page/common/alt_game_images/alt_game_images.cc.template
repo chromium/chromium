@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include "components/error_page/common/alt_game_images.h"
 
-#include <cstring>
+#include <memory>
+#include <string>
 
-#include "base/base64.h"
 #include "base/base64url.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -25,18 +25,18 @@ namespace {
   };
 {% endfor %}
 
-const uint8_t* kAltGameImages1x[] = {
+const uint8_t* const kAltGameImages1x[] = {
   {% for image in images_1x %}
     kAltGameImages1x{{ image.name }},
   {% endfor %}
 };
-constexpr int kAltGameImagesCount = base::size(kAltGameImages1x);
+constexpr int kAltGameImagesCount = std::size(kAltGameImages1x);
 const size_t kAltGameImages1xLength[] = {
   {% for image in images_1x %}
-    base::size(kAltGameImages1x{{ image.name }}),
+    std::size(kAltGameImages1x{{ image.name }}),
   {% endfor %}
 };
-static_assert(base::size(kAltGameImages1xLength) == kAltGameImagesCount, "");
+static_assert(std::size(kAltGameImages1xLength) == kAltGameImagesCount, "");
 
 {% for image in images_2x %}
   const uint8_t kAltGameImages2x{{ image.name }}[] = {
@@ -44,7 +44,7 @@ static_assert(base::size(kAltGameImages1xLength) == kAltGameImagesCount, "");
   };
 {% endfor %}
 
-const uint8_t* kAltGameImages2x[] = {
+const uint8_t* const kAltGameImages2x[] = {
   {% for image in images_2x %}
     kAltGameImages2x{{ image.name }},
   {% endfor %}
@@ -52,12 +52,12 @@ const uint8_t* kAltGameImages2x[] = {
 
 const size_t kAltGameImages2xLength[] = {
   {% for image in images_2x %}
-    base::size(kAltGameImages2x{{ image.name }}),
+    std::size(kAltGameImages2x{{ image.name }}),
   {% endfor %}
 };
 
-static_assert(base::size(kAltGameImages2x) == kAltGameImagesCount, "");
-static_assert(base::size(kAltGameImages2xLength) == kAltGameImagesCount, "");
+static_assert(std::size(kAltGameImages2x) == kAltGameImagesCount, "");
+static_assert(std::size(kAltGameImages2xLength) == kAltGameImagesCount, "");
 
 std::string DecryptImage(const std::string& image_ciphertext,
                          crypto::SymmetricKey* key) {
@@ -83,15 +83,17 @@ bool LookupImage(int id, int scale, std::string* image) {
   if (id < 0 || id >= kAltGameImagesCount)
     return false;
 
-  if (scale == 1)
+  if (scale == 1) {
     *image = std::string(reinterpret_cast<const char*>(kAltGameImages1x[id]),
                          kAltGameImages1xLength[id]);
-  else if (scale == 2)
+    return true;
+  }
+  if (scale == 2) {
     *image = std::string(reinterpret_cast<const char*>(kAltGameImages2x[id]),
                          kAltGameImages2xLength[id]);
-  else
-    return false;
-  return true;
+    return true;
+  }
+  return false;
 }
 
 std::unique_ptr<crypto::SymmetricKey> GetKey() {
