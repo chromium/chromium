@@ -53,8 +53,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       ->AppRegistryCache()
       .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
         app_type_ = update.AppType();
-        is_platform_app_ =
-            update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
+        is_platform_app_ = update.IsPlatformApp().value_or(false);
         show_in_launcher_ =
             update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
 
@@ -189,7 +188,7 @@ void AppServiceAppResult::Launch(int event_flags,
             update.AppType() == apps::mojom::AppType::kWeb ||
             update.AppType() == apps::mojom::AppType::kSystemWeb ||
             (update.AppType() == apps::mojom::AppType::kChromeApp &&
-             update.IsPlatformApp() == apps::mojom::OptionalBool::kFalse)) {
+             update.IsPlatformApp().value_or(true))) {
           is_active_app = true;
         }
       });

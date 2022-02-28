@@ -217,7 +217,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_policy_id_, u.PolicyId());
     EXPECT_EQ(expect_policy_id_changed_, u.PolicyIdChanged());
 
-    EXPECT_EQ(expect_is_platform_app_, u.GetIsPlatformApp());
+    EXPECT_EQ(expect_is_platform_app_, u.IsPlatformApp());
     EXPECT_EQ(expect_is_platform_app_changed_, u.IsPlatformAppChanged());
 
     EXPECT_EQ(expect_recommendable_, u.GetRecommendable());

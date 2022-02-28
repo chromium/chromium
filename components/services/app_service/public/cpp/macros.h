@@ -71,6 +71,23 @@ namespace apps {
            (!state_ || (delta_->VALUE != state_->VALUE)); \
   }
 
+#define PRINT_OPTIONAL_VALUE(VALUE) \
+  (app.VALUE().has_value() ? (app.VALUE().value() ? "true" : "false") : "null")
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+#define CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(VALUE)           \
+  if (mojom_delta_ &&                                                 \
+      (mojom_delta_->VALUE != apps::mojom::OptionalBool::kUnknown)) { \
+    return mojom_delta_->VALUE == apps::mojom::OptionalBool::kTrue;   \
+  }                                                                   \
+  if (mojom_state_) {                                                 \
+    if (mojom_state_->VALUE == apps::mojom::OptionalBool::kUnknown)   \
+      return absl::nullopt;                                           \
+    return mojom_state_->VALUE == apps::mojom::OptionalBool::kTrue;   \
+  }                                                                   \
+  return absl::nullopt;
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_MACROS_H_

@@ -69,7 +69,7 @@ class AppUpdateMojomTest : public testing::Test {
   std::string expect_policy_id_;
   bool expect_policy_id_changed_;
 
-  apps::mojom::OptionalBool expect_is_platform_app_;
+  absl::optional<bool> expect_is_platform_app_;
   bool expect_is_platform_app_changed_;
 
   apps::mojom::OptionalBool expect_recommendable_;
@@ -273,7 +273,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_install_reason_ = apps::mojom::InstallReason::kUnknown;
     expect_install_source_ = apps::mojom::InstallSource::kUnknown;
     expect_policy_id_ = "";
-    expect_is_platform_app_ = apps::mojom::OptionalBool::kUnknown;
+    expect_is_platform_app_ = absl::nullopt;
     expect_recommendable_ = apps::mojom::OptionalBool::kUnknown;
     expect_searchable_ = apps::mojom::OptionalBool::kUnknown;
     expect_show_in_launcher_ = apps::mojom::OptionalBool::kUnknown;
@@ -581,14 +581,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->is_platform_app = apps::mojom::OptionalBool::kFalse;
-      expect_is_platform_app_ = apps::mojom::OptionalBool::kFalse;
+      expect_is_platform_app_ = false;
       expect_is_platform_app_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->is_platform_app = apps::mojom::OptionalBool::kTrue;
-      expect_is_platform_app_ = apps::mojom::OptionalBool::kTrue;
+      expect_is_platform_app_ = true;
       expect_is_platform_app_changed_ = true;
       CheckExpects(u);
     }

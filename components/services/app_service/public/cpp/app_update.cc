@@ -657,19 +657,12 @@ apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
   }
 }
 
-apps::mojom::OptionalBool AppUpdate::IsPlatformApp() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->is_platform_app != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->is_platform_app;
+absl::optional<bool> AppUpdate::IsPlatformApp() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(is_platform_app, absl::nullopt)
   }
-  if (mojom_state_) {
-    return mojom_state_->is_platform_app;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetIsPlatformApp() const {
-  GET_VALUE_WITH_FALLBACK(is_platform_app, absl::nullopt)
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(is_platform_app)
 }
 
 bool AppUpdate::IsPlatformAppChanged() const {
@@ -1084,7 +1077,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "InstallReason: " << app.InstallReason() << std::endl;
   out << "PolicyId: " << app.PolicyId() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
-  out << "IsPlatformApp: " << app.IsPlatformApp() << std::endl;
+  out << "IsPlatformApp: " << PRINT_OPTIONAL_VALUE(IsPlatformApp) << std::endl;
   out << "Recommendable: " << app.Recommendable() << std::endl;
   out << "Searchable: " << app.Searchable() << std::endl;
   out << "ShowInLauncher: " << app.ShowInLauncher() << std::endl;

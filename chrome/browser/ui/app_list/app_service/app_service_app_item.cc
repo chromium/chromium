@@ -140,8 +140,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
   }
 
   if (in_constructor || app_update.IsPlatformAppChanged()) {
-    is_platform_app_ =
-        app_update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
+    is_platform_app_ = app_update.IsPlatformApp().value_or(false);
   }
 
   if (in_constructor || app_update.ReadinessChanged() ||
@@ -178,7 +177,7 @@ void AppServiceAppItem::Activate(int event_flags) {
             update.AppType() == apps::mojom::AppType::kWeb ||
             update.AppType() == apps::mojom::AppType::kSystemWeb ||
             (update.AppType() == apps::mojom::AppType::kChromeApp &&
-             update.IsPlatformApp() == apps::mojom::OptionalBool::kFalse)) {
+             update.IsPlatformApp().value_or(true))) {
           is_active_app = true;
         }
       });

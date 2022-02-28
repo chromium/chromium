@@ -136,8 +136,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
 
   apps::mojom::OptionalBool InstalledInternally() const;
 
-  apps::mojom::OptionalBool IsPlatformApp() const;
-  absl::optional<bool> GetIsPlatformApp() const;
+  absl::optional<bool> IsPlatformApp() const;
   bool IsPlatformAppChanged() const;
 
   apps::mojom::OptionalBool Recommendable() const;

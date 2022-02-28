@@ -673,8 +673,7 @@ bool ChromeShelfPrefs::IsAshExtensionApp(const std::string& app_id) {
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&should_run_in_lacros](const apps::AppUpdate& update) {
-        should_run_in_lacros =
-            update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
+        should_run_in_lacros = update.IsPlatformApp().value_or(false);
       });
   return should_run_in_lacros;
 }
