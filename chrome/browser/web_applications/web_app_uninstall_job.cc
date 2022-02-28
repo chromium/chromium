@@ -38,7 +38,7 @@ WebAppUninstallJob::WebAppUninstallJob(
 WebAppUninstallJob::~WebAppUninstallJob() = default;
 
 void WebAppUninstallJob::Start(const AppId& app_id,
-                               url::Origin app_origin,
+                               const url::Origin& app_origin,
                                webapps::WebappUninstallSource source,
                                ModifyAppRegistry delete_option,
                                UninstallCallback callback) {
@@ -68,7 +68,7 @@ void WebAppUninstallJob::Start(const AppId& app_id,
   // Uninstall any sub-apps the app has.
   std::vector<AppId> sub_app_ids = registrar_->GetAllSubAppIds(app_id_);
   num_pending_sub_app_uninstalls_ = sub_app_ids.size();
-  for (AppId sub_app_id : sub_app_ids) {
+  for (const AppId& sub_app_id : sub_app_ids) {
     if (registrar_->GetAppById(sub_app_id) == nullptr)
       continue;
     install_finalizer_->UninstallExternalWebApp(

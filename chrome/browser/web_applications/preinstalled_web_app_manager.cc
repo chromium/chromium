@@ -98,14 +98,15 @@ struct LoadedConfigs {
   std::vector<std::string> errors;
 };
 
-LoadedConfigs LoadConfigsBlocking(std::vector<base::FilePath> config_dirs) {
+LoadedConfigs LoadConfigsBlocking(
+    const std::vector<base::FilePath>& config_dirs) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
   LoadedConfigs result;
   base::FilePath::StringType extension(FILE_PATH_LITERAL(".json"));
 
-  for (auto config_dir : config_dirs) {
+  for (const auto& config_dir : config_dirs) {
     base::FileEnumerator json_files(config_dir,
                                     false,  // Recursive.
                                     base::FileEnumerator::FILES);

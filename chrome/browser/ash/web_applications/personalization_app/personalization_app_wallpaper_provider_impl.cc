@@ -365,7 +365,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   }
 
   std::vector<ash::OnlineWallpaperVariant> variants;
-  for (auto entry : image_asset_id_map_) {
+  for (const auto& entry : image_asset_id_map_) {
     const ImageInfo& image_info = entry.second;
     if (image_info.unit_id == it->second.unit_id &&
         image_info.collection_id == it->second.collection_id) {

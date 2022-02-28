@@ -52,7 +52,7 @@ namespace {
 
 bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
                              const GURL& url) {
-  for (apps::IconInfo info : icon_infos) {
+  for (const apps::IconInfo& info : icon_infos) {
     if (info.url.EqualsIgnoringRef(url))
       return true;
   }

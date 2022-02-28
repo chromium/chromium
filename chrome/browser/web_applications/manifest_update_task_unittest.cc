@@ -134,17 +134,17 @@ TEST_F(ManifestUpdateTaskTest, TestFileHandlerChangedExtension) {
 std::vector<apps::IconInfo> GenerateIconInfosFrom(
     const IconBitmaps& downloaded) {
   std::vector<apps::IconInfo> result;
-  for (auto entry : downloaded.any) {
+  for (const auto& entry : downloaded.any) {
     apps::IconInfo icon_info(GURL(), entry.first);
     icon_info.purpose = apps::IconInfo::Purpose::kAny;
     result.push_back(icon_info);
   }
-  for (auto entry : downloaded.maskable) {
+  for (const auto& entry : downloaded.maskable) {
     apps::IconInfo icon_info(GURL(), entry.first);
     icon_info.purpose = apps::IconInfo::Purpose::kMaskable;
     result.push_back(icon_info);
   }
-  for (auto entry : downloaded.monochrome) {
+  for (const auto& entry : downloaded.monochrome) {
     apps::IconInfo icon_info(GURL(), entry.first);
     icon_info.purpose = apps::IconInfo::Purpose::kMonochrome;
     result.push_back(icon_info);

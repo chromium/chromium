@@ -186,7 +186,7 @@ base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(
 #if DCHECK_IS_ON()
   // Check |launch_files| all come from the same directory.
   if (!launch_dir.empty()) {
-    for (auto path : params.launch_files) {
+    for (const auto& path : params.launch_files) {
       DCHECK_EQ(launch_dir, path.DirName());
     }
   }

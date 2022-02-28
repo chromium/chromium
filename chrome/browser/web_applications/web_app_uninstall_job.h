@@ -64,7 +64,7 @@ class WebAppUninstallJob {
   };
   // The given `app_id` must correspond to an app in the `registrar`.
   void Start(const AppId& app_id,
-             url::Origin app_origin,
+             const url::Origin& app_origin,
              webapps::WebappUninstallSource source,
              ModifyAppRegistry delete_option,
              UninstallCallback callback);

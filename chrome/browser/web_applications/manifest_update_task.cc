@@ -180,10 +180,10 @@ IconDiff HaveIconBitmapsChanged(
   downloaded_sizes[apps::IconInfo::Purpose::kMonochrome] =
       std::vector<SquareSizePx>();
   // Put each entry found into the right map (sort by purpose).
-  for (auto entry : disk_icon_info) {
+  for (const auto& entry : disk_icon_info) {
     on_disk_sizes[entry.purpose].push_back(entry.square_size_px.value_or(-1));
   }
-  for (auto entry : downloaded_icon_info) {
+  for (const auto& entry : downloaded_icon_info) {
     downloaded_sizes[entry.purpose].push_back(
         entry.square_size_px.value_or(-1));
   }
