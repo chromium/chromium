@@ -5551,26 +5551,6 @@
             ]
         }
     ],
-    "RetailCoupons": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Experiment_V2_20211129",
-                    "params": {
-                        "RetailCouponsWithCodeParam": "true"
-                    },
-                    "enable_features": [
-                        "RetailCoupons"
-                    ]
-                }
-            ]
-        }
-    ],
     "SRTPromptFieldTrial": [
         {
             "platforms": [
