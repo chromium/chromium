@@ -30,6 +30,7 @@
 
 namespace base {
 class FilePath;
+class TimeDelta;
 }  // namespace base
 
 namespace url {
@@ -217,6 +218,16 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_;
 };
+
+// Gets the delay for a report that has failed to be sent
+// `failed_send_attempts` times.
+// Returns `absl::nullopt` to indicate that no more attempts should be made.
+// Otherwise, the return value must be positive. `failed_send_attempts` is
+// guaranteed to be positive.
+//
+// Exposed here for testing.
+CONTENT_EXPORT
+absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
 
 }  // namespace content
 

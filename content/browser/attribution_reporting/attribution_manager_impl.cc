@@ -4,11 +4,13 @@
 
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
+#include <cmath>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,7 +26,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -156,6 +157,19 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 }
 
 }  // namespace
+
+absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
+  DCHECK_GT(failed_send_attempts, 0);
+
+  const int kMaxFailedSendAttempts = 2;
+  const base::TimeDelta kInitialReportDelay = base::Minutes(5);
+  const int kDelayFactor = 3;
+
+  if (failed_send_attempts > kMaxFailedSendAttempts)
+    return absl::nullopt;
+
+  return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
+}
 
 AttributionManager* AttributionManagerProviderImpl::GetManager(
     WebContents* web_contents) const {

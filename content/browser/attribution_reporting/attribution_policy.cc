@@ -4,12 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_policy.h"
 
-#include <math.h>
-
-#include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 
 namespace content {
 
@@ -31,19 +27,6 @@ base::Time GetExpiryTimeForImpression(
   // maximum.
   return impression_time +
          base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
-}
-
-absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
-  DCHECK_GT(failed_send_attempts, 0);
-
-  const int kMaxFailedSendAttempts = 2;
-  const base::TimeDelta kInitialReportDelay = base::Minutes(5);
-  const int kDelayFactor = 3;
-
-  if (failed_send_attempts > kMaxFailedSendAttempts)
-    return absl::nullopt;
-
-  return kInitialReportDelay * pow(kDelayFactor, failed_send_attempts - 1);
 }
 
 }  // namespace content

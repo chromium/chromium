@@ -24,14 +24,6 @@ base::Time GetExpiryTimeForImpression(
     base::Time impression_time,
     CommonSourceInfo::SourceType source_type);
 
-// Gets the delay for a report that has failed to be sent
-// `failed_send_attempts` times.
-// Returns `absl::nullopt` to indicate that no more attempts should be made.
-// Otherwise, the return value must be positive. `failed_send_attempts` is
-// guaranteed to be positive.
-CONTENT_EXPORT
-absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_POLICY_H_

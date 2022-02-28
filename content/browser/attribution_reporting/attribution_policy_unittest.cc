@@ -92,21 +92,4 @@ TEST(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   }
 }
 
-TEST(AttributionPolicyTest, GetFailedReportDelay) {
-  const struct {
-    int failed_send_attempts;
-    absl::optional<base::TimeDelta> expected;
-  } kTestCases[] = {
-      {1, base::Minutes(5)},
-      {2, base::Minutes(15)},
-      {3, absl::nullopt},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              GetFailedReportDelay(test_case.failed_send_attempts))
-        << "failed_send_attempts=" << test_case.failed_send_attempts;
-  }
-}
-
 }  // namespace content
