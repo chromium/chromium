@@ -2125,8 +2125,9 @@ void StoragePartitionImpl::OnTrustTokenIssuanceDivertedToSystem(
 
 void StoragePartitionImpl::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
-  GetContentClient()->browser()->CanSendSCTAuditingReport(browser_context_,
-                                                          std::move(callback));
+  bool allowed =
+      GetContentClient()->browser()->CanSendSCTAuditingReport(browser_context_);
+  std::move(callback).Run(allowed);
 }
 
 void StoragePartitionImpl::OnNewSCTAuditingReportSent() {

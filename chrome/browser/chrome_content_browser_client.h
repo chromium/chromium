@@ -304,9 +304,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
-  void CanSendSCTAuditingReport(
-      content::BrowserContext* browser_context,
-      base::OnceCallback<void(bool)> callback) override;
+  bool CanSendSCTAuditingReport(
+      content::BrowserContext* browser_context) override;
   void OnNewSCTAuditingReportSent(
       content::BrowserContext* browser_context) override;
   scoped_refptr<network::SharedURLLoaderFactory>

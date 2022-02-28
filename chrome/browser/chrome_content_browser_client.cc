@@ -2846,10 +2846,9 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
 }
 #endif
 
-void ChromeContentBrowserClient::CanSendSCTAuditingReport(
-    content::BrowserContext* browser_context,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(SCTReportingService::CanSendSCTAuditingReport());
+bool ChromeContentBrowserClient::CanSendSCTAuditingReport(
+    content::BrowserContext* browser_context) {
+  return SCTReportingService::CanSendSCTAuditingReport();
 }
 
 void ChromeContentBrowserClient::OnNewSCTAuditingReportSent(

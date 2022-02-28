@@ -845,9 +845,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Allows the embedder to implement policy for whether an SCT auditing report
   // should be sent.
-  virtual void CanSendSCTAuditingReport(
-      BrowserContext* browser_context,
-      base::OnceCallback<void(bool)> callback);
+  virtual bool CanSendSCTAuditingReport(BrowserContext* browser_context);
 
   // Notification that a new SCT auditing report has been sent.
   virtual void OnNewSCTAuditingReportSent(BrowserContext* browser_context) {}
