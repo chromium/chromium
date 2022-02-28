@@ -314,6 +314,36 @@ TEST_P(QuotaDatabaseTest, GetBucket) {
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 }
 
+TEST_P(QuotaDatabaseTest, GetBucketById) {
+  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
+  EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));
+
+  // Add a bucket entry into the bucket table.
+  StorageKey storage_key =
+      StorageKey::CreateFromStringForTesting("http://google/");
+  std::string bucket_name = "google_bucket";
+  QuotaErrorOr<BucketInfo> result =
+      db.CreateBucketForTesting(storage_key, bucket_name, kPerm);
+  ASSERT_TRUE(result.ok());
+
+  BucketInfo created_bucket = result.value();
+  ASSERT_GT(created_bucket.id.value(), 0);
+  ASSERT_EQ(created_bucket.name, bucket_name);
+  ASSERT_EQ(created_bucket.storage_key, storage_key);
+  ASSERT_EQ(created_bucket.type, kPerm);
+
+  result = db.GetBucketById(created_bucket.id);
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ(result.value().name, created_bucket.name);
+  EXPECT_EQ(result.value().storage_key, created_bucket.storage_key);
+  ASSERT_EQ(result.value().type, created_bucket.type);
+
+  constexpr BucketId kNonExistentBucketId(7777);
+  result = db.GetBucketById(BucketId(kNonExistentBucketId));
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
+}
+
 TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));

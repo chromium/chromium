@@ -1695,6 +1695,55 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
   EXPECT_EQ(usage(), 4000 + 50000 + 900000000);
 }
 
+TEST_F(QuotaManagerImplTest, GetUsage_WithBucketModification) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 50},
+      {"http://bar.com/", "logs", kTemp, 100},
+  };
+
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
+
+  auto global_usage_result = GetGlobalUsage(kPerm);
+  EXPECT_EQ(global_usage_result.usage, 50);
+  EXPECT_EQ(global_usage_result.unlimited_usage, 0);
+
+  auto foo_temp_bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(foo_temp_bucket.ok());
+  client->ModifyBucketAndNotify(foo_temp_bucket->id, 80000000);
+
+  global_usage_result = GetGlobalUsage(kTemp);
+  EXPECT_EQ(global_usage_result.usage, 1 + 100 + 80000000);
+  EXPECT_EQ(global_usage_result.unlimited_usage, 0);
+
+  global_usage_result = GetGlobalUsage(kPerm);
+  EXPECT_EQ(global_usage_result.usage, 50);
+  EXPECT_EQ(global_usage_result.unlimited_usage, 0);
+
+  auto foo_perm_bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kPerm);
+  ASSERT_TRUE(foo_perm_bucket.ok());
+  client->ModifyBucketAndNotify(foo_perm_bucket->id, 200);
+
+  global_usage_result = GetGlobalUsage(kPerm);
+  EXPECT_EQ(global_usage_result.usage, 50 + 200);
+  EXPECT_EQ(global_usage_result.unlimited_usage, 0);
+
+  GetHostUsageWithBreakdown("bar.com", kTemp);
+  EXPECT_EQ(usage(), 100);
+
+  auto bar_temp_bucket =
+      GetBucket(ToStorageKey("http://bar.com/"), "logs", kTemp);
+  ASSERT_TRUE(bar_temp_bucket.ok());
+  client->ModifyBucketAndNotify(bar_temp_bucket->id, 900000000);
+
+  GetHostUsageWithBreakdown("bar.com", kTemp);
+  EXPECT_EQ(usage(), 100 + 900000000);
+}
+
 TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteBucket) {
   static const ClientBucketData kData[] = {
       {"http://foo.com/", kDefaultBucketName, kTemp, 1},

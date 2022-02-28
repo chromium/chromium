@@ -58,6 +58,7 @@ class MockQuotaClient : public mojom::QuotaClient {
   void ModifyStorageKeyAndNotify(const blink::StorageKey& storage_key,
                                  blink::mojom::StorageType type,
                                  int64_t delta);
+  void ModifyBucketAndNotify(BucketId bucket_id, int64_t delta);
 
   void AddBucketToErrorSet(const BucketLocator& bucket);
 

@@ -64,6 +64,19 @@ void MockQuotaClient::ModifyStorageKeyAndNotify(
       base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
 }
 
+void MockQuotaClient::ModifyBucketAndNotify(BucketId bucket_id, int64_t delta) {
+  auto it = std::find_if(bucket_data_.begin(), bucket_data_.end(),
+                         [bucket_id](std::pair<BucketLocator, int64_t> entry) {
+                           return entry.first.id == bucket_id;
+                         });
+  DCHECK(it != bucket_data_.end());
+  it->second += delta;
+  DCHECK_GE(it->second, 0);
+  quota_manager_proxy_->NotifyBucketModified(
+      client_type_, bucket_id, delta, IncrementMockTime(),
+      base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
+}
+
 void MockQuotaClient::AddBucketToErrorSet(const BucketLocator& bucket) {
   error_buckets_.emplace(bucket);
 }

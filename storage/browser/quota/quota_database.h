@@ -134,6 +134,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                      const std::string& bucket_name,
                                      blink::mojom::StorageType storage_type);
 
+  // Retrieves BucketInfo of the bucket with `bucket_id`.
+  // Returns a QuotaError::kEntryNotFound if the bucket does not exist, or
+  // a QuotaError::kDatabaseError if the operation has failed.
+  QuotaErrorOr<BucketInfo> GetBucketById(BucketId bucket_id);
+
   // Returns all buckets for `type` in the buckets table. Returns a QuotaError
   // if the operation has failed.
   QuotaErrorOr<std::set<BucketLocator>> GetBucketsForType(

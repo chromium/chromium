@@ -47,6 +47,7 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
+#include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_macros.h"
@@ -134,6 +135,12 @@ QuotaErrorOr<BucketInfo> GetBucketOnDBThread(const StorageKey& storage_key,
                                              QuotaDatabase* database) {
   DCHECK(database);
   return database->GetBucket(storage_key, bucket_name, type);
+}
+
+QuotaErrorOr<BucketInfo> GetBucketByIdOnDBThread(BucketId bucket_id,
+                                                 QuotaDatabase* database) {
+  DCHECK(database);
+  return database->GetBucketById(bucket_id);
 }
 
 QuotaErrorOr<std::set<StorageKey>> GetStorageKeysForTypeOnDBThread(
@@ -1944,22 +1951,11 @@ void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
   DCHECK(callback);
   EnsureDatabaseOpened();
 
-  if (callback)
-    std::move(callback).Run();
-
-  if (db_disabled_)
-    return;
-
-  // TODO(crbug.com/1199417): Update bucket usage in UsageTracker once
-  // QuotaClient & UsageTracker operate by bucket. UsageTracker should be
-  // updated after ensuring there is a entry in the QuotaDatabase.
-  // Run `callback` on completion.
-
   PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(&UpdateBucketModifiedTimeOnDBThread, bucket_id,
-                     modification_time),
-      base::BindOnce(&QuotaManagerImpl::OnComplete,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&GetBucketByIdOnDBThread, bucket_id),
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
+                     weak_factory_.GetWeakPtr(), client_id, delta,
+                     modification_time, std::move(callback)));
 }
 
 void QuotaManagerImpl::DumpQuotaTable(DumpQuotaTableCallback callback) {
