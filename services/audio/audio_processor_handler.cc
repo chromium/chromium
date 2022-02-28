@@ -49,9 +49,6 @@ void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,
                                           base::TimeDelta delay) {
   TRACE_EVENT2("audio", "AudioProcessorHandler::OnPlayoutData", " this ",
                static_cast<void*>(this), "delay", delay.InMillisecondsF());
-  // TODO(https://crbug.com/1292037): Ensure that the buffer size is supported,
-  // either through interface guarantees or rebuffering.
-  CHECK_EQ(audio_bus.frames(), sample_rate / 100);
   audio_processor_->OnPlayoutData(audio_bus, sample_rate, delay);
 }
 

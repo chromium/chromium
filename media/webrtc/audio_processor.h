@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
+#include "media/base/audio_push_fifo.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
@@ -105,8 +106,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
                             double volume,
                             bool key_pressed);
 
-  // Processes playout audio. |audio_bus| must contain |sample_rate/100| samples
-  // per channel.
+  // Analyzes playout audio for e.g. echo cancellation.
   // Must be called on the playout thread.
   void OnPlayoutData(const media::AudioBus& audio_bus,
                      int sample_rate,
@@ -179,6 +179,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
                                      int num_preferred_channels,
                                      float* const* output_ptrs);
 
+  // Used as callback from |playout_fifo_| in OnPlayoutData().
+  // Called on the playout thread.
+  void AnalyzePlayoutData(const AudioBus& audio_bus, int frame_delay);
+
   void SendLogMessage(const std::string& message)
       VALID_CONTEXT_REQUIRED(owning_sequence_);
 
@@ -203,8 +207,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   std::unique_ptr<rtc::TaskQueue> worker_queue_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
-  // Cached value for the playout delay latency. Accessed on both capture and
-  // playout threads.
+  // Cached value for the playout delay latency. Updated on the playout thread
+  // and read on the capture thread.
   std::atomic<base::TimeDelta> playout_delay_{base::TimeDelta()};
 
   // Members configured on the owning sequence in the constructor and
@@ -238,12 +242,21 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
 
   // Members accessed only on the playout thread:
 
+  // FIFO to provide playout audio in 10 ms chunks.
+  AudioPushFifo playout_fifo_;
+
+  // Cached value of the playout delay before adjusting for delay introduced by
+  // |playout_fifo_|.
+  base::TimeDelta unbuffered_playout_delay_ = base::TimeDelta();
+
+  // The sample rate of incoming playout audio.
+  absl::optional<int> playout_sample_rate_hz_ = absl::nullopt;
+
   // Indicates whether the audio processor playout signal has ever had
   // asymmetric left and right channel content.
   bool assume_upmixed_mono_playout_ = true;
 
   // Counters to avoid excessively logging errors on a real-time thread.
-  size_t unsupported_buffer_size_log_count_ = 0;
   size_t apm_playout_error_code_log_count_ = 0;
   size_t large_delay_log_count_ = 0;
 };

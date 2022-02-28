@@ -82,8 +82,6 @@ class AudioProcessorHandler final
 
   // ReferenceOutput::Listener implementation.
   // Called on the playout thread.
-  // TODO(https://crbug.com/1292037): Currently needs 10 ms of audio per call,
-  // but this is not guaranteed in the interface.
   void OnPlayoutData(const media::AudioBus& audio_bus,
                      int sample_rate,
                      base::TimeDelta delay) final;

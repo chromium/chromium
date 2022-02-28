@@ -488,21 +488,81 @@ TEST_F(AudioProcessorTest, DiscreteChannelLayout) {
   }
 }
 
-TEST_F(AudioProcessorTest, ForwardsPlayoutReferenceToWebrtcApm) {
-  auto mock_webrtc_audio_processing =
-      rtc::make_ref_counted<webrtc::test::MockAudioProcessing>();
-  AudioProcessor audio_processor(mock_capture_callback_.Get(),
-                                 LogCallbackForTesting(), params_, params_,
-                                 mock_webrtc_audio_processing, false);
+class AudioProcessorPlayoutTest : public AudioProcessorTest {
+ protected:
+  AudioProcessorPlayoutTest()
+      : mock_webrtc_apm_(
+            rtc::make_ref_counted<webrtc::test::MockAudioProcessing>()),
+        audio_processor_(mock_capture_callback_.Get(),
+                         LogCallbackForTesting(),
+                         params_,
+                         params_,
+                         mock_webrtc_apm_,
+                         false) {}
 
+  rtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;
+  AudioProcessor audio_processor_;
+};
+
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_ForwardsDataToWebrtcApm) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/480);
   data_bus->Zero();
 
-  EXPECT_CALL(*mock_webrtc_audio_processing, AnalyzeReverseStream(_, _))
-      .Times(1);
+  EXPECT_CALL(*mock_webrtc_apm_, AnalyzeReverseStream(_, _)).Times(1);
 
-  audio_processor.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+}
+
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_BuffersPlayout) {
+  std::unique_ptr<media::AudioBus> data_bus =
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 4 / 1000);
+  data_bus->Zero();
+
+  // 5 buffers of 4 ms yields two 10 ms calls to APM.
+  EXPECT_CALL(*mock_webrtc_apm_, AnalyzeReverseStream(_, _)).Times(2);
+
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
+}
+
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_HandlesVariableInputSize) {
+  std::unique_ptr<media::AudioBus> long_data_bus =
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 25 / 1000);
+  long_data_bus->Zero();
+  std::unique_ptr<media::AudioBus> short_data_bus =
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 5 / 1000);
+  short_data_bus->Zero();
+
+  // 25 ms + 5 ms yields three 10 ms calls to APM.
+  EXPECT_CALL(*mock_webrtc_apm_, AnalyzeReverseStream(_, _)).Times(3);
+
+  audio_processor_.OnPlayoutData(*long_data_bus, 48000, base::Milliseconds(10));
+  audio_processor_.OnPlayoutData(*short_data_bus, 48000,
+                                 base::Milliseconds(10));
+}
+
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_HandlesSampleRateChange) {
+  std::unique_ptr<media::AudioBus> high_rate_data_bus =
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 12 / 1000);
+  high_rate_data_bus->Zero();
+  std::unique_ptr<media::AudioBus> low_rate_data_bus =
+      media::AudioBus::Create(/*channels=*/2, /*frames=*/32000 * 18 / 1000);
+  low_rate_data_bus->Zero();
+
+  // 12 ms yields one 10 ms call to APM and leaves 2 ms in the buffer.
+  EXPECT_CALL(*mock_webrtc_apm_, AnalyzeReverseStream(_, _)).Times(1);
+  audio_processor_.OnPlayoutData(*high_rate_data_bus, 48000,
+                                 base::Milliseconds(10));
+
+  // 18 ms yields one 10 ms call to APM. Any previous buffer content should have
+  // been discarded, otherwise there would be more than one call to APM.
+  EXPECT_CALL(*mock_webrtc_apm_, AnalyzeReverseStream(_, _)).Times(1);
+  audio_processor_.OnPlayoutData(*low_rate_data_bus, 32000,
+                                 base::Milliseconds(10));
 }
 
 // When audio processing is performed, processed audio should be delivered as
