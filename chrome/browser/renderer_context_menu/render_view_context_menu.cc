@@ -620,8 +620,8 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
   return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
-        BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
   if (event_flags & ui::EF_MOUSE_BUTTON)
     return ui::MENU_SOURCE_MOUSE;
@@ -1738,12 +1738,14 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 }
 
 void RenderViewContextMenu::AppendPrintItem() {
+#if BUILDFLAG(ENABLE_PRINTING)
   if (GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
       (params_.media_type == ContextMenuDataMediaType::kNone ||
        params_.media_flags & ContextMenuData::kMediaCanPrint) &&
       params_.misspelled_word.empty()) {
     menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 void RenderViewContextMenu::AppendMediaRouterItem() {

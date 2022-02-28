@@ -448,7 +448,11 @@ extern const char kPrinterTypeDenyList[];
 extern const char kPrintingAllowedBackgroundGraphicsModes[];
 extern const char kPrintingBackgroundGraphicsDefault[];
 extern const char kPrintingPaperSizeDefault[];
+
+#if BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintingEnabled[];
+#endif  // BUILDFLAG(ENABLE_PRINTING)
+
 extern const char kPrintHeaderFooter[];
 extern const char kPrintPreviewDisabled[];
 extern const char kPrintPreviewDefaultDestinationSelectionRules[];

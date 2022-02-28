@@ -1408,8 +1408,10 @@ const char kPrintingBackgroundGraphicsDefault[] =
 // A pref holding the default paper size.
 const char kPrintingPaperSizeDefault[] = "printing.paper_size_default";
 
+#if BUILDFLAG(ENABLE_PRINTING)
 // Boolean controlling whether printing is enabled.
 const char kPrintingEnabled[] = "printing.enabled";
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 // Boolean controlling whether print preview is disabled.
 const char kPrintPreviewDisabled[] = "printing.print_preview_disabled";

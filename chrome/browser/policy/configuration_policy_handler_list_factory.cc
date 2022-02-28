@@ -249,9 +249,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPasswordManagerEnabled,
     password_manager::prefs::kCredentialsEnableService,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(ENABLE_PRINTING)
   { key::kPrintingEnabled,
     prefs::kPrintingEnabled,
     base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(ENABLE_PRINTING)
   { key::kPrintHeaderFooter,
     prefs::kPrintHeaderFooter,
     base::Value::Type::BOOLEAN },

@@ -189,10 +189,12 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
       base::BindRepeating(
           &BrowserCommandController::UpdateCommandsForIncognitoAvailability,
           base::Unretained(this)));
+#if BUILDFLAG(ENABLE_PRINTING)
   profile_pref_registrar_.Add(
       prefs::kPrintingEnabled,
       base::BindRepeating(&BrowserCommandController::UpdatePrintingState,
                           base::Unretained(this)));
+#endif  // BUILDFLAG(ENABLE_PRINTING)
   profile_pref_registrar_.Add(
       prefs::kDownloadRestrictions,
       base::BindRepeating(&BrowserCommandController::UpdateSaveAsState,
