@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+import {mountGuest} from '../../common/js/api.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -37,7 +38,7 @@ export class ContentScanner {
    *     successfully.
    * @param {function(DOMError)} errorCallback Called an error occurs.
    */
-  scan(entriesCallback, successCallback, errorCallback) {}
+  async scan(entriesCallback, successCallback, errorCallback) {}
 
   /**
    * Request cancelling of the running scan. When the cancelling is done,
@@ -64,7 +65,7 @@ export class DirectoryContentScanner extends ContentScanner {
    * Starts to read the entries in the directory.
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     if (!this.entry_ || !this.entry_.createReader) {
       // If entry is not specified or if entry doesn't implement createReader,
       // we cannot read it.
@@ -94,6 +95,7 @@ export class DirectoryContentScanner extends ContentScanner {
       }, errorCallback);
     };
     readEntries();
+    return;
   }
 }
 
@@ -111,7 +113,7 @@ export class DriveSearchContentScanner extends ContentScanner {
    * Starts to search on Drive File System.
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     // Let's give another search a chance to cancel us before we begin.
     setTimeout(() => {
       // Check cancelled state before read the entries.
@@ -151,6 +153,7 @@ export class DriveSearchContentScanner extends ContentScanner {
             successCallback();
           });
     }, DriveSearchContentScanner.SCAN_DELAY_);
+    return;
   }
 }
 
@@ -190,7 +193,7 @@ export class LocalSearchContentScanner extends ContentScanner {
    * Starts the file name search.
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     util.readEntriesRecursively(assert(this.entry_), (entries) => {
       const matchEntries = entries.filter(
           entry => entry.name.toLowerCase().indexOf(this.query_) >= 0);
@@ -198,6 +201,7 @@ export class LocalSearchContentScanner extends ContentScanner {
         entriesCallback(matchEntries);
       }
     }, successCallback, errorCallback, () => this.cancelled_);
+    return;
   }
 }
 
@@ -218,7 +222,7 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
    * Starts to metadata-search on Drive File System.
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     chrome.fileManagerPrivate.searchDriveMetadata(
         {query: '', types: this.searchType_, maxResults: 100}, results => {
           if (chrome.runtime.lastError) {
@@ -244,6 +248,7 @@ export class DriveMetadataSearchContentScanner extends ContentScanner {
           }
           successCallback();
         });
+    return;
   }
 }
 
@@ -277,7 +282,7 @@ export class RecentContentScanner extends ContentScanner {
   /**
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     chrome.fileManagerPrivate.getRecentFiles(
         this.sourceRestriction_, this.recentFileType_, entries => {
           if (chrome.runtime.lastError) {
@@ -292,6 +297,7 @@ export class RecentContentScanner extends ContentScanner {
           }
           successCallback();
         });
+    return;
   }
 }
 
@@ -318,7 +324,7 @@ export class MediaViewContentScanner extends ContentScanner {
    * files in directories recursively.
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     // To provide flatten view of files, this media-view scanner retrieves files
     // in directories inside the media's root entry recursively.
     util.readEntriesRecursively(
@@ -345,7 +351,7 @@ export class CrostiniMounter extends ContentScanner {
   /**
    * @override
    */
-  scan(entriesCallback, successCallback, errorCallback) {
+  async scan(entriesCallback, successCallback, errorCallback) {
     chrome.fileManagerPrivate.mountCrostini(() => {
       if (chrome.runtime.lastError) {
         console.error(
@@ -356,6 +362,45 @@ export class CrostiniMounter extends ContentScanner {
       }
       successCallback();
     });
+    return;
+  }
+}
+
+/**
+ * Shows an empty list and spinner whilst starting and mounting a Guest OS's
+ * shared files.
+ *
+ * When FilesApp starts, the related placeholder root entry is shown which uses
+ * this GuestOsMounter as its ContentScanner. When the mount succeeds it will
+ * show up as a disk volume. NavigationListModel.reorderNavigationItems_ will
+ * detect thew new volume and hide the placeholder root item while the disk
+ * volume exists.
+ */
+export class GuestOsMounter extends ContentScanner {
+  /**
+   * @param {number} guest_id The id of the GuestOsMountProvider to use
+   */
+  constructor(guest_id) {
+    super();
+
+    /** @private @const {number} */
+    this.guest_id_ = guest_id;
+  }
+
+  /**
+   * @override
+   */
+  async scan(entriesCallback, successCallback, errorCallback) {
+    try {
+      await mountGuest(this.guest_id_);
+      successCallback();
+    } catch (error) {
+      console.error('mountGuest error: ', error);
+      errorCallback(util.createDOMError(
+          // TODO(crbug/1293229): Strings
+          constants.CROSTINI_CONNECT_ERR, error));
+    }
+    return;
   }
 }
 

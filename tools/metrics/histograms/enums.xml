@@ -31776,6 +31776,7 @@ Called by update_extension_histograms.py.-->
   <int value="1630" label="AUTOTESTPRIVATE_GETLOGINEVENTRECORDERLOGINEVENTS"/>
   <int value="1631" label="AUTOTESTPRIVATE_ADDLOGINEVENTFORTESTING"/>
   <int value="1632" label="OS_DIAGNOSTICS_RUNDISKREADROUTINE"/>
+  <int value="1633" label="FILEMANAGERPRIVATE_MOUNTGUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">

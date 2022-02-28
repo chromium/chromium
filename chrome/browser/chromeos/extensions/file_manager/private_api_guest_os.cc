@@ -9,6 +9,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_function.h"
 
+namespace {
+// Thresholds for mountGuest() API.
+constexpr base::TimeDelta kMountGuestSlowOperationThreshold = base::Seconds(10);
+constexpr base::TimeDelta kMountGuestVerySlowOperationThreshold =
+    base::Seconds(30);
+}  // namespace
+
 namespace extensions {
 
 ExtensionFunction::ResponseAction
@@ -26,6 +33,20 @@ FileManagerPrivateListMountableGuestsFunction::Run() {
     entries.Append(std::move(entry));
   }
   return RespondNow(OneArgument(std::move(entries)));
+}
+
+FileManagerPrivateMountGuestFunction::FileManagerPrivateMountGuestFunction() {
+  // Mounting shares may require a VM to be started.
+  SetWarningThresholds(kMountGuestSlowOperationThreshold,
+                       kMountGuestVerySlowOperationThreshold);
+}
+
+FileManagerPrivateMountGuestFunction::~FileManagerPrivateMountGuestFunction() =
+    default;
+
+ExtensionFunction::ResponseAction FileManagerPrivateMountGuestFunction::Run() {
+  LOG(ERROR) << "Mount not implemented";
+  return RespondNow(Error("Not implemented"));
 }
 
 }  // namespace extensions

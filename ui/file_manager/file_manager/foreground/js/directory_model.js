@@ -9,6 +9,7 @@ import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_mod
 import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 
 import {AsyncUtil} from '../../common/js/async_util.js';
+import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -19,7 +20,7 @@ import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
-import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
+import {ContentScanner, CrostiniMounter, DirectoryContents, DirectoryContentScanner, DriveMetadataSearchContentScanner, DriveSearchContentScanner, FileFilter, FileListContext, GuestOsMounter, LocalSearchContentScanner, MediaViewContentScanner, RecentContentScanner} from './directory_contents.js';
 import {FileListModel} from './file_list_model.js';
 import {FileWatcher} from './file_watcher.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -1409,6 +1410,12 @@ export class DirectoryModel extends EventTarget {
     if (entry.rootType == VolumeManagerCommon.RootType.CROSTINI) {
       return () => {
         return new CrostiniMounter();
+      };
+    }
+    if (entry.rootType == VolumeManagerCommon.RootType.GUEST_OS) {
+      return () => {
+        const placeholder = /** @type {!GuestOsPlaceholder} */ (entry);
+        return new GuestOsMounter(placeholder.guest_id);
       };
     }
     if (entry.rootType == VolumeManagerCommon.RootType.MY_FILES) {

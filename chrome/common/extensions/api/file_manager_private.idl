@@ -1647,6 +1647,10 @@ interface Functions {
 
   // Lists mountable Guest OSs.
   static void listMountableGuests(ListMountableGuestsCallback callback);
+
+  // Starts and mounts the target Guest OS.
+  // |callback|
+  static void mountGuest(long id, SimpleCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

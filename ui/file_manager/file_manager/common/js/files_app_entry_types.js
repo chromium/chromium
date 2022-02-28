@@ -702,15 +702,15 @@ export class FakeEntryImpl {
 export class GuestOsPlaceholder extends FakeEntryImpl {
   /**
    * @param {string} label Translated text to be displayed to user.
-   * @param {number} id Id of the guest
+   * @param {number} guest_id Id of the guest
    */
-  constructor(label, id) {
+  constructor(label, guest_id) {
     super(label, VolumeManagerCommon.RootType.GUEST_OS, undefined, undefined);
 
     /**
      * @public {number} The id of this guest
      */
-    this.id = id;
+    this.guest_id = guest_id;
 
     /**
      * @public {string} the class name for this class. It's workaround for the

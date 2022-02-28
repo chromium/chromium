@@ -1202,6 +1202,15 @@ chrome.fileManagerPrivate.mountCrostini = function(callback) {};
 chrome.fileManagerPrivate.listMountableGuests = function(callback) {};
 
 /**
+ * Starts and mounts target guest
+ * @param {!number} id Id of the mount provider to use
+ * @param {function()} callback Callback called after the requests completes
+ * (either successfully or with an error).
+ *     chrome.runtime.lastError will be set if there was an error.
+ */
+chrome.fileManagerPrivate.mountGuest = function(id, callback) {};
+
+/**
  * Shares paths with crostini container.
  * @param {string} vmName VM to share path with.
  * @param {!Array<!Entry>} entries Entries of the files and directories to

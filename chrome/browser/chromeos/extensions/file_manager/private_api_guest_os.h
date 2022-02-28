@@ -27,6 +27,25 @@ class FileManagerPrivateListMountableGuestsFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.mountGuest method.
+// Mounts a Guest OS.
+class FileManagerPrivateMountGuestFunction : public LoggedExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.mountGuest",
+                             FILEMANAGERPRIVATE_MOUNTGUEST)
+  FileManagerPrivateMountGuestFunction();
+
+  FileManagerPrivateMountGuestFunction(
+      const FileManagerPrivateMountGuestFunction&) = delete;
+  FileManagerPrivateMountGuestFunction& operator=(
+      const FileManagerPrivateMountGuestFunction&) = delete;
+
+ private:
+  ~FileManagerPrivateMountGuestFunction() override;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_MANAGER_PRIVATE_API_GUEST_OS_H_
