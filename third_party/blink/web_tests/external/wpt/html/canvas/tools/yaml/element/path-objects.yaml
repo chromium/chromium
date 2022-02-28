@@ -2510,7 +2510,7 @@
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
-    ctx.roundRect(10, 10, 80, 30, 0);
+    ctx.roundRect(10, 10, 80, 30);
     ctx.fillStyle = '#0f0';
     ctx.fill();
     // upper left corner (10, 10)
