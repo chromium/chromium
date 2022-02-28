@@ -14,3 +14,6 @@ Patches:
   0003-Pthread-once-for-funcs-init.patch:
      Fix the data race that was introduced in the previous patch by using
      pthread_once() for function pointers initialization.
+  0004-Fixup-ashmem_get_prot_region-for-memfd.patch:
+     mmap with MAP_PRIVATE is meant to succeed even on write-protected
+     memfd's as it will just copy-on-write.
