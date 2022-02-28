@@ -933,8 +933,6 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Renderer.ResidentSet", 0);
 
   histograms.ExpectTotalCount("Memory.Total.PrivateMemoryFootprint", 0);
-  histograms.ExpectTotalCount(
-      "Memory.Total.PrivateMemoryFootprint.HasZombieProfile", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererPrivateMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.RendererMalloc", 0);
   histograms.ExpectTotalCount("Memory.Total.SharedMemoryFootprint", 0);
@@ -965,8 +963,6 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 kTestRendererResidentSet, 2);
 #endif
 
-  histograms.ExpectTotalCount(
-      "Memory.Total.PrivateMemoryFootprint.HasZombieProfile", 0);
   histograms.ExpectUniqueSample("Memory.Total.PrivateMemoryFootprint",
                                 2 * kTestRendererPrivateMemoryFootprint, 1);
   histograms.ExpectUniqueSample("Memory.Total.RendererPrivateMemoryFootprint",
