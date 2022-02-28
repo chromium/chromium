@@ -153,6 +153,7 @@ enum CertVerifyProcType {
   CERT_VERIFY_PROC_MAC,
   CERT_VERIFY_PROC_WIN,
   CERT_VERIFY_PROC_BUILTIN,
+  CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS,
 };
 
 // Wrapper for base::mac::IsAtLeastOS10_12() to avoid littering ifdefs.
@@ -180,6 +181,8 @@ std::string VerifyProcTypeToName(
       return "CertVerifyProcWin";
     case CERT_VERIFY_PROC_BUILTIN:
       return "CertVerifyProcBuiltin";
+    case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
+      return "CertVerifyProcBuiltinChromeRoots";
   }
 
   return nullptr;
@@ -205,6 +208,9 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     case CERT_VERIFY_PROC_BUILTIN:
       return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
                                          CreateSslSystemTrustStore());
+    case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
+      return CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                         CreateSslSystemTrustStoreChromeRoot());
     default:
       return nullptr;
   }
@@ -224,7 +230,7 @@ const std::vector<CertVerifyProcType> kAllCertVerifiers = {
 #elif BUILDFLAG(IS_MAC)
     CERT_VERIFY_PROC_MAC, CERT_VERIFY_PROC_BUILTIN
 #elif BUILDFLAG(IS_WIN)
-    CERT_VERIFY_PROC_WIN
+    CERT_VERIFY_PROC_WIN, CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     CERT_VERIFY_PROC_BUILTIN
 #else
@@ -249,6 +255,7 @@ bool ScopedTestRootCanTrustIntermediateCert(
   return verify_proc_type == CERT_VERIFY_PROC_MAC ||
          verify_proc_type == CERT_VERIFY_PROC_IOS ||
          verify_proc_type == CERT_VERIFY_PROC_BUILTIN ||
+         verify_proc_type == CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS ||
          verify_proc_type == CERT_VERIFY_PROC_ANDROID;
 }
 
@@ -437,30 +444,35 @@ class CertVerifyProcInternalTest
   bool SupportsCRLSet() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
            verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN;
+           VerifyProcTypeIsBuiltin();
   }
 
   bool SupportsCRLSetsInPathBuilding() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN;
+           VerifyProcTypeIsBuiltin();
   }
 
   bool SupportsEV() const {
     // TODO(crbug.com/117478): Android and iOS do not support EV.
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
            verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN;
+           VerifyProcTypeIsBuiltin();
   }
 
   bool SupportsSoftFailRevChecking() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
            verify_proc_type() == CERT_VERIFY_PROC_MAC ||
-           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN;
+           VerifyProcTypeIsBuiltin();
   }
 
   bool SupportsRevCheckingRequiredLocalAnchors() const {
     return verify_proc_type() == CERT_VERIFY_PROC_WIN ||
-           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN;
+           VerifyProcTypeIsBuiltin();
+  }
+
+  bool VerifyProcTypeIsBuiltin() const {
+    return verify_proc_type() == CERT_VERIFY_PROC_BUILTIN ||
+           verify_proc_type() == CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS;
   }
 
   CertVerifyProc* verify_proc() const { return verify_proc_.get(); }
@@ -848,7 +860,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
   ASSERT_TRUE(host);
   EXPECT_EQ("127.0.0.1", *host);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
+  if (VerifyProcTypeIsBuiltin()) {
     event = std::find_if(events.begin(), events.end(), [](const auto& e) {
       return e.type == NetLogEventType::CERT_VERIFY_PROC_INPUT_CERT;
     });
@@ -1614,7 +1626,7 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
                              << "against rsleevi.";
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
 #if BUILDFLAG(IS_MAC)
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
+  if (VerifyProcTypeIsBuiltin()) {
     auto* mac_trust_debug_info =
         net::TrustStoreMac::ResultDebugData::Get(&verify_result);
     ASSERT_TRUE(mac_trust_debug_info);
@@ -1719,7 +1731,7 @@ TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
 #endif
 
   // TODO(crbug.com/649017): Don't special-case builtin verifier.
-  if (verify_proc_type() != CERT_VERIFY_PROC_BUILTIN)
+  if (!VerifyProcTypeIsBuiltin())
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
 
   if (verify_proc_type() != CERT_VERIFY_PROC_ANDROID) {
@@ -1728,7 +1740,7 @@ TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
   }
 
   // TODO(crbug.com/649017): Don't special-case builtin verifier.
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
+  if (VerifyProcTypeIsBuiltin()) {
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
@@ -2890,6 +2902,7 @@ class CertVerifyProcNameNormalizationTest : public CertVerifyProcInternalTest {
       case CERT_VERIFY_PROC_WIN:
         return prefix + "Win";
       case CERT_VERIFY_PROC_BUILTIN:
+      case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
         return prefix + "Builtin";
     }
   }
@@ -2943,6 +2956,7 @@ TEST_P(CertVerifyProcNameNormalizationTest, StringType) {
       break;
     case CERT_VERIFY_PROC_ANDROID:
     case CERT_VERIFY_PROC_BUILTIN:
+    case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
       EXPECT_THAT(error, IsOk());
       break;
   }
@@ -2973,6 +2987,7 @@ TEST_P(CertVerifyProcNameNormalizationTest, CaseFolding) {
     case CERT_VERIFY_PROC_IOS:
     case CERT_VERIFY_PROC_MAC:
     case CERT_VERIFY_PROC_BUILTIN:
+    case CERT_VERIFY_PROC_BUILTIN_CHROME_ROOTS:
       EXPECT_THAT(error, IsOk());
       break;
   }
@@ -3477,8 +3492,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       Verify(chain_sha1.get(), kHostname, flags, CRLSet::BuiltinCRLSet().get(),
              CertificateList(), &verify_result);
 
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN ||
-      verify_proc_type() == CERT_VERIFY_PROC_MAC) {
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_MAC) {
     // Should have built a chain through the SHA256 intermediate. This was only
     // available via AIA, and not the (SHA1) one provided directly to path
     // building.
@@ -4279,7 +4293,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   int error =
       Verify(chain.get(), ocsp_test_server.host_port_pair().host(), flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN)
+  if (VerifyProcTypeIsBuiltin())
     EXPECT_THAT(error, IsOk());
   else
     EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
