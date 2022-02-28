@@ -170,40 +170,17 @@ bool AnimationHost::NextFrameHasPendingRAF() const {
   return next_frame_has_pending_raf_.Read(*this);
 }
 
-void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
-  for (auto map_entry : element_to_animations_map_.Write(*this)) {
-    // kReservedElementId is reserved for a paint worklet element that animates
-    // a custom property. This element is assumed to always be present as no
-    // element is needed to tick this animation.
-    if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,
-                                                        changed_list) ||
-        map_entry.first.GetStableId() == ElementId::kReservedElementId) {
-      map_entry.second->ElementIdRegistered(map_entry.first, changed_list);
-    } else {
-      map_entry.second->ElementIdUnregistered(map_entry.first, changed_list);
-    }
-  }
-}
-
 void AnimationHost::InitClientAnimationState() {
   for (auto map_entry : element_to_animations_map_.Write(*this))
     map_entry.second->InitClientAnimationState();
 }
 
-void AnimationHost::RegisterElementId(ElementId element_id,
-                                      ElementListType list_type) {
+void AnimationHost::RemoveElementId(ElementId element_id) {
   scoped_refptr<ElementAnimations> element_animations =
       GetElementAnimationsForElementId(element_id);
-  if (element_animations)
-    element_animations->ElementIdRegistered(element_id, list_type);
-}
-
-void AnimationHost::UnregisterElementId(ElementId element_id,
-                                        ElementListType list_type) {
-  scoped_refptr<ElementAnimations> element_animations =
-      GetElementAnimationsForElementId(element_id);
-  if (element_animations)
-    element_animations->ElementIdUnregistered(element_id, list_type);
+  if (element_animations) {
+    element_animations->RemoveKeyframeEffects();
+  }
 }
 
 void AnimationHost::RegisterAnimationForElement(ElementId element_id,
@@ -799,6 +776,11 @@ ElementId AnimationHost::ImplOnlyScrollAnimatingElement() const {
     return ElementId();
 
   return scroll_offset_animations_impl_.Read(*this)->GetElementId();
+}
+
+void AnimationHost::ImplOnlyScrollAnimatingElementRemoved() {
+  scroll_offset_animations_impl_.Write(*this)
+      ->AnimatingElementRemovedByCommit();
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {

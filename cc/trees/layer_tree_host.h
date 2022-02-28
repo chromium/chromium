@@ -668,9 +668,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                        Layer* layer);
   void UnregisterElement(ElementId element_id);
 
-  // For layer list mode only.
-  void UpdateActiveElements();
-
   void SetElementIdsForTesting();
   void BuildPropertyTreesForTesting();
 

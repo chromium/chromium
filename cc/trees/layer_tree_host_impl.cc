@@ -602,6 +602,14 @@ void LayerTreeHostImpl::FinishCommit(
   TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::FinishCommit");
   LayerTreeImpl* tree = sync_tree();
   tree->PullPropertiesFrom(state, unsafe_state);
+
+  // Check whether the impl scroll animating node was removed by the commit.
+  if (ElementId impl_only_scrolling_element =
+          mutator_host()->ImplOnlyScrollAnimatingElement()) {
+    if (!tree->property_trees()->HasElement(impl_only_scrolling_element)) {
+      mutator_host()->ImplOnlyScrollAnimatingElementRemoved();
+    }
+  }
   PullLayerTreeHostPropertiesFrom(state);
 
   // Transfer image decode requests to the impl thread.
@@ -674,10 +682,6 @@ void LayerTreeHostImpl::CommitComplete() {
 
   if (CommitToActiveTree()) {
     active_tree_->HandleScrollbarShowRequests();
-
-    // Property tree nodes have been updated by the commit. Update elements
-    // available on active tree to start/stop ticking animations.
-    UpdateElements(ElementListType::ACTIVE);
 
     // We have to activate animations here or "IsActive()" is true on the layers
     // but the animations aren't activated yet so they get ignored by
@@ -1542,10 +1546,6 @@ void LayerTreeHostImpl::SetViewportDamage(const gfx::Rect& damage_rect) {
 void LayerTreeHostImpl::SetEnableFrameRateThrottling(
     bool enable_frame_rate_throttling) {
   enable_frame_rate_throttling_ = enable_frame_rate_throttling;
-}
-
-void LayerTreeHostImpl::UpdateElements(ElementListType changed_list) {
-  mutator_host()->UpdateRegisteredElementIds(changed_list);
 }
 
 void LayerTreeHostImpl::InvalidateContentOnImplSide() {
@@ -3353,10 +3353,6 @@ void LayerTreeHostImpl::ActivateSyncTree() {
     pending_tree_->PushPropertiesTo(active_tree_.get());
     if (!pending_tree_->LayerListIsEmpty())
       pending_tree_->property_trees()->ResetAllChangeTracking();
-
-    // Property tree nodes have been updated by PushLayerProperties. Update
-    // elements available on active tree to start/stop ticking animations.
-    UpdateElements(ElementListType::ACTIVE);
 
     active_tree_->lifecycle().AdvanceTo(LayerTreeLifecycle::kNotSyncing);
 

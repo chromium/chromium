@@ -85,14 +85,12 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
 
   DCHECK(layer_tree_impl_);
   layer_tree_impl_->RegisterLayer(this);
-  layer_tree_impl_->AddToElementLayerList(element_id_, this);
 
   SetNeedsPushProperties();
 }
 
 LayerImpl::~LayerImpl() {
   layer_tree_impl_->UnregisterLayer(this);
-  layer_tree_impl_->RemoveFromElementLayerList(element_id_);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), "cc::LayerImpl", this);
 }
@@ -605,10 +603,7 @@ void LayerImpl::SetElementId(ElementId element_id) {
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "LayerImpl::SetElementId",
                "element", element_id.ToString());
-
-  layer_tree_impl_->RemoveFromElementLayerList(element_id_);
   element_id_ = element_id;
-  layer_tree_impl_->AddToElementLayerList(element_id_, this);
 }
 
 void LayerImpl::UnionUpdateRect(const gfx::Rect& update_rect) {

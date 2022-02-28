@@ -72,20 +72,12 @@ TEST_F(ElementAnimationsTest, AttachToLayerInActiveTree) {
 
   AttachTimelineAnimationLayer();
 
-  EXPECT_TRUE(element_animations_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_->has_element_in_pending_list());
-
   PushProperties();
 
   GetImplTimelineAndAnimationByID();
 
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
-
   // Create the layer in the impl active tree.
   client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
-  EXPECT_TRUE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
 
   EXPECT_TRUE(client_impl_.IsElementInPropertyTrees(element_id_,
                                                     ElementListType::ACTIVE));
@@ -96,77 +88,32 @@ TEST_F(ElementAnimationsTest, AttachToLayerInActiveTree) {
   client_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
   EXPECT_EQ(element_animations_,
             animation_->keyframe_effect()->element_animations());
-  EXPECT_FALSE(element_animations_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_->has_element_in_pending_list());
 
   // Sync doesn't detach LayerImpl.
   PushProperties();
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
 
   // Kill layer on impl thread in pending tree.
   client_impl_.UnregisterElementId(element_id_, ElementListType::PENDING);
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_pending_list());
 
   // Kill layer on impl thread in active tree.
   client_impl_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_pending_list());
 
   // Sync doesn't change anything.
   PushProperties();
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_pending_list());
 
   animation_->DetachElement();
   EXPECT_FALSE(animation_->keyframe_effect()->element_animations());
 
   // Release ptrs now to test the order of destruction.
   ReleaseRefPtrs();
-}
-
-TEST_F(ElementAnimationsTest, AttachToNotYetCreatedLayer) {
-  host_->AddAnimationTimeline(timeline_);
-  timeline_->AttachAnimation(animation_);
-
-  PushProperties();
-  GetImplTimelineAndAnimationByID();
-
-  // Perform attachment separately.
-  animation_->AttachElement(element_id_);
-  element_animations_ = animation_->keyframe_effect()->element_animations();
-
-  EXPECT_FALSE(element_animations_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_->has_element_in_pending_list());
-
-  PushProperties();
-  element_animations_impl_ =
-      animation_impl_->keyframe_effect()->element_animations();
-
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_pending_list());
-
-  // Create layer.
-  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
-  EXPECT_TRUE(element_animations_->has_element_in_active_list());
-  EXPECT_FALSE(element_animations_->has_element_in_pending_list());
-
-  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
-
-  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
-  EXPECT_TRUE(element_animations_impl_->has_element_in_active_list());
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
 }
 
 TEST_F(ElementAnimationsTest, AddRemoveAnimations) {
@@ -1057,9 +1004,6 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   AttachTimelineAnimationLayer();
   CreateImplTimelineAndAnimation();
 
-  EXPECT_TRUE(element_animations_impl_->has_element_in_pending_list());
-  EXPECT_FALSE(element_animations_impl_->has_element_in_active_list());
-
   auto events = CreateEventsForTesting();
 
   gfx::PointF initial_value(500.f, 100.f);
@@ -1832,16 +1776,6 @@ TEST_F(ElementAnimationsTest, InactiveObserverGetsTicked) {
                           id, TargetProperty::OPACITY));
   animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)
       ->set_affects_active_elements(false);
-
-  // Without an observer, the animation shouldn't progress to the STARTING
-  // state.
-  animation_impl_->Tick(kInitialTickTime);
-  animation_impl_->UpdateState(true, events.get());
-  EXPECT_EQ(0u, events->events_.size());
-  EXPECT_EQ(
-      KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
-      animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
-
   CreateTestImplLayer(ElementListType::PENDING);
 
   // With only a pending observer, the animation should progress to the
@@ -3880,27 +3814,6 @@ TEST_F(ElementAnimationsTest, TestIsAnimatingPropertyTimeOffsetFillMode) {
       TargetProperty::OPACITY, ElementListType::PENDING));
   EXPECT_FALSE(animation_->keyframe_effect()->IsCurrentlyAnimatingProperty(
       TargetProperty::OPACITY, ElementListType::ACTIVE));
-}
-
-TEST_F(ElementAnimationsTest, DestroyTestMainLayerBeforePushProperties) {
-  CreateTestLayer(false, false);
-  AttachTimelineAnimationLayer();
-  EXPECT_EQ(0u, host_->ticking_animations_for_testing().size());
-
-  animation_->AddKeyframeModel(
-      CreateKeyframeModel(std::unique_ptr<gfx::AnimationCurve>(
-                              new FakeFloatTransition(1.0, 1.f, 0.5f)),
-                          2, TargetProperty::OPACITY));
-  EXPECT_EQ(1u, host_->ticking_animations_for_testing().size());
-
-  DestroyTestMainLayer();
-  host_->UpdateAnimationState(true, nullptr);
-  EXPECT_EQ(0u, host_->ticking_animations_for_testing().size());
-
-  PushProperties();
-  host_impl_->ActivateAnimations(nullptr);
-  EXPECT_EQ(0u, host_->ticking_animations_for_testing().size());
-  EXPECT_EQ(0u, host_impl_->ticking_animations_for_testing().size());
 }
 
 TEST_F(ElementAnimationsTest, RemoveAndReAddAnimationToTicking) {

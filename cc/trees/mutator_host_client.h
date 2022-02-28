@@ -10,6 +10,7 @@
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/trees/property_animation_state.h"
 #include "cc/trees/target_property.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Transform;

@@ -169,8 +169,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void MarkKeyframeModelsForDeletion(base::TimeTicks, AnimationEvents* events);
   void MarkFinishedKeyframeModels(base::TimeTicks monotonic_time);
 
-  bool HasElementInActiveList() const;
-  gfx::PointF ScrollOffsetForAnimation() const;
+  absl::optional<gfx::PointF> ScrollOffsetForAnimation() const;
   void GenerateEvent(AnimationEvents* events,
                      const KeyframeModel& keyframe_model,
                      AnimationEvent::Type type,
