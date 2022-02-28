@@ -3092,10 +3092,17 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("15125551234", GetFieldValueById("phone_form2"));
 }
 
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
 // Test that forms that dynamically change a second time do not get filled.
+// Test is flaky on Mac, see https://crbug.com/1290277.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicChangingFormFill_SecondChange \
+  DISABLED_DynamicChangingFormFill_SecondChange
+#else
+#define MAYBE_DynamicChangingFormFill_SecondChange \
+  DynamicChangingFormFill_SecondChange
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SecondChange) {
+                       MAYBE_DynamicChangingFormFill_SecondChange) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/double_dynamic_form.html");
@@ -3168,9 +3175,14 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change select fields to text
 // fields by changing the visibilities.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
+// Test is flaky on Mac, see https://crbug.com/1290277.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicFormFill_SelectToText DISABLED_DynamicFormFill_SelectToText
+#else
+#define MAYBE_DynamicFormFill_SelectToText DynamicFormFill_SelectToText
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_SelectToText) {
+                       MAYBE_DynamicFormFill_SelectToText) {
   CreateTestProfile();
 
   GURL url = embedded_test_server()->GetURL(
@@ -3219,8 +3231,16 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on.
+// Test is flaky on Mac, see https://crbug.com/1290277.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicFormFill_FirstElementDisappears \
+  DISABLED_DynamicFormFill_FirstElementDisappears
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappears \
+  DynamicFormFill_FirstElementDisappears
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappears) {
+                       MAYBE_DynamicFormFill_FirstElementDisappears) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid.html");
@@ -3293,9 +3313,17 @@ IN_PROC_BROWSER_TEST_P(
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with identical
 // names.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
+// Test is flaky on Mac, see https://crbug.com/1290277.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
+  DISABLED_DynamicFormFill_FirstElementDisappearsBadnameUnowned
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned \
+  DynamicFormFill_FirstElementDisappearsBadnameUnowned
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(
+    AutofillInteractiveTestDynamicForm,
+    MAYBE_DynamicFormFill_FirstElementDisappearsBadnameUnowned) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_element_invalid_unowned_badnames.html");
@@ -3412,9 +3440,16 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed only once.
-// TODO(https://crbug.com/1290277): Check back if flakiness is fixed now.
+// Test is flaky on Mac, see https://crbug.com/1290277.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DISABLED_DynamicChangingFormFill_DoubleSelectUpdated
+#else
+#define MAYBE_DynamicChangingFormFill_DoubleSelectUpdated \
+  DynamicChangingFormFill_DoubleSelectUpdated
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_DoubleSelectUpdated) {
+                       MAYBE_DynamicChangingFormFill_DoubleSelectUpdated) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_double_select_options_change.html");
