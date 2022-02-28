@@ -432,6 +432,11 @@ bool AppUpdate::VersionChanged() const {
 }
 
 std::vector<std::string> AppUpdate::AdditionalSearchTerms() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(additional_search_terms, empty,
+                                            std::vector<std::string>{})
+  }
+
   std::vector<std::string> additional_search_terms;
 
   if (mojom_delta_ && !mojom_delta_->additional_search_terms.empty()) {
@@ -443,11 +448,6 @@ std::vector<std::string> AppUpdate::AdditionalSearchTerms() const {
   }
 
   return additional_search_terms;
-}
-
-std::vector<std::string> AppUpdate::GetAdditionalSearchTerms() const {
-  GET_VALUE_WITH_CHECK_AND_DEFAULT_RETURN(additional_search_terms, empty,
-                                          std::vector<std::string>{})
 }
 
 bool AppUpdate::AdditionalSearchTermsChanged() const {

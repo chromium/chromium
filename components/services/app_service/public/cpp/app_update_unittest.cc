@@ -187,7 +187,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_version_, u.Version());
     EXPECT_EQ(expect_version_changed_, u.VersionChanged());
 
-    EXPECT_EQ(expect_additional_search_terms_, u.GetAdditionalSearchTerms());
+    EXPECT_EQ(expect_additional_search_terms_, u.AdditionalSearchTerms());
     EXPECT_EQ(expect_additional_search_terms_changed_,
               u.AdditionalSearchTermsChanged());
 
