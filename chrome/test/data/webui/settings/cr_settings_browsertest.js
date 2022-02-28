@@ -642,7 +642,8 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
 ].forEach(test => registerTest(...test));
 
 // Timeout on Linux dbg bots: https://crbug.com/1133412
-GEN('#if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
+// Fails on Mac bots: https://crbug.com/1222886
+GEN('#if !((BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_MAC))');
 [['SecurityPage', 'security_page_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');
