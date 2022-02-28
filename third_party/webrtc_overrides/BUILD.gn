@@ -195,8 +195,6 @@ source_set("task_queue_factory") {
     # third_party/blink/renderer/platform/peerconnection/coalesced_tasks_test.cc
     "coalesced_tasks.cc",
     "coalesced_tasks.h",
-    "metronome_provider.cc",
-    "metronome_provider.h",
 
     # Tested in
     # third_party/blink/renderer/platform/peerconnection/metronome_source_test.cc

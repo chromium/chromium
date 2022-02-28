@@ -543,10 +543,8 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::
 
 VideoTrackAdapter::VideoTrackAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<MetronomeProvider> metronome_provider,
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
     : io_task_runner_(io_task_runner),
-      metronome_provider_(std::move(metronome_provider)),
       media_stream_video_source_(media_stream_video_source),
       renderer_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       muted_state_(false),
@@ -727,7 +725,7 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
 
   on_muted_callback_ = std::move(on_muted_callback);
   monitoring_frame_rate_timer_ = std::make_unique<WebRtcTimer>(
-      metronome_provider_, io_task_runner_,
+      io_task_runner_,
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this))));
 

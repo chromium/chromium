@@ -86,11 +86,6 @@ void WebRtcTimer::SchedulableCallback::MaybeRun() {
   }
 }
 
-WebRtcTimer::WebRtcTimer(scoped_refptr<MetronomeProvider> metronome_provider,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner,
-                         base::RepeatingCallback<void()> callback)
-    : WebRtcTimer(std::move(task_runner), std::move(callback)) {}
-
 WebRtcTimer::WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                          base::RepeatingCallback<void()> callback)
     : callback_(std::move(callback)),

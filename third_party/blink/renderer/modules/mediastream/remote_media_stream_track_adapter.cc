@@ -20,12 +20,10 @@ namespace blink {
 RemoteVideoTrackAdapter::RemoteVideoTrackAdapter(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     webrtc::VideoTrackInterface* webrtc_track,
-    scoped_refptr<MetronomeProvider> metronome_provider,
     ExecutionContext* track_execution_context)
     : RemoteMediaStreamTrackAdapter(main_thread,
                                     webrtc_track,
-                                    track_execution_context),
-      metronome_provider_(std::move(metronome_provider)) {
+                                    track_execution_context) {
   std::unique_ptr<TrackObserver> observer(
       new TrackObserver(main_thread, observed_track().get()));
   // Here, we use CrossThreadUnretained() to avoid a circular reference.
@@ -52,7 +50,7 @@ void RemoteVideoTrackAdapter::InitializeWebVideoTrack(
     bool enabled) {
   DCHECK(main_thread_->BelongsToCurrentThread());
   auto video_source_ptr = std::make_unique<MediaStreamRemoteVideoSource>(
-      main_thread_, std::move(observer), metronome_provider_);
+      main_thread_, std::move(observer));
   MediaStreamRemoteVideoSource* video_source = video_source_ptr.get();
   InitializeTrack(MediaStreamSource::kTypeVideo);
   track()->Source()->SetPlatformSource(std::move(video_source_ptr));

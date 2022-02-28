@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace cc {
@@ -460,9 +459,6 @@ class CORE_EXPORT HTMLMediaElement
   // ExecutionContextLifecycleStateObserver functions.
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
   void ContextDestroyed() override;
-
-  // Gets the current context's metronome provider.
-  scoped_refptr<MetronomeProvider> GetExecutionContextMetronomeProvider() const;
 
   virtual void OnPlay() {}
   virtual void OnLoadStarted() {}

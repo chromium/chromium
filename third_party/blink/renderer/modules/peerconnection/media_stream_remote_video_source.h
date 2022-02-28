@@ -11,7 +11,6 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 
 namespace blink {
 
@@ -27,8 +26,7 @@ class MODULES_EXPORT MediaStreamRemoteVideoSource
  public:
   explicit MediaStreamRemoteVideoSource(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      std::unique_ptr<TrackObserver> observer,
-      scoped_refptr<MetronomeProvider> metronome_provider);
+      std::unique_ptr<TrackObserver> observer);
 
   MediaStreamRemoteVideoSource(const MediaStreamRemoteVideoSource&) = delete;
   MediaStreamRemoteVideoSource& operator=(const MediaStreamRemoteVideoSource&) =

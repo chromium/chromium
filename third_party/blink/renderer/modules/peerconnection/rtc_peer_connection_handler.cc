@@ -2224,8 +2224,6 @@ void RTCPeerConnectionHandler::Close() {
     peer_connection_tracker_->TrackClose(this);
 
   native_peer_connection_->Close();
-  DCHECK(dependency_factory_);
-  dependency_factory_->OnPeerConnectionClosed();
 
   // This object may no longer forward call backs to blink.
   is_closed_ = true;

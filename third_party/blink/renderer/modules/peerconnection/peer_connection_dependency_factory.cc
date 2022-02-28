@@ -40,7 +40,6 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/peerconnection/execution_context_metronome_provider.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -461,13 +460,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
 
   if (!metronome_source_) {
-    // Store a reference to the context's metronome provider so that it can be
-    // used when cleaning up peer connections, even while the context is being
-    // destroyed.
-    metronome_provider_ =
-        ExecutionContextMetronomeProvider::From(*GetExecutionContext())
-            .metronome_provider();
-    DCHECK(metronome_provider_);
     metronome_source_ = base::MakeRefCounted<MetronomeSource>();
   }
 
@@ -708,12 +700,6 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   auto pc_or_error = GetPcFactory()->CreatePeerConnectionOrError(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
-    ++open_peer_connections_;
-    if (open_peer_connections_ == 1u) {
-      DCHECK(metronome_provider_);
-      DCHECK(metronome_source_);
-      metronome_provider_->OnStartUsingMetronome(metronome_source_);
-    }
     // Convert from rtc::scoped_refptr to scoped_refptr
     return pc_or_error.value().get();
   } else {
@@ -721,25 +707,6 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     ThrowExceptionFromRTCError(pc_or_error.error(), exception_state);
     return nullptr;
   }
-}
-
-size_t PeerConnectionDependencyFactory::open_peer_connections() const {
-  return open_peer_connections_;
-}
-
-void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
-  DCHECK(open_peer_connections_);
-  --open_peer_connections_;
-  // |metronome_provider_| may be null in some testing-only environments.
-  if (!open_peer_connections_ && metronome_provider_) {
-    DCHECK(metronome_source_);
-    metronome_provider_->OnStopUsingMetronome();
-  }
-}
-
-scoped_refptr<MetronomeProvider>
-PeerConnectionDependencyFactory::metronome_provider() const {
-  return metronome_provider_;
 }
 
 std::unique_ptr<cricket::PortAllocator>

@@ -60,8 +60,7 @@ class MediaStreamRemoteVideoSourceUnderTest
       std::unique_ptr<blink::TrackObserver> observer)
       : MediaStreamRemoteVideoSource(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            std::move(observer),
-            /*metronome_provider=*/nullptr) {}
+            std::move(observer)) {}
   using MediaStreamRemoteVideoSource::EncodedSinkInterfaceForTesting;
   using MediaStreamRemoteVideoSource::SinkInterfaceForTesting;
   using MediaStreamRemoteVideoSource::StartSourceImpl;

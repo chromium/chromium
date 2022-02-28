@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/webrtc_timer.h"
 
@@ -207,7 +206,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
  public:
   VideoTrackAdapterFixtureTest()
       : testing_render_thread_("TestingRenderThread"),
-        metronome_provider_(base::MakeRefCounted<MetronomeProvider>()),
         frame_received_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED) {}
   ~VideoTrackAdapterFixtureTest() override = default;
@@ -234,8 +232,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     testing_render_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
           adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-              platform_support_->GetIOTaskRunner(), metronome_provider_,
-              mock_source_->GetWeakPtr());
+              platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());
           adapter_created.Signal();
         }));
     adapter_created.Wait();
@@ -311,7 +308,6 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport>
       platform_support_;
   base::Thread testing_render_thread_;
-  const scoped_refptr<MetronomeProvider> metronome_provider_;
   std::unique_ptr<MockMediaStreamVideoSource> mock_source_;
   scoped_refptr<VideoTrackAdapter> adapter_;
 
@@ -462,8 +458,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     web_source_.SetPlatformSource(std::move(source));
     RunSyncOnRenderThread([&] {
       adapter_ = base::MakeRefCounted<VideoTrackAdapter>(
-          platform_support_->GetIOTaskRunner(), /*metronome_provider=*/nullptr,
-          mock_source_->GetWeakPtr());
+          platform_support_->GetIOTaskRunner(), mock_source_->GetWeakPtr());
     });
   }
 

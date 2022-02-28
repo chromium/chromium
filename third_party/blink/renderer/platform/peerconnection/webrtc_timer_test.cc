@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {

@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace blink {
@@ -42,11 +41,8 @@ class MODULES_EXPORT VideoTrackAdapter
  public:
   using OnMutedCallback = base::RepeatingCallback<void(bool mute_state)>;
 
-  // TODO(https://crbug.com/1296138): Remove |metronome_provider|, it is not
-  // used anymore.
   VideoTrackAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      scoped_refptr<MetronomeProvider> metronome_provider,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
   VideoTrackAdapter(const VideoTrackAdapter&) = delete;
@@ -155,9 +151,6 @@ class MODULES_EXPORT VideoTrackAdapter
   THREAD_CHECKER(thread_checker_);
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-  // |metronome_provider_| is optional, but if a metronome is available then
-  // frame monitoring logic will run on the metronome.
-  const scoped_refptr<MetronomeProvider> metronome_provider_;
 
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 

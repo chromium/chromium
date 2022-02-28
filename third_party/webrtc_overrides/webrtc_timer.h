@@ -14,7 +14,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
-#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
@@ -34,11 +33,6 @@ RTC_EXPORT extern const base::Feature kWebRtcTimerUsesMetronome;
 class RTC_EXPORT WebRtcTimer final {
  public:
   WebRtcTimer(scoped_refptr<base::SequencedTaskRunner> task_runner,
-              base::RepeatingCallback<void()> callback);
-  // TODO(https://crbug.com/1296138): Delete this constructor, the
-  // |metronome_provider| is not used anymore.
-  WebRtcTimer(scoped_refptr<MetronomeProvider> metronome_provider,
-              scoped_refptr<base::SequencedTaskRunner> task_runner,
               base::RepeatingCallback<void()> callback);
   ~WebRtcTimer();
   // Must be called prior to destruction. Unregisters from the metronome
