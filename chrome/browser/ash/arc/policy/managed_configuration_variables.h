@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ARC_POLICY_MANAGED_CONFIGURATION_VARIABLES_H_
 
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace arc {
@@ -31,6 +32,11 @@ extern const char kDeviceAnnotatedLocation[];
 // * ${DEVICE_ANNOTATED_LOCATION} - Location assigned by administrator.
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
+    base::Value* managedConfiguration);
+
+void RecursivelyReplaceManagedConfigurationVariables(
+    const Profile* profile,
+    policy::DeviceAttributes* attributes,
     base::Value* managedConfiguration);
 
 }  // namespace arc

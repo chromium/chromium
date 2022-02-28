@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
@@ -32,6 +33,9 @@ constexpr char kTestEmail[] = "username@somedomain.com";
 constexpr char kTestEmailName[] = "username";
 constexpr char kTestEmailDomain[] = "somedomain.com";
 constexpr char kTestDeviceSerialNumber[] = "CAFE1337";
+constexpr char kTestDeviceDirectoryId[] = "85729104-ef7a-5718d62e72ca";
+constexpr char kTestDeviceAssetId[] = "admin provided test asset ID";
+constexpr char kTestDeviceAnnotatedLocation[] = "admin provided test location";
 
 Parameter sampleWithoutVariables() {
   // Set up an |input| Value without variables.
@@ -50,6 +54,9 @@ Parameter sampleWithVariables() {
   constexpr const char kUserNameKey[] = "user_name";
   constexpr const char kUserDomainKey[] = "user_domain";
   constexpr const char kDeviceSerialNumberKey[] = "device_serial_number";
+  constexpr const char kDeviceDirectoryIdKey[] = "device_directory_id";
+  constexpr const char kDeviceAssetIdKey[] = "device_asset_id";
+  constexpr const char kDeviceLocationKey[] = "device_annotated_location_key";
 
   // Set up an |input| Value with some variables.
   base::Value input(base::Value::Type::DICTIONARY);
@@ -57,6 +64,9 @@ Parameter sampleWithVariables() {
   input.SetStringKey(kUserNameKey, kUserEmailName);
   input.SetStringKey(kUserDomainKey, kUserEmailDomain);
   input.SetStringKey(kDeviceSerialNumberKey, kDeviceSerialNumber);
+  input.SetStringKey(kDeviceDirectoryIdKey, kDeviceDirectoryId);
+  input.SetStringKey(kDeviceAssetIdKey, kDeviceAssetId);
+  input.SetStringKey(kDeviceLocationKey, kDeviceAnnotatedLocation);
 
   // Set up an |output| Value where variables have been replaced.
   base::Value output(base::Value::Type::DICTIONARY);
@@ -64,6 +74,9 @@ Parameter sampleWithVariables() {
   output.SetStringKey(kUserNameKey, kTestEmailName);
   output.SetStringKey(kUserDomainKey, kTestEmailDomain);
   output.SetStringKey(kDeviceSerialNumberKey, kTestDeviceSerialNumber);
+  output.SetStringKey(kDeviceDirectoryIdKey, kTestDeviceDirectoryId);
+  output.SetStringKey(kDeviceAssetIdKey, kTestDeviceAssetId);
+  output.SetStringKey(kDeviceLocationKey, kTestDeviceAnnotatedLocation);
 
   return std::make_pair(std::move(input), std::move(output));
 }
@@ -127,6 +140,13 @@ class ManagedConfigurationVariablesTest
     IdentityTestEnvironmentProfileAdaptor adaptor(profile_.get());
     adaptor.identity_test_env()->SetPrimaryAccount(kTestEmail,
                                                    signin::ConsentLevel::kSync);
+
+    // Set up fake device attributes.
+    fake_device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
+    fake_device_attributes_->SetFakeDirectoryApiId(kTestDeviceDirectoryId);
+    fake_device_attributes_->SetFakeDeviceAssetId(kTestDeviceAssetId);
+    fake_device_attributes_->SetFakeDeviceAnotatedLocation(
+        kTestDeviceAnnotatedLocation);
   }
 
   void TearDown() override { profile_.reset(); }
@@ -137,6 +157,10 @@ class ManagedConfigurationVariablesTest
 
   const base::Value& expected_output() { return parameter.second; }
 
+  policy::FakeDeviceAttributes* device_attributes() {
+    return fake_device_attributes_.get();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
 
@@ -144,15 +168,17 @@ class ManagedConfigurationVariablesTest
 
   chromeos::system::FakeStatisticsProvider statistics_provider_;
 
+  std::unique_ptr<policy::FakeDeviceAttributes> fake_device_attributes_;
+
   Parameter parameter;
 };
 
 TEST_P(ManagedConfigurationVariablesTest, ReplacesVariables) {
-  RecursivelyReplaceManagedConfigurationVariables(profile(), &mutable_input());
+  RecursivelyReplaceManagedConfigurationVariables(
+      profile(), device_attributes(), &mutable_input());
   EXPECT_EQ(mutable_input(), expected_output());
 }
 
-// TODO(http://b/219948590) Update samples to test device attributes.
 INSTANTIATE_TEST_SUITE_P(All,
                          ManagedConfigurationVariablesTest,
                          testing::Values(&sampleWithoutVariables,

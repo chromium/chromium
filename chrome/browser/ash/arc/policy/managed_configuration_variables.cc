@@ -8,6 +8,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -49,22 +51,18 @@ const std::string SignedInUserEmail(const Profile* profile) {
   return info.email;
 }
 
-const std::string DeviceDirectoryId() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDirectoryApiID();
+const std::string DeviceDirectoryId(
+    policy::DeviceAttributes* device_attributes) {
+  return device_attributes->GetDirectoryApiID();
 }
 
-const std::string DeviceAssetId() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDeviceAssetID();
+const std::string DeviceAssetId(policy::DeviceAttributes* device_attributes) {
+  return device_attributes->GetDeviceAssetID();
 }
 
-const std::string DeviceAnnotatedLocation() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->GetDeviceAnnotatedLocation();
+const std::string DeviceAnnotatedLocation(
+    policy::DeviceAttributes* device_attributes) {
+  return device_attributes->GetDeviceAnnotatedLocation();
 }
 
 const std::string DeviceSerialNumber() {
@@ -85,10 +83,20 @@ const char kDeviceAnnotatedLocation[] = "${DEVICE_ANNOTATED_LOCATION}";
 void RecursivelyReplaceManagedConfigurationVariables(
     const Profile* profile,
     base::Value* managedConfiguration) {
+  policy::DeviceAttributesImpl device_attributes;
+  RecursivelyReplaceManagedConfigurationVariables(profile, &device_attributes,
+                                                  managedConfiguration);
+}
+
+void RecursivelyReplaceManagedConfigurationVariables(
+    const Profile* profile,
+    policy::DeviceAttributes* device_attributes,
+    base::Value* managedConfiguration) {
   // Recursive call for dictionary values.
   if (managedConfiguration->is_dict()) {
     for (auto kv : managedConfiguration->DictItems()) {
-      RecursivelyReplaceManagedConfigurationVariables(profile, &kv.second);
+      RecursivelyReplaceManagedConfigurationVariables(
+          profile, device_attributes, &kv.second);
     }
     return;
   }
@@ -105,13 +113,14 @@ void RecursivelyReplaceManagedConfigurationVariables(
     *managedConfiguration =
         base::Value(EmailDomain(SignedInUserEmail(profile)));
   } else if (managedConfiguration->GetString() == kDeviceDirectoryId) {
-    *managedConfiguration = base::Value(DeviceDirectoryId());
+    *managedConfiguration = base::Value(DeviceDirectoryId(device_attributes));
   } else if (managedConfiguration->GetString() == kDeviceSerialNumber) {
     *managedConfiguration = base::Value(DeviceSerialNumber());
   } else if (managedConfiguration->GetString() == kDeviceAssetId) {
-    *managedConfiguration = base::Value(DeviceAssetId());
+    *managedConfiguration = base::Value(DeviceAssetId(device_attributes));
   } else if (managedConfiguration->GetString() == kDeviceAnnotatedLocation) {
-    *managedConfiguration = base::Value(DeviceAnnotatedLocation());
+    *managedConfiguration =
+        base::Value(DeviceAnnotatedLocation(device_attributes));
   }
 }
 
