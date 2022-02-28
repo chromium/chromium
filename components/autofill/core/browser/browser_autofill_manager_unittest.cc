@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
@@ -9409,6 +9410,9 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);
   form.fields.push_back(field);
+  test::CreateTestFormField("Phone Number", "phonenumber", "12345678901", "tel",
+                            &field);
+  form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
 
@@ -9422,21 +9426,35 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"Test Country");
+  EXPECT_EQ(response_data.fields[4].value, u"12345678901");
 
   {
     FormStructure* form_structure;
     AutofillField* autofill_field;
-    std::vector<std::u16string> expected_values = {
-        u"Elvis Aaron Presley", u"Memphis", u"", u"United States"};
+    std::vector<std::string> expected_values = {
+        "Elvis Aaron Presley", "Memphis", "", "United States", ""};
     bool found = browser_autofill_manager_->GetCachedFormAndField(
         form, form.fields[0], &form_structure, &autofill_field);
     ASSERT_TRUE(found);
     for (size_t i = 0; i < form.fields.size(); ++i) {
       ASSERT_TRUE(form_structure->field(i)->SameFieldAs(form.fields[i]));
-      EXPECT_EQ(
-          form_structure->field(i)->value_not_autofilled_over_existing_value(),
-          expected_values[i]);
+      if (!expected_values[i].empty()) {
+        EXPECT_TRUE(form_structure->field(i)
+                        ->value_not_autofilled_over_existing_value_hash()
+                        .has_value());
+        EXPECT_FALSE(form_structure->field(i)->is_autofilled);
+        EXPECT_EQ(form_structure->field(i)
+                      ->value_not_autofilled_over_existing_value_hash(),
+                  base::FastHash(expected_values[i]));
+      }
     }
+    EXPECT_TRUE(form_structure->field(2)->is_autofilled);  // Selection field.
+
+    // Prefilled value is same as the value to be autofilled so
+    // |value_not_autofilled_over_existing_value_hash| is not set for the field.
+    EXPECT_FALSE(form_structure->field(4)->is_autofilled);
+    EXPECT_FALSE(form_structure->field(4)
+                     ->value_not_autofilled_over_existing_value_hash());
   }
 
   features.Reset();
@@ -9450,6 +9468,7 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   EXPECT_EQ(response_data.fields[1].value, u"Memphis");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
   EXPECT_EQ(response_data.fields[3].value, u"United States");
+  EXPECT_EQ(response_data.fields[4].value, u"12345678901");
 }
 
 // Desktop only tests.

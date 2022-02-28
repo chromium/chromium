@@ -12523,6 +12523,95 @@ TEST_F(AutofillMetricsTest, AutofilledStateFieldSource) {
       1);
 }
 
+// Tests the following 4 cases when |kAutofillPreventOverridingPrefilledValues|
+// is enabled:
+// 1. The field is not autofilled since it has a prefilled value but the value
+//    is edited before the form submission and is same as the value that was
+//    to be autofilled in the field.
+//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue|
+//    should emit true for this case.
+// 2. The field is not autofilled since it has a prefilled value but the value
+//    is edited before the form submission and is different than the value that
+//    was to be autofilled in the field.
+//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue|
+//    should emit false for this case.
+// 3. The field had a prefilled value that was similar to the value to be
+//    autofilled in the field.
+//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue|
+//    should not record anything in this case.
+// 4. Selection fields are always overridden by Autofill.
+//    |Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue|
+//    should not record anything in this case.
+TEST_F(AutofillMetricsTest,
+       IsValueNotAutofilledOverExistingValueSameAsSubmittedValue) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      autofill::features::kAutofillPreventOverridingPrefilledValues);
+  RecreateProfile(false);
+
+  FormData form = test::GetFormData(
+      {.description_for_logging = "AutofilledStateFieldSource",
+       .fields = {{.role = ServerFieldType::NAME_FULL},
+                  {.role = ServerFieldType::ADDRESS_HOME_CITY,
+                   .value = u"Sacremento"},  // Case #1
+                  {.role = ServerFieldType::ADDRESS_HOME_STATE,
+                   .value = u"CA",
+                   .form_control_type = "select-one",
+                   .select_options = {{u"TN", u"Tennesse"},
+                                      {u"CA", u"California"},
+                                      {u"WA", u"Washington DC"}}},  // Case #4
+                  {.role = ServerFieldType::ADDRESS_HOME_ZIP,
+                   .value = u"00000"},  // Case #2
+                  {.role = ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+                   .value = u"12345678901"},  // Case #3
+                  {.role = ServerFieldType::ADDRESS_HOME_COUNTRY}}});
+
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,        ADDRESS_HOME_CITY,       ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_COUNTRY};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FULL,        ADDRESS_HOME_CITY,       ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_COUNTRY};
+
+  // Simulate having seen this form on page load.
+  browser_autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
+
+  browser_autofill_manager_->OnAskForValuesToFill(
+      0, form, form.fields[0], gfx::RectF(),
+      /*autoselect_first_suggestion=*/false);
+  browser_autofill_manager_->DidShowSuggestions(
+      /*has_autofill_suggestions=*/true, form, form.fields[0]);
+
+  std::string guid(kTestGuid);
+  browser_autofill_manager_->FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, 0, form, form.fields.front(),
+      browser_autofill_manager_->MakeFrontendIDForTest(std::string(), guid));
+
+  // Case #1: Change submitted value to expected autofilled value for the field.
+  // The histogram should emit true for this.
+  form.fields[1].value = u"Memphis";
+  browser_autofill_manager_->OnTextFieldDidChange(form, form.fields[1],
+                                                  gfx::RectF(), TimeTicks());
+
+  // Case #2: Change submitted value such that it different than expected
+  // autofilled value for the field. The histogram should emit false for this.
+  form.fields[3].value = u"00001";
+  browser_autofill_manager_->OnTextFieldDidChange(form, form.fields[3],
+                                                  gfx::RectF(), TimeTicks());
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  browser_autofill_manager_->OnFormSubmitted(form, /*known_success=*/false,
+                                             SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
+      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
+      false, 1);
+}
+
 // Base class for cross-frame filling metrics, in particular for
 // Autofill.CreditCard.SeamlessFills.* and Autofill.CreditCard.NumberFills.*.
 class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {

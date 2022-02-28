@@ -2046,6 +2046,12 @@ class AutofillMetrics {
   // updated each time a new value is added.
   static const int kNumCardUploadDecisionMetrics = 19;
 
+  // Logs whether the submitted field value is same as the non-empty value
+  // to be autofilled in the field, when the field had a different prefilled
+  // value.
+  static void LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
+      bool is_same);
+
  private:
   static void Log(AutocompleteEvent event);
 };
