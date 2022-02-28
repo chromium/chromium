@@ -21,7 +21,7 @@ html::page-transition-container(*) {
   will-change: transform;
 }
 
-html::transition-container(root) {
+html::page-transition-container(root) {
   right: 0;
   bottom: 0;
 }

@@ -16,7 +16,7 @@
 }
 
 html::page-transition-incoming-image(*) {
-  animation: fade-in 0.25s;
+  animation: fade-in 0.25s forwards;
 }
 
 @keyframes fade-out {
@@ -26,5 +26,5 @@ html::page-transition-incoming-image(*) {
 }
 
 html::page-transition-outgoing-image(*) {
-  animation: fade-out 0.25s;
+  animation: fade-out 0.25s forwards;
 }

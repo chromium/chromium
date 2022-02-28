@@ -525,7 +525,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
       builder.AppendFormat(
           R"CSS(
           html::page-transition-container(%s) {
-            animation: page-transition-container-anim-%s 0.25s
+            animation: page-transition-container-anim-%s 0.25s forwards
           }
           )CSS",
           document_transition_tag.c_str(), document_transition_tag.c_str());
