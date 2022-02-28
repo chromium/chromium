@@ -53,10 +53,10 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
           views::BubbleBorder::Shadow::STANDARD_SHADOW);
 
   const ui::ThemeProvider* theme_provider = target_->GetThemeProvider();
-  const SkColor foreground_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  const SkColor background_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  const SkColor foreground_color = theme_provider->GetColor(
+      ThemeProperties::COLOR_FLYING_INDICATOR_FOREGROUND);
+  const SkColor background_color = theme_provider->GetColor(
+      ThemeProperties::COLOR_FLYING_INDICATOR_BACKGROUND);
 
   // Set the bubble properties.
   bubble_view->SetAccessibleRole(ax::mojom::Role::kNone);

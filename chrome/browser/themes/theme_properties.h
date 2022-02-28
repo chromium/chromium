@@ -310,6 +310,10 @@ class ThemeProperties {
     COLOR_FRAME_CAPTION_ACTIVE,
     COLOR_FRAME_CAPTION_INACTIVE,
 
+    // Colors used for the FlyingIndicator
+    COLOR_FLYING_INDICATOR_BACKGROUND,
+    COLOR_FLYING_INDICATOR_FOREGROUND,
+
     // /!\ If you make any changes to this enum, you must also increment
     // kThemePackVersion in browser_theme_pack.cc, or else themes will display
     // incorrectly.

@@ -389,6 +389,10 @@ SkColor ThemeHelper::GetDefaultColor(
         return SK_ColorTRANSPARENT;
       }
     }
+    case TP::COLOR_FLYING_INDICATOR_BACKGROUND:
+      return GetColor(TP::COLOR_TOOLBAR, incognito, theme_supplier);
+    case TP::COLOR_FLYING_INDICATOR_FOREGROUND:
+      return GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, incognito, theme_supplier);
     case TP::COLOR_FRAME_CAPTION_ACTIVE:
     case TP::COLOR_FRAME_CAPTION_INACTIVE:
       return color_utils::GetColorWithMaxContrast(GetColor(

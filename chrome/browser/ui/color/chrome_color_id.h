@@ -43,6 +43,11 @@
   E_CPONLY(kColorDownloadToolbarButtonActive) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
+  /* Flying Indicator colors. */ \
+  E(kColorFlyingIndicatorBackground, \
+    ThemeProperties::COLOR_FLYING_INDICATOR_BACKGROUND) \
+  E(kColorFlyingIndicatorForeground, \
+    ThemeProperties::COLOR_FLYING_INDICATOR_FOREGROUND) \
   /* Frame caption colors. */ \
   E(kColorFrameCaptionActive, ThemeProperties::COLOR_FRAME_CAPTION_ACTIVE) \
   E(kColorFrameCaptionInactive, ThemeProperties::COLOR_FRAME_CAPTION_INACTIVE) \
