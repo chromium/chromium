@@ -367,6 +367,10 @@ bool AppUpdate::ShortNameChanged() const {
 }
 
 const std::string& AppUpdate::PublisherId() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(publisher_id, base::EmptyString())
+  }
+
   if (mojom_delta_ && mojom_delta_->publisher_id.has_value()) {
     return mojom_delta_->publisher_id.value();
   }
@@ -374,10 +378,6 @@ const std::string& AppUpdate::PublisherId() const {
     return mojom_state_->publisher_id.value();
   }
   return base::EmptyString();
-}
-
-const std::string& AppUpdate::GetPublisherId() const {
-  GET_VALUE_WITH_FALLBACK(publisher_id, base::EmptyString())
 }
 
 bool AppUpdate::PublisherIdChanged() const {

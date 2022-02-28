@@ -96,7 +96,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   // contains the Android package name. May be empty if AppId() should be
   // considered as the canonical publisher ID.
   const std::string& PublisherId() const;
-  const std::string& GetPublisherId() const;
   bool PublisherIdChanged() const;
 
   const std::string& Description() const;
