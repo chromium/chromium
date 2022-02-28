@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
@@ -62,8 +61,8 @@ VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
       CommonSourceInfo(
           impression.impression_data, impression_origin,
           impression.conversion_destination, reporting_origin, impression_time,
-          GetExpiryTimeForImpression(impression.expiry, impression_time,
-                                     source_type),
+          CommonSourceInfo::GetExpiryTime(impression.expiry, impression_time,
+                                          source_type),
           source_type, impression.priority, /*debug_key=*/absl::nullopt));
 
   // TODO(apaseltiner): It would be nice to be able to report an issue in

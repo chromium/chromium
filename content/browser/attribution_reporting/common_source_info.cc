@@ -5,9 +5,30 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "net/base/schemeful_site.h"
 
 namespace content {
+
+base::Time CommonSourceInfo::GetExpiryTime(
+    absl::optional<base::TimeDelta> declared_expiry,
+    base::Time impression_time,
+    CommonSourceInfo::SourceType source_type) {
+  constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
+  constexpr base::TimeDelta kDefaultImpressionExpiry = base::Days(30);
+
+  // Default to the maximum expiry time.
+  base::TimeDelta expiry = declared_expiry.value_or(kDefaultImpressionExpiry);
+
+  // Expiry time for event sources must be a whole number of days.
+  if (source_type == CommonSourceInfo::SourceType::kEvent)
+    expiry = expiry.RoundToMultiple(base::Days(1));
+
+  // If the impression specified its own expiry, clamp it to the minimum and
+  // maximum.
+  return impression_time +
+         base::clamp(expiry, kMinImpressionExpiry, kDefaultImpressionExpiry);
+}
 
 CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    url::Origin impression_origin,

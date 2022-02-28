@@ -407,8 +407,6 @@ source_set("browser") {
     "attribution_reporting/attribution_observer_types.h",
     "attribution_reporting/attribution_page_metrics.cc",
     "attribution_reporting/attribution_page_metrics.h",
-    "attribution_reporting/attribution_policy.cc",
-    "attribution_reporting/attribution_policy.h",
     "attribution_reporting/attribution_random_generator.h",
     "attribution_reporting/attribution_report.cc",
     "attribution_reporting/attribution_report.h",

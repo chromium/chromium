@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
@@ -111,8 +110,8 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   StorableSource storable_source(CommonSourceInfo(
       data->source_event_id, context.context_origin, data->destination,
       reporting_origin, source_time,
-      GetExpiryTimeForImpression(data->expiry, source_time,
-                                 context.source_type),
+      CommonSourceInfo::GetExpiryTime(data->expiry, source_time,
+                                      context.source_type),
       context.source_type, data->priority,
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt));

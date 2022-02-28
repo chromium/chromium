@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
@@ -32,6 +33,11 @@ class CONTENT_EXPORT CommonSourceInfo {
     kEvent = 1,
     kMaxValue = kEvent,
   };
+
+  static base::Time GetExpiryTime(
+      absl::optional<base::TimeDelta> declared_expiry,
+      base::Time impression_time,
+      SourceType source_type);
 
   CommonSourceInfo(uint64_t source_event_id,
                    url::Origin impression_origin,

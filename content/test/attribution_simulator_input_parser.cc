@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -133,7 +132,7 @@ class AttributionSimulatorInputParser {
             source_event_id, std::move(source_origin),
             std::move(destination_origin), std::move(reporting_origin),
             source_time,
-            GetExpiryTimeForImpression(expiry, source_time, *source_type),
+            CommonSourceInfo::GetExpiryTime(expiry, source_time, *source_type),
             *source_type, priority, debug_key)),
         std::move(source));
   }

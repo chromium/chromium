@@ -1,39 +1,39 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_policy.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-TEST(AttributionPolicyTest, NoExpiryForImpression_DefaultUsed) {
+TEST(CommonSourceInfoTest, NoExpiryForImpression_DefaultUsed) {
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(
         impression_time + base::Days(30),
-        GetExpiryTimeForImpression(
+        CommonSourceInfo::GetExpiryTime(
             /*declared_expiry=*/absl::nullopt, impression_time, source_type));
   }
 }
 
-TEST(AttributionPolicyTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
+TEST(CommonSourceInfoTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   constexpr base::TimeDelta declared_expiry = base::Days(60);
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(impression_time + base::Days(30),
-              GetExpiryTimeForImpression(declared_expiry, impression_time,
-                                         source_type));
+              CommonSourceInfo::GetExpiryTime(declared_expiry, impression_time,
+                                              source_type));
   }
 }
 
-TEST(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
+TEST(CommonSourceInfoTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
   const struct {
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
@@ -48,13 +48,13 @@ TEST(AttributionPolicyTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
   for (auto source_type : kSourceTypes) {
     for (const auto& test_case : kTestCases) {
       EXPECT_EQ(impression_time + test_case.want_expiry,
-                GetExpiryTimeForImpression(test_case.declared_expiry,
-                                           impression_time, source_type));
+                CommonSourceInfo::GetExpiryTime(test_case.declared_expiry,
+                                                impression_time, source_type));
     }
   }
 }
 
-TEST(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
+TEST(CommonSourceInfoTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
     CommonSourceInfo::SourceType source_type;
     base::TimeDelta declared_expiry;
@@ -76,19 +76,19 @@ TEST(AttributionPolicyTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(
         impression_time + test_case.want_expiry,
-        GetExpiryTimeForImpression(test_case.declared_expiry, impression_time,
-                                   test_case.source_type));
+        CommonSourceInfo::GetExpiryTime(
+            test_case.declared_expiry, impression_time, test_case.source_type));
   }
 }
 
-TEST(AttributionPolicyTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
+TEST(CommonSourceInfoTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
   constexpr base::TimeDelta declared_expiry = base::Days(10);
   const base::Time impression_time = base::Time::Now();
 
   for (auto source_type : kSourceTypes) {
     EXPECT_EQ(impression_time + base::Days(10),
-              GetExpiryTimeForImpression(declared_expiry, impression_time,
-                                         source_type));
+              CommonSourceInfo::GetExpiryTime(declared_expiry, impression_time,
+                                              source_type));
   }
 }
 
