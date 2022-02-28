@@ -1627,7 +1627,8 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
 
     MinMaxSizesResult child_result =
         ComputeMinAndMaxContentContribution(Style(), child, space);
-    NGBoxStrut child_margins = ComputeMinMaxMargins(Style(), child);
+    NGBoxStrut child_margins =
+        ComputeMarginsFor(space, child.Style(), ConstraintSpace());
     child_result.sizes += child_margins.InlineSum();
 
     depends_on_block_constraints |= child_result.depends_on_block_constraints;

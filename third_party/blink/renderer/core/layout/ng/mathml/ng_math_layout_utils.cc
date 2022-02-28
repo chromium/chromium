@@ -58,7 +58,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
   auto result = ComputeMinAndMaxContentContribution(parent_style, child, space);
 
   // Add margins directly here.
-  result.sizes += ComputeMinMaxMargins(parent_style, child).InlineSum();
+  result.sizes +=
+      ComputeMarginsFor(space, child.Style(), parent_space).InlineSum();
 
   return result;
 }

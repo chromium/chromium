@@ -1900,7 +1900,7 @@ static LayoutUnit ComputeContentSize(
       const MinMaxSizesResult child_result =
           ComputeMinAndMaxContentContribution(style, float_node, float_space);
       LayoutUnit child_inline_margins =
-          ComputeMinMaxMargins(style, float_node).InlineSum();
+          ComputeMarginsFor(float_space, float_node.Style(), space).InlineSum();
 
       if (depends_on_block_constraints_out) {
         *depends_on_block_constraints_out |=

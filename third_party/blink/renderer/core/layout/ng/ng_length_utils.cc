@@ -1236,29 +1236,6 @@ NGBoxStrut ComputeMarginsFor(const NGConstraintSpace& constraint_space,
       .ConvertToLogical(compute_for.GetWritingDirection());
 }
 
-NGBoxStrut ComputeMinMaxMargins(const ComputedStyle& parent_style,
-                                NGLayoutInputNode child) {
-  // An inline child just produces line-boxes which don't have any margins.
-  if (child.IsInline() || !child.Style().MayHaveMargin())
-    return NGBoxStrut();
-
-  const Length& inline_start_margin_length =
-      child.Style().MarginStartUsing(parent_style);
-  const Length& inline_end_margin_length =
-      child.Style().MarginEndUsing(parent_style);
-
-  // TODO(ikilpatrick): We may want to re-visit calculated margins at some
-  // point. Currently "margin-left: calc(10px + 50%)" will resolve to 0px, but
-  // 10px would be more correct, (as percentages resolve to zero).
-  NGBoxStrut margins;
-  if (inline_start_margin_length.IsFixed())
-    margins.inline_start = LayoutUnit(inline_start_margin_length.Value());
-  if (inline_end_margin_length.IsFixed())
-    margins.inline_end = LayoutUnit(inline_end_margin_length.Value());
-
-  return margins;
-}
-
 namespace {
 
 NGBoxStrut ComputeBordersInternal(const ComputedStyle& style) {

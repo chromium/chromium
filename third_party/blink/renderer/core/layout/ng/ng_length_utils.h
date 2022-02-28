@@ -513,11 +513,6 @@ inline NGLineBoxStrut ComputeLineMarginsForVisualContainer(
           {constraint_space.GetWritingMode(), TextDirection::kLtr});
 }
 
-// Compute margins for a child during the min-max size calculation.
-// TODO(ikilpatrick): Replace this function with ComputeMarginsFor.
-CORE_EXPORT NGBoxStrut ComputeMinMaxMargins(const ComputedStyle& parent_style,
-                                            NGLayoutInputNode child);
-
 CORE_EXPORT NGBoxStrut ComputeBorders(const NGConstraintSpace&,
                                       const NGBlockNode&);
 

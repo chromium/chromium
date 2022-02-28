@@ -329,7 +329,10 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
         << child.ToString();
 
     // Determine the max inline contribution of the child.
-    NGBoxStrut margins = ComputeMinMaxMargins(Style(), child);
+    NGBoxStrut margins =
+        child.IsInline()
+            ? NGBoxStrut()
+            : ComputeMarginsFor(space, child_style, ConstraintSpace());
     LayoutUnit max_inline_contribution;
 
     if (child.IsFloating()) {

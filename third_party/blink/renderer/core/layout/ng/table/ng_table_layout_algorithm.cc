@@ -53,7 +53,8 @@ NGTableTypes::Caption ComputeCaptionConstraint(
 
     MinMaxSizes min_max_sizes =
         ComputeMinAndMaxContentContribution(table_style, caption, space).sizes;
-    min_max_sizes += ComputeMinMaxMargins(table_style, caption).InlineSum();
+    min_max_sizes +=
+        ComputeMarginsFor(space, caption.Style(), table_space).InlineSum();
     caption_min_max.Encompass(min_max_sizes);
   }
   return caption_min_max;

@@ -462,7 +462,9 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       const auto space = builder.ToConstraintSpace();
 
       result = ComputeMinAndMaxContentContribution(Style(), legend, space);
-      result.sizes += ComputeMinMaxMargins(Style(), legend).InlineSum();
+      result.sizes +=
+          ComputeMarginsFor(space, legend.Style(), ConstraintSpace())
+              .InlineSum();
     }
   }
 
@@ -483,7 +485,8 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       MinMaxSizesResult content_result =
           ComputeMinAndMaxContentContribution(Style(), content, space);
       content_result.sizes +=
-          ComputeMinMaxMargins(Style(), content).InlineSum();
+          ComputeMarginsFor(space, content.Style(), ConstraintSpace())
+              .InlineSum();
       result.sizes.Encompass(content_result.sizes);
       result.depends_on_block_constraints |=
           content_result.depends_on_block_constraints;
