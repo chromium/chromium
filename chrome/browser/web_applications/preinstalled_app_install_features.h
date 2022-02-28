@@ -24,6 +24,8 @@ extern const base::Feature kDefaultCalculatorWebApp;
 extern const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers;
 
 extern const base::Feature kCursiveStylusPreinstall;
+
+extern const base::Feature kMessagesPreinstall;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that

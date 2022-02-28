@@ -3175,6 +3175,9 @@ extern const char kEnableTtsLacrosSupportDescription[];
 
 extern const char kLinkCapturingUiUpdateName[];
 extern const char kLinkCapturingUiUpdateDescription[];
+
+extern const char kMessagesPreinstallName[];
+extern const char kMessagesPreinstallDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)

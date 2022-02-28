@@ -4102,6 +4102,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "messages-preinstall",
+    "owners": [ "jonmann", "jshikaram" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "metal",
     "owners": [ "ccameron", "jvanverth" ],
     "expiry_milestone": 83

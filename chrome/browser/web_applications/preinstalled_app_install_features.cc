@@ -20,6 +20,7 @@ constexpr const base::Feature* kPreinstalledAppInstallFeatures[] = {
     &kDefaultCalculatorWebApp,
 #if BUILDFLAG(IS_CHROMEOS)
     &kCursiveStylusPreinstall,
+    &kMessagesPreinstall,
 #endif
 };
 
@@ -82,6 +83,10 @@ const base::Feature kAllowDefaultWebAppMigrationForChromeOsManagedUsers{
 // screen.
 const base::Feature kCursiveStylusPreinstall{"CursiveStylusPreinstall",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables installing the Messages app on unmanaged devices.
+const base::Feature kMessagesPreinstall{"MessagesPreinstall",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
