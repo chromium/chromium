@@ -1356,16 +1356,24 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   if (IsCellOrTableHeader(GetRole()) || IsTableRow(GetRole())) {
     // Expose aria-colindex and aria-rowindex in a cell or row only if they are
     // different from the table's physical coordinates.
-    if (delegate_->GetTableCellAriaRowIndex() !=
-            delegate_->GetTableCellRowIndex() ||
-        delegate_->GetTableCellAriaColIndex() !=
-            delegate_->GetTableCellColIndex()) {
-      if (!IsTableRow(GetRole())) {
-        AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
-                           "colindex", attributes);
-      }
+    // Note: aria-col/rowindex is 1 based where as table's physical coordinates
+    // are 0 based, so we subtract aria-col/rowindex by 1 to compare with
+    // table's physical coordinates.
+    absl::optional<int> aria_rowindex = delegate_->GetTableCellAriaRowIndex();
+    absl::optional<int> physical_rowindex = delegate_->GetTableCellRowIndex();
+    absl::optional<int> aria_colindex = delegate_->GetTableCellAriaColIndex();
+    absl::optional<int> physical_colindex = delegate_->GetTableCellColIndex();
+
+    if (aria_rowindex && physical_rowindex &&
+        aria_rowindex.value() - 1 != physical_rowindex.value()) {
       AddAttributeToList(ax::mojom::IntAttribute::kAriaCellRowIndex, "rowindex",
                          attributes);
+    }
+
+    if (!IsTableRow(GetRole()) && aria_colindex && physical_colindex &&
+        aria_colindex.value() - 1 != physical_colindex.value()) {
+      AddAttributeToList(ax::mojom::IntAttribute::kAriaCellColumnIndex,
+                         "colindex", attributes);
     }
 
     // Experimental: expose aria-rowtext / aria-coltext. Not standardized

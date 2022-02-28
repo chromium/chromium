@@ -1,19 +1,19 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_TABLE
 ++++ROLE_SYSTEM_ROW
-++++++ROLE_SYSTEM_COLUMNHEADER name='Column 1' colindex:1 rowindex:1
+++++++ROLE_SYSTEM_COLUMNHEADER name='Column 1' ia2_table_cell_column_index=0 ia2_table_cell_row_index=0
 ++++++++ROLE_SYSTEM_STATICTEXT name='Column 1'
-++++++ROLE_SYSTEM_COLUMNHEADER name='Column 2' colindex:2 rowindex:1
+++++++ROLE_SYSTEM_COLUMNHEADER name='Column 2' ia2_table_cell_column_index=1 ia2_table_cell_row_index=0
 ++++++++ROLE_SYSTEM_STATICTEXT name='Column 2'
-++++++ROLE_SYSTEM_COLUMNHEADER name='Column 3' colindex:3 rowindex:1
+++++++ROLE_SYSTEM_COLUMNHEADER name='Column 3' ia2_table_cell_column_index=2 ia2_table_cell_row_index=0
 ++++++++ROLE_SYSTEM_STATICTEXT name='Column 3'
 ++++ROLE_SYSTEM_ROW
-++++++ROLE_SYSTEM_CELL name='Cell A2' FOCUSABLE colindex:2 rowindex:2
+++++++ROLE_SYSTEM_CELL name='Cell A2' FOCUSABLE colindex:2 ia2_table_cell_column_index=0 ia2_table_cell_row_index=1
 ++++++++ROLE_SYSTEM_STATICTEXT name='Cell A2'
-++++++ROLE_SYSTEM_CELL name='Cell A3' FOCUSABLE colindex:3 rowindex:2
+++++++ROLE_SYSTEM_CELL name='Cell A3' FOCUSABLE colindex:3 ia2_table_cell_column_index=1 ia2_table_cell_row_index=1
 ++++++++ROLE_SYSTEM_STATICTEXT name='Cell A3'
 ++++ROLE_SYSTEM_ROW
-++++++ROLE_SYSTEM_CELL name='Cell B1' FOCUSABLE colindex:1 rowindex:3
+++++++ROLE_SYSTEM_CELL name='Cell B1' FOCUSABLE ia2_table_cell_column_index=0 ia2_table_cell_row_index=2
 ++++++++ROLE_SYSTEM_STATICTEXT name='Cell B1'
-++++++ROLE_SYSTEM_CELL name='Cell B2' FOCUSABLE colindex:2 rowindex:3
+++++++ROLE_SYSTEM_CELL name='Cell B2' FOCUSABLE ia2_table_cell_column_index=1 ia2_table_cell_row_index=2
 ++++++++ROLE_SYSTEM_STATICTEXT name='Cell B2'
