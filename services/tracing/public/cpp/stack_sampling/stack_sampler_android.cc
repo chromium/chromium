@@ -27,8 +27,7 @@ void StackSamplerAndroid::AddAuxUnwinder(
 
 void StackSamplerAndroid::RecordStackFrames(
     base::StackBuffer* stack_buffer,
-    base::ProfileBuilder* profile_builder,
-    base::PlatformThreadId thread_id) {
+    base::ProfileBuilder* profile_builder) {
   if (!unwinder_.is_initialized()) {
     // May block on disk access. This function is executed on the profiler
     // thread, so this will only block profiling execution.

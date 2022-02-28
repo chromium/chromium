@@ -111,8 +111,7 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Same as above function, with custom |sampler| implementation. The sampler
   // on Android is not implemented in base.
-  StackSamplingProfiler(SamplingProfilerThreadToken thread_token,
-                        const SamplingParams& params,
+  StackSamplingProfiler(const SamplingParams& params,
                         std::unique_ptr<ProfileBuilder> profile_builder,
                         std::unique_ptr<StackSampler> sampler);
 
@@ -183,23 +182,19 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Friend the global function from sample_metadata.cc so that it can call into
   // the function below.
-  friend void ApplyMetadataToPastSamplesImpl(
-      TimeTicks period_start,
-      TimeTicks period_end,
-      int64_t name_hash,
-      absl::optional<int64_t> key,
-      int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
+  friend void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
+                                             TimeTicks period_end,
+                                             int64_t name_hash,
+                                             absl::optional<int64_t> key,
+                                             int64_t value);
 
   // Apply metadata to already recorded samples. See the
   // ApplyMetadataToPastSamples() docs in sample_metadata.h.
-  static void ApplyMetadataToPastSamples(
-      TimeTicks period_start,
-      TimeTicks period_end,
-      int64_t name_hash,
-      absl::optional<int64_t> key,
-      int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
+  static void ApplyMetadataToPastSamples(TimeTicks period_start,
+                                         TimeTicks period_end,
+                                         int64_t name_hash,
+                                         absl::optional<int64_t> key,
+                                         int64_t value);
 
   // The thread whose stack will be sampled.
   SamplingProfilerThreadToken thread_token_;

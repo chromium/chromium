@@ -294,8 +294,7 @@ TEST(StackSamplerImplTest, MAYBE_CopyStack) {
   std::unique_ptr<StackBuffer> stack_buffer =
       std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
   TestProfileBuilder profile_builder(&module_cache);
-  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
-                                       PlatformThread::CurrentId());
+  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder);
 
   EXPECT_EQ(stack, stack_copy);
 }
@@ -317,8 +316,7 @@ TEST(StackSamplerImplTest, CopyStackTimestamp) {
   std::unique_ptr<StackBuffer> stack_buffer =
       std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
   TestProfileBuilder profile_builder(&module_cache);
-  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
-                                       PlatformThread::CurrentId());
+  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder);
 
   EXPECT_EQ(timestamp, profile_builder.last_timestamp());
 }
@@ -335,8 +333,7 @@ TEST(StackSamplerImplTest, UnwinderInvokedWhileRecordingStackFrames) {
 
   stack_sampler_impl.Initialize();
 
-  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
-                                       PlatformThread::CurrentId());
+  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder);
 
   EXPECT_TRUE(unwinder->on_stack_capture_was_invoked());
   EXPECT_TRUE(unwinder->update_modules_was_invoked());
@@ -357,8 +354,7 @@ TEST(StackSamplerImplTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
   CallRecordingUnwinder* aux_unwinder = owned_aux_unwinder.get();
   stack_sampler_impl.AddAuxUnwinder(std::move(owned_aux_unwinder));
 
-  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
-                                       PlatformThread::CurrentId());
+  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder);
 
   EXPECT_TRUE(aux_unwinder->on_stack_capture_was_invoked());
   EXPECT_TRUE(aux_unwinder->update_modules_was_invoked());
