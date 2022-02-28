@@ -18,7 +18,7 @@
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">החלפה</translation>
 <translation id="1073899992769346247">צריך להחליף את הסוללה או לטעון אותה</translation>
-<translation id="1081015718268701546">‏בשלב זה, אין תמיכה באפליקציות Linux. אפליקציות אחרות יישמרו.</translation>
+<translation id="1081015718268701546">‏בשלב הזה, אין תמיכה באפליקציות Linux. אפליקציות אחרות יישמרו.</translation>
 <translation id="108486256082349153">סלולרי: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">אחה"צ טובים <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">משעמם לי</translation>
@@ -356,7 +356,7 @@
 <translation id="3252573918265662711">הגדרות</translation>
 <translation id="3255483164551725916">מה אפשר לעשות?</translation>
 <translation id="3269597722229482060">לחיצה ימנית</translation>
-<translation id="3289544412142055976">‏בשלב זה, אין תמיכה באפליקציות Linux</translation>
+<translation id="3289544412142055976">‏בשלב הזה, אין תמיכה באפליקציות Linux</translation>
 <translation id="3289674678944039601">מתבצעת טעינה באמצעות מתאם</translation>
 <translation id="3290356915286466215">לא מאובטחת</translation>
 <translation id="3294437725009624529">אורח</translation>
@@ -851,7 +851,7 @@
 <translation id="6431865393913628856">הקלטת המסך</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, אירוע (<ph name="NUMBER" />)</translation>
-<translation id="6449483711453944360">‏בשלב זה, אין תמיכה באפליקציות Linux ובחלונות פרטיים</translation>
+<translation id="6449483711453944360">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים</translation>
 <translation id="6452181791372256707">דחייה</translation>
 <translation id="6453179446719226835">שינוי השפה הסתיים</translation>
 <translation id="6459472438155181876">הרחבת המסך אל <ph name="DISPLAY_NAME" /> מתבצעת</translation>
@@ -1026,7 +1026,7 @@
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
-<translation id="7543399541175347147">‏בשלב זה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
+<translation id="7543399541175347147">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
 <translation id="7544300628205093162">התאורה האחורית של המקלדת פועלת</translation>
 <translation id="7548434653388805669">לילה טוב!</translation>
 <translation id="7551643184018910560">הצמדה למדף</translation>

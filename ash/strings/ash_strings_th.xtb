@@ -962,6 +962,7 @@
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
 <translation id="7086931198345821656">การอัปเดตนี้ต้องทำการ Powerwash <ph name="DEVICE_TYPE" /> ระบบจะลบข้อมูลทั้งหมด ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="7088960765736518739">การเข้าถึงด้วยสวิตช์</translation>
+<translation id="7098053464892629930">ดาวน์โหลดแอปของ <ph name="NAME" /> ใน Google Play เพื่อดูฟีเจอร์ที่ใช้ได้ทั้งหมด</translation>
 <translation id="7098389117866926363">อุปกรณ์ USB-C (พอร์ตด้านหลังซ้าย)</translation>
 <translation id="7106330611027933926">แสดงเดสก์บาร์</translation>
 <translation id="7118268675952955085">ภาพหน้าจอ</translation>
@@ -1205,6 +1206,7 @@
 <translation id="8660331759611631213">รากที่สองของ 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664753092453405566">แสดงรายการเครือข่าย <ph name="STATE_TEXT" /></translation>
+<translation id="8666856788528804727">เปิด <ph name="NAME" /> เพื่อตั้งค่าอุปกรณ์</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8683506306463609433">ใช้งานการติดตามประสิทธิภาพอยู่</translation>
 <translation id="8685326675965865247">ค้นหาอุปกรณ์ แอป การตั้งค่า และเว็บ ใช้แป้นลูกศรเพื่อไปยังส่วนต่างๆ ของแอป</translation>

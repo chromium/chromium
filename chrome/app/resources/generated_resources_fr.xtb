@@ -2304,6 +2304,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3277691515294482687">Sauvegarder mes applications et mes fichiers dans le dossier "Mes fichiers" avant de mettre à niveau Linux.</translation>
 <translation id="3278001907972365362">Vos comptes Google nécessitent votre attention</translation>
 <translation id="3278800075417428224">Gérer les langues dans les paramètres CloudReady 2.0</translation>
+<translation id="3278928434075969895">Ce profil utilise les paramètres proxy Chrome OS.</translation>
 <translation id="3279092821516760512">Certains contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les aurez pas acceptés.</translation>
 <translation id="3279230909244266691">Cette opération peut prendre quelques minutes. Démarrage de la machine virtuelle…</translation>
 <translation id="3280237271814976245">Enregistrer &amp;sous...</translation>
@@ -4876,6 +4877,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5909379458939060601">Supprimer ce profil et les données de connexion ?</translation>
 <translation id="5910363049092958439">En&amp;registrer l'image sous...</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> est hors connexion</translation>
+<translation id="5911505723657992440">Utiliser les paramètres proxy Chrome OS pour ce profil.</translation>
 <translation id="5911533659001334206">Visionneuse de raccourcis</translation>
 <translation id="5914724413750400082">Module (<ph name="MODULUS_NUM_BITS" /> bits) :
   <ph name="MODULUS_HEX_DUMP" />

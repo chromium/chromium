@@ -921,6 +921,7 @@
 <translation id="1869433484041798909">Копче за обележувач</translation>
 <translation id="1871098866036088250">Отворај во прелистувачот Chrome</translation>
 <translation id="187145082678092583">Помалку апликации</translation>
+<translation id="1871463148436682760">Одлично!</translation>
 <translation id="1871534214638631766">Прикажувај поврзани информации кога ќе кликнам со десно копче или кога долго ќе притиснам на содржини</translation>
 <translation id="1871569928317311284">Исклучи темна тема</translation>
 <translation id="1871615898038944731">Вашиот <ph name="DEVICE_TYPE" /> е ажуриран</translation>
@@ -1253,6 +1254,7 @@
 <translation id="2203088913459920044">Името може да содржи букви, бројки и специјални знаци</translation>
 <translation id="220321590587754225">Не можеше да се поврзе. Обидете се повторно.</translation>
 <translation id="2204034823255629767">Прочитајте го и променете го напишаниот текст</translation>
+<translation id="2207115382329026341">Овозможете поставки за стриминг на апликации од телефонот.</translation>
 <translation id="220858061631308971">Внесете го PIN-кодот на „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2210462644007531147">Инсталацијата не можеше да се заврши</translation>
 <translation id="2212565012507486665">Дозволи колачиња</translation>
@@ -1446,6 +1448,7 @@
 <translation id="2367972762794486313">Покажи апликации</translation>
 <translation id="236939127352773362">Кога уреди споделуваат во близина</translation>
 <translation id="2371076942591664043">Отвори кога е &amp;готово</translation>
+<translation id="237307274687369010">Не можеше да се стартува <ph name="APP_NAME" /></translation>
 <translation id="2373666622366160481">Приспособи според листот хартија</translation>
 <translation id="2375406435414127095">Поврзете се со телефонот</translation>
 <translation id="2377588536920405462">Може да ја исклучите локацијата со исклучување на главната поставка за „Локација“ на уредот. Може да го исклучите и користењето Wi-Fi, мобилни мрежи и сензори за локација во поставките за „Локација“.</translation>
@@ -2348,6 +2351,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуст</translation>
 <translation id="3305389145870741612">Процесот на форматирање може да потрае неколку секунди. Почекајте.</translation>
 <translation id="3305661444342691068">Отвори PDF во Преглед</translation>
+<translation id="3306992216458434072">Именувајте ја групата и изберете боја</translation>
 <translation id="3307176291962384345">Добијте попусти за <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Ја спречивме страницата да поставува колачиња.</translation>
 <translation id="3308134619352333507">Сокриј копче</translation>
@@ -3762,6 +3766,7 @@
 <translation id="4708794300267213770">Прикажи заклучен екран при будење од режим на мирување</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
+<translation id="47158868804223727">Кликнете на името на групата за да го проширите или соберете</translation>
 <translation id="4716483597559580346">Фабричко ресетирање за дополнителна безбедност</translation>
 <translation id="471880041731876836">Немате дозвола за посета на сајтов</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
@@ -3825,6 +3830,7 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Вашиот администратор<ph name="END_LINK" /> управува со ажурирањата</translation>
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4796142525425001238">Секогаш враќај</translation>
+<translation id="4797314204379834752">Пробајте да користите групи картички за да ги организирате задачите, за купување онлајн и друго</translation>
 <translation id="4798236378408895261">Прикачи <ph name="BEGIN_LINK" />евиденција за Bluetooth<ph name="END_LINK" /> (интерно во Google)</translation>
 <translation id="479863874072008121">Управувајте со уредите</translation>
 <translation id="4800839971935185386">Прегледајте ги ажурирањата на имињата и иконите</translation>
@@ -4065,6 +4071,7 @@
 <translation id="5039696241953571917">Прегледувајте ги и управувајте со зачуваните лозинки во вашата сметка на Google</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040823038948176460">Дополнителни поставки за содржини</translation>
+<translation id="5041509233170835229">Апликација на Chrome</translation>
 <translation id="5043440033854483429">Името може да содржи букви, бројки и цртички (-) и да има од 1 до 15 знаци.</translation>
 <translation id="5043913660911154449">Или одредете го PPD на вашиот печатач <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Погрешна лозинка</translation>
@@ -5390,6 +5397,7 @@
 <translation id="6393156038355142111">Предложи силна лозинка</translation>
 <translation id="6393550101331051049">Дозволено им е да прикажуваат небезбедни содржини</translation>
 <translation id="6395423953133416962">Испрати <ph name="BEGIN_LINK1" />информации за системот<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />метриката<ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Системска апликација</translation>
 <translation id="6396988158856674517">Блокирајте го користењето на сензорите за движење за сајтовите</translation>
 <translation id="6398715114293939307">Отстранете ја Google Play Store</translation>
 <translation id="6398765197997659313">Излези од цел екран</translation>
@@ -5459,6 +5467,7 @@
 <translation id="6460566145397380451">Дозволено им е да се поврзуваат со MIDI-уредите</translation>
 <translation id="6460601847208524483">Пронајди следно</translation>
 <translation id="6461170143930046705">Се пребаруваат мрежи…</translation>
+<translation id="6462204616987156669">Кликнете со десно копче на картичка и изберете „Додај картичка на нова група“</translation>
 <translation id="6463795194797719782">&amp;Уреди</translation>
 <translation id="6464825623202322042">Овој уред</translation>
 <translation id="6465841119675156448">Без интернет</translation>
@@ -5876,6 +5885,7 @@
 <translation id="6885771755599377173">Преглед на информациите за системот</translation>
 <translation id="6886871292305414135">Отвори ја врската во нова &amp;картичка</translation>
 <translation id="6889957081990109136">Сѐ уште не е доделен прекинувач</translation>
+<translation id="689007770043972343">Пробајте да повлечете други картички во групата</translation>
 <translation id="6892812721183419409">Отвори ја врската како <ph name="USER" /></translation>
 <translation id="6895032998810961280">Пријавете детали во Google за штетен софтвер, поставки на системот и процеси што се најдени на вашиот компјутер при ова чистење</translation>
 <translation id="6895902329218596456">Со <ph name="USER_EMAIL" /> управува <ph name="MANAGER" />, а вашиот администратор блокирал најавување со секундарна сметка</translation>
@@ -6453,6 +6463,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 колаче}one{{NUM_COOKIES} колаче}other{{NUM_COOKIES} колачиња}}</translation>
 <translation id="7493386493263658176">Екстензијата <ph name="EXTENSION_NAME" /> ќе може да го собира текстот што го пишувате, вклучувајќи ги личните податоци, како лозинки и броеви на кредитни картички. Дали сакате да ја користите?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Апликација на Android</translation>
 <translation id="7495778526395737099">Ја заборавивте вашата стара лозинка?</translation>
 <translation id="7497981768003291373">Немате неодамна снимена текстуална евиденција на WebRTC.</translation>
 <translation id="7501957181231305652">или</translation>

@@ -1252,6 +1252,7 @@
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
 <translation id="220321590587754225">연결할 수 없습니다. 다시 시도하세요.</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
+<translation id="2207115382329026341">휴대전화를 이용한 앱 스트리밍 설정을 켭니다.</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
@@ -1445,6 +1446,7 @@
 <translation id="2367972762794486313">앱 표시</translation>
 <translation id="236939127352773362">근처에 공유 중인 기기가 있을 때</translation>
 <translation id="2371076942591664043">완료되면 열기(&amp;D)</translation>
+<translation id="237307274687369010"><ph name="APP_NAME" /> 앱을 실행할 수 없음</translation>
 <translation id="2373666622366160481">용지에 맞춤</translation>
 <translation id="2375406435414127095">휴대전화에 연결</translation>
 <translation id="2377588536920405462">기기에서 기본 위치 설정을 사용 중지하여 위치를 사용 중지할 수 있습니다. 또한 위치 설정에서 위치 파악에 Wi‑Fi, 모바일 네트워크, 센서의 사용을 중지할 수도 있습니다.</translation>

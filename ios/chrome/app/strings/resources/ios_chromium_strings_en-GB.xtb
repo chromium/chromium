@@ -66,6 +66,7 @@
 <translation id="5777187867430702742">Chromium page</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
+<translation id="5983312940147103417">Make Chromium better</translation>
 <translation id="602807004951640891">By using Chromium, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
 <translation id="6119647025869519954">To make Chromium your default:
 1. Open settings
@@ -104,6 +105,13 @@
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>
 <translation id="7980860476903281594">Chromium shares your location with sites that you allow.</translation>
 <translation id="8013573822802650211">To see your tabs from wherever you use Chromium, sign in on all your devices</translation>
+<translation id="80599830191519229">When on:
+<ph name="BEGIN_INDENT" />  • Help make Chromium better for people who use it the way that you do<ph name="END_INDENT" />
+
+Things to consider:
+<ph name="BEGIN_INDENT" />  • Info is sent to Google about your Chromium usage, but it isn't tied to you
+  • If Chromium crashes, details about the crash may include some personal info
+  • If you turn on sync, metrics may also include info about URLs that you visit<ph name="END_INDENT" /></translation>
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>

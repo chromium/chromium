@@ -908,6 +908,7 @@
 <translation id="1869433484041798909">სანიშნეს ღილაკი</translation>
 <translation id="1871098866036088250">Chrome-ის ბრაუზერში გახსნა</translation>
 <translation id="187145082678092583">ნაკლები აპი</translation>
+<translation id="1871463148436682760">ყოჩაღ!</translation>
 <translation id="1871534214638631766">კონტენტზე მარჯვენა დაწკაპუნებისას ან ხანგრძლივად დაჭერისას დაკავშირებული ინფორმაციის ჩვენება</translation>
 <translation id="1871569928317311284">მუქი თემის გამორთვა</translation>
 <translation id="1871615898038944731">თქვენი <ph name="DEVICE_TYPE" /> განახლებულია</translation>
@@ -2303,6 +2304,7 @@
 <translation id="3277691515294482687">Linux-ის ახალ ვერსიაზე გადასვლამდე ჩემი აპებისა და ფაილების სარეზერვო ასლების შექმნა „ჩემი ფაილების“ საქაღალდეში.</translation>
 <translation id="3278001907972365362">თქვენი Google ანგარიშ(ებ)ი საჭიროებს ყურადღებას</translation>
 <translation id="3278800075417428224">ენების მართვა CloudReady 2.0-ის პარამეტრებიდან</translation>
+<translation id="3278928434075969895">ეს პროფილი იყენებს Chrome OS პროქსი-სერვერის პარამეტრებს.</translation>
 <translation id="3279092821516760512">არჩეულ კონტაქტებს შეეძლებათ კონტენტის თქვენთვის გაზიარება, როცა ახლომახლო იქნებიან. მონაცემთა გადაცემა არ დაიწყება, სანამ არ დაეთანხმებით.</translation>
 <translation id="3279230909244266691">მიმდინარეობს ვირტუალური მოწყობილობის გაშვება, რასაც შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="3280237271814976245">&amp;შეინახე როგორც…</translation>
@@ -2332,6 +2334,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" />-იანი ფასდაკლება</translation>
 <translation id="3305389145870741612">ფორმატირების პროცესს, შესაძლოა, რამდენიმე წამი დასჭირდეს. დაელოდეთ.</translation>
 <translation id="3305661444342691068">PDF-ის გახსნა წინასწარ ხედში</translation>
+<translation id="3306992216458434072">დაასათაურეთ თქვენი ჯგუფი და აირჩიეთ ფერი</translation>
 <translation id="3307176291962384345">მიიღეთ ფასდაკლებები <ph name="MERCHANT_NAME" />-ისთვის</translation>
 <translation id="3308116878371095290">ამ გვერდზე აიკრძალა ქუქი-ფაილების დაყენება.</translation>
 <translation id="3308134619352333507">დამალვის ღილაკი</translation>
@@ -3745,6 +3748,7 @@
 <translation id="4708794300267213770">ძილიდან გამოღვიძებისას ჩაკეტილი ეკრანის ჩვენება</translation>
 <translation id="4708849949179781599">გასვლა <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">პარამეტრების აღდგენა</translation>
+<translation id="47158868804223727">დააწკაპუნეთ ჯგუფის სახელზე მის გასაფართოებლად ან ჩასაკეცად</translation>
 <translation id="4716483597559580346">Powerwash-ის განხორციელება დამატებითი უსაფრთხოებისთვის</translation>
 <translation id="471880041731876836">თქვენ არ გაქვთ ამ საიტის მონახულების ნებართვა</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />-ის პაროლი</translation>
@@ -3808,6 +3812,7 @@
 <translation id="4794810983896241342">განახლებებს მართავს <ph name="BEGIN_LINK" />თქვენი ადმინისტრატორი<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">ვებგვერდი, მხოლოდ HTML</translation>
 <translation id="4796142525425001238">ყოველთვის აღდგეს</translation>
+<translation id="4797314204379834752">ცადეთ ჩანართების ჯგუფების გამოყენება ამოცანების ორგანიზებისთვის, ონლაინმაღაზიებისთვის და სხვა</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ჟურნალების<ph name="END_LINK" /> დართვა (Google-ის შიდა გამოყენებისთვის)</translation>
 <translation id="479863874072008121">მოწყობილობების მართვა</translation>
 <translation id="4800839971935185386">სახელისა და ხატულის განახლებების გადახედვა</translation>
@@ -4048,6 +4053,7 @@
 <translation id="5039696241953571917">ნახეთ და მართეთ შენახული პაროლები თქვენს Google ანგარიშში</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5040823038948176460">კონტენტის დამატებითი პარამეტრები</translation>
+<translation id="5041509233170835229">Chrome აპი</translation>
 <translation id="5043440033854483429">სახელი შეიძლება შეიცავდეს ასოებს, ციფრებსა და დეფისებს (-), ხოლო მისი სიგრძე უნდა იყოს 1-დან 15 სიმბოლოს ჩათვლით.</translation>
 <translation id="5043913660911154449">ან მიუთითეთ პრინტერის PPD. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">არასწორი პაროლი</translation>
@@ -4874,6 +4880,7 @@
 <translation id="5909379458939060601">გსურთ, წაშალოთ ეს პროფილი და დათვალიერების მონაცემები?</translation>
 <translation id="5910363049092958439">გამოსახულების შენ&amp;ახვა, როგორც…</translation>
 <translation id="5910726859585389579"><ph name="DEVICE_TYPE" /> ხაზგარეშეა</translation>
+<translation id="5911505723657992440">Chrome OS პროქსი-სერვერის პარამეტრების გამოყენება ამ პროფილისთვის.</translation>
 <translation id="5911533659001334206">მალსახმობების მნახველი</translation>
 <translation id="5914724413750400082">მოდული (<ph name="MODULUS_NUM_BITS" /> ბიტი):
   <ph name="MODULUS_HEX_DUMP" />
@@ -5373,6 +5380,7 @@
 <translation id="6393156038355142111">ძლიერი პაროლის შემოთავაზება</translation>
 <translation id="6393550101331051049">დაუცველი კონტენტის ჩვენება დაშვებულია</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />სისტემის ინფორმაციის<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
+<translation id="6396175271241405634">სისტემური აპი</translation>
 <translation id="6396988158856674517">საიტებისთვის მოძრაობის სენსორების გამოყენების აკრძალვა</translation>
 <translation id="6398715114293939307">Google Play Store-ის ამოშლა</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
@@ -5442,6 +5450,7 @@
 <translation id="6460566145397380451">MIDI-მოწყობილობებთან დაკავშირება დაშვებულია</translation>
 <translation id="6460601847208524483">შემდეგის ძებნა</translation>
 <translation id="6461170143930046705">მიმდინარეობს ქსელების ძიება…</translation>
+<translation id="6462204616987156669">მარჯვენა ღილაკით დააწკაპუნეთ ჩანართზე და აირჩიეთ „ჩანართის დამატება ახალ ჯგუფში“</translation>
 <translation id="6463795194797719782">&amp;რედაქტირება</translation>
 <translation id="6464825623202322042">ეს მოწყობილობა</translation>
 <translation id="6465841119675156448">ინტერნეტის გარეშე</translation>
@@ -5859,6 +5868,7 @@
 <translation id="6885771755599377173">სისტემის ინფორმაციის გადახედვა</translation>
 <translation id="6886871292305414135">ბმულის გახსნა ახალ &amp;ჩანართში</translation>
 <translation id="6889957081990109136">გადამრთველი ჯერ არ არის მიკუთვნებული</translation>
+<translation id="689007770043972343">ცადეთ, თქვენს ჯგუფში ჩავლებით გადმოიტანოთ სხვა გახსნილი ჩანართები</translation>
 <translation id="6892812721183419409">ბმულის გახსნა, როგორც <ph name="USER" /></translation>
 <translation id="6895032998810961280">საზიანო პროგრამული უზრუნველყოფის, სისტემის პარამეტრების და თქვენი კომპიუტერის გასუფთავებისას აღმოჩენილი მიმდინარე პროცესების შესახებ დეტალური ინფორმაციის შეტყობინება Google-ისთვის</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" /> იმართება <ph name="MANAGER" />-ის მიერ და თქვენმა ადმინისტრატორმა დაბლოკა სისტემაში შესვლა არაძირითადი ანგარიშიდან</translation>
@@ -6436,6 +6446,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 ქუქი-ჩანაწერი}other{{NUM_COOKIES} ქუქი-ჩანაწერი}}</translation>
 <translation id="7493386493263658176">გაფართოება „<ph name="EXTENSION_NAME" />“ თქვენ მიერ აკრეფილი ნებისმიერი ტექსტის შეგროვებას შეძლებს, მათ შორის, ისეთი პირადი ინფორმაციის, როგორიც არის პაროლები და საკრედიტო ბარათების ნომრები. გსურთ ამ გაფართოების გამოყენება?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android აპი</translation>
 <translation id="7495778526395737099">დაგავიწყდათ ძველი პაროლი?</translation>
 <translation id="7497981768003291373">ახლახან აღბეჭდილი WebRTC-ის ტექსტური ჟურნალები არ არის.</translation>
 <translation id="7501957181231305652">ან</translation>

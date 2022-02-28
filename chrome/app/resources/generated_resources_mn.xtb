@@ -916,6 +916,7 @@
 <translation id="1869433484041798909">Хавчуурганы товчлуур</translation>
 <translation id="1871098866036088250">Chrome хөтөч дээр нээх</translation>
 <translation id="187145082678092583">Арай цөөн апп</translation>
+<translation id="1871463148436682760">Амжилттай дууссан!</translation>
 <translation id="1871534214638631766">Таныг контент дээр хулганынхаа баруун талыг товших эсвэл дээр нь удаан дарах үед холбоотой мэдээллийг харуулна</translation>
 <translation id="1871569928317311284">Бараан загварыг унтраах</translation>
 <translation id="1871615898038944731">Таны <ph name="DEVICE_TYPE" />-г шинэчилсэн байна</translation>
@@ -2346,6 +2347,7 @@
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> хямдралтай</translation>
 <translation id="3305389145870741612">Форматлах үйл ажиллагаанд тодорхой хугацаа шаардлагатай тул түр хүлээнэ үү.</translation>
 <translation id="3305661444342691068">PDF-ийг урьдчилан харах байдлаар нээх</translation>
+<translation id="3306992216458434072">Бүлгээ нэрлэж, өнгө сонгоно уу</translation>
 <translation id="3307176291962384345"><ph name="MERCHANT_NAME" />-н хөнгөлөлтүүдийг авах</translation>
 <translation id="3308116878371095290">Энэхүү хуудсыг cookies байршуулах тохиргооноос хамгаалсан байна.</translation>
 <translation id="3308134619352333507">Товчлуурыг нуух</translation>
@@ -3759,6 +3761,7 @@
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
+<translation id="47158868804223727">Бүлгийг дэлгэх эсвэл хураахын тулд нэрийг нь товшино уу</translation>
 <translation id="4716483597559580346">Хамгаалалтыг сайжруулахын тулд powerwash хийх</translation>
 <translation id="471880041731876836">Танд энэ сайтад зочлох зөвшөөрөл алга</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />-н нууц үг</translation>
@@ -3822,6 +3825,7 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Таны администратор<ph name="END_LINK" /> шинэчлэлтүүдийг удирддаг</translation>
 <translation id="479536056609751218">Цахим хуудас, зөвхөн HTML</translation>
 <translation id="4796142525425001238">Үргэлж сэргээ</translation>
+<translation id="4797314204379834752">Ажлуудыг цэгцлэх, онлайн худалдаа хийх болон бусад зүйлд табын бүлгүүдийг ашиглаж үзнэ үү</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth Логыг<ph name="END_LINK" /> хавсаргана уу (Google дотоод)</translation>
 <translation id="479863874072008121">Төхөөрөмжүүдийг удирдах</translation>
 <translation id="4800839971935185386">Нэр болон дүрс тэмдгийн шинэчлэлтүүдийг шалгах</translation>
@@ -4062,6 +4066,7 @@
 <translation id="5039696241953571917">Google Бүртгэлдээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5040823038948176460">Контентын нэмэлт тохиргоо</translation>
+<translation id="5041509233170835229">Chrome Апп</translation>
 <translation id="5043440033854483429">Нэр нь үсэг, тоо, дундуур зураас (-) ашиглах боломжтой бөгөөд 1-ээс 15 тэмдэгттэй ёстой.</translation>
 <translation id="5043913660911154449">Эсвэл хэвлэгчийнхээ PPD-г заах <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5045550434625856497">Буруу нууц үг</translation>
@@ -5388,6 +5393,7 @@
 <translation id="6393156038355142111">Сайн нууц үг санал болгох</translation>
 <translation id="6393550101331051049">Аюултай контент харуулахыг зөвшөөрсөн</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" /> системийн мэдээллийг илгээх <ph name="END_LINK1" /> ба<ph name="BEGIN_LINK2" /> хэмжигдэхүүн <ph name="END_LINK2" /></translation>
+<translation id="6396175271241405634">Системийн апп</translation>
 <translation id="6396988158856674517">Сайтуудыг хөдөлгөөн мэдрэгч ашиглахыг хориглох</translation>
 <translation id="6398715114293939307">Google Play дэлгүүрийг устгах</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
@@ -5457,6 +5463,7 @@
 <translation id="6460566145397380451">MIDI төхөөрөмжүүдэд холбогдохыг зөвшөөрсөн</translation>
 <translation id="6460601847208524483">Дараагийнхыг хайж ол</translation>
 <translation id="6461170143930046705">Сүлжээ хайж байна...</translation>
+<translation id="6462204616987156669">Таб дээр баруун талыг товшоод, "Табыг шинэ бүлэгт нэмэх"-ийг сонгоно уу</translation>
 <translation id="6463795194797719782">&amp;Засварлах</translation>
 <translation id="6464825623202322042">Энэ төхөөрөмж</translation>
 <translation id="6465841119675156448">Интернэтгүйгээр</translation>
@@ -5874,6 +5881,7 @@
 <translation id="6885771755599377173">Системийн мэдээллийг урьдчилан үзэх</translation>
 <translation id="6886871292305414135">Шинэ цонхонд холбоосыг нээ</translation>
 <translation id="6889957081990109136">Одоогоор сэлгүүр оноогоогүй байна</translation>
+<translation id="689007770043972343">Бусад нээлттэй табыг бүлэг рүүгээ чирч үзнэ үү</translation>
 <translation id="6892812721183419409">Холбоосыг <ph name="USER" />-р нээх</translation>
 <translation id="6895032998810961280">Энэ цэвэрлэгээний үеэр компьютероосоо олдсон хортой программ хангамж, системийн тохиргоо болон боловсруулалтын талаар дэлгэрэнгүй мэдээллийг Google-д мэдээлнэ үү</translation>
 <translation id="6895902329218596456"><ph name="USER_EMAIL" />-г <ph name="MANAGER" /> удирддаг бөгөөд танай админ хоёрдогч бүртгэлээр нэвтрэхийг блоклосон</translation>
@@ -6451,6 +6459,7 @@
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 күүки}other{{NUM_COOKIES} күүки}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> өргөтгөл таны шивсэн бүх текстийг цуглуулах бөгөөд үүнд таны нууц үг, кредит картын дугаар зэрэг хувийн өгөгдөл багтана. Та энэ өргөтгөлийг ашиглах уу?</translation>
 <translation id="7494694779888133066"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
+<translation id="7495149565104413027">Android Апп</translation>
 <translation id="7495778526395737099">Хуучин нууц үгээ мартсан уу?</translation>
 <translation id="7497981768003291373">Танд саяхан авсан WebRTC текст лог алга.</translation>
 <translation id="7501957181231305652">эсвэл</translation>
@@ -6530,6 +6539,7 @@
 <translation id="7573172247376861652">Батерейны цэнэг</translation>
 <translation id="7573594921350120855">Сайтууд ихэвчлэн видео чат зэрэг харилцаа холбооны онцлогуудад зориулж таны видео камерыг ашигладаг</translation>
 <translation id="7574650250151586813">Текст бичихийн тулд Daydream гарын аппыг шинэчилнэ үү</translation>
+<translation id="7574676002608048667">Нууц үг илгээх</translation>
 <translation id="7576690715254076113">Шалгах</translation>
 <translation id="7576976045740938453">Демо горимын бүртгэлд алдаа гарлаа.</translation>
 <translation id="7578137152457315135">Хурууны хээний тохиргоо</translation>
