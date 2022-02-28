@@ -3242,6 +3242,29 @@ if (!is_android) {
       ]
     }
 
+    # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS.
+    if (enable_supervised_users && !is_chromeos_lacros) {
+      assert(is_chromeos_ash)
+      sources += [
+        "../browser/supervised_user/permission_request_creator_mock.cc",
+        "../browser/supervised_user/permission_request_creator_mock.h",
+        "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
+        "../browser/supervised_user/supervised_user_service_browsertest.cc",
+        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
+      ]
+      if (enable_extensions) {
+        sources += [
+          "../browser/supervised_user/supervised_user_extension_browsertest.cc",
+          "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_view_browsertest.cc",
+          "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
+        ]
+      }
+      deps += [
+        "//chrome/browser/supervised_user:test_support",
+        "//chrome/browser/supervised_user/supervised_user_features",
+      ]
+    }
+
     # NOTE: This is the main "browser_tests" section for |is_chromeos_ash|.
     if (is_chromeos_ash) {
       sources += [
@@ -3703,8 +3726,6 @@ if (!is_android) {
         "../browser/ui/views/frame/top_controls_slide_controller_chromeos_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest_chromeos.cc",
         "../browser/ui/views/plugin_vm/plugin_vm_installer_view_browsertest.cc",
-        "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_view_browsertest.cc",
-        "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
         "../browser/ui/web_applications/web_app_guest_session_browsertest_chromeos.cc",
@@ -4078,24 +4099,6 @@ if (!is_android) {
       sources += [ "../browser/extensions/api/mdns/mdns_apitest.cc" ]
     }
 
-    if (enable_supervised_users) {
-      sources += [
-        "../browser/supervised_user/permission_request_creator_mock.cc",
-        "../browser/supervised_user/permission_request_creator_mock.h",
-        "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
-        "../browser/supervised_user/supervised_user_service_browsertest.cc",
-        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
-      ]
-      deps += [
-        "//chrome/browser/supervised_user:test_support",
-        "//chrome/browser/supervised_user/supervised_user_features",
-      ]
-      if (enable_extensions) {
-        sources += [
-          "../browser/supervised_user/supervised_user_extension_browsertest.cc",
-        ]
-      }
-    }
     if ((is_linux || is_chromeos) && is_asan && is_lsan) {
       # TODO(crbug.com/793426): Fix the flakiness on Linux Asan Lsan bot.
       sources -= [ "../browser/media/encrypted_media_browsertest.cc" ]
@@ -6577,7 +6580,6 @@ test("unit_tests") {
         "//chrome/browser/nearby_sharing/proto:tachyon_proto",
         "//chrome/browser/policy:onc",
         "//chrome/browser/policy:unit_tests",
-        "//chrome/browser/supervised_user/kids_chrome_management:proto",
         "//chrome/browser/ui/quick_answers",
         "//chrome/browser/ui/webui/nearby_share:mojom",
         "//chrome/browser/ui/webui/nearby_share/public/mojom",
@@ -8160,6 +8162,7 @@ test("unit_tests") {
     }
     deps += [
       "//chrome/browser/supervised_user:test_support",
+      "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/supervised_user/supervised_user_error_page:unit_tests",
       "//chrome/browser/supervised_user/supervised_user_features:unit_tests",
     ]

@@ -60,6 +60,10 @@
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"
@@ -2359,10 +2363,12 @@ TEST_F(IdentityManagerTest, AreRefreshTokensLoaded) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(IdentityManagerTest, SetPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(account_manager::Account{
-      account_manager::AccountKey{kTestGaiaId,
-                                  account_manager::AccountType::kGaia},
-      kTestEmail});
+  signin_client()->SetInitialPrimaryAccountForTests(
+      account_manager::Account{
+          account_manager::AccountKey{kTestGaiaId,
+                                      account_manager::AccountType::kGaia},
+          kTestEmail},
+      /*is_child=*/false);
   // Do not sign into a primary account as part of the test setup.
   RecreateIdentityManager(AccountConsistencyMethod::kDisabled,
                           PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
@@ -2376,10 +2382,12 @@ TEST_F(IdentityManagerTest, SetPrimaryAccount) {
 
 // TODO(https://crbug.com/1223364): Remove this when all the users are migrated.
 TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
-  signin_client()->SetInitialPrimaryAccountForTests(account_manager::Account{
-      account_manager::AccountKey{kTestGaiaId2,
-                                  account_manager::AccountType::kGaia},
-      kTestEmail2});
+  signin_client()->SetInitialPrimaryAccountForTests(
+      account_manager::Account{
+          account_manager::AccountKey{kTestGaiaId2,
+                                      account_manager::AccountType::kGaia},
+          kTestEmail2},
+      /*is_child=*/false);
 
   // RecreateIdentityManager will create PrimaryAccountManager with the primary
   // account set to kTestGaiaId. After that, IdentityManager ctor should clear

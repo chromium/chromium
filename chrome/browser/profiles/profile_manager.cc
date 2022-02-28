@@ -162,6 +162,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
@@ -484,6 +485,18 @@ base::FilePath GetLastUsedProfileBaseName() {
 
   return base::FilePath::FromASCII(chrome::kInitialProfile);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+void UpdateSupervisedUserPref(Profile* profile, bool is_child) {
+  DCHECK(profile);
+  if (is_child) {
+    profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
+                                   supervised_users::kChildAccountSUID);
+  } else {
+    profile->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
+  }
+}
+#endif
 
 }  // namespace
 
@@ -1315,15 +1328,17 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       profile->GetPrefs()->SetInteger(arc::prefs::kArcManagementTransition,
                                       static_cast<int>(transition));
     }
-
-    if (user_is_child) {
-      profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
-                                     supervised_users::kChildAccountSUID);
-    } else {
-      profile->GetPrefs()->ClearPref(prefs::kSupervisedUserId);
-    }
+    UpdateSupervisedUserPref(profile, user_is_child);
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  const bool user_is_child =
+      chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kChildSession;
+  UpdateSupervisedUserPref(profile, user_is_child);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   size_t avatar_index;
   std::string profile_name;

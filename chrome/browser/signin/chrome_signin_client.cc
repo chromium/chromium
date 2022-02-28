@@ -313,7 +313,23 @@ ChromeSigninClient::GetInitialPrimaryAccount() {
 
   return account_manager::FromMojoAccount(device_account);
 }
-#endif
+
+// Returns whether the account that must be auto-signed-in to the main profile
+// in Lacros is a child account.
+// Returns false for guest session, public session, kiosk, demo mode and Active
+// Directory account.
+// Returns null for secondary / non-main profiles in LaCrOS.
+absl::optional<bool> ChromeSigninClient::IsInitialPrimaryAccountChild() const {
+  if (!profile_->IsMainProfile())
+    return absl::nullopt;
+
+  DCHECK(chromeos::LacrosService::Get());
+  const bool is_child_session =
+      chromeos::LacrosService::Get()->init_params()->session_type ==
+      crosapi::mojom::SessionType::kChildSession;
+  return is_child_session;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ChromeSigninClient::SetURLLoaderFactoryForTest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {

@@ -231,8 +231,10 @@ class SupervisedUserService : public KeyedService,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList metrics.
-  // Igores reporting when AreWebFilterPrefsDefault() is true.
+  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
+  // LaCrOS.
+  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList
+  // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
   void ReportNonDefaultWebFilterValue() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -414,6 +416,8 @@ class SupervisedUserService : public KeyedService,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
+  // LaCrOS.
   // When there is change between WebFilterType::kTryToBlockMatureSites and
   // WebFilterType::kCertainSites, both
   // prefs::kDefaultSupervisedUserFilteringBehavior and

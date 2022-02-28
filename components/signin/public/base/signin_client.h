@@ -96,8 +96,13 @@ class SigninClient : public KeyedService {
   virtual bool IsNonEnterpriseUser(const std::string& username);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns an account used to sign into Chrome OS session if available.
   virtual absl::optional<account_manager::Account>
   GetInitialPrimaryAccount() = 0;
+
+  // Returns whether account used to sign into Chrome OS is a child account.
+  // Returns nullopt for secondary / non-main profiles in LaCrOS.
+  virtual absl::optional<bool> IsInitialPrimaryAccountChild() const = 0;
 #endif
 };
 

@@ -146,7 +146,7 @@ class FamilyInfoFetcherTest
   }
 
   CoreAccountInfo SetPrimaryAccount() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     return identity_test_env_.SetPrimaryAccount(kAccountId,
                                                 signin::ConsentLevel::kSync);
 #elif BUILDFLAG(IS_ANDROID)
@@ -161,7 +161,7 @@ class FamilyInfoFetcherTest
   }
 
   void IssueRefreshToken() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
                                                    signin::ConsentLevel::kSync);
 #elif BUILDFLAG(IS_ANDROID)

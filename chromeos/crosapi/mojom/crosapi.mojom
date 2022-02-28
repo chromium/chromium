@@ -474,11 +474,12 @@ interface Crosapi {
 
 [Stable, Extensible]
 enum SessionType {
-  kUnknown,
+  [Default] kUnknown,
   kRegularSession,
   kGuestSession,
   kPublicSession,
   [MinVersion=40] kWebKioskSession,
+  [MinVersion=41] kChildSession,
 };
 
 // Device mode (e.g. enterprise enrollment state). See policy::DeviceMode.

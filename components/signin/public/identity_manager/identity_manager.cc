@@ -39,6 +39,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/account_manager_core/account.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace signin {
@@ -46,10 +48,12 @@ namespace signin {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+
 void SetPrimaryAccount(IdentityManager* identity_manager,
                        AccountTrackerService* account_tracker_service,
                        SigninClient* signin_client,
-                       const account_manager::Account& device_account) {
+                       const account_manager::Account& device_account,
+                       signin::Tribool device_account_is_child) {
   if (device_account.key.account_type() != account_manager::AccountType::kGaia)
     return;
 
@@ -67,8 +71,15 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
   // by default.
   const CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(ConsentLevel::kSync);
-  if (primary_account_id == device_account_id)
+  DCHECK(signin_client);
+
+  if (primary_account_id == device_account_id) {
+    identity_manager->GetAccountsMutator()->UpdateAccountInfo(
+        device_account_id, device_account_is_child, signin::Tribool::kUnknown);
+
     return;  // Already correct primary account set, nothing to do.
+  }
+
   if (!primary_account_id.empty()) {
     // Different primary account found, have to clear it first.
     // TODO(https://crbug.com/1223364): Replace this if with a CHECK after all
@@ -77,9 +88,12 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
         signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE,
         signin_metrics::SignoutDelete::kIgnoreMetric);
   }
+
   PrimaryAccountMutator::PrimaryAccountError error =
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
           device_account_id, ConsentLevel::kSync);
+  identity_manager->GetAccountsMutator()->UpdateAccountInfo(
+      device_account_id, device_account_is_child, signin::Tribool::kUnknown);
   CHECK_EQ(PrimaryAccountMutator::PrimaryAccountError::kNoError, error)
       << "SetPrimaryAccount error: " << static_cast<int>(error);
   CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
@@ -156,8 +170,14 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   absl::optional<account_manager::Account> initial_account =
       signin_client_->GetInitialPrimaryAccount();
   if (initial_account.has_value()) {
+    const absl::optional<bool>& initial_account_is_child =
+        signin_client_->IsInitialPrimaryAccountChild();
+    CHECK(initial_account_is_child.has_value());
     SetPrimaryAccount(this, account_tracker_service_.get(), signin_client_,
-                      initial_account.value());
+                      initial_account.value(),
+                      initial_account_is_child.value()
+                          ? signin::Tribool::kTrue
+                          : signin::Tribool::kFalse);
   }
 #endif
 }

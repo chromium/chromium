@@ -117,6 +117,7 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
   DCHECK(chromeos::LacrosService::Get());
   switch (chromeos::LacrosService::Get()->init_params()->session_type) {
     case crosapi::mojom::SessionType::kRegularSession:
+    case crosapi::mojom::SessionType::kChildSession:
       return DlpPolicyEvent_UserType_REGULAR;
     case crosapi::mojom::SessionType::kPublicSession:
       return DlpPolicyEvent_UserType_MANAGED_GUEST;

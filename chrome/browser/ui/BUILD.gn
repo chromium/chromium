@@ -1836,6 +1836,21 @@ static_library("ui") {
     ]
   }
 
+  if (enable_supervised_users && enable_extensions) {
+    assert(is_chromeos_ash || is_chromeos_lacros)
+    sources += [
+      "supervised_user/parent_permission_dialog.h",
+      "views/supervised_user/extension_install_blocked_by_parent_dialog_view.cc",
+      "views/supervised_user/extension_install_blocked_by_parent_dialog_view.h",
+      "views/supervised_user/parent_permission_dialog_view.cc",
+      "views/supervised_user/parent_permission_dialog_view.h",
+    ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//chromeos/ui/vector_icons",
+    ]
+  }
+
   if (is_chromeos_ash) {
     assert(enable_extensions)
     assert(enable_supervised_users)
@@ -2363,7 +2378,6 @@ static_library("ui") {
       "settings_window_manager_chromeos.cc",
       "settings_window_manager_chromeos.h",
       "settings_window_manager_observer_chromeos.h",
-      "supervised_user/parent_permission_dialog.h",
       "views/apps/app_dialog/app_block_dialog_view.cc",
       "views/apps/app_dialog/app_block_dialog_view.h",
       "views/apps/app_dialog/app_pause_dialog_view.cc",
@@ -2417,10 +2431,6 @@ static_library("ui") {
       "views/select_file_dialog_extension.h",
       "views/select_file_dialog_extension_factory.cc",
       "views/select_file_dialog_extension_factory.h",
-      "views/supervised_user/extension_install_blocked_by_parent_dialog_view.cc",
-      "views/supervised_user/extension_install_blocked_by_parent_dialog_view.h",
-      "views/supervised_user/parent_permission_dialog_view.cc",
-      "views/supervised_user/parent_permission_dialog_view.h",
       "views/touch_selection_menu_chromeos.cc",
       "views/touch_selection_menu_chromeos.h",
       "views/touch_selection_menu_runner_chromeos.cc",

@@ -239,6 +239,8 @@ std::string SupervisedUserService::GetCustodianName() const {
   std::string name =
       profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianName);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1218633): Check if additional work is needed for
+  // extensions in LaCrOS.
   // |GetActiveUser()| can return null in unit tests.
   if (name.empty() && !!user_manager::UserManager::Get()->GetActiveUser()) {
     name = base::UTF16ToUTF8(
@@ -776,6 +778,8 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
     const Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1218633): Check if this is needed for extensions in
+  // LaCrOS.
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
   // extensions creation flags are ignored in case of default extensions with

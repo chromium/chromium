@@ -82,6 +82,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -2280,3 +2282,45 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
   EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(ProfileManagerTest, RegularSession) {
+  // Setup regular session in LaCrOS.
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+
+  base::FilePath dest_path = temp_dir_.GetPath();
+  dest_path = dest_path.Append(FILE_PATH_LITERAL("Regular Profile"));
+
+  // Create and initialize a profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  Profile* profile = profile_manager->GetProfile(dest_path);
+
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
+            std::string());
+  EXPECT_FALSE(profile->IsChild());
+}
+
+TEST_F(ProfileManagerTest, ChildSession) {
+  // Setup child session in LaCrOS.
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      crosapi::mojom::BrowserInitParams::New();
+  init_params->session_type = crosapi::mojom::SessionType::kChildSession;
+  chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
+
+  // Create and initialize a profile.
+  base::FilePath dest_path = temp_dir_.GetPath();
+  dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile"));
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const Profile* profile = profile_manager->GetProfile(dest_path);
+
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
+            supervised_users::kChildAccountSUID);
+  EXPECT_TRUE(profile->IsChild());
+}
+#endif

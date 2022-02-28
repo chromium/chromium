@@ -99,7 +99,11 @@ class ChildAccountService : public KeyedService,
   void CancelFetchingFamilyInfo();
   void ScheduleNextFamilyInfoUpdate(base::TimeDelta delay);
 
-  void PropagateChildStatusToUser(bool is_child);
+  // Asserts that `is_child` matches the child status of the primary user.
+  // Terminates user session in case of status mismatch in order to prevent
+  // supervision incidents. Relevant on Chrome OS platform that has the concept
+  // of the user.
+  void AssertChildStatusOfTheUser(bool is_child);
 
   void SetFirstCustodianPrefs(const FamilyInfoFetcher::FamilyMember& custodian);
   void SetSecondCustodianPrefs(

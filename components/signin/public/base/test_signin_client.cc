@@ -122,9 +122,15 @@ TestSigninClient::GetInitialPrimaryAccount() {
   return initial_primary_account_;
 }
 
-void TestSigninClient::SetInitialPrimaryAccountForTests(
-    const account_manager::Account& account) {
-  initial_primary_account_ = absl::make_optional(account);
+absl::optional<bool> TestSigninClient::IsInitialPrimaryAccountChild() const {
+  return is_initial_primary_account_child_;
 }
 
-#endif
+void TestSigninClient::SetInitialPrimaryAccountForTests(
+    const account_manager::Account& account,
+    const absl::optional<bool>& is_child) {
+  initial_primary_account_ = absl::make_optional(account);
+  is_initial_primary_account_child_ = is_child;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

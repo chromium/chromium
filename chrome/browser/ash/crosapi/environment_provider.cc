@@ -41,6 +41,9 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {
     return mojom::SessionType::kWebKioskSession;
   }
+  if (user->GetType() == user_manager::USER_TYPE_CHILD) {
+    return mojom::SessionType::kChildSession;
+  }
   return mojom::SessionType::kRegularSession;
 }
 

@@ -63,7 +63,9 @@ declare_args() {
   # This feature is only approved for release on ChromeOS at this time.
   enable_side_search = is_chromeos
 
-  enable_supervised_users = is_chromeos_ash || is_android
+  # Enables supervision for Family Link users.
+  # Supervision is only supported on Chrome OS and Android.
+  enable_supervised_users = is_chromeos_ash || is_chromeos_lacros || is_android
 
   # Enables usage of the system-provided notification center.
   enable_system_notifications =

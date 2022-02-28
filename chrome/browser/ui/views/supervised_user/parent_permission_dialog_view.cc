@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -326,9 +327,15 @@ bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
 }
 
 std::u16string ParentPermissionDialogView::GetActiveUserFirstName() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::UserManager* manager = user_manager::UserManager::Get();
   const user_manager::User* user = manager->GetActiveUser();
   return user->GetGivenName();
+#else
+  // TODO(https://crbug.com/1218633): Implement support for parent approved
+  // extensions in LaCrOS.
+  return std::u16string();
+#endif
 }
 
 void ParentPermissionDialogView::AddedToWidget() {
