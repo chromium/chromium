@@ -9,6 +9,7 @@
 #import "remoting/ios/app/help_view_controller.h"
 
 #include "remoting/base/string_resources.h"
+#import "remoting/ios/app/web_view_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
 // TODO(nicholss): These urls should come from a global config.
@@ -22,9 +23,9 @@ static NSString* const kCreditsUrlString =
 @implementation HelpViewController
 
 - (instancetype)init {
-  if (self = [super
-          initWithUrl:kHelpCenterUrl
-                title:l10n_util::GetNSString(IDS_ACTIONBAR_HELP_TITLE)]) {
+  if (self = [super initWithURL:[NSURL URLWithString:kHelpCenterUrl]]) {
+    self.navigationItem.title =
+        l10n_util::GetNSString(IDS_ACTIONBAR_HELP_TITLE);
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
         initWithTitle:l10n_util::GetNSString(IDS_CREDITS)
                 style:UIBarButtonItemStylePlain
