@@ -43,7 +43,7 @@ TEST_F('CrComponentsColorChangeListenerTest', 'All', function() {
 var CrComponentsManagedFootnoteTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/managed_footnote_test.js';
+    return 'chrome://test/test_loader.html?module=cr_components/managed_footnote_test.js&host=webui-test';
   }
 };
 
@@ -95,7 +95,7 @@ GEN('#endif  // BUILDFLAG(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_components/managed_dialog_test.js';
+    return 'chrome://test/test_loader.html?module=cr_components/managed_dialog_test.js&host=webui-test';
   }
 };
 

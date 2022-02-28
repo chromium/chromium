@@ -118,10 +118,7 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "managed_dialog/managed_dialog.js",
-    "omnibox/cr_autocomplete_match_list.js",
-  ]
+  in_files = [ "omnibox/cr_autocomplete_match_list.js" ]
 
   if (is_chromeos_ash) {
     in_files += [
@@ -229,6 +226,7 @@ preprocess_if_expr("preprocess_generated_ts") {
   out_folder = preprocess_folder
   in_files = [
     "iph_bubble/iph_bubble.ts",
+    "managed_dialog/managed_dialog.ts",
     "managed_footnote/managed_footnote.ts",
   ]
 }
@@ -397,7 +395,6 @@ if (is_chromeos_ash) {
 group("closure_compile") {
   deps = [
     "color_change_listener:closure_compile",
-    "managed_dialog:closure_compile",
     "omnibox:closure_compile",
   ]
 

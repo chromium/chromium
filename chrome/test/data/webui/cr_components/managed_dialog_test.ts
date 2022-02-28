@@ -6,8 +6,9 @@
 
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
+import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ManagedDialogTest', function() {
   suiteSetup(function() {
@@ -21,11 +22,11 @@ suite('ManagedDialogTest', function() {
   /**
    * Sets loadTimeData to the parameters, inserts a <managed-dialog> element in
    * the DOM, and returns it.
-   * @param {string} title Managed dialog title text
-   * @param {string} body Managed dialog body text
-   * @return {Element}
+   * @param title Managed dialog title text
+   * @param body Managed dialog body text
    */
-  function createManagedDialog(title, body) {
+  function createManagedDialog(
+      title: string, body: string): ManagedDialogElement {
     loadTimeData.overrideValues({
       title,
       body,
@@ -46,14 +47,14 @@ suite('ManagedDialogTest', function() {
     const body = 'Your org is managing this for you!';
     const dialog = createManagedDialog(title, body);
     assertNotEquals('none', getComputedStyle(dialog).display);
-    assertTrue(dialog.$$('cr-dialog').open);
-    assertTrue(dialog.shadowRoot.textContent.includes(title));
-    assertTrue(dialog.shadowRoot.textContent.includes(body));
+    assertTrue(dialog.$.dialog.open);
+    assertTrue(dialog.shadowRoot!.textContent!.includes(title));
+    assertTrue(dialog.shadowRoot!.textContent!.includes(body));
 
     // Click OK button to dismiss dialog
-    dialog.$$('.action-button').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('.action-button')!.click();
 
     // Dialog is no longer displayed
-    assertFalse(dialog.$$('cr-dialog').open);
+    assertFalse(dialog.$.dialog.open);
   });
 });

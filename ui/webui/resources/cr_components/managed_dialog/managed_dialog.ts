@@ -12,19 +12,20 @@ import '../../cr_elements/icons.m.js';
 import '../../cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from '../../js/i18n_behavior.m.js';
+import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ManagedDialogElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+export interface ManagedDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
-class ManagedDialogElement extends ManagedDialogElementBase {
+const ManagedDialogElementBase = I18nMixin(PolymerElement);
+
+export class ManagedDialogElement extends ManagedDialogElementBase {
   static get is() {
     return 'managed-dialog';
   }
@@ -43,9 +44,17 @@ class ManagedDialogElement extends ManagedDialogElementBase {
     };
   }
 
-  /** @private */
-  onOkClick_() {
+  title: string;
+  body: string;
+
+  private onOkClick_() {
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'managed-dialog': ManagedDialogElement;
   }
 }
 

@@ -25,7 +25,7 @@ import {WebUIListenerMixin} from '../../js/web_ui_listener_mixin.js';
 const ManagedFootnoteElementBase =
     I18nMixin(WebUIListenerMixin(PolymerElement));
 
-class ManagedFootnoteElement extends ManagedFootnoteElementBase {
+export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
   static get is() {
     return 'managed-footnote';
   }
@@ -78,6 +78,12 @@ class ManagedFootnoteElement extends ManagedFootnoteElementBase {
     }
     // </if>
     return this.i18nAdvanced('browserManagedByOrg');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'managed-footnote': ManagedFootnoteElement;
   }
 }
 
