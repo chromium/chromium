@@ -28,59 +28,61 @@ namespace {
 // The space between icon views.
 constexpr int kIconSpacingDp = 8;
 
-// A struct for storing the various information used to determine which app
-// icons/favicons to display.
-struct IconInfo {
-  int activation_index;
-  int count;
-};
+// Given a map of unique icon identifiers to icon info, returns a vector of the
+// same key, value pair ordered by icons' activation index.
+std::vector<IconIdentifierAndIconInfo> SortIconIdentifierToIconInfo(
+    std::map<std::string, IconInfo>& icon_identifier_to_icon_info) {
+  // Create a vector using `sorted_icon_identifier_to_icon_info` that contains
+  // pairs of identifiers and counts. This will initially be unsorted.
+  std::vector<IconIdentifierAndIconInfo> sorted_icon_identifier_to_icon_info;
 
-// Given a map from unique icon identifiers to their count, returns an ordered
-// vector of the unique icon identifiers (app ids/urls) and their number of
-// occurrences.
-std::vector<std::pair<std::string, int>> SortIconIdentifiers(
-    const std::map<std::string, IconInfo>& identifier_info) {
-  // Create a vector using `identifier_info` that contains pairs of identifiers
-  // and counts. This will be unsorted.
-  std::vector<std::pair<std::string, int>> identifiers_with_count;
-  for (const auto& entry : identifier_info)
-    identifiers_with_count.emplace_back(entry.first, entry.second.count);
+  for (const auto& entry : icon_identifier_to_icon_info) {
+    sorted_icon_identifier_to_icon_info.emplace_back(entry.first,
+                                                     std::move(entry.second));
+  }
 
-  // Sort `identifiers_with_count` using the activation indices stored in
-  // `identifier_info`.
-  std::sort(identifiers_with_count.begin(), identifiers_with_count.end(),
-            [&identifier_info](const std::pair<std::string, int>& data_1,
-                               const std::pair<std::string, int>& data_2) {
-              return identifier_info.at(data_1.first).activation_index <
-                     identifier_info.at(data_2.first).activation_index;
-            });
+  // Sort `sorted_icon_identifier_to_icon_info` using the activation indices
+  // stored in `icon_identifier_to_icon_info`. `data_n.first` points to the icon
+  // identifier.
+  std::sort(
+      sorted_icon_identifier_to_icon_info.begin(),
+      sorted_icon_identifier_to_icon_info.end(),
+      [&icon_identifier_to_icon_info](const IconIdentifierAndIconInfo& data_1,
+                                      const IconIdentifierAndIconInfo& data_2) {
+        return icon_identifier_to_icon_info.at(data_1.first).activation_index <
+               icon_identifier_to_icon_info.at(data_2.first).activation_index;
+      });
 
-  return identifiers_with_count;
+  return sorted_icon_identifier_to_icon_info;
 }
 
-// Inserts an `IconInfo` struct into `out_identifier_info` if no entry exists
-// for `identifier`. If an entry exists for `identifier`, updates its values.
-void InsertIdentifierInfo(
+// Inserts an `IconInfo` struct into `out_icon_identifier_to_icon_info` if no
+// entry exists for `identifier`. If an entry exists for `identifier`, updates
+// its values.
+void InsertIconIdentifierToIconInfo(
+    const std::string& app_id,
     const std::string& identifier,
     int activation_index,
-    std::map<std::string, IconInfo>* out_identifier_info) {
+    std::map<std::string, IconInfo>* out_icon_identifier_to_icon_info) {
   // A single app/site can have multiple windows so count their occurrences and
   // use the smallest activation index for sorting purposes.
-  if (!base::Contains(*out_identifier_info, identifier)) {
-    (*out_identifier_info)[identifier] = {activation_index, /*count=*/1};
+  if (!base::Contains(*out_icon_identifier_to_icon_info, identifier)) {
+    (*out_icon_identifier_to_icon_info)[identifier] = {app_id, activation_index,
+                                                       /*count=*/1};
   } else {
-    ++(*out_identifier_info)[identifier].count;
-    (*out_identifier_info)[identifier].activation_index = std::min(
-        (*out_identifier_info)[identifier].activation_index, activation_index);
+    ++(*out_icon_identifier_to_icon_info)[identifier].count;
+    (*out_icon_identifier_to_icon_info)[identifier].activation_index = std::min(
+        (*out_icon_identifier_to_icon_info)[identifier].activation_index,
+        activation_index);
   }
 }
 
 // Iterates through `launch_list`, inserting `IconInfo` structs into
-// `out_identifier_info` for each tab and app.
-void InsertIdentifierInfoFromLaunchList(
+// `out_icon_identifier_to_icon_info` for each tab and app.
+void InsertIconIdentifierToIconInfoFromLaunchList(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list,
-    std::map<std::string, IconInfo>* out_identifier_info) {
+    std::map<std::string, IconInfo>* out_icon_identifier_to_icon_info) {
   // We want to group active tabs and apps ahead of inactive tabs so offsets
   // inactive tabs activation index by `kInactiveTabOffset`. In almost every use
   // case, there should be no more than `kInactiveTabOffset` number of tabs +
@@ -104,11 +106,11 @@ void InsertIdentifierInfoFromLaunchList(
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
         // Strip extra information from the url so urls with the same host but
         // different queries are treated the same.
-        InsertIdentifierInfo(urls[i].GetWithEmptyPath().spec(),
-                             active_tab_index == i
-                                 ? activation_index
-                                 : kInactiveTabOffset + activation_index,
-                             out_identifier_info);
+        InsertIconIdentifierToIconInfo(
+            app_id, urls[i].GetWithEmptyPath().spec(),
+            active_tab_index == i ? activation_index
+                                  : kInactiveTabOffset + activation_index,
+            out_icon_identifier_to_icon_info);
       }
     } else {
       // PWAs will have the same app id as chrome. For these apps, retrieve
@@ -118,7 +120,8 @@ void InsertIdentifierInfoFromLaunchList(
       if (app_id == app_constants::kChromeAppId && app_name.has_value())
         new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
 
-      InsertIdentifierInfo(new_app_id, activation_index, out_identifier_info);
+      InsertIconIdentifierToIconInfo(app_id, new_app_id, activation_index,
+                                     out_icon_identifier_to_icon_info);
     }
   }
 }
@@ -143,15 +146,16 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
 
   // Iterate through the template's WindowInfo, counting the occurrences of each
   // unique icon identifier and storing their lowest activation index.
-  std::map<std::string, IconInfo> identifier_info;
+  std::map<std::string, IconInfo> icon_identifier_to_icon_info;
   for (auto& app_id_to_launch_list_entry :
        restore_data->app_id_to_launch_list()) {
-    InsertIdentifierInfoFromLaunchList(app_id_to_launch_list_entry.first,
-                                       app_id_to_launch_list_entry.second,
-                                       &identifier_info);
+    InsertIconIdentifierToIconInfoFromLaunchList(
+        app_id_to_launch_list_entry.first, app_id_to_launch_list_entry.second,
+        &icon_identifier_to_icon_info);
   }
 
-  CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
+  CreateIconViewsFromIconIdentifiers(
+      SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
 }
 
 void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
@@ -160,7 +164,7 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
 
   // Iterate through `windows`, counting the occurrences of each unique icon and
   // storing their lowest activation index.
-  std::map<std::string, IconInfo> identifier_info;
+  std::map<std::string, IconInfo> icon_identifier_to_icon_info;
   auto* delegate = Shell::Get()->desks_templates_delegate();
   for (size_t i = 0; i < windows.size(); ++i) {
     auto* window = windows[i];
@@ -178,10 +182,14 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
           views::Widget::GetWidgetForNativeWindow(window)->GetColorProvider();
     }
 
-    InsertIdentifierInfo(app_id, i, &identifier_info);
+    // Since there were no modifications to `app_id`, app id and icon identifier
+    // are both `app_id`.
+    InsertIconIdentifierToIconInfo(/*app_id*/ app_id, /*identifier*/ app_id, i,
+                                   &icon_identifier_to_icon_info);
   }
 
-  CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
+  CreateIconViewsFromIconIdentifiers(
+      SortIconIdentifierToIconInfo(icon_identifier_to_icon_info));
 }
 
 void DesksTemplatesIconContainer::Layout() {
@@ -222,25 +230,29 @@ void DesksTemplatesIconContainer::Layout() {
 }
 
 void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
-    const std::vector<std::pair<std::string, int>>& identifiers_and_counts) {
+    const std::vector<IconIdentifierAndIconInfo>&
+        icon_identifier_to_icon_info) {
   DCHECK(children().empty());
 
-  if (identifiers_and_counts.empty())
+  if (icon_identifier_to_icon_info.empty())
     return;
 
-  for (size_t i = 0; i < kMaxIcons && i < identifiers_and_counts.size(); ++i) {
+  for (size_t i = 0; i < kMaxIcons && i < icon_identifier_to_icon_info.size();
+       ++i) {
+    auto icon_identifier = icon_identifier_to_icon_info[i].first;
+    auto icon_info = icon_identifier_to_icon_info[i].second;
     DesksTemplatesIconView* icon_view = AddChildView(
         views::Builder<DesksTemplatesIconView>()
             .SetBackground(views::CreateRoundedRectBackground(
-                identifiers_and_counts[i].second == 1
+                icon_info.count == 1
                     ? SK_ColorTRANSPARENT
                     : AshColorProvider::Get()->GetControlsLayerColor(
                           AshColorProvider::ControlsLayerType::
                               kControlBackgroundColorInactive),
                 DesksTemplatesIconView::kIconSize / 2))
             .Build());
-    icon_view->SetIconIdentifierAndCount(identifiers_and_counts[i].first,
-                                         identifiers_and_counts[i].second);
+    icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
+                                         icon_info.count);
   }
 
   // Always add a `DesksTemplatesIconView` overflow counter in case the width
@@ -254,8 +266,11 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                                    kControlBackgroundColorInactive),
                            DesksTemplatesIconView::kIconSize / 2))
                        .Build());
+  // Set both `icon_identifier` and `app_id` to be empty strings for overflow
+  // icon views, since only the count should matter.
   overflow_icon_view->SetIconIdentifierAndCount(
-      std::string(), identifiers_and_counts.size() - num_added_icons);
+      /*icon_identifier*/ std::string(), /*app_id*/ std::string(),
+      icon_identifier_to_icon_info.size() - num_added_icons);
 }
 
 BEGIN_METADATA(DesksTemplatesIconContainer, views::BoxLayoutView)

@@ -18,8 +18,18 @@ class ColorProvider;
 
 namespace ash {
 
+// A struct for storing the various information used to determine which app
+// icons/favicons to display.
+struct IconInfo {
+  std::string app_id;
+  int activation_index;
+  int count;
+};
+
 class DeskTemplate;
 class DesksTemplatesIconView;
+
+using IconIdentifierAndIconInfo = std::pair<std::string, IconInfo>;
 
 // This class for determines which app icons/favicons to show for a desk
 // template and creates the according DesksTemplatesIconView's for them.
@@ -68,10 +78,11 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
  private:
   friend class DesksTemplatesItemViewTestApi;
 
-  // Given an ordered vector of pairs, where the first entry is an icon's
-  // identifier and the second entry is its count, create views for them.
+  // Given a sorted vector of pairs of icon identifier and icon info, create
+  // views for them.
   void CreateIconViewsFromIconIdentifiers(
-      const std::vector<std::pair<std::string, int>>& identifiers_and_counts);
+      const std::vector<IconIdentifierAndIconInfo>&
+          icon_identifier_to_icon_info);
 
   // If `this` is created with an incognito window, store the ui::ColorProvider
   // of one of the incognito windows to retrieve its icon's color.

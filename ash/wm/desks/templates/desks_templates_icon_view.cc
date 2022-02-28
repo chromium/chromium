@@ -58,6 +58,7 @@ DesksTemplatesIconView::~DesksTemplatesIconView() = default;
 
 void DesksTemplatesIconView::SetIconIdentifierAndCount(
     const std::string& icon_identifier,
+    const std::string& app_id,
     int count) {
   icon_identifier_ = icon_identifier;
   count_ = count;
