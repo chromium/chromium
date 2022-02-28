@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/backoff_entry.h"
+#include "personalization_app_ambient_provider_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -66,7 +67,14 @@ PersonalizationAppAmbientProviderImpl::PersonalizationAppAmbientProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)),
       fetch_settings_retry_backoff_(&kRetryBackoffPolicy),
-      update_settings_retry_backoff_(&kRetryBackoffPolicy) {}
+      update_settings_retry_backoff_(&kRetryBackoffPolicy) {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      ash::ambient::prefs::kAmbientModeEnabled,
+      base::BindRepeating(
+          &PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged,
+          base::Unretained(this)));
+}
 
 PersonalizationAppAmbientProviderImpl::
     ~PersonalizationAppAmbientProviderImpl() = default;
@@ -93,10 +101,8 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   ambient_observer_remote_.reset();
   ambient_observer_remote_.Bind(std::move(observer));
 
-  // Call it once to get the current ambient mode.
-  PrefService* pref_service = profile_->GetPrefs();
-  OnAmbientModeEnabledChanged(
-      pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+  // Call it once to get the current ambient mode enabled status.
+  OnAmbientModeEnabledChanged();
 
   ResetLocalSettings();
   // Will notify WebUI when fetches successfully.
@@ -138,10 +144,18 @@ void PersonalizationAppAmbientProviderImpl::SetTemperatureUnit(
   }
 }
 
-void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged(
-    bool ambient_mode_enabled) {
-  DCHECK(ambient_observer_remote_.is_bound());
-  ambient_observer_remote_->OnAmbientModeEnabledChanged(ambient_mode_enabled);
+void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
+  const bool enabled = IsAmbientModeEnabled();
+  if (ambient_observer_remote_.is_bound()) {
+    ambient_observer_remote_->OnAmbientModeEnabledChanged(enabled);
+  }
+
+  // Call |UpdateSettings| when Ambient mode is enabled to make sure that
+  // settings are properly synced to the server even if the user never touches
+  // the other controls. Please see b/177456397.
+  if (settings_ && enabled) {
+    UpdateSettings();
+  }
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
@@ -359,7 +373,7 @@ void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
   OnTopicSourceChanged();
 
   // If weather info is disabled, call `UpdateSettings()` immediately to force
-  // it to true.
+  // it to true. Please see b/177456397.
   if (!settings_->show_weather && IsAmbientModeEnabled()) {
     UpdateSettings();
   }

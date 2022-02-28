@@ -616,6 +616,26 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestEnabledPrefChangeUpdatesSettings) {
+  // Simulate initial page request.
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // Should not trigger |UpdateSettings|.
+  SetEnabledPref(/*enabled=*/false);
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
+
+  // Settings this to true should trigger |UpdateSettings|.
+  SetEnabledPref(/*enabled=*/true);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
        TestWeatherFalseTriggersUpdateSettings) {
   ash::AmbientSettings weather_off_settings;
   weather_off_settings.show_weather = false;
