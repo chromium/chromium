@@ -113,13 +113,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
         TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
                 mActivityType, regularTabCreator, incognitoTabCreator, mOrderController,
-                mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
+                tabContentProvider, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
                 mIsUndoSupported);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
         IncognitoTabModel incognitoModel = new IncognitoTabModelImpl(
                 new IncognitoTabModelImplCreator(mWindowAndroidSupplier, regularTabCreator,
-                        incognitoTabCreator, mOrderController, mTabContentManager,
+                        incognitoTabCreator, mOrderController, tabContentProvider,
                         mNextTabPolicySupplier, mAsyncTabParamsManager, mActivityType, this));
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
