@@ -1296,6 +1296,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Gpu.Rasterization.Raster.MSAASampleCountLog2" units="count"
+    expires_after="M106">
+  <owner>penghuang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    log2() of MSAA sample count of a raster task. Value is in [log2(1),log2(64)]
+    or [0,6] range. If log2() of the MSAA sample count is 0 (MSAA sample count
+    is 1), it means MSAA is disabled.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.Rasterization.Raster.NumPaintOps" units="count"
     expires_after="M106">
   <owner>penghuang@chromium.org</owner>
