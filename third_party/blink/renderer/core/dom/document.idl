@@ -114,9 +114,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [CallWith=Isolate, CEReactions, RaisesException] void writeln(DOMString... text);
 
     // TrustedTypes variants of the above.
-    // Note: This should be gated on [RuntimeEnabled=TrustedDOMTypes], but
-    // since RuntimeEnabled isn't compatible with overloaded methods, we're
-    // handling these unconditionally.
     [CallWith=Isolate, CEReactions, RaisesException] void write(TrustedHTML text);
     [CallWith=Isolate, CEReactions, RaisesException] void writeln(TrustedHTML text);
 
