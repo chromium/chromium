@@ -25,13 +25,13 @@ class WebAppRegistrar;
 class UrlHandlerManager {
  public:
   UrlHandlerManager() = delete;
-  explicit UrlHandlerManager(Profile* const profile);
+  explicit UrlHandlerManager(Profile* profile);
   virtual ~UrlHandlerManager();
 
   UrlHandlerManager(const UrlHandlerManager&) = delete;
   UrlHandlerManager& operator=(const UrlHandlerManager&) = delete;
 
-  void SetSubsystems(WebAppRegistrar* const registrar);
+  void SetSubsystems(WebAppRegistrar* registrar);
 
   // Returns Result::kOk if registration succeeds, Result::kError otherwise.
   virtual void RegisterUrlHandlers(const AppId& app_id,

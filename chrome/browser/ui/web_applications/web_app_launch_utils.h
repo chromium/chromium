@@ -61,15 +61,14 @@ void ClearAppPrefsForWebContents(content::WebContents* web_contents);
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser);
 
-Browser* CreateWebApplicationWindow(
-    Profile* profile,
-    const std::string& app_id,
-    WindowOpenDisposition disposition,
-    int32_t restore_id,
-    bool omit_from_session_restore = false,
-    bool can_resize = true,
-    bool can_maximize = true,
-    const gfx::Rect initial_bounds = gfx::Rect());
+Browser* CreateWebApplicationWindow(Profile* profile,
+                                    const std::string& app_id,
+                                    WindowOpenDisposition disposition,
+                                    int32_t restore_id,
+                                    bool omit_from_session_restore = false,
+                                    bool can_resize = true,
+                                    bool can_maximize = true,
+                                    gfx::Rect initial_bounds = gfx::Rect());
 
 content::WebContents* NavigateWebApplicationWindow(
     Browser* browser,

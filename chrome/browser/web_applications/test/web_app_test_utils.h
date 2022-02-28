@@ -28,8 +28,7 @@ std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
     Source::Type source_type = Source::kSync);
 
-std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
-                                           const uint32_t seed);
+std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url, uint32_t seed);
 
 void TestAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
@@ -49,7 +48,7 @@ void CheckServiceWorkerStatus(const GURL& url,
                               content::StoragePartition* storage_partition,
                               content::ServiceWorkerCapability status);
 
-void SetWebAppSettingsDictPref(Profile* profile, const base::StringPiece pref);
+void SetWebAppSettingsDictPref(Profile* profile, base::StringPiece pref);
 
 }  // namespace test
 }  // namespace web_app

@@ -46,13 +46,14 @@ class SystemWebAppDelegate {
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.
   SystemWebAppDelegate(
-      const SystemAppType type,
+      SystemAppType type,
       const std::string& internal_name,
       const GURL& install_url,
       Profile* profile,
       const OriginTrialsMap& origin_trials_map = OriginTrialsMap());
 
   SystemWebAppDelegate(const SystemWebAppDelegate& other) = delete;
+  SystemWebAppDelegate& operator=(const SystemWebAppDelegate& other) = delete;
   virtual ~SystemWebAppDelegate();
 
   SystemAppType GetType() const { return type_; }

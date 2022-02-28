@@ -74,7 +74,7 @@ struct SystemAppLaunchParams {
 // |profile|, or use content::TestNavigationObserver to wait the navigation.
 void LaunchSystemWebAppAsync(
     Profile* profile,
-    const SystemAppType type,
+    SystemAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
     apps::mojom::WindowInfoPtr window_info = nullptr);
 

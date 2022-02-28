@@ -260,7 +260,7 @@ class WebAppInstallTask : content::WebContentsObserver {
       OsHooksErrors os_hooks_errors);
   void OnOsHooksCreated(DisplayMode user_display_mode,
                         const AppId& app_id,
-                        const OsHooksErrors os_hook_errors);
+                        OsHooksErrors os_hook_errors);
 
   void RecordDownloadedIconsResultAndHttpStatusCodes(
       IconsDownloadedResult result,

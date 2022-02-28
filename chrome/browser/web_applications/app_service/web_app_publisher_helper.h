@@ -315,7 +315,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // NotificationDisplayService::Observer overrides.
   void OnNotificationDisplayed(
       const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata) override;
+      const NotificationCommon::Metadata* metadata) override;
   void OnNotificationClosed(const std::string& notification_id) override;
   void OnNotificationDisplayServiceDestroyed(
       NotificationDisplayService* service) override;
@@ -326,7 +326,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void OnRequestUpdate(int render_process_id,
                        int render_frame_id,
                        blink::mojom::MediaStreamType stream_type,
-                       const content::MediaRequestState state) override;
+                       content::MediaRequestState state) override;
 
   // apps::AppWebContentsData::Client:
   void OnWebContentsDestroyed(content::WebContents* contents) override;
@@ -365,7 +365,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
                             const std::string& notification_id);
   void MaybeAddWebPageNotifications(
       const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata);
+      const NotificationCommon::Metadata* metadata);
 
   // Returns whether the app should show a badge.
   bool ShouldShowBadge(const std::string& app_id,

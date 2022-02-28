@@ -38,7 +38,7 @@ struct UrlHandlerLaunchParams {
   UrlHandlerLaunchParams(const base::FilePath& profile_path,
                          const AppId& app_id,
                          const GURL& url,
-                         const UrlHandlerSavedChoice saved_choice,
+                         UrlHandlerSavedChoice saved_choice,
                          const base::Time& saved_choice_timestamp);
 
   UrlHandlerLaunchParams(const UrlHandlerLaunchParams& other);
