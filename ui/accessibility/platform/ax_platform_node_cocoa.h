@@ -38,6 +38,13 @@ AX_EXPORT
 // Returns true if this accessible element should be included into the ax tree.
 - (BOOL)isIncludedInPlatformTree;
 
+// Returns an accessible element serving as a title UI element, an element
+// representing the accessible name of the object and which is exposed via
+// accessibilityTitleUIElement (or AXTitleUIElement legacy attribute) not via
+// accessibilityTitle (or legacy AXTitle attribute) or accessibilityLabel
+// (legacy AXDescription attribute).
+- (id)titleUIElement;
+
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role;

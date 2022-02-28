@@ -764,6 +764,12 @@ ax::mojom::NameFrom AXPlatformNodeBase::GetNameFrom() const {
   return delegate_->GetNameFrom();
 }
 
+bool AXPlatformNodeBase::HasNameFromOtherElement() const {
+  ax::mojom::NameFrom nameFrom = GetNameFrom();
+  return nameFrom == ax::mojom::NameFrom::kCaption ||
+         nameFrom == ax::mojom::NameFrom::kRelatedElement;
+}
+
 // static
 AXPlatformNodeBase* AXPlatformNodeBase::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {

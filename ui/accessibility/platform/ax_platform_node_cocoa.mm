@@ -452,6 +452,36 @@ bool IsAXSetter(SEL selector) {
          !_node->IsInvisibleOrIgnored();
 }
 
+- (id)titleUIElement {
+  // True only if it's a control, if there's a single label, and the label has
+  // nonempty text.
+
+  // VoiceOver ignores TitleUIElement if the element isn't a control.
+  if (!ui::IsControl(_node->GetRole()))
+    return nil;
+
+  if (!_node->HasNameFromOtherElement()) {
+    return nil;
+  }
+
+  std::vector<int32_t> labelledby_ids =
+      _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
+  if (labelledby_ids.size() != 1)
+    return nil;
+
+  ui::AXPlatformNode* label =
+      _node->GetDelegate()->GetFromNodeID(labelledby_ids[0]);
+  if (!label)
+    return nil;
+
+  // No title UI element if the label's name is empty.
+  std::string labelName = label->GetDelegate()->GetName();
+  if (labelName.empty())
+    return nil;
+
+  return label->GetNativeViewAccessible();
+}
+
 + (NSString*)nativeRoleFromAXRole:(ax::mojom::Role)role {
   static const base::NoDestructor<RoleMap> role_map(BuildRoleMap());
   RoleMap::const_iterator it = role_map->find(role);
@@ -887,8 +917,13 @@ bool IsAXSetter(SEL selector) {
     ]];
   }
 
+  // KeyShortcuts
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts))
     [axAttributes addObject:NSAccessibilityKeyShortcutsValueAttribute];
+
+  // TitleUIElement
+  if ([self titleUIElement])
+    [axAttributes addObject:NSAccessibilityTitleUIElementAttribute];
 
   return axAttributes.autorelease();
 }
@@ -1403,6 +1438,10 @@ bool IsAXSetter(SEL selector) {
     return @"";
 
   return [self getName];
+}
+
+- (id)AXTitleUIElement {
+  return [self accessibilityTitleUIElement];
 }
 
 - (NSString*)AXDescription {
@@ -1986,6 +2025,17 @@ bool IsAXSetter(SEL selector) {
       [ret addObject:colheader];
   }
   return [ret count] ? ret : nil;
+}
+
+//
+// NSAccessibility protocol: configuring linkage elements.
+//
+
+- (id)accessibilityTitleUIElement {
+  if (![self instanceActive])
+    return nil;
+
+  return [self titleUIElement];
 }
 
 // MathML attributes.

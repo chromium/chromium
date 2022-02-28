@@ -194,6 +194,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   ax::mojom::NameFrom GetNameFrom() const;
 
+  bool HasNameFromOtherElement() const;
+
   // Returns the selection container if inside one.
   AXPlatformNodeBase* GetSelectionContainer() const;
 

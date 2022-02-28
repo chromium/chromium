@@ -165,7 +165,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // The tabs owned by a tablist.
 @property(nonatomic, readonly) NSArray* tabs;
 @property(nonatomic, readonly) NSString* title;
-@property(nonatomic, readonly) id titleUIElement;
 @property(nonatomic, readonly) NSString* value;
 @property(nonatomic, readonly) NSString* valueDescription;
 @property(nonatomic, readonly) NSValue* visibleCharacterRange;

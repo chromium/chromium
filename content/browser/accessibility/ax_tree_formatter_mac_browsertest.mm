@@ -427,8 +427,9 @@ IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, ScriptNullValue) {
-  TestScript(R"~~(<input id="input">)~~", {"input.AXTitleUIElement"},
-             R"~~(input.AXTitleUIElement=NULL
+  TestScript(R"~~(<div role="grid" id="grid"></div>)~~",
+             {"grid.AXRowHeaderUIElements"},
+             R"~~(grid.AXRowHeaderUIElements=NULL
 )~~");
 }
 
@@ -549,8 +550,8 @@ text.AXRole='AXStaticText'
 }
 
 IN_PROC_BROWSER_TEST_F(AXTreeFormatterMacBrowserTest, ScriptVariablesNull) {
-  TestScript(R"~~(<p id="p">Paragraph</p>)~~",
-             {"var:= p.AXTitleUIElement", "var"},
+  TestScript(R"~~(<div id="grid" role="grid"></div>)~~",
+             {"var:= grid.AXRowHeaderUIElements", "var"},
              R"~~(var=NULL
 var=NULL
 )~~");

@@ -651,7 +651,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilitySubroleAttribute, @"subrole"},
       {NSAccessibilityTabsAttribute, @"tabs"},
       {NSAccessibilityTitleAttribute, @"title"},
-      {NSAccessibilityTitleUIElementAttribute, @"titleUIElement"},
       {NSAccessibilityTopLevelUIElementAttribute, @"window"},
       {NSAccessibilityValueAttribute, @"value"},
       {NSAccessibilityValueAutofillAvailableAttribute,
@@ -796,7 +795,7 @@ bool content::IsNSRange(id value) {
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
   // expose it in AXDescription.
-  if ([self shouldExposeTitleUIElement])
+  if ([self titleUIElement])
     return @"";
 
   ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
@@ -850,7 +849,7 @@ bool content::IsNSRange(id value) {
   // Given an image where there's no other title, return the base part
   // of the filename as the description.
   if ([[self role] isEqualToString:NSAccessibilityImageRole]) {
-    if ([self titleUIElement])
+    if ([self accessibilityTitleUIElement])
       return @"";
 
     std::string url;
@@ -1252,35 +1251,6 @@ bool content::IsNSRange(id value) {
     default:
       return false;
   }
-}
-
-// Returns true if this object should expose its accessible name using
-// AXTitleUIElement rather than AXTitle or AXDescription. We only do
-// this if it's a control, if there's a single label, and the label has
-// nonempty text.
-// internal
-- (BOOL)shouldExposeTitleUIElement {
-  // VoiceOver ignores TitleUIElement if the element isn't a control.
-  if (!ui::IsControl(_owner->GetRole()))
-    return false;
-
-  ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
-      _owner->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  if (nameFrom != ax::mojom::NameFrom::kCaption &&
-      nameFrom != ax::mojom::NameFrom::kRelatedElement)
-    return false;
-
-  std::vector<int32_t> labelledby_ids =
-      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
-  if (labelledby_ids.size() != 1)
-    return false;
-
-  BrowserAccessibility* label = _owner->manager()->GetFromID(labelledby_ids[0]);
-  if (!label)
-    return false;
-
-  std::string labelName = label->GetName();
-  return !labelName.empty();
 }
 
 - (content::BrowserAccessibility*)owner {
@@ -1703,7 +1673,7 @@ bool content::IsNSRange(id value) {
 
   // If we're exposing the title in TitleUIElement, don't also redundantly
   // expose it in AXDescription.
-  if ([self shouldExposeTitleUIElement])
+  if ([self titleUIElement])
     return @"";
 
   ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
@@ -1727,28 +1697,6 @@ bool content::IsNSRange(id value) {
   }
 
   return @"";
-}
-
-- (id)titleUIElement {
-  if (![self instanceActive])
-    return nil;
-  if (![self shouldExposeTitleUIElement])
-    return nil;
-
-  std::vector<int32_t> labelledby_ids =
-      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
-  ax::mojom::NameFrom nameFrom = static_cast<ax::mojom::NameFrom>(
-      _owner->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
-  if ((nameFrom == ax::mojom::NameFrom::kCaption ||
-       nameFrom == ax::mojom::NameFrom::kRelatedElement) &&
-      labelledby_ids.size() == 1) {
-    BrowserAccessibility* titleElement =
-        _owner->manager()->GetFromID(labelledby_ids[0]);
-    if (titleElement)
-      return titleElement->GetNativeViewAccessible();
-  }
-
-  return nil;
 }
 
 - (id)AXValue {
@@ -2690,7 +2638,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityStartTextMarkerAttribute,
                        NSAccessibilitySubroleAttribute,
                        NSAccessibilityTitleAttribute,
-                       NSAccessibilityTitleUIElementAttribute,
                        NSAccessibilityTopLevelUIElementAttribute,
                        NSAccessibilityValueAttribute,
                        NSAccessibilityWindowAttribute, nil];
@@ -2801,17 +2748,6 @@ bool content::IsNSRange(id value) {
   // For now we expose the language attribute if we have any language set.
   if (_owner->node() && !_owner->node()->GetLanguage().empty())
     [ret addObject:NSAccessibilityLanguageAttribute];
-
-  // Title UI Element.
-  if (_owner->HasIntListAttribute(
-          ax::mojom::IntListAttribute::kLabelledbyIds) &&
-      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds)
-              .size() > 0) {
-    [ret addObject:NSAccessibilityTitleUIElementAttribute];
-  }
-
-  if ([self shouldExposeTitleUIElement])
-    [ret addObject:NSAccessibilityTitleUIElementAttribute];
 
   // TODO(aboxhall): expose NSAccessibilityServesAsTitleForUIElementsAttribute
   // for elements which are referred to by labelledby or are labels

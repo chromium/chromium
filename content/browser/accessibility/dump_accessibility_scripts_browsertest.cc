@@ -322,6 +322,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXRequired) {
   RunTypedTest<kMacAttributes>("ax-required.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTitleUIElement) {
+  RunTypedTest<kMacAttributes>("ax-title-ui-element.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTitle) {
+  RunTypedTest<kMacAttributes>("ax-title.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXURL) {
   RunTypedTest<kMacAttributes>("ax-url.html");
 }
@@ -390,6 +398,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityRoleDescription) {
   RunTypedTest<kMacMethods>("accessibility-role-description.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityTitleUIElement) {
+  RunTypedTest<kMacMethods>("accessibility-title-ui-element.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
