@@ -441,10 +441,10 @@ BrowserAutofillManager::BrowserAutofillManager(
           std::make_unique<AutofillSuggestionGenerator>(client,
                                                         personal_data_)) {
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver->IsInMainFrame(), form_interactions_ukm_logger(), client);
+      driver->IsInAnyMainFrame(), form_interactions_ukm_logger(), client);
   credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
-      driver->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
-      client);
+      driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+      personal_data_, client);
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver, client, personal_data_, credit_card_form_event_logger_.get());
@@ -1590,11 +1590,11 @@ void BrowserAutofillManager::Reset() {
   DCHECK(!pending_form_data_);
   AutofillManager::Reset();
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
-      driver()->IsInMainFrame(), form_interactions_ukm_logger(),
+      driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
       unsafe_client());
   credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(
-      driver()->IsInMainFrame(), form_interactions_ukm_logger(), personal_data_,
-      unsafe_client());
+      driver()->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+      personal_data_, unsafe_client());
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
       driver(), unsafe_client(), personal_data_,
       credit_card_form_event_logger_.get());

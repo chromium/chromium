@@ -42,7 +42,7 @@ class AutofillDriverIOS : public AutofillDriver {
 
   // AutofillDriver:
   bool IsIncognito() const override;
-  bool IsInMainFrame() const override;
+  bool IsInAnyMainFrame() const override;
   bool IsPrerendering() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;

@@ -25,8 +25,8 @@ bool TestAutofillDriver::IsIncognito() const {
   return is_incognito_;
 }
 
-bool TestAutofillDriver::IsInMainFrame() const {
-  return is_in_main_frame_;
+bool TestAutofillDriver::IsInAnyMainFrame() const {
+  return is_in_any_main_frame_;
 }
 
 bool TestAutofillDriver::IsPrerendering() const {
@@ -120,8 +120,8 @@ void TestAutofillDriver::SetIsIncognito(bool is_incognito) {
   is_incognito_ = is_incognito;
 }
 
-void TestAutofillDriver::SetIsInMainFrame(bool is_in_main_frame) {
-  is_in_main_frame_ = is_in_main_frame;
+void TestAutofillDriver::SetIsInAnyMainFrame(bool is_in_any_main_frame) {
+  is_in_any_main_frame_ = is_in_any_main_frame;
 }
 
 void TestAutofillDriver::SetIsolationInfo(

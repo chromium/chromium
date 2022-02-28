@@ -551,7 +551,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     // Copy fields to the root.
     auto IsRoot = [this](FormSpan fs) {
       MockContentAutofillDriver* d = driver(fs.form);
-      return d->IsInMainFrame() || d->is_sub_root();
+      return d->IsInAnyMainFrame() || d->is_sub_root();
     };
     auto it = base::ranges::find_if(form_fields, IsRoot);
     CHECK(it != form_fields.end());
@@ -602,7 +602,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
   }
 
   FormData& GetFlattenedForm(base::StringPiece form_name) {
-    CHECK(driver(form_name)->IsInMainFrame() ||
+    CHECK(driver(form_name)->IsInAnyMainFrame() ||
           driver(form_name)->is_sub_root());
     auto it = forms_.find(form_name);
     CHECK(it != forms_.end()) << form_name;

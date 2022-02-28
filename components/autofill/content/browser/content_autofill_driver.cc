@@ -128,8 +128,8 @@ bool ContentAutofillDriver::IsIncognito() const {
       ->IsOffTheRecord();
 }
 
-bool ContentAutofillDriver::IsInMainFrame() const {
-  return render_frame_host_->GetParent() == nullptr;
+bool ContentAutofillDriver::IsInAnyMainFrame() const {
+  return render_frame_host_->GetMainFrame() == render_frame_host_;
 }
 
 bool ContentAutofillDriver::IsPrerendering() const {

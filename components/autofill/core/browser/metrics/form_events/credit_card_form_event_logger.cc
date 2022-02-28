@@ -31,12 +31,12 @@ ServerFieldTypeSet GetFieldTypeSet(
 }  // namespace
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
-    bool is_in_main_frame,
+    bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     PersonalDataManager* personal_data_manager,
     AutofillClient* client)
     : FormEventLoggerBase("CreditCard",
-                          is_in_main_frame,
+                          is_in_any_main_frame,
                           form_interactions_ukm_logger,
                           client ? client->GetLogManager() : nullptr),
       personal_data_manager_(personal_data_manager),

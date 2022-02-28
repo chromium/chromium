@@ -36,7 +36,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   };
 
   CreditCardFormEventLogger(
-      bool is_in_main_frame,
+      bool is_in_any_main_frame,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       PersonalDataManager* personal_data_manager,
       AutofillClient* client);

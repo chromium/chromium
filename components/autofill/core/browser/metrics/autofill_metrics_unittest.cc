@@ -642,15 +642,15 @@ class AutofillMetricsIFrameTest : public AutofillMetricsTest,
                                   public testing::WithParamInterface<bool> {
  public:
   AutofillMetricsIFrameTest()
-      : is_in_main_frame_(GetParam()),
+      : is_in_any_main_frame_(GetParam()),
         credit_card_form_events_frame_histogram_(
             std::string("Autofill.FormEvents.CreditCard.") +
-            (is_in_main_frame_ ? "IsInMainFrame" : "IsInIFrame")) {
-    autofill_driver_->SetIsInMainFrame(is_in_main_frame_);
+            (is_in_any_main_frame_ ? "IsInMainFrame" : "IsInIFrame")) {
+    autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
   }
 
  protected:
-  const bool is_in_main_frame_;
+  const bool is_in_any_main_frame_;
   const std::string credit_card_form_events_frame_histogram_;
 };
 

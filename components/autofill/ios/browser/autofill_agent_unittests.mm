@@ -382,7 +382,7 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
                                                            main_frame);
-  EXPECT_TRUE(main_frame_driver->IsInMainFrame());
+  EXPECT_TRUE(main_frame_driver->IsInAnyMainFrame());
   auto iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
@@ -392,7 +392,7 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   autofill::AutofillDriverIOS* iframe_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
                                                            iframe);
-  EXPECT_FALSE(iframe_driver->IsInMainFrame());
+  EXPECT_FALSE(iframe_driver->IsInAnyMainFrame());
   EXPECT_FALSE(main_frame_driver->is_processed());
   EXPECT_FALSE(iframe_driver->is_processed());
   fake_web_state_.SetLoading(false);
