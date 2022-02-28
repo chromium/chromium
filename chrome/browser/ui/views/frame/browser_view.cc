@@ -474,11 +474,12 @@ class ContentsSeparator : public views::View {
 BEGIN_METADATA(ContentsSeparator, views::View)
 END_METADATA
 
-bool ShouldShowWindowIcon(const Browser* browser) {
+bool ShouldShowWindowIcon(const Browser* browser,
+                          bool app_uses_window_controls_overlay) {
 #if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
-  if (browser->is_trusted_source())
+  if (browser->is_trusted_source() || app_uses_window_controls_overlay)
     return false;
 #endif
   return browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
@@ -698,7 +699,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       browser_(std::move(browser)),
       accessibility_mode_observer_(
           std::make_unique<AccessibilityModeObserver>(this)) {
-  SetShowIcon(::ShouldShowWindowIcon(browser_.get()));
+  SetShowIcon(
+      ::ShouldShowWindowIcon(browser_.get(), AppUsesWindowControlsOverlay()));
 
   // In forced app mode, all size controls are always disabled. Otherwise, use
   // `create_params` to enable/disable specific size controls.
@@ -2881,7 +2883,7 @@ bool BrowserView::ShouldShowWindowTitle() const {
 #if BUILDFLAG(IS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // title, crbug.com/119411. Child windows (i.e. popups) do show a title.
-  if (browser_->is_trusted_source())
+  if (browser_->is_trusted_source() || AppUsesWindowControlsOverlay())
     return false;
 #elif BUILDFLAG(IS_WIN)
   // On Windows in touch mode we display a window title.
