@@ -298,9 +298,19 @@ public class Clipboard {
 
     /**
      * Check if the system clipboard has content to be pasted.
-     * @return True if the system clipboard contains anything, otherwise, return false.
+     * @return true if the system clipboard contains anything, otherwise, return false.
      */
     public boolean canPaste() {
+        return false;
+    }
+
+    /**
+     * Check if the clipboard can be used for copy. false if the backed clipboard service isn't
+     * available.
+     *
+     * @return Whether clipboard supports copy operation.
+     */
+    public boolean canCopy() {
         return false;
     }
 

@@ -592,6 +592,11 @@ public class ClipboardImpl
         return mClipboardManager.hasPrimaryClip();
     }
 
+    @Override
+    public boolean canCopy() {
+        return true;
+    }
+
     /**
      * Check Whether the ClipDescription has stypled text.
      * @param description The {@link ClipDescription} to check if it has stytled text.

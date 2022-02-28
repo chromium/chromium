@@ -845,7 +845,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             menu.removeItem(R.id.select_action_menu_web_search);
         }
 
-        if (isSelectionPassword()) {
+        if (isSelectionPassword() || !Clipboard.getInstance().canCopy()) {
             menu.removeItem(R.id.select_action_menu_copy);
             menu.removeItem(R.id.select_action_menu_cut);
         }
