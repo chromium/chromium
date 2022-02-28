@@ -1675,7 +1675,7 @@ deps = {
   },
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '965c39fdf304a80eacd6cdca43241956084301c3',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '3c8e39ece0c32337ac9371a20cdfad888b2539d1',
 
   'src/third_party/turbine': {
       'packages': [
