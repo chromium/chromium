@@ -1002,7 +1002,7 @@ void ExpectFramesEq(const std::vector<Frame>& actual,
 
 TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
   const uint32_t page_table[] = {0, 2};
-  const size_t number_of_pages = base::size(page_table);
+  const size_t number_of_pages = std::size(page_table);
   const size_t page_size = 1 << 17;
 
   const FunctionTableEntry function_table[] = {
@@ -1044,10 +1044,10 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, base::size(unwind_instruction_table)),
-      make_span(function_offset_table, base::size(function_offset_table)),
-      make_span(function_table, base::size(function_table)),
-      make_span(page_table, base::size(page_table)),
+      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
+      make_span(function_offset_table, std::size(function_offset_table)),
+      make_span(function_table, std::size(function_table)),
+      make_span(page_table, std::size(page_table)),
   };
 
   ModuleCache module_cache;

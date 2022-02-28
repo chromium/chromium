@@ -17,7 +17,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 
@@ -57,7 +56,7 @@ pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
 
-  for (pool_handle i = 0; i < base::size(pools_); ++i) {
+  for (pool_handle i = 0; i < std::size(pools_); ++i) {
     if (!pools_[i].IsInitialized()) {
       pools_[i].Initialize(ptr, length);
       return i + 1;
@@ -86,7 +85,7 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 }
 
 void AddressPoolManager::ResetForTesting() {
-  for (pool_handle i = 0; i < base::size(pools_); ++i)
+  for (pool_handle i = 0; i < std::size(pools_); ++i)
     pools_[i].Reset();
 }
 

@@ -12,7 +12,6 @@
 #include <sys/types.h>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/process/process_metrics.h"
@@ -29,7 +28,7 @@ namespace {
 // system or the empty string on failure.
 std::string GetSysctlValue(const char* key_name) {
   char value[256];
-  size_t len = base::size(value);
+  size_t len = std::size(value);
   if (sysctlbyname(key_name, &value, &len, nullptr, 0) == 0) {
     DCHECK_GE(len, 1u);
     DCHECK_EQ('\0', value[len - 1]);

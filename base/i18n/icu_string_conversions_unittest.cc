@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/icu_string_conversions.h"
+
 #include <math.h>
 #include <stdarg.h>
 #include <stddef.h>
@@ -10,9 +12,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/i18n/icu_string_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -163,7 +163,7 @@ static const struct {
 };
 
 TEST(ICUStringConversionsTest, ConvertBetweenCodepageAndUTF16) {
-  for (size_t i = 0; i < base::size(kConvertCodepageCases); ++i) {
+  for (size_t i = 0; i < std::size(kConvertCodepageCases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
                      "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
                      kConvertCodepageCases[i].encoded,
@@ -218,7 +218,7 @@ static const struct {
 };
 TEST(ICUStringConversionsTest, ConvertToUtf8AndNormalize) {
   std::string result;
-  for (size_t i = 0; i < base::size(kConvertAndNormalizeCases); ++i) {
+  for (size_t i = 0; i < std::size(kConvertAndNormalizeCases); ++i) {
     SCOPED_TRACE(base::StringPrintf(
                      "Test[%" PRIuS "]: <encoded: %s> <codepage: %s>", i,
                      kConvertAndNormalizeCases[i].encoded,

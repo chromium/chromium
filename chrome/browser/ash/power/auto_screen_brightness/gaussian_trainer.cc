@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "ash/constants/ash_features.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"

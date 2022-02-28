@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -767,7 +766,7 @@ TEST(JSONReaderTest, InvalidSanity) {
       "/* test *", "{\"foo\"", "{\"foo\":", "  [", "\"\\u123g\"", "{\n\"eh:\n}",
   };
 
-  for (size_t i = 0; i < base::size(kInvalidJson); ++i) {
+  for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
     LOG(INFO) << "Sanity test " << i << ": <" << kInvalidJson[i] << ">";
     JSONReader::ValueWithError root =
         JSONReader::ReadAndReturnValueWithError(kInvalidJson[i]);
@@ -922,7 +921,7 @@ TEST(JSONReaderTest, ParseNumberErrors) {
       // clang-format on
   };
 
-  for (unsigned int i = 0; i < base::size(kCases); ++i) {
+  for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
@@ -963,7 +962,7 @@ TEST(JSONReaderTest, UnterminatedInputs) {
       // clang-format on
   };
 
-  for (unsigned int i = 0; i < base::size(kCases); ++i) {
+  for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto* test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case));
 
@@ -1035,7 +1034,7 @@ TEST(JSONReaderTest, LineColumnCounting) {
       },
   };
 
-  for (unsigned int i = 0; i < base::size(kCases); ++i) {
+  for (unsigned int i = 0; i < std::size(kCases); ++i) {
     auto test_case = kCases[i];
     SCOPED_TRACE(StringPrintf("case %u: \"%s\"", i, test_case.input));
 
@@ -1068,7 +1067,7 @@ TEST(JSONReaderTest, ChromiumExtensions) {
       {"[\"\\v\"]", JSON_ALLOW_VERT_TAB},
   };
 
-  for (size_t i = 0; i < base::size(kCases); ++i) {
+  for (size_t i = 0; i < std::size(kCases); ++i) {
     SCOPED_TRACE(testing::Message() << "case " << i);
     const auto& test_case = kCases[i];
 

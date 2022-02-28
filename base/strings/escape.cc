@@ -96,7 +96,7 @@ bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
     // reach max character length number of bytes, or hit an unescaped
     // character. No need to check length of escaped_text, as
     // UnescapeUnsignedByteAtIndex checks lengths.
-    while (num_bytes < size(bytes) &&
+    while (num_bytes < std::size(bytes) &&
            UnescapeUnsignedByteAtIndex(escaped_text, index + num_bytes * 3,
                                        &bytes[num_bytes]) &&
            CBU8_IS_TRAIL(bytes[num_bytes])) {

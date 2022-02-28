@@ -8,7 +8,6 @@
 
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -93,7 +92,7 @@ TEST(AbseilStringNumberConversionsTest, HexStringToUInt128) {
   const char input[] =
       "0xc0ffee\0"
       "9";
-  std::string input_string(input, base::size(input) - 1);
+  std::string input_string(input, std::size(input) - 1);
   absl::uint128 output;
   EXPECT_FALSE(HexStringToUInt128(input_string, &output));
   EXPECT_EQ(0xc0ffeeU, output);

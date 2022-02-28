@@ -4,7 +4,6 @@
 
 #include "base/hash/md5_constexpr.h"
 
-#include "base/cxx17_backports.h"
 #include "base/hash/md5.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +20,7 @@ constexpr MD5CE::IntermediateData MD5CE::kInitialIntermediateData;
 // A constexpr comparison operator for MD5Results, allowing compile time tests
 // to be expressed.
 constexpr bool Equal(const MD5Digest& lhs, const MD5Digest& rhs) {
-  for (size_t i = 0; i < base::size(lhs.a); ++i) {
+  for (size_t i = 0; i < std::size(lhs.a); ++i) {
     if (lhs.a[i] != rhs.a[i])
       return false;
   }
@@ -38,18 +37,18 @@ static_assert(MD5Hash32Constexpr(kMessage0) == 0xF96B697Dul,
               "incorrect MD5Hash32 implementation");
 
 constexpr char kMessage1[] = "The quick brown fox jumps over the lazy dog";
-static_assert(MD5Hash64Constexpr(kMessage1, base::size(kMessage1) - 1) ==
+static_assert(MD5Hash64Constexpr(kMessage1, std::size(kMessage1) - 1) ==
                   0x9E107D9D372BB682ull,
               "incorrect MD5Hash64 implementation");
 
-static_assert(MD5Hash32Constexpr(kMessage1, base::size(kMessage1) - 1) ==
+static_assert(MD5Hash32Constexpr(kMessage1, std::size(kMessage1) - 1) ==
                   0x9E107D9Dul,
               "incorrect MD5Hash32 implementation");
 
 // Comparison operator for checking that the constexpr MD5 implementation
 // matches the default implementation.
 void ExpectEqual(const MD5Digest& lhs, const MD5Digest& rhs) {
-  for (size_t i = 0; i < base::size(lhs.a); ++i)
+  for (size_t i = 0; i < std::size(lhs.a); ++i)
     EXPECT_EQ(lhs.a[i], rhs.a[i]);
 }
 

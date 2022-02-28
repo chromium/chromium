@@ -430,7 +430,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   const int kRegisterPadding = 16;
 #endif
 
-  for (size_t i = 0; i < base::size(registers); i++) {
+  for (size_t i = 0; i < std::size(registers); i++) {
     PrintToStderr(registers[i].label);
     internal::itoa_r(registers[i].value, buf, sizeof(buf),
                      16, kRegisterPadding);

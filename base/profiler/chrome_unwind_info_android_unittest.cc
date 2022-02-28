@@ -19,8 +19,8 @@ bool operator==(const FunctionTableEntry& e1, const FunctionTableEntry& e2) {
                   e2.function_offset_table_byte_index);
 }
 
-template <class T>
-void ExpectSpanSizeAndContentsEqual(span<T> actual, span<T> expected) {
+template <class T, size_t E1, size_t E2>
+void ExpectSpanSizeAndContentsEqual(span<T, E1> actual, span<T, E2> expected) {
   EXPECT_EQ(actual.size(), expected.size());
   if (actual.size() != expected.size()) {
     return;
@@ -76,17 +76,13 @@ TEST(ChromeUnwindInfoAndroidTest, CreateUnwindInfo) {
   ASSERT_EQ(&data[256], reinterpret_cast<const uint8_t*>(
                             &unwind_info.unwind_instruction_table[0]));
 
-  ExpectSpanSizeAndContentsEqual(unwind_info.page_table,
-                                 make_span(page_table, size(page_table)));
-  ExpectSpanSizeAndContentsEqual(
-      unwind_info.function_table,
-      make_span(function_table, size(function_table)));
-  ExpectSpanSizeAndContentsEqual(
-      unwind_info.function_offset_table,
-      make_span(function_offset_table, size(function_offset_table)));
-  ExpectSpanSizeAndContentsEqual(
-      unwind_info.unwind_instruction_table,
-      make_span(unwind_instruction_table, size(unwind_instruction_table)));
+  ExpectSpanSizeAndContentsEqual(unwind_info.page_table, make_span(page_table));
+  ExpectSpanSizeAndContentsEqual(unwind_info.function_table,
+                                 make_span(function_table));
+  ExpectSpanSizeAndContentsEqual(unwind_info.function_offset_table,
+                                 make_span(function_offset_table));
+  ExpectSpanSizeAndContentsEqual(unwind_info.unwind_instruction_table,
+                                 make_span(unwind_instruction_table));
 }
 
 }  // namespace base

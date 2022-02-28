@@ -5,8 +5,10 @@
 #ifndef BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
 #define BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
 
+#include <cstddef>
+#include <iterator>
+
 #include "base/base_export.h"
-#include "base/cxx17_backports.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
@@ -420,9 +422,7 @@ class BASE_EXPORT BuiltinCategories {
   }
 
   // Returns the amount of built-in categories in the registry.
-  static constexpr size_t Size() {
-    return base::size(kBuiltinCategories);
-  }
+  static constexpr size_t Size() { return std::size(kBuiltinCategories); }
 
   // Where in the builtin category list to start when populating the
   // about://tracing UI.
@@ -526,13 +526,13 @@ class BASE_EXPORT BuiltinCategories {
   // Returns whether |category| is used only for testing.
   static constexpr bool IsCategoryForTesting(const char* category) {
     return IsStringInArray(category, kCategoriesForTesting,
-                           base::size(kCategoriesForTesting));
+                           std::size(kCategoriesForTesting));
   }
 
   // Returns whether |category| is registered in the builtin list.
   static constexpr bool IsBuiltinCategory(const char* category) {
     return IsStringInArray(category, kBuiltinCategories,
-                           base::size(kBuiltinCategories));
+                           std::size(kBuiltinCategories));
   }
 };
 

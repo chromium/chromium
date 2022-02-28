@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
@@ -70,7 +69,7 @@ AuthorizationRef GetAuthorizationRightsWithPrompt(
     {kAuthorizationEnvironmentPrompt, prompt_length, (void*)prompt_c, 0}
   };
 
-  AuthorizationEnvironment environment = {base::size(environment_items),
+  AuthorizationEnvironment environment = {std::size(environment_items),
                                           environment_items};
 
   status = AuthorizationCopyRights(authorization,
@@ -95,7 +94,7 @@ AuthorizationRef AuthorizationCreateToRunAsRoot(CFStringRef prompt) {
   AuthorizationItem right_items[] = {
     {kAuthorizationRightExecute, 0, NULL, 0}
   };
-  AuthorizationRights rights = {base::size(right_items), right_items};
+  AuthorizationRights rights = {std::size(right_items), right_items};
 
   return GetAuthorizationRightsWithPrompt(&rights, prompt, 0);
 }

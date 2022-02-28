@@ -9,7 +9,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -93,7 +92,7 @@ base::StringPiece GetModule(base::StringPiece file) {
   base::StringPiece::size_type extension_start = module.rfind('.');
   module = module.substr(0, extension_start);
   static const char kInlSuffix[] = "-inl";
-  static const int kInlSuffixLen = base::size(kInlSuffix) - 1;
+  static const int kInlSuffixLen = std::size(kInlSuffix) - 1;
   if (base::EndsWith(module, kInlSuffix))
     module.remove_suffix(kInlSuffixLen);
   return module;

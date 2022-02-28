@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -275,12 +274,12 @@ TEST(FoundationUtilTest, GetValueFromDictionary) {
   CFStringRef keys[] = { CFSTR("one"), CFSTR("two"), CFSTR("three") };
   CFNumberRef values[] = { cf_one, cf_two, cf_three };
 
-  static_assert(base::size(keys) == base::size(values),
+  static_assert(std::size(keys) == std::size(values),
                 "keys and values arrays must have the same size");
 
   ScopedCFTypeRef<CFDictionaryRef> test_dict(CFDictionaryCreate(
       kCFAllocatorDefault, reinterpret_cast<const void**>(keys),
-      reinterpret_cast<const void**>(values), base::size(values),
+      reinterpret_cast<const void**>(values), std::size(values),
       &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
   // GetValueFromDictionary<>(_, _) should produce the correct
@@ -369,7 +368,7 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
-  for (size_t i = 0; i < base::size(nsinteger_cases); ++i) {
+  for (size_t i = 0; i < std::size(nsinteger_cases); ++i) {
     EXPECT_EQ(nsinteger_cases[i].expected,
               StringPrintf("%" PRIdNS, nsinteger_cases[i].value));
     EXPECT_EQ(nsinteger_cases[i].expected_hex,
@@ -393,7 +392,7 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
-  for (size_t i = 0; i < base::size(nsuinteger_cases); ++i) {
+  for (size_t i = 0; i < std::size(nsuinteger_cases); ++i) {
     EXPECT_EQ(nsuinteger_cases[i].expected,
               StringPrintf("%" PRIuNS, nsuinteger_cases[i].value));
     EXPECT_EQ(nsuinteger_cases[i].expected_hex,

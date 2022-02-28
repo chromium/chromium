@@ -11,8 +11,6 @@
 #include <sys/user.h>
 #include <unistd.h>
 
-#include "base/cxx17_backports.h"
-
 namespace base {
 
 ProcessId GetParentProcessId(ProcessHandle process) {
@@ -20,7 +18,7 @@ ProcessId GetParentProcessId(ProcessHandle process) {
   size_t length;
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, process };
 
-  if (sysctl(mib, base::size(mib), &info, &length, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
     return -1;
 
   return info.ki_ppid;
@@ -33,7 +31,7 @@ FilePath GetProcessExecutablePath(ProcessHandle process) {
 
   length = sizeof(pathname);
 
-  if (sysctl(mib, base::size(mib), pathname, &length, NULL, 0) < 0 ||
+  if (sysctl(mib, std::size(mib), pathname, &length, NULL, 0) < 0 ||
       length == 0) {
     return FilePath();
   }

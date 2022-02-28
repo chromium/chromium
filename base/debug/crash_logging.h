@@ -12,7 +12,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -125,7 +124,7 @@ class BASE_EXPORT ScopedCrashKeyString {
 // that restricts the name of a crash key to 40 characters.
 #define SCOPED_CRASH_KEY_STRING_INTERNAL2(category, name, nonce, data,  \
                                           key_size)                     \
-  static_assert(::base::size(category "-" name) < 40,                   \
+  static_assert(::std::size(category "-" name) < 40,                    \
                 "Crash key names must be shorter than 40 characters."); \
   ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
       [] {                                                              \

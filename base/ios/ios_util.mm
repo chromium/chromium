@@ -6,10 +6,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/system/sys_info.h"
 
@@ -54,7 +52,7 @@ bool IsRunningOnIOS15OrLater() {
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
   static const int32_t* current_version = OSVersionAsArray();
   int32_t version[] = {major, minor, bug_fix};
-  for (size_t i = 0; i < base::size(version); i++) {
+  for (size_t i = 0; i < std::size(version); i++) {
     if (current_version[i] != version[i])
       return current_version[i] > version[i];
   }

@@ -25,7 +25,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
-#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -490,8 +489,7 @@ bool ReadSymbolicLink(const FilePath& symlink_path, FilePath* target_path) {
   DCHECK(!symlink_path.empty());
   DCHECK(target_path);
   char buf[PATH_MAX];
-  ssize_t count =
-      ::readlink(symlink_path.value().c_str(), buf, base::size(buf));
+  ssize_t count = ::readlink(symlink_path.value().c_str(), buf, std::size(buf));
 
 #if BUILDFLAG(IS_ANDROID) && defined(__LP64__)
   // A few 64-bit Android L/M devices return INT_MAX instead of -1 here for
@@ -1063,7 +1061,7 @@ bool VerifyPathControlledByAdmin(const FilePath& path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   std::set<gid_t> allowed_group_ids;
-  for (int i = 0, ie = base::size(kAdminGroupNames); i < ie; ++i) {
+  for (int i = 0, ie = std::size(kAdminGroupNames); i < ie; ++i) {
     struct group *group_record = getgrnam(kAdminGroupNames[i]);
     if (!group_record) {
       DPLOG(ERROR) << "Could not get the group ID of group \""

@@ -7,7 +7,6 @@
 #include <limits.h>
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -22,7 +21,7 @@ namespace {
 // in sandboxed scenarios as we might have by-name policies that allow pipe
 // creation. Also keep the secure random number generation.
 const wchar_t kPipeNameFormat[] = L"\\\\.\\pipe\\chrome.sync.%u.%u.%lu";
-const size_t kPipePathMax = base::size(kPipeNameFormat) + (3 * 10) + 1;
+const size_t kPipePathMax = std::size(kPipeNameFormat) + (3 * 10) + 1;
 
 // To avoid users sending negative message lengths to Send/Receive
 // we clamp message lengths, which are size_t, to no more than INT_MAX.
@@ -154,7 +153,7 @@ size_t CancelableFileOperation(Function operation,
       if (::GetLastError() == ERROR_IO_PENDING) {
         HANDLE events[] = { io_event->handle(), cancel_event->handle() };
         const int wait_result = WaitForMultipleObjects(
-            base::size(events), events, FALSE,
+            std::size(events), events, FALSE,
             timeout_in_ms == INFINITE
                 ? timeout_in_ms
                 : static_cast<DWORD>(

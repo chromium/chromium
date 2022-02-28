@@ -10,7 +10,6 @@
 #include <sstream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -216,14 +215,14 @@ uintptr_t GetStackEnd() {
 }
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-StackTrace::StackTrace() : StackTrace(base::size(trace_)) {}
+StackTrace::StackTrace() : StackTrace(std::size(trace_)) {}
 
 StackTrace::StackTrace(size_t count) {
-  count_ = CollectStackTrace(trace_, std::min(count, base::size(trace_)));
+  count_ = CollectStackTrace(trace_, std::min(count, std::size(trace_)));
 }
 
 StackTrace::StackTrace(const void* const* trace, size_t count) {
-  count = std::min(count, base::size(trace_));
+  count = std::min(count, std::size(trace_));
   if (count)
     memcpy(trace_, trace, count * sizeof(trace_[0]));
   count_ = count;

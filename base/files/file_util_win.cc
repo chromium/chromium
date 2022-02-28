@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 
 #include <windows.h>
+
 #include <io.h>
 #include <psapi.h>
 #include <shellapi.h>
@@ -20,7 +21,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -382,10 +382,10 @@ bool ReplaceFile(const FilePath& from_path,
   // Alias paths for investigation of shutdown hangs. crbug.com/1054164
   FilePath::CharType from_path_str[MAX_PATH];
   base::wcslcpy(from_path_str, from_path.value().c_str(),
-                base::size(from_path_str));
+                std::size(from_path_str));
   base::debug::Alias(from_path_str);
   FilePath::CharType to_path_str[MAX_PATH];
-  base::wcslcpy(to_path_str, to_path.value().c_str(), base::size(to_path_str));
+  base::wcslcpy(to_path_str, to_path.value().c_str(), std::size(to_path_str));
   base::debug::Alias(to_path_str);
 
   // Assume that |to_path| already exists and try the normal replace. This will
@@ -935,7 +935,7 @@ int GetMaximumPathComponentLength(const FilePath& path) {
 
   wchar_t volume_path[MAX_PATH];
   if (!GetVolumePathNameW(path.NormalizePathSeparators().value().c_str(),
-                          volume_path, size(volume_path))) {
+                          volume_path, std::size(volume_path))) {
     return -1;
   }
 

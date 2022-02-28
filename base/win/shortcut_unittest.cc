@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -39,7 +38,7 @@ class ShortcutTest : public testing::Test {
     {
       const FilePath target_file(
           temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Target 1.txt")));
-      WriteFile(target_file, kFileContents, base::size(kFileContents));
+      WriteFile(target_file, kFileContents, std::size(kFileContents));
 
       link_properties_.set_target(target_file);
       link_properties_.set_working_dir(temp_dir_.GetPath());
@@ -62,7 +61,7 @@ class ShortcutTest : public testing::Test {
     {
       const FilePath target_file_2(
           temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Target 2.txt")));
-      WriteFile(target_file_2, kFileContents2, base::size(kFileContents2));
+      WriteFile(target_file_2, kFileContents2, std::size(kFileContents2));
 
       FilePath icon_path_2;
       CreateTemporaryFileInDir(temp_dir_.GetPath(), &icon_path_2);
@@ -160,8 +159,8 @@ TEST_F(ShortcutTest, CreateAndResolveShortcut) {
   FilePath resolved_name;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, nullptr));
 
-  char read_contents[base::size(kFileContents)];
-  base::ReadFile(resolved_name, read_contents, base::size(read_contents));
+  char read_contents[std::size(kFileContents)];
+  base::ReadFile(resolved_name, read_contents, std::size(read_contents));
   EXPECT_STREQ(kFileContents, read_contents);
 }
 
@@ -177,8 +176,8 @@ TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
   std::wstring args;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, &args));
 
-  char read_contents[base::size(kFileContents)];
-  base::ReadFile(resolved_name, read_contents, base::size(read_contents));
+  char read_contents[std::size(kFileContents)];
+  base::ReadFile(resolved_name, read_contents, std::size(read_contents));
   EXPECT_STREQ(kFileContents, read_contents);
   EXPECT_EQ(link_properties_.arguments, args);
 }
@@ -244,8 +243,8 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
   FilePath resolved_name;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, nullptr));
 
-  char read_contents[base::size(kFileContents2)];
-  base::ReadFile(resolved_name, read_contents, base::size(read_contents));
+  char read_contents[std::size(kFileContents2)];
+  base::ReadFile(resolved_name, read_contents, std::size(read_contents));
   EXPECT_STREQ(kFileContents2, read_contents);
 }
 

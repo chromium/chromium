@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/logging.h"
@@ -203,7 +202,7 @@ TextDirection GetTextDirectionForLocaleInStartUp(const char* locale_name) {
       SplitStringPiece(locale_name, "-_", KEEP_WHITESPACE, SPLIT_WANT_ALL);
   const StringPiece& language_code = locale_split[0];
   if (std::binary_search(kRTLLanguageCodes,
-                         kRTLLanguageCodes + base::size(kRTLLanguageCodes),
+                         kRTLLanguageCodes + std::size(kRTLLanguageCodes),
                          language_code))
     return RIGHT_TO_LEFT;
   return LEFT_TO_RIGHT;

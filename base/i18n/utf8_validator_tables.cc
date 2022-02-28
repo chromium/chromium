@@ -6,7 +6,8 @@
 // DO NOT EDIT.
 
 #include "base/i18n/utf8_validator_tables.h"
-#include "base/cxx17_backports.h"
+
+#include <iterator>
 
 namespace base {
 namespace internal {
@@ -50,7 +51,7 @@ const uint8_t kUtf8ValidatorTables[] = {
     0x81,                                            // 0xa8
 };
 
-const size_t kUtf8ValidatorTablesSize = base::size(kUtf8ValidatorTables);
+const size_t kUtf8ValidatorTablesSize = std::size(kUtf8ValidatorTables);
 
 }  // namespace internal
 }  // namespace base

@@ -186,7 +186,7 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
 
   HANDLE events[] = {Handle(), stop_event_handle.get()};
   DWORD wait_result =
-      ::WaitForMultipleObjects(base::size(events), events, FALSE, INFINITE);
+      ::WaitForMultipleObjects(std::size(events), events, FALSE, INFINITE);
 
   if (wait_result == WAIT_OBJECT_0) {
     DWORD temp_code;  // Don't clobber out-parameters in case of failure.

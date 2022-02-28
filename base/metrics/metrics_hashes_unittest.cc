@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +25,7 @@ TEST(MetricsHashesTest, HashMetricName) {
       {"Forward", "0x67d2f6740a8eaebf"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     uint64_t hash = HashMetricName(cases[i].input);
     std::string hash_hex = base::StringPrintf("0x%016" PRIx64, hash);
     EXPECT_EQ(cases[i].output, hash_hex);
@@ -44,7 +43,7 @@ TEST(MetricsHashesTest, HashMetricNameAs32Bits) {
       {"Forward", "0x67d2f674"},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
+  for (size_t i = 0; i < std::size(cases); ++i) {
     uint32_t hash = HashMetricNameAs32Bits(cases[i].input);
     std::string hash_hex = base::StringPrintf("0x%08" PRIx32, hash);
     EXPECT_EQ(cases[i].output, hash_hex);

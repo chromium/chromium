@@ -40,7 +40,7 @@ NOINLINE void OnNoMemoryInternal(size_t size) {
   // Pass the size of the failed request in an exception argument.
   ULONG_PTR exception_args[] = {size};
   ::RaiseException(base::win::kOomExceptionCode, EXCEPTION_NONCONTINUABLE,
-                   base::size(exception_args), exception_args);
+                   std::size(exception_args), exception_args);
 
   // Safety check, make sure process exits here.
   _exit(win::kOomExceptionCode);

@@ -6,7 +6,6 @@
 
 #include <windows.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -117,7 +116,7 @@ std::wstring AccessToken::Privilege::GetName() const {
   LUID luid;
   luid.LowPart = luid_.LowPart;
   luid.HighPart = luid_.HighPart;
-  DWORD size = base::size(name);
+  DWORD size = std::size(name);
   if (!::LookupPrivilegeName(nullptr, &luid, name, &size))
     return base::StringPrintf(L"%08X-%08X", luid.HighPart, luid.LowPart);
   return name;

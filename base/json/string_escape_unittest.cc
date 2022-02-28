@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -252,7 +251,7 @@ TEST(JSONStringEscapeTest, EscapeBytes) {
   }
 
   const char kEmbedNull[] = { '\xab', '\x39', '\0', '\x9f', '\xab' };
-  std::string in(kEmbedNull, base::size(kEmbedNull));
+  std::string in(kEmbedNull, std::size(kEmbedNull));
   EXPECT_FALSE(IsStringUTF8AllowingNoncharacters(in));
   EXPECT_EQ(std::string("\\u00AB9\\u0000\\u009F\\u00AB"),
             EscapeBytesAsInvalidJSONString(in, false));

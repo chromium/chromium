@@ -902,9 +902,9 @@ TEST_F(ThreadControllerWithMessagePumpTest,
         // "ThreadController active" state at the end.
         for (auto& t : tasks)
           task_source_.AddTask(FROM_HERE, t.Get(), TimeTicks());
-        for (size_t i = 0; i < size(tasks); ++i) {
+        for (size_t i = 0; i < std::size(tasks); ++i) {
           const TimeTicks expected_delayed_run_time =
-              i < size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
+              i < std::size(tasks) - 1 ? TimeTicks() : TimeTicks::Max();
 
           EXPECT_CALL(tasks[i], Run());
           EXPECT_EQ(thread_controller_.DoWork().delayed_run_time,

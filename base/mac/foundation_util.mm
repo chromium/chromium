@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
@@ -158,7 +157,7 @@ FilePath GetUserLibraryPath() {
 //   returns - path to the application bundle, or empty on error
 FilePath GetAppBundlePath(const FilePath& exec_name) {
   const char kExt[] = ".app";
-  const size_t kExtLength = base::size(kExt) - 1;
+  const size_t kExtLength = std::size(kExt) - 1;
 
   // Split the path into components.
   std::vector<std::string> components = exec_name.GetComponents();

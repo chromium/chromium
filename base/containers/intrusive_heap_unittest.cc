@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -69,7 +68,7 @@ void ExpectCanonical(const IntrusiveHeapInt& heap) {
 void MakeCanonical(IntrusiveHeapInt* heap) {
   static constexpr int kInts[] = {CANONICAL_ELEMENTS};
   heap->clear();
-  heap->insert(kInts, kInts + base::size(kInts));
+  heap->insert(kInts, kInts + std::size(kInts));
   ExpectCanonical(*heap);
 }
 

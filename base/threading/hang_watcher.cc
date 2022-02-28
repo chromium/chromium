@@ -446,7 +446,7 @@ HangWatcher::GetTimeSinceLastCriticalMemoryPressureCrashKey() {
   if (last_critical_memory_pressure_time.is_null()) {
     constexpr char kNoMemoryPressureMsg[] = "No critical memory pressure";
     static_assert(
-        base::size(kNoMemoryPressureMsg) <=
+        std::size(kNoMemoryPressureMsg) <=
             static_cast<uint64_t>(kCrashKeyContentSize),
         "The crash key is too small to hold \"No critical memory pressure\".");
     return debug::ScopedCrashKeyString(crash_key, kNoMemoryPressureMsg);

@@ -634,7 +634,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, StopSafely) {
         params[1].sampling_interval = Milliseconds(1);
         params[1].samples_per_profile = 100000;
 
-        SampleRecordedCounter samples_recorded[size(params)];
+        SampleRecordedCounter samples_recorded[std::size(params)];
         ModuleCache module_cache1, module_cache2;
         TestProfilerInfo profiler_info0(target_thread_token, params[0],
                                         &module_cache1, &samples_recorded[0]);

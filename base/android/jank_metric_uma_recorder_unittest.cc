@@ -49,9 +49,9 @@ const int64_t kDurations[] = {
     1'000'000,   // 1ms
     20'000'000,  // 20ms
 };
-const size_t kDurationsLen = base::size(kDurations);
+const size_t kDurationsLen = std::size(kDurations);
 
-static_assert(base::size(kDurations) == base::size(kTimestampsNs),
+static_assert(std::size(kDurations) == std::size(kTimestampsNs),
               "Length of timestamps and durations should be equal.");
 
 // Jank bursts are calculated based on durations.
@@ -59,7 +59,7 @@ const int64_t kJankBursts[] = {
     100'000'000,  // 100ms
     20'000'000,   // 20ms
 };
-const size_t kJankBurstsLen = base::size(kJankBursts);
+const size_t kJankBurstsLen = std::size(kJankBursts);
 
 }  // namespace
 

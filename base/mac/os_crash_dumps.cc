@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <unistd.h>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 
 namespace base::mac {
@@ -41,7 +40,7 @@ void DisableOSCrashDumps() {
   };
 
   // For all these signals, just wire things up so we exit immediately.
-  for (size_t i = 0; i < base::size(signals_to_intercept); ++i) {
+  for (size_t i = 0; i < std::size(signals_to_intercept); ++i) {
     struct sigaction act = {};
     act.sa_handler = ExitSignalHandler;
 

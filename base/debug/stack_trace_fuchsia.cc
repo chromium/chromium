@@ -21,7 +21,6 @@
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/elf_reader.h"
 #include "base/logging.h"
 
@@ -132,7 +131,7 @@ void SymbolMap::Populate() {
     // The process name may have a process type suffix at the end (e.g.
     // "context", "renderer", gpu"), which doesn't belong in the module list.
     // Trim the suffix from the name.
-    for (size_t i = 0; i < base::size(app_name) && app_name[i] != '\0'; ++i) {
+    for (size_t i = 0; i < std::size(app_name) && app_name[i] != '\0'; ++i) {
       if (app_name[i] == ':') {
         app_name[i] = 0;
         break;

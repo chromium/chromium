@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/i18n/string_search.h"
+
 #include <stddef.h>
 
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/string_search.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/i18n/unicode/usearch.h"
@@ -361,7 +361,7 @@ TEST(StringSearchTest, RepeatingStringSearch) {
           {.match_index = match_index, .match_length = match_length});
     }
 
-    ASSERT_EQ(base::size(kExpectation), results.size());
+    ASSERT_EQ(std::size(kExpectation), results.size());
     for (size_t i = 0; i < results.size(); ++i) {
       EXPECT_EQ(results[i].match_index, kExpectation[i].match_index);
       EXPECT_EQ(results[i].match_length, kExpectation[i].match_length);
@@ -381,7 +381,7 @@ TEST(StringSearchTest, RepeatingStringSearch) {
           {.match_index = match_index, .match_length = match_length});
     }
 
-    ASSERT_EQ(base::size(kExpectation), results.size());
+    ASSERT_EQ(std::size(kExpectation), results.size());
     for (size_t i = 0; i < results.size(); ++i) {
       EXPECT_EQ(results[i].match_index, kExpectation[i].match_index);
       EXPECT_EQ(results[i].match_length, kExpectation[i].match_length);

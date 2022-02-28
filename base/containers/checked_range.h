@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/containers/checked_iterators.h"
-#include "base/cxx17_backports.h"
 #include "base/template_util.h"
 
 namespace base {
@@ -20,7 +19,7 @@ namespace base {
 // CheckedContiguousRange is a light-weight wrapper around a container modeling
 // the ContiguousContainer requirement [1, 2]. Effectively this means that the
 // container stores its elements contiguous in memory. Furthermore, it is
-// expected that base::data(container) and base::size(container) are valid
+// expected that std::data(container) and std::size(container) are valid
 // expressions, and that data() + idx is dereferenceable for all idx in the
 // range [0, size()). In the standard library this includes the containers
 // std::string, std::vector and std::array, but other containers like
@@ -51,7 +50,7 @@ template <typename ContiguousContainer>
 class CheckedContiguousRange {
  public:
   using element_type = std::remove_pointer_t<decltype(
-      base::data(std::declval<ContiguousContainer&>()))>;
+      std::data(std::declval<ContiguousContainer&>()))>;
   using value_type = std::remove_cv_t<element_type>;
   using reference = element_type&;
   using const_reference = const element_type&;
@@ -132,17 +131,17 @@ class CheckedContiguousRange {
   }
 
   constexpr pointer data() const noexcept {
-    return container_ ? base::data(*container_) : nullptr;
+    return container_ ? std::data(*container_) : nullptr;
   }
 
   constexpr const_pointer cdata() const noexcept { return data(); }
 
   constexpr size_type size() const noexcept {
-    return container_ ? base::size(*container_) : 0;
+    return container_ ? std::size(*container_) : 0;
   }
 
   constexpr bool empty() const noexcept {
-    return container_ ? base::empty(*container_) : true;
+    return container_ ? std::empty(*container_) : true;
   }
 
  private:

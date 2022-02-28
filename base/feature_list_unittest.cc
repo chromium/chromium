@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/feature_list_buildflags.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -82,7 +81,7 @@ TEST_F(FeatureListTest, InitializeFromCommandLine) {
       {"OnByDefault", "OnByDefault,OffByDefault", false, false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]: [%s] [%s]", i,
                                     test_case.enable_features,
@@ -173,7 +172,7 @@ TEST_F(FeatureListTest, FieldTrialOverrides) {
   };
 
   FieldTrial::ActiveGroup active_group;
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
@@ -391,7 +390,7 @@ TEST_F(FeatureListTest, AssociateReportingFieldTrial) {
   const char kForcedOnGroupName[] = "ForcedOn";
   const char kForcedOffGroupName[] = "ForcedOff";
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]: [%s] [%s]", i,
                                     test_case.enable_features,
@@ -727,7 +726,7 @@ TEST(FeatureListAccessorTest, InitializeFromCommandLine) {
        FeatureList::OVERRIDE_DISABLE_FEATURE},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     const auto& test_case = test_cases[i];
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]: [%s] [%s]", i,
                                     test_case.enable_features,

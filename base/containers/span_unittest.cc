@@ -230,7 +230,7 @@ TEST(SpanTest, ConstructFromConstexprArray) {
 
   constexpr span<const int> dynamic_span(kArray);
   static_assert(kArray == dynamic_span.data(), "");
-  static_assert(base::size(kArray) == dynamic_span.size(), "");
+  static_assert(std::size(kArray) == dynamic_span.size(), "");
 
   static_assert(kArray[0] == dynamic_span[0], "");
   static_assert(kArray[1] == dynamic_span[1], "");
@@ -238,9 +238,9 @@ TEST(SpanTest, ConstructFromConstexprArray) {
   static_assert(kArray[3] == dynamic_span[3], "");
   static_assert(kArray[4] == dynamic_span[4], "");
 
-  constexpr span<const int, base::size(kArray)> static_span(kArray);
+  constexpr span<const int, std::size(kArray)> static_span(kArray);
   static_assert(kArray == static_span.data(), "");
-  static_assert(base::size(kArray) == static_span.size(), "");
+  static_assert(std::size(kArray) == static_span.size(), "");
 
   static_assert(kArray[0] == static_span[0], "");
   static_assert(kArray[1] == static_span[1], "");
@@ -254,19 +254,19 @@ TEST(SpanTest, ConstructFromArray) {
 
   span<const int> const_span(array);
   EXPECT_EQ(array, const_span.data());
-  EXPECT_EQ(base::size(array), const_span.size());
+  EXPECT_EQ(std::size(array), const_span.size());
   for (size_t i = 0; i < const_span.size(); ++i)
     EXPECT_EQ(array[i], const_span[i]);
 
   span<int> dynamic_span(array);
   EXPECT_EQ(array, dynamic_span.data());
-  EXPECT_EQ(base::size(array), dynamic_span.size());
+  EXPECT_EQ(std::size(array), dynamic_span.size());
   for (size_t i = 0; i < dynamic_span.size(); ++i)
     EXPECT_EQ(array[i], dynamic_span[i]);
 
-  span<int, base::size(array)> static_span(array);
+  span<int, std::size(array)> static_span(array);
   EXPECT_EQ(array, static_span.data());
-  EXPECT_EQ(base::size(array), static_span.size());
+  EXPECT_EQ(std::size(array), static_span.size());
   for (size_t i = 0; i < static_span.size(); ++i)
     EXPECT_EQ(array[i], static_span[i]);
 }
@@ -288,7 +288,7 @@ TEST(SpanTest, ConstructFromStdArray) {
   for (size_t i = 0; i < dynamic_span.size(); ++i)
     EXPECT_EQ(array[i], dynamic_span[i]);
 
-  span<int, base::size(array)> static_span(array);
+  span<int, std::size(array)> static_span(array);
   EXPECT_EQ(array.data(), static_span.data());
   EXPECT_EQ(array.size(), static_span.size());
   for (size_t i = 0; i < static_span.size(); ++i)
@@ -1342,7 +1342,7 @@ TEST(SpanTest, EnsureConstexprGoodness) {
 
   constexpr span<const int> lasts = constexpr_span.last(size);
   for (size_t i = 0; i < lasts.size(); ++i) {
-    const size_t j = (base::size(kArray) - size) + i;
+    const size_t j = (std::size(kArray) - size) + i;
     EXPECT_EQ(kArray[j], lasts[i]);
   }
 

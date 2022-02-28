@@ -9,7 +9,6 @@
 #include <sys/param.h>
 #include <sys/sysctl.h>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics_iocounters.h"
 
@@ -31,12 +30,12 @@ static int GetProcessCPU(pid_t pid) {
   int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
                 sizeof(struct kinfo_proc), 0 };
 
-  if (sysctl(mib, base::size(mib), NULL, &length, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0)
     return -1;
 
   mib[5] = (length / sizeof(struct kinfo_proc));
 
-  if (sysctl(mib, base::size(mib), &info, &length, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
     return 0;
 
   return info.p_pctcpu;
@@ -75,7 +74,7 @@ size_t GetSystemCommitCharge() {
   unsigned long mem_total, mem_free, mem_inactive;
   size_t len = sizeof(vmtotal);
 
-  if (sysctl(mib, base::size(mib), &vmtotal, &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), &vmtotal, &len, NULL, 0) < 0)
     return 0;
 
   mem_total = vmtotal.t_vm;

@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/critical_closure.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -155,7 +154,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   // hits a DCHECK because creation fails with no indication why. Pull the path
   // onto the stack so that we can see if it is malformed in some odd way.
   wchar_t path_copy[MAX_PATH];
-  base::wcslcpy(path_copy, path.value().c_str(), base::size(path_copy));
+  base::wcslcpy(path_copy, path.value().c_str(), std::size(path_copy));
   base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
 
@@ -169,7 +168,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
     char path[128];
   } file_info;
   file_info.data_size = data.size();
-  strlcpy(file_info.path, path.value().c_str(), base::size(file_info.path));
+  strlcpy(file_info.path, path.value().c_str(), std::size(file_info.path));
   debug::Alias(&file_info);
 #endif
 

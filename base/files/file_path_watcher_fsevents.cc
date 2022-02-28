@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -222,7 +221,7 @@ void FilePathWatcherFSEvents::UpdateEventStream(
   CFStringRef paths_array[] = { cf_path.get(), cf_dir_path.get() };
   ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
-                    base::size(paths_array), &kCFTypeArrayCallBacks));
+                    std::size(paths_array), &kCFTypeArrayCallBacks));
 
   FSEventStreamContext context;
   context.version = 0;

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/proc_maps_linux.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
-#include "base/debug/proc_maps_linux.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -172,7 +172,7 @@ TEST(ProcMapsTest, Permissions) {
          MappedMemoryRegion::EXECUTE | MappedMemoryRegion::PRIVATE},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(
         base::StringPrintf("kTestCases[%zu] = %s", i, kTestCases[i].input));
 
@@ -269,7 +269,7 @@ TEST(ProcMapsTest, MissingFields) {
     "00400000-0040b000 r-xp 00000000 794418 /bin/cat\n",   // Missing device.
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%zu] = %s", i, kTestCases[i]));
     std::vector<MappedMemoryRegion> regions;
     EXPECT_FALSE(ParseProcMaps(kTestCases[i], &regions));
@@ -286,7 +286,7 @@ TEST(ProcMapsTest, InvalidInput) {
     "00400000-0040b000 rwxp 00000000 fc:00 parse! /bin/cat\n",
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("kTestCases[%zu] = %s", i, kTestCases[i]));
     std::vector<MappedMemoryRegion> regions;
     EXPECT_FALSE(ParseProcMaps(kTestCases[i], &regions));

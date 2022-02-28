@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -758,8 +757,8 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
 #endif
   {
     CheckedAutoLock auto_lock(lock_);
-    for (size_t i = 0; i < base::size(shared_worker_threads_); ++i) {
-      for (size_t j = 0; j < base::size(shared_worker_threads_[i]); ++j) {
+    for (size_t i = 0; i < std::size(shared_worker_threads_); ++i) {
+      for (size_t j = 0; j < std::size(shared_worker_threads_[i]); ++j) {
         local_shared_worker_threads[i][j] = shared_worker_threads_[i][j];
         shared_worker_threads_[i][j] = nullptr;
 #if BUILDFLAG(IS_WIN)
@@ -771,8 +770,8 @@ void PooledSingleThreadTaskRunnerManager::ReleaseSharedWorkerThreads() {
     }
   }
 
-  for (size_t i = 0; i < base::size(local_shared_worker_threads); ++i) {
-    for (size_t j = 0; j < base::size(local_shared_worker_threads[i]); ++j) {
+  for (size_t i = 0; i < std::size(local_shared_worker_threads); ++i) {
+    for (size_t j = 0; j < std::size(local_shared_worker_threads[i]); ++j) {
       if (local_shared_worker_threads[i][j])
         UnregisterWorkerThread(local_shared_worker_threads[i][j]);
 #if BUILDFLAG(IS_WIN)

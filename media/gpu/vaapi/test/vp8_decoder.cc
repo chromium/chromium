@@ -7,6 +7,7 @@
 #include <va/va.h>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/parsers/vp8_parser.h"

@@ -5,9 +5,9 @@
 #include "base/i18n/break_iterator.h"
 
 #include <stddef.h>
+
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -506,7 +506,7 @@ TEST(BreakIteratorTest, BreakCharacter) {
   }
   BreakIterator iter(text, BreakIterator::BREAK_CHARACTER);
   ASSERT_TRUE(iter.Init());
-  for (size_t i = 0; i < base::size(kCharacters); ++i) {
+  for (size_t i = 0; i < std::size(kCharacters); ++i) {
     EXPECT_TRUE(iter.Advance());
     EXPECT_EQ(characters[i], iter.GetString());
   }

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,14 +132,14 @@ TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
 
   // Set the value of the slot to be the index of the current
   // SequenceLocalStorageMaps in the vector
-  for (unsigned int i = 0; i < base::size(sequence_local_storage_maps); ++i) {
+  for (unsigned int i = 0; i < std::size(sequence_local_storage_maps); ++i) {
     internal::ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_sequence_local_storage(&sequence_local_storage_maps[i]);
 
     slot.emplace(i);
   }
 
-  for (unsigned int i = 0; i < base::size(sequence_local_storage_maps); ++i) {
+  for (unsigned int i = 0; i < std::size(sequence_local_storage_maps); ++i) {
     internal::ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_sequence_local_storage(&sequence_local_storage_maps[i]);
 

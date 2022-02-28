@@ -32,7 +32,6 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/cpu.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
@@ -147,7 +146,7 @@ const size_t kTestSizes[] = {
     1 << 20,
     1 << 21,
 };
-constexpr size_t kTestSizesCount = base::size(kTestSizes);
+constexpr size_t kTestSizesCount = std::size(kTestSizes);
 
 void AllocateRandomly(base::PartitionRoot<base::internal::ThreadSafe>* root,
                       size_t count,
@@ -4382,10 +4381,10 @@ class ScopedOpenCLNoOpKernel {
     const size_t source_lengths[] = {
         strlen(sources[0]),
     };
-    static_assert(base::size(sources) == base::size(source_lengths),
+    static_assert(std::size(sources) == std::size(source_lengths),
                   "arrays must be parallel");
 
-    program_ = clCreateProgramWithSource(context_, base::size(sources), sources,
+    program_ = clCreateProgramWithSource(context_, std::size(sources), sources,
                                          source_lengths, &rv);
     ASSERT_EQ(rv, CL_SUCCESS) << "clCreateProgramWithSource";
 

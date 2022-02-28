@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -61,7 +60,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     "/", "/foo", "foo", "/foo/bar.", "foo/bar.", "/foo/bar./bazquux",
     "foo/bar./bazquux", "foo/.app", "//foo",
   };
-  for (size_t i = 0; i < base::size(invalid_inputs); i++) {
+  for (size_t i = 0; i < std::size(invalid_inputs); i++) {
     out = GetAppBundlePath(FilePath(invalid_inputs[i]));
     EXPECT_TRUE(out.empty()) << "loop: " << i;
   }
@@ -85,7 +84,7 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
     { "/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
         "/Applications/Google Foo.app" },
   };
-  for (size_t i = 0; i < base::size(valid_inputs); i++) {
+  for (size_t i = 0; i < std::size(valid_inputs); i++) {
     out = GetAppBundlePath(FilePath(valid_inputs[i].in));
     EXPECT_FALSE(out.empty()) << "loop: " << i;
     EXPECT_STREQ(valid_inputs[i].expected_out,

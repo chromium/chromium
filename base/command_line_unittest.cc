@@ -48,7 +48,7 @@ TEST(CommandLineTest, CommandLineConstructor) {
       FILE_PATH_LITERAL("--not-a-switch"),
       FILE_PATH_LITERAL("\"in the time of submarines...\""),
       FILE_PATH_LITERAL("unquoted arg-with-space")};
-  CommandLine cl(size(argv), argv);
+  CommandLine cl(std::size(argv), argv);
 
   EXPECT_FALSE(cl.GetCommandLineString().empty());
   EXPECT_FALSE(cl.HasSwitch("cruller"));
@@ -293,7 +293,7 @@ TEST(CommandLineTest, AppendSwitchesDashDash) {
  const CommandLine::CharType* raw_argv[] = { FILE_PATH_LITERAL("prog"),
                                              FILE_PATH_LITERAL("--"),
                                              FILE_PATH_LITERAL("--arg1") };
- CommandLine cl(size(raw_argv), raw_argv);
+ CommandLine cl(std::size(raw_argv), raw_argv);
 
  cl.AppendSwitch("switch1");
  cl.AppendSwitchASCII("switch2", "foo");
@@ -564,7 +564,7 @@ TEST(CommandLineTest, MultipleSameSwitch) {
       FILE_PATH_LITERAL("-baz"),
       FILE_PATH_LITERAL("--foo=two")  // --foo second time
   };
-  CommandLine cl(size(argv), argv);
+  CommandLine cl(std::size(argv), argv);
 
   EXPECT_TRUE(cl.HasSwitch("foo"));
   EXPECT_TRUE(cl.HasSwitch("baz"));
@@ -614,7 +614,7 @@ TEST(CommandLineTest, MultipleFilterFileSwitch) {
   CommandLine::SetDuplicateSwitchHandler(
       std::make_unique<MergeDuplicateFoosSemicolon>());
 
-  CommandLine cl(size(argv), argv);
+  CommandLine cl(std::size(argv), argv);
 
   EXPECT_TRUE(cl.HasSwitch("mergeable-foo"));
   EXPECT_TRUE(cl.HasSwitch("baz"));

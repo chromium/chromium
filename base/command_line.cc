@@ -50,7 +50,7 @@ constexpr CommandLine::StringPieceType kSwitchPrefixes[] = {L"--", L"-", L"/"};
 // Unixes don't use slash as a switch.
 constexpr CommandLine::StringPieceType kSwitchPrefixes[] = {"--", "-"};
 #endif
-size_t switch_prefix_count = base::size(kSwitchPrefixes);
+size_t switch_prefix_count = std::size(kSwitchPrefixes);
 
 #if BUILDFLAG(IS_WIN)
 // Switch string that specifies the single argument to the command line.
@@ -196,7 +196,7 @@ void CommandLine::set_slash_is_not_a_switch() {
   // The last switch prefix should be slash, so adjust the size to skip it.
   static_assert(base::make_span(kSwitchPrefixes).back() == L"/",
                 "Error: Last switch prefix is not a slash.");
-  switch_prefix_count = base::size(kSwitchPrefixes) - 1;
+  switch_prefix_count = std::size(kSwitchPrefixes) - 1;
 }
 
 // static

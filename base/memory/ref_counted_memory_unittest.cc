@@ -51,7 +51,7 @@ TEST(RefCountedMemoryUnitTest, RefCountedBytes) {
   scoped_refptr<RefCountedMemory> mem2;
   {
     const unsigned char kData[] = {12, 11, 99};
-    mem2 = MakeRefCounted<RefCountedBytes>(kData, size(kData));
+    mem2 = MakeRefCounted<RefCountedBytes>(kData, std::size(kData));
   }
   ASSERT_EQ(3U, mem2->size());
   EXPECT_EQ(12U, mem2->front()[0]);
