@@ -8,4 +8,6 @@
 <View
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/divider"
+    android:layout_marginTop="@dimen/horizontal_divider_vertical_margin"
+    android:layout_marginBottom="@dimen/horizontal_divider_vertical_margin"
     style="@style/HorizontalDivider" />

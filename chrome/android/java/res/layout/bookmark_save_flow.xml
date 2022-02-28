@@ -32,43 +32,46 @@
           android:scaleType="centerInside"
           android:contentDescription="@string/bookmark_action_bar_edit_folder" />
 
-        <LinearLayout
+      <LinearLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical|start"
+          android:orientation="vertical"
+          android:screenReaderFocusable="true"
+          android:focusable="true">
+
+        <TextView
+            android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:orientation="vertical"
-            android:screenReaderFocusable="true"
-            android:focusable="true">
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            android:focusable="false" />
 
-          <TextView
-              android:id="@+id/title_text"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-              android:focusable="false" />
+        <TextView
+            android:id="@+id/subtitle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:focusable="false" />
+      </LinearLayout>
 
-          <TextView
-              android:id="@+id/subtitle_text"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-              android:focusable="false" />
-        </LinearLayout>
+      <View
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_weight="1" />
 
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/bookmark_edit"
-          android:layout_width="0dp"
+          android:layout_width="wrap_content"
           android:layout_height="72dp"
-          android:layout_weight="1"
-          android:gravity="center|end"
-          android:layout_gravity="end"
           android:text="@string/bookmark_item_edit"
           android:textAppearance="@style/TextAppearance.TextMedium.Link"
           style="@style/TextButton"
+          android:paddingStart="24dp"
           android:paddingEnd="24dp" />
-    </LinearLayout>
+  </LinearLayout>
 
     <View
         android:id="@+id/notification_switch_divider"
@@ -82,14 +85,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
         android:visibility="gone">
 
       <org.chromium.ui.widget.ChromeImageView
           android:id="@+id/notification_switch_start_icon"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginEnd="16dp"
+          android:layout_marginHorizontal="16dp"
           android:layout_gravity="center_vertical"
           android:importantForAccessibility="no" />
 
@@ -121,7 +123,8 @@
           android:id="@+id/notification_switch"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical" />
+          android:layout_gravity="center_vertical"
+          android:layout_marginEnd="24dp" />
     </LinearLayout>
   </LinearLayout>
 </org.chromium.ui.widget.ViewLookupCachingFrameLayout>

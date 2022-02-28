@@ -190,4 +190,7 @@
     <!-- Surface color elevations -->
     <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
+
+    <!-- Vertical divider dimens -->
+    <dimen name="horizontal_divider_vertical_margin">8dp</dimen>
 </resources>
