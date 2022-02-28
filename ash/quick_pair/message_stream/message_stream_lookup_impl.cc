@@ -197,7 +197,8 @@ void MessageStreamLookupImpl::OnSocketDisconnected(
 void MessageStreamLookupImpl::AttemptCreateMessageStream(
     device::BluetoothDevice* device,
     const CreateMessageStreamAttemptType& type) {
-  QP_LOG(VERBOSE) << __func__ << ": device address = " << device->GetAddress();
+  QP_LOG(VERBOSE) << __func__ << ": device address = " << device->GetAddress()
+                  << " type = " << CreateMessageStreamAttemptTypeToString(type);
 
   // Only open MessageStreams for new devices that don't already have a
   // MessageStream stored in the map. We can sometimes reach this point if
