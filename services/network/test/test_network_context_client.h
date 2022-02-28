@@ -53,6 +53,9 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
   void OnTrustAnchorUsed() override {}
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
+  void OnCanSendSCTAuditingReport(
+      OnCanSendSCTAuditingReportCallback callback) override;
+  void OnNewSCTAuditingReportSent() override {}
 #endif
   void OnTrustTokenIssuanceDivertedToSystem(
       mojom::FulfillTrustTokenIssuanceRequestPtr request,

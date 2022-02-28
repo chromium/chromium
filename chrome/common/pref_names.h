@@ -1194,6 +1194,8 @@ extern const char kCorsNonWildcardRequestHeadersSupport[];
 extern const char kOriginAgentClusterDefaultEnabled[];
 
 extern const char kForceMajorVersionToMinorPositionInUserAgent[];
+
+extern const char kSCTAuditingHashdanceReportCount[];
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

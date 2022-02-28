@@ -3390,4 +3390,9 @@ const char kCorsNonWildcardRequestHeadersSupport[] =
 const char kOriginAgentClusterDefaultEnabled[] =
     "origin_agent_cluster_default_enabled";
 
+// An integer count of how many SCT Auditing hashdance reports have ever been
+// sent by this client, across all profiles.
+const char kSCTAuditingHashdanceReportCount[] =
+    "sct_auditing.hashdance_report_count";
+
 }  // namespace prefs

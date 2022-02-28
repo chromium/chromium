@@ -52,4 +52,11 @@ void TestNetworkContextClient::OnFileUploadRequested(
   std::move(callback).Run(net::OK, std::move(files));
 }
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+void TestNetworkContextClient::OnCanSendSCTAuditingReport(
+    OnCanSendSCTAuditingReportCallback callback) {
+  std::move(callback).Run(true);
+}
+#endif
+
 }  // namespace network

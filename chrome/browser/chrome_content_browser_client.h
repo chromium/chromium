@@ -33,7 +33,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -305,6 +304,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
+  void CanSendSCTAuditingReport(
+      content::BrowserContext* browser_context,
+      base::OnceCallback<void(bool)> callback) override;
+  void OnNewSCTAuditingReportSent(
+      content::BrowserContext* browser_context) override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetSystemSharedURLLoaderFactory() override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;

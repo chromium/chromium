@@ -15,9 +15,14 @@
 #include "base/time/time_to_iso8601.h"
 #include "net/base/hash_value.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/network_context.h"
+#include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -58,7 +63,8 @@ class SCTAuditingReporterTest : public testing::Test {
     base::Time now;
   };
 
-  SCTAuditingReporterTest() {
+  SCTAuditingReporterTest()
+      : network_service_(NetworkService::CreateForTesting()) {
     SCTAuditingReporter::SetRetryDelayForTesting(base::TimeDelta());
 
     reporter_metadata_.issued = base::Time::Now() - base::Days(30);
@@ -70,6 +76,25 @@ class SCTAuditingReporterTest : public testing::Test {
 
     response_.ingested_until = base::Time::Now();
     response_.now = base::Time::Now();
+
+    // Set up a NetworkContext.
+    mojom::NetworkContextParamsPtr context_params =
+        CreateNetworkContextParamsForTesting();
+    context_params->cert_verifier_params =
+        FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
+    context_params->sct_auditing_mode =
+        mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
+    network_context_ = std::make_unique<NetworkContext>(
+        network_service_.get(),
+        network_context_remote_.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
+
+    // A NetworkContextClient is needed for querying/updating the report count.
+    mojo::PendingRemote<network::mojom::NetworkContextClient>
+        network_context_client_remote;
+    network_context_client_ = std::make_unique<TestNetworkContextClient>(
+        network_context_client_remote.InitWithNewPipeAndPassReceiver());
+    network_context_->SetClient(std::move(network_context_client_remote));
   }
 
   // Creates a reporter.
@@ -88,7 +113,7 @@ class SCTAuditingReporterTest : public testing::Test {
         *SCTAuditingReporter::SCTHashdanceMetadata::FromValue(
             reporter_metadata_.ToValue());
     return SCTAuditingReporter(
-        net::HashValue(), std::move(report),
+        network_context_.get(), net::HashValue(), std::move(report),
         /*is_hashdance=*/true, std::move(metadata), &url_loader_factory_,
         kExpectedIngestionDelay, kMaxIngestionRandomDelay, GURL(kTestReportURL),
         GURL(kTestLookupURL),
@@ -130,16 +155,24 @@ class SCTAuditingReporterTest : public testing::Test {
             nullptr));
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME,
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
   };
 
+  std::unique_ptr<NetworkService> network_service_;
+  std::unique_ptr<NetworkContext> network_context_;
+  std::unique_ptr<TestNetworkContextClient> network_context_client_;
   TestURLLoaderFactory url_loader_factory_;
 
   // Metadata used when creating a repoter.
   SCTAuditingReporter::SCTHashdanceMetadata reporter_metadata_;
 
   Response response_;
+
+  // Stores the mojo::Remote<mojom::NetworkContext> of the most recently created
+  // NetworkContext.
+  mojo::Remote<mojom::NetworkContext> network_context_remote_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

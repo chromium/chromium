@@ -31,6 +31,7 @@
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "services/network/url_loader_factory.h"
@@ -83,6 +84,14 @@ class SCTAuditingHandlerTest : public testing::Test {
     std::vector<mojom::CTLogInfoPtr> log_list;
     log_list.emplace_back(std::move(log));
     network_service_->UpdateCtLogList(std::move(log_list), base::Time::Now());
+
+    // A NetworkContextClient is needed for querying/updating the report count.
+    mojo::PendingRemote<network::mojom::NetworkContextClient>
+        network_context_client_remote;
+    network_context_client_ =
+        std::make_unique<network::TestNetworkContextClient>(
+            network_context_client_remote.InitWithNewPipeAndPassReceiver());
+    network_context_->SetClient(std::move(network_context_client_remote));
 
     // Set up SCT auditing configuration.
     auto* cache = network_service_->sct_auditing_cache();
@@ -159,6 +168,7 @@ class SCTAuditingHandlerTest : public testing::Test {
   base::FilePath persistence_path_;
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkContext> network_context_;
+  std::unique_ptr<TestNetworkContextClient> network_context_client_;
   scoped_refptr<net::X509Certificate> chain_;
   std::unique_ptr<SCTAuditingHandler> handler_;
   base::test::ScopedFeatureList scoped_feature_list_;

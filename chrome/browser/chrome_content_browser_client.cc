@@ -119,6 +119,7 @@
 #include "chrome/browser/ssl/https_defaulted_callbacks.h"
 #include "chrome/browser/ssl/https_only_mode_navigation_throttle.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_interceptor.h"
+#include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/ssl_client_auth_metrics.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
@@ -1285,6 +1286,7 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
   registry->RegisterStringPref(prefs::kIsolateOrigins, std::string());
   registry->RegisterBooleanPref(prefs::kSitePerProcess, false);
   registry->RegisterBooleanPref(prefs::kTabFreezingEnabled, true);
+  registry->RegisterIntegerPref(prefs::kSCTAuditingHashdanceReportCount, 0);
 }
 
 // static
@@ -2853,6 +2855,17 @@ void ChromeContentBrowserClient::OnTrustAnchorUsed(
   service->SetUsedPolicyCertificates();
 }
 #endif
+
+void ChromeContentBrowserClient::CanSendSCTAuditingReport(
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(SCTReportingService::CanSendSCTAuditingReport());
+}
+
+void ChromeContentBrowserClient::OnNewSCTAuditingReportSent(
+    content::BrowserContext* browser_context) {
+  SCTReportingService::OnNewSCTAuditingReportSent();
+}
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeContentBrowserClient::GetSystemSharedURLLoaderFactory() {
