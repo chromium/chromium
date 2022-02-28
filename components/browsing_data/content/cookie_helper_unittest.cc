@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -592,13 +591,7 @@ TEST_F(CookieHelperTest, CannedDifferentFrames) {
                      base::Unretained(this)));
 }
 
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_CannedGetCookieCount DISABLED_CannedGetCookieCount
-#else
-#define MAYBE_CannedGetCookieCount CannedGetCookieCount
-#endif
-// Flaky on Linux TSan: https://crbug.com/1285414.
-TEST_F(CookieHelperTest, MAYBE_CannedGetCookieCount) {
+TEST_F(CookieHelperTest, CannedGetCookieCount) {
   // The URL in the omnibox is a frame URL. This is not necessarily the request
   // URL, since websites usually include other resources.
   GURL frame1_url("http://www.google.com");

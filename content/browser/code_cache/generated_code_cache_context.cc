@@ -112,6 +112,13 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
 void GeneratedCodeCacheContext::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RunOrPostTask(
+      this, FROM_HERE,
+      base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread, this));
+}
+
+void GeneratedCodeCacheContext::ShutdownOnThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   generated_js_code_cache_.reset();
   generated_wasm_code_cache_.reset();
   generated_webui_js_code_cache_.reset();

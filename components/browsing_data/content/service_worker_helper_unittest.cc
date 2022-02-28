@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,13 +30,7 @@ class CannedServiceWorkerHelperTest : public testing::Test {
   content::TestBrowserContext browser_context_;
 };
 
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_Empty DISABLED_Empty
-#else
-#define MAYBE_Empty Empty
-#endif
-// Flaky on Linux TSan: https://crbug.com/1285414
-TEST_F(CannedServiceWorkerHelperTest, MAYBE_Empty) {
+TEST_F(CannedServiceWorkerHelperTest, Empty) {
   const GURL origin("https://host1:1/");
   std::vector<GURL> scopes;
   scopes.push_back(GURL("https://host1:1/*"));
