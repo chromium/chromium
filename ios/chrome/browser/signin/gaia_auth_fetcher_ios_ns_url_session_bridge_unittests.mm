@@ -14,9 +14,10 @@
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/net/cookies/system_cookie_util.h"
 #include "ios/web/common/features.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
@@ -123,9 +124,8 @@ class TestGaiaAuthFetcherIOSNSURLSessionBridge
 
 }  // namespace
 
-class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public ChromeWebTest {
+class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
  protected:
-  // ChromeWebTest.
   void SetUp() override;
   void TearDown() override;
 
@@ -159,6 +159,11 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public ChromeWebTest {
 
   friend TestGaiaAuthFetcherIOSNSURLSessionBridge;
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
@@ -194,11 +199,18 @@ NSURLSession* TestGaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
 #pragma mark - GaiaAuthFetcherIOSNSURLSessionBridgeTest
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
-  ChromeWebTest::SetUp();
+  PlatformTest::SetUp();
+
+  browser_state_ = TestChromeBrowserState::Builder().Build();
+
+  web::WebState::CreateParams params(browser_state_.get());
+  web_state_ = web::WebState::Create(params);
+  web_state_->GetView();
+  web_state_->SetKeepRenderProcessAlive(true);
 
   delegate_.reset(new FakeGaiaAuthFetcherIOSBridgeDelegate());
   ns_url_session_bridge_.reset(new TestGaiaAuthFetcherIOSNSURLSessionBridge(
-      delegate_.get(), GetBrowserState(), this));
+      delegate_.get(), browser_state_.get(), this));
   url_session_configuration_ =
       NSURLSessionConfiguration.ephemeralSessionConfiguration;
   url_session_configuration_.HTTPShouldSetCookies = YES;
@@ -219,7 +231,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetUp() {
 
 void GaiaAuthFetcherIOSNSURLSessionBridgeTest::TearDown() {
   ASSERT_OCMOCK_VERIFY((id)url_session_mock_);
-  ChromeWebTest::TearDown();
+  web_state_.reset();
 }
 
 NSURLSession* GaiaAuthFetcherIOSNSURLSessionBridgeTest::CreateNSURLSession(
@@ -242,7 +254,7 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetCookiesInCookieJar() {
   std::vector<net::CanonicalCookie> cookies_out;
   base::RunLoop run_loop;
   network::mojom::CookieManager* cookie_manager =
-      GetBrowserState()->GetCookieManager();
+      browser_state_->GetCookieManager();
   cookie_manager->GetAllCookies(base::BindOnce(base::BindLambdaForTesting(
       [&run_loop,
        &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
@@ -301,7 +313,7 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::AddAllCookiesInCookieManager(
 bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetCookiesInCookieManager(
     NSArray<NSHTTPCookie*>* cookies) {
   network::mojom::CookieManager* cookie_manager =
-      GetBrowserState()->GetCookieManager();
+      browser_state_->GetCookieManager();
   for (NSHTTPCookie* cookie in cookies) {
     std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());
