@@ -123,6 +123,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                        EBreakBetween row_break_between,
                                        wtf_size_t row_index,
                                        NGLayoutInputNode child,
+                                       const NGLayoutResult& layout_result,
                                        bool has_container_separation);
 
   // Move past the breakpoint before the row, if possible, and return true. Also

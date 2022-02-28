@@ -67,12 +67,34 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
                                          const NGLayoutResult&,
                                          const NGBoxFragmentBuilder&);
 
+// Return true if the container is being resumed after a fragmentainer break,
+// and the child is at the first fragment of a node, and we are allowed to break
+// before it. Normally, this isn't allowed, as that would take us nowhere,
+// progress-wise, but for multicol in nested fragmentation, we'll allow it in
+// some cases. If we set the appeal of breaking before the first child high
+// enough, we'll automatically discard any subsequent less perfect
+// breakpoints. This will make us push everything that would break with an
+// appeal lower than the minimum appeal (stored in the constraint space) ahead
+// of us, until we reach the next column row (in the next outer fragmentainer).
+// That row may be taller, which might help us avoid breaking violations.
+bool IsBreakableAtStartOfResumedContainer(
+    const NGConstraintSpace& space,
+    const NGLayoutResult& child_layout_result,
+    const NGBoxFragmentBuilder& builder);
+
 // Calculate the appeal of breaking before this child.
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace&,
                                          NGLayoutInputNode child,
                                          const NGLayoutResult&,
                                          const NGBoxFragmentBuilder&,
-                                         bool has_container_separation);
+                                         bool has_container_separation,
+                                         bool is_row_item = false);
+NGBreakAppeal CalculateBreakAppealBefore(
+    const NGConstraintSpace&,
+    NGLayoutResult::EStatus layout_result_status,
+    EBreakBetween break_between,
+    bool has_container_separation,
+    bool breakable_at_start_of_container);
 
 // Calculate the appeal of breaking inside this child. The appeal is based on
 // the one stored in the layout result, unless hypothetical_appeal is specified.
@@ -240,7 +262,8 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace&,
                                        const NGLayoutResult&,
                                        LayoutUnit fragmentainer_block_offset,
                                        bool has_container_separation,
-                                       NGBoxFragmentBuilder*);
+                                       NGBoxFragmentBuilder*,
+                                       bool is_row_item = false);
 
 // Insert a break before the child, and propagate space shortage if needed.
 // |block_size_override| should only be supplied when you wish to propagate a
@@ -293,7 +316,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
                         const NGLayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
                         NGBreakAppeal appeal_before,
-                        NGBoxFragmentBuilder* builder);
+                        NGBoxFragmentBuilder* builder,
+                        bool is_row_item = false);
 
 // If the appeal of breaking before or inside the child is the same or higher
 // than any previous breakpoint we've found, set a new breakpoint in the

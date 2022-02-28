@@ -57,30 +57,6 @@ inline int FragmentainerBreakPrecedence(EBreakBetween break_value) {
   }
 }
 
-// Return true if the container is being resumed after a fragmentainer break,
-// and the child is at the first fragment of a node, and we are allowed to break
-// before it. Normally, this isn't allowed, as that would take us nowhere,
-// progress-wise, but for multicol in nested fragmentation, we'll allow it in
-// some cases. If we set the appeal of breaking before the first child high
-// enough, we'll automatically discard any subsequent less perfect
-// breakpoints. This will make us push everything that would break with an
-// appeal lower than the minimum appeal (stored in the constraint space) ahead
-// of us, until we reach the next column row (in the next outer fragmentainer).
-// That row may be taller, which might help us avoid breaking violations.
-bool IsBreakableAtStartOfResumedContainer(
-    const NGConstraintSpace& space,
-    const NGLayoutResult& child_layout_result,
-    const NGBoxFragmentBuilder& builder) {
-  if (space.MinBreakAppeal() != kBreakAppealLastResort &&
-      IsResumingLayout(builder.PreviousBreakToken())) {
-    if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
-            child_layout_result.PhysicalFragment()))
-      return box_fragment->IsFirstForNode();
-    return true;
-  }
-  return false;
-}
-
 }  // anonymous namespace
 
 EBreakBetween JoinFragmentainerBreakValues(EBreakBetween first_value,
@@ -139,17 +115,51 @@ EBreakBetween CalculateBreakBetweenValue(NGLayoutInputNode child,
   return builder.JoinedBreakBetweenValue(break_before);
 }
 
+bool IsBreakableAtStartOfResumedContainer(
+    const NGConstraintSpace& space,
+    const NGLayoutResult& child_layout_result,
+    const NGBoxFragmentBuilder& builder) {
+  if (space.MinBreakAppeal() != kBreakAppealLastResort &&
+      IsResumingLayout(builder.PreviousBreakToken())) {
+    DCHECK_EQ(child_layout_result.Status(), NGLayoutResult::kSuccess);
+    if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(
+            child_layout_result.PhysicalFragment()))
+      return box_fragment->IsFirstForNode();
+    return true;
+  }
+  return false;
+}
+
 NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
                                          NGLayoutInputNode child,
                                          const NGLayoutResult& layout_result,
                                          const NGBoxFragmentBuilder& builder,
-                                         bool has_container_separation) {
-  DCHECK(layout_result.Status() == NGLayoutResult::kSuccess ||
-         layout_result.Status() == NGLayoutResult::kOutOfFragmentainerSpace);
+                                         bool has_container_separation,
+                                         bool is_row_item) {
+  // Break-before and break-after for items in a row are handled at the row
+  // level, so |breakable_at_start_of_container| should be false for such items.
+  bool breakable_at_start_of_container =
+      !is_row_item &&
+      IsBreakableAtStartOfResumedContainer(space, layout_result, builder);
+  EBreakBetween break_between =
+      CalculateBreakBetweenValue(child, layout_result, builder);
+  return CalculateBreakAppealBefore(space, layout_result.Status(),
+                                    break_between, has_container_separation,
+                                    breakable_at_start_of_container);
+}
+
+NGBreakAppeal CalculateBreakAppealBefore(
+    const NGConstraintSpace& space,
+    NGLayoutResult::EStatus layout_result_status,
+    EBreakBetween break_between,
+    bool has_container_separation,
+    bool breakable_at_start_of_container) {
+  DCHECK(layout_result_status == NGLayoutResult::kSuccess ||
+         layout_result_status == NGLayoutResult::kOutOfFragmentainerSpace);
   NGBreakAppeal break_appeal = kBreakAppealPerfect;
   if (!has_container_separation &&
-      layout_result.Status() == NGLayoutResult::kSuccess) {
-    if (!IsBreakableAtStartOfResumedContainer(space, layout_result, builder)) {
+      layout_result_status == NGLayoutResult::kSuccess) {
+    if (!breakable_at_start_of_container) {
       // This is not a valid break point. If there's no container separation, it
       // means that we're breaking before the first piece of in-flow content
       // inside this block, even if it's not a valid class C break point [1]. We
@@ -169,8 +179,6 @@ NGBreakAppeal CalculateBreakAppealBefore(const NGConstraintSpace& space,
     break_appeal = space.MinBreakAppeal();
   }
 
-  EBreakBetween break_between =
-      CalculateBreakBetweenValue(child, layout_result, builder);
   if (IsAvoidBreakValue(space, break_between)) {
     // If there's a break-{after,before}:avoid* involved at this breakpoint, its
     // appeal will decrease.
@@ -589,9 +597,14 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
                                        const NGLayoutResult& layout_result,
                                        LayoutUnit fragmentainer_block_offset,
                                        bool has_container_separation,
-                                       NGBoxFragmentBuilder* builder) {
+                                       NGBoxFragmentBuilder* builder,
+                                       bool is_row_item) {
   DCHECK(space.HasBlockFragmentation());
 
+  // Items in a row should never have container separation.
+  DCHECK(!is_row_item || !has_container_separation);
+
+  // Break-before and break-after are handled at the row level.
   if (has_container_separation) {
     EBreakBetween break_between =
         CalculateBreakBetweenValue(child, layout_result, *builder);
@@ -603,13 +616,19 @@ NGBreakStatus BreakBeforeChildIfNeeded(const NGConstraintSpace& space,
     }
   }
 
-  NGBreakAppeal appeal_before = CalculateBreakAppealBefore(
-      space, child, layout_result, *builder, has_container_separation);
+  NGBreakAppeal appeal_before =
+      CalculateBreakAppealBefore(space, child, layout_result, *builder,
+                                 has_container_separation, is_row_item);
+#if DCHECK_IS_ON()
+  if (is_row_item)
+    DCHECK_EQ(appeal_before, NGBreakAppeal::kBreakAppealLastResort);
+#endif
 
   // Attempt to move past the break point, and if we can do that, also assess
   // the appeal of breaking there, even if we didn't.
   if (MovePastBreakpoint(space, child, layout_result,
-                         fragmentainer_block_offset, appeal_before, builder))
+                         fragmentainer_block_offset, appeal_before, builder,
+                         is_row_item))
     return NGBreakStatus::kContinue;
 
   // Breaking inside the child isn't appealing, and we're out of space. Figure
@@ -709,7 +728,8 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
                         const NGLayoutResult& layout_result,
                         LayoutUnit fragmentainer_block_offset,
                         NGBreakAppeal appeal_before,
-                        NGBoxFragmentBuilder* builder) {
+                        NGBoxFragmentBuilder* builder,
+                        bool is_row_item) {
   if (layout_result.Status() != NGLayoutResult::kSuccess) {
     // Layout aborted - no fragment was produced. There's nothing to move
     // past. We need to break before.
@@ -826,13 +846,14 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
     if (move_past) {
       // The child either fits, or we are not allowed to break. So we can move
       // past this breakpoint.
-      if (child.IsBlock() && builder) {
+      if (child.IsBlock() && builder && !is_row_item) {
         // We're tentatively not going to break before or inside this child, but
         // we'll check the appeal of breaking there anyway. It may be the best
         // breakpoint we'll ever find. (Note that we only do this for block
         // children, since, when it comes to inline layout, we first need to lay
         // out all the line boxes, so that we know what do to in order to honor
-        // orphans and widows, if at all possible.)
+        // orphans and widows, if at all possible. We also only do this for
+        // non-row items since items in a row will be parallel to one another.)
         UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child),
                                      layout_result, appeal_before, builder);
       }
