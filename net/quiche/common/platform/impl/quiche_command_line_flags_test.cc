@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
-
 #include <string>
 
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,8 +63,8 @@ TEST_F(QuicheCommandLineFlagTest, DefaultValues) {
 
 TEST_F(QuicheCommandLineFlagTest, NotSpecified) {
   const char* argv[]{"one", "two", "three"};
-  auto parse_result = QuicheParseCommandLineFlagsForTest(
-      "usage message", base::size(argv), argv);
+  auto parse_result = QuicheParseCommandLineFlagsForTest("usage message",
+                                                         std::size(argv), argv);
   EXPECT_FALSE(parse_result.exit_status.has_value());
   std::vector<std::string> expected_args{"two", "three"};
   EXPECT_EQ(expected_args, parse_result.non_flag_args);
@@ -83,7 +80,7 @@ TEST_F(QuicheCommandLineFlagTest, BoolFlag) {
     SetQuicheFlag(FLAGS_foo, false);
     const char* argv[]{"argv0", s};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
     EXPECT_TRUE(GetQuicheFlag(FLAGS_foo));
@@ -94,7 +91,7 @@ TEST_F(QuicheCommandLineFlagTest, BoolFlag) {
     SetQuicheFlag(FLAGS_foo, true);
     const char* argv[]{"argv0", s};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
     EXPECT_FALSE(GetQuicheFlag(FLAGS_foo));
@@ -106,7 +103,7 @@ TEST_F(QuicheCommandLineFlagTest, BoolFlag) {
 
     testing::internal::CaptureStderr();
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     std::string captured_stderr = testing::internal::GetCapturedStderr();
 
     EXPECT_TRUE(parse_result.exit_status.has_value());
@@ -124,7 +121,7 @@ TEST_F(QuicheCommandLineFlagTest, Int32Flag) {
     std::string flag_str = base::StringPrintf("--bar=%d", i);
     const char* argv[]{"argv0", flag_str.c_str()};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
     EXPECT_EQ(i, GetQuicheFlag(FLAGS_bar));
@@ -136,7 +133,7 @@ TEST_F(QuicheCommandLineFlagTest, Int32Flag) {
 
     testing::internal::CaptureStderr();
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     std::string captured_stderr = testing::internal::GetCapturedStderr();
 
     EXPECT_TRUE(parse_result.exit_status.has_value());
@@ -153,7 +150,7 @@ TEST_F(QuicheCommandLineFlagTest, StringFlag) {
     SetQuicheFlag(FLAGS_baz, "whee");
     const char* argv[]{"argv0", "--baz"};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
     EXPECT_EQ("", GetQuicheFlag(FLAGS_baz));
@@ -164,7 +161,7 @@ TEST_F(QuicheCommandLineFlagTest, StringFlag) {
     std::string flag_str = base::StrCat({"--baz=", s});
     const char* argv[]{"argv0", flag_str.c_str()};
     auto parse_result = QuicheParseCommandLineFlagsForTest(
-        "usage message", base::size(argv), argv);
+        "usage message", std::size(argv), argv);
     EXPECT_FALSE(parse_result.exit_status.has_value());
     EXPECT_TRUE(parse_result.non_flag_args.empty());
     EXPECT_EQ(s, GetQuicheFlag(FLAGS_baz));

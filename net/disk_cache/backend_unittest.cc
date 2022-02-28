@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -515,17 +514,17 @@ void DiskCacheBackendTest::BackendKeying() {
   entry2->Close();
 
   char buffer[30];
-  base::strlcpy(buffer, kName1, base::size(buffer));
+  base::strlcpy(buffer, kName1, std::size(buffer));
   ASSERT_THAT(OpenEntry(buffer, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();
 
-  base::strlcpy(buffer + 1, kName1, base::size(buffer) - 1);
+  base::strlcpy(buffer + 1, kName1, std::size(buffer) - 1);
   ASSERT_THAT(OpenEntry(buffer + 1, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();
 
-  base::strlcpy(buffer + 3, kName1, base::size(buffer) - 3);
+  base::strlcpy(buffer + 3, kName1, std::size(buffer) - 3);
   ASSERT_THAT(OpenEntry(buffer + 3, &entry2), IsOk());
   EXPECT_TRUE(entry1 == entry2);
   entry2->Close();

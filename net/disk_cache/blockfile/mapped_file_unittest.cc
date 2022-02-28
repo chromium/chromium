@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/disk_cache/blockfile/mapped_file.h"
-#include "base/cxx17_backports.h"
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -51,7 +51,7 @@ TEST_F(DiskCacheTest, MappedFile_SyncIO) {
   char buffer1[20];
   char buffer2[20];
   CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
-  base::strlcpy(buffer1, "the data", base::size(buffer1));
+  base::strlcpy(buffer1, "the data", std::size(buffer1));
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 8192));
   EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 8192));
   EXPECT_STREQ(buffer1, buffer2);
@@ -70,7 +70,7 @@ TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
   char buffer1[20];
   char buffer2[20];
   CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
-  base::strlcpy(buffer1, "the data", base::size(buffer1));
+  base::strlcpy(buffer1, "the data", std::size(buffer1));
   bool completed;
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 1024 * 1024, &callback,
               &completed));

@@ -9,7 +9,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -502,7 +501,7 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
       "CONNECTION_2G",      "CONNECTION_3G",        "CONNECTION_4G",
       "CONNECTION_NONE",    "CONNECTION_BLUETOOTH", "CONNECTION_5G",
   };
-  static_assert(base::size(kConnectionTypeNames) ==
+  static_assert(std::size(kConnectionTypeNames) ==
                     NetworkChangeNotifier::CONNECTION_LAST + 1,
                 "ConnectionType name count should match");
   if (type < CONNECTION_UNKNOWN || type > CONNECTION_LAST) {

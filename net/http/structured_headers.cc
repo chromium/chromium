@@ -650,7 +650,7 @@ class StructuredHeaderSerializer {
       // Maximum is 12 integer digits, one decimal point, three fractional
       // digits, and a null terminator.
       char buffer[17];
-      base::snprintf(buffer, base::size(buffer), "%#.3f", decimal_value);
+      base::snprintf(buffer, std::size(buffer), "%#.3f", decimal_value);
 
       // Strip any trailing 0s after the decimal point, but leave at least one
       // digit after it in all cases. (So 1.230 becomes 1.23, but 1.000 becomes

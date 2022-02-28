@@ -17,7 +17,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -1983,7 +1982,7 @@ void HttpNetworkTransactionTest::PreconnectErrorResendRequestTest(
   ChunkedUploadDataStream upload_data_stream(0);
   if (chunked_upload) {
     request.method = "POST";
-    upload_data_stream.AppendData(upload_data, base::size(upload_data) - 1,
+    upload_data_stream.AppendData(upload_data, std::size(upload_data) - 1,
                                   true);
     request.upload_data_stream = &upload_data_stream;
   }
@@ -2524,7 +2523,7 @@ TEST_F(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
   data.set_busy_before_sync_reads(true);
   session_deps_.socket_factory->AddSocketDataProvider(&data);
 
-  const int kNumUnreadBodies = base::size(data_writes) - 1;
+  const int kNumUnreadBodies = std::size(data_writes) - 1;
   std::string response_lines[kNumUnreadBodies];
 
   uint32_t first_socket_log_id = NetLogSource::kInvalidId;
@@ -2571,7 +2570,7 @@ TEST_F(HttpNetworkTransactionTest, KeepAliveAfterUnreadBody) {
       "HTTP/1.1 200 Hunky-Dory",
   };
 
-  static_assert(kNumUnreadBodies == base::size(kStatusLines),
+  static_assert(kNumUnreadBodies == std::size(kStatusLines),
                 "forgot to update kStatusLines");
 
   for (int i = 0; i < kNumUnreadBodies; ++i)
@@ -5999,7 +5998,7 @@ TEST_F(HttpNetworkTransactionTest, SameDestinationForDifferentProxyTypes) {
   };
   MockWrite socks5_writes[] = {
       MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kSOCKS5Request, base::size(kSOCKS5Request)),
+      MockWrite(ASYNC, kSOCKS5Request, std::size(kSOCKS5Request)),
       MockWrite(SYNCHRONOUS,
                 "GET /socks5 HTTP/1.1\r\n"
                 "Host: test\r\n"
@@ -6687,7 +6686,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGetWithProxyAuth) {
     "proxy-authorization", "Basic Zm9vOmJhcg=="
   };
   spdy::SpdySerializedFrame req_get_authorization(spdy_util_.ConstructSpdyGet(
-      kExtraAuthorizationHeaders, base::size(kExtraAuthorizationHeaders) / 2, 3,
+      kExtraAuthorizationHeaders, std::size(kExtraAuthorizationHeaders) / 2, 3,
       LOWEST));
   MockWrite spdy_writes[] = {
       CreateMockWrite(req_get, 0), CreateMockWrite(req_get_authorization, 3),
@@ -6702,7 +6701,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGetWithProxyAuth) {
   spdy::SpdySerializedFrame resp_authentication(
       spdy_util_.ConstructSpdyReplyError(
           "407", kExtraAuthenticationHeaders,
-          base::size(kExtraAuthenticationHeaders) / 2, 1));
+          std::size(kExtraAuthenticationHeaders) / 2, 1));
   spdy::SpdySerializedFrame body_authentication(
       spdy_util_.ConstructSpdyDataFrame(1, true));
   spdy::SpdySerializedFrame resp_data(
@@ -8647,18 +8646,18 @@ TEST_F(HttpNetworkTransactionTest, NTLMAuthV2) {
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          base::size(ntlm::test::kExpectedNegotiateMsg)),
+          std::size(ntlm::test::kExpectedNegotiateMsg)),
       &negotiate_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          base::size(ntlm::test::kChallengeMsgFromSpecV2)),
+          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
       &challenge_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          base::size(
+          std::size(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
       &authenticate_msg);
 
@@ -8799,18 +8798,18 @@ TEST_F(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          base::size(ntlm::test::kExpectedNegotiateMsg)),
+          std::size(ntlm::test::kExpectedNegotiateMsg)),
       &negotiate_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          base::size(ntlm::test::kChallengeMsgFromSpecV2)),
+          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
       &challenge_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          base::size(
+          std::size(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
       &authenticate_msg);
 
@@ -9045,18 +9044,18 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2) {
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          base::size(ntlm::test::kExpectedNegotiateMsg)),
+          std::size(ntlm::test::kExpectedNegotiateMsg)),
       &negotiate_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          base::size(ntlm::test::kChallengeMsgFromSpecV2)),
+          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
       &challenge_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          base::size(
+          std::size(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
       &authenticate_msg);
 
@@ -9236,18 +9235,18 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          base::size(ntlm::test::kExpectedNegotiateMsg)),
+          std::size(ntlm::test::kExpectedNegotiateMsg)),
       &negotiate_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          base::size(ntlm::test::kChallengeMsgFromSpecV2)),
+          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
       &challenge_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          base::size(
+          std::size(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
       &authenticate_msg);
 
@@ -9426,18 +9425,18 @@ TEST_F(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          base::size(ntlm::test::kExpectedNegotiateMsg)),
+          std::size(ntlm::test::kExpectedNegotiateMsg)),
       &negotiate_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          base::size(ntlm::test::kChallengeMsgFromSpecV2)),
+          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
       &challenge_msg);
   base::Base64Encode(
       base::StringPiece(
           reinterpret_cast<const char*>(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          base::size(
+          std::size(
               ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
       &authenticate_msg);
 
@@ -11535,7 +11534,7 @@ TEST_F(HttpNetworkTransactionTest, RedirectOfHttpsConnectViaSpdyProxy) {
     "http://login.example.com/",
   };
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(
-      "302", kExtraHeaders, base::size(kExtraHeaders) / 2, 1));
+      "302", kExtraHeaders, std::size(kExtraHeaders) / 2, 1));
   MockRead data_reads[] = {
       // Pause on first read.
       MockRead(ASYNC, ERR_IO_PENDING, 1), CreateMockRead(resp, 2),
@@ -11645,7 +11644,7 @@ TEST_F(HttpNetworkTransactionTest, ErrorResponseToHttpsConnectViaSpdyProxy) {
     "http://login.example.com/",
   };
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(
-      "404", kExtraHeaders, base::size(kExtraHeaders) / 2, 1));
+      "404", kExtraHeaders, std::size(kExtraHeaders) / 2, 1));
   spdy::SpdySerializedFrame body(
       spdy_util_.ConstructSpdyDataFrame(1, "The host does not exist", true));
   MockRead data_reads[] = {
@@ -11707,7 +11706,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
       "proxy-authorization", "Basic Zm9vOmJhcg==",
   };
   spdy::SpdySerializedFrame connect2(spdy_util_.ConstructSpdyConnect(
-      kAuthCredentials, base::size(kAuthCredentials) / 2, 3,
+      kAuthCredentials, std::size(kAuthCredentials) / 2, 3,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
       HostPortPair("www.example.org", 443)));
   // fetch https://www.example.org/ via HTTP
@@ -11730,7 +11729,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthSpdyProxy) {
     "proxy-authenticate", "Basic realm=\"MyRealm1\"",
   };
   spdy::SpdySerializedFrame conn_auth_resp(spdy_util_.ConstructSpdyReplyError(
-      kAuthStatus, kAuthChallenge, base::size(kAuthChallenge) / 2, 1));
+      kAuthStatus, kAuthChallenge, std::size(kAuthChallenge) / 2, 1));
 
   spdy::SpdySerializedFrame conn_resp(
       spdy_util_.ConstructSpdyGetReply(nullptr, 0, 3));
@@ -12339,13 +12338,13 @@ TEST_F(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   char read_buffer[] = { 0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0 };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, write_buffer, base::size(write_buffer)),
+      MockWrite(ASYNC, write_buffer, std::size(write_buffer)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, read_buffer, base::size(read_buffer)),
+      MockRead(ASYNC, read_buffer, std::size(read_buffer)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
@@ -12396,14 +12395,14 @@ TEST_F(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, reinterpret_cast<char*>(write_buffer),
-                base::size(write_buffer)),
+                std::size(write_buffer)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
       MockRead(ASYNC, reinterpret_cast<char*>(read_buffer),
-               base::size(read_buffer)),
+               std::size(read_buffer)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
@@ -12456,13 +12455,13 @@ TEST_F(HttpNetworkTransactionTest, SOCKS4_HTTP_GET_no_PAC) {
   char read_buffer[] = { 0x00, 0x5A, 0x00, 0x00, 0, 0, 0, 0 };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, write_buffer, base::size(write_buffer)),
+      MockWrite(ASYNC, write_buffer, std::size(write_buffer)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
-      MockRead(ASYNC, read_buffer, base::size(read_buffer)),
+      MockRead(ASYNC, read_buffer, std::size(read_buffer)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"), MockRead(SYNCHRONOUS, OK)};
@@ -12521,7 +12520,7 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
   MockWrite data_writes[] = {
       MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
       MockWrite(ASYNC, kSOCKS5ExampleOkRequest,
-                base::size(kSOCKS5ExampleOkRequest)),
+                std::size(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
@@ -12592,14 +12591,14 @@ TEST_F(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
   MockWrite data_writes[] = {
       MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
       MockWrite(ASYNC, reinterpret_cast<const char*>(kSOCKS5ExampleOkRequest),
-                base::size(kSOCKS5ExampleOkRequest)),
+                std::size(kSOCKS5ExampleOkRequest)),
       MockWrite("GET / HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
                 "Connection: keep-alive\r\n\r\n")};
 
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
-      MockRead(ASYNC, kSOCKS5SslOkResponse, base::size(kSOCKS5SslOkResponse)),
+      MockRead(ASYNC, kSOCKS5SslOkResponse, std::size(kSOCKS5SslOkResponse)),
       MockRead("HTTP/1.0 200 OK\r\n"),
       MockRead("Content-Type: text/html; charset=iso-8859-1\r\n\r\n"),
       MockRead("Payload"),
@@ -12731,7 +12730,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
             tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -12789,7 +12788,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
             tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -12867,7 +12866,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     session_deps_.proxy_resolution_service =
         ConfiguredProxyResolutionService::CreateFixed(
             tests[i].proxy_server, TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -16712,7 +16711,7 @@ TEST_F(HttpNetworkTransactionTest, SSLWriteCertError) {
     ERR_CERT_AUTHORITY_INVALID,
     ERR_CERT_DATE_INVALID,
   };
-  for (size_t i = 0; i < base::size(kErrors); i++) {
+  for (size_t i = 0; i < std::size(kErrors); i++) {
     CheckErrorIsPassedBack(kErrors[i], ASYNC);
     CheckErrorIsPassedBack(kErrors[i], SYNCHRONOUS);
   }

@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -362,7 +361,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
       kSecClassIdentity, kSecMatchLimitAll, kCFBooleanTrue, kCFBooleanTrue,
   };
   ScopedCFTypeRef<CFDictionaryRef> query(CFDictionaryCreate(
-      kCFAllocatorDefault, kKeys, kValues, base::size(kValues),
+      kCFAllocatorDefault, kKeys, kValues, std::size(kValues),
       &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
   ScopedCFTypeRef<CFArrayRef> result;
   {

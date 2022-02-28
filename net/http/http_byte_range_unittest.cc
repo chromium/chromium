@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/http/http_byte_range.h"
-#include "base/cxx17_backports.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -28,7 +28,7 @@ TEST(HttpByteRangeTest, ValidRanges) {
     {  -1, -1, 100000, true },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     HttpByteRange range;
     range.set_first_byte_position(tests[i].first_byte_position);
     range.set_last_byte_position(tests[i].last_byte_position);
@@ -60,7 +60,7 @@ TEST(HttpByteRangeTest, SetInstanceSize) {
     {  10, 10000, -1, 1000000, true, 10, 10000 },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     HttpByteRange range;
     range.set_first_byte_position(tests[i].first_byte_position);
     range.set_last_byte_position(tests[i].last_byte_position);
@@ -93,7 +93,7 @@ TEST(HttpByteRangeTest, GetHeaderValue) {
       {HttpByteRange::RightUnbounded(100), "bytes=100-"},
       {HttpByteRange::Suffix(100), "bytes=-100"},
   };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     EXPECT_EQ(tests[i].expected, tests[i].range.GetHeaderValue());
   }
 }

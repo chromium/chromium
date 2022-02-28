@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/containers/cxx20_erase_list.h"
-#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
@@ -85,7 +84,7 @@ std::string URLRequestTestJob::test_headers() {
       "HTTP/1.1 200 OK\n"
       "Content-type: text/html\n"
       "\n";
-  return std::string(kHeaders, base::size(kHeaders));
+  return std::string(kHeaders, std::size(kHeaders));
 }
 
 // static getter for redirect response headers
@@ -94,7 +93,7 @@ std::string URLRequestTestJob::test_redirect_headers() {
       "HTTP/1.1 302 MOVED\n"
       "Location: somewhere\n"
       "\n";
-  return std::string(kHeaders, base::size(kHeaders));
+  return std::string(kHeaders, std::size(kHeaders));
 }
 
 // static getter for redirect response headers
@@ -124,7 +123,7 @@ std::string URLRequestTestJob::test_error_headers() {
   static const char kHeaders[] =
       "HTTP/1.1 500 BOO HOO\n"
       "\n";
-  return std::string(kHeaders, base::size(kHeaders));
+  return std::string(kHeaders, std::size(kHeaders));
 }
 
 URLRequestTestJob::URLRequestTestJob(URLRequest* request, bool auto_advance)

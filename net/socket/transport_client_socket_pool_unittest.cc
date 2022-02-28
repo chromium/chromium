@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -1536,7 +1535,7 @@ TEST_F(TransportClientSocketPoolTest, SpdyAuthOneConnectJobTwoRequests) {
       "NTLM",
   };
   spdy::SpdySerializedFrame connect_auth_resp(spdy_util.ConstructSpdyReplyError(
-      kAuthStatus, kAuthChallenge, base::size(kAuthChallenge) / 2, 1));
+      kAuthStatus, kAuthChallenge, std::size(kAuthChallenge) / 2, 1));
   spdy::SpdySerializedFrame reset(
       spdy_util.ConstructSpdyRstStream(1, spdy::ERROR_CODE_HTTP_1_1_REQUIRED));
   MockRead reads[] = {

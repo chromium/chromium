@@ -19,7 +19,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -134,7 +133,7 @@ const char kBinaryBlob[] = {'\n',   '\r',    // BACKWARDS CRNL
                             '\b',            // backspace
                             '\'',            // single-quote, special in PHP
 };
-const size_t kBinaryBlobSize = base::size(kBinaryBlob);
+const size_t kBinaryBlobSize = std::size(kBinaryBlob);
 
 const int kVeryBigTimeoutMillis = 60 * 60 * 24 * 1000;
 

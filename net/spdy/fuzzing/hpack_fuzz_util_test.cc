@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/base_paths.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -69,7 +68,7 @@ TEST(HpackFuzzUtilTest, ParsesSequenceOfHeaderBlocks) {
       "fin";
 
   HpackFuzzUtil::Input input;
-  input.input.assign(fixture, base::size(fixture) - 1);
+  input.input.assign(fixture, std::size(fixture) - 1);
 
   absl::string_view block;
 
@@ -142,11 +141,11 @@ TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
 
 TEST(HpackFuzzUtilTest, FlipBitsMutatesBuffer) {
   char buffer[] = "testbuffer1234567890";
-  std::string unmodified(buffer, base::size(buffer) - 1);
+  std::string unmodified(buffer, std::size(buffer) - 1);
 
   EXPECT_EQ(unmodified, buffer);
   HpackFuzzUtil::FlipBits(reinterpret_cast<uint8_t*>(buffer),
-                          base::size(buffer) - 1, 1);
+                          std::size(buffer) - 1, 1);
   EXPECT_NE(unmodified, buffer);
 }
 

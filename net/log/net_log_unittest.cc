@@ -4,7 +4,6 @@
 
 #include "net/log/net_log.h"
 
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -323,14 +322,14 @@ void RunTestThreads(NetLog* net_log) {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  for (size_t i = 0; i < base::size(threads); ++i) {
+  for (size_t i = 0; i < std::size(threads); ++i) {
     threads[i].Init(net_log, &start_event);
     threads[i].Start();
   }
 
   start_event.Signal();
 
-  for (size_t i = 0; i < base::size(threads); ++i)
+  for (size_t i = 0; i < std::size(threads); ++i)
     threads[i].Join();
 }
 
@@ -338,7 +337,7 @@ void RunTestThreads(NetLog* net_log) {
 TEST(NetLogTest, NetLogEventThreads) {
   // Attach some observers.  They'll safely detach themselves on destruction.
   CountingObserver observers[3];
-  for (size_t i = 0; i < base::size(observers); ++i) {
+  for (size_t i = 0; i < std::size(observers); ++i) {
     NetLog::Get()->AddObserver(&observers[i], NetLogCaptureMode::kEverything);
   }
 
@@ -348,7 +347,7 @@ TEST(NetLogTest, NetLogEventThreads) {
 
   // Check that each observer saw the emitted events.
   const int kTotalEvents = kThreads * kEvents;
-  for (size_t i = 0; i < base::size(observers); ++i)
+  for (size_t i = 0; i < std::size(observers); ++i)
     EXPECT_EQ(kTotalEvents, observers[i].count());
 }
 

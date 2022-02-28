@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -42,7 +41,7 @@ namespace net {
 namespace {
 
 const char kBodyData[] = "Body data";
-const size_t kBodyDataSize = base::size(kBodyData);
+const size_t kBodyDataSize = std::size(kBodyData);
 // Size of the buffer to be allocated for each read.
 const size_t kReadBufferSize = 4096;
 
@@ -528,7 +527,7 @@ TEST_P(BidirectionalStreamSpdyImplTest, RstWithNoErrorBeforeSendIsComplete) {
   EXPECT_EQ(CountWriteBytes(base::make_span(writes, 1)),
             delegate->GetTotalSentBytes());
   // Should not count RST stream.
-  EXPECT_EQ(CountReadBytes(base::make_span(reads).first(base::size(reads) - 2)),
+  EXPECT_EQ(CountReadBytes(base::make_span(reads).first(std::size(reads) - 2)),
             delegate->GetTotalReceivedBytes());
 
   // Now call SendData again should produce an error because end of stream

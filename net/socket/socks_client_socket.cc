@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/public/dns_query_type.h"
@@ -357,7 +356,7 @@ const std::string SOCKSClientSocket::BuildHandshakeWriteBuffer() const {
 
   std::string handshake_data(reinterpret_cast<char*>(&request),
                              sizeof(request));
-  handshake_data.append(kEmptyUserId, base::size(kEmptyUserId));
+  handshake_data.append(kEmptyUserId, std::size(kEmptyUserId));
 
   return handshake_data;
 }

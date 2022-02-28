@@ -5,10 +5,10 @@
 #include "net/websockets/websocket_frame_parser.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "net/base/io_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,13 +17,13 @@ namespace net {
 namespace {
 
 const char kHello[] = "Hello, world!";
-const uint64_t kHelloLength = base::size(kHello) - 1;
+const uint64_t kHelloLength = std::size(kHello) - 1;
 const char kHelloFrame[] = "\x81\x0DHello, world!";
-const uint64_t kHelloFrameLength = base::size(kHelloFrame) - 1;
+const uint64_t kHelloFrameLength = std::size(kHelloFrame) - 1;
 const char kMaskedHelloFrame[] =
     "\x81\x8D\xDE\xAD\xBE\xEF"
     "\x96\xC8\xD2\x83\xB1\x81\x9E\x98\xB1\xDF\xD2\x8B\xFF";
-const uint64_t kMaskedHelloFrameLength = base::size(kMaskedHelloFrame) - 1;
+const uint64_t kMaskedHelloFrameLength = std::size(kMaskedHelloFrame) - 1;
 
 struct FrameHeaderTestCase {
   const char* frame_header;
@@ -46,7 +46,7 @@ const FrameHeaderTestCase kFrameHeaderTests[] = {
   { "\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
     UINT64_C(0x7FFFFFFFFFFFFFFF), kWebSocketErrorMessageTooBig }
 };
-const int kNumFrameHeaderTests = base::size(kFrameHeaderTests);
+const int kNumFrameHeaderTests = std::size(kFrameHeaderTests);
 
 TEST(WebSocketFrameParserTest, DecodeNormalFrame) {
   WebSocketFrameParser parser;
@@ -128,7 +128,7 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     { "\x81\x05" "Ninth", 7, "Ninth", 5 },
     { "\x81\x05" "Tenth", 7, "Tenth", 5 }
   };
-  static const int kNumInputs = base::size(kInputs);
+  static const int kNumInputs = std::size(kInputs);
 
   std::vector<char> input;
   // Concatenate all frames.
@@ -444,7 +444,7 @@ TEST(WebSocketFrameParserTest, InvalidLengthEncoding) {
     { "\x81\x7F\x00\x00\x00\x00\x00\x00\x00\x00", 10 },
     { "\x81\x7E\x00\x00\x00\x00\x00\x00\xFF\xFF", 10 },
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     const char* frame_header = kTests[i].frame_header;
@@ -492,7 +492,7 @@ TEST(WebSocketFrameParserTest, FrameTypes) {
     { "\x8E\x00", 2, 0xE },
     { "\x8F\x00", 2, 0xF }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     const char* frame_header = kTests[i].frame_header;
@@ -545,7 +545,7 @@ TEST(WebSocketFrameParserTest, FinalBitAndReservedBits) {
     { "\x71\x00", 2, false, true, true, true },
     { "\xF1\x00", 2, true, true, true, true }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     const char* frame_header = kTests[i].frame_header;

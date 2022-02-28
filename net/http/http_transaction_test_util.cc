@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -181,7 +180,7 @@ const MockTransaction* FindMockTransaction(const GURL& url) {
     return it->second;
 
   // look for builtins:
-  for (size_t i = 0; i < base::size(kBuiltinMockTransactions); ++i) {
+  for (size_t i = 0; i < std::size(kBuiltinMockTransactions); ++i) {
     if (url == GURL(kBuiltinMockTransactions[i]->url))
       return kBuiltinMockTransactions[i];
   }

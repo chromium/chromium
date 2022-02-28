@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -640,7 +639,7 @@ class RevocationInjector {
     };
     BOOL ok = CryptInstallOIDFunctionAddress(
         nullptr, X509_ASN_ENCODING, CRYPT_OID_VERIFY_REVOCATION_FUNC,
-        base::size(kInterceptFunction), kInterceptFunction,
+        std::size(kInterceptFunction), kInterceptFunction,
         CRYPT_INSTALL_OID_FUNC_BEFORE_FLAG);
     DCHECK(ok);
   }
@@ -1100,7 +1099,7 @@ int CertVerifyProcWin::VerifyInternal(
     szOID_SGC_NETSCAPE
   };
   chain_para.RequestedUsage.dwType = USAGE_MATCH_TYPE_OR;
-  chain_para.RequestedUsage.Usage.cUsageIdentifier = base::size(usage);
+  chain_para.RequestedUsage.Usage.cUsageIdentifier = std::size(usage);
   chain_para.RequestedUsage.Usage.rgpszUsageIdentifier =
       const_cast<LPSTR*>(usage);
 

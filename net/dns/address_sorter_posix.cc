@@ -257,11 +257,11 @@ bool CompareDestinations(const std::unique_ptr<DestinationInfo>& dst_a,
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
     : socket_factory_(socket_factory),
       precedence_table_(LoadPolicy(kDefaultPrecedenceTable,
-                                   base::size(kDefaultPrecedenceTable))),
+                                   std::size(kDefaultPrecedenceTable))),
       label_table_(
-          LoadPolicy(kDefaultLabelTable, base::size(kDefaultLabelTable))),
+          LoadPolicy(kDefaultLabelTable, std::size(kDefaultLabelTable))),
       ipv4_scope_table_(LoadPolicy(kDefaultIPv4ScopeTable,
-                                   base::size(kDefaultIPv4ScopeTable))) {
+                                   std::size(kDefaultIPv4ScopeTable))) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   OnIPAddressChanged();
 }

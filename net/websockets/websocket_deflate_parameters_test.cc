@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "net/websockets/websocket_extension_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -218,7 +217,7 @@ std::vector<InitializeTestParameter> InitializeTestParameters() {
       {"; hogefuga", kUnknownParameter},
   };
   return std::vector<InitializeTestParameter>(
-      parameters, parameters + base::size(parameters));
+      parameters, parameters + std::size(parameters));
 }
 
 const CompatibilityTestParameter kCompatibilityTestParameters[] = {

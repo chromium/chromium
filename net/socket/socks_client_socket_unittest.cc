@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -232,7 +231,7 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
         MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
                   kSOCKS4OkRequestLocalHostPort80Length)};
     MockRead data_reads[] = {
-        MockRead(SYNCHRONOUS, test.fail_reply, base::size(test.fail_reply))};
+        MockRead(SYNCHRONOUS, test.fail_reply, std::size(test.fail_reply))};
     RecordingNetLogObserver log_observer;
 
     user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
@@ -264,8 +263,8 @@ TEST_F(SOCKSClientSocketTest, PartialServerReads) {
   MockWrite data_writes[] = {MockWrite(ASYNC, kSOCKS4OkRequestLocalHostPort80,
                                        kSOCKS4OkRequestLocalHostPort80Length)};
   MockRead data_reads[] = {
-      MockRead(ASYNC, kSOCKSPartialReply1, base::size(kSOCKSPartialReply1)),
-      MockRead(ASYNC, kSOCKSPartialReply2, base::size(kSOCKSPartialReply2))};
+      MockRead(ASYNC, kSOCKSPartialReply1, std::size(kSOCKSPartialReply1)),
+      MockRead(ASYNC, kSOCKSPartialReply2, std::size(kSOCKSPartialReply2))};
   RecordingNetLogObserver log_observer;
 
   user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
@@ -291,12 +290,11 @@ TEST_F(SOCKSClientSocketTest, PartialClientWrites) {
   const char kSOCKSPartialRequest2[] = { 0x00, 0x50, 127, 0, 0, 1, 0 };
 
   MockWrite data_writes[] = {
-      MockWrite(ASYNC, kSOCKSPartialRequest1,
-                base::size(kSOCKSPartialRequest1)),
+      MockWrite(ASYNC, kSOCKSPartialRequest1, std::size(kSOCKSPartialRequest1)),
       // simulate some empty writes
-      MockWrite(ASYNC, 0), MockWrite(ASYNC, 0),
-      MockWrite(ASYNC, kSOCKSPartialRequest2,
-                base::size(kSOCKSPartialRequest2)),
+      MockWrite(ASYNC, 0),
+      MockWrite(ASYNC, 0),
+      MockWrite(ASYNC, kSOCKSPartialRequest2, std::size(kSOCKSPartialRequest2)),
   };
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS4OkReply, kSOCKS4OkReplyLength)};

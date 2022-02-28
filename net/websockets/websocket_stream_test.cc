@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
@@ -225,7 +224,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
         "user-agent",      "",        "accept-encoding", "gzip, deflate",
         "accept-language", "en-us,fr"};
     frames_.push_back(spdy_util_.ConstructSpdyGet(
-        kExtraRequestHeaders, base::size(kExtraRequestHeaders) / 2, 1,
+        kExtraRequestHeaders, std::size(kExtraRequestHeaders) / 2, 1,
         DEFAULT_PRIORITY));
     AddWrite(&frames_.back());
 

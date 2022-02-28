@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -505,7 +504,7 @@ TEST_F(UDPSocketTest, ClientGetLocalPeerAddresses) {
     {"2001:db8:0::42", "::1", true},
 #endif
   };
-  for (size_t i = 0; i < base::size(tests); i++) {
+  for (size_t i = 0; i < std::size(tests); i++) {
     SCOPED_TRACE(std::string("Connecting from ") + tests[i].local_address +
                  std::string(" to ") + tests[i].remote_address);
 

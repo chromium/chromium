@@ -1560,7 +1560,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkIsolationKey) {
   // For each server, set up and tear down a QUIC session cleanly, and check
   // that stats have been added to HttpServerProperties using the correct
   // NetworkIsolationKey.
-  for (size_t i = 0; i < base::size(kNetworkIsolationKeys); ++i) {
+  for (size_t i = 0; i < std::size(kNetworkIsolationKeys); ++i) {
     SCOPED_TRACE(i);
 
     ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -1607,7 +1607,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkIsolationKey) {
     EXPECT_TRUE(socket_data.AllReadDataConsumed());
     EXPECT_TRUE(socket_data.AllWriteDataConsumed());
 
-    for (size_t j = 0; j < base::size(kNetworkIsolationKeys); ++j) {
+    for (size_t j = 0; j < std::size(kNetworkIsolationKeys); ++j) {
       // Stats up to kNetworkIsolationKeys[j] should have been populated, all
       // others should remain empty.
       if (j <= i) {
@@ -1628,7 +1628,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkIsolationKey) {
   // For each server, simulate an error during session creation, and check that
   // stats have been deleted from HttpServerProperties using the correct
   // NetworkIsolationKey.
-  for (size_t i = 0; i < base::size(kNetworkIsolationKeys); ++i) {
+  for (size_t i = 0; i < std::size(kNetworkIsolationKeys); ++i) {
     SCOPED_TRACE(i);
 
     MockQuicData socket_data(version_);
@@ -1650,7 +1650,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkIsolationKey) {
 
     EXPECT_FALSE(HasActiveSession(scheme_host_port_, kNetworkIsolationKeys[i]));
 
-    for (size_t j = 0; j < base::size(kNetworkIsolationKeys); ++j) {
+    for (size_t j = 0; j < std::size(kNetworkIsolationKeys); ++j) {
       // Stats up to kNetworkIsolationKeys[j] should have been deleted, all
       // others should still be populated.
       if (j <= i) {

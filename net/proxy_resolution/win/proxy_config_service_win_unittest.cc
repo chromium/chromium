@@ -4,7 +4,6 @@
 
 #include "net/proxy_resolution/win/proxy_config_service_win.h"
 
-#include "base/cxx17_backports.h"
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
@@ -206,7 +205,7 @@ TEST(ProxyConfigServiceWinTest, SetFromIEConfig) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ie_config = {
         tests[i].ie_config.auto_detect,
         const_cast<wchar_t*>(tests[i].ie_config.auto_config_url),

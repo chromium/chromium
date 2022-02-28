@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "net/base/address_tracker_linux.h"
@@ -32,15 +31,15 @@ static const unsigned char kIPv6Addr[] = {0x24, 0x01, 0xfa, 0x00, 0x00, 0x04,
                                           0xfe, 0xe5, 0x00, 0xc3};
 
 char* GetInterfaceName(int interface_index, char* ifname) {
-  static_assert(base::size(kIfnameEm1) < IF_NAMESIZE, "Invalid interface name");
-  memcpy(ifname, kIfnameEm1, base::size(kIfnameEm1));
+  static_assert(std::size(kIfnameEm1) < IF_NAMESIZE, "Invalid interface name");
+  memcpy(ifname, kIfnameEm1, std::size(kIfnameEm1));
   return ifname;
 }
 
 char* GetInterfaceNameVM(int interface_index, char* ifname) {
-  static_assert(base::size(kIfnameVmnet) < IF_NAMESIZE,
+  static_assert(std::size(kIfnameVmnet) < IF_NAMESIZE,
                 "Invalid interface name");
-  memcpy(ifname, kIfnameVmnet, base::size(kIfnameVmnet));
+  memcpy(ifname, kIfnameVmnet, std::size(kIfnameVmnet));
   return ifname;
 }
 

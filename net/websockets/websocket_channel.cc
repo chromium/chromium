@@ -14,7 +14,6 @@
 #include "base/big_endian.h"
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -81,7 +80,7 @@ bool IsStrictlyValidCloseStatusCode(int code) {
       5000, 65536,  // Codes above 5000 are invalid.
   };
   const int* const kInvalidRangesEnd =
-      kInvalidRanges + base::size(kInvalidRanges);
+      kInvalidRanges + std::size(kInvalidRanges);
 
   DCHECK_GE(code, 0);
   DCHECK_LT(code, 65536);

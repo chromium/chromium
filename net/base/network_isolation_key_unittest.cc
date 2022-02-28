@@ -4,7 +4,6 @@
 
 #include "net/base/network_isolation_key.h"
 
-#include "base/cxx17_backports.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "net/base/schemeful_site.h"
@@ -105,7 +104,7 @@ TEST(NetworkIsolationKeyTest, Operators) {
                           SchemefulSite(GURL("https://a.test/")), &nonce2),
   };
 
-  for (size_t first = 0; first < base::size(kKeys); ++first) {
+  for (size_t first = 0; first < std::size(kKeys); ++first) {
     NetworkIsolationKey key1 = kKeys[first];
     SCOPED_TRACE(key1.ToDebugString());
 
@@ -119,7 +118,7 @@ TEST(NetworkIsolationKeyTest, Operators) {
     EXPECT_FALSE(key1 < key1_copy);
     EXPECT_FALSE(key1_copy < key1);
 
-    for (size_t second = first + 1; second < base::size(kKeys); ++second) {
+    for (size_t second = first + 1; second < std::size(kKeys); ++second) {
       NetworkIsolationKey key2 = kKeys[second];
       SCOPED_TRACE(key2.ToDebugString());
 

@@ -9,7 +9,6 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
 #include "base/native_library.h"
 #include "base/path_service.h"
@@ -69,7 +68,7 @@ void EstablishInitialContext(test::MockGSSAPILibrary* library) {
       1,                                   // Locally initiated
       0);                                  // Open
   gss_buffer_desc in_buffer = {0, nullptr};
-  gss_buffer_desc out_buffer = {base::size(kInitialAuthResponse),
+  gss_buffer_desc out_buffer = {std::size(kInitialAuthResponse),
                                 const_cast<char*>(kInitialAuthResponse)};
   library->ExpectSecurityContext(
       "Negotiate",
@@ -221,7 +220,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
           kAuthResponse)   // Output token
   };
 
-  for (size_t i = 0; i < base::size(queries); ++i) {
+  for (size_t i = 0; i < std::size(queries); ++i) {
     mock_library->ExpectSecurityContext(queries[i].expected_package,
                                         queries[i].response_code,
                                         queries[i].minor_response_code,
@@ -244,7 +243,7 @@ TEST(HttpAuthGSSAPIPOSIXTest, GSSAPICycle) {
   gss_buffer_desc output_token = {0, nullptr};
   OM_uint32 ret_flags = 0;
   OM_uint32 time_rec = 0;
-  for (size_t i = 0; i < base::size(queries); ++i) {
+  for (size_t i = 0; i < std::size(queries); ++i) {
     major_status = mock_library->init_sec_context(&minor_status,
                                                   initiator_cred_handle,
                                                   &context_handle,

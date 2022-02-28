@@ -8,7 +8,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
@@ -279,10 +278,10 @@ TEST(DnsQueryParseTest, FailsInvalidQueries) {
     const uint8_t* data;
     size_t size;
   } testcases[] = {
-      {kQueryTruncatedQuestion, base::size(kQueryTruncatedQuestion)},
-      {kQueryTwoQuestions, base::size(kQueryTwoQuestions)},
-      {kQueryInvalidDNSDomainName1, base::size(kQueryInvalidDNSDomainName1)},
-      {kQueryInvalidDNSDomainName2, base::size(kQueryInvalidDNSDomainName2)}};
+      {kQueryTruncatedQuestion, std::size(kQueryTruncatedQuestion)},
+      {kQueryTwoQuestions, std::size(kQueryTwoQuestions)},
+      {kQueryInvalidDNSDomainName1, std::size(kQueryInvalidDNSDomainName1)},
+      {kQueryInvalidDNSDomainName2, std::size(kQueryInvalidDNSDomainName2)}};
   std::unique_ptr<DnsQuery> query;
   for (const auto& testcase : testcases) {
     EXPECT_FALSE(ParseAndCreateDnsQueryFromRawPacket(testcase.data,

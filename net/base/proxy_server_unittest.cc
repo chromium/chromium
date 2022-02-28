@@ -4,7 +4,6 @@
 
 #include "net/base/proxy_server.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +70,7 @@ TEST(ProxyServerTest, FromSchemeHostAndPort) {
       {ProxyServer::SCHEME_SOCKS5, "foopy", absl::nullopt, "", "foopy", 1080},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i].input_host + ":" +
                  base::NumberToString(tests[i].input_port.value_or(-1)));
     auto proxy = ProxyServer::FromSchemeHostAndPort(
@@ -103,7 +102,7 @@ TEST(ProxyServerTest, InvalidHostname) {
       "foo.80",
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
     auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP,
                                                     tests[i], 80);
@@ -119,7 +118,7 @@ TEST(ProxyServerTest, InvalidPort) {
       "0x35",
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
     auto proxy = ProxyServer::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP,
                                                     "foopy", tests[i]);

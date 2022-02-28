@@ -7,7 +7,6 @@
 #include <ostream>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -232,7 +231,7 @@ std::u16string UnescapeForHTML(base::StringPiece16 input) {
       {"&lt;", '<'},   {"&gt;", '>'},   {"&amp;", '&'},
       {"&quot;", '"'}, {"&#39;", '\''},
   };
-  constexpr size_t kEscapeToCharsCount = base::size(kEscapeToChars);
+  constexpr size_t kEscapeToCharsCount = std::size(kEscapeToChars);
 
   if (input.find(u"&") == std::string::npos)
     return std::u16string(input);
@@ -244,7 +243,7 @@ std::u16string UnescapeForHTML(base::StringPiece16 input) {
     if (*iter == '&') {
       // Potential ampersand encode char.
       size_t index = iter - text.begin();
-      for (size_t i = 0; i < base::size(kEscapeToChars); i++) {
+      for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
         if (ampersand_chars[i].empty()) {
           ampersand_chars[i] =
               base::ASCIIToUTF16(kEscapeToChars[i].ampersand_code);

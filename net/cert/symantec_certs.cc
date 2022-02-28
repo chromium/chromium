@@ -4,8 +4,6 @@
 
 #include "net/cert/symantec_certs.h"
 
-#include "base/cxx17_backports.h"
-
 namespace net {
 
 // See net/data/ssl/symantec/README.md
@@ -186,7 +184,7 @@ const SHA256HashValue kSymantecRoots[] = {
       0x1a, 0x15, 0x83, 0xef, 0x54, 0x94, 0x78, 0xd2, 0x64, 0x76}},
 };
 
-const size_t kSymantecRootsLength = base::size(kSymantecRoots);
+const size_t kSymantecRootsLength = std::size(kSymantecRoots);
 
 const SHA256HashValue kSymantecExceptions[] = {
     {{0x56, 0xe9, 0x8d, 0xea, 0xc0, 0x06, 0xa7, 0x29, 0xaf, 0xa2, 0xed,
@@ -218,7 +216,7 @@ const SHA256HashValue kSymantecExceptions[] = {
       0x01, 0xc1, 0x84, 0x42, 0xe4, 0x40, 0x3d, 0x11, 0x18, 0x49}},
 };
 
-const size_t kSymantecExceptionsLength = base::size(kSymantecExceptions);
+const size_t kSymantecExceptionsLength = std::size(kSymantecExceptions);
 
 const SHA256HashValue kSymantecManagedCAs[] = {
     {{0x7c, 0xac, 0x9a, 0x0f, 0xf3, 0x15, 0x38, 0x77, 0x50, 0xba, 0x8b,
@@ -229,7 +227,7 @@ const SHA256HashValue kSymantecManagedCAs[] = {
       0x08, 0x86, 0x7c, 0x04, 0xa5, 0x73, 0xfd, 0x5c, 0xf9, 0xee}},
 };
 
-const size_t kSymantecManagedCAsLength = base::size(kSymantecManagedCAs);
+const size_t kSymantecManagedCAsLength = std::size(kSymantecManagedCAs);
 
 bool IsLegacySymantecCert(const HashValueVector& public_key_hashes) {
   return IsAnySHA256HashInSortedArray(public_key_hashes, kSymantecRoots) &&

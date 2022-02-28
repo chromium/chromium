@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -54,7 +53,7 @@ bool IsPacMimeType(const std::string& mime_type) {
   static const char* const kSupportedPacMimeTypes[] = {
       "application/x-ns-proxy-autoconfig", "application/x-javascript-config",
   };
-  for (size_t i = 0; i < base::size(kSupportedPacMimeTypes); ++i) {
+  for (size_t i = 0; i < std::size(kSupportedPacMimeTypes); ++i) {
     if (base::LowerCaseEqualsASCII(mime_type, kSupportedPacMimeTypes[i]))
       return true;
   }

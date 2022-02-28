@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -783,7 +782,7 @@ int SSLClientSocketImpl::Init() {
         IsCECPQ2Host(host_and_port_.host())))) {
     static const int kCurves[] = {NID_CECPQ2, NID_X25519, NID_X9_62_prime256v1,
                                   NID_secp384r1};
-    if (!SSL_set1_curves(ssl_.get(), kCurves, base::size(kCurves))) {
+    if (!SSL_set1_curves(ssl_.get(), kCurves, std::size(kCurves))) {
       return ERR_UNEXPECTED;
     }
   }
@@ -881,7 +880,7 @@ int SSLClientSocketImpl::Init() {
         SSL_SIGN_RSA_PSS_RSAE_SHA512,    SSL_SIGN_RSA_PKCS1_SHA512,
     };
     if (!SSL_set_verify_algorithm_prefs(ssl_.get(), kVerifyPrefs,
-                                        base::size(kVerifyPrefs))) {
+                                        std::size(kVerifyPrefs))) {
       return ERR_UNEXPECTED;
     }
   }

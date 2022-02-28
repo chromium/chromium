@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -1188,7 +1187,7 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
 
       const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
       static const int kRequestTextSize =
-          static_cast<int>(base::size(request_text) - 1);
+          static_cast<int>(std::size(request_text) - 1);
       scoped_refptr<IOBuffer> request_buffer =
           base::MakeRefCounted<IOBuffer>(kRequestTextSize);
       memcpy(request_buffer->data(), request_text, kRequestTextSize);
@@ -1671,13 +1670,13 @@ TEST_P(SSLClientSocketReadTest, Read) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   scoped_refptr<IOBuffer> request_buffer =
-      base::MakeRefCounted<IOBuffer>(base::size(request_text) - 1);
-  memcpy(request_buffer->data(), request_text, base::size(request_text) - 1);
+      base::MakeRefCounted<IOBuffer>(std::size(request_text) - 1);
+  memcpy(request_buffer->data(), request_text, std::size(request_text) - 1);
 
   rv = callback.GetResult(
-      sock->Write(request_buffer.get(), base::size(request_text) - 1,
+      sock->Write(request_buffer.get(), std::size(request_text) - 1,
                   callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
+  EXPECT_EQ(static_cast<int>(std::size(request_text) - 1), rv);
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(4096);
   int64_t unencrypted_bytes_read = 0;
@@ -1754,7 +1753,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithSynchronousError) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   static const int kRequestTextSize =
-      static_cast<int>(base::size(request_text) - 1);
+      static_cast<int>(std::size(request_text) - 1);
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestTextSize);
   memcpy(request_buffer->data(), request_text, kRequestTextSize);
@@ -1807,7 +1806,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousError) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   static const int kRequestTextSize =
-      static_cast<int>(base::size(request_text) - 1);
+      static_cast<int>(std::size(request_text) - 1);
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestTextSize);
   memcpy(request_buffer->data(), request_text, kRequestTextSize);
@@ -1875,7 +1874,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousErrorNoRead) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   static const int kRequestTextSize =
-      static_cast<int>(base::size(request_text) - 1);
+      static_cast<int>(std::size(request_text) - 1);
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestTextSize);
   memcpy(request_buffer->data(), request_text, kRequestTextSize);
@@ -2060,7 +2059,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithWriteError) {
   // Send a request so there is something to read from the socket.
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   static const int kRequestTextSize =
-      static_cast<int>(base::size(request_text) - 1);
+      static_cast<int>(std::size(request_text) - 1);
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestTextSize);
   memcpy(request_buffer->data(), request_text, kRequestTextSize);
@@ -2243,14 +2242,14 @@ TEST_P(SSLClientSocketReadTest, Read_SmallChunks) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   scoped_refptr<IOBuffer> request_buffer =
-      base::MakeRefCounted<IOBuffer>(base::size(request_text) - 1);
-  memcpy(request_buffer->data(), request_text, base::size(request_text) - 1);
+      base::MakeRefCounted<IOBuffer>(std::size(request_text) - 1);
+  memcpy(request_buffer->data(), request_text, std::size(request_text) - 1);
 
   TestCompletionCallback callback;
   rv = callback.GetResult(
-      sock_->Write(request_buffer.get(), base::size(request_text) - 1,
+      sock_->Write(request_buffer.get(), std::size(request_text) - 1,
                    callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
+  EXPECT_EQ(static_cast<int>(std::size(request_text) - 1), rv);
 
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(1);
   do {
@@ -2284,14 +2283,14 @@ TEST_P(SSLClientSocketReadTest, Read_ManySmallRecords) {
 
   const char request_text[] = "GET /ssl-many-small-records HTTP/1.0\r\n\r\n";
   scoped_refptr<IOBuffer> request_buffer =
-      base::MakeRefCounted<IOBuffer>(base::size(request_text) - 1);
-  memcpy(request_buffer->data(), request_text, base::size(request_text) - 1);
+      base::MakeRefCounted<IOBuffer>(std::size(request_text) - 1);
+  memcpy(request_buffer->data(), request_text, std::size(request_text) - 1);
 
   rv = callback.GetResult(
-      sock->Write(request_buffer.get(), base::size(request_text) - 1,
+      sock->Write(request_buffer.get(), std::size(request_text) - 1,
                   callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
   ASSERT_GT(rv, 0);
-  ASSERT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
+  ASSERT_EQ(static_cast<int>(std::size(request_text) - 1), rv);
 
   // Note: This relies on SSLClientSocketNSS attempting to read up to 17K of
   // data (the max SSL record size) at a time. Ensure that at least 15K worth
@@ -2319,14 +2318,14 @@ TEST_P(SSLClientSocketReadTest, Read_Interrupted) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   scoped_refptr<IOBuffer> request_buffer =
-      base::MakeRefCounted<IOBuffer>(base::size(request_text) - 1);
-  memcpy(request_buffer->data(), request_text, base::size(request_text) - 1);
+      base::MakeRefCounted<IOBuffer>(std::size(request_text) - 1);
+  memcpy(request_buffer->data(), request_text, std::size(request_text) - 1);
 
   TestCompletionCallback callback;
   rv = callback.GetResult(
-      sock_->Write(request_buffer.get(), base::size(request_text) - 1,
+      sock_->Write(request_buffer.get(), std::size(request_text) - 1,
                    callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
+  EXPECT_EQ(static_cast<int>(std::size(request_text) - 1), rv);
 
   // Do a partial read and then exit.  This test should not crash!
   scoped_refptr<IOBuffer> buf = base::MakeRefCounted<IOBuffer>(512);
@@ -2354,13 +2353,13 @@ TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
 
   const char request_text[] = "GET / HTTP/1.0\r\n\r\n";
   scoped_refptr<IOBuffer> request_buffer =
-      base::MakeRefCounted<IOBuffer>(base::size(request_text) - 1);
-  memcpy(request_buffer->data(), request_text, base::size(request_text) - 1);
+      base::MakeRefCounted<IOBuffer>(std::size(request_text) - 1);
+  memcpy(request_buffer->data(), request_text, std::size(request_text) - 1);
 
   rv = callback.GetResult(
-      sock->Write(request_buffer.get(), base::size(request_text) - 1,
+      sock->Write(request_buffer.get(), std::size(request_text) - 1,
                   callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS));
-  EXPECT_EQ(static_cast<int>(base::size(request_text) - 1), rv);
+  EXPECT_EQ(static_cast<int>(std::size(request_text) - 1), rv);
 
   auto entries = log_observer_.GetEntries();
   size_t last_index = ExpectLogContainsSomewhereAfter(
@@ -2401,7 +2400,7 @@ TEST_F(SSLClientSocketTest, PrematureApplicationData) {
   // All reads and writes complete synchronously (async=false).
   MockRead data_reads[] = {
       MockRead(SYNCHRONOUS, reinterpret_cast<const char*>(application_data),
-               base::size(application_data)),
+               std::size(application_data)),
       MockRead(SYNCHRONOUS, OK),
   };
 
@@ -2902,7 +2901,7 @@ TEST_P(SSLClientSocketVersionTest, ReuseStates) {
   EXPECT_FALSE(sock_->WasEverUsed());
 
   const char kRequestText[] = "GET / HTTP/1.0\r\n\r\n";
-  const size_t kRequestLen = base::size(kRequestText) - 1;
+  const size_t kRequestLen = std::size(kRequestText) - 1;
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestLen);
   memcpy(request_buffer->data(), kRequestText, kRequestLen);
@@ -2975,7 +2974,7 @@ TEST_P(SSLClientSocketVersionTest, ReusableAfterWrite) {
 
   // Write a partial HTTP request.
   const char kRequestText[] = "GET / HTTP/1.0";
-  const size_t kRequestLen = base::size(kRequestText) - 1;
+  const size_t kRequestLen = std::size(kRequestText) - 1;
   scoped_refptr<IOBuffer> request_buffer =
       base::MakeRefCounted<IOBuffer>(kRequestLen);
   memcpy(request_buffer->data(), kRequestText, kRequestLen);

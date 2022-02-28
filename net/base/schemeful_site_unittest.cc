@@ -46,7 +46,7 @@ TEST(SchemefulSiteTest, Operators) {
 
   // Compare each origin to every other origin and ensure the operators work as
   // expected.
-  for (size_t first = 0; first < base::size(kTestOrigins); ++first) {
+  for (size_t first = 0; first < std::size(kTestOrigins); ++first) {
     SchemefulSite site1 = SchemefulSite(kTestOrigins[first]);
     SCOPED_TRACE(site1.GetDebugString());
 
@@ -58,7 +58,7 @@ TEST(SchemefulSiteTest, Operators) {
     EXPECT_EQ(site1, site1_copy);
     EXPECT_FALSE(site1 < site1_copy);
 
-    for (size_t second = first + 1; second < base::size(kTestOrigins);
+    for (size_t second = first + 1; second < std::size(kTestOrigins);
          ++second) {
       SchemefulSite site2 = SchemefulSite(kTestOrigins[second]);
       SCOPED_TRACE(site2.GetDebugString());

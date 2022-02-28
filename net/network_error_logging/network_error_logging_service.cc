@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -129,7 +128,7 @@ const struct {
 void GetPhaseAndTypeFromNetError(Error error,
                                  std::string* phase_out,
                                  std::string* type_out) {
-  for (size_t i = 0; i < base::size(kErrorTypes); ++i) {
+  for (size_t i = 0; i < std::size(kErrorTypes); ++i) {
     DCHECK(kErrorTypes[i].phase != nullptr);
     DCHECK(kErrorTypes[i].type != nullptr);
     if (kErrorTypes[i].error == error) {

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
 #include "net/base/ip_address.h"
@@ -144,7 +143,7 @@ TEST(AddressListTest, CreateFromIPAddressList) {
       AddressList::CreateFromIPAddressList(ip_list, std::move(aliases));
   std::string canonical_name;
   EXPECT_THAT(test_list.dns_aliases(), UnorderedElementsAre(kCanonicalName));
-  EXPECT_EQ(base::size(tests), test_list.size());
+  EXPECT_EQ(std::size(tests), test_list.size());
 }
 
 TEST(AddressListTest, GetCanonicalNameWhenUnset) {

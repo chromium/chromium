@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
@@ -138,7 +137,7 @@ NetworkQualityEstimator::NetworkQualityEstimator(
           net::NetLogSourceType::NETWORK_QUALITY_ESTIMATOR)),
       event_creator_(net_log_) {
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
-            base::size(rtt_ms_observations_));
+            std::size(rtt_ms_observations_));
 
   network_quality_store_ =
       std::make_unique<nqe::internal::NetworkQualityStore>();
@@ -473,7 +472,7 @@ void NetworkQualityEstimator::OnConnectionTypeChanged(
   // This can happen if the device switches from one WiFi SSID to another.
 
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
-            base::size(rtt_ms_observations_));
+            std::size(rtt_ms_observations_));
 
   // Write the estimates of the previous network to the cache.
   network_quality_store_->Add(
@@ -988,7 +987,7 @@ base::TimeDelta NetworkQualityEstimator::GetRTTEstimateInternal(
     size_t* observations_count) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
-            base::size(rtt_ms_observations_));
+            std::size(rtt_ms_observations_));
 
   // RTT observations are sorted by duration from shortest to longest, thus
   // a higher percentile RTT will have a longer RTT than a lower percentile.
@@ -1234,7 +1233,7 @@ void NetworkQualityEstimator::OnNewThroughputObservationAvailable(
 bool NetworkQualityEstimator::ShouldComputeEffectiveConnectionType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(nqe::internal::OBSERVATION_CATEGORY_COUNT,
-            base::size(rtt_ms_observations_));
+            std::size(rtt_ms_observations_));
 
   const base::TimeTicks now = tick_clock_->NowTicks();
   // Recompute effective connection type only if

@@ -4,7 +4,6 @@
 
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -141,8 +140,8 @@ NormalizeResult NormalizeDataToRuleMap(const std::string data,
   size_t line_end = 0;
   bool is_private = false;
   RuleMap extra_rules;
-  int begin_private_length = base::size(kBeginPrivateDomainsComment) - 1;
-  int end_private_length = base::size(kEndPrivateDomainsComment) - 1;
+  int begin_private_length = std::size(kBeginPrivateDomainsComment) - 1;
+  int end_private_length = std::size(kEndPrivateDomainsComment) - 1;
   while (line_start < data.size()) {
     if (line_start + begin_private_length < data.size() &&
         !data.compare(line_start, begin_private_length,

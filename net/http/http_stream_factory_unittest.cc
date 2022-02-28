@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -83,17 +82,16 @@
 #include "net/third_party/quiche/src/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+// This file can be included from net/http even though
+// it is in net/websockets because it doesn't
+// introduce any link dependency to net/websockets.
+#include "net/websockets/websocket_handshake_stream_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
-
-// This file can be included from net/http even though
-// it is in net/websockets because it doesn't
-// introduce any link dependency to net/websockets.
-#include "net/websockets/websocket_handshake_stream_base.h"
 
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -505,7 +503,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
 using HttpStreamFactoryTest = TestWithTaskEnvironment;
 
 TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
     std::unique_ptr<HttpNetworkSession> session(
@@ -530,7 +528,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixed(
             "http_proxy", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -554,7 +552,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixed(
             "socks4://socks_proxy:1080", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -578,7 +576,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
 }
 
 TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
     std::unique_ptr<HttpNetworkSession> session(

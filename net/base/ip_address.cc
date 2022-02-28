@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -407,7 +406,7 @@ IPAddress ConvertIPv4MappedIPv6ToIPv4(const IPAddress& address) {
 
   base::StackVector<uint8_t, 16> bytes;
   bytes->insert(bytes->end(),
-                address.bytes().begin() + base::size(kIPv4MappedPrefix),
+                address.bytes().begin() + std::size(kIPv4MappedPrefix),
                 address.bytes().end());
   return IPAddress(bytes->data(), bytes->size());
 }

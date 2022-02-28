@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
 #include "base/task/post_task.h"
@@ -53,7 +52,7 @@ void InitializeResState(res_state res) {
   memset(res, 0, sizeof(*res));
   res->options = RES_INIT;
 
-  for (unsigned i = 0; i < base::size(kNameserversIPv4) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv4) && i < MAXNS; ++i) {
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_port = base::HostToNet16(NS_DEFAULTPORT + i);
@@ -65,7 +64,7 @@ void InitializeResState(res_state res) {
 #if BUILDFLAG(IS_LINUX)
   // Install IPv6 addresses, replacing the corresponding IPv4 addresses.
   unsigned nscount6 = 0;
-  for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv6) && i < MAXNS; ++i) {
     if (!kNameserversIPv6[i])
       continue;
     // Must use malloc to mimic res_ninit. Expect to be freed in

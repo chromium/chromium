@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -752,7 +751,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicGSettingsTest) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
     std::unique_ptr<MockEnvironment> env(new MockEnvironment);
@@ -1081,7 +1080,7 @@ TEST_F(ProxyConfigServiceLinuxTest, BasicEnvTest) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
     std::unique_ptr<MockEnvironment> env(new MockEnvironment);
@@ -1692,7 +1691,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEConfigParser) {
       },
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
                                     tests[i].description.c_str()));
     std::unique_ptr<MockEnvironment> env(new MockEnvironment);

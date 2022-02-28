@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "net/spdy/spdy_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +20,7 @@ namespace test {
 namespace {
 
 const char kData[] = "SPDY read queue test data.\0Some more data.";
-const size_t kDataSize = base::size(kData);
+const size_t kDataSize = std::size(kData);
 
 // Enqueues |data| onto |queue| in chunks of at most |max_buffer_size|
 // bytes.

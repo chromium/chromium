@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -228,7 +227,7 @@ const Uint64TestData kUint64TestData[] = {
 };
 
 TEST(ParseValuesTest, ParseUint64) {
-  for (size_t i = 0; i < base::size(kUint64TestData); i++) {
+  for (size_t i = 0; i < std::size(kUint64TestData); i++) {
     const Uint64TestData& test_case = kUint64TestData[i];
     SCOPED_TRACE(i);
 
@@ -264,7 +263,7 @@ const Uint8TestData kUint8TestData[] = {
 };
 
 TEST(ParseValuesTest, ParseUint8) {
-  for (size_t i = 0; i < base::size(kUint8TestData); i++) {
+  for (size_t i = 0; i < std::size(kUint8TestData); i++) {
     const Uint8TestData& test_case = kUint8TestData[i];
     SCOPED_TRACE(i);
 
@@ -309,7 +308,7 @@ const IsValidIntegerTestData kIsValidIntegerTestData[] = {
 };
 
 TEST(ParseValuesTest, IsValidInteger) {
-  for (size_t i = 0; i < base::size(kIsValidIntegerTestData); i++) {
+  for (size_t i = 0; i < std::size(kIsValidIntegerTestData); i++) {
     const auto& test_case = kIsValidIntegerTestData[i];
     SCOPED_TRACE(i);
 

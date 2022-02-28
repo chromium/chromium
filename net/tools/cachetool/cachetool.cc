@@ -8,7 +8,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
@@ -238,7 +237,7 @@ class StreamCommandMarshal final : public CommandMarshal {
       return "";
     std::cout.flush();
     size_t command_id = static_cast<size_t>(std::cin.get());
-    if (command_id >= base::size(kCommandNames)) {
+    if (command_id >= std::size(kCommandNames)) {
       ReturnFailure("Unknown command.");
       return "";
     }

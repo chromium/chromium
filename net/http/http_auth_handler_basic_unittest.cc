@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
@@ -45,7 +44,7 @@ TEST(HttpAuthHandlerBasicTest, GenerateAuthToken) {
   };
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   HttpAuthHandlerBasic::Factory factory;
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::string challenge = "Basic realm=\"Atlantis\"";
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
@@ -111,7 +110,7 @@ TEST(HttpAuthHandlerBasicTest, HandleAnotherChallenge) {
                     NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
                     host_resolver.get(), &basic));
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::string challenge(tests[i].challenge);
     HttpAuthChallengeTokenizer tok(challenge.begin(),
                                    challenge.end());
@@ -204,7 +203,7 @@ TEST(HttpAuthHandlerBasicTest, InitFromChallenge) {
   };
   HttpAuthHandlerBasic::Factory factory;
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     std::string challenge = tests[i].challenge;
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();

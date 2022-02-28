@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -410,7 +409,7 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
     // String field
     if (!numerical) {
       if (!found_month) {
-        for (size_t i = 0; i < base::size(kMonths); ++i) {
+        for (size_t i = 0; i < std::size(kMonths); ++i) {
           // Match prefix, so we could match January, etc
           if (base::StartsWith(token, base::StringPiece(kMonths[i], 3),
                                base::CompareCase::INSENSITIVE_ASCII)) {

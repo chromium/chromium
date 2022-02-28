@@ -115,8 +115,7 @@ std::string StreamDelegateBase::TakeReceivedData() {
   size_t len = received_data_queue_.GetTotalSize();
   std::string received_data(len, '\0');
   if (len > 0) {
-    EXPECT_EQ(len,
-              received_data_queue_.Dequeue(base::data(received_data), len));
+    EXPECT_EQ(len, received_data_queue_.Dequeue(std::data(received_data), len));
   }
   return received_data;
 }

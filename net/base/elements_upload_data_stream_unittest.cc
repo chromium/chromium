@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,7 +47,7 @@ namespace net {
 namespace {
 
 const char kTestData[] = "0123456789";
-const size_t kTestDataSize = base::size(kTestData) - 1;
+const size_t kTestDataSize = std::size(kTestData) - 1;
 const size_t kTestBufferSize = 1 << 14;  // 16KB.
 
 // Reads data from the upload data stream, and returns the data as string.

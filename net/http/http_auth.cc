@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -145,7 +144,7 @@ std::string HttpAuth::GetAuthTargetString(Target target) {
 
 // static
 const char* HttpAuth::SchemeToString(Scheme scheme) {
-  static_assert(base::size(kSchemeNames) == AUTH_SCHEME_MAX,
+  static_assert(std::size(kSchemeNames) == AUTH_SCHEME_MAX,
                 "http auth scheme names incorrect size");
   if (scheme < AUTH_SCHEME_BASIC || scheme >= AUTH_SCHEME_MAX) {
     NOTREACHED();
@@ -156,7 +155,7 @@ const char* HttpAuth::SchemeToString(Scheme scheme) {
 
 // static
 HttpAuth::Scheme HttpAuth::StringToScheme(const std::string& str) {
-  for (uint8_t i = 0; i < base::size(kSchemeNames); i++) {
+  for (uint8_t i = 0; i < std::size(kSchemeNames); i++) {
     if (str == kSchemeNames[i])
       return static_cast<Scheme>(i);
   }

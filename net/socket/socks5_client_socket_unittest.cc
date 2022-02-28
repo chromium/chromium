@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
@@ -126,7 +125,7 @@ TEST_F(SOCKS5ClientSocketTest, CompleteHandshake) {
 
   MockWrite data_writes[] = {
       MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-      MockWrite(ASYNC, kOkRequest, base::size(kOkRequest)),
+      MockWrite(ASYNC, kOkRequest, std::size(kOkRequest)),
       MockWrite(ASYNC, payload_write.data(), payload_write.size())};
   MockRead data_reads[] = {
       MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
@@ -189,7 +188,7 @@ TEST_F(SOCKS5ClientSocketTest, ConnectAndDisconnectTwice) {
       0x03,  // ATYPE
   };
 
-  std::string request(kSOCKS5DomainRequest, base::size(kSOCKS5DomainRequest));
+  std::string request(kSOCKS5DomainRequest, std::size(kSOCKS5DomainRequest));
   request.push_back(static_cast<char>(hostname.size()));
   request.append(hostname);
   request.append(reinterpret_cast<const char*>(&kNwPort), sizeof(kNwPort));
@@ -254,9 +253,9 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const char partial1[] = { 0x05, 0x01 };
     const char partial2[] = { 0x00 };
     MockWrite data_writes[] = {
-        MockWrite(ASYNC, partial1, base::size(partial1)),
-        MockWrite(ASYNC, partial2, base::size(partial2)),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, partial1, std::size(partial1)),
+        MockWrite(ASYNC, partial2, std::size(partial2)),
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
@@ -284,10 +283,10 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const char partial2[] = { 0x00 };
     MockWrite data_writes[] = {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
-        MockRead(ASYNC, partial1, base::size(partial1)),
-        MockRead(ASYNC, partial2, base::size(partial2)),
+        MockRead(ASYNC, partial1, std::size(partial1)),
+        MockRead(ASYNC, partial2, std::size(partial2)),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength)};
     user_sock_ =
         BuildMockSocket(data_reads, data_writes, hostname, 80, NetLog::Get());
@@ -312,7 +311,7 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
         MockWrite(ASYNC, kOkRequest, kSplitPoint),
         MockWrite(ASYNC, kOkRequest + kSplitPoint,
-                  base::size(kOkRequest) - kSplitPoint)};
+                  std::size(kOkRequest) - kSplitPoint)};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSOCKS5OkResponseLength) };
@@ -336,7 +335,7 @@ TEST_F(SOCKS5ClientSocketTest, PartialReadWrites) {
     const int kSplitPoint = 6;  // Break the handshake read into two parts.
     MockWrite data_writes[] = {
         MockWrite(ASYNC, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength),
-        MockWrite(ASYNC, kOkRequest, base::size(kOkRequest))};
+        MockWrite(ASYNC, kOkRequest, std::size(kOkRequest))};
     MockRead data_reads[] = {
         MockRead(ASYNC, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength),
         MockRead(ASYNC, kSOCKS5OkResponse, kSplitPoint),

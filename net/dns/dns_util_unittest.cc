@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/big_endian.h"
-#include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -405,7 +404,7 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "noodles.blorg`",      "www.-noodles.blorg",
   };
 
-  for (size_t i = 0; i < base::size(bad_hostnames); ++i) {
+  for (size_t i = 0; i < std::size(bad_hostnames); ++i) {
     EXPECT_FALSE(IsValidDNSDomain(bad_hostnames[i]));
   }
 
@@ -415,7 +414,7 @@ TEST_F(DNSUtilTest, IsValidDNSDomain) {
       "www_.noodles.blorg",  "www.noodles.blorg.", "_privet._tcp.local",
   };
 
-  for (size_t i = 0; i < base::size(good_hostnames); ++i) {
+  for (size_t i = 0; i < std::size(good_hostnames); ++i) {
     EXPECT_TRUE(IsValidDNSDomain(good_hostnames[i]));
   }
 }
@@ -429,7 +428,7 @@ TEST_F(DNSUtilTest, IsValidUnrestrictedDNSDomain) {
       "www.nood(les).blorg", "noo dl(es)._tcp.local",
   };
 
-  for (size_t i = 0; i < base::size(good_hostnames); ++i) {
+  for (size_t i = 0; i < std::size(good_hostnames); ++i) {
     EXPECT_TRUE(IsValidUnrestrictedDNSDomain(good_hostnames[i]));
   }
 }

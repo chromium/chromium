@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
@@ -1199,7 +1198,7 @@ TEST(HostCacheTest, KeyComparators) {
   secure_key.secure = true;
   tests.emplace_back(insecure_key, secure_key, -1);
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]", i));
 
     const HostCache::Key& key1 = tests[i].key1;

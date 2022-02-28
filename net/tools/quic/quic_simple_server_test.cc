@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "net/quic/address_utils.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
 #include "net/third_party/quiche/src/quic/core/quic_crypto_stream.h"
@@ -70,7 +69,7 @@ TEST_F(QuicChromeServerDispatchPacketTest, DispatchPacket) {
                                   // private flags
                                   0x00};
   quic::QuicReceivedPacket encrypted_valid_packet(
-      reinterpret_cast<char*>(valid_packet), base::size(valid_packet),
+      reinterpret_cast<char*>(valid_packet), std::size(valid_packet),
       quic::QuicTime::Zero(), false);
 
   EXPECT_CALL(dispatcher_, ProcessPacket(_, _, _)).Times(1);

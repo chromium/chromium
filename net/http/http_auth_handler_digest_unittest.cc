@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_auth_handler_digest.h"
+
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
@@ -12,7 +13,6 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
-#include "net/http/http_auth_handler_digest.h"
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
@@ -364,7 +364,7 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
       new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
@@ -530,7 +530,7 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
       new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;

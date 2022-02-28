@@ -5,8 +5,6 @@
 #ifndef NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 #define NET_DNS_PUBLIC_HOST_RESOLVER_SOURCE_H_
 
-#include "base/cxx17_backports.h"
-
 namespace net {
 
 // Enumeration to specify the allowed results source for HostResolver
@@ -41,7 +39,7 @@ const HostResolverSource kHostResolverSources[] = {
     HostResolverSource::LOCAL_ONLY};
 
 static_assert(
-    base::size(kHostResolverSources) ==
+    std::size(kHostResolverSources) ==
         static_cast<unsigned>(HostResolverSource::MAX) + 1,
     "All HostResolverSource values should be in kHostResolverSources.");
 

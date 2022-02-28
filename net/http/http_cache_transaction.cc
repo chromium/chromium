@@ -195,7 +195,7 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
   TRACE_EVENT1("io", "HttpCacheTransaction::Transaction", "priority",
                RequestPriorityToString(priority));
   static_assert(HttpCache::Transaction::kNumValidationHeaders ==
-                    base::size(kValidationHeaders),
+                    std::size(kValidationHeaders),
                 "invalid number of validation headers");
 
   io_callback_ = base::BindRepeating(&Transaction::OnIOComplete,
@@ -2339,7 +2339,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   if (request_->extra_headers.HasHeader(HttpRequestHeaders::kRange))
     range_found = true;
 
-  for (size_t i = 0; i < base::size(kSpecialHeaders); ++i) {
+  for (size_t i = 0; i < std::size(kSpecialHeaders); ++i) {
     if (HeaderMatches(request_->extra_headers, kSpecialHeaders[i].search)) {
       effective_load_flags_ |= kSpecialHeaders[i].load_flag;
       special_headers = true;
@@ -2349,7 +2349,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
 
   // Check for conditionalization headers which may correspond with a
   // cache validation request.
-  for (size_t i = 0; i < base::size(kValidationHeaders); ++i) {
+  for (size_t i = 0; i < std::size(kValidationHeaders); ++i) {
     const ValidationHeaderInfo& info = kValidationHeaders[i];
     std::string validation_value;
     if (request_->extra_headers.GetHeader(
@@ -2616,7 +2616,7 @@ bool HttpCache::Transaction::
     ExternallyConditionalizedValidationHeadersMatchEntry() const {
   DCHECK(external_validation_.initialized);
 
-  for (size_t i = 0; i < base::size(kValidationHeaders); i++) {
+  for (size_t i = 0; i < std::size(kValidationHeaders); i++) {
     if (external_validation_.values[i].empty())
       continue;
 

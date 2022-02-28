@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -31,7 +30,7 @@ const char* kFailurePhase[]{
     "readasync",  // READ_ASYNC
 };
 
-static_assert(base::size(kFailurePhase) ==
+static_assert(std::size(kFailurePhase) ==
                   URLRequestFailedJob::FailurePhase::MAX_FAILURE_PHASE,
               "kFailurePhase must match FailurePhase enum");
 
@@ -50,7 +49,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
     int net_error = OK;
     URLRequestFailedJob::FailurePhase phase =
         URLRequestFailedJob::FailurePhase::MAX_FAILURE_PHASE;
-    for (size_t i = 0; i < base::size(kFailurePhase); i++) {
+    for (size_t i = 0; i < std::size(kFailurePhase); i++) {
       std::string phase_error_string;
       if (GetValueForKeyInQuery(request->url(), kFailurePhase[i],
                                 &phase_error_string)) {

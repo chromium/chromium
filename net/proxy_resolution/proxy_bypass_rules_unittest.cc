@@ -4,7 +4,6 @@
 
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
@@ -68,7 +67,7 @@ void ExpectBypassLocalhost(
 #endif
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, inverted_hosts);
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, inverted_hosts);
 }
 
 // Tests calling |rules.Matches()| for link-local URLs returns |bypasses|.
@@ -78,7 +77,7 @@ void ExpectBypassLinkLocal(const ProxyBypassRules& rules, bool bypasses) {
       "[fe91::1]",   "[::ffff:169.254.3.2]",
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, {});
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, {});
 }
 
 // Tests calling |rules.Matches()| with miscelaneous URLs that are neither
@@ -106,7 +105,7 @@ void ExpectBypassMisc(
 #endif
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, inverted_hosts);
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, inverted_hosts);
 }
 
 TEST(ProxyBypassRulesTest, ParseAndMatchBasicHost) {

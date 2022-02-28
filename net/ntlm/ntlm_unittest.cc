@@ -17,7 +17,6 @@
 #include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/ntlm/ntlm_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -315,7 +314,7 @@ TEST(NtlmTest, GenerateUpdatedTargetInfo) {
   // 1) A flags AVPair with the MIC_PRESENT bit set.
   // 2) A channel bindings AVPair containing the channel bindings hash.
   // 3) A target name AVPair containing the SPN of the server.
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoSpecResponseV2),
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoSpecResponseV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoSpecResponseV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -335,7 +334,7 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoNoEpaOrMic) {
   std::vector<uint8_t> updated_target_info = GenerateUpdatedTargetInfo(
       false, false, reinterpret_cast<const char*>(test::kChannelBindings),
       test::kNtlmSpn, server_av_pairs, &server_timestamp);
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoFromSpecV2),
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoFromSpecV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoFromSpecV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -362,7 +361,7 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoWithServerTimestamp) {
       test::kNtlmSpn, server_av_pairs, &server_timestamp);
   // Verify that the server timestamp was read from the target info.
   ASSERT_EQ(test::kServerTimestamp, server_timestamp);
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2),
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2),
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoFromSpecPlusServerTimestampV2,
                       updated_target_info.data(), updated_target_info.size()));
@@ -388,7 +387,7 @@ TEST(NtlmTest, GenerateUpdatedTargetInfoWhenServerSendsNoTargetInfo) {
   // Server pairs) not present.
   const size_t kMissingServerPairsLength = 32;
 
-  ASSERT_EQ(base::size(test::kExpectedTargetInfoSpecResponseV2) -
+  ASSERT_EQ(std::size(test::kExpectedTargetInfoSpecResponseV2) -
                 kMissingServerPairsLength,
             updated_target_info.size());
   ASSERT_EQ(0, memcmp(test::kExpectedTargetInfoSpecResponseV2 +

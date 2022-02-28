@@ -12,7 +12,6 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -117,7 +116,7 @@ bool CreateTargetFolder(const base::FilePath& path, RankCrashes action,
     "remove_load2",
     "remove_load3"
   };
-  static_assert(base::size(folders) == disk_cache::MAX_CRASH, "sync folders");
+  static_assert(std::size(folders) == disk_cache::MAX_CRASH, "sync folders");
   DCHECK(action > disk_cache::NO_CRASH && action < disk_cache::MAX_CRASH);
 
   *full_path = path.AppendASCII(folders[action]);

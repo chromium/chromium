@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,7 +52,7 @@ std::unique_ptr<SpdyBufferProducer> IntToProducer(int i) {
 class RequeingBufferProducer : public SpdyBufferProducer {
  public:
   explicit RequeingBufferProducer(SpdyWriteQueue* queue) {
-    buffer_ = std::make_unique<SpdyBuffer>(kOriginal, base::size(kOriginal));
+    buffer_ = std::make_unique<SpdyBuffer>(kOriginal, std::size(kOriginal));
     buffer_->AddConsumeCallback(
         base::BindRepeating(RequeingBufferProducer::ConsumeCallback, queue));
   }
@@ -65,8 +64,7 @@ class RequeingBufferProducer : public SpdyBufferProducer {
   static void ConsumeCallback(SpdyWriteQueue* queue,
                               size_t size,
                               SpdyBuffer::ConsumeSource source) {
-    auto buffer =
-        std::make_unique<SpdyBuffer>(kRequeued, base::size(kRequeued));
+    auto buffer = std::make_unique<SpdyBuffer>(kRequeued, std::size(kRequeued));
     auto buffer_producer =
         std::make_unique<SimpleBufferProducer>(std::move(buffer));
 
@@ -266,13 +264,13 @@ TEST_F(SpdyWriteQueueTest, RemovePendingWritesForStreamsAfter) {
 
   for (int i = 0; i < 100; ++i) {
     write_queue.Enqueue(DEFAULT_PRIORITY, spdy::SpdyFrameType::HEADERS,
-                        IntToProducer(i), streams[i % base::size(streams)],
+                        IntToProducer(i), streams[i % std::size(streams)],
                         TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   write_queue.RemovePendingWritesForStreamsAfter(stream1->stream_id());
 
-  for (int i = 0; i < 100; i += base::size(streams)) {
+  for (int i = 0; i < 100; i += std::size(streams)) {
     spdy::SpdyFrameType frame_type = spdy::SpdyFrameType::DATA;
     std::unique_ptr<SpdyBufferProducer> frame_producer;
     base::WeakPtr<SpdyStream> stream;

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -602,7 +601,7 @@ TEST_F(SpdyHttpStreamTest, ConnectionClosedDuringChunkedPost) {
 // chunk becomes available while a write is pending.
 TEST_F(SpdyHttpStreamTest, DelayedSendChunkedPost) {
   const char kUploadData1[] = "12345678";
-  const int kUploadData1Size = base::size(kUploadData1) - 1;
+  const int kUploadData1Size = std::size(kUploadData1) - 1;
   spdy::SpdySerializedFrame req(
       spdy_util_.ConstructChunkedSpdyPost(nullptr, 0));
   spdy::SpdySerializedFrame chunk1(spdy_util_.ConstructSpdyDataFrame(1, false));

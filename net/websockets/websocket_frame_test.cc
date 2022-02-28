@@ -5,10 +5,10 @@
 #include "net/websockets/websocket_frame.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/aligned_memory.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +32,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
     { "\x81\x7F\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 10,
       UINT64_C(0x7FFFFFFFFFFFFFFF) }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -53,7 +53,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengths) {
 TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
   static const char kMaskingKey[] = "\xDE\xAD\xBE\xEF";
   static_assert(
-      base::size(kMaskingKey) - 1 == WebSocketFrameHeader::kMaskingKeyLength,
+      std::size(kMaskingKey) - 1 == WebSocketFrameHeader::kMaskingKeyLength,
       "incorrect masking key size");
 
   struct TestCase {
@@ -71,7 +71,7 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
     { "\x81\xFF\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xDE\xAD\xBE\xEF", 14,
       UINT64_C(0x7FFFFFFFFFFFFFFF) }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   WebSocketMaskingKey masking_key;
   std::copy(kMaskingKey,
@@ -120,7 +120,7 @@ TEST(WebSocketFrameHeaderTest, FrameOpCodes) {
     { "\x8E\x00", 2, 0xE },
     { "\x8F\x00", 2, 0xF }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     WebSocketFrameHeader header(kTests[i].opcode);
@@ -156,7 +156,7 @@ TEST(WebSocketFrameHeaderTest, FinalBitAndReservedBits) {
     { "\x71\x00", 2, false, true, true, true },
     { "\xF1\x00", 2, true, true, true, true }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -197,7 +197,7 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
     { UINT64_C(0x10000), true, 14u },
     { UINT64_C(0x7FFFFFFFFFFFFFFF), true, 14u }
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -235,7 +235,7 @@ TEST(WebSocketFrameTest, MaskPayload) {
     { "\x00\x00\x00\x00", 0, "FooBar", "FooBar", 6 },
     { "\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6 },
   };
-  static const int kNumTests = base::size(kTests);
+  static const int kNumTests = std::size(kTests);
 
   for (int i = 0; i < kNumTests; ++i) {
     WebSocketMaskingKey masking_key;
@@ -284,7 +284,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
     "\xda\xa8\x4b\x75\xa1\xcb\xa9\x77\x19\x4d\x6e\xdf\xc8\x08\x1c\xb6"
     "\x6d\xfb\x38\x04\x44\xd5\xba\x57\x9f\x76\xb0\x2e\x07\x91\xe6\xa8"
   };
-  static const size_t kTestInputSize = base::size(kTestInput) - 1;
+  static const size_t kTestInputSize = std::size(kTestInput) - 1;
   static const char kTestOutput[] = {
     "\xef\xcd\x47\xa5\xcb\x36\x12\x1d\xcb\xd7\xad\x72\xeb\x5d\x0d\xb5"
     "\xbb\x36\x80\xf5\x2e\x16\x76\x6d\x9b\x2c\x34\x34\xa9\xe0\x68\xc8"
@@ -293,7 +293,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
     "\x08\x12\x11\xcb\x73\x71\xf3\xc9\xcb\xf7\x34\x61\x1a\xb2\x46\x08"
     "\xbf\x41\x62\xba\x96\x6f\xe0\xe9\x4d\xcc\xea\x90\xd5\x2b\xbc\x16"
   };
-  static_assert(base::size(kTestInput) == base::size(kTestOutput),
+  static_assert(std::size(kTestInput) == std::size(kTestOutput),
                 "output and input arrays should have the same length");
   std::unique_ptr<char, base::AlignedFreeDeleter> scratch(static_cast<char*>(
       base::AlignedAlloc(kScratchBufferSize, kMaxVectorAlignment)));

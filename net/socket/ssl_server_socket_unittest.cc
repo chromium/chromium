@@ -26,7 +26,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -1206,7 +1205,7 @@ TEST_F(SSLServerSocketTest, RequireEcdheFlag) {
   };
   SSLContextConfig config;
   config.disabled_cipher_suites.assign(
-      kEcdheCiphers, kEcdheCiphers + base::size(kEcdheCiphers));
+      kEcdheCiphers, kEcdheCiphers + std::size(kEcdheCiphers));
 
   // Legacy RSA key exchange ciphers only exist in TLS 1.2 and below.
   config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
@@ -1286,7 +1285,7 @@ TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKeyRequireEcdhe) {
   };
   SSLContextConfig config;
   config.disabled_cipher_suites.assign(
-      kEcdheCiphers, kEcdheCiphers + base::size(kEcdheCiphers));
+      kEcdheCiphers, kEcdheCiphers + std::size(kEcdheCiphers));
   // TLS 1.3 always works with SSLPrivateKey.
   config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
   ssl_config_service_->UpdateSSLConfigAndNotify(config);

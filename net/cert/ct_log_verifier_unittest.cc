@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "crypto/secure_hash.h"
@@ -542,7 +541,7 @@ TEST_P(CTLogVerifierConsistencyProofTest, VerifiesValidConsistencyProof) {
 INSTANTIATE_TEST_SUITE_P(KnownGoodProofs,
                          CTLogVerifierConsistencyProofTest,
                          ::testing::Range(size_t(0),
-                                          base::size(kConsistencyProofs)));
+                                          std::size(kConsistencyProofs)));
 
 class CTLogVerifierAuditProofTest
     : public CTLogVerifierTest,
@@ -561,7 +560,7 @@ TEST_P(CTLogVerifierAuditProofTest, VerifiesValidAuditProofs) {
 
 INSTANTIATE_TEST_SUITE_P(KnownGoodProofs,
                          CTLogVerifierAuditProofTest,
-                         ::testing::Range(size_t(0), base::size(kAuditProofs)));
+                         ::testing::Range(size_t(0), std::size(kAuditProofs)));
 
 TEST_F(CTLogVerifierTest, VerifiesAuditProofEdgeCases_InvalidLeafIndex) {
   std::vector<std::string> proof;

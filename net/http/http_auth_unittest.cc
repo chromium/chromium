@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -139,7 +138,7 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
   http_auth_handler_factory->SetHttpAuthPreferences(kNegotiateAuthScheme,
                                                     &http_auth_preferences);
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     // Make a HttpResponseHeaders object.
     std::string headers_with_status_line("HTTP/1.1 401 Unauthorized\n");
     headers_with_status_line += tests[i].headers;

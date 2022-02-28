@@ -56,7 +56,7 @@ TEST(NetLogValuesTest, NetLogBinaryValue) {
 
   // Test the encoding for a non-empty sequence (which needs padding).
   const uint8_t kBytes[] = {0x00, 0xF3, 0xF8, 0xFF};
-  auto value2 = NetLogBinaryValue(kBytes, base::size(kBytes));
+  auto value2 = NetLogBinaryValue(kBytes, std::size(kBytes));
   ASSERT_TRUE(value2.is_string());
   EXPECT_EQ("APP4/w==", value2.GetString());
 }

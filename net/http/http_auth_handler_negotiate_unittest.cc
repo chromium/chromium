@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -179,7 +178,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
             kAuthResponse)   // Output token
     };
 
-    for (size_t i = 0; i < base::size(queries); ++i) {
+    for (size_t i = 0; i < std::size(queries); ++i) {
       mock_library->ExpectSecurityContext(queries[i].expected_package,
                                           queries[i].response_code,
                                           queries[i].minor_response_code,

@@ -52,7 +52,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -560,7 +559,7 @@ void CookieMonster::SetPersistSessionCookies(bool persist_session_cookies) {
 const char* const CookieMonster::kDefaultCookieableSchemes[] = {"http", "https",
                                                                 "ws", "wss"};
 const int CookieMonster::kDefaultCookieableSchemesCount =
-    base::size(kDefaultCookieableSchemes);
+    std::size(kDefaultCookieableSchemes);
 
 CookieChangeDispatcher& CookieMonster::GetChangeDispatcher() {
   return change_dispatcher_;
@@ -1696,7 +1695,7 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
   // Ideally, this would be asserted up where we define kChangeCauseMapping,
   // but DeletionCause's visibility (or lack thereof) forces us to make
   // this check here.
-  static_assert(base::size(kChangeCauseMapping) == DELETE_COOKIE_LAST_ENTRY + 1,
+  static_assert(std::size(kChangeCauseMapping) == DELETE_COOKIE_LAST_ENTRY + 1,
                 "kChangeCauseMapping size should match DeletionCause size");
 
   CanonicalCookie* cc = it->second.get();
@@ -1748,7 +1747,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
   // Ideally, this would be asserted up where we define kChangeCauseMapping,
   // but DeletionCause's visibility (or lack thereof) forces us to make
   // this check here.
-  static_assert(base::size(kChangeCauseMapping) == DELETE_COOKIE_LAST_ENTRY + 1,
+  static_assert(std::size(kChangeCauseMapping) == DELETE_COOKIE_LAST_ENTRY + 1,
                 "kChangeCauseMapping size should match DeletionCause size");
 
   CanonicalCookie* cc = cookie_it->second.get();

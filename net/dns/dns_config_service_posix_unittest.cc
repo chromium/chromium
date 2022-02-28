@@ -2,30 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/dns/dns_config_service_posix.h"
+
 #include <resolv.h>
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/cancelable_callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/dns_config.h"
-#include "net/dns/dns_config_service_posix.h"
 #include "net/dns/public/dns_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "base/bind.h"
-#include "base/task/thread_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
@@ -77,7 +76,7 @@ void InitializeResState(res_state res) {
   res->dnsrch[0] = res->defdname;
   res->dnsrch[1] = res->defdname + sizeof("chromium.org");
 
-  for (unsigned i = 0; i < base::size(kNameserversIPv4) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv4) && i < MAXNS; ++i) {
     struct sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_port = base::HostToNet16(NS_DEFAULTPORT + i);
@@ -89,7 +88,7 @@ void InitializeResState(res_state res) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Install IPv6 addresses, replacing the corresponding IPv4 addresses.
   unsigned nscount6 = 0;
-  for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv6) && i < MAXNS; ++i) {
     if (!kNameserversIPv6[i])
       continue;
     // Must use malloc to mimick res_ninit.
@@ -126,14 +125,14 @@ void InitializeExpectedConfig(DnsConfig* config) {
   config->search.push_back("example.com");
 
   config->nameservers.clear();
-  for (unsigned i = 0; i < base::size(kNameserversIPv4) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv4) && i < MAXNS; ++i) {
     IPAddress ip;
     EXPECT_TRUE(ip.AssignFromIPLiteral(kNameserversIPv4[i]));
     config->nameservers.push_back(IPEndPoint(ip, NS_DEFAULTPORT + i));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
+  for (unsigned i = 0; i < std::size(kNameserversIPv6) && i < MAXNS; ++i) {
     if (!kNameserversIPv6[i])
       continue;
     IPAddress ip;

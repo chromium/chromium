@@ -5,7 +5,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/base64.h"
-#include "base/cxx17_backports.h"
 #include "net/net_test_jni_headers/DummySpnegoAuthenticator_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +16,7 @@ namespace net {
 // From RFC 4178, which uses SNEGO not SPNEGO.
 static const unsigned char kSpnegoOid[] = {0x2b, 0x06, 0x01, 0x05, 0x05, 0x02};
 gss_OID_desc CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL = {
-    base::size(kSpnegoOid), const_cast<unsigned char*>(kSpnegoOid)};
+    std::size(kSpnegoOid), const_cast<unsigned char*>(kSpnegoOid)};
 
 gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC = &CHROME_GSS_SPNEGO_MECH_OID_DESC_VAL;
 

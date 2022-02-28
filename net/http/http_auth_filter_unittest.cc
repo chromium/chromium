@@ -7,7 +7,6 @@
 #include <memory>
 #include <ostream>
 
-#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -68,7 +67,7 @@ TEST(HttpAuthFilterTest, EmptyFilter) {
 TEST(HttpAuthFilterTest, NonEmptyFilter) {
   // Create an non-empty filter
   std::string server_allowlist_filter_string;
-  for (size_t i = 0; i < base::size(server_allowlist_array); ++i) {
+  for (size_t i = 0; i < std::size(server_allowlist_array); ++i) {
     if (!server_allowlist_filter_string.empty())
       server_allowlist_filter_string += ",";
     server_allowlist_filter_string += "*";

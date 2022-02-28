@@ -5,7 +5,6 @@
 #include "net/disk_cache/blockfile/stats.h"
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram.h"
@@ -69,7 +68,7 @@ const char* const kCounterNames[] = {
   "Doom recent entries",
   "unused"
 };
-static_assert(base::size(kCounterNames) == disk_cache::Stats::MAX_COUNTER,
+static_assert(std::size(kCounterNames) == disk_cache::Stats::MAX_COUNTER,
               "update the names");
 
 }  // namespace

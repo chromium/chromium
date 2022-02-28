@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_auth_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +55,7 @@ TEST(URLSecurityManager, UseDefaultCredentials) {
   url_security_manager->SetDefaultAllowlist(std::move(auth_filter));
   ASSERT_TRUE(url_security_manager.get());
 
-  for (size_t i = 0; i < base::size(kTestDataList); ++i) {
+  for (size_t i = 0; i < std::size(kTestDataList); ++i) {
     url::SchemeHostPort scheme_host_port(
         GURL(kTestDataList[i].scheme_host_port));
     bool can_use_default =
@@ -78,7 +77,7 @@ TEST(URLSecurityManager, CanDelegate) {
   url_security_manager->SetDelegateAllowlist(std::move(auth_filter));
   ASSERT_TRUE(url_security_manager.get());
 
-  for (size_t i = 0; i < base::size(kTestDataList); ++i) {
+  for (size_t i = 0; i < std::size(kTestDataList); ++i) {
     url::SchemeHostPort scheme_host_port(
         GURL(kTestDataList[i].scheme_host_port));
     bool can_delegate = url_security_manager->CanDelegate(scheme_host_port);
@@ -94,7 +93,7 @@ TEST(URLSecurityManager, CanDelegate_NoAllowlist) {
       URLSecurityManager::Create());
   ASSERT_TRUE(url_security_manager.get());
 
-  for (size_t i = 0; i < base::size(kTestDataList); ++i) {
+  for (size_t i = 0; i < std::size(kTestDataList); ++i) {
     url::SchemeHostPort scheme_host_port(
         GURL(kTestDataList[i].scheme_host_port));
     bool can_delegate = url_security_manager->CanDelegate(scheme_host_port);

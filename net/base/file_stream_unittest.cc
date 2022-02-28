@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -45,7 +44,7 @@ namespace net {
 namespace {
 
 constexpr char kTestData[] = "0123456789";
-constexpr int kTestDataSize = base::size(kTestData) - 1;
+constexpr int kTestDataSize = std::size(kTestData) - 1;
 
 // Creates an IOBufferWithSize that contains the kTestDataSize.
 scoped_refptr<IOBufferWithSize> CreateTestDataBuffer() {

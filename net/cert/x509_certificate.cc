@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -262,7 +261,7 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
     // data is one of the accepted formats.
     if (format & ~FORMAT_PEM_CERT_SEQUENCE) {
       for (size_t i = 0;
-           certificates.empty() && i < base::size(kFormatDecodePriority); ++i) {
+           certificates.empty() && i < std::size(kFormatDecodePriority); ++i) {
         if (format & kFormatDecodePriority[i]) {
           certificates = CreateCertBuffersFromBytes(
               base::as_bytes(base::make_span(decoded)),
@@ -282,7 +281,7 @@ CertificateList X509Certificate::CreateCertificateListFromBytes(
   // contains the binary representation of a Format, if it failed to parse
   // as a PEM certificate/chain.
   for (size_t i = 0;
-       certificates.empty() && i < base::size(kFormatDecodePriority); ++i) {
+       certificates.empty() && i < std::size(kFormatDecodePriority); ++i) {
     if (format & kFormatDecodePriority[i])
       certificates = CreateCertBuffersFromBytes(data, kFormatDecodePriority[i]);
   }

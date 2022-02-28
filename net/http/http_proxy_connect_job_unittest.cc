@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
@@ -512,12 +511,12 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
       kResponseHeaderValue,
   };
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyConnect(
-      kExtraRequestHeaders, base::size(kExtraRequestHeaders) / 2, 1,
+      kExtraRequestHeaders, std::size(kExtraRequestHeaders) / 2, 1,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
       HostPortPair(kEndpointHost, 443)));
   MockWrite spdy_writes[] = {CreateMockWrite(req, 0)};
   spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
-      kExtraResponseHeaders, base::size(kExtraResponseHeaders) / 2, 1));
+      kExtraResponseHeaders, std::size(kExtraResponseHeaders) / 2, 1));
   MockRead spdy_reads[] = {
       CreateMockRead(resp, 1, ASYNC),
       MockRead(SYNCHRONOUS, ERR_IO_PENDING, 2),
@@ -577,7 +576,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
         "Basic Zm9vOmJhcg==",
     };
     spdy::SpdySerializedFrame connect2(spdy_util.ConstructSpdyConnect(
-        kSpdyAuthCredentials, base::size(kSpdyAuthCredentials) / 2, 3,
+        kSpdyAuthCredentials, std::size(kSpdyAuthCredentials) / 2, 3,
         HttpProxyConnectJob::kH2QuicTunnelPriority,
         HostPortPair(kEndpointHost, 443)));
 
@@ -596,7 +595,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuth) {
     };
     spdy::SpdySerializedFrame connect_auth_resp(
         spdy_util.ConstructSpdyReplyError(kAuthStatus, kAuthChallenge,
-                                          base::size(kAuthChallenge) / 2, 1));
+                                          std::size(kAuthChallenge) / 2, 1));
 
     spdy::SpdySerializedFrame connect2_resp(
         spdy_util.ConstructSpdyGetReply(nullptr, 0, 3));
@@ -694,7 +693,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
         "Basic Zm9vOmJhcg==",
     };
     spdy::SpdySerializedFrame connect2(spdy_util.ConstructSpdyConnect(
-        kSpdyAuthCredentials, base::size(kSpdyAuthCredentials) / 2, 3,
+        kSpdyAuthCredentials, std::size(kSpdyAuthCredentials) / 2, 3,
         HttpProxyConnectJob::kH2QuicTunnelPriority,
         HostPortPair(kEndpointHost, 443)));
     spdy::SpdySerializedFrame rst2(
@@ -702,7 +701,7 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     spdy_util.UpdateWithStreamDestruction(3);
 
     spdy::SpdySerializedFrame connect3(spdy_util.ConstructSpdyConnect(
-        kSpdyAuthCredentials, base::size(kSpdyAuthCredentials) / 2, 5,
+        kSpdyAuthCredentials, std::size(kSpdyAuthCredentials) / 2, 5,
         HttpProxyConnectJob::kH2QuicTunnelPriority,
         HostPortPair(kEndpointHost, 443)));
     MockWrite spdy_writes[] = {
@@ -722,10 +721,10 @@ TEST_P(HttpProxyConnectJobTest, NeedAuthTwice) {
     };
     spdy::SpdySerializedFrame connect_auth_resp(
         spdy_util.ConstructSpdyReplyError(kAuthStatus, kAuthChallenge,
-                                          base::size(kAuthChallenge) / 2, 1));
+                                          std::size(kAuthChallenge) / 2, 1));
     spdy::SpdySerializedFrame connect2_auth_resp(
         spdy_util.ConstructSpdyReplyError(kAuthStatus, kAuthChallenge,
-                                          base::size(kAuthChallenge) / 2, 3));
+                                          std::size(kAuthChallenge) / 2, 3));
     spdy::SpdySerializedFrame connect3_resp(
         spdy_util.ConstructSpdyGetReply(nullptr, 0, 5));
     MockRead spdy_reads[] = {
@@ -819,7 +818,7 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
     };
     SpdyTestUtil spdy_util;
     spdy::SpdySerializedFrame connect(spdy_util.ConstructSpdyConnect(
-        kSpdyAuthCredentials, base::size(kSpdyAuthCredentials) / 2, 1,
+        kSpdyAuthCredentials, std::size(kSpdyAuthCredentials) / 2, 1,
         HttpProxyConnectJob::kH2QuicTunnelPriority,
         HostPortPair(kEndpointHost, 443)));
 
@@ -1268,7 +1267,7 @@ TEST_P(HttpProxyConnectJobTest, TunnelSetupRedirect) {
         "set-cookie",
         "foo=bar",
     };
-    const int responseHeadersSize = base::size(responseHeaders) / 2;
+    const int responseHeadersSize = std::size(responseHeaders) / 2;
     spdy::SpdySerializedFrame resp(spdy_util.ConstructSpdyReplyError(
         "302", responseHeaders, responseHeadersSize, 1));
     MockRead spdy_reads[] = {
@@ -1358,7 +1357,7 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
       "Basic Zm9vOmJhcg==",
   };
   spdy::SpdySerializedFrame connect2(spdy_util.ConstructSpdyConnect(
-      kSpdyAuthCredentials, base::size(kSpdyAuthCredentials) / 2, 3,
+      kSpdyAuthCredentials, std::size(kSpdyAuthCredentials) / 2, 3,
       HttpProxyConnectJob::kH2QuicTunnelPriority,
       HostPortPair(kEndpointHost, 443)));
   // This may be sent in some tests, either when tearing down a successful
@@ -1380,7 +1379,7 @@ TEST_P(HttpProxyConnectJobTest, TestTimeoutsAuthChallenge) {
       "Basic realm=\"MyRealm1\"",
   };
   spdy::SpdySerializedFrame connect_auth_resp(spdy_util.ConstructSpdyReplyError(
-      kAuthStatus, kAuthChallenge, base::size(kAuthChallenge) / 2, 1));
+      kAuthStatus, kAuthChallenge, std::size(kAuthChallenge) / 2, 1));
   spdy::SpdySerializedFrame connect2_resp(
       spdy_util.ConstructSpdyGetReply(nullptr, 0, 3));
   MockRead spdy_reads[] = {

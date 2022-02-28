@@ -4430,12 +4430,12 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
   // This gets tested a few times with different deletion target, to make sure
   // that the implementation doesn't just happen to pick the right one because
   // of implementation details.
-  for (size_t run = 0; run < base::size(kNames); ++run) {
+  for (size_t run = 0; run < std::size(kNames); ++run) {
     CookieMonster cm(nullptr, nullptr, kFirstPartySetsDefault);
     Time now = Time::Now();
     GURL url("http://www.example.com");
 
-    for (size_t i = 0; i < base::size(kNames); ++i) {
+    for (size_t i = 0; i < std::size(kNames); ++i) {
       std::string cookie_string =
           base::StrCat({kNames[i], "=", base::NumberToString(i)});
       EXPECT_TRUE(SetCookieWithCreationTime(&cm, url, cookie_string, now));
@@ -4444,8 +4444,8 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
     // Delete the run'th cookie.
     CookieList all_cookies = GetAllCookiesForURLWithOptions(
         &cm, url, CookieOptions::MakeAllInclusive());
-    ASSERT_EQ(all_cookies.size(), base::size(kNames));
-    for (size_t i = 0; i < base::size(kNames); ++i) {
+    ASSERT_EQ(all_cookies.size(), std::size(kNames));
+    for (size_t i = 0; i < std::size(kNames); ++i) {
       const CanonicalCookie& cookie = all_cookies[i];
       if (cookie.Name() == kNames[run]) {
         EXPECT_TRUE(DeleteCanonicalCookie(&cm, cookie));
@@ -4455,8 +4455,8 @@ TEST_F(CookieMonsterTest, DeleteDuplicateCTime) {
     // Check that the right cookie got removed.
     all_cookies = GetAllCookiesForURLWithOptions(
         &cm, url, CookieOptions::MakeAllInclusive());
-    ASSERT_EQ(all_cookies.size(), base::size(kNames) - 1);
-    for (size_t i = 0; i < base::size(kNames) - 1; ++i) {
+    ASSERT_EQ(all_cookies.size(), std::size(kNames) - 1);
+    for (size_t i = 0; i < std::size(kNames) - 1; ++i) {
       const CanonicalCookie& cookie = all_cookies[i];
       EXPECT_NE(cookie.Name(), kNames[run]);
     }

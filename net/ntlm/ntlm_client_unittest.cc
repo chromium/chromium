@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/ntlm/ntlm.h"
@@ -303,7 +302,7 @@ TEST(NtlmClientTest, Type3UnicodeWithSessionSecuritySpecTest) {
   std::vector<uint8_t> result = GenerateAuthMsg(client, test::kChallengeMsgV1);
 
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgSpecResponseV1),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgSpecResponseV1),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgSpecResponseV1,
                       result.data(), result.size()));
@@ -418,7 +417,7 @@ TEST(NtlmClientTest, VerifyNegotiateMessageV2) {
 
   std::vector<uint8_t> result = client.GetNegotiateMessage();
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedNegotiateMsg), result.size());
+  ASSERT_EQ(std::size(test::kExpectedNegotiateMsg), result.size());
   ASSERT_EQ(0,
             memcmp(test::kExpectedNegotiateMsg, result.data(), result.size()));
 }
@@ -430,7 +429,7 @@ TEST(NtlmClientTest, VerifyAuthenticateMessageV2) {
   std::vector<uint8_t> result =
       GenerateAuthMsg(client, test::kChallengeMsgFromSpecV2);
   ASSERT_FALSE(result.empty());
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgSpecResponseV2),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgSpecResponseV2),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgSpecResponseV2,
                       result.data(), result.size()));
@@ -447,7 +446,7 @@ TEST(NtlmClientTest,
   std::vector<uint8_t> result = GenerateAuthMsg(client, test::kChallengeMsgV1);
   ASSERT_FALSE(result.empty());
 
-  ASSERT_EQ(base::size(test::kExpectedAuthenticateMsgToOldV1ChallegeV2),
+  ASSERT_EQ(std::size(test::kExpectedAuthenticateMsgToOldV1ChallegeV2),
             result.size());
   ASSERT_EQ(0, memcmp(test::kExpectedAuthenticateMsgToOldV1ChallegeV2,
                       result.data(), result.size()));

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/proxy_resolution/proxy_config.h"
-#include "base/cxx17_backports.h"
+
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "net/base/proxy_string_util.h"
@@ -436,7 +436,7 @@ TEST(ProxyConfigTest, ParseProxyRules) {
 
   ProxyConfig config;
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     config.proxy_rules().ParseFromString(tests[i].proxy_rules);
 
     EXPECT_EQ(tests[i].type, config.proxy_rules().type);

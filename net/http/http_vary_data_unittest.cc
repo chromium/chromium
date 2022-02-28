@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_vary_data.h"
+
 #include <algorithm>
 
-#include "base/cxx17_backports.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_vary_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -44,7 +44,7 @@ TEST(HttpVaryDataTest, IsInvalid) {
 
   const bool kExpectedValid[] = {false, true, true, true};
 
-  for (size_t i = 0; i < base::size(kTestResponses); ++i) {
+  for (size_t i = 0; i < std::size(kTestResponses); ++i) {
     TestTransaction t;
     t.Init(std::string(), kTestResponses[i]);
 

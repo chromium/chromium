@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -149,7 +148,7 @@ struct NET_EXPORT_PRIVATE AvPair {
 };
 
 static constexpr uint8_t kSignature[] = "NTLMSSP";
-static constexpr size_t kSignatureLen = base::size(kSignature);
+static constexpr size_t kSignatureLen = std::size(kSignature);
 static constexpr uint16_t kProofInputVersionV2 = 0x0101;
 static constexpr size_t kSecurityBufferLen =
     (2 * sizeof(uint16_t)) + sizeof(uint32_t);

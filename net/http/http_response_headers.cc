@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -110,11 +109,11 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
 };
 
 bool ShouldUpdateHeader(base::StringPiece name) {
-  for (size_t i = 0; i < base::size(kNonUpdatedHeaders); ++i) {
+  for (size_t i = 0; i < std::size(kNonUpdatedHeaders); ++i) {
     if (base::LowerCaseEqualsASCII(name, kNonUpdatedHeaders[i]))
       return false;
   }
-  for (size_t i = 0; i < base::size(kNonUpdatedHeaderPrefixes); ++i) {
+  for (size_t i = 0; i < std::size(kNonUpdatedHeaderPrefixes); ++i) {
     if (base::StartsWith(name, kNonUpdatedHeaderPrefixes[i],
                          base::CompareCase::INSENSITIVE_ASCII))
       return false;
@@ -887,17 +886,17 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
 }
 
 void HttpResponseHeaders::AddHopByHopHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kHopByHopResponseHeaders); ++i)
+  for (size_t i = 0; i < std::size(kHopByHopResponseHeaders); ++i)
     result->insert(std::string(kHopByHopResponseHeaders[i]));
 }
 
 void HttpResponseHeaders::AddCookieHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kCookieResponseHeaders); ++i)
+  for (size_t i = 0; i < std::size(kCookieResponseHeaders); ++i)
     result->insert(std::string(kCookieResponseHeaders[i]));
 }
 
 void HttpResponseHeaders::AddChallengeHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kChallengeResponseHeaders); ++i)
+  for (size_t i = 0; i < std::size(kChallengeResponseHeaders); ++i)
     result->insert(std::string(kChallengeResponseHeaders[i]));
 }
 
@@ -906,7 +905,7 @@ void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
 }
 
 void HttpResponseHeaders::AddSecurityStateHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kSecurityStateHeaders); ++i)
+  for (size_t i = 0; i < std::size(kSecurityStateHeaders); ++i)
     result->insert(std::string(kSecurityStateHeaders[i]));
 }
 
