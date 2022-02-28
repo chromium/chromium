@@ -133,7 +133,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
   lifecycle_ = next_status;
 }
 
-static bool gHasContext;
+// Record/replay state is initialized along with the first LocalWindowProxy.
+static bool gRecordReplayStateInitialized;
 
 void LocalWindowProxy::Initialize() {
   TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
@@ -186,8 +187,8 @@ void LocalWindowProxy::Initialize() {
   // After creating the first context, we are ready to set up the state used
   // to process driver commands when recording/replaying, and to create
   // checkpoints. Create the first checkpoint at which execution can pause.
-  if (recordreplay::IsRecordingOrReplaying() && !gHasContext) {
-    gHasContext = true;
+  if (recordreplay::IsRecordingOrReplaying() && !gRecordReplayStateInitialized) {
+    gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());
     recordreplay::NewCheckpoint();
   }
@@ -593,9 +594,24 @@ void LocalWindowProxy::SetAbortScriptExecution(
   script_state_->GetContext()->SetAbortScriptExecution(callback);
 }
 
+// We keep track of the most recently created local window proxy
+// for ensuring that record/replay state is initialized when
+// the first paint is triggered. FIXME clean up reference.
+static LocalWindowProxy* gLatestLocalWindowProxy;
+
 LocalWindowProxy::LocalWindowProxy(v8::Isolate* isolate,
                                    LocalFrame& frame,
                                    scoped_refptr<DOMWrapperWorld> world)
-    : WindowProxy(isolate, frame, std::move(world)) {}
+    : WindowProxy(isolate, frame, std::move(world)) {
+  gLatestLocalWindowProxy = this;
+}
+
+void RecordReplayStateEnsureInitialized() {
+  if (recordreplay::IsRecordingOrReplaying() && !gRecordReplayStateInitialized) {
+    CHECK(gLatestLocalWindowProxy);
+    gLatestLocalWindowProxy->InitializeIfNeeded();
+    CHECK(gRecordReplayStateInitialized);
+  }
+}
 
 }  // namespace blink

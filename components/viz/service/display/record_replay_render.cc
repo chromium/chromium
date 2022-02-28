@@ -13,6 +13,10 @@
 #include "components/viz/service/display_embedder/software_output_surface.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
+namespace blink {
+extern void RecordReplayStateEnsureInitialized();
+}
+
 namespace viz {
 
 struct SharedBitmapInfo {
@@ -184,6 +188,10 @@ static std::atomic<size_t> gCurrentPaintBookmark;
 static size_t gLastCommitBookmark;
 
 void RecordReplayOnCommitPaint() {
+  // Record/replay state has to be initialized before the first paint
+  // starts, as a checkpoint must have been taken.
+  blink::RecordReplayStateEnsureInitialized();
+
   gCurrentPaintBookmark = V8RecordReplayPaintStart();
 }
 

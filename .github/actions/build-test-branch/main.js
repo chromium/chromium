@@ -63,19 +63,7 @@ function platformTasks(platform) {
     [buildTask]
   );
 
-  const testPlaywrightTask = newTask(
-    `Chromium Playwright Tests ${platform}`,
-    {
-      kind: "PlaywrightLiveTests",
-      runtime: "chromium",
-      revision: chromiumRevision,
-      driverRevision,
-    },
-    platform,
-    [buildTask]
-  );
-
-  return [buildTask, testTask];
+  return [buildTask, testStaticTask];
 }
 
 function getBranchName(refName) {
