@@ -343,9 +343,5 @@ bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
 }
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
-  return
-      // Feedback Extension.
-      origin.spec() == "chrome-extension://gfdkimpbcpahaombhbimeihdjnejgicl/" ||
-      (origin.spec() == chrome::kChromeUIFeedbackURL &&
-       base::FeatureList::IsEnabled(features::kWebUIFeedback));
+  return origin.spec() == chrome::kChromeUIFeedbackURL;
 }

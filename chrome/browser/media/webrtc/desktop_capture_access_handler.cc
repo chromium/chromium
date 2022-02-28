@@ -106,8 +106,7 @@ bool ShouldDisplayNotification(const extensions::Extension* extension) {
 // Returns true if an on-screen notification should not be displayed after
 // desktop capture is taken for the |url|.
 bool HasNotificationExemption(const GURL& url) {
-  return (url.spec() == chrome::kChromeUIFeedbackURL &&
-          base::FeatureList::IsEnabled(features::kWebUIFeedback));
+  return url.spec() == chrome::kChromeUIFeedbackURL;
 }
 
 #if !BUILDFLAG(IS_ANDROID)
