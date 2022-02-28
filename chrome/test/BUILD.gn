@@ -7864,10 +7864,7 @@ test("unit_tests") {
           "../browser/ui/webui/print_preview/print_preview_handler_chromeos_unittest.cc",
         ]
       } else {
-        sources += [
-          "../browser/ui/webui/print_preview/local_printer_handler_default_unittest.cc",
-          "../common/cloud_print/cloud_print_helpers_unittest.cc",
-        ]
+        sources += [ "../browser/ui/webui/print_preview/local_printer_handler_default_unittest.cc" ]
       }
 
       if (is_chromeos_ash) {
