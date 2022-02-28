@@ -75,6 +75,8 @@ const char* const kDefaultAppOrder[] = {
     extension_misc::kCalendarAppId,
     web_app::kGoogleCalendarAppId,
 
+    web_app::kMessagesAppId,
+
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,
     web_app::kYoutubeAppId,
