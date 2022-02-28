@@ -3,7 +3,21 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_logger.h"
+
+#include <string>
+
 #include "base/strings/string_util.h"
+#include "media/base/media_log.h"
+#include "media/base/media_log_events.h"
+#include "media/base/media_log_properties.h"
+#include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 

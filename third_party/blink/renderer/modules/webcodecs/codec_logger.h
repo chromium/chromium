@@ -6,17 +6,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_CODEC_LOGGER_H_
 
 #include <memory>
+#include <string>
 
+#include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/media_log.h"
+#include "base/location.h"
 #include "media/base/media_util.h"
-#include "media/base/status.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
-#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -31,8 +36,6 @@ void SendPlayerNameInformationInternal(media::MediaLog* media_log,
                                        std::string loadedAs);
 
 }  // namespace internal
-
-class ExecutionContext;
 
 // Simple wrapper around MediaLog instances, to manage the lifetime safety of
 // said MediaLogs. |parent_media_log_| must be destroyed and created on the
