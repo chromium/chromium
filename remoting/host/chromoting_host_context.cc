@@ -112,7 +112,7 @@ ChromotingHostContext::url_loader_factory() {
 }
 
 policy::ManagementService* ChromotingHostContext::management_service() {
-  return &platform_management_service_;
+  return policy::PlatformManagementService::GetInstance();
 }
 
 std::unique_ptr<ChromotingHostContext> ChromotingHostContext::Create(

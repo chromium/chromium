@@ -39,8 +39,6 @@ class ManagementServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  PlatformManagementService platform_management_service_;
 };
 
 }  // namespace policy

@@ -25,7 +25,7 @@ ManagementServiceFactory* ManagementServiceFactory::GetInstance() {
 
 // static
 ManagementService* ManagementServiceFactory::GetForPlatform() {
-  return &(GetInstance()->platform_management_service_);
+  return PlatformManagementService::GetInstance();
 }
 
 // static

@@ -126,15 +126,20 @@ void ChromeFeatureListCreator::CreatePrefService() {
       std::make_unique<policy::ChromeBrowserPolicyConnector>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto local_state_pref_store = base::MakeRefCounted<JsonPrefStore>(
-      local_state_file, std::unique_ptr<PrefFilter>());
-
   // ManagementService needs Local State but creating local state needs
   // ManagementService, instantiate the underlying PrefStore early and share it
   // between both.
-  auto* platform_management_service =
-      policy::ManagementServiceFactory::GetForPlatform();
-  platform_management_service->UsePrefStoreAsCache(local_state_pref_store);
+  auto local_state_pref_store =
+      base::MakeRefCounted<JsonPrefStore>(local_state_file);
+
+  // Try and read the local state prefs, if it succeeds, use it as the
+  // ManagementService's cache.
+  if (local_state_pref_store->ReadPrefs() ==
+      JsonPrefStore::PREF_READ_ERROR_NONE) {
+    auto* platform_management_service =
+        policy::ManagementServiceFactory::GetForPlatform();
+    platform_management_service->UsePrefStoreAsCache(local_state_pref_store);
+  }
 
   local_state_ = chrome_prefs::CreateLocalState(
       local_state_file, local_state_pref_store,

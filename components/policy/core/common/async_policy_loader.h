@@ -13,8 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -84,8 +86,11 @@ class POLICY_EXPORT AsyncPolicyLoader {
   // if the update events aren't triggered.
   void Reload(bool force);
 
-  // Returns `true` iif the platform is not managed by a trusted source.
+  // Returns `true` and only if the platform is not managed by a trusted source.
   bool ShouldFilterSensitivePolicies();
+  void SetPlatformManagementTrustworthinessAndReload(
+      bool force,
+      ManagementAuthorityTrustworthiness trustworthiness);
 
   const scoped_refptr<SchemaMap>& schema_map() const { return schema_map_; }
 
@@ -98,7 +103,8 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   // Used by the AsyncPolicyProvider to install the |update_callback_|.
   // Invoked on the background thread.
-  void Init(const UpdateCallback& update_callback);
+  void Init(scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
+            const UpdateCallback& update_callback);
 
   // Used by the AsyncPolicyProvider to reload with an updated SchemaMap.
   void RefreshPolicies(scoped_refptr<SchemaMap> schema_map);
@@ -114,6 +120,13 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Task runner for running foregroud jobs.
+  scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
+
+  bool loading_management_trustworhiness_ = false;
+  absl::optional<ManagementAuthorityTrustworthiness>
+      platform_management_trustworthiness_;
 
   raw_ptr<ManagementService> management_service_;
 

@@ -49,8 +49,6 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
 
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 
-  PlatformManagementService platform_management_service_;
-
   // Owned by the base class.
   raw_ptr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
 };

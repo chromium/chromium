@@ -15,8 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-constexpr char kManagementAuthorityThrustworthynessValueChangeHistogram[] =
-    "Enterprise.ManagementAuthorityThrustworthyness.Cache.ValueChange";
+constexpr char kManagementAuthorityTrustworthinessValueChangeHistogram[] =
+    "Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange";
 constexpr char kPrefName[] = "pref";
 
 class TestPlatformManagementStatusProvider
@@ -84,9 +84,9 @@ IN_PROC_BROWSER_TEST_F(ManagementServiceBrowserTest,
                        PRE_PlatformManagementServiceCache) {
   EXPECT_FALSE(platform_status_provider_->cached_authority().has_value());
   histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityThrustworthynessValueChangeHistogram, true, 1);
+      kManagementAuthorityTrustworthinessValueChangeHistogram, true, 1);
   histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityThrustworthynessValueChangeHistogram, false, 0);
+      kManagementAuthorityTrustworthinessValueChangeHistogram, false, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagementServiceBrowserTest,
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ManagementServiceBrowserTest,
   EXPECT_EQ(policy::EnterpriseManagementAuthority::DOMAIN_LOCAL,
             *platform_status_provider_->cached_authority());
   histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityThrustworthynessValueChangeHistogram, true, 0);
+      kManagementAuthorityTrustworthinessValueChangeHistogram, true, 0);
   histogram_tester_.ExpectBucketCount(
-      kManagementAuthorityThrustworthynessValueChangeHistogram, false, 1);
+      kManagementAuthorityTrustworthinessValueChangeHistogram, false, 1);
 }

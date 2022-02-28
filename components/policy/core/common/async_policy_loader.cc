@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 
 using base::Time;
@@ -62,7 +63,28 @@ void AsyncPolicyLoader::Reload(bool force) {
     return;
   }
 
+  // `management_service_` must be called on the main thread.
+  // base::Unretained is okay here since `management_service_` is an instance of
+  // PlatformManagementService which is a singleton that outlives this class.
+  if (!platform_management_trustworthiness_.has_value() &&
+      management_service_) {
+    DCHECK_EQ(management_service_, PlatformManagementService::GetInstance());
+    ui_thread_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            &ManagementService::GetManagementAuthorityTrustworthiness,
+            base::Unretained(management_service_)),
+        base::BindOnce(
+            &AsyncPolicyLoader::SetPlatformManagementTrustworthinessAndReload,
+            weak_factory_.GetWeakPtr(), force));
+    return;
+  }
+
   std::unique_ptr<PolicyBundle> bundle(Load());
+
+  // Reset so that we get the latest management trustworthiness at the next
+  // reload.
+  platform_management_trustworthiness_.reset();
 
   // Check if there was a modification while reading.
   if (!force && !IsSafeToReload(now, &delay)) {
@@ -83,12 +105,21 @@ void AsyncPolicyLoader::Reload(bool force) {
 bool AsyncPolicyLoader::ShouldFilterSensitivePolicies() {
 #if BUILDFLAG(IS_WIN)
   DCHECK(management_service_);
-  return management_service_->GetManagementAuthorityTrustworthiness() <
+  return platform_management_trustworthiness_.value_or(
+             ManagementAuthorityTrustworthiness::NONE) <
          ManagementAuthorityTrustworthiness::TRUSTED;
 #else
   return false;
 #endif
 }
+
+void AsyncPolicyLoader::SetPlatformManagementTrustworthinessAndReload(
+    bool force,
+    ManagementAuthorityTrustworthiness trustworthiness) {
+  platform_management_trustworthiness_ = trustworthiness;
+  Reload(force);
+}
+
 std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
     const scoped_refptr<SchemaMap>& schema_map) {
   // This is the first load, early during startup. Use this to record the
@@ -103,11 +134,14 @@ std::unique_ptr<PolicyBundle> AsyncPolicyLoader::InitialLoad(
   return bundle;
 }
 
-void AsyncPolicyLoader::Init(const UpdateCallback& update_callback) {
+void AsyncPolicyLoader::Init(
+    scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
+    const UpdateCallback& update_callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(update_callback_.is_null());
   DCHECK(!update_callback.is_null());
   update_callback_ = update_callback;
+  ui_thread_task_runner_ = ui_thread_task_runner;
 
   InitOnBackgroundThread();
 

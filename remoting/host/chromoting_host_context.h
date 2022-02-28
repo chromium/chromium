@@ -134,8 +134,6 @@ class ChromotingHostContext {
   // Serves URLRequestContexts that use the network and UI task runners.
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter_;
 
-  policy::PlatformManagementService platform_management_service_;
-
   // Makes a SharedURLLoaderFactory out of |url_request_context_getter_|
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;

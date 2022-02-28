@@ -198,7 +198,6 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   HKEY hive_;
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
-  PlatformManagementService platform_management_service_;
 };
 
 ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() {}
@@ -280,7 +279,7 @@ ConfigurationPolicyProvider* RegistryTestHarness::CreateProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   base::win::ScopedDomainStateForTesting scoped_domain(true);
   std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderWin(
-      task_runner, &platform_management_service_, kTestPolicyKey));
+      task_runner, PlatformManagementService::GetInstance(), kTestPolicyKey));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -410,7 +409,8 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   bool Matches(const PolicyBundle& expected) {
     PolicyLoaderWin loader(task_environment_.GetMainThreadTaskRunner(),
-                           &platform_management_service_, kTestPolicyKey);
+                           PlatformManagementService::GetInstance(),
+                           kTestPolicyKey);
     std::unique_ptr<PolicyBundle> loaded(
         loader.InitialLoad(schema_registry_.schema_map()));
     return loaded->Equals(expected);
@@ -418,7 +418,6 @@ class PolicyLoaderWinTest : public PolicyTestBase {
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
   base::win::ScopedDomainStateForTesting scoped_domain_;
-  PlatformManagementService platform_management_service_;
 };
 
 const wchar_t PolicyLoaderWinTest::kTestPolicyKey[] =

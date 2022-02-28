@@ -10,15 +10,18 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/containers/flat_map.h"
+#include "base/sequence_checker.h"
 #include "components/policy/policy_export.h"
+#include "components/prefs/persistent_pref_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-class PersistentPrefStore;
 class PrefService;
 
 namespace policy {
+
+class ManagementService;
 
 enum class ManagementAuthorityTrustworthiness {
   NONE = 0,           // No management authority found
@@ -52,33 +55,34 @@ class POLICY_EXPORT ManagementStatusProvider {
   virtual ~ManagementStatusProvider();
 
   // Returns a valid authority if the service or component is managed.
+  // The returned value may be a cached value.
   EnterpriseManagementAuthority GetAuthority();
 
+  // Returns a valid authority if the service or component is managed.
+  // This value is never ached and may required blocking I/O to get.
+  virtual EnterpriseManagementAuthority FetchAuthority() = 0;
+
   bool RequiresCache() const;
-  void RefreshCache();
+  void UpdateCache(EnterpriseManagementAuthority authority);
 
   void UsePrefStoreAsCache(scoped_refptr<PersistentPrefStore> pref_store);
   virtual void UsePrefServiceAsCache(PrefService* prefs);
 
  protected:
-  // Returns a valid authority if the service or component is managed.
-  virtual EnterpriseManagementAuthority FetchAuthority() = 0;
   const std::string& cache_pref_name() const { return cache_pref_name_; }
 
  private:
-  absl::optional<int> management_authority_cache_;
-  absl::variant<scoped_refptr<PersistentPrefStore>, PrefService*> cache_;
+  absl::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
+      nullptr;
   const std::string cache_pref_name_;
 };
 
 // Interface to gives information related to an entity's management state.
+// This class must be used on the main thread at all times.
 class POLICY_EXPORT ManagementService {
  public:
   explicit ManagementService(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
-  ManagementService(
-      std::vector<std::unique_ptr<ManagementStatusProvider>> providers,
-      const std::string& cache_pref_name);
   virtual ~ManagementService();
 
   // Sets `prefs` as a read-write cache.
@@ -89,8 +93,10 @@ class POLICY_EXPORT ManagementService {
   void UsePrefStoreAsCache(scoped_refptr<PersistentPrefStore> pref_store);
 
   // Refreshes the cached values and call `callback` with the previous and new
-  // management authority thrustworthiness.
-  void RefreshCache(CacheRefreshCallback callback);
+  // management authority trustworthiness. This function must only be called on
+  // on an instance of ManagementService that is certain to not be destroyed
+  // until `callback` is called.
+  virtual void RefreshCache(CacheRefreshCallback callback);
 
   // Returns true if `authority` is are actively managed.
   bool HasManagementAuthority(EnterpriseManagementAuthority authority);
@@ -114,9 +120,12 @@ class POLICY_EXPORT ManagementService {
   // Sets the management status providers to be used by the service.
   void SetManagementStatusProvider(
       std::vector<std::unique_ptr<ManagementStatusProvider>> providers);
+  const std::vector<std::unique_ptr<ManagementStatusProvider>>&
+  management_status_providers() {
+    return management_status_providers_;
+  }
 
  private:
-  void RefreshCacheImpl(CacheRefreshCallback callback);
   // Returns a bitset of with the active `EnterpriseManagementAuthority` on the
   // managed entity.
   int GetManagementAuthorities();
@@ -124,7 +133,8 @@ class POLICY_EXPORT ManagementService {
   absl::optional<int> management_authorities_for_testing_;
   std::vector<std::unique_ptr<ManagementStatusProvider>>
       management_status_providers_;
-  base::WeakPtrFactory<ManagementService> weak_ptr_factory{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace policy
