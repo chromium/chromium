@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/abseil_string_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -32,10 +33,8 @@ void AddSpdyHeader(const std::string& name,
   if (headers->find(name) == headers->end()) {
     (*headers)[name] = value;
   } else {
-    std::string joint_value = (*headers)[name].as_string();
-    joint_value.append(1, '\0');
-    joint_value.append(value);
-    (*headers)[name] = joint_value;
+    (*headers)[name] = base::StrCat(
+        {(*headers)[name].as_string(), base::StringPiece("\0", 1), value});
   }
 }
 
@@ -49,12 +48,11 @@ int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
   if (it == headers.end())
     return ERR_INCOMPLETE_HTTP2_HEADERS;
 
-  std::string status(it->second);
-  std::string raw_headers("HTTP/1.1 ");
-  raw_headers.append(status);
-  raw_headers.push_back('\0');
+  const auto status = base::StringViewToStringPiece(it->second);
+  std::string raw_headers =
+      base::StrCat({"HTTP/1.1 ", status, base::StringPiece("\0", 1)});
   for (it = headers.begin(); it != headers.end(); ++it) {
-    auto name = std::string(it->first);
+    const auto name = base::StringViewToStringPiece(it->first);
     DCHECK_GT(name.size(), 0u);
     if (name[0] == ':') {
       // https://tools.ietf.org/html/rfc7540#section-8.1.2.4
@@ -69,21 +67,18 @@ int SpdyHeadersToHttpResponse(const spdy::Http2HeaderBlock& headers,
     // becomes
     //    Set-Cookie: foo\0
     //    Set-Cookie: bar\0
-    auto value = std::string(it->second);
+    const auto value = base::StringViewToStringPiece(it->second);
     size_t start = 0;
     size_t end = 0;
     do {
-      raw_headers.append(name);
-      raw_headers.push_back(':');
-
       end = value.find('\0', start);
-      std::string tval;
+      base::StringPiece tval;
       if (end != value.npos)
         tval = value.substr(start, (end - start));
       else
         tval = value.substr(start);
-      raw_headers.append(tval);
-      raw_headers.push_back('\0');
+      base::StrAppend(&raw_headers,
+                      {name, ":", tval, base::StringPiece("\0", 1)});
       start = end + 1;
     } while (end != value.npos);
   }
