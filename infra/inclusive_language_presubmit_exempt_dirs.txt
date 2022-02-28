@@ -81,7 +81,6 @@ chrome/installer/util 2 2
 chrome/install_static 1 1
 chromeos/network/docs 1 1
 chromeos/process_proxy 6 5
-chromeos/third_party/android_bionic_libc 1 1
 chrome/test/chromedriver 1 1
 chrome/test/chromedriver/chrome 1 1
 chrome/test/chromedriver/docs 1 1
