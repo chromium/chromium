@@ -2026,9 +2026,6 @@ const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
 const char kPasswordScriptsFetchingDescription[] =
     "Fetches scripts for password change flows.";
 
-const char kPdfUnseasonedName[] = "Pepper-free PDF viewer";
-const char kPdfUnseasonedDescription[] = "Enables the Pepper-free PDF viewer.";
-
 const char kPdfXfaFormsName[] = "PDF XFA support";
 const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "

@@ -4773,11 +4773,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "pdf-unseasoned",
-    "owners": [ "//pdf/OWNERS" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "pdf-xfa-forms",
     "owners": [ "carlosil", "tsepez" ],
     "expiry_milestone": 105
