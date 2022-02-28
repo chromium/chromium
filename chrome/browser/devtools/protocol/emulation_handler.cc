@@ -20,6 +20,10 @@ protocol::Response EmulationHandler::Disable() {
 }
 
 protocol::Response EmulationHandler::SetAutomationOverride(bool enabled) {
+  // Fallthrough requests when the override is already enabled.
+  if (enabled && automation_info_bar_)
+    return protocol::Response::FallThrough();
+
   infobars::ContentInfoBarManager* info_bar_manager = nullptr;
   content::WebContents* web_contents = agent_host_->GetWebContents();
   if (web_contents) {

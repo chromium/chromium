@@ -554,6 +554,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(static_cast<int>(manager->infobar_count()), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       AutomationOverrideAddsOneInfoBarOnly) {
+  Attach();
+  auto* manager = infobars::ContentInfoBarManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  {
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetBoolKey("enabled", true);
+    SendCommandSync("Emulation.setAutomationOverride", std::move(params));
+  }
+  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  {
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetBoolKey("enabled", true);
+    SendCommandSync("Emulation.setAutomationOverride", std::move(params));
+  }
+  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+}
+
 class NetworkResponseProtocolTest : public DevToolsProtocolTest {
  protected:
   base::Value FetchAndWaitForResponse(const GURL& url) {
