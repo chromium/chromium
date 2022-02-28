@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -117,6 +118,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                           IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_tabs)
                     : l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
+  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
+    AddItemWithStringId(TabStripModel::CommandFollowSite,
+                        IDS_TAB_CXMENU_FOLLOW_SITE);
+  }
   if (send_tab_to_self::ShouldOfferFeature(
           tab_strip->GetWebContentsAt(index))) {
     AddSeparator(ui::NORMAL_SEPARATOR);

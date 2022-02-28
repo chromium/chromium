@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feed/android/rss_links_fetcher.h"
+#include "chrome/browser/feed/rss_links_fetcher.h"
 
 #include "base/callback.h"
-#include "chrome/browser/android/tab_android.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -14,22 +13,13 @@
 namespace feed {
 namespace {
 
-service_manager::InterfaceProvider* GetRenderFrameRemoteInterfaces(
-    TabAndroid* tab) {
-  if (!tab || !tab->web_contents() || !tab->web_contents()->GetMainFrame())
-    return nullptr;
-
-  return tab->web_contents()->GetMainFrame()->GetRemoteInterfaces();
-}
-
 mojo::Remote<feed::mojom::RssLinkReader> GetRssLinkReaderRemote(
-    TabAndroid* tab) {
+    content::WebContents* web_contents) {
+  DCHECK(web_contents->GetMainFrame()->IsRenderFrameCreated());
   mojo::Remote<feed::mojom::RssLinkReader> result;
-  service_manager::InterfaceProvider* interface_provider =
-      GetRenderFrameRemoteInterfaces(tab);
-  if (interface_provider) {
-    interface_provider->GetInterface(result.BindNewPipeAndPassReceiver());
-  }
+  // GetRemoteInterfaces() cannot be null if the render frame is created.
+  web_contents->GetMainFrame()->GetRemoteInterfaces()->GetInterface(
+      result.BindNewPipeAndPassReceiver());
   return result;
 }
 
@@ -78,20 +68,32 @@ class RssLinksFetcher {
   base::OnceCallback<void(std::vector<GURL>)> callback_;
 };
 
-}  // namespace
-
-void FetchRssLinks(const GURL& url,
-                   mojo::Remote<feed::mojom::RssLinkReader> link_reader,
-                   base::OnceCallback<void(std::vector<GURL>)> callback) {
+void FetchRssLinksHelper(const GURL& url,
+                         mojo::Remote<feed::mojom::RssLinkReader> link_reader,
+                         base::OnceCallback<void(std::vector<GURL>)> callback) {
   // RssLinksFetcher is self-deleting.
   auto* fetcher = new RssLinksFetcher();
   fetcher->Start(url, std::move(link_reader), std::move(callback));
 }
 
+}  // namespace
+
+void FetchRssLinksForTesting(
+    const GURL& url,
+    mojo::Remote<feed::mojom::RssLinkReader> link_reader,
+    base::OnceCallback<void(std::vector<GURL>)> callback) {
+  FetchRssLinksHelper(url, std::move(link_reader), std::move(callback));
+}
+
 void FetchRssLinks(const GURL& url,
-                   TabAndroid* page_tab,
+                   content::WebContents* web_contents,
                    base::OnceCallback<void(std::vector<GURL>)> callback) {
-  FetchRssLinks(url, GetRssLinkReaderRemote(page_tab), std::move(callback));
+  if (!web_contents) {
+    std::move(callback).Run(std::vector<GURL>());
+    return;
+  }
+  FetchRssLinksHelper(url, GetRssLinkReaderRemote(web_contents),
+                      std::move(callback));
 }
 
 }  // namespace feed

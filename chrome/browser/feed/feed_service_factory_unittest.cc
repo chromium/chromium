@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feed/android/feed_service_factory.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 
 #include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"

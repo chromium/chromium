@@ -1322,6 +1322,12 @@ void TabStripModel::CloseTabGroup(const tab_groups::TabGroupId& group) {
     observer.OnTabGroupChanged(change);
 }
 
+void TabStripModel::FollowSites(const std::vector<int>& indices) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  for (int index : indices)
+    delegate_->FollowSite(GetWebContentsAt(index));
+}
+
 int TabStripModel::GetTabCount() const {
   return static_cast<int>(contents_data_.size());
 }
@@ -1394,6 +1400,16 @@ bool TabStripModel::IsContextMenuCommandEnabled(
           static_cast<int>(indices.size()) == count();
       return !would_leave_strip_empty &&
              delegate()->CanMoveTabsToWindow(indices);
+    }
+
+    case CommandFollowSite: {
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      // Since all tabs should belong to same profile, it is enough to do the
+      // check based on the first tab.
+      content::WebContents* web_contents = GetWebContentsAt(indices[0]);
+      Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      return !profile->IsIncognitoProfile();
     }
 
     default:
@@ -1577,6 +1593,12 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(
           UserMetricsAction("TabContextMenu_MoveTabToNewWindow"));
       delegate()->MoveTabsToNewWindow(GetIndicesForCommand(context_index));
+      break;
+    }
+
+    case CommandFollowSite: {
+      base::RecordAction(UserMetricsAction("DesktopFeed.FollowSite"));
+      FollowSites(GetIndicesForCommand(context_index));
       break;
     }
 

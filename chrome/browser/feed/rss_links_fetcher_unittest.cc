@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feed/android/rss_links_fetcher.h"
+#include "chrome/browser/feed/rss_links_fetcher.h"
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -27,6 +27,12 @@ class StubRssLinkReader : public mojom::RssLinkReader {
  public:
   StubRssLinkReader() {}
   ~StubRssLinkReader() override {}
+
+  mojo::PendingRemote<mojom::RssLinkReader> BindAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void ResetReceiver() { receiver_.reset(); }
 
   // mojom::RssLinkReader
   void GetRssLinks(GetRssLinksCallback callback) override {
@@ -54,6 +60,7 @@ class StubRssLinkReader : public mojom::RssLinkReader {
  private:
   GetRssLinksCallback callback_;
   base::RepeatingClosure on_call_;
+  mojo::Receiver<mojom::RssLinkReader> receiver_{this};
 };
 
 class RssLinksFetcherUnitTest : public ::testing::Test {
@@ -68,11 +75,10 @@ class RssLinksFetcherUnitTest : public ::testing::Test {
 TEST_F(RssLinksFetcherUnitTest, Success) {
   CallbackReceiver<std::vector<GURL>> rss_links;
   StubRssLinkReader link_reader;
-  auto receiver = link_reader.MakeReceiver();
-  FetchRssLinks(TestPageUrl(),
-                mojo::Remote<feed::mojom::RssLinkReader>(
-                    receiver->BindNewPipeAndPassRemote()),
-                rss_links.Bind());
+  FetchRssLinksForTesting(
+      TestPageUrl(),
+      mojo::Remote<feed::mojom::RssLinkReader>(link_reader.BindAndPassRemote()),
+      rss_links.Bind());
   link_reader.WaitForCall();
 
   {
@@ -91,13 +97,12 @@ TEST_F(RssLinksFetcherUnitTest, Success) {
 TEST_F(RssLinksFetcherUnitTest, Disconnected) {
   CallbackReceiver<std::vector<GURL>> rss_links;
   StubRssLinkReader link_reader;
-  auto receiver = link_reader.MakeReceiver();
-  FetchRssLinks(TestPageUrl(),
-                mojo::Remote<feed::mojom::RssLinkReader>(
-                    receiver->BindNewPipeAndPassRemote()),
-                rss_links.Bind());
+  FetchRssLinksForTesting(
+      TestPageUrl(),
+      mojo::Remote<feed::mojom::RssLinkReader>(link_reader.BindAndPassRemote()),
+      rss_links.Bind());
   link_reader.WaitForCall();
-  receiver.reset();
+  link_reader.ResetReceiver();
   link_reader.Respond(feed::mojom::RssLinks::New(TestPageUrl(), TestRssUrls()));
   EXPECT_EQ(std::vector<GURL>(), rss_links.RunAndGetResult());
 }
@@ -105,11 +110,10 @@ TEST_F(RssLinksFetcherUnitTest, Disconnected) {
 TEST_F(RssLinksFetcherUnitTest, PageUrlMismatch) {
   CallbackReceiver<std::vector<GURL>> rss_links;
   StubRssLinkReader link_reader;
-  auto receiver = link_reader.MakeReceiver();
-  FetchRssLinks(TestPageUrl(),
-                mojo::Remote<feed::mojom::RssLinkReader>(
-                    receiver->BindNewPipeAndPassRemote()),
-                rss_links.Bind());
+  FetchRssLinksForTesting(
+      TestPageUrl(),
+      mojo::Remote<feed::mojom::RssLinkReader>(link_reader.BindAndPassRemote()),
+      rss_links.Bind());
   link_reader.WaitForCall();
   link_reader.Respond(
       feed::mojom::RssLinks::New(GURL("https://someotherpage"), TestRssUrls()));

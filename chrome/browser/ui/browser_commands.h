@@ -247,6 +247,9 @@ bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
                                                       const GURL& url);
 
+// Follows a web feed associated with the main frame of specified web contents.
+void FollowSite(Browser* browser, content::WebContents* web_contents);
+
 }  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_BROWSER_COMMANDS_H_

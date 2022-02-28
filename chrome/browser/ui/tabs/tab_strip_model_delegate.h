@@ -164,6 +164,9 @@ class TabStripModelDelegate {
   virtual void CacheWebContents(
       const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
           web_contents) = 0;
+
+  // Follows a web feed for the specified WebContents.
+  virtual void FollowSite(content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feed/android/feed_service_factory.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/android/feed_service_bridge.h"
-#include "chrome/browser/feed/android/refresh_task_scheduler_impl.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +25,7 @@
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/version_info/version_info.h"
@@ -34,8 +33,14 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/feed/android/feed_service_bridge.h"
+#include "chrome/browser/feed/android/refresh_task_scheduler_impl.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 namespace feed {
-const char kFeedv2Folder[] = "feedv2";
+const base::FilePath::CharType kFeedv2Folder[] = FILE_PATH_LITERAL("feedv2");
 namespace internal {
 const base::StringPiece GetFollowingFeedFollowCountGroupName(
     size_t follow_count) {
@@ -51,23 +56,63 @@ const base::StringPiece GetFollowingFeedFollowCountGroupName(
     return "13-20";
   return "21+";
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(jianli): Need to figure out what to do for desktop version.
+class NoOpRefreshTaskScheduler : public feed::RefreshTaskScheduler {
+ public:
+  NoOpRefreshTaskScheduler() = default;
+  ~NoOpRefreshTaskScheduler() override = default;
+
+  void EnsureScheduled(RefreshTaskId id, base::TimeDelta delay) override {}
+  void Cancel(RefreshTaskId id) override {}
+  void RefreshTaskComplete(RefreshTaskId id) override {}
+};
+#endif
+
 }  // namespace internal
 
 class FeedServiceDelegateImpl : public FeedService::Delegate {
  public:
   ~FeedServiceDelegateImpl() override = default;
   std::string GetLanguageTag() override {
+#if BUILDFLAG(IS_ANDROID)
     return FeedServiceBridge::GetLanguageTag();
+#else
+    // TODO(jianli): Need to figure out what to do for desktop version.
+    return "en";
+#endif
   }
   DisplayMetrics GetDisplayMetrics() override {
+#if BUILDFLAG(IS_ANDROID)
     return FeedServiceBridge::GetDisplayMetrics();
+#else
+    // TODO(jianli): Need to figure out what to do for desktop version.
+    DisplayMetrics metrics;
+    metrics.density = 0;
+    metrics.width_pixels = 0;
+    metrics.height_pixels = 0;
+    return metrics;
+#endif
   }
   bool IsAutoplayEnabled() override {
+#if BUILDFLAG(IS_ANDROID)
     return FeedServiceBridge::IsAutoplayEnabled();
+#else
+    return false;
+#endif
   }
-  void ClearAll() override { FeedServiceBridge::ClearAll(); }
+  void ClearAll() override {
+    // TODO(jianli): Need to figure out what to do for desktop version.
+#if BUILDFLAG(IS_ANDROID)
+    FeedServiceBridge::ClearAll();
+#endif
+  }
   void PrefetchImage(const GURL& url) override {
+    // TODO(jianli): Need to figure out what to do for desktop version.
+#if BUILDFLAG(IS_ANDROID)
     FeedServiceBridge::PrefetchImage(url);
+#endif
   }
   void RegisterExperiments(const Experiments& experiments) override {
     // Note that this does not affect the contents of the X-Client-Data
@@ -124,6 +169,13 @@ FeedServiceFactory::~FeedServiceFactory() = default;
 
 KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  // Currently feed service is only supported for kWebUiFeed on desktop.
+  // TODO(jianli): Update all other places that depend on FeedServiceFactory
+  // when we want to roll this out.
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(base::FeatureList::IsEnabled(feed::kWebUiFeed));
+#endif
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   content::StoragePartition* storage_partition =
@@ -148,14 +200,22 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
   feed::ChromeInfo chrome_info;
   chrome_info.version = base::Version({CHROME_VERSION});
   chrome_info.channel = chrome::GetChannel();
+#if BUILDFLAG(IS_ANDROID)
   chrome_info.start_surface =
       base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
+#else
+  chrome_info.start_surface = false;
+#endif
 
   return new FeedService(
       std::make_unique<FeedServiceDelegateImpl>(),
+#if BUILDFLAG(IS_ANDROID)
       std::make_unique<RefreshTaskSchedulerImpl>(
           background_task::BackgroundTaskSchedulerFactory::GetForKey(
               profile->GetProfileKey())),
+#else
+      std::make_unique<internal::NoOpRefreshTaskScheduler>(),
+#endif
       profile->GetPrefs(), g_browser_process->local_state(),
       storage_partition->GetProtoDatabaseProvider()->GetDB<feedstore::Record>(
           leveldb_proto::ProtoDbType::FEED_STREAM_DATABASE,

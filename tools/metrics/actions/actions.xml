@@ -7021,6 +7021,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="DesktopFeed.FollowSite">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user followed the web feed for the website (Desktop only).
+  </description>
+</action>
+
 <action name="DesktopReadingList.AddItem.FromBookmarkIcon">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

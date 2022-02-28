@@ -33,10 +33,10 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/feed/android/feed_service_factory.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID
 
 // static
 ChromeBrowsingDataRemoverDelegateFactory*

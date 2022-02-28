@@ -2,31 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feed/android/rss_links_fetcher.h"
+#include "chrome/browser/feed/rss_links_fetcher.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/sync_sessions/session_sync_service_impl.h"
-#include "components/sync_sessions/sync_sessions_client.h"
-#include "components/sync_sessions/synced_tab_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/android/android_browser_test.h"
+#else
+#include "chrome/test/base/in_process_browser_test.h"
+#endif
+
 namespace feed {
 namespace {
 
+#if BUILDFLAG(IS_ANDROID)
 class RssLinksFetcherTest : public AndroidBrowserTest {
+#else
+class RssLinksFetcherTest : public InProcessBrowserTest {
+#endif
  public:
   RssLinksFetcherTest() { features_.InitAndEnableFeature(kWebFeed); }
   // AndroidBrowserTest:
@@ -38,15 +42,14 @@ class RssLinksFetcherTest : public AndroidBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
-  auto* tab = TabAndroid::FromWebContents(
-      chrome_test_utils::GetActiveWebContents(this));
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   const GURL url =
       embedded_test_server()->GetURL("localhost", "/page_with_rss.html");
-  ASSERT_TRUE(content::NavigateToURL(tab->web_contents(), url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
 
   base::HistogramTester histogram_tester;
   CallbackReceiver<std::vector<GURL>> rss_links;
-  FetchRssLinks(url, tab, rss_links.Bind());
+  FetchRssLinks(url, web_contents, rss_links.Bind());
   std::vector<GURL> result = rss_links.RunAndGetResult();
   // Only valid RSS links in the head section should be returned.
   // Just check path on URLs relative to the local server, since its port
@@ -66,15 +69,14 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
 }
 
 IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
-  auto* tab = TabAndroid::FromWebContents(
-      chrome_test_utils::GetActiveWebContents(this));
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   const GURL url = embedded_test_server()->GetURL(
       "localhost", "/page_with_rss_in_body.html");
-  ASSERT_TRUE(content::NavigateToURL(tab->web_contents(), url));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
 
   base::HistogramTester histogram_tester;
   CallbackReceiver<std::vector<GURL>> rss_links;
-  FetchRssLinks(url, tab, rss_links.Bind());
+  FetchRssLinks(url, web_contents, rss_links.Bind());
   std::vector<GURL> result = rss_links.RunAndGetResult();
   // As there's no valid RSS links in the head, the ones from the body should be
   // returned.

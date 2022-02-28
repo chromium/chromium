@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/android/channel.gni")
-
 declare_args() {
   # Whether Feed is enabled in the build.
-  enable_feed_v2 = is_android
+  enable_feed_v2 = !is_ios
 
   # Whether to include Feed in ChromeModern builds.
   enable_feed_v2_modern = true

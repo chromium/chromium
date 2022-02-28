@@ -101,3 +101,6 @@ void TestTabStripModelDelegate::AddToReadLater(
 void TestTabStripModelDelegate::CacheWebContents(
     const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
         web_contents) {}
+
+void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
+}

@@ -262,6 +262,11 @@ void BrowserTabStripModelDelegate::CacheWebContents(
   cache.CacheWebContents(std::move(cached));
 }
 
+void BrowserTabStripModelDelegate::FollowSite(
+    content::WebContents* web_contents) {
+  chrome::FollowSite(browser_, web_contents);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, private:
 
