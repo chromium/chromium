@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertArrayEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
@@ -237,6 +237,106 @@ export async function testToggleHoldingSpaceCommand(done) {
     command.execute(event, fileManager);
     assertTrue(didInteractWithMockPrivateApi);
   }
+
+  done();
+}
+
+/**
+ * Checks that the 'extract-all' command is enabled or disabled
+ * dependent on the current selection.
+ */
+export async function testExtractAllCommand(done) {
+  // Check: `extract-all` command exists.
+  const command = CommandHandler.getCommand('extract-all');
+  assertNotEquals(command, undefined);
+
+  // Enable the extract all feature and provide strings.
+  loadTimeData.resetForTesting({
+    EXTRACT_ARCHIVE: true,
+    EXTRACT_ALL_BUTTON_LABEL: 'Extract all',
+  });
+  loadTimeData.getString = id => {
+    return loadTimeData.data_[id] || id;
+  };
+
+  let startIOTaskCalled = false;
+
+  /**
+   * Mock chrome startIOTask API.
+   * @type {Object}
+   */
+  const mockChrome = {
+    fileManagerPrivate: {
+      startIOTask: () => {
+        startIOTaskCalled = true;
+      },
+    },
+
+    runtime: {},
+  };
+  installMockChrome(mockChrome);
+
+  // Mock volume manager.
+  const volumeManager = new MockVolumeManager();
+
+  // Create `DOWNLOADS` volume.
+  const downloadsVolumeInfo = volumeManager.createVolumeInfo(
+      VolumeManagerCommon.VolumeType.DOWNLOADS, 'downloadsVolumeId',
+      'Downloads volume');
+  const downloadsFileSystem = downloadsVolumeInfo.fileSystem;
+
+  // Mock file entries.
+  const folderEntry = MockDirectoryEntry.create(downloadsFileSystem, '/folder');
+  const textFileEntry = new MockEntry(downloadsFileSystem, '/file.txt');
+  const zipFileEntry = new MockEntry(downloadsFileSystem, '/archive.zip');
+
+  // Mock `Event`.
+  const event = {
+    canExecute: true,
+    command: {
+      hidden: false,
+      setHidden: (hidden) => {
+        event.command.hidden = hidden;
+      },
+    },
+  };
+
+  // The current selection for testing.
+  const currentSelection = {
+    entries: [],
+    iconType: 'none',
+    totalCount: 0,
+  };
+
+  // Mock `FileManager`.
+  const fileManager = {
+    directoryModel: {
+      isReadOnly: () => false,
+    },
+    getCurrentDirectoryEntry: () => folderEntry,
+    getSelection: () => currentSelection,
+    volumeManager: volumeManager,
+  };
+
+  // Check: canExecute is false and command is hidden with no selection.
+  command.canExecute(event, fileManager);
+  assertFalse(event.canExecute);
+  assertTrue(event.command.hidden);
+
+  // Check: canExecute is true and command is visible with a single ZIP file.
+  currentSelection.entries = [zipFileEntry];
+  currentSelection.iconType = 'archive';
+  currentSelection.totalCount = 1;
+  command.canExecute(event, fileManager);
+  assertTrue(event.canExecute);
+  assertFalse(event.command.hidden);
+
+  // Check: canExecute is false and command hidden for multiple selection.
+  currentSelection.entries = [zipFileEntry, textFileEntry];
+  currentSelection.totalCount = 2;
+  command.canExecute(event, fileManager);
+  assertFalse(event.canExecute);
+  assertTrue(event.command.hidden);
 
   done();
 }
