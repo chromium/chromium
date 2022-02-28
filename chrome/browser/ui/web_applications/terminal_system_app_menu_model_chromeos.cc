@@ -49,12 +49,12 @@ void TerminalSystemAppMenuModel::ExecuteCommand(int command_id,
   if (command_id == IDC_TERMINAL_LINUX) {
     chrome::AddTabAt(browser(),
                      crostini::GenerateTerminalURL(browser()->profile()),
-                     /*idx=*/-1,
+                     /*index=*/-1,
                      /*foreground=*/true);
   } else if (command_id == IDC_TERMINAL_SSH) {
     chrome::AddTabAt(browser(),
                      GURL("chrome-untrusted://terminal/html/terminal_ssh.html"),
-                     /*idx=*/-1,
+                     /*index=*/-1,
                      /*foreground=*/true);
   } else if (command_id == IDC_OPTIONS) {
     crostini::LaunchTerminalSettings(browser()->profile());

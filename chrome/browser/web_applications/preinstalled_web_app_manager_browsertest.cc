@@ -121,7 +121,7 @@ void ExpectInitialManifestFieldsFromBasicWebApp(
 
   // Manifest Resources: This is chrome/test/data/web_apps/basic-192.png
   EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager, web_app->app_id(),
-                                        /*size=*/192),
+                                        /*size_px=*/192),
             SK_ColorBLACK);
 
   // User preferences:
@@ -716,8 +716,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
-            SK_ColorBLUE);
+  EXPECT_EQ(
+      IconManagerReadAppIconPixel(icon_manager(), app_id, /*size_px=*/192),
+      SK_ColorBLUE);
 }
 
 // Check that offline fallback installs attempt fetching the install_url.
@@ -813,8 +814,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
-            SK_ColorBLUE);
+  EXPECT_EQ(
+      IconManagerReadAppIconPixel(icon_manager(), app_id, /*size_px=*/192),
+      SK_ColorBLUE);
 }
 
 // Check that offline only installs don't fetch from the install_url.
@@ -864,8 +866,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // theme_color must be installed opaque.
   EXPECT_EQ(registrar().GetAppThemeColor(app_id),
             SkColorSetARGB(0xFF, 0xBB, 0xCC, 0xDD));
-  EXPECT_EQ(IconManagerReadAppIconPixel(icon_manager(), app_id, /*size=*/192),
-            SK_ColorBLUE);
+  EXPECT_EQ(
+      IconManagerReadAppIconPixel(icon_manager(), app_id, /*size_px=*/192),
+      SK_ColorBLUE);
 }
 
 const char kOnlyForNewUsersInstallUrl[] = "https://example.org/";

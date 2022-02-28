@@ -44,9 +44,9 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
   if (chromeos::features::IsDarkLightModeEnabled()) {
     auto* color_provider = ash::AshColorProvider::Get();
     info->theme_color =
-        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+        color_provider->GetBackgroundColorInMode(/*use_dark_color=*/false);
     info->dark_mode_theme_color =
-        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+        color_provider->GetBackgroundColorInMode(/*use_dark_color=*/true);
     info->background_color = info->theme_color;
     info->dark_mode_background_color = info->dark_mode_theme_color;
   } else {
