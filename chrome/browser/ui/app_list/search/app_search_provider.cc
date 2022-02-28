@@ -349,8 +349,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
           update.Recommendable().value_or(false) &&
           update.Paused() != apps::mojom::OptionalBool::kTrue &&
           update.Readiness() != apps::Readiness::kDisabledByPolicy);
-      apps_vector->back()->set_searchable(update.Searchable() ==
-                                          apps::mojom::OptionalBool::kTrue);
+      apps_vector->back()->set_searchable(update.Searchable().value_or(false));
 
       // Until it's been installed, the Crostini Terminal is hidden and
       // requires a few characters before being shown in search results.

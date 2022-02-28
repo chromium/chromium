@@ -223,7 +223,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_recommendable_, u.Recommendable());
     EXPECT_EQ(expect_recommendable_changed_, u.RecommendableChanged());
 
-    EXPECT_EQ(expect_searchable_, u.GetSearchable());
+    EXPECT_EQ(expect_searchable_, u.Searchable());
     EXPECT_EQ(expect_searchable_changed_, u.SearchableChanged());
 
     EXPECT_EQ(expect_show_in_launcher_, u.GetShowInLauncher());

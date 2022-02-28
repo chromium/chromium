@@ -142,8 +142,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> Recommendable() const;
   bool RecommendableChanged() const;
 
-  apps::mojom::OptionalBool Searchable() const;
-  absl::optional<bool> GetSearchable() const;
+  absl::optional<bool> Searchable() const;
   bool SearchableChanged() const;
 
   apps::mojom::OptionalBool ShowInLauncher() const;
