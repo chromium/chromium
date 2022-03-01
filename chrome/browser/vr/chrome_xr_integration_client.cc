@@ -113,7 +113,6 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 #if BUILDFLAG(IS_ANDROID)
   providers.push_back(std::make_unique<device::GvrDeviceProvider>());
 #if BUILDFLAG(ENABLE_ARCORE)
-  // TODO(https://crbug.com/966647) remove this check.
   if (base::FeatureList::IsEnabled(features::kWebXrArModule)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_ar_compositor_delegate_provider =
