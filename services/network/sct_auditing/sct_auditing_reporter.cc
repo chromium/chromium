@@ -194,7 +194,7 @@ base::Value SCTAuditingReporter::SCTHashdanceMetadata::ToValue() const {
       kLogIdKey, base::Base64Encode(base::as_bytes(base::make_span(log_id))));
   value.SetKey(kLogMMDKey, base::TimeDeltaToValue(log_mmd));
   value.SetKey(kCertificateExpiry, base::TimeToValue(certificate_expiry));
-  return value;
+  return std::move(value);
 }
 
 // static
