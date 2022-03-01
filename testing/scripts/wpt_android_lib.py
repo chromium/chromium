@@ -333,13 +333,24 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
     else:
       self.system_webview_shell_pkg = 'org.chromium.webview_shell'
 
+  def _install_webview_from_release(self, serial, channel):
+    path = os.path.join(SRC_DIR, 'clank', 'bin', 'install_webview.py')
+    command = [sys.executable, path, '-s', serial, '--channel', channel]
+    return common.run_command(command)
+
   @contextlib.contextmanager
   def _install_apks(self):
-    install_shell_as_needed = _maybe_install_user_apk(
-        self._devices, self.options.system_webview_shell,
-        self.system_webview_shell_pkg)
-    install_webview_provider_as_needed = _maybe_install_webview_provider(
-        self._devices, self.options.webview_provider)
+    if self.options.release_channel:
+      self._install_webview_from_release(self._device.serial,
+                                         self.options.release_channel)
+      install_shell_as_needed = _no_op()
+      install_webview_provider_as_needed = _no_op()
+    else:
+      install_shell_as_needed = _maybe_install_user_apk(
+          self._device, self.options.system_webview_shell,
+          self.system_webview_shell_pkg)
+      install_webview_provider_as_needed = _maybe_install_webview_provider(
+          self._device, self.options.webview_provider)
     with install_shell_as_needed, install_webview_provider_as_needed:
       yield
 
@@ -355,6 +366,9 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
                               'will be used.'))
     parser.add_argument('--webview-provider',
                         help='Webview provider APK to install.')
+    parser.add_argument('--release-channel',
+                        default=None,
+                        help='Using WebView from release channel.')
 
   @property
   def rest_args(self):
