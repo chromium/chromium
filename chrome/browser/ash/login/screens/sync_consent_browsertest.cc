@@ -39,6 +39,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/pref_names.h"
@@ -303,8 +304,8 @@ class SyncConsentTest
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByGaiaId(test::kTestGaiaId);
-    account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
-        !is_minor_user);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_offer_extended_chrome_sync_promos(!is_minor_user);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 

@@ -62,7 +62,8 @@ void AccountCapabilitiesFetcher::OnGetTokenSuccess(
   const int kMaxRetries = 3;
   gaia_oauth_client_->GetAccountCapabilities(
       token_response.access_token,
-      {kCanOfferExtendedChromeSyncPromosCapabilityName}, kMaxRetries, this);
+      AccountCapabilities::GetSupportedAccountCapabilityNames(), kMaxRetries,
+      this);
 }
 
 void AccountCapabilitiesFetcher::OnGetTokenFailure(

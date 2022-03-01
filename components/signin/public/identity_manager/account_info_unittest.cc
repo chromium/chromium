@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class AccountInfoTest : public testing::Test {};
@@ -95,7 +96,8 @@ TEST_F(AccountInfoTest, UpdateWithSuccessfulUpdate) {
   other.account_id = CoreAccountId("test_id");
   other.full_name = other.given_name = "test_name";
   other.is_child_account = signin::Tribool::kTrue;
-  other.capabilities.set_can_offer_extended_chrome_sync_promos(true);
+  AccountCapabilitiesTestMutator mutator(&other.capabilities);
+  mutator.set_can_offer_extended_chrome_sync_promos(true);
 
   EXPECT_TRUE(info.UpdateWith(other));
   EXPECT_EQ("test_id", info.gaia);

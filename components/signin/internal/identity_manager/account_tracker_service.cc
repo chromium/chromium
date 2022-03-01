@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -646,18 +647,19 @@ void AccountTrackerService::LoadFromPrefs() {
               kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
         }
 
-        switch (FindAccountCapabilityState(
-            dict, kCanOfferExtendedChromeSyncPromosCapabilityName)) {
-          case signin::Tribool::kUnknown:
-            break;
-          case signin::Tribool::kTrue:
-            account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
-                true);
-            break;
-          case signin::Tribool::kFalse:
-            account_info.capabilities.set_can_offer_extended_chrome_sync_promos(
-                false);
-            break;
+        for (const std::string& name :
+             AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+          switch (FindAccountCapabilityState(dict, name)) {
+            case signin::Tribool::kUnknown:
+              account_info.capabilities.capabilities_map_.erase(name);
+              break;
+            case signin::Tribool::kTrue:
+              account_info.capabilities.capabilities_map_[name] = true;
+              break;
+            case signin::Tribool::kFalse:
+              account_info.capabilities.capabilities_map_[name] = false;
+              break;
+          }
         }
 
         if (!account_info.gaia.empty())
@@ -731,9 +733,12 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   // |kLastDownloadedImageURLWithSizePath| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizePath| matches the picture on disk.
-  SetAccountCapabilityState(
-      dict, kCanOfferExtendedChromeSyncPromosCapabilityName,
-      account_info.capabilities.can_offer_extended_chrome_sync_promos());
+  for (const std::string& name :
+       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+    signin::Tribool capability_state =
+        account_info.capabilities.GetCapabilityByName(name);
+    SetAccountCapabilityState(dict, name, capability_state);
+  }
 }
 
 void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {

@@ -110,10 +110,13 @@ absl::optional<AccountCapabilities> AccountCapabilitiesFromValue(
 
   // 2. Fill AccountCapabilities fields based on the mapping.
   AccountCapabilities capabilities;
-  auto it = boolean_capabilities.find(
-      kCanOfferExtendedChromeSyncPromosCapabilityName);
-  if (it != boolean_capabilities.end())
-    capabilities.set_can_offer_extended_chrome_sync_promos(it->second);
+  for (const std::string& name :
+       AccountCapabilities::GetSupportedAccountCapabilityNames()) {
+    auto it = boolean_capabilities.find(name);
+    if (it != boolean_capabilities.end()) {
+      capabilities.capabilities_map_[name] = it->second;
+    }
+  }
 
   return capabilities;
 }

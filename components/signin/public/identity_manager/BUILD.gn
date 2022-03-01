@@ -147,6 +147,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "account_capabilities_test_mutator.cc",
+    "account_capabilities_test_mutator.h",
     "identity_test_environment.cc",
     "identity_test_environment.h",
     "identity_test_utils.cc",
