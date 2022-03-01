@@ -82,6 +82,8 @@ constexpr struct {
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
     {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
     {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x17ef, 0x60e4},  // Lenovo Legion M300 RGB Gaming Mouse
+                       // (which can send keystrokes as part of macros.)
     {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
     {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
     {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
