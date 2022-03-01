@@ -108,6 +108,7 @@
         <include name="IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\welcome_page_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
         <include name="IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_APP_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\arc_account_picker_app.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
         <include name="IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS" file="${root_gen_dir}\chrome\browser\resources\inline_login\signin_blocked_by_policy_page.js" use_base_dir="false" type ="BINDATA" preprocess="true" />
+        <include name="IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_BROWSER_PROXY_JS" file="resources\inline_login\arc_account_picker_browser_proxy.js" type ="BINDATA" />
       </if>
 
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_MANIFEST" file="resources\identity_scope_approval_dialog\manifest.json" type="BINDATA" />

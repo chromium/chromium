@@ -14,6 +14,7 @@ js_type_check("closure_compile") {
       ]
   deps = [
     ":arc_account_picker_app",
+    ":arc_account_picker_browser_proxy",
     ":inline_login_app",
     ":inline_login_browser_proxy",
     ":inline_login_util",
@@ -51,6 +52,7 @@ js_library("welcome_page_app") {
 
 js_library("arc_account_picker_app") {
   deps = [
+    ":arc_account_picker_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -67,6 +69,11 @@ js_library("inline_login_browser_proxy") {
     "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//ui/webui/resources/js:cr.m",
   ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("arc_account_picker_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 

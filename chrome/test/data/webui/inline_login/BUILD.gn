@@ -21,6 +21,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
                   ]
   deps = [
+    ":arc_account_picker_test",
     ":inline_login_test",
     ":inline_login_test_util",
   ]
@@ -70,6 +71,17 @@ js_library("arc_account_picker_page_test") {
     "//chrome/browser/resources/inline_login:inline_login_app",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("arc_account_picker_test") {
+  deps = [
+    "..:chai_assert",
+    "//chrome/browser/resources/inline_login:arc_account_picker_app",
+    "//chrome/browser/resources/inline_login:arc_account_picker_browser_proxy",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

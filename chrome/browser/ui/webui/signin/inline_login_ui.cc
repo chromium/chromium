@@ -122,6 +122,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
     {"arc_account_picker_app.js", IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_APP_JS},
+    {"arc_account_picker_browser_proxy.js",
+     IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_BROWSER_PROXY_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
     {"signin_blocked_by_policy_page.js",
      IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},

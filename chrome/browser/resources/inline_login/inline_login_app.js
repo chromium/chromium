@@ -26,7 +26,7 @@ import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../gaia_auth_host/authenticator.m.js';
-import {Account, InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
 /**
  * @fileoverview Inline login WebUI in various signin flows for ChromeOS and
@@ -114,16 +114,6 @@ Polymer({
     isAvailableInArc_: {
       type: Boolean,
       value: false,
-    },
-
-    /**
-     * Accounts which are not available in ARC and are shown on the ARC picker
-     * screen.
-     * @type {!Array<!Account>}
-     */
-    arcPickerAccounts_: {
-      type: Array,
-      value: [],
     },
 
     /**
@@ -402,16 +392,16 @@ Polymer({
     // <if expr="chromeos_ash">
     if (this.isArcAccountRestrictionsEnabled_ &&
         view === View.arcAccountPicker) {
-      this.browserProxy_.getAccountsNotAvailableInArc().then(result => {
-        // If there are no accounts to show in the picker - go directly to
-        // the welcome screen.
-        if (result.length === 0) {
-          this.switchView_(View.welcome);
-          return;
-        }
-        this.set('arcPickerAccounts_', result);
-        this.switchView_(view);
-      });
+      this.$$('arc-account-picker-app')
+          .loadAccounts()
+          .then(
+              accountsFound => {
+                this.switchView_(
+                    accountsFound ? View.arcAccountPicker : View.welcome);
+              },
+              reject => {
+                this.switchView_(View.welcome);
+              });
       return;
     }
     // </if>
@@ -454,6 +444,7 @@ Polymer({
   switchView_(id) {
     this.currentView_ = id;
     /** @type {CrViewManagerElement} */ (this.$.viewManager).switchView(id);
+    this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
   },
 
   /**

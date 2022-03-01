@@ -6,14 +6,28 @@ import './account_manager_shared_css.js';
 
 import {getImage} from '//resources/js/icon.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Account} from './inline_login_browser_proxy.js';
-import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {Account, ArcAccountPickerBrowserProxy, ArcAccountPickerBrowserProxyImpl} from './arc_account_picker_browser_proxy.js';
+
+/**
+ * @fileoverview Polymer element for showing a list of accounts that are not
+ * available in ARC and allowing user to make them available in ARC. Used by
+ * UIs in inline login dialog.
+ *
+ * Usage:
+ * $$('arc-account-picker-app').loadAccounts().then(accountsFound => {
+ *    if (accountsFound) {
+ *      // show the arc-account-picker-app
+ *    } else {
+ *      // no accounts found
+ *    }
+ * });
+ */
 
 /** @typedef {{model: !{item: Account}, target: !Element}} */
 let EventModel;
 
 /** @polymer */
-class ArcAccountPickerAppElement extends PolymerElement {
+export class ArcAccountPickerAppElement extends PolymerElement {
   static get is() {
     return 'arc-account-picker-app';
   }
@@ -27,12 +41,19 @@ class ArcAccountPickerAppElement extends PolymerElement {
       /**
        * Accounts which are not available in ARC and are shown on the ARC picker
        * screen.
-       * @type {!Array<!Account>}
+       * @private {!Array<!Account>}
        */
-      accounts: {
+      accounts_: {
         type: Array,
       }
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!ArcAccountPickerBrowserProxy} */
+    this.browserProxy_ = ArcAccountPickerBrowserProxyImpl.getInstance();
   }
 
   ready() {
@@ -42,6 +63,24 @@ class ArcAccountPickerAppElement extends PolymerElement {
         .addEventListener(
             'click',
             () => this.dispatchEvent(new CustomEvent('opened-new-window')));
+  }
+
+  /**
+   * Call `getAccountsNotAvailableInArc` to load accounts that are not available
+   * in ARC.
+   * @return {!Promise<boolean>} a promise of boolean, if the value is true -
+   *     there are > 0 accounts found, false otherwise.
+   */
+  loadAccounts() {
+    return new Promise((resolve) => {
+      this.browserProxy_.getAccountsNotAvailableInArc().then(result => {
+        if (result.length === 0) {
+          resolve(false);
+        }
+        this.set('accounts_', result);
+        resolve(true);
+      });
+    });
   }
 
   /**
@@ -66,8 +105,7 @@ class ArcAccountPickerAppElement extends PolymerElement {
    * @private
    */
   makeAvailableInArc_(event) {
-    InlineLoginBrowserProxyImpl.getInstance().makeAvailableInArc(
-        event.model.item);
+    this.browserProxy_.makeAvailableInArc(event.model.item);
   }
 
   /**
