@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2022-01-19T19:04:26.377Z",
+  "time_generated": "2022-03-01T02:06:31.092Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -10581,6 +10581,7 @@
                 "play dino run",
                 "chrome dino",
                 "dino game",
+                "play dino",
                 "dino run"
               ]
             }
@@ -10887,6 +10888,7 @@
                 "customize",
                 "control",
                 "manage",
+                "change",
                 "visit",
                 "view",
                 "edit"

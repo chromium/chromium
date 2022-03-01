@@ -15979,6 +15979,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "play chrome dino",
             "play chrome dino game",
             "play chrome dinosaur",
+            "play dino",
             "play dino game",
             "play dino run",
         },
