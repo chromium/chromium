@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
@@ -196,6 +197,10 @@ namespace {
 // The header view controller containing the fake omnibox and logo.
 @property(nonatomic, strong)
     ContentSuggestionsHeaderViewController* headerController;
+
+// The coordinator for handling feed management.
+@property(nonatomic, strong)
+    FeedManagementCoordinator* feedManagementCoordinator;
 
 @end
 
@@ -350,6 +355,8 @@ namespace {
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   [sceneState removeObserver:self];
 
+  [self.feedManagementCoordinator stop];
+  self.feedManagementCoordinator = nil;
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
   self.incognitoViewController = nil;
@@ -598,21 +605,31 @@ namespace {
 
   // Items for signed-in users.
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM)
-                  action:^{
-                    [weakSelf.ntpMediator handleFeedManageActivityTapped];
-                  }
-                   style:UIAlertActionStyleDefault];
+    if (IsWebChannelsEnabled()) {
+      [self.alertCoordinator
+          addItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM)
+                    action:^{
+                      [weakSelf handleFeedManageTapped];
+                    }
+                     style:UIAlertActionStyleDefault];
+    } else {
+      [self.alertCoordinator
+          addItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM)
+                    action:^{
+                      [weakSelf.ntpMediator handleFeedManageActivityTapped];
+                    }
+                     style:UIAlertActionStyleDefault];
 
-    [self.alertCoordinator
-        addItemWithTitle:l10n_util::GetNSString(
-                             IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM)
-                  action:^{
-                    [weakSelf.ntpMediator handleFeedManageInterestsTapped];
-                  }
-                   style:UIAlertActionStyleDefault];
+      [self.alertCoordinator
+          addItemWithTitle:l10n_util::GetNSString(
+                               IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM)
+                    action:^{
+                      [weakSelf.ntpMediator handleFeedManageInterestsTapped];
+                    }
+                     style:UIAlertActionStyleDefault];
+    }
   }
 
   // Items for all users.
@@ -1050,6 +1067,16 @@ namespace {
                                  l10n_util::GetNSString(
                                      IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
   [feedHeader setTitleText:feedHeaderTitleText];
+}
+
+- (void)handleFeedManageTapped {
+  [self.feedManagementCoordinator stop];
+  self.feedManagementCoordinator = nil;
+
+  self.feedManagementCoordinator = [[FeedManagementCoordinator alloc]
+      initWithBaseViewController:self.ntpViewController
+                         browser:self.browser];
+  [self.feedManagementCoordinator start];
 }
 
 #pragma mark - Getters

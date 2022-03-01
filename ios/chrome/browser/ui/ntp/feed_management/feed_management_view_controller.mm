@@ -1,0 +1,125 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
+
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+// These values are used in the TableViewModel to indicate sections of the
+// table.
+typedef NS_ENUM(NSInteger, SectionIdentifier) {
+  FollowingSectionIdentifier = kSectionIdentifierEnumZero,
+  OtherSectionIdentifier,
+};
+
+// These values are used in the TableViewModel to indicate specific rows.
+typedef NS_ENUM(NSInteger, ItemType) {
+  FollowingItemType = kItemTypeEnumZero,
+  InterestsItemType,
+  HiddenItemType,
+  ActivityItemType,
+};
+
+}  // namespace
+
+@implementation FeedManagementViewController
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.title = l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_TITLE);
+  self.navigationController.navigationBar.prefersLargeTitles = YES;
+
+  UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                    primaryAction:[UIAction
+                                      actionWithHandler:^(UIAction* action) {
+                                        [self.parentViewController
+                                            dismissViewControllerAnimated:YES
+                                                               completion:nil];
+                                      }]];
+  self.navigationItem.rightBarButtonItem = doneButton;
+
+  [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  self.navigationController.toolbarHidden = YES;
+}
+
+- (void)loadModel {
+  [super loadModel];
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:FollowingSectionIdentifier];
+
+  TableViewTextItem* followingItem =
+      [[TableViewTextItem alloc] initWithType:FollowingItemType];
+  followingItem.text =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT);
+  followingItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:followingItem
+      toSectionWithIdentifier:FollowingSectionIdentifier];
+
+  [model addSectionWithIdentifier:OtherSectionIdentifier];
+
+  TableViewDetailTextItem* interestsItem =
+      [[TableViewDetailTextItem alloc] initWithType:InterestsItemType];
+  interestsItem.text =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT);
+  interestsItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL);
+  interestsItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:interestsItem toSectionWithIdentifier:OtherSectionIdentifier];
+
+  TableViewDetailTextItem* hiddenItem =
+      [[TableViewDetailTextItem alloc] initWithType:HiddenItemType];
+  hiddenItem.text = l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT);
+  hiddenItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL);
+  hiddenItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:hiddenItem toSectionWithIdentifier:OtherSectionIdentifier];
+
+  TableViewDetailTextItem* activityItem =
+      [[TableViewDetailTextItem alloc] initWithType:ActivityItemType];
+  activityItem.text =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT);
+  activityItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL);
+  activityItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  [model addItem:activityItem toSectionWithIdentifier:OtherSectionIdentifier];
+}
+
+#pragma mark UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+
+  switch (itemType) {
+    case FollowingItemType:
+      [self.delegate followingTapped];
+      break;
+    case InterestsItemType:
+      [self.delegate interestsTapped];
+      break;
+    case HiddenItemType:
+      [self.delegate hiddenTapped];
+      break;
+    case ActivityItemType:
+      [self.delegate activityTapped];
+      break;
+  }
+}
+
+@end

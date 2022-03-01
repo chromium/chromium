@@ -801,6 +801,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM" desc="The 'Manage Interests' action for the Discover feed header menu.">
         Manage Interests
       </message>
+      <message name="IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ITEM" desc="The 'Manage' action for the Discover feed header menu.">
+        Manage
+      </message>
       <message name="IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM" desc="The 'Turn Off' action for the Discover feed header menu.">
         Turn Off
       </message>
@@ -900,6 +903,30 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime
       </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_ACTIVITY_DETAIL" desc="The explanation of the 'Activity' row in the feed management UI.">
+        Control your Google Account data
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_ACTIVITY_TEXT" desc="The 'Activity' row title in the feed management UI.">
+        Activity
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_FOLLOWING_TEXT" desc="The 'Following' row title in the feed management UI.">
+        Following
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_DETAIL" desc="The explanation of the 'Interests' row in the feed management UI.">
+        See and edit the topics you're interested in
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_INTERESTS_TEXT" desc="The 'Interests' row title in the feed management UI.">
+        Interests
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_DETAIL" desc="The explanation of the 'Hidden' row in the feed management UI.">
+        See and edit topics you've hidden from your account
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_HIDDEN_TEXT" desc="The 'Hidden' row title in the feed management UI.">
+        Hidden
+      </message>
+      <message name="IDS_IOS_FEED_MANAGEMENT_TITLE" desc="The title of the feed management UI.">
+        Manage
+      </message>
       <message name="IDS_IOS_FEED_SORT_ACCESSIBILITY_LABEL" desc="The accessibility label for the Following feed header's sort button.">
         Sort button for Following feed.
       </message>
@@ -908,6 +935,12 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_FEED_SORT_PUBLISHER" desc="Sort by publisher label text in feed sort menu.">
         Sort by Publisher
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_TITLE" desc="The title of the following feed management UI.">
+        Following
+      </message>
+      <message name="IDS_IOS_FOLLOW_MANAGEMENT_UNFOLLOW_ACTION" desc="The 'Unfollow' action for a channel in the following feed management UI">
+        Unfollow
       </message>
       <message name="IDS_IOS_FOLLOWING_FEED_TITLE" desc="The title in the Following feed header label.">
         Following

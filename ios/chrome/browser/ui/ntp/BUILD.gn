@@ -77,6 +77,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_observer",
+    "//ios/chrome/browser/ui/ntp/feed_management",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/util",
