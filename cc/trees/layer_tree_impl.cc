@@ -652,6 +652,10 @@ void LayerTreeImpl::PullPropertiesFrom(
 
   MoveChangeTrackingToLayers();
 
+  // Updating elements affects whether animations are in effect based on their
+  // properties so run after pushing updated animation properties.
+  host_impl_->UpdateElements(ElementListType::PENDING);
+
   lifecycle().AdvanceTo(LayerTreeLifecycle::kNotSyncing);
 }
 
@@ -946,6 +950,35 @@ bool LayerTreeImpl::IsElementInPropertyTree(ElementId element_id) const {
 
 ElementListType LayerTreeImpl::GetElementTypeForAnimation() const {
   return IsActiveTree() ? ElementListType::ACTIVE : ElementListType::PENDING;
+}
+
+void LayerTreeImpl::AddToElementLayerList(ElementId element_id,
+                                          LayerImpl* layer) {
+  if (!element_id)
+    return;
+
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("layer-element"),
+               "LayerTreeImpl::AddToElementLayerList", "element",
+               element_id.ToString());
+
+  if (!settings().use_layer_lists) {
+    host_impl_->mutator_host()->RegisterElementId(element_id,
+                                                  GetElementTypeForAnimation());
+  }
+}
+
+void LayerTreeImpl::RemoveFromElementLayerList(ElementId element_id) {
+  if (!element_id)
+    return;
+
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("layer-element"),
+               "LayerTreeImpl::RemoveFromElementLayerList", "element",
+               element_id.ToString());
+
+  if (!settings().use_layer_lists) {
+    host_impl_->mutator_host()->UnregisterElementId(
+        element_id, GetElementTypeForAnimation());
+  }
 }
 
 void LayerTreeImpl::SetTransformMutated(ElementId element_id,

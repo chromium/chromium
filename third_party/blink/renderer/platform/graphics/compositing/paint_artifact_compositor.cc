@@ -895,6 +895,9 @@ void PaintArtifactCompositor::Update(
   property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
   root_layer_->SetChildLayerList(std::move(layers));
 
+  // Update the host's active registered elements from the new property tree.
+  host->UpdateActiveElements();
+
   // Mark the property trees as having been rebuilt.
   host->property_trees()->set_needs_rebuild(false);
   host->property_trees()->ResetCachedData();

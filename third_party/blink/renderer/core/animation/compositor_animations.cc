@@ -469,6 +469,8 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
     const EffectModel& effect,
     const PaintArtifactCompositor* paint_artifact_compositor) {
   LayoutObject* layout_object = target_element.GetLayoutObject();
+  if (!layout_object || !layout_object->FirstFragment().PaintProperties())
+    return false;
 
   if (!paint_artifact_compositor) {
     // TODO(pdr): This should return true. This likely only affects tests.
@@ -483,11 +485,6 @@ bool CompositorAnimations::CompositorPropertyAnimationsHaveNoEffect(
   for (const PropertyHandle& property : groups.Keys()) {
     if (!CompositedAnimationRequiresProperties(property))
       continue;
-
-    if (!layout_object || !layout_object->FirstFragment().PaintProperties()) {
-      any_compositor_properties_missing = true;
-      continue;
-    }
 
     CompositorElementId target_element_id =
         CompositorElementIdFromUniqueObjectId(

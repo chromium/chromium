@@ -5734,6 +5734,8 @@ crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/whee
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
 crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
+# Timeout only for compositor-threaded
+crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Timeout ]
 
 # fast/scrolling
 crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/hover-during-scroll.html [ Failure ]
