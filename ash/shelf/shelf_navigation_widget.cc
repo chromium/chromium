@@ -283,6 +283,8 @@ class ShelfNavigationWidget::Delegate : public views::AccessiblePaneView,
  private:
   void SetParentLayer(ui::Layer* layer);
 
+  void RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf);
+
   BackButton* back_button_ = nullptr;
   HomeButton* home_button_ = nullptr;
   // When true, the default focus of the navigation widget is the last
@@ -313,8 +315,18 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
   home_button_->set_context_menu_controller(shelf_view);
   home_button_->SetSize(gfx::Size(control_size, control_size));
 
-  GetViewAccessibility().OverrideNextFocus(shelf->hotseat_widget());
-  GetViewAccessibility().OverridePreviousFocus(shelf->GetStatusAreaWidget());
+  // Ensure widgets are represented in accessibility.
+  if (shelf->hotseat_widget()) {
+    shelf->hotseat_widget()->GetRootView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kChildrenChanged, true);
+  }
+
+  if (shelf->GetStatusAreaWidget()) {
+    shelf->GetStatusAreaWidget()->GetRootView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kChildrenChanged, true);
+  }
+
+  RefreshAccessibilityWidgetNextPreviousFocus(shelf->shelf_widget());
   opaque_background_.SetName("shelfNavigation/Background");
 }
 
@@ -371,11 +383,8 @@ void ShelfNavigationWidget::Delegate::GetAccessibleNodeData(
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 
-  ShelfWidget* shelf_widget =
-      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget();
-  GetViewAccessibility().OverrideNextFocus(shelf_widget->hotseat_widget());
-  GetViewAccessibility().OverridePreviousFocus(
-      shelf_widget->status_area_widget());
+  RefreshAccessibilityWidgetNextPreviousFocus(
+      Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget());
 }
 
 void ShelfNavigationWidget::Delegate::ReorderChildLayers(
@@ -397,6 +406,12 @@ views::View* ShelfNavigationWidget::Delegate::GetDefaultFocusableChild() {
 void ShelfNavigationWidget::Delegate::SetParentLayer(ui::Layer* layer) {
   layer->Add(&opaque_background_);
   ReorderLayers();
+}
+
+void ShelfNavigationWidget::Delegate::
+    RefreshAccessibilityWidgetNextPreviousFocus(ShelfWidget* shelf) {
+  GetViewAccessibility().OverrideNextFocus(shelf->hotseat_widget());
+  GetViewAccessibility().OverridePreviousFocus(shelf->status_area_widget());
 }
 
 ShelfNavigationWidget::TestApi::TestApi(ShelfNavigationWidget* widget)
