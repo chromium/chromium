@@ -68,9 +68,9 @@ launch_no_launch_icon,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,launch_from_m
 uninstall_by_user,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,uninstall_from_list & uninstall_from_menu & uninstall_from_os & uninstall_from_app_settings,67,,,,,N/A (Parameterized Action),,
 manifest_update_icons,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,68,,,,,Not Yet Implemented,Updates the icon field in the manifest of the website.,finnur@ is working on this
 launch_from_menu_option,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,69,,,,,Not Yet Implemented,"Launch the web app by navigating the browser to the web app, and selecting the ""Launch _"" menu option in the 3-dot menu.",P1
-manifest_update_display_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,70,,,,,Implemented,Updates the display property of the manifest to 'browser' on the given site's manifest,P1
-check_tab_not_created,,,94,,,,,Implemented,A tab was not created by the last state change action,P1
-open_in_chrome,,,71,,,,,Not Yet Implemented,Click on the 'open in chrome' link in the 3-dot menu of the app window,P1
+manifest_update_display_browser,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,70,,,,,Implemented,Updates the display property of the manifest to 'browser' on the given site's manifest,"cliffordcheng@, P1"
+check_tab_not_created,,,94,,,,,Implemented,A tab was not created by the last state change action,"cliffordcheng@, P1"
+open_in_chrome,,,71,,,,,Implemented,Click on the 'open in chrome' link in the 3-dot menu of the app window,"cliffordcheng@, P1"
 create_shortcuts,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,72,,,,,Not Yet Implemented,create shortcut in app list,P2
 switch_incognito_profile,,,73,,,,,Not Yet Implemented,Switch to using incognito mode,P2
 delete_platform_shortcut,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,74,,,,,Not Yet Implemented,Delete the shortcut that lives on the operating system,P2
@@ -91,16 +91,18 @@ manifest_update_title,SiteA,,88,,,,,WIP,The website updates it's manifest.json t
 accept_app_update_dialog,,,91,,,,,WIP,Click Accept in the App Identity Update dialog,finnur@
 check_update_dialog_not_shown,,,92,,,,,WIP,,finnur@
 deny_app_update_dialog,,,93,,,,,WIP,,finnue@
-open_app_settings,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,open_app_settings_from_chrome_apps & open_app_settings_from_app_window,95,,,,,Implemented,Launch chrome://app-settings/<app-id> page,phillis@
+open_app_settings,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,open_app_settings_from_chrome_apps & open_app_settings_from_app_window,95,,,,,N/A (Parameterized Action),Launch chrome://app-settings/<app-id> page,phillis@
 open_app_settings_from_chrome_apps,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,96,,,,,Implemented,,phillis@
 open_app_settings_from_app_window,,,97,,,,,Implemented,,phillis@
 uninstall_from_app_settings,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,98,,,,,Implemented,"uninstall an app from app settings page, the app has to be locally installed.",phillis@
 uninstall_not_locally_installed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,uninstall_from_list & uninstall_from_menu & uninstall_from_os,99,,,,,N/A (Parameterized Action),"Uninstall an app by user, the app can be not locally installed.",
-apply_run_on_os_login_policy_allowed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,100,,,,,WIP,Apply WebAppSettings policy for run_on_os_login to be allowed,phillis@
-apply_run_on_os_login_policy_blocked,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,101,,,,,WIP,Apply WebAppSettings policy for run_on_os_login to be blocked,
-apply_run_on_os_login_policy_run_windowed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,102,,,,,WIP,Apply WebAppSettings policy for run_on_os_login to be run_windowed,
-remove_run_on_os_login_policy,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,103,,,,,WIP,Remove  run_on_os_login policy for the app in WebAppSettings policy.,
-enable_run_on_os_login,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,104,,,,,WIP,Enable run on os login from app settings page,phillis@
-disable_run_on_os_login,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,105,,,,,WIP,Disable run on os login from app settings page,
-check_run_on_os_login_enabled,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,106,,,,,WIP,Check run on os login is enabled.,
-check_run_on_os_login_disabled,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,107,,,,,WIP,Check run on os login is disabled.,
+apply_run_on_os_login_policy_allowed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,100,,,,,Implemented,Apply WebAppSettings policy for run_on_os_login to be allowed,phillis@
+apply_run_on_os_login_policy_blocked,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,101,,,,,Implemented,Apply WebAppSettings policy for run_on_os_login to be blocked,phillis@
+apply_run_on_os_login_policy_run_windowed,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,102,,,,,Implemented,Apply WebAppSettings policy for run_on_os_login to be run_windowed,phillis@
+remove_run_on_os_login_policy,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,103,,,,,Implemented,Remove  run_on_os_login policy for the app in WebAppSettings policy.,phillis@
+enable_run_on_os_login,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,104,,,,,Implemented,Enable run on os login from app settings page,phillis@
+disable_run_on_os_login,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,105,,,,,Implemented,Disable run on os login from app settings page,phillis@
+check_run_on_os_login_enabled,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,106,,,,,Implemented,Check run on os login is enabled.,phillis@
+check_run_on_os_login_disabled,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,107,,,,,Implemented,Check run on os login is disabled.,phillis@
+check_app_settings_app_state,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,108,,,,,Implemented,Check the app shown on app settings page matches the current app state.,phillis@
+check_browser_navigation_is_app_settings,SiteA* | SiteAFoo | SiteABar | SiteB | SiteC,,109,,,,,Implemented,Check the current browser naviagtion is chrome://app-settings/<app-id>,phillis@

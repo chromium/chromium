@@ -178,7 +178,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ManifestUpdateDisplayBrowser(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
   void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
-  void OpenInChrome(const std::string& site_mode);
+  void OpenInChrome();
   void SetOpenInTab(const std::string& site_mode);
   void SetOpenInWindow(const std::string& site_mode);
   void SwitchProfileClients(const std::string& client_mode);

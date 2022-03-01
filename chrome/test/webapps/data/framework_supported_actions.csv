@@ -35,6 +35,7 @@ manifest_update_display_minimal,                       🌕, 🌕,  🌕,   🌕
 navigate_browser,                                      🌕, 🌕,  🌕,   🌕,
 navigate_pwa_site_a_to,                                🌕, 🌕,  🌕,   🌕,
 navigate_notfound_url,                                 🌕, 🌕,  🌕,   🌕,
+open_in_chrome,                                        🌕, 🌕,  🌕,   🌕,
 set_open_in_tab,                                       🌓, 🌓,  🌓,   🌓,
 set_open_in_window,                                    🌓, 🌓,  🌓,   🌓,
 switch_profile_clients,                                🌕, 🌕,  🌕,   🌕,
