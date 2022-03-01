@@ -38,9 +38,42 @@ const parameterCommentFormatRule = {
   },
 };
 
+const genericParameterOnDeclarationType = {
+  create: (context) => {
+    return {
+      /* eslint-disable-next-line @typescript-eslint/naming-convention */
+      VariableDeclarator({id: {typeAnnotation}, init}) {
+        if (init === null || init.type !== 'NewExpression' ||
+            init.callee.type !== 'Identifier') {
+          return;
+        }
+        const newTypeName = init.callee.name;
+
+        if (typeAnnotation === undefined ||
+            typeAnnotation.type !== 'TSTypeAnnotation' ||
+            typeAnnotation.typeAnnotation.type !== 'TSTypeReference' ||
+            typeAnnotation.typeAnnotation.typeName.type !== 'Identifier') {
+          return;
+        }
+        const typeAnnotationTypeName =
+            typeAnnotation.typeAnnotation.typeName.name;
+
+        if (newTypeName === typeAnnotationTypeName) {
+          context.report({
+            node: typeAnnotation.typeAnnotation.typeParameters,
+            message:
+                'Generic type parameters can be moved to the new expression.',
+          });
+        }
+      },
+    };
+  },
+};
+
 /* global module */
 module.exports = {
   rules: {
     'parameter-comment-format': parameterCommentFormatRule,
+    'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
   },
 };

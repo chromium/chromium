@@ -15,7 +15,7 @@ addUnloadCallback(() => {
   windowUnload.signal();
 });
 
-const NEVER_SETTLED_PROMISE: Promise<never> = new Promise(
+const NEVER_SETTLED_PROMISE = new Promise<never>(
     () => {
         // This doesn't call the resolve function so the Promise will never
         // be resolved or rejected.

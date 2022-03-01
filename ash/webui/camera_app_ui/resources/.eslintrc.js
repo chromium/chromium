@@ -638,6 +638,8 @@ module.exports = {
     '@typescript-eslint/no-unused-expressions': 'error',
 
     'cca/parameter-comment-format': 'error',
+
+    'cca/generic-parameter-on-declaration-type': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
