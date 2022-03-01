@@ -54,12 +54,6 @@ OSStatus CreatePolicy(const CSSM_OID* policy_oid,
 
 }  // namespace
 
-bool IsValidSecCertificate(SecCertificateRef cert_handle) {
-  const CSSM_X509_NAME* sanity_check = NULL;
-  OSStatus status = SecCertificateGetSubject(cert_handle, &sanity_check);
-  return status == noErr && sanity_check;
-}
-
 base::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
     const uint8_t* data,
     size_t length) {
@@ -72,8 +66,6 @@ base::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
                                                  CSSM_CERT_ENCODING_DER,
                                                  cert_handle.InitializeInto());
   if (status != noErr)
-    return base::ScopedCFTypeRef<SecCertificateRef>();
-  if (!IsValidSecCertificate(cert_handle.get()))
     return base::ScopedCFTypeRef<SecCertificateRef>();
   return cert_handle;
 }

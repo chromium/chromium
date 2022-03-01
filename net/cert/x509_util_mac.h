@@ -20,19 +20,6 @@ namespace net {
 
 namespace x509_util {
 
-// Tests that a given |cert_handle| is actually a valid X.509 certificate, and
-// returns true if it is.
-//
-// On OS X, SecCertificateCreateFromData() does not return any errors if
-// called with invalid data, as long as data is present. The actual decoding
-// of the certificate does not happen until an API that requires a CSSM
-// handle is called. While SecCertificateGetCLHandle is the most likely
-// candidate, as it performs the parsing, it does not check whether the
-// parsing was actually successful. Instead, SecCertificateGetSubject is
-// used (supported since 10.3), as a means to check that the certificate
-// parsed as a valid X.509 certificate.
-NET_EXPORT bool IsValidSecCertificate(SecCertificateRef cert_handle);
-
 // Creates a SecCertificate handle from the DER-encoded representation.
 // Returns NULL on failure.
 NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
