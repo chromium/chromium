@@ -41,6 +41,11 @@ extern const char kProcessTypeXSessionChooser[];
 
 extern const char kEvaluateCapabilitySwitchName[];
 
+#if BUILDFLAG(IS_LINUX)
+// Used to record client sessions to utmp/wtmp.
+extern const char kEnableUtempter[];
+#endif
+
 // Values for kEvaluateCapabilitySwitchName.
 #if BUILDFLAG(IS_WIN)
 // Executes EvaluateD3D() function.

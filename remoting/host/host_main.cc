@@ -80,8 +80,9 @@ const char kUsageMessage[] =
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
     "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
+    "  --enable-utempter        - Enables recording to utmp/wtmp on Linux.\n"
     "  --webrtc-trace-event-file=<path> - Enables logging webrtc trace events "
-    "to a file.";
+    "to a file.\n";
 
 void Usage(const base::FilePath& program_name) {
   printf(kUsageMessage, program_name.MaybeAsASCII().c_str());

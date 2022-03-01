@@ -29,6 +29,10 @@ const char kProcessTypeXSessionChooser[] = "xsession_chooser";
 
 const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 
+#if BUILDFLAG(IS_LINUX)
+const char kEnableUtempter[] = "enable-utempter";
+#endif
+
 #if BUILDFLAG(IS_WIN)
 const char kEvaluateD3D[] = "d3d-support";
 const char kEvaluate3dDisplayMode[] = "3d-display-mode";

@@ -439,6 +439,18 @@ static_library("common") {
     deps += [ "//components/policy:generated" ]
   }
 
+  if (is_linux) {
+    sources += [
+      "host_utmp_logger.cc",
+      "host_utmp_logger.h",
+    ]
+
+    libs += [
+      "utempter",
+      "util",
+    ]
+  }
+
   if (is_linux && !is_chromeos_lacros) {
     sources += [
       "linux/audio_pipe_reader.cc",
