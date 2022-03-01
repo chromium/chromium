@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 
 #include "cc/document_transition/document_transition_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_callback.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
@@ -33,11 +34,23 @@ DocumentTransitionSupplement* DocumentTransitionSupplement::From(
 }
 
 // static
-DocumentTransition* DocumentTransitionSupplement::documentTransition(
+DocumentTransition* DocumentTransitionSupplement::EnsureDocumentTransition(
     Document& document) {
   auto* supplement = From(document);
   DCHECK(supplement->GetTransition());
   return supplement->GetTransition();
+}
+
+// static
+void DocumentTransitionSupplement::createDocumentTransition(
+    Document& document,
+    V8DocumentTransitionCallback* callback) {
+  auto* transition = EnsureDocumentTransition(document);
+  // TODO(vmpstr): We need to figure what to do if we already have a transition.
+  if (transition->HasActiveTransition())
+    return;
+  auto script_scope = transition->CreateScriptMutationsAllowedScope();
+  callback->InvokeAndReportException(&document, transition);
 }
 
 DocumentTransition* DocumentTransitionSupplement::GetTransition() {

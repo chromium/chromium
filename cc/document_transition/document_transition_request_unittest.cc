@@ -15,10 +15,8 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
   bool called = false;
   auto callback = base::BindLambdaForTesting([&called]() { called = true; });
 
-  auto request = DocumentTransitionRequest::CreatePrepare(
-      DocumentTransitionRequest::Effect::kRevealLeft,
-      /*document_tag=*/0, DocumentTransitionRequest::TransitionConfig(),
-      /*shared_element_config=*/{}, std::move(callback), false);
+  auto request = DocumentTransitionRequest::CreateCapture(
+      /*document_tag=*/0, /*shared_element_count=*/0, std::move(callback));
 
   EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();
@@ -27,36 +25,29 @@ TEST(DocumentTransitionRequestTest, PrepareRequest) {
 
   auto directive = request->ConstructDirective({});
   EXPECT_GT(directive.sequence_id(), 0u);
-  EXPECT_EQ(DocumentTransitionRequest::Effect::kRevealLeft, directive.effect());
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kSave,
             directive.type());
-  EXPECT_FALSE(directive.is_renderer_driven_animation());
+  EXPECT_TRUE(directive.is_renderer_driven_animation());
 
   auto duplicate = request->ConstructDirective({});
   EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
-  EXPECT_EQ(duplicate.effect(), directive.effect());
   EXPECT_EQ(duplicate.type(), directive.type());
   EXPECT_EQ(duplicate.is_renderer_driven_animation(),
             directive.is_renderer_driven_animation());
 }
 
 TEST(DocumentTransitionRequestTest, StartRequest) {
-  bool called = false;
-  auto callback = base::BindLambdaForTesting([&called]() { called = true; });
+  auto request = DocumentTransitionRequest::CreateAnimateRenderer(
+      /*document_tag=*/0);
 
-  auto request = DocumentTransitionRequest::CreateStart(
-      /*document_tag=*/0, /*shared_element_transition=*/0, std::move(callback));
-
-  EXPECT_FALSE(called);
   request->TakeFinishedCallback().Run();
-  EXPECT_TRUE(called);
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
   auto directive = request->ConstructDirective({});
   EXPECT_GT(directive.sequence_id(), 0u);
-  EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimate,
+  EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer,
             directive.type());
-  EXPECT_FALSE(directive.is_renderer_driven_animation());
+  EXPECT_TRUE(directive.is_renderer_driven_animation());
 }
 
 }  // namespace cc

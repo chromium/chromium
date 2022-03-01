@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
@@ -31,6 +32,8 @@ const AtomicString& RootTag() {
   return kRootTag;
 }
 
+constexpr int root_index = 0;
+
 const String& StaticUAStyles() {
   DEFINE_STATIC_LOCAL(
       String, kStaticUAStyles,
@@ -43,12 +46,6 @@ const String& AnimationUAStyles() {
       String, kAnimationUAStyles,
       (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS)));
   return kAnimationUAStyles;
-}
-
-AtomicString IdFromIndex(wtf_size_t index) {
-  StringBuilder builder;
-  builder.AppendFormat("shared-%d", index);
-  return builder.ToAtomicString();
 }
 
 }  // namespace
@@ -104,71 +101,108 @@ DocumentTransitionStyleTracker::DocumentTransitionStyleTracker(
 
 DocumentTransitionStyleTracker::~DocumentTransitionStyleTracker() = default;
 
-void DocumentTransitionStyleTracker::Prepare(
-    const HeapVector<Member<Element>>& old_elements) {
+void DocumentTransitionStyleTracker::AddSharedElement(Element* element,
+                                                      const AtomicString& tag) {
+  DCHECK(element);
+  // TODO(vmpstr): Log a console warning if we're modifying elements in a state
+  // that does not permit to do so.
+  if (state_ == State::kCapturing || state_ == State::kStarted)
+    return;
+
+  // TODO(vmpstr): One element can have multiple tags associated with it, but
+  // it isn't currently allowed to have one tag be associated with more than one
+  // element. The explainer dictates to abandon the transition. We need to
+  // detect that case and abandon the transition.
+  pending_shared_elements_.push_back(element);
+  pseudo_document_transition_tags_.push_back(tag);
+}
+
+void DocumentTransitionStyleTracker::RemoveSharedElement(Element* element) {
+  // TODO(vmpstr): Log a console warning if we're modifying elements in a state
+  // that does not permit to do so.
+  if (state_ == State::kCapturing || state_ == State::kStarted)
+    return;
+  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
+    if (pending_shared_elements_[i] == element) {
+      pending_shared_elements_.EraseAt(i);
+      pseudo_document_transition_tags_.EraseAt(i);
+    }
+  }
+}
+
+void DocumentTransitionStyleTracker::Capture() {
   DCHECK_EQ(state_, State::kIdle);
 
-  state_ = State::kPreparing;
-
-  // An id for each shared element + root.
-  pseudo_document_transition_tags_.resize(old_elements.size() + 1);
+  state_ = State::kCapturing;
 
   // The order of IDs in this list defines the DOM order and as a result the
   // paint order of these elements. This is why root needs to be first in the
   // list.
-  pseudo_document_transition_tags_[0] = RootTag();
   old_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
-  element_data_map_.ReserveCapacityForSize(old_elements.size());
-  for (wtf_size_t i = 0; i < old_elements.size(); ++i) {
-    auto document_transition_tag = IdFromIndex(i);
+  element_data_map_.ReserveCapacityForSize(pending_shared_elements_.size());
+  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
+    const auto& document_transition_tag = pseudo_document_transition_tags_[i];
 
     auto* element_data = MakeGarbageCollected<ElementData>();
-    element_data->target_element = old_elements[i];
-    if (old_elements[i])
+    element_data->target_element = pending_shared_elements_[i];
+    DCHECK_NE(root_index, static_cast<int>(i + 1));
+    element_data->element_index = i + 1;
+    if (pending_shared_elements_[i])
       element_data->old_snapshot_id = viz::SharedElementResourceId::Generate();
     element_data_map_.insert(document_transition_tag, std::move(element_data));
-
-    pseudo_document_transition_tags_[i + 1] =
-        std::move(document_transition_tag);
   }
 
+  // TODO(vmpstr): This is a bit awkward. push/set/pop
+  pseudo_document_transition_tags_.push_front(RootTag());
   document_->GetStyleEngine().SetDocumentTransitionTags(
       pseudo_document_transition_tags_);
+  pseudo_document_transition_tags_.EraseAt(0);
 
   // We need a style invalidation to generate the pseudo element tree.
   InvalidateStyle();
 }
 
-void DocumentTransitionStyleTracker::PrepareResolved() {
-  DCHECK_EQ(state_, State::kPreparing);
+void DocumentTransitionStyleTracker::CaptureResolved() {
+  DCHECK_EQ(state_, State::kCapturing);
 
-  state_ = State::kPrepared;
+  state_ = State::kCaptured;
+
+  // Since the elements will be unset, we need to invalidate their style first.
+  // TODO(vmpstr): We don't have to invalidate the pseudo styles at this point,
+  // just the shared elements. We can split InvalidateStyle() into two functions
+  // as an optimization.
+  InvalidateStyle();
 
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     element_data->target_element = nullptr;
     element_data->cached_border_box_size = element_data->border_box_size;
     element_data->cached_viewport_matrix = element_data->viewport_matrix;
-  }
-}
-
-void DocumentTransitionStyleTracker::Start(
-    const HeapVector<Member<Element>>& new_elements) {
-  DCHECK_EQ(state_, State::kPrepared);
-  DCHECK_EQ(element_data_map_.size(), new_elements.size());
-
-  state_ = State::kStarted;
-  new_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
-  for (wtf_size_t i = 0; i < new_elements.size(); ++i) {
-    auto document_transition_tag = IdFromIndex(i);
-
-    auto& element_data = element_data_map_.find(document_transition_tag)->value;
-    element_data->target_element = new_elements[i];
-    if (new_elements[i])
-      element_data->new_snapshot_id = viz::SharedElementResourceId::Generate();
     element_data->effect_node = nullptr;
   }
   root_effect_node_ = nullptr;
+}
+
+void DocumentTransitionStyleTracker::Start() {
+  DCHECK_EQ(state_, State::kCaptured);
+
+  state_ = State::kStarted;
+  new_root_snapshot_id_ = viz::SharedElementResourceId::Generate();
+  for (wtf_size_t i = 0; i < pending_shared_elements_.size(); ++i) {
+    const auto& document_transition_tag = pseudo_document_transition_tags_[i];
+
+    // TODO(vmpstr): Support new elements during start. It requires us to figure
+    // out what the new document tag set is as well as creating new element
+    // data.
+    if (element_data_map_.find(document_transition_tag) ==
+        element_data_map_.end())
+      continue;
+
+    auto& element_data = element_data_map_.find(document_transition_tag)->value;
+    element_data->target_element = pending_shared_elements_[i];
+    if (pending_shared_elements_[i])
+      element_data->new_snapshot_id = viz::SharedElementResourceId::Generate();
+  }
 
   // We need a style invalidation to generate new content pseudo elements for
   // new elements in the DOM.
@@ -189,32 +223,39 @@ void DocumentTransitionStyleTracker::EndTransition() {
 
   element_data_map_.clear();
   pseudo_document_transition_tags_.clear();
+  pending_shared_elements_.clear();
   document_->GetStyleEngine().SetDocumentTransitionTags({});
 
   // We need a style invalidation to remove the pseudo element tree.
   InvalidateStyle();
 }
 
-viz::SharedElementResourceId DocumentTransitionStyleTracker::GetLiveSnapshotId(
-    const Element* element) const {
+void DocumentTransitionStyleTracker::UpdateElementIndicesAndSnapshotId(
+    Element* element,
+    DocumentTransitionSharedElementId& index,
+    viz::SharedElementResourceId& resource_id) const {
   DCHECK(element);
 
   for (const auto& entry : element_data_map_) {
     if (entry.value->target_element == element) {
-      auto snapshot_id = HasLiveNewContent() ? entry.value->new_snapshot_id
-                                             : entry.value->old_snapshot_id;
-      DCHECK(snapshot_id.IsValid());
-      return snapshot_id;
+      index.AddIndex(entry.value->element_index);
+      resource_id = HasLiveNewContent() ? entry.value->new_snapshot_id
+                                        : entry.value->old_snapshot_id;
+      DCHECK(resource_id.IsValid());
+      return;
     }
   }
 
   NOTREACHED();
-  return viz::SharedElementResourceId();
 }
 
-viz::SharedElementResourceId
-DocumentTransitionStyleTracker::GetLiveRootSnapshotId() const {
-  return HasLiveNewContent() ? new_root_snapshot_id_ : old_root_snapshot_id_;
+void DocumentTransitionStyleTracker::UpdateRootIndexAndSnapshotId(
+    DocumentTransitionSharedElementId& index,
+    viz::SharedElementResourceId& resource_id) const {
+  index.AddIndex(root_index);
+  resource_id =
+      HasLiveNewContent() ? new_root_snapshot_id_ : old_root_snapshot_id_;
+  DCHECK(resource_id.IsValid());
 }
 
 PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
@@ -426,6 +467,56 @@ EffectPaintPropertyNode* DocumentTransitionStyleTracker::GetRootEffect() const {
   return root_effect_node_.get();
 }
 
+void DocumentTransitionStyleTracker::VerifySharedElements() {
+  for (auto& entry : element_data_map_) {
+    auto& element_data = entry.value;
+    if (!element_data->target_element)
+      continue;
+    auto& active_element = element_data->target_element;
+
+    auto* object = active_element->GetLayoutObject();
+
+    // TODO(vmpstr): Should this work for replaced elements as well?
+    if (object) {
+      if (object->ShouldApplyPaintContainment())
+        continue;
+
+      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kRendering,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "Dropping element from transition. Shared element must have "
+          "containt:paint");
+      console_message->SetNodes(document_->GetFrame(),
+                                {DOMNodeIds::IdForNode(active_element)});
+      document_->AddConsoleMessage(console_message);
+    }
+
+    // Clear the shared element. Note that we don't remove the element from the
+    // vector, since we need to preserve the order of the elements and we
+    // support nulls as a valid active element.
+
+    // Invalidate the element since we should no longer be compositing it.
+    auto* box = active_element->GetLayoutBox();
+    if (box && box->HasSelfPaintingLayer()) {
+      box->SetNeedsPaintPropertyUpdate();
+      box->Layer()->SetNeedsCompositingInputsUpdate();
+    }
+    active_element = nullptr;
+  }
+}
+
+bool DocumentTransitionStyleTracker::IsSharedElement(Element* element) const {
+  // In stable states, we don't have shared elements.
+  if (state_ == State::kIdle || state_ == State::kCaptured)
+    return false;
+
+  for (auto& entry : element_data_map_) {
+    if (entry.value->target_element == element)
+      return true;
+  }
+  return false;
+}
+
 void DocumentTransitionStyleTracker::InvalidateStyle() {
   ua_style_sheet_.reset();
   document_->GetStyleEngine().InvalidateUADocumentTransitionStyle();
@@ -449,13 +540,25 @@ void DocumentTransitionStyleTracker::InvalidateStyle() {
     if (layout_view->HasSelfPaintingLayer())
       layout_view->Layer()->SetNeedsCompositingInputsUpdate();
   }
+
   for (auto& entry : element_data_map_) {
     if (!entry.value->target_element)
       continue;
     auto* object = entry.value->target_element->GetLayoutObject();
     if (!object)
       continue;
+
+    // We propagate the shared element id on an effect node for the object. This
+    // means that we should update the paint properties to update the shared
+    // element id.
     object->SetNeedsPaintPropertyUpdate();
+
+    auto* box = entry.value->target_element->GetLayoutBox();
+    if (!box || !box->HasSelfPaintingLayer())
+      continue;
+
+    // We might need to composite or decomposite this layer.
+    box->Layer()->SetNeedsCompositingInputsUpdate();
   }
 }
 
@@ -543,6 +646,7 @@ bool DocumentTransitionStyleTracker::HasLiveNewContent() const {
 void DocumentTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(element_data_map_);
+  visitor->Trace(pending_shared_elements_);
 }
 
 void DocumentTransitionStyleTracker::ElementData::Trace(

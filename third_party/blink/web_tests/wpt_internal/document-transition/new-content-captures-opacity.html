@@ -33,17 +33,20 @@ html::page-transition { background: lightpink; }
 <div id=e3 class=box></div>
 <script>
 async function runTest() {
-  await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [e1, e2, e3]
+  document.createDocumentTransition(async (t) => {
+    t.setElement(e1, "e1");
+    t.setElement(e2, "e2");
+    t.setElement(e3, "e3");
+    await t.captureAndHold();
+
+    e1.classList.add("dst");
+    e2.classList.add("dst");
+    e3.classList.add("dst");
+
+    t.start();
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
   });
-  e1.classList.add("dst");
-  e2.classList.add("dst");
-  e3.classList.add("dst");
-  document.documentTransition.start({
-    sharedElements: [e1, e2, e3]
-  });
-  requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>

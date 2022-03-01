@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -36,19 +37,20 @@ class DocumentTransitionStyleTracker
   explicit DocumentTransitionStyleTracker(Document& document);
   ~DocumentTransitionStyleTracker();
 
-  // Notifies when the transition is initiated. |elements| is the set of shared
-  // elements in the old DOM.
-  void Prepare(const HeapVector<Member<Element>>& old_elements);
+  void AddSharedElement(Element*, const AtomicString&);
+  void RemoveSharedElement(Element*);
+
+  // Notifies when the transition is initiated.
+  void Capture();
 
   // Notifies when caching snapshots for elements in the old DOM finishes. This
   // is dispatched before script is notified to ensure this class releases any
   // references to elements in the old DOM before it is mutated by script.
-  void PrepareResolved();
+  void CaptureResolved();
 
   // Notifies when the new DOM has finished loading and a transition can be
-  // started. |elements| is the set of shared elements in the new DOM paired
-  // sequentially with the list of |elements| in the Prepare call.
-  void Start(const HeapVector<Member<Element>>& new_elements);
+  // started.
+  void Start();
 
   // Notifies when the animation setup for the transition during Start have
   // finished executing.
@@ -58,13 +60,12 @@ class DocumentTransitionStyleTracker
   // is initiated.
   void Abort();
 
-  // Returns the resource id that |element| should be tagged with. This
-  // |element| must be a shared element in the current DOM (specified in Prepare
-  // or Start).
-  viz::SharedElementResourceId GetLiveSnapshotId(const Element* element) const;
+  void UpdateRootIndexAndSnapshotId(DocumentTransitionSharedElementId&,
+                                    viz::SharedElementResourceId&) const;
 
-  // Returns the resource id for the root stacking context.
-  viz::SharedElementResourceId GetLiveRootSnapshotId() const;
+  void UpdateElementIndicesAndSnapshotId(Element*,
+                                         DocumentTransitionSharedElementId&,
+                                         viz::SharedElementResourceId&) const;
 
   // Creates a PseudoElement for the corresponding |pseudo_id| and
   // |document_transition_tag|. The |pseudo_id| must be a ::transition* element.
@@ -99,12 +100,20 @@ class DocumentTransitionStyleTracker
   EffectPaintPropertyNode* GetEffect(Element* element) const;
   EffectPaintPropertyNode* GetRootEffect() const;
 
+  void VerifySharedElements();
+
+  int PendingSharedElementCount() const {
+    return pending_shared_elements_.size();
+  }
+
+  bool IsSharedElement(Element* element) const;
+
  private:
   class ImageWrapperPseudoElement;
 
   // These state transitions are executed in a serial order unless the
   // transition is aborted.
-  enum class State { kIdle, kPreparing, kPrepared, kStarted, kFinished };
+  enum class State { kIdle, kCapturing, kCaptured, kStarted, kFinished };
 
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
@@ -131,6 +140,9 @@ class DocumentTransitionStyleTracker
     // An effect used to represent the `target_element`'s contents, including
     // any of element's own effects, in a pseudo element layer.
     scoped_refptr<EffectPaintPropertyNode> effect_node;
+
+    // Index to add to the document transition shared element id.
+    int element_index;
   };
 
   void InvalidateStyle();
@@ -139,7 +151,8 @@ class DocumentTransitionStyleTracker
 
   Member<Document> document_;
   State state_ = State::kIdle;
-  Vector<AtomicString> pseudo_document_transition_tags_;
+  VectorOf<AtomicString> pseudo_document_transition_tags_;
+  VectorOf<Element> pending_shared_elements_;
   HeapHashMap<AtomicString, Member<ElementData>> element_data_map_;
   viz::SharedElementResourceId old_root_snapshot_id_;
   viz::SharedElementResourceId new_root_snapshot_id_;

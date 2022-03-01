@@ -34,16 +34,14 @@ div {
 
 <script>
 async function startTransition() {
-  await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [e1]
-  });
+  document.createDocumentTransition(async (t) => {
+    t.setElement(e1, "e1");
+    await t.captureAndHold();
 
-  e1.classList.remove("left");
-  e1.classList.add("right");
+    e1.classList.remove("left");
+    e1.classList.add("right");
 
-  document.documentTransition.start({
-    sharedElements: [e1]
+    t.start();
   });
 }
 

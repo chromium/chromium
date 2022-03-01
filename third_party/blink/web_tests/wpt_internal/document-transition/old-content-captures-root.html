@@ -24,11 +24,12 @@
   height: 100px;
   background: red;
 }
+
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
 html::page-transition { background: pink; }
-html::page-transition-container(shared-0) { animation-duration: 300s; }
-html::page-transition-image-wrapper(shared-0) { visibility: hidden }
+html::page-transition-container(shared) { animation-duration: 300s; }
+html::page-transition-image-wrapper(shared) { visibility: hidden }
 html::page-transition-outgoing-image(root) { animation: unset; opacity: 1 }
 html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
 </style>
@@ -36,17 +37,17 @@ html::page-transition-incoming-image(root) { animation: unset; opacity: 0 }
 <div id=shared></div>
 <script>
 async function runTest() {
-  await document.documentTransition.prepare({
-    rootTransition: "none",
-    sharedElements: [shared]
-  });
-  e1.classList.add("dst");
-  document.documentTransition.start({
-    sharedElements: [shared]
-  });
+  document.createDocumentTransition(async (t) => {
+    t.setElement(shared, "shared");
 
-  requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+    await t.captureAndHold();
+
+    e1.classList.add("dst");
+
+    t.start();
+
+    requestAnimationFrame(() => requestAnimationFrame(takeScreenshot));
+  });
 }
 onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>
-

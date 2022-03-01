@@ -1,40 +1,45 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<title>Shared transitions: capture clip-path elements</title>
+<title>Shared transitions: capture root elements</title>
 <link rel="help" href="https://github.com/WICG/shared-element-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
-<link rel="match" href="old-content-captures-clip-path-ref.html">
+<link rel="match" href="new-content-captures-root-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <style>
 .box {
-  color: red;
   background: lightblue;
   width: 100px;
   height: 100px;
   contain: paint;
   position: absolute;
-  font-size: 30pt;
+  will-change: transform;
 }
 #e1 {
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  top: 20px;
-  left: 20px;
+  top: 10px;
+  left: 30px;
+}
+#shared {
+  contain: paint;
+  width: 100px;
+  height: 100px;
+  background: red;
 }
 
 div.dst { background: lightgreen; }
 /* We're verifying what we capture, so just display the old contents for 5 minutes.  */
-html::page-transition-container(*) { animation-duration: 300s; }
-html::page-transition-incoming-image(*) { animation: unset; opacity: 0; }
-html::page-transition-outgoing-image(*) { animation: unset; opacity: 1; }
-/* hide the root so we show transition background to ensure we're in a transition */
-html::page-transition-container(root) { animation: unset; opacity: 0; }
-html::page-transition { background: lightpink; }
+html::page-transition { background: pink; }
+html::page-transition-container(shared) { animation-duration: 300s; }
+html::page-transition-image-wrapper(shared) { visibility: hidden }
+html::page-transition-outgoing-image(root) { animation-duration: 0s; opacity: 0 }
+html::page-transition-incoming-image(root) { animation-duration: 0s; opacity: 1 }
 </style>
 <div id=e1 class=box></div>
+<div id=shared></div>
 <script>
 async function runTest() {
   document.createDocumentTransition(async (t) => {
-    t.setElement(e1, "e1");
+    t.setElement(shared, "shared");
+
     await t.captureAndHold();
 
     e1.classList.add("dst");
