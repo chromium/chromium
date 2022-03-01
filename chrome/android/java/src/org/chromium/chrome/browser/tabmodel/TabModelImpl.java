@@ -87,7 +87,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     public TabModelImpl(@NonNull Profile profile, @ActivityType int activityType,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
-            TabModelOrderController orderController, TabContentManager tabContentManager,
+            TabModelOrderController orderController, @NonNull TabContentManager tabContentManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
             boolean supportUndo) {
@@ -96,6 +96,7 @@ public class TabModelImpl extends TabModelJniBridge {
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
+        assert mTabContentManager != null;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
@@ -651,7 +652,7 @@ public class TabModelImpl extends TabModelJniBridge {
      *     notification.
      */
     private void finalizeTabClosure(Tab tab, boolean notifyTabClosureCommitted) {
-        if (mTabContentManager != null) mTabContentManager.removeTabThumbnail(tab.getId());
+        mTabContentManager.removeTabThumbnail(tab.getId());
 
         for (TabModelObserver obs : mObservers) obs.didCloseTab(tab);
         for (TabModelObserver obs : mObservers) obs.didCloseTab(tab.getId(), tab.isIncognito());
