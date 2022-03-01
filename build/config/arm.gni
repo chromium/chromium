@@ -129,7 +129,12 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # - "pac": Enables Pointer Authentication Code (PAC, featured in Armv8.3)
     # - "standard": Enables both PAC and Branch Target Identification (Armv8.5).
     # - "none": No branch protection.
-    arm_control_flow_integrity = "none"
+    arm_control_flow_integrity = "pac"
+
+    # TODO(cavalcantii): enable the feature for the following OSes next.
+    if (is_mac || is_chromeos || is_fuchsia || is_win) {
+      arm_control_flow_integrity = "none"
+    }
   }
   assert(arm_control_flow_integrity == "none" ||
              arm_control_flow_integrity == "standard" ||
