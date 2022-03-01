@@ -44,8 +44,6 @@
 
 <script>
   window.onload = async () => {
-    array = document.getElementsByClassName('hoverme');
-
     promise_test(async () => {
       const scrollCallback = () => { eventSender.keyDown('PageDown'); };
       const postScrollTrgetIndex = 2;

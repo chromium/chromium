@@ -5162,9 +5162,6 @@ crbug.com/912821 http/tests/devtools/tracing/user-timing.js [ Skip ]
 # Sheriff 2018-12-13
 crbug.com/910452 media/controls/buttons-after-reset.html [ Failure Pass ]
 
-# Update 2020-06-01: flaky on all platforms.
-crbug.com/914782 fast/scrolling/no-hover-during-scroll.html [ Failure Pass ]
-
 crbug.com/919272 external/wpt/resource-timing/resource-timing.html [ Skip ]
 
 # Sheriff 2019-01-03

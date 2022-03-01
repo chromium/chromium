@@ -2,10 +2,14 @@
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
+<script src="resources/hover-on-scroll-checker.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js">
+</script>
 
 <style>
   body, html {
     margin: 0;
+    height: 500vh;
   }
   div {
     height: 50px;
@@ -30,76 +34,42 @@
   First move your mouse cursor to the page, you will see the text under the mouse cursor changed to "currently hovered". <br>
   Scroll mouse wheel slowly, you should not see any text under the mouse changed to "currently hovered" while the scrolling is in process and finishes.
 </div>
+<div class="hoverme">hover over me</div>
+<div class="hoverme">hover over me</div>
+<div class="hoverme">hover over me</div>
+<div class="hoverme">hover over me</div>
+<div class="hoverme">hover over me</div>
 
 <script>
-  let array;
-  const numHoverElements = 30;
-  const elementHeight = 50;
-  const textWhenNotHovered = "hover over me";
-  const textWhenHovered = "currently hovered";
-  const textWhenWasHovered = "was hovered";
-  const mouse = GestureSourceType.MOUSE_INPUT;
-  const scrollSpeed = 350;
-  const hoveredColor = "rgb(255, 255, 0)";
-  const unhoveredColor = "rgb(0, 0, 255)";
-
-  function buildPage() {
-    for (let i = 0; i < numHoverElements; i++) {
-      let div = document.createElement('div');
-      div.className = "hoverme";
-      div.innerHTML = textWhenNotHovered;
-      document.body.appendChild(div);
-    }
-
-    array = document.getElementsByClassName('hoverme');
-
-    for (let element of array) {
-      element.addEventListener('mouseover', function (e) {
-        this.innerHTML = textWhenHovered;
-      });
-      element.addEventListener('mouseout', function (e) {
-        this.innerHTML = textWhenWasHovered;
-      });
-    }
-  }
-
   window.onload = async () => {
     if (window.internals) {
       internals.settings.setScrollAnimatorEnabled(false);
     }
 
-    buildPage();
-    await waitForCompositorCommit();
-
     promise_test(async () => {
-      let x = array[0].offsetLeft + 10;
-      let y = array[0].offsetTop + 25;
-      // Move cursor to 1st element.
-      await mouseMoveTo(x, y);
-      await waitFor( () => { return array[0].innerHTML == textWhenHovered;}, 'wait for move to 1st element');
-      assert_equals(array[0].innerHTML, textWhenHovered);
-      assert_equals(array[1].innerHTML, textWhenNotHovered);
-      assert_equals(getComputedStyle(array[0]).backgroundColor, hoveredColor);
+      const elementHeight = 50;
+      const mouse = GestureSourceType.MOUSE_INPUT;
+      const scrollSpeed = 350;
+      const postScrollHoverIndex = 3;
+      let scrollAmount = postScrollHoverIndex * elementHeight;
 
-      // Scroll end up at 4th element. Hover state does not update during scrolling
-      // so that 2nd, 3rd elements do not see the mouseover and mouseout events, but hover state
-      // is updated at the end of scroll, so 4th element does see a mouseover and mouseout events.
-      assert_equals(document.scrollingElement.scrollTop, 0);
-      await smoothScroll(3 * elementHeight, x, y, mouse, 'down', scrollSpeed);
-      // Wait enough time to see if we fire a fake mouse move event to update the hover state.
-      await waitForAnimationEnd(() => { return document.scrollingElement.scrollTop; }, 200, 60);
-      // TODO(crbug/902438): Support wheel scroll at low speeds in GpuBenchmarking::SmoothScrollBy. 
-      assert_approx_equals(document.scrollingElement.scrollTop, 3 * elementHeight, 25);
-      assert_equals(array[0].innerHTML, textWhenWasHovered);
-      assert_equals(array[1].innerHTML, textWhenNotHovered);
-      assert_equals(array[2].innerHTML, textWhenNotHovered);
-      assert_equals(array[3].innerHTML, textWhenHovered);
-      assert_equals(array[4].innerHTML, textWhenNotHovered);
-      assert_equals(getComputedStyle(array[0]).backgroundColor, unhoveredColor);
-      assert_equals(getComputedStyle(array[1]).backgroundColor, unhoveredColor);
-      assert_equals(getComputedStyle(array[2]).backgroundColor, unhoveredColor);
-      assert_equals(getComputedStyle(array[3]).backgroundColor, hoveredColor);
-    }, 'Mouse wheel scroll on the page, no hover update during scrolling, but updating hover at the end of scroll.');
+      // The scrollAmount is converted to wheel ticks, and the number of pixels
+      // per tick depends on whether percent-based scrolling is enabled.
+      // To get an accurate scroll amount, we need to conditionally adjust for
+      // the variable tick increment.
+      if (isPercentBasedScrollingEnabled()) {
+        const expectedScroll =
+            calculateExpectedScroll(document.scrollingElement, 0,
+                                    scrollAmount).y;
+        scrollAmount *= scrollAmount / expectedScroll;
+      }
+      const scrollCallback = (x, y) => {
+        return smoothScroll(Math.floor(scrollAmount), x, y, mouse, 'down',
+                            scrollSpeed);
+      };
+      return runHoverStateOnScrollTest(scrollCallback, postScrollHoverIndex);
+    }, 'Mouse wheel scroll on the page, no hover update during scrolling, ' +
+       'but updating hover at the end of scroll.');
   }
 
 </script>
