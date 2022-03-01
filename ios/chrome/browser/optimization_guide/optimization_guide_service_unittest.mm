@@ -5,8 +5,8 @@
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "components/optimization_guide/core/hints_component_util.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "services/metrics/public/cpp/ukm_source.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +89,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
     std::vector<base::Feature> enabled_features;
     enabled_features.push_back(
         optimization_guide::features::kOptimizationHints);
+    enabled_features.push_back(
+        optimization_guide::features::kRemoteOptimizationGuideFetching);
     if (url_keyed_anonymized_data_collection_enabled_) {
       enabled_features.push_back(
           optimization_guide::features::
@@ -128,23 +131,31 @@ class OptimizationGuideServiceTest : public PlatformTest {
   void SimulateNavigation(
       NavigationContextAndData* context_and_data,
       const absl::optional<GURL> redirect_url = absl::nullopt) {
+    return SimulateNavigationInBrowserState(
+        context_and_data, optimization_guide_service_, redirect_url);
+  }
+
+  void SimulateNavigationInBrowserState(
+      NavigationContextAndData* context_and_data,
+      OptimizationGuideService* optimization_guide_service,
+      const absl::optional<GURL> redirect_url = absl::nullopt) {
     std::vector<GURL> navigation_redirect_chain;
     navigation_redirect_chain.push_back(
         context_and_data->navigation_context_->GetUrl());
 
-    optimization_guide_service_->OnNavigationStartOrRedirect(
+    optimization_guide_service->OnNavigationStartOrRedirect(
         context_and_data->navigation_data_.get());
     RunUntilIdle();
 
     if (redirect_url) {
       context_and_data->navigation_data_->set_navigation_url(*redirect_url);
-      optimization_guide_service_->OnNavigationStartOrRedirect(
+      optimization_guide_service->OnNavigationStartOrRedirect(
           context_and_data->navigation_data_.get());
       navigation_redirect_chain.push_back(*redirect_url);
       RunUntilIdle();
     }
 
-    optimization_guide_service_->OnNavigationFinish(navigation_redirect_chain);
+    optimization_guide_service->OnNavigationFinish(navigation_redirect_chain);
     RunUntilIdle();
   }
 
@@ -189,7 +200,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
   TestChromeBrowserState* browser_state() { return browser_state_.get(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   OptimizationGuideService* optimization_guide_service_;
@@ -477,6 +488,67 @@ TEST_F(OptimizationGuideServiceTest, CheckForBlocklistFilter) {
                              kNotAllowedByOptimizationFilter),
         1);
   }
+}
+
+TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
+  // Wait until initialization logic finishes running and component pushed to
+  // both incognito and regular browsers.
+  PushHintsComponentAndWaitForCompletion();
+
+  // Set up incognito browser state and incognito OptimizationGuideService
+  // consumer.
+  ChromeBrowserState* otr_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideService* otr_ogs =
+      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+  otr_ogs->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+
+  // Navigate to a URL that has a hint from a component and wait for that hint
+  // to have loaded.
+  base::HistogramTester histogram_tester;
+  NavigationContextAndData context_and_data(kHintsURL);
+  SimulateNavigationInBrowserState(&context_and_data, otr_ogs);
+  RetryForHistogramUntilCountReached(&histogram_tester,
+                                     "OptimizationGuide.LoadedHint.Result", 1);
+
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kTrue,
+            otr_ogs->CanApplyOptimization(
+                GURL(kHintsURL), optimization_guide::proto::NOSCRIPT, nullptr));
+}
+
+TEST_F(OptimizationGuideServiceTest, IncognitoStillProcessesBloomFilter) {
+  PushHintsComponentAndWaitForCompletion();
+
+  // Set up incognito browser and incognito OptimizationGuideService
+  // consumer.
+  ChromeBrowserState* otr_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+
+  // Instantiate off the record Optimization Guide Service.
+  OptimizationGuideService* otr_ogs =
+      OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
+  base::HistogramTester histogram_tester;
+
+  // Register an optimization type with an optimization filter.
+  otr_ogs->RegisterOptimizationTypes(
+      {optimization_guide::proto::FAST_HOST_HINTS});
+  // Wait until filter is loaded. This histogram will record twice: once when
+  // the config is found and once when the filter is created.
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.OptimizationFilterStatus.FastHostHints", 2);
+
+  EXPECT_EQ(optimization_guide::OptimizationGuideDecision::kFalse,
+            otr_ogs->CanApplyOptimization(
+                GURL("https://blockedhost.com/whatever"),
+                optimization_guide::proto::FAST_HOST_HINTS, nullptr));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.FastHostHints",
+      static_cast<int>(optimization_guide::OptimizationTypeDecision::
+                           kNotAllowedByOptimizationFilter),
+      1);
 }
 
 class OptimizationGuideServiceMSBBUserTest

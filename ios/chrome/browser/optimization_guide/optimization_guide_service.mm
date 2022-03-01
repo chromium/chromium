@@ -39,10 +39,6 @@ OptimizationGuideService::OptimizationGuideService(
       ChromeBrowserState::FromBrowserState(browser_state);
   DCHECK(chrome_browser_state);
 
-  // TODO(crbug.com/1239388): Handle incognito profile in IOS, the same way its
-  // handled in other platforms.
-  DCHECK(!browser_state->IsOffTheRecord());
-
   // Regardless of whether the profile is off the record or not, initialize the
   // Optimization Guide with the database associated with the original profile.
   auto* proto_db_provider =
@@ -51,38 +47,46 @@ OptimizationGuideService::OptimizationGuideService(
   base::FilePath profile_path =
       chrome_browser_state->GetOriginalChromeBrowserState()->GetStatePath();
 
-  // Only create a top host provider from the command line if provided.
-  top_host_provider_ =
-      optimization_guide::CommandLineTopHostProvider::CreateIfEnabled();
-  tab_url_provider_ = std::make_unique<TabUrlProviderImpl>(
-      chrome_browser_state, base::DefaultClock::GetInstance());
-
-  hint_store_ =
-      optimization_guide::features::ShouldPersistHintsToDisk()
-          ? std::make_unique<optimization_guide::OptimizationGuideStore>(
-                proto_db_provider,
-                profile_path.Append(
-                    optimization_guide::kOptimizationGuideHintStore),
-                base::ThreadPool::CreateSequencedTaskRunner(
-                    {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
-          : nullptr;
-
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
+  base::WeakPtr<optimization_guide::OptimizationGuideStore>
+      prediction_model_and_features_store;
+  if (chrome_browser_state->IsOffTheRecord()) {
+    OptimizationGuideService* original_ogs =
+        OptimizationGuideServiceFactory::GetForBrowserState(
+            chrome_browser_state->GetOriginalChromeBrowserState());
+    DCHECK(original_ogs);
+    hint_store = original_ogs->GetHintsManager()->hint_store();
+  } else {
+    // Only create a top host provider from the command line if provided.
+    top_host_provider_ =
+        optimization_guide::CommandLineTopHostProvider::CreateIfEnabled();
+    tab_url_provider_ = std::make_unique<TabUrlProviderImpl>(
+        chrome_browser_state, base::DefaultClock::GetInstance());
+    bool optimization_guide_fetching_enabled =
+        optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+            browser_state->IsOffTheRecord(), chrome_browser_state->GetPrefs());
+    base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
+                              optimization_guide_fetching_enabled);
+    IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOptimizationGuideRemoteFetching",
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+    hint_store_ =
+        optimization_guide::features::ShouldPersistHintsToDisk()
+            ? std::make_unique<optimization_guide::OptimizationGuideStore>(
+                  proto_db_provider,
+                  profile_path.Append(
+                      optimization_guide::kOptimizationGuideHintStore),
+                  base::ThreadPool::CreateSequencedTaskRunner(
+                      {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
+            : nullptr;
+    hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
+  }
   optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
   hints_manager_ = std::make_unique<optimization_guide::IOSChromeHintsManager>(
-      browser_state, chrome_browser_state->GetPrefs(),
-      hint_store_ ? hint_store_->AsWeakPtr() : nullptr,
+      browser_state, chrome_browser_state->GetPrefs(), hint_store,
       top_host_provider_.get(), tab_url_provider_.get(),
       browser_state->GetSharedURLLoaderFactory(),
       optimization_guide_logger_.get());
-
-  bool optimization_guide_fetching_enabled =
-      optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
-          browser_state->IsOffTheRecord(), chrome_browser_state->GetPrefs());
-  base::UmaHistogramBoolean("OptimizationGuide.RemoteFetchingEnabled",
-                            optimization_guide_fetching_enabled);
-  IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "SyntheticOptimizationGuideRemoteFetching",
-      optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
 }
 
 OptimizationGuideService::~OptimizationGuideService() {

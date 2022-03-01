@@ -8,6 +8,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
+#include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
@@ -49,4 +50,9 @@ OptimizationGuideServiceFactory::BuildServiceInstanceFor(
 
 bool OptimizationGuideServiceFactory::ServiceIsCreatedWithBrowserState() const {
   return optimization_guide::features::IsOptimizationHintsEnabled();
+}
+
+web::BrowserState* OptimizationGuideServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateOwnInstanceInIncognito(context);
 }
