@@ -7,7 +7,6 @@
 #include <atomic>
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
 
 namespace WTF {
@@ -40,8 +39,7 @@ void SetIsBeforeThreadCreatedForTest() {
 ThreadSpecific<Threading>* Threading::static_data_;
 
 Threading::Threading()
-    : atomic_string_table_(new AtomicStringTable),
-      cached_converter_icu_(new ICUConverterWrapper),
+    : cached_converter_icu_(new ICUConverterWrapper),
       thread_id_(CurrentThread()) {}
 
 Threading::~Threading() = default;
