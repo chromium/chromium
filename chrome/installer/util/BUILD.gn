@@ -7,6 +7,64 @@ import("//build/config/chrome_build.gni")
 
 import("//testing/test.gni")
 
+if (is_win) {
+  source_set("metainstaller_utils") {
+    sources = [
+      "delete_after_reboot_helper.cc",
+      "delete_after_reboot_helper.h",
+      "lzma_util.cc",
+      "lzma_util.h",
+      "self_cleaning_temp_dir.cc",
+      "self_cleaning_temp_dir.h",
+    ]
+    deps = [ "//third_party/lzma_sdk" ]
+    public_deps = [
+      "//base",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+
+  source_set("work_item") {
+    sources = [
+      "callback_work_item.cc",
+      "callback_work_item.h",
+      "conditional_work_item_list.cc",
+      "conditional_work_item_list.h",
+      "copy_tree_work_item.cc",
+      "copy_tree_work_item.h",
+      "create_dir_work_item.cc",
+      "create_dir_work_item.h",
+      "create_reg_key_work_item.cc",
+      "create_reg_key_work_item.h",
+      "delete_reg_key_work_item.cc",
+      "delete_reg_key_work_item.h",
+      "delete_reg_value_work_item.cc",
+      "delete_reg_value_work_item.h",
+      "delete_tree_work_item.cc",
+      "delete_tree_work_item.h",
+      "duplicate_tree_detector.cc",
+      "duplicate_tree_detector.h",
+      "install_service_work_item.cc",
+      "install_service_work_item.h",
+      "install_service_work_item_impl.cc",
+      "install_service_work_item_impl.h",
+      "move_tree_work_item.cc",
+      "move_tree_work_item.h",
+      "registry_key_backup.cc",
+      "registry_key_backup.h",
+      "registry_util.cc",
+      "registry_util.h",
+      "set_reg_value_work_item.cc",
+      "set_reg_value_work_item.h",
+      "work_item.cc",
+      "work_item.h",
+      "work_item_list.cc",
+      "work_item_list.h",
+    ]
+    public_deps = [ "//base" ]
+  }
+}
+
 # This file deliberately has no default "util" target so dependants have to
 # specify with the ":with_no_strings" or ":with_rc_strings" variants. Random
 # code that ends up getting linked into chrome proper should depend on the
@@ -47,7 +105,6 @@ static_library("with_no_strings") {
     "//chrome:strings",
     "//chrome/common:constants",
     "//components/variations",
-    "//content/public/common:result_codes",
     "//third_party/abseil-cpp:absl",
   ]
 
@@ -57,8 +114,20 @@ static_library("with_no_strings") {
 
   if (is_win) {
     sources = [
-      "delete_after_reboot_helper.cc",
-      "delete_after_reboot_helper.h",
+      "additional_parameters.cc",
+      "additional_parameters.h",
+      "advanced_firewall_manager_win.cc",
+      "advanced_firewall_manager_win.h",
+      "app_command.cc",
+      "app_command.h",
+      "app_commands.cc",
+      "app_commands.h",
+      "auto_launch_util.cc",
+      "auto_launch_util.h",
+      "beacons.cc",
+      "beacons.h",
+      "delete_old_versions.cc",
+      "delete_old_versions.h",
       "experiment.cc",
       "experiment.h",
       "experiment_labels.cc",
@@ -67,28 +136,40 @@ static_library("with_no_strings") {
       "experiment_metrics.h",
       "experiment_storage.cc",
       "experiment_storage.h",
+      "firewall_manager_win.cc",
+      "firewall_manager_win.h",
+      "google_update_settings.cc",
+      "google_update_settings.h",
+      "google_update_util.cc",
+      "google_update_util.h",
+      "helper.cc",
+      "helper.h",
       "html_dialog.h",
       "html_dialog_impl.cc",
       "initial_preferences.cc",
       "initial_preferences.h",
+      "install_util.cc",
+      "install_util.h",
+      "installation_state.cc",
+      "installation_state.h",
+      "l10n_string_util.cc",
+      "l10n_string_util.h",
       "logging_installer.cc",
       "logging_installer.h",
-      "lzma_util.cc",
-      "lzma_util.h",
       "registry_entry.cc",
       "registry_entry.h",
       "scoped_token_privilege.cc",
       "scoped_token_privilege.h",
       "scoped_user_protocol_entry.cc",
       "scoped_user_protocol_entry.h",
-      "self_cleaning_temp_dir.cc",
-      "self_cleaning_temp_dir.h",
       "shell_util.cc",
       "shell_util.h",
     ]
 
     public_deps += [
       ":did_run_support",
+      ":metainstaller_utils",
+      ":work_item",
 
       # Need to depend on the generated strings target since files here
       # depend on the generated header, but only depend on the ":strings"
@@ -109,7 +190,6 @@ static_library("with_no_strings") {
       "//crypto",
       "//rlz/buildflags",
       "//third_party/icu",
-      "//third_party/lzma_sdk",
     ]
 
     libs = [
@@ -118,69 +198,6 @@ static_library("with_no_strings") {
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
-
-    sources += [
-      "additional_parameters.cc",
-      "additional_parameters.h",
-      "advanced_firewall_manager_win.cc",
-      "advanced_firewall_manager_win.h",
-      "app_command.cc",
-      "app_command.h",
-      "app_commands.cc",
-      "app_commands.h",
-      "auto_launch_util.cc",
-      "auto_launch_util.h",
-      "beacons.cc",
-      "beacons.h",
-      "callback_work_item.cc",
-      "callback_work_item.h",
-      "conditional_work_item_list.cc",
-      "conditional_work_item_list.h",
-      "copy_tree_work_item.cc",
-      "copy_tree_work_item.h",
-      "create_dir_work_item.cc",
-      "create_dir_work_item.h",
-      "create_reg_key_work_item.cc",
-      "create_reg_key_work_item.h",
-      "delete_old_versions.cc",
-      "delete_old_versions.h",
-      "delete_reg_key_work_item.cc",
-      "delete_reg_key_work_item.h",
-      "delete_reg_value_work_item.cc",
-      "delete_reg_value_work_item.h",
-      "delete_tree_work_item.cc",
-      "delete_tree_work_item.h",
-      "duplicate_tree_detector.cc",
-      "duplicate_tree_detector.h",
-      "firewall_manager_win.cc",
-      "firewall_manager_win.h",
-      "google_update_settings.cc",
-      "google_update_settings.h",
-      "google_update_util.cc",
-      "google_update_util.h",
-      "helper.cc",
-      "helper.h",
-      "install_service_work_item.cc",
-      "install_service_work_item.h",
-      "install_service_work_item_impl.cc",
-      "install_service_work_item_impl.h",
-      "install_util.cc",
-      "install_util.h",
-      "installation_state.cc",
-      "installation_state.h",
-      "l10n_string_util.cc",
-      "l10n_string_util.h",
-      "move_tree_work_item.cc",
-      "move_tree_work_item.h",
-      "registry_key_backup.cc",
-      "registry_key_backup.h",
-      "set_reg_value_work_item.cc",
-      "set_reg_value_work_item.h",
-      "work_item.cc",
-      "work_item.h",
-      "work_item_list.cc",
-      "work_item_list.h",
-    ]
   } else {
     sources = [
       "initial_preferences.cc",
@@ -322,6 +339,7 @@ if (is_win) {
       "registry_key_backup_unittest.cc",
       "registry_test_data.cc",
       "registry_test_data.h",
+      "registry_util_unittest.cc",
       "run_all_unittests.cc",
       "scoped_token_privilege_unittest.cc",
       "scoped_user_protocol_entry_unittest.cc",

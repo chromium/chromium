@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/registry_util.h"
 
 using base::win::RegKey;
 
@@ -387,16 +387,16 @@ bool InstallServiceWorkItemImpl::DeleteServiceImpl() {
   for (const auto& clsid : clsids_) {
     for (const auto& reg_path :
          {GetComClsidRegistryPath(clsid), GetComAppidRegistryPath(clsid)}) {
-      InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
-                                     WorkItem::kWow64Default);
+      installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
+                                   WorkItem::kWow64Default);
     }
   }
 
   for (const auto& iid : iids_) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
-                                     WorkItem::kWow64Default);
+      installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, reg_path,
+                                   WorkItem::kWow64Default);
     }
   }
 

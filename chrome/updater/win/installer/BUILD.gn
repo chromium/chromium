@@ -26,7 +26,8 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//chrome/installer/util:with_no_strings",
+    "//chrome/installer/util:constants",
+    "//chrome/installer/util:metainstaller_utils",
     "//chrome/updater:branding_header",
     "//chrome/updater/win:tag_extractor",
   ]
@@ -117,7 +118,6 @@ template("generate_installer") {
       ":lib",
       ":version",
       "//build/win:default_exe_manifest",
-      "//chrome/installer/util:with_no_strings",
     ]
   }
 }
@@ -159,7 +159,6 @@ test("installer_unittest") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/installer/util:with_no_strings",
     "//testing/gtest",
   ]
 }

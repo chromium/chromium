@@ -4,10 +4,11 @@
 
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
 #include "base/win/shlwapi.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/registry_util.h"
 
 using base::win::RegKey;
 
@@ -42,8 +43,8 @@ bool DeleteRegKeyWorkItem::DoImpl() {
   }
 
   // Delete the key.
-  if (!InstallUtil::DeleteRegistryKey(predefined_root_, path_.c_str(),
-                                      wow64_access_)) {
+  if (!installer::DeleteRegistryKey(predefined_root_, path_.c_str(),
+                                    wow64_access_)) {
     return false;
   }
 
@@ -56,8 +57,7 @@ void DeleteRegKeyWorkItem::RollbackImpl() {
 
   // Delete anything in the key before restoring the backup in case someone else
   // put new data in the key after Do().
-  InstallUtil::DeleteRegistryKey(predefined_root_, path_.c_str(),
-                                 wow64_access_);
+  installer::DeleteRegistryKey(predefined_root_, path_.c_str(), wow64_access_);
 
   // Restore the old contents.  The restoration takes on its default security
   // attributes; any custom attributes are lost.

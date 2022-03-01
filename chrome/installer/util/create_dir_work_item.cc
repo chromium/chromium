@@ -6,7 +6,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "chrome/installer/util/logging_installer.h"
 
 CreateDirWorkItem::~CreateDirWorkItem() {}
 

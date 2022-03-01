@@ -25,7 +25,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/installer/util/install_service_work_item.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -361,8 +361,8 @@ void RegisterUserRunAtStartup(const std::wstring& run_value_name,
 bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
   VLOG(1) << __func__;
 
-  return InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
-                                          run_value_name);
+  return installer::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
+                                        run_value_name);
 }
 
 }  // namespace updater

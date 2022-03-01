@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/win/shlwapi.h"
-#include "chrome/installer/util/logging_installer.h"
 
 CopyTreeWorkItem::~CopyTreeWorkItem() {}
 

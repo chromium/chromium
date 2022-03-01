@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
-#include "chrome/installer/util/logging_installer.h"
 
 using base::win::RegKey;
 

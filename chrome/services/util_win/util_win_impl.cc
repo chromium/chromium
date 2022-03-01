@@ -23,7 +23,7 @@
 #include "base/win/shortcut.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/registry_util.h"
 #include "chrome/services/util_win/av_products.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
@@ -58,14 +58,14 @@ class IsPinnedToTaskbarHelper {
   // Returns true if the target parameter of the |shortcut| evaluates to
   // |program_compare|.
   bool IsShortcutForProgram(const base::FilePath& shortcut,
-                            const InstallUtil::ProgramCompare& program_compare);
+                            const installer::ProgramCompare& program_compare);
 
   // Returns true if one of the shortcut inside the given |directory| evaluates
   // to |program_compare| and is pinned to the taskbar. If [check_verbs] is
   // true we check that the unpin from taskbar verb exists for the shortcut.
   bool DirectoryContainsPinnedShortcutForProgram(
       const base::FilePath& directory,
-      const InstallUtil::ProgramCompare& program_compare,
+      const installer::ProgramCompare& program_compare,
       bool check_verbs);
 
   bool error_occured_ = false;
@@ -164,7 +164,7 @@ bool IsPinnedToTaskbarHelper::ShortcutHasUnpinToTaskbarVerb(
 
 bool IsPinnedToTaskbarHelper::IsShortcutForProgram(
     const base::FilePath& shortcut,
-    const InstallUtil::ProgramCompare& program_compare) {
+    const installer::ProgramCompare& program_compare) {
   base::win::ShortcutProperties shortcut_properties;
   if (!ResolveShortcutProperties(
           shortcut, base::win::ShortcutProperties::PROPERTIES_TARGET,
@@ -177,7 +177,7 @@ bool IsPinnedToTaskbarHelper::IsShortcutForProgram(
 
 bool IsPinnedToTaskbarHelper::DirectoryContainsPinnedShortcutForProgram(
     const base::FilePath& directory,
-    const InstallUtil::ProgramCompare& program_compare,
+    const installer::ProgramCompare& program_compare,
     bool check_verbs) {
   base::FileEnumerator shortcut_enum(directory, false,
                                      base::FileEnumerator::FILES);
@@ -201,7 +201,7 @@ bool IsPinnedToTaskbarHelper::GetResult(bool check_verbs) {
   if (!base::PathService::Get(base::FILE_EXE, &current_exe))
     return false;
 
-  InstallUtil::ProgramCompare current_exe_compare(current_exe);
+  installer::ProgramCompare current_exe_compare(current_exe);
   // Look into the "Quick Launch\User Pinned\TaskBar" folder.
   base::FilePath taskbar_pins_dir;
   if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pins_dir) &&

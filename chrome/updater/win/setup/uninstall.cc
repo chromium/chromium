@@ -21,7 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
-#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -42,8 +42,8 @@ void DeleteComServer(UpdaterScope scope, HKEY root, bool uninstall_all) {
   for (const CLSID& clsid : JoinVectors(
            GetSideBySideServers(scope),
            uninstall_all ? GetActiveServers(scope) : std::vector<CLSID>())) {
-    InstallUtil::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
-                                   WorkItem::kWow64Default);
+    installer::DeleteRegistryKey(root, GetComServerClsidRegistryPath(clsid),
+                                 WorkItem::kWow64Default);
   }
 }
 
@@ -54,9 +54,9 @@ void DeleteComService(bool uninstall_all) {
        JoinVectors(GetSideBySideServers(UpdaterScope::kSystem),
                    uninstall_all ? GetActiveServers(UpdaterScope::kSystem)
                                  : std::vector<CLSID>())) {
-    InstallUtil::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
-                                   GetComServerAppidRegistryPath(appid),
-                                   WorkItem::kWow64Default);
+    installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE,
+                                 GetComServerAppidRegistryPath(appid),
+                                 WorkItem::kWow64Default);
   }
 
   for (const bool is_internal_service : {true, false}) {
@@ -77,13 +77,13 @@ void DeleteComInterfaces(HKEY root, bool uninstall_all) {
            uninstall_all ? GetActiveInterfaces() : std::vector<IID>())) {
     for (const auto& reg_path :
          {GetComIidRegistryPath(iid), GetComTypeLibRegistryPath(iid)}) {
-      InstallUtil::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
+      installer::DeleteRegistryKey(root, reg_path, WorkItem::kWow64Default);
     }
   }
 }
 
 void DeleteGoogleUpdateEntries(UpdaterScope scope, HKEY root) {
-  InstallUtil::DeleteRegistryKey(root, UPDATER_KEY, KEY_WOW64_32KEY);
+  installer::DeleteRegistryKey(root, UPDATER_KEY, KEY_WOW64_32KEY);
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);

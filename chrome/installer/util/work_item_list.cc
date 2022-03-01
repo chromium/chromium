@@ -13,7 +13,6 @@
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 #include "chrome/installer/util/delete_reg_value_work_item.h"
 #include "chrome/installer/util/delete_tree_work_item.h"
-#include "chrome/installer/util/logging_installer.h"
 #include "chrome/installer/util/move_tree_work_item.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 

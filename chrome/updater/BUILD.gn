@@ -309,7 +309,9 @@ if (is_win || is_mac || is_linux) {
       ]
       deps += [
         "//build:branding_buildflags",
-        "//chrome/installer/util:with_no_strings",
+        "//chrome/installer/util:constants",
+        "//chrome/installer/util:metainstaller_utils",
+        "//chrome/installer/util:work_item",
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
@@ -329,6 +331,7 @@ if (is_win || is_mac || is_linux) {
       libs = [
         "secur32.lib",
         "taskschd.lib",
+        "wtsapi32.lib",
       ]
     }
 
@@ -547,7 +550,7 @@ if (is_win || is_mac || is_linux) {
             "$root_build_dir/base.dll",
             "$root_build_dir/ui_base.dll",
           ]
-          
+
           if (is_debug) {
             data = [ "$root_build_dir/ucrtbased.dll" ]
           }
