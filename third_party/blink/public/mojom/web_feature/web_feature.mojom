@@ -3489,6 +3489,8 @@ enum WebFeature {
   kWrongBaselineOfMultiLineButtonWithNonSpace = 4168,
   kBlobStoreAccessAcrossTopLevelSite = 4169,
   kBlobStoreAccessUnknownTopLevelSite = 4170,
+  kMediaCapabilitiesDecodingInfoWebrtc = 4174,
+  kMediaCapabilitiesEncodingInfoWebrtc = 4175,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

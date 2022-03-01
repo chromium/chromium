@@ -808,6 +808,9 @@ ScriptPromise MediaCapabilities::decodingInfo(
   DCHECK(message.IsEmpty());
 
   if (is_webrtc) {
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kMediaCapabilitiesDecodingInfoWebrtc);
+
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
     // IMPORTANT: Acquire the promise before potentially synchronously resolving
@@ -1003,6 +1006,9 @@ ScriptPromise MediaCapabilities::encodingInfo(
   ScriptPromise promise = resolver->Promise();
 
   if (is_webrtc) {
+    UseCounter::Count(ExecutionContext::From(script_state),
+                      WebFeature::kMediaCapabilitiesEncodingInfoWebrtc);
+
     if (auto* handler = WebrtcEncodingInfoHandler::Instance()) {
       const int callback_id = CreateCallbackId();
       pending_cb_map_.insert(
