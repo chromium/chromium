@@ -363,6 +363,20 @@ const googleRules = {
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
+// https://github.com/eslint/eslint/issues/8769
+// Hack node module system so that eslint-plugin-cca resolves to local module.
+/* global require */
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+const m = require('module');
+const originalResolve = m._resolveFilename;
+m._resolveFilename = (request, ...args) => {
+  if (request === 'eslint-plugin-cca') {
+    return require.resolve('./eslint_plugin');
+  } else {
+    return originalResolve.call(m, request, ...args);
+  }
+};
+
 const typescriptEslintDir =
     '../../../../third_party/node/node_modules/@typescript-eslint';
 
@@ -402,7 +416,7 @@ module.exports = {
     },
   },
   parser: `${typescriptEslintDir}/parser`,
-  plugins: ['@typescript-eslint', 'jsdoc'],
+  plugins: ['@typescript-eslint', 'jsdoc', 'eslint-plugin-cca'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
@@ -622,6 +636,8 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 'error',
 
     '@typescript-eslint/no-unused-expressions': 'error',
+
+    'cca/parameter-comment-format': 'error',
   }),
   overrides: [{
     files: ['**/*.ts'],
