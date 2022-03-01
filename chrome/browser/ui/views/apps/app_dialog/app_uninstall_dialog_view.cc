@@ -43,6 +43,7 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #endif
 
@@ -176,8 +177,18 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
 #endif
       break;
     case apps::mojom::AppType::kBorealis:
-      // TODO(b/178741230): Borealis' uninstaller needs custom text.  For now
-      // just use Crostini's.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (app_id == borealis::kClientAppId) {
+        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+            IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY));
+      } else {
+        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+            IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY));
+      }
+#else
+      NOTREACHED();
+#endif
+      break;
     case apps::mojom::AppType::kCrostini:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       InitializeViewWithMessage(l10n_util::GetStringUTF16(

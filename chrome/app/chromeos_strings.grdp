@@ -5792,7 +5792,7 @@ Permissions you've already given to apps may apply to this account. You can cont
   <!-- TODO(danielng): Add string descriptions and remove translateable tags
        when strings are finalized. -->
   <message name="IDS_BOREALIS_APP_NAME" desc="" translateable="false">
-    Borealis
+    Steam
   </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="" translateable="false">
     Set up <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>
@@ -5856,6 +5856,12 @@ Permissions you've already given to apps may apply to this account. You can cont
   </message>
   <message name="IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE" desc="" translateable="false">
       Couldn't install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>. Another process is already trying to install <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph> or hasn't finished cancelling. Please try again later.
+  </message>
+  <message name="IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling Steam (name of app).">
+      Any games and apps installed via Steam will also be removed from this device
+  </message>
+  <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
+      Data associated with this app may be removed from this device
   </message>
   <!--
     IDS_EDU_LOGIN_INFO_* strings END
