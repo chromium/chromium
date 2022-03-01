@@ -69,7 +69,7 @@ TEST(X509UtilTest, CreateSecCertificateArrayForX509Certificate) {
             BytesForSecCert(CFArrayGetValueAtIndex(sec_certs.get(), 3)));
 }
 
-TEST(X509UtilTest, CreateSecCertificateArrayForX509CertificateErrors) {
+TEST(X509UtilTest, DISABLED_CreateSecCertificateArrayForX509CertificateErrors) {
   scoped_refptr<X509Certificate> ok_cert(
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
