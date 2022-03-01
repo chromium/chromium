@@ -26,7 +26,7 @@ namespace system_logs {
 namespace {
 
 namespace healthd = ::chromeos::cros_healthd::mojom;
-constexpr char kRevenLogKey[] = "CLOUDREADY_HARDWARE_INFO";
+constexpr char kRevenLogKey[] = "CHROMEOSFLEX_HARDWARE_INFO";
 
 constexpr char kCpuNameKey[] = "cpu_name";
 constexpr char kCpuNameVal[] = "Intel(R) Core(TM) i5-10210U CPU @ 1.60GHz";

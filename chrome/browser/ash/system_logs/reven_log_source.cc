@@ -25,8 +25,7 @@ using healthd::TelemetryInfo;
 using healthd::TelemetryInfoPtr;
 using ProbeCategories = healthd::ProbeCategoryEnum;
 
-// TODO(xiangdongkong): replace cloudready with the official branding name
-constexpr char kRevenLogKey[] = "CLOUDREADY_HARDWARE_INFO";
+constexpr char kRevenLogKey[] = "CHROMEOSFLEX_HARDWARE_INFO";
 constexpr char kNewlineWithIndent[] = "\n  ";
 constexpr char kKeyValueDelimiter[] = ": ";
 
