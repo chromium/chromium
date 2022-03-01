@@ -24,10 +24,8 @@ NetAddress DevToolsEndpoint::Address() const {
 }
 
 std::string DevToolsEndpoint::GetBrowserDebuggerUrl() const {
-  const std::string scheme = server_url_.SchemeIs("https") ? "wss" : "ws";
-
-  url::Replacements<char> replacements;
-  replacements.SetScheme(scheme.c_str(), url::Component(0, scheme.length()));
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(server_url_.SchemeIs("https") ? "wss" : "ws");
 
   return server_url_.Resolve("devtools/browser/")
       .ReplaceComponents(replacements)
@@ -35,10 +33,8 @@ std::string DevToolsEndpoint::GetBrowserDebuggerUrl() const {
 }
 
 std::string DevToolsEndpoint::GetDebuggerUrl(const std::string& id) const {
-  const std::string scheme = server_url_.SchemeIs("https") ? "wss" : "ws";
-
-  url::Replacements<char> replacements;
-  replacements.SetScheme(scheme.c_str(), url::Component(0, scheme.length()));
+  GURL::Replacements replacements;
+  replacements.SetSchemeStr(server_url_.SchemeIs("https") ? "wss" : "ws");
 
   return server_url_.Resolve("devtools/page/" + id)
       .ReplaceComponents(replacements)
