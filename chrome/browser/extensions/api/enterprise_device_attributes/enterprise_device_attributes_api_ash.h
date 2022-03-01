@@ -17,6 +17,8 @@ class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
     : public ExtensionFunction {
  public:
   EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction();
+  explicit EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction(
+      std::unique_ptr<policy::DeviceAttributes> attributes);
 
  protected:
   ~EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction() override;
@@ -24,6 +26,8 @@ class EnterpriseDeviceAttributesGetDirectoryDeviceIdFunction
   ResponseAction Run() override;
 
  private:
+  std::unique_ptr<policy::DeviceAttributes> attributes_;
+
   DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDirectoryDeviceId",
                              ENTERPRISE_DEVICEATTRIBUTES_GETDIRECTORYDEVICEID)
 };
@@ -67,6 +71,8 @@ class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
     : public ExtensionFunction {
  public:
   EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction();
+  explicit EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction(
+      std::unique_ptr<policy::DeviceAttributes> attributes);
 
  protected:
   ~EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction() override;
@@ -74,6 +80,8 @@ class EnterpriseDeviceAttributesGetDeviceAnnotatedLocationFunction
   ResponseAction Run() override;
 
  private:
+  std::unique_ptr<policy::DeviceAttributes> attributes_;
+
   DECLARE_EXTENSION_FUNCTION(
       "enterprise.deviceAttributes.getDeviceAnnotatedLocation",
       ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEANNOTATEDLOCATION)
@@ -83,6 +91,8 @@ class EnterpriseDeviceAttributesGetDeviceHostnameFunction
     : public ExtensionFunction {
  public:
   EnterpriseDeviceAttributesGetDeviceHostnameFunction();
+  explicit EnterpriseDeviceAttributesGetDeviceHostnameFunction(
+      std::unique_ptr<policy::DeviceAttributes> attributes);
 
  protected:
   ~EnterpriseDeviceAttributesGetDeviceHostnameFunction() override;
@@ -90,6 +100,8 @@ class EnterpriseDeviceAttributesGetDeviceHostnameFunction
   ResponseAction Run() override;
 
  private:
+  std::unique_ptr<policy::DeviceAttributes> attributes_;
+
   DECLARE_EXTENSION_FUNCTION("enterprise.deviceAttributes.getDeviceHostname",
                              ENTERPRISE_DEVICEATTRIBUTES_GETDEVICEHOSTNAME)
 };
