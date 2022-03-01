@@ -649,6 +649,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // new mode they will have the correct items (tabs).
   if (IsTabsSearchEnabled() && previousMode == TabGridModeSearch) {
     self.remoteTabsViewController.searchTerms = nil;
+    self.regularTabsViewController.searchText = nil;
+    self.incognitoTabsViewController.searchText = nil;
     [self.regularTabsDelegate resetToAllItems];
     [self.incognitoTabsDelegate resetToAllItems];
     [self hideScrim];
@@ -1895,6 +1897,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self updateScrimVisibilityForText:searchText];
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:
+      self.incognitoTabsViewController.searchText = searchText;
       if (searchText.length) {
         [self.incognitoTabsDelegate searchItemsWithText:searchText];
       } else {
@@ -1904,10 +1907,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         // display all the tabs from all the available windows.
         [self.incognitoTabsDelegate resetToAllItems];
       }
-      self.incognitoTabsViewController.searchText = searchText;
       break;
     case TabGridPageRegularTabs:
     case TabGridPageRemoteTabs:
+      self.regularTabsViewController.searchText = searchText;
+      self.remoteTabsViewController.searchTerms = searchText;
       if (searchText.length) {
         [self.regularTabsDelegate searchItemsWithText:searchText];
       } else {
@@ -1917,8 +1921,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         // display all the tabs from all the available windows.
         [self.regularTabsDelegate resetToAllItems];
       }
-      self.regularTabsViewController.searchText = searchText;
-      self.remoteTabsViewController.searchTerms = searchText;
       break;
   }
 }
