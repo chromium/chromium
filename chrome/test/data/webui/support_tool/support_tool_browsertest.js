@@ -29,8 +29,8 @@ const SupportToolBrowserTest = class extends PolymerTest {
 var SupportToolTest = class extends SupportToolBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://support-tool/test_loader.html?module=support_tool/' +
-        'support_tool_test.js';
+    return 'chrome://support-tool/test_loader.html?' +
+        'module=support_tool/support_tool_test.js&host=webui-test';
   }
 };
 

@@ -103,7 +103,6 @@ if (include_js_tests) {
       "settings/cr_settings_browsertest.js",
       "settings/privacy_sandbox_browsertest.js",
       "settings/settings_idle_load_browsertest.js",
-      "support_tool/support_tool_browsertest.js",
       "text_defaults_browsertest.js",
       "webui_resource_async_browsertest.js",
       "whats_new/whats_new_browsertest.js",
@@ -198,6 +197,7 @@ if (include_js_tests) {
       sources += [
         "access_code_cast/access_code_cast_browsertest.js",
         "commander/commander_browsertest.js",
+        "support_tool/support_tool_browsertest.js",
       ]
     }
     if (is_cfm) {
@@ -658,8 +658,14 @@ generate_grd("build_grd") {
   }
 
   if (!is_android) {
-    deps += [ "whats_new:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/whats_new/resources.grdp" ]
+    deps += [
+      "support_tool:build_grdp",
+      "whats_new:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/whats_new/resources.grdp",
+      "$target_gen_dir/support_tool/resources.grdp",
+    ]
   }
 
   if (!is_chromeos_ash && !is_android) {

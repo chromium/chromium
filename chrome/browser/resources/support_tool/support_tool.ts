@@ -28,4 +28,10 @@ export class SupportToolElement extends PolymerElement {
   private caseId_: string = loadTimeData.getString('caseId');
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'support-tool': SupportToolElement;
+  }
+}
+
 customElements.define(SupportToolElement.is, SupportToolElement);
