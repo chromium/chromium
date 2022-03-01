@@ -42,10 +42,14 @@ interface StandaloneBrowserTestController {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 11
-// Next method id: 18
+// Next version: 12
+// Next method id: 21
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
+  // Clicks the middle of the views element identified by |element_name|.
+  [MinVersion=11]
+  ClickElement@20(string element_name) => (bool success);
+
   // Clicks the middle of the window. Assumes that the window exists and is
   // visible on screen. |window_id| should be obtained from
   // PlatformWindow::GetWindowUniqueId(). A typical format might be:
@@ -55,6 +59,11 @@ interface TestController {
   // Checks whether an item with a given ID exists in the shelf.
   [MinVersion=5]
   DoesItemExistInShelf@9(string item_id) => (bool exists);
+
+  // Checks if ash is currently showing any views UI element with the given
+  // element_name.
+  [MinVersion=11]
+  DoesElementExist@19(string element_name) => (bool exists);
 
   // Queries whether a window with the given |window_id| exists and is either
   // visible or minimized. |window_id| should be obtained from
@@ -109,6 +118,12 @@ interface TestController {
   // the shelf. Returns |false| on any error.
   [MinVersion=6]
   PinOrUnpinItemInShelf@11(string item_id, bool pin) => (bool success);
+
+  // Select the context menu item for the shelf item with |item_id| at |index|.
+  // Returns false on any error.
+  [MinVersion=11]
+  SelectContextMenuForShelfItem@18(string item_id, uint32 index)
+      => (bool success);
 
   // Simulates a user left-clicking an item in the shelf. This assumes the item
   // is already in the shelf. Returns |false| on any error.

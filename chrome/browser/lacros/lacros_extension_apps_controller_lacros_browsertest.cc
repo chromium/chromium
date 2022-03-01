@@ -17,6 +17,7 @@
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -88,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LaunchPinnedApp) {
   if (chromeos::LacrosService::Get()->GetInterfaceVersion(
           crosapi::mojom::TestController::Uuid_) <
       static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kSelectItemInShelfMinVersion)) {
+                           kSelectContextMenuForShelfItemMinVersion)) {
     LOG(WARNING) << "Unsupported ash version.";
     return;
   }
@@ -208,6 +209,67 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, DefaultContextMenu) {
   EXPECT_EQ(items[1], "Close");
   EXPECT_EQ(items[2], "Uninstall");
   EXPECT_EQ(items[3], "App info");
+}
+
+// Uninstalls an app via the context menu.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest,
+                       UninstallContextMenu) {
+  // If ash does not contain the relevant test controller functionality, then
+  // there's nothing to do for this test.
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kSelectContextMenuForShelfItemMinVersion)) {
+    LOG(WARNING) << "Unsupported ash version.";
+    return;
+  }
+
+  // Create the controller and publisher.
+  LacrosExtensionAppsPublisher publisher;
+  publisher.Initialize();
+  LacrosExtensionAppsController controller;
+  controller.Initialize(publisher.publisher());
+
+  // No item should exist in the shelf before the window is launched.
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  std::string app_id = lacros_extensions_util::MuxId(profile(), extension);
+  LOG(INFO) << "No item starts in shelf";
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
+
+  // Launch the app via LacrosExtensionAppsController.
+  crosapi::mojom::LaunchParamsPtr launch_params =
+      crosapi::mojom::LaunchParams::New();
+  launch_params->app_id = app_id;
+  launch_params->launch_source = apps::mojom::LaunchSource::kFromTest;
+  controller.Launch(std::move(launch_params), base::DoNothing());
+
+  // Wait for item to exist in shelf.
+  LOG(INFO) << "Wait for item to appear in shelf after install";
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
+
+  // Select index 2, which corresponds to Uninstall.
+  base::HistogramTester tester;
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+  std::vector<std::string> items;
+  bool success = false;
+  waiter.SelectContextMenuForShelfItem(app_id, /*index=*/2, &success);
+  ASSERT_TRUE(success);
+
+  // This pops up an ash dialog to confirm uninstall. First we wait fo the
+  // dialog to appear, and then we click the confirm button.
+  std::string element_name = kAppUninstallDialogOkButtonId.GetName();
+  browser_test_util::WaitForElementCreation(element_name);
+  waiter.ClickElement(element_name, &success);
+  ASSERT_TRUE(success);
+
+  // Wait for the item to be no longer visible in the shelf as it's uninstalled
+  // which implicitly closes the window.
+  LOG(INFO) << "Wait for item to disappear from shelf after uninstall";
+  browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
 }
 
 }  // namespace

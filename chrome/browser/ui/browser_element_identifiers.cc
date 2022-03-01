@@ -8,6 +8,7 @@
 #include "ui/base/interaction/element_tracker.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppMenuButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAvatarButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkStarViewElementId);

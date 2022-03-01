@@ -37,6 +37,9 @@ class VIEWS_EXPORT InputEventActivationProtector {
   // Resets the state for click tracking.
   void ResetForTesting();
 
+  // Integration tests can disable all input event activation protectors.
+  static void DisableForTesting();
+
  private:
   // Timestamp of when the view being tracked is first shown.
   base::TimeTicks view_shown_time_stamp_;

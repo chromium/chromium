@@ -74,6 +74,37 @@ void WaitForWindow(const std::string& id, bool exists) {
   outer_loop.Run();
 }
 
+void WaitForElement(const std::string& id, bool exists) {
+  base::RunLoop outer_loop;
+  auto wait_for_element = base::BindRepeating(
+      [](base::RunLoop* outer_loop, const std::string& id,
+         bool expected_exists) {
+        auto* lacros_service = chromeos::LacrosService::Get();
+        CHECK(lacros_service->IsAvailable<crosapi::mojom::TestController>());
+
+        base::RunLoop inner_loop(base::RunLoop::Type::kNestableTasksAllowed);
+        bool exists = false;
+        lacros_service->GetRemote<crosapi::mojom::TestController>()
+            ->DoesElementExist(
+                id, base::BindOnce(
+                        [](base::RunLoop* loop, bool* out_exist, bool exist) {
+                          *out_exist = std::move(exist);
+                          loop->Quit();
+                        },
+                        &inner_loop, &exists));
+        inner_loop.Run();
+
+        if (exists == expected_exists)
+          outer_loop->Quit();
+      },
+      &outer_loop, id, exists);
+
+  // Wait for the element to be available.
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(1), std::move(wait_for_element));
+  outer_loop.Run();
+}
+
 }  // namespace
 
 std::string GetWindowId(aura::Window* window) {
@@ -87,6 +118,10 @@ std::string GetWindowId(aura::Window* window) {
   auto* desktop_window_tree_host_linux =
       views::DesktopWindowTreeHostLinux::From(window_tree_host);
   return desktop_window_tree_host_linux->platform_window()->GetWindowUniqueId();
+}
+
+void WaitForElementCreation(const std::string& element_name) {
+  WaitForElement(element_name, /*exists=*/true);
 }
 
 void WaitForWindowCreation(const std::string& id) {

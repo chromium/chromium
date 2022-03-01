@@ -211,10 +211,11 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     DCHECK(it != app_window_id_cache_.end());
 
     std::string muxed_id =
-        lacros_extensions_util::MuxId(profile_, app_window->GetExtension());
+        lacros_extensions_util::MuxId(profile_, app_window->extension_id());
     std::string window_id = it->second;
-
     publisher_->OnAppWindowRemoved(muxed_id, window_id);
+
+    app_window_id_cache_.erase(app_window);
   }
 
   // Publishes a differential update to the app service.

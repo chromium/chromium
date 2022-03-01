@@ -19,6 +19,9 @@ namespace browser_test_util {
 // and shared with ash.
 std::string GetWindowId(aura::Window* window);
 
+// Waits for an element to be created.
+void WaitForElementCreation(const std::string& element_name);
+
 // Some crosapi methods rely on the assumption that ash/exo are aware of the
 // existence of a Lacros Window. Wayland is an async protocol that uses a
 // different communication channel than crosapi. This method provides a

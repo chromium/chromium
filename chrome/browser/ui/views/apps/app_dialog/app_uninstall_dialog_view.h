@@ -63,6 +63,8 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
   void OnDialogCancelled();
   void OnDialogAccepted();
 
+  void OnWidgetInitialized() override;
+
   raw_ptr<Profile> profile_;
 
   raw_ptr<views::Checkbox> report_abuse_checkbox_ = nullptr;

@@ -30,9 +30,13 @@ class TestControllerAsh : public mojom::TestController,
       mojo::PendingReceiver<mojom::TestController> receiver) override;
 
   // crosapi::mojom::TestController:
+  void ClickElement(const std::string& element_name,
+                    ClickElementCallback callback) override;
   void ClickWindow(const std::string& window_id) override;
   void DoesItemExistInShelf(const std::string& item_id,
                             DoesItemExistInShelfCallback callback) override;
+  void DoesElementExist(const std::string& element_name,
+                        DoesElementExistCallback callback) override;
   void DoesWindowExist(const std::string& window_id,
                        DoesWindowExistCallback callback) override;
   void EnterOverviewMode(EnterOverviewModeCallback callback) override;
@@ -50,6 +54,10 @@ class TestControllerAsh : public mojom::TestController,
   void PinOrUnpinItemInShelf(const std::string& item_id,
                              bool pin,
                              PinOrUnpinItemInShelfCallback cb) override;
+  void SelectContextMenuForShelfItem(
+      const std::string& item_id,
+      uint32_t index,
+      SelectContextMenuForShelfItemCallback cb) override;
   void SelectItemInShelf(const std::string& item_id,
                          SelectItemInShelfCallback cb) override;
   void SendTouchEvent(const std::string& window_id,
@@ -80,9 +88,17 @@ class TestControllerAsh : public mojom::TestController,
   // Called when the lacros test controller was disconnected.
   void OnControllerDisconnected();
 
-  // Called when a ShelfItemDelegate returns its context menu.
+  // Called when a ShelfItemDelegate returns its context menu and the follow up
+  // is to return the results.
   static void OnGetContextMenuForShelfItem(
       GetContextMenuForShelfItemCallback callback,
+      std::unique_ptr<ui::SimpleMenuModel> model);
+  // Called when a ShelfItemDelegate returns its context menu and the follow up
+  // is to select an item.
+  static void OnSelectContextMenuForShelfItem(
+      SelectContextMenuForShelfItemCallback callback,
+      const std::string& item_id,
+      uint32_t index,
       std::unique_ptr<ui::SimpleMenuModel> model);
 
   // Each call to EnterOverviewMode or ExitOverviewMode spawns a waiter for the

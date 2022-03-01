@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
@@ -152,9 +154,11 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kExtension:
       NOTREACHED();
+      break;
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+      // Do nothing special for kStandaloneBrowserChromeApp.
       break;
     case apps::mojom::AppType::kArc:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -338,4 +342,10 @@ void AppUninstallDialogView::OnDialogAccepted() {
       report_abuse_checkbox_ && report_abuse_checkbox_->GetChecked();
   uninstall_dialog()->OnDialogClosed(true /* uninstall */, clear_site_data,
                                      report_abuse_checkbox);
+}
+
+void AppUninstallDialogView::OnWidgetInitialized() {
+  AppDialogView::OnWidgetInitialized();
+  GetOkButton()->SetProperty(views::kElementIdentifierKey,
+                             kAppUninstallDialogOkButtonId);
 }

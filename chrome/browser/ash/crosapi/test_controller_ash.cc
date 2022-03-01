@@ -32,6 +32,8 @@
 #include "ui/events/event_source.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 namespace crosapi {
 
@@ -46,9 +48,10 @@ bool Dispatch(aura::WindowTreeHost* host, ui::Event* event) {
 }
 
 // Returns whether the dispatcher or target was destroyed.
-bool DispatchMouseEvent(aura::Window* window, ui::EventType type) {
-  const gfx::Point center = window->bounds().CenterPoint();
-  ui::MouseEvent press(type, center, center, ui::EventTimeForNow(),
+bool DispatchMouseEvent(aura::Window* window,
+                        ui::EventType type,
+                        gfx::Point location) {
+  ui::MouseEvent press(type, location, location, ui::EventTimeForNow(),
                        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   return Dispatch(window->GetHost(), &press);
 }
@@ -78,13 +81,48 @@ void TestControllerAsh::BindReceiver(
 #endif
 }
 
+void TestControllerAsh::ClickElement(const std::string& element_name,
+                                     ClickElementCallback callback) {
+  ui::ElementIdentifier id =
+      ui::ElementIdentifier::FromName(element_name.c_str());
+  if (!id) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  auto views = views::ElementTrackerViews::GetInstance()
+                   ->GetAllMatchingViewsInAnyContext(id);
+  if (views.empty()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  // Pick the first view that matches the element name.
+  views::View* view = views[0];
+
+  // We directly send mouse events to the view. It's also possible to use
+  // EventGenerator to move the mouse and send a click. Unfortunately, that
+  // approach has occasional flakiness. This is presumably due to another window
+  // appearing on top of the dialog and taking the mouse events but has not been
+  // explicitly diagnosed.
+  views::TrackedElementViews* tracked_element =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(
+          view, /*assign_temporary_id=*/false);
+  views::test::InteractionTestUtilSimulatorViews simulator;
+  simulator.PressButton(tracked_element,
+                        ui::test::InteractionTestUtil::InputType::kMouse);
+
+  std::move(callback).Run(/*success=*/true);
+}
+
 void TestControllerAsh::ClickWindow(const std::string& window_id) {
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window)
     return;
-  bool destroyed = DispatchMouseEvent(window, ui::ET_MOUSE_PRESSED);
+  const gfx::Point center = window->bounds().CenterPoint();
+  bool destroyed = DispatchMouseEvent(window, ui::ET_MOUSE_PRESSED, center);
   if (!destroyed) {
-    DispatchMouseEvent(window, ui::ET_MOUSE_RELEASED);
+    DispatchMouseEvent(window, ui::ET_MOUSE_RELEASED, center);
   }
 }
 
@@ -93,6 +131,21 @@ void TestControllerAsh::DoesItemExistInShelf(
     DoesItemExistInShelfCallback callback) {
   bool exists = ash::ShelfModel::Get()->ItemIndexByAppID(item_id) != -1;
   std::move(callback).Run(exists);
+}
+
+void TestControllerAsh::DoesElementExist(const std::string& element_name,
+                                         DoesElementExistCallback callback) {
+  ui::ElementIdentifier id =
+      ui::ElementIdentifier::FromName(element_name.c_str());
+  if (!id) {
+    std::move(callback).Run(/*exists=*/false);
+    return;
+  }
+
+  bool any_elements_exist = !views::ElementTrackerViews::GetInstance()
+                                 ->GetAllMatchingViewsInAnyContext(id)
+                                 .empty();
+  std::move(callback).Run(/*exists=*/any_elements_exist);
 }
 
 void TestControllerAsh::DoesWindowExist(const std::string& window_id,
@@ -211,6 +264,21 @@ void TestControllerAsh::SelectItemInShelf(const std::string& item_id,
   std::move(callback).Run(/*success=*/true);
 }
 
+void TestControllerAsh::SelectContextMenuForShelfItem(
+    const std::string& item_id,
+    uint32_t index,
+    SelectContextMenuForShelfItemCallback callback) {
+  ash::ShelfItemDelegate* delegate =
+      ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(item_id));
+  if (!delegate) {
+    std::move(callback).Run(false);
+    return;
+  }
+  delegate->GetContextMenu(
+      /*display_id=*/0,
+      base::BindOnce(&TestControllerAsh::OnSelectContextMenuForShelfItem,
+                     std::move(callback), item_id, index));
+}
 void TestControllerAsh::SendTouchEvent(const std::string& window_id,
                                        mojom::TouchEventType type,
                                        uint8_t pointer_id,
@@ -297,6 +365,25 @@ void TestControllerAsh::OnGetContextMenuForShelfItem(
     items.push_back(base::UTF16ToUTF8(model->GetLabelAt(i)));
   }
   std::move(callback).Run(std::move(items));
+}
+
+void TestControllerAsh::OnSelectContextMenuForShelfItem(
+    SelectContextMenuForShelfItemCallback callback,
+    const std::string& item_id,
+    uint32_t index,
+    std::unique_ptr<ui::SimpleMenuModel> model) {
+  if (index < model->GetItemCount()) {
+    int command_id = model->GetCommandIdAt(index);
+    ash::ShelfItemDelegate* delegate =
+        ash::ShelfModel::Get()->GetShelfItemDelegate(ash::ShelfID(item_id));
+    if (delegate) {
+      delegate->ExecuteCommand(/*from_context_menu=*/true, command_id,
+                               /*event_flags=*/0, /*display_id=*/0);
+      std::move(callback).Run(/*success=*/true);
+      return;
+    }
+  }
+  std::move(callback).Run(/*success=*/false);
 }
 
 void TestControllerAsh::GetOpenAshBrowserWindows(

@@ -62,7 +62,11 @@ const extensions::Extension* MaybeGetExtension(
 
 std::string MuxId(const Profile* profile,
                   const extensions::Extension* extension) {
-  return profile->GetBaseName().value() + kDelimiter + extension->id();
+  return MuxId(profile, extension->id());
+}
+
+std::string MuxId(const Profile* profile, const std::string& extension_id) {
+  return profile->GetBaseName().value() + kDelimiter + extension_id;
 }
 
 bool DemuxPlatformAppId(const std::string& muxed_id,
