@@ -30,6 +30,7 @@ const char kDisableTechnologyResultSuffix[] = ".EnabledState.Disable.Result";
 const char kCellular[] = "Cellular";
 const char kCellularESim[] = "Cellular.ESim";
 const char kCellularPSim[] = "Cellular.PSim";
+const char kPolicySuffix[] = ".Policy";
 
 const char kEthernet[] = "Ethernet";
 const char kEthernetEap[] = "Ethernet.Eap";
@@ -68,10 +69,13 @@ const std::vector<std::string> GetCellularNetworkTypeHistogams(
     const NetworkState* network_state) {
   std::vector<std::string> cellular_histograms{kCellular};
 
-  if (network_state->eid().empty())
-    cellular_histograms.emplace_back(kCellularPSim);
-  else
-    cellular_histograms.emplace_back(kCellularESim);
+  const char* cellular_sim_type =
+      network_state->eid().empty() ? kCellularPSim : kCellularESim;
+  cellular_histograms.emplace_back(cellular_sim_type);
+  if (network_state->IsManagedByPolicy()) {
+    cellular_histograms.emplace_back(
+        base::StrCat({cellular_sim_type, kPolicySuffix}));
+  }
   return cellular_histograms;
 }
 

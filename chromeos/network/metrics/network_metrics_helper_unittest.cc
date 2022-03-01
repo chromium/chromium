@@ -12,6 +12,7 @@
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/network/network_ui_data.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -29,6 +30,8 @@ const char kCellularESimConnectResultAllHistogram[] =
     "Network.Ash.Cellular.ESim.ConnectionResult.All";
 const char kCellularPSimConnectResultAllHistogram[] =
     "Network.Ash.Cellular.PSim.ConnectionResult.All";
+const char kCellularESimPolicyConnectResultAllHistogram[] =
+    "Network.Ash.Cellular.ESim.Policy.ConnectionResult.All";
 
 // LogAllConnectionResult() VPN histograms.
 const char kVpnConnectResultAllHistogram[] =
@@ -61,6 +64,8 @@ const char kCellularESimConnectResultUserInitiatedHistogram[] =
     "Network.Ash.Cellular.ESim.ConnectionResult.UserInitiated";
 const char kCellularPSimConnectResultUserInitiatedHistogram[] =
     "Network.Ash.Cellular.PSim.ConnectionResult.UserInitiated";
+const char kCellularESimPolicyConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.ESim.Policy.ConnectionResult.UserInitiated";
 
 // LogUserInitiatedConnectionResult() VPN histograms.
 const char kVpnConnectResultUserInitiatedHistogram[] =
@@ -93,6 +98,8 @@ const char kCellularESimConnectionStateHistogram[] =
     "Network.Ash.Cellular.ESim.DisconnectionsWithoutUserAction";
 const char kCellularPSimConnectionStateHistogram[] =
     "Network.Ash.Cellular.PSim.DisconnectionsWithoutUserAction";
+const char kCellularESimPolicyConnectionStateHistogram[] =
+    "Network.Ash.Cellular.ESim.Policy.DisconnectionsWithoutUserAction";
 
 // LogConnectionStateResult() VPN histograms.
 const char kVpnConnectionStateHistogram[] =
@@ -248,6 +255,49 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
   NetworkMetricsHelper::LogConnectionStateResult(
       kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 0);
+}
+
+TEST_F(NetworkMetricsHelperTest, CellularESimPolicy) {
+  shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
+                                    shill::kTypeCellular, shill::kStateIdle,
+                                    /*visible=*/true);
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kEidProperty, base::Value("eid"));
+  std::unique_ptr<NetworkUIData> ui_data =
+      NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
+  shill_service_client_->SetServiceProperty(kTestServicePath,
+                                            shill::kUIDataProperty,
+                                            base::Value(ui_data->GetAsJson()));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
+                                               shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kCellularConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
+                                      1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimPolicyConnectResultAllHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
+                                      0);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimPolicyConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularPSimConnectResultUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimPolicyConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 0);
 }

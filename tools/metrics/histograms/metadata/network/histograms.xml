@@ -29,7 +29,9 @@ chromium-metrics-reviews@google.com.
 
   <variant name="Cellular"/>
   <variant name="Cellular.ESim"/>
+  <variant name="Cellular.ESim.Policy"/>
   <variant name="Cellular.PSim"/>
+  <variant name="Cellular.PSim.Policy"/>
   <variant name="Ethernet"/>
   <variant name="Ethernet.Eap"/>
   <variant name="Ethernet.NoEap"/>
