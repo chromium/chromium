@@ -347,10 +347,10 @@ class WPTWebviewAdapter(WPTAndroidAdapter):
       install_webview_provider_as_needed = _no_op()
     else:
       install_shell_as_needed = _maybe_install_user_apk(
-          self._device, self.options.system_webview_shell,
+          self._devices, self.options.system_webview_shell,
           self.system_webview_shell_pkg)
       install_webview_provider_as_needed = _maybe_install_webview_provider(
-          self._device, self.options.webview_provider)
+          self._devices, self.options.webview_provider)
     with install_shell_as_needed, install_webview_provider_as_needed:
       yield
 
