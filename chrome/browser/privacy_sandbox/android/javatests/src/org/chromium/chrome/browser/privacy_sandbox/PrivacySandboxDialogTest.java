@@ -59,7 +59,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisabledTest(message = "https://crbug.com/1300632")
 @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
 public final class PrivacySandboxDialogTest {
     @ClassRule
@@ -168,6 +167,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1300632")
     public void testControllerIncognito() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
@@ -180,6 +180,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1300632")
     public void testControllerShowsNothing() throws IOException {
         mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.NONE);
         launchDialog();
@@ -190,6 +191,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1300632")
     public void testControllerShowsConsent() throws IOException {
         mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.CONSENT);
         launchDialog();
@@ -224,6 +226,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1300632")
     public void testControllerShowsNotice() throws IOException, InterruptedException {
         mFakePrivacySandboxBridge.setRequiredDialogType(DialogType.NOTICE);
         launchDialog();
