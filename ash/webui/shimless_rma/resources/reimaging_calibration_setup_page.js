@@ -8,17 +8,27 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
-const instructionMessagesKeys = {
+/** @type {!Object<!CalibrationSetupInstruction, string>} */
+const INSRUCTION_MESSAGE_KEY_MAP = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
       'calibrateBaseInstructionsText',
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface]:
       'calibrateLidInstructionsText'
+};
+
+/** @type {!Object<!CalibrationSetupInstruction, string>} */
+const CALIBRATION_IMG_MAP = {
+  [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
+      'base_on_flat_surface',
+  [CalibrationSetupInstruction.kCalibrationInstructionPlaceLidOnFlatSurface]:
+      'lid_on_flat_surface',
 };
 
 /**
@@ -48,10 +58,9 @@ export class ReimagingCalibrationSetupPage extends
 
   static get properties() {
     return {
-      /** @protected */
-      calibrationInstructions_: {
-        type: String,
-        value: '',
+      /** @protected {?CalibrationSetupInstruction} */
+      calibrationSetupInstruction_: {
+        type: Object,
       }
     };
   }
@@ -67,8 +76,7 @@ export class ReimagingCalibrationSetupPage extends
     super.ready();
     this.shimlessRmaService_.getCalibrationSetupInstructions().then(
         (result) => {
-          this.calibrationInstructions_ =
-              this.i18n(instructionMessagesKeys[result.instructions]);
+          this.calibrationSetupInstruction_ = result.instructions;
         });
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
@@ -79,6 +87,26 @@ export class ReimagingCalibrationSetupPage extends
   /** @return {!Promise<StateResult>} */
   onNextButtonClick() {
     return this.shimlessRmaService_.runCalibrationStep();
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getCalibrationInstructionsText_() {
+    assert(this.calibrationSetupInstruction_);
+    return this.i18n(
+        INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction_]);
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getImgSrc_() {
+    assert(this.calibrationSetupInstruction_);
+    return `illustrations/${
+        CALIBRATION_IMG_MAP[this.calibrationSetupInstruction_]}.svg`;
   }
 }
 
