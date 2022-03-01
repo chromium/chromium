@@ -609,6 +609,14 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithEncryptedMedia(
 PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
     TestMediaSource* source,
     uint8_t test_type,
+    CreateAudioDecodersCB prepend_audio_decoders_cb) {
+  prepend_audio_decoders_cb_ = prepend_audio_decoders_cb;
+  return StartPipelineWithMediaSource(source, test_type, nullptr);
+}
+
+PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
+    TestMediaSource* source,
+    uint8_t test_type,
     FakeEncryptedMedia* encrypted_media) {
   ParseTestTypeFlags(test_type);
 

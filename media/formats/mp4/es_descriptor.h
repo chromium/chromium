@@ -29,6 +29,12 @@ enum ObjectType {
   kDTSX = 0xb2                 // DTS:X
 };
 
+enum Tag {
+  kESDescrTag = 0x03,
+  kDecoderConfigDescrTag = 0x04,
+  kDecoderSpecificInfoTag = 0x05
+};
+
 // This class parse object type and decoder specific information from an
 // elementary stream descriptor, which is usually contained in an esds box.
 // Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
@@ -46,12 +52,6 @@ class MEDIA_EXPORT ESDescriptor {
   const std::vector<uint8_t>& decoder_specific_info() const;
 
  private:
-  enum Tag {
-    kESDescrTag = 0x03,
-    kDecoderConfigDescrTag = 0x04,
-    kDecoderSpecificInfoTag = 0x05
-  };
-
   bool ParseDecoderConfigDescriptor(BitReader* reader);
   bool ParseDecoderSpecificInfo(BitReader* reader);
 

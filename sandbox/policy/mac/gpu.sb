@@ -50,6 +50,16 @@
   )
 )
 
+; Needed for AudioToolbox xHE-AAC decoding. https://crbug.com/1289825
+(if (>= os-version 1015)
+  (begin
+    (allow mach-lookup
+      (global-name "com.apple.audio.AudioComponentRegistrar"))
+    (allow file-read-data
+      (subpath "/System/Library/Components/AudioCodecs.component"))
+  )
+)
+
 ; Needed for WebGL - https://crbug.com/75343
 (allow iokit-open
   (iokit-connection "IOAccelerator")

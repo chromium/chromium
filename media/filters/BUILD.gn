@@ -77,9 +77,7 @@ source_set("filters") {
     "wsola_internals.h",
   ]
 
-  configs += [
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
 
   deps = [
     "//base",
@@ -199,6 +197,13 @@ source_set("filters") {
       "android/media_codec_audio_decoder.h",
     ]
     deps += [ "//media/base/android" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "mac/audio_toolbox_audio_decoder.cc",
+      "mac/audio_toolbox_audio_decoder.h",
+    ]
   }
 
   if (use_vaapi) {
