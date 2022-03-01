@@ -2738,6 +2738,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 
   self.view.backgroundColor = UIColor.clearColor;
+  self.contentArea.alpha = 1;
 
   CGRect webStateViewFrame = self.contentArea.bounds;
   if (self.thumbStripPanHandler.currentState == ViewRevealState::Revealed ||
