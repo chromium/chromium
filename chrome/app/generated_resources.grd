@@ -7641,6 +7641,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_DESK_HEADING_A11Y" desc="The a11y message for desk headings in 'Move tabs to another window' when grouped by desk.">
             Desk <ph name="DESK_TITLE">$1<ex>School</ex></ph> has <ph name="NUM_BROWSERS">$2<ex>3</ex></ph> browser windows open
           </message>
+          <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_CURRENT_DESK_LABEL" desc="The label for the current active desk in 'Move tabs to another window' when grouped by desk.">
+             <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph> (Current)
+          </message>
         </if>
       </if>
       <if expr="use_titlecase">

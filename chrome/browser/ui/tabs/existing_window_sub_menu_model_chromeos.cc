@@ -103,8 +103,15 @@ void ExistingWindowSubMenuModelChromeOS::BuildMenuGroupedByDesk(
     if (desk_items.empty())
       continue;
 
-    // Create a MenuItemInfo for this desk.
-    const std::u16string desk_name = desks_helper->GetDeskName(desk);
+    // Create a MenuItemInfo for this desk for `desk_name`.
+    std::u16string desk_name;
+    if (desk == static_cast<size_t>(desks_helper->GetActiveDeskIndex())) {
+      desk_name = l10n_util::GetStringFUTF16(
+          IDS_TAB_CXMENU_GROUPED_BY_DESK_CURRENT_DESK_LABEL,
+          desks_helper->GetDeskName(desk));
+    } else {
+      desk_name = desks_helper->GetDeskName(desk);
+    }
     ExistingBaseSubMenuModel::MenuItemInfo desk_heading(desk_name);
     desk_heading.may_have_mnemonics = false;
     desk_heading.accessible_name = l10n_util::GetStringFUTF16(

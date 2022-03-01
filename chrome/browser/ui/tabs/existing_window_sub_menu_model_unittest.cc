@@ -398,7 +398,7 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuGroupedByDesks) {
       nullptr, browser()->tab_menu_model_delegate(),
       browser()->tab_strip_model(), 0);
   ASSERT_EQ(15, menu1->GetItemCount());
-  EXPECT_EQ(u"Desk 1", menu1->GetLabelAt(2));
+  EXPECT_EQ(u"Desk 1 (Current)", menu1->GetLabelAt(2));
   CheckBrowserTitle(menu1->GetLabelAt(3), kBrowser2TabTitle, 1);
   EXPECT_EQ(ui::SPACING_SEPARATOR, menu1->GetSeparatorTypeAt(4));
   EXPECT_EQ(u"Desk 2", menu1->GetLabelAt(5));
