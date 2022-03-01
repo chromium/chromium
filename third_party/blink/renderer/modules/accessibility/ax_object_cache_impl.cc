@@ -2828,6 +2828,23 @@ void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
     obj->HandleAriaExpandedChanged();
 }
 
+void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(
+    Element* element) {
+  AXObject* ax_object = Get(element);
+  if (!ax_object)
+    return;
+
+  ax::mojom::blink::Role previous_role = ax_object->RoleValue();
+  bool was_toggle_button =
+      previous_role == ax::mojom::blink::Role::kToggleButton;
+  bool is_toggle_button = ax_object->HasAttribute(html_names::kAriaPressedAttr);
+
+  if (was_toggle_button != is_toggle_button)
+    HandleRoleChangeWithCleanLayout(element);
+  else
+    PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
+}
+
 void AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
@@ -3107,9 +3124,10 @@ void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
   } else if (attr_name == html_names::kAriaDescriptionAttr ||
              attr_name == html_names::kAriaDescribedbyAttr) {
     TextChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaCheckedAttr ||
-             attr_name == html_names::kAriaPressedAttr) {
+  } else if (attr_name == html_names::kAriaCheckedAttr) {
     PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
+  } else if (attr_name == html_names::kAriaPressedAttr) {
+    HandleAriaPressedChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaSelectedAttr) {
     HandleAriaSelectedChangedWithCleanLayout(element);
   } else if (attr_name == html_names::kAriaExpandedAttr) {

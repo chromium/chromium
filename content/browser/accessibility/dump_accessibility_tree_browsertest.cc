@@ -3181,6 +3181,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DisplayLockingAllCommitted) {
 //
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AriaPressedChangesButtonRole) {
+  RunRegressionTest(FILE_PATH_LITERAL("aria-pressed-changes-button-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AddChildOfNotIncludedInTreeChain) {
   RunRegressionTest(
       FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));

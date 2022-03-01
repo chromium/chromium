@@ -406,6 +406,13 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    public void test_ariaPressedChangesButtonRole() {
+        performTest("aria-pressed-changes-button-role.html",
+                "aria-pressed-changes-button-role-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaReadonlyChanged() {
         performTest("aria-readonly-changed.html", EMPTY_EXPECTATIONS_FILE);
     }

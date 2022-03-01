@@ -296,6 +296,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaPressedChangesButtonRole) {
+  RunEventTest(FILE_PATH_LITERAL("aria-pressed-changes-button-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaReadonlyChanged) {
   RunEventTest(FILE_PATH_LITERAL("aria-readonly-changed.html"));
 }
