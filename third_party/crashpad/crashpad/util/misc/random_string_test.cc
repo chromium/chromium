@@ -16,9 +16,9 @@
 
 #include <sys/types.h>
 
+#include <iterator>
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -33,7 +33,7 @@ TEST(RandomString, RandomString) {
   const std::string allowed_characters("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
   size_t character_counts[26] = {};
-  ASSERT_EQ(allowed_characters.size(), base::size(character_counts));
+  ASSERT_EQ(allowed_characters.size(), std::size(character_counts));
 
   std::set<std::string> strings;
 
@@ -61,7 +61,7 @@ TEST(RandomString, RandomString) {
   // Make sure every character appears at least once. It is possible, but
   // extremely unlikely, for a character to not appear at all.
   for (size_t character_index = 0;
-       character_index < base::size(character_counts);
+       character_index < std::size(character_counts);
        ++character_index) {
     EXPECT_GT(character_counts[character_index], 0u)
         << allowed_characters[character_index];

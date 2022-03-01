@@ -14,9 +14,9 @@
 
 #include "minidump/minidump_rva_list_writer.h"
 
+#include <iterator>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -89,10 +89,10 @@ TEST(MinidumpRVAListWriter, ThreeChildren) {
   ASSERT_TRUE(list_writer.WriteEverything(&string_file));
 
   const MinidumpRVAList* list =
-      MinidumpRVAListAtStart(string_file.string(), base::size(kValues));
+      MinidumpRVAListAtStart(string_file.string(), std::size(kValues));
   ASSERT_TRUE(list);
 
-  for (size_t index = 0; index < base::size(kValues); ++index) {
+  for (size_t index = 0; index < std::size(kValues); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS, index));
 
     const uint32_t* child = MinidumpWritableAtRVA<uint32_t>(

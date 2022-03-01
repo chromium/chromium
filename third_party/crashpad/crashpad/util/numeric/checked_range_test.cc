@@ -17,9 +17,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -78,7 +78,7 @@ TEST(CheckedRange, IsValid) {
       {0xffffffff, 0xffffffff, false},
   };
 
-  for (size_t index = 0; index < base::size(kUnsignedTestData); ++index) {
+  for (size_t index = 0; index < std::size(kUnsignedTestData); ++index) {
     const auto& testcase = kUnsignedTestData[index];
     SCOPED_TRACE(base::StringPrintf("unsigned index %" PRIuS
                                     ", base 0x%x, size 0x%x",
@@ -140,7 +140,7 @@ TEST(CheckedRange, IsValid) {
       {-1, 0xffffffff, false},
   };
 
-  for (size_t index = 0; index < base::size(kSignedTestData); ++index) {
+  for (size_t index = 0; index < std::size(kSignedTestData); ++index) {
     const auto& testcase = kSignedTestData[index];
     SCOPED_TRACE(base::StringPrintf("signed index %" PRIuS
                                     ", base 0x%x, size 0x%x",
@@ -186,7 +186,7 @@ TEST(CheckedRange, ContainsValue) {
   CheckedRange<uint32_t> parent_range(0x2000, 0x1000);
   ASSERT_TRUE(parent_range.IsValid());
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ", value 0x%x", index, testcase.value));
@@ -234,7 +234,7 @@ TEST(CheckedRange, ContainsRange) {
   CheckedRange<uint32_t> parent_range(0x2000, 0x1000);
   ASSERT_TRUE(parent_range.IsValid());
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS ", base 0x%x, size 0x%x",
                                     index,
@@ -287,7 +287,7 @@ TEST(CheckedRange, OverlapsRange) {
   CheckedRange<uint32_t> first_range(0x2000, 0x1000);
   ASSERT_TRUE(first_range.IsValid());
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS ", base 0x%x, size 0x%x",
                                     index,

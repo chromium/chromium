@@ -16,7 +16,8 @@
 
 #include <sys/utsname.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
@@ -74,7 +75,7 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
         mach_thread_self(),
         kSimulatedException,
         code,
-        base::size(code),
+        std::size(code),
         MACHINE_THREAD_STATE,
         reinterpret_cast<ConstThreadState>(&cpu_context),
         MACHINE_THREAD_STATE_COUNT);

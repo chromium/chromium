@@ -18,9 +18,9 @@
 #include <string.h>
 #include <uuid/uuid.h>
 
+#include <iterator>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "snapshot/mac/process_types/internal.h"
 #include "util/process/process_memory_mac.h"
 
@@ -74,7 +74,7 @@ using UInt64Array4 = uint64_t[4];
 template <>
 inline void Assign<UInt64Array4, UInt32Array4>(UInt64Array4* destination,
                                                const UInt32Array4& source) {
-  for (size_t index = 0; index < base::size(source); ++index) {
+  for (size_t index = 0; index < std::size(source); ++index) {
     (*destination)[index] = source[index];
   }
 }

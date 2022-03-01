@@ -16,10 +16,10 @@
 
 #include <unistd.h>
 
+#include <iterator>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
@@ -130,7 +130,7 @@ bool IsSignalInSet(int sig, const int* set, size_t set_size) {
 struct sigaction* Signals::OldActions::ActionForSignal(int sig) {
   DCHECK_GT(sig, 0);
   const size_t slot = sig - 1;
-  DCHECK_LT(slot, base::size(actions_));
+  DCHECK_LT(slot, std::size(actions_));
   return &actions_[slot];
 }
 
@@ -165,8 +165,7 @@ bool Signals::InstallCrashHandlers(Handler handler,
                                    OldActions* old_actions,
                                    const std::set<int>* unhandled_signals) {
   return InstallHandlers(
-      std::vector<int>(kCrashSignals,
-                       kCrashSignals + base::size(kCrashSignals)),
+      std::vector<int>(kCrashSignals, kCrashSignals + std::size(kCrashSignals)),
       handler,
       flags,
       old_actions,
@@ -179,7 +178,7 @@ bool Signals::InstallTerminateHandlers(Handler handler,
                                        OldActions* old_actions) {
   return InstallHandlers(
       std::vector<int>(kTerminateSignals,
-                       kTerminateSignals + base::size(kTerminateSignals)),
+                       kTerminateSignals + std::size(kTerminateSignals)),
       handler,
       flags,
       old_actions,
@@ -324,12 +323,12 @@ void Signals::RestoreHandlerAndReraiseSignalOnReturn(
 
 // static
 bool Signals::IsCrashSignal(int sig) {
-  return IsSignalInSet(sig, kCrashSignals, base::size(kCrashSignals));
+  return IsSignalInSet(sig, kCrashSignals, std::size(kCrashSignals));
 }
 
 // static
 bool Signals::IsTerminateSignal(int sig) {
-  return IsSignalInSet(sig, kTerminateSignals, base::size(kTerminateSignals));
+  return IsSignalInSet(sig, kTerminateSignals, std::size(kTerminateSignals));
 }
 
 }  // namespace crashpad

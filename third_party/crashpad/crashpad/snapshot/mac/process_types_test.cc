@@ -18,10 +18,10 @@
 #include <mach/mach.h>
 #include <string.h>
 
+#include <iterator>
 #include <limits>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -172,7 +172,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
       {16, kUnsupported, 328},
       {17, kUnsupported, 368},
   };
-  for (size_t index = 0; index < base::size(kVersionsAndSizes); ++index) {
+  for (size_t index = 0; index < std::size(kVersionsAndSizes); ++index) {
     uint32_t version = kVersionsAndSizes[index].version;
     SCOPED_TRACE(base::StringPrintf("index %zu, version %u", index, version));
 
@@ -325,7 +325,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
               self_image_infos->sharedCacheBaseAddress);
     EXPECT_EQ(proctype_image_infos.dyldPath,
               reinterpret_cast<uint64_t>(self_image_infos->dyldPath));
-    for (size_t index = 0; index < base::size(self_image_infos->notifyPorts);
+    for (size_t index = 0; index < std::size(self_image_infos->notifyPorts);
          ++index) {
       EXPECT_EQ(proctype_image_infos.notifyPorts[index],
                 self_image_infos->notifyPorts[index])
@@ -345,7 +345,7 @@ TEST(ProcessTypes, DyldImagesSelf) {
   // process_types version. It’s difficult to compare the reserved fields in
   // these older SDKs, so only do it where the declarations match.
   if (proctype_image_infos.version >= 14) {
-    for (size_t index = 0; index < base::size(proctype_image_infos.reserved);
+    for (size_t index = 0; index < std::size(proctype_image_infos.reserved);
          ++index) {
       EXPECT_EQ(proctype_image_infos.reserved[index],
                 implicit_cast<uint64_t>(self_image_infos->reserved[index]))

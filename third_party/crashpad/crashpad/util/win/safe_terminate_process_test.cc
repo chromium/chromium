@@ -16,11 +16,11 @@
 
 #include <string.h>
 
-#include <string>
+#include <iterator>
 #include <memory>
+#include <string>
 
 #include "base/check.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -150,7 +150,7 @@ TEST(SafeTerminateProcess, PatchBadly) {
     };
 
     void* target = reinterpret_cast<void*>(TerminateProcess);
-    ScopedExecutablePatch executable_patch(target, patch, base::size(patch));
+    ScopedExecutablePatch executable_patch(target, patch, std::size(patch));
 
     // Make sure that SafeTerminateProcess() can be called. Since it’s been
     // patched with a no-op stub, GetLastError() shouldn’t be modified.

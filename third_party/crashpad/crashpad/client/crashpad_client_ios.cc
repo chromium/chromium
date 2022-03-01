@@ -17,8 +17,8 @@
 #include <unistd.h>
 
 #include <ios>
+#include <iterator>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
@@ -40,7 +40,7 @@ bool IsBeingDebugged() {
   kinfo_proc kern_proc_info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) == 0)
+  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) == 0)
     return kern_proc_info.kp_proc.p_flag & P_TRACED;
   return false;
 }
@@ -111,7 +111,7 @@ class CrashHandler : public Thread,
                         mach_thread_self(),
                         kSimulatedException,
                         code,
-                        base::size(code),
+                        std::size(code),
                         MACHINE_THREAD_STATE,
                         reinterpret_cast<ConstThreadState>(context),
                         MACHINE_THREAD_STATE_COUNT);
@@ -304,7 +304,7 @@ class CrashHandler : public Thread,
         mach_thread_self(),
         kMachExceptionFromNSException,
         code,
-        base::size(code),
+        std::size(code),
         MACHINE_THREAD_STATE,
         reinterpret_cast<ConstThreadState>(context),
         MACHINE_THREAD_STATE_COUNT);

@@ -16,8 +16,9 @@
 
 #include <string.h>
 
+#include <iterator>
+
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "minidump/minidump_string_writer.h"
 #include "snapshot/system_snapshot.h"
@@ -235,7 +236,7 @@ void MinidumpSystemInfoWriter::SetCPUX86VendorString(
       sizeof(registers) == sizeof(system_info_.Cpu.X86CpuInfo.VendorId),
       "VendorId sizes must be equal");
 
-  for (size_t index = 0; index < base::size(registers); ++index) {
+  for (size_t index = 0; index < std::size(registers); ++index) {
     memcpy(&registers[index],
            &vendor[index * sizeof(*registers)],
            sizeof(*registers));

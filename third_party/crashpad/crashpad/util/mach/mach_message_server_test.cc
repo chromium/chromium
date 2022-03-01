@@ -19,9 +19,9 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <set>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/scoped_mach_port.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -284,7 +284,7 @@ class TestMachMessageServer : public MachMessageServer::Interface,
   std::set<mach_msg_id_t> MachMessageServerRequestIDs() override {
     static constexpr mach_msg_id_t request_ids[] = {kRequestMessageID};
     return std::set<mach_msg_id_t>(&request_ids[0],
-                                   &request_ids[base::size(request_ids)]);
+                                   &request_ids[std::size(request_ids)]);
   }
 
   mach_msg_size_t MachMessageServerRequestSize() override {

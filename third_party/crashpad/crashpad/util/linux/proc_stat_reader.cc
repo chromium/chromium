@@ -18,7 +18,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "util/file/file_io.h"
@@ -48,7 +49,7 @@ bool ProcStatReader::Initialize(PtraceConnection* connection, pid_t tid) {
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
 
   char path[32];
-  snprintf(path, base::size(path), "/proc/%d/stat", tid);
+  snprintf(path, std::size(path), "/proc/%d/stat", tid);
   if (!connection->ReadFileContents(base::FilePath(path), &contents_)) {
     return false;
   }

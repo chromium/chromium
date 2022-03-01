@@ -14,7 +14,8 @@
 
 #include "snapshot/sanitized/sanitization_information.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "util/misc/from_pointer_cast.h"
@@ -66,7 +67,7 @@ const char* const kNonEmptyAllowedAnnotations[] = {"string1",
 TEST_F(AllowedAnnotationsTest, NonEmptyAllowedAnnotations) {
   ASSERT_TRUE(DoReadAllowedAnnotations(kNonEmptyAllowedAnnotations));
   ASSERT_EQ(allowed_annotations_.size(),
-            base::size(kNonEmptyAllowedAnnotations) - 1);
+            std::size(kNonEmptyAllowedAnnotations) - 1);
   for (size_t index = 0; index < allowed_annotations_.size(); ++index) {
     EXPECT_EQ(allowed_annotations_[index], kNonEmptyAllowedAnnotations[index]);
   }

@@ -14,9 +14,9 @@
 
 #include "minidump/minidump_byte_array_writer.h"
 
+#include <iterator>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -35,7 +35,7 @@ TEST(MinidumpByteArrayWriter, Write) {
       {},
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS, i));
 
     StringFile string_file;
@@ -67,7 +67,7 @@ TEST(MinidumpByteArrayWriter, SetData) {
     {},
   };
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
+  for (size_t i = 0; i < std::size(kTests); ++i) {
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS, i));
 
     crashpad::MinidumpByteArrayWriter writer;

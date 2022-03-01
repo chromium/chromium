@@ -25,11 +25,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <map>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -68,7 +68,7 @@ TEST(ProcessReaderMac, SelfBasic) {
   EXPECT_EQ(process_reader.ParentProcessID(), getppid());
 
   static constexpr char kTestMemory[] = "Some test memory";
-  char buffer[base::size(kTestMemory)];
+  char buffer[std::size(kTestMemory)];
   ASSERT_TRUE(process_reader.Memory()->Read(
       FromPointerCast<mach_vm_address_t>(kTestMemory),
       sizeof(kTestMemory),
@@ -702,11 +702,11 @@ class ScopedOpenCLNoOpKernel {
     const size_t source_lengths[] = {
         strlen(sources[0]),
     };
-    static_assert(base::size(sources) == base::size(source_lengths),
+    static_assert(std::size(sources) == std::size(source_lengths),
                   "arrays must be parallel");
 
     program_ = clCreateProgramWithSource(
-        context_, base::size(sources), sources, source_lengths, &rv);
+        context_, std::size(sources), sources, source_lengths, &rv);
     ASSERT_EQ(rv, CL_SUCCESS) << "clCreateProgramWithSource";
 
     rv = clBuildProgram(

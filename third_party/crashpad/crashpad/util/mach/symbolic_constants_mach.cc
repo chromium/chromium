@@ -17,7 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/strings/stringprintf.h"
 #include "util/mach/exception_behaviors.h"
 #include "util/mach/mach_extensions.h"
@@ -45,7 +46,7 @@ constexpr const char* kExceptionNames[] = {
     "GUARD",
     "CORPSE_NOTIFY",
 };
-static_assert(base::size(kExceptionNames) == EXC_TYPES_COUNT,
+static_assert(std::size(kExceptionNames) == EXC_TYPES_COUNT,
               "kExceptionNames length");
 
 constexpr char kExcPrefix[] = "EXC_";
@@ -170,7 +171,7 @@ std::string ThreadStateFlavorFullToShort(const base::StringPiece& flavor) {
         {"_STATE32", "32"},
         {"_STATE64", "64"},
     };
-    for (size_t suffix_index = 0; suffix_index < base::size(kStateSuffixes);
+    for (size_t suffix_index = 0; suffix_index < std::size(kStateSuffixes);
          ++suffix_index) {
       const char* suffix = kStateSuffixes[suffix_index].orig;
       size_t suffix_len = strlen(suffix);
@@ -194,7 +195,7 @@ namespace crashpad {
 std::string ExceptionToString(exception_type_t exception,
                               SymbolicConstantToStringOptions options) {
   const char* exception_name =
-      implicit_cast<size_t>(exception) < base::size(kExceptionNames)
+      implicit_cast<size_t>(exception) < std::size(kExceptionNames)
           ? kExceptionNames[exception]
           : nullptr;
   if (!exception_name) {
@@ -220,7 +221,7 @@ bool StringToException(const base::StringPiece& string,
     base::StringPiece short_string =
         can_match_full ? string.substr(strlen(kExcPrefix)) : string;
     for (exception_type_t index = 0;
-         index < implicit_cast<exception_type_t>(base::size(kExceptionNames));
+         index < implicit_cast<exception_type_t>(std::size(kExceptionNames));
          ++index) {
       const char* exception_name = kExceptionNames[index];
       if (!exception_name) {
@@ -250,7 +251,7 @@ std::string ExceptionMaskToString(exception_mask_t exception_mask,
   exception_mask_t local_exception_mask = exception_mask;
   std::string mask_string;
   bool has_forbidden_or = false;
-  for (size_t exception = 0; exception < base::size(kExceptionNames);
+  for (size_t exception = 0; exception < std::size(kExceptionNames);
        ++exception) {
     const char* exception_name = kExceptionNames[exception];
     exception_mask_t exception_mask_value = 1 << exception;
@@ -324,7 +325,7 @@ bool StringToExceptionMask(const base::StringPiece& string,
     base::StringPiece short_string =
         can_match_full ? string.substr(strlen(kExcMaskPrefix)) : string;
     for (exception_type_t index = 0;
-         index < implicit_cast<exception_type_t>(base::size(kExceptionNames));
+         index < implicit_cast<exception_type_t>(std::size(kExceptionNames));
          ++index) {
       const char* exception_name = kExceptionNames[index];
       if (!exception_name) {
@@ -363,7 +364,7 @@ std::string ExceptionBehaviorToString(exception_behavior_t behavior,
   const exception_behavior_t basic_behavior = ExceptionBehaviorBasic(behavior);
 
   const char* behavior_name =
-      implicit_cast<size_t>(basic_behavior) < base::size(kBehaviorNames)
+      implicit_cast<size_t>(basic_behavior) < std::size(kBehaviorNames)
           ? kBehaviorNames[basic_behavior]
           : nullptr;
   if (!behavior_name) {
@@ -430,8 +431,7 @@ bool StringToExceptionBehavior(const base::StringPiece& string,
     base::StringPiece short_string =
         can_match_full ? sp.substr(strlen(kBehaviorPrefix)) : sp;
     for (exception_behavior_t index = 0;
-         index <
-         implicit_cast<exception_behavior_t>(base::size(kBehaviorNames));
+         index < implicit_cast<exception_behavior_t>(std::size(kBehaviorNames));
          ++index) {
       const char* behavior_name = kBehaviorNames[index];
       if (!behavior_name) {
@@ -467,13 +467,13 @@ bool StringToExceptionBehavior(const base::StringPiece& string,
 std::string ThreadStateFlavorToString(thread_state_flavor_t flavor,
                                       SymbolicConstantToStringOptions options) {
   const char* flavor_name =
-      implicit_cast<size_t>(flavor) < base::size(kFlavorNames)
+      implicit_cast<size_t>(flavor) < std::size(kFlavorNames)
           ? kFlavorNames[flavor]
           : nullptr;
 
   if (!flavor_name) {
     for (size_t generic_flavor_index = 0;
-         generic_flavor_index < base::size(kGenericFlavorNames);
+         generic_flavor_index < std::size(kGenericFlavorNames);
          ++generic_flavor_index) {
       if (flavor == kGenericFlavorNames[generic_flavor_index].flavor) {
         flavor_name = kGenericFlavorNames[generic_flavor_index].name;
@@ -500,7 +500,7 @@ bool StringToThreadStateFlavor(const base::StringPiece& string,
                                thread_state_flavor_t* flavor) {
   if ((options & kAllowFullName) || (options & kAllowShortName)) {
     for (thread_state_flavor_t index = 0;
-         index < implicit_cast<thread_state_flavor_t>(base::size(kFlavorNames));
+         index < implicit_cast<thread_state_flavor_t>(std::size(kFlavorNames));
          ++index) {
       const char* flavor_name = kFlavorNames[index];
       if (!flavor_name) {
@@ -520,7 +520,7 @@ bool StringToThreadStateFlavor(const base::StringPiece& string,
     }
 
     for (size_t generic_flavor_index = 0;
-         generic_flavor_index < base::size(kGenericFlavorNames);
+         generic_flavor_index < std::size(kGenericFlavorNames);
          ++generic_flavor_index) {
       const char* flavor_name = kGenericFlavorNames[generic_flavor_index].name;
       thread_state_flavor_t flavor_number =

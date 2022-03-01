@@ -17,7 +17,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
 
 namespace crashpad {
 namespace test {
@@ -44,28 +44,28 @@ void InitializeCPUContextFxsave(FxsaveType* fxsave, uint32_t* seed) {
   fxsave->reserved_3 = static_cast<uint16_t>(value++);
   fxsave->mxcsr = value++;
   fxsave->mxcsr_mask = value++;
-  for (size_t st_mm_index = 0; st_mm_index < base::size(fxsave->st_mm);
+  for (size_t st_mm_index = 0; st_mm_index < std::size(fxsave->st_mm);
        ++st_mm_index) {
-    for (size_t byte = 0; byte < base::size(fxsave->st_mm[st_mm_index].st);
+    for (size_t byte = 0; byte < std::size(fxsave->st_mm[st_mm_index].st);
          ++byte) {
       fxsave->st_mm[st_mm_index].st[byte] = static_cast<uint8_t>(value++);
     }
     for (size_t byte = 0;
-         byte < base::size(fxsave->st_mm[st_mm_index].st_reserved);
+         byte < std::size(fxsave->st_mm[st_mm_index].st_reserved);
          ++byte) {
       fxsave->st_mm[st_mm_index].st_reserved[byte] =
           static_cast<uint8_t>(value);
     }
   }
-  for (size_t xmm_index = 0; xmm_index < base::size(fxsave->xmm); ++xmm_index) {
-    for (size_t byte = 0; byte < base::size(fxsave->xmm[xmm_index]); ++byte) {
+  for (size_t xmm_index = 0; xmm_index < std::size(fxsave->xmm); ++xmm_index) {
+    for (size_t byte = 0; byte < std::size(fxsave->xmm[xmm_index]); ++byte) {
       fxsave->xmm[xmm_index][byte] = static_cast<uint8_t>(value++);
     }
   }
-  for (size_t byte = 0; byte < base::size(fxsave->reserved_4); ++byte) {
+  for (size_t byte = 0; byte < std::size(fxsave->reserved_4); ++byte) {
     fxsave->reserved_4[byte] = static_cast<uint8_t>(value++);
   }
-  for (size_t byte = 0; byte < base::size(fxsave->available); ++byte) {
+  for (size_t byte = 0; byte < std::size(fxsave->available); ++byte) {
     fxsave->available[byte] = static_cast<uint8_t>(value++);
   }
 
@@ -174,7 +174,7 @@ void InitializeCPUContextARM(CPUContext* context, uint32_t seed) {
 
   uint32_t value = seed;
 
-  for (size_t index = 0; index < base::size(arm->regs); ++index) {
+  for (size_t index = 0; index < std::size(arm->regs); ++index) {
     arm->regs[index] = value++;
   }
   arm->fp = value++;
@@ -185,7 +185,7 @@ void InitializeCPUContextARM(CPUContext* context, uint32_t seed) {
   arm->pc = value++;
   arm->cpsr = value++;
 
-  for (size_t index = 0; index < base::size(arm->vfp_regs.vfp); ++index) {
+  for (size_t index = 0; index < std::size(arm->vfp_regs.vfp); ++index) {
     arm->vfp_regs.vfp[index] = value++;
   }
   arm->vfp_regs.fpscr = value++;
@@ -205,14 +205,14 @@ void InitializeCPUContextARM64(CPUContext* context, uint32_t seed) {
 
   uint32_t value = seed;
 
-  for (size_t index = 0; index < base::size(arm64->regs); ++index) {
+  for (size_t index = 0; index < std::size(arm64->regs); ++index) {
     arm64->regs[index] = value++;
   }
   arm64->sp = value++;
   arm64->pc = value++;
   arm64->spsr = value++;
 
-  for (size_t index = 0; index < base::size(arm64->fpsimd); ++index) {
+  for (size_t index = 0; index < std::size(arm64->fpsimd); ++index) {
     arm64->fpsimd[index].lo = value++;
     arm64->fpsimd[index].hi = value++;
   }
@@ -231,7 +231,7 @@ void InitializeCPUContextMIPS(CPUContext* context, uint32_t seed) {
 
   uint32_t value = seed;
 
-  for (size_t index = 0; index < base::size(mipsel->regs); ++index) {
+  for (size_t index = 0; index < std::size(mipsel->regs); ++index) {
     mipsel->regs[index] = value++;
   }
 
@@ -242,7 +242,7 @@ void InitializeCPUContextMIPS(CPUContext* context, uint32_t seed) {
   mipsel->cp0_status = value++;
   mipsel->cp0_cause = value++;
 
-  for (size_t index = 0; index < base::size(mipsel->fpregs.fregs); ++index) {
+  for (size_t index = 0; index < std::size(mipsel->fpregs.fregs); ++index) {
     mipsel->fpregs.fregs[index]._fp_fregs = static_cast<float>(value++);
   }
 
@@ -267,7 +267,7 @@ void InitializeCPUContextMIPS64(CPUContext* context, uint32_t seed) {
 
   uint64_t value = seed;
 
-  for (size_t index = 0; index < base::size(mips64->regs); ++index) {
+  for (size_t index = 0; index < std::size(mips64->regs); ++index) {
     mips64->regs[index] = value++;
   }
 
@@ -278,7 +278,7 @@ void InitializeCPUContextMIPS64(CPUContext* context, uint32_t seed) {
   mips64->cp0_status = value++;
   mips64->cp0_cause = value++;
 
-  for (size_t index = 0; index < base::size(mips64->fpregs.dregs); ++index) {
+  for (size_t index = 0; index < std::size(mips64->fpregs.dregs); ++index) {
     mips64->fpregs.dregs[index] = static_cast<double>(value++);
   }
 

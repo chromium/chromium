@@ -16,9 +16,9 @@
 
 #include <sys/types.h>
 
+#include <iterator>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -119,7 +119,7 @@ TEST(CheckedAddressRange, IsValid) {
       {0xffffffffffffffff, 1, kInvalid},
   };
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS
                                     ", base 0x%" PRIx64 ", size 0x%" PRIx64,
@@ -170,7 +170,7 @@ TEST(CheckedAddressRange, ContainsValue) {
   CheckedAddressRange parent_range_32(false, 0x2000, 0x1000);
   ASSERT_TRUE(parent_range_32.IsValid());
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ", value 0x%" PRIx64, index, testcase.value));
@@ -227,7 +227,7 @@ TEST(CheckedAddressRange, ContainsRange) {
   CheckedAddressRange parent_range_32(false, 0x2000, 0x1000);
   ASSERT_TRUE(parent_range_32.IsValid());
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& testcase = kTestData[index];
     SCOPED_TRACE(base::StringPrintf("index %" PRIuS
                                     ", base 0x%" PRIx64 ", size 0x%" PRIx64,

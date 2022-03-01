@@ -17,7 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/annotation.h"
@@ -157,8 +158,7 @@ void PEImageAnnotationsReader::ReadCrashpadAnnotationsList(
     snapshot.type = current.type;
 
     char name[Annotation::kNameMaxLength];
-    if (!process_reader_->Memory()->Read(
-            current.name, base::size(name), name)) {
+    if (!process_reader_->Memory()->Read(current.name, std::size(name), name)) {
       LOG(WARNING) << "could not read annotation name at index " << index
                    << " in " << base::WideToUTF8(name_);
       continue;

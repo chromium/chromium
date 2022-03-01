@@ -16,7 +16,8 @@
 
 #include <stdint.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/logging.h"
 #include "util/file/file_writer.h"
 #include "util/numeric/safe_assignment.h"
@@ -245,7 +246,7 @@ bool MinidumpWritable::WritePaddingAndObject(FileWriterInterface* file_writer) {
   // The number of elements in kZeroes must be at least one less than the
   // maximum Alignment() ever encountered.
   static constexpr uint8_t kZeroes[kMaximumAlignment - 1] = {};
-  DCHECK_LE(leading_pad_bytes_, base::size(kZeroes));
+  DCHECK_LE(leading_pad_bytes_, std::size(kZeroes));
 
   if (leading_pad_bytes_) {
     if (!file_writer->Write(&kZeroes, leading_pad_bytes_)) {

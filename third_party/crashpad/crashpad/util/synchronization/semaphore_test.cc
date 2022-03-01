@@ -16,7 +16,8 @@
 
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 
@@ -127,7 +128,7 @@ TEST(Semaphore, TenThreaded) {
   Semaphore semaphore(5);
   ThreadMainInfo info[10];
   size_t iterations = 0;
-  for (size_t index = 0; index < base::size(info); ++index) {
+  for (size_t index = 0; index < std::size(info); ++index) {
     info[index].semaphore = &semaphore;
     info[index].iterations = index;
     iterations += info[index].iterations;
@@ -139,7 +140,7 @@ TEST(Semaphore, TenThreaded) {
     semaphore.Signal();
   }
 
-  for (size_t index = 0; index < base::size(info); ++index) {
+  for (size_t index = 0; index < std::size(info); ++index) {
     JoinThread(&info[index]);
   }
 }

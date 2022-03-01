@@ -17,10 +17,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <iterator>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_stream_writer.h"
@@ -156,7 +156,7 @@ TEST(MinidumpFileWriter, AddUserExtensionStream) {
   minidump_file.SetTimestamp(kTimestamp);
 
   static constexpr uint8_t kStreamData[] = "Hello World!";
-  constexpr size_t kStreamSize = base::size(kStreamData);
+  constexpr size_t kStreamSize = std::size(kStreamData);
   constexpr MinidumpStreamType kStreamType =
       static_cast<MinidumpStreamType>(0x4d);
 

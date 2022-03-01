@@ -17,9 +17,9 @@
 #include <windows.h>
 #include <dbghelp.h>
 
+#include <iterator>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_annotation_writer.h"
 #include "minidump/minidump_simple_string_dictionary_writer.h"
@@ -155,9 +155,9 @@ TEST(MinidumpModuleCrashpadInfoWriter, FullModule) {
                 sizeof(MinidumpSimpleStringDictionaryEntry) +
                 sizeof(MinidumpAnnotationList) + 2 +  // padding
                 sizeof(MinidumpAnnotation) + sizeof(MinidumpUTF8String) +
-                base::size(kEntry) + 2 +  // padding
-                sizeof(MinidumpUTF8String) + base::size(kKey) +
-                sizeof(MinidumpUTF8String) + base::size(kValue) +
+                std::size(kEntry) + 2 +  // padding
+                sizeof(MinidumpUTF8String) + std::size(kKey) +
+                sizeof(MinidumpUTF8String) + std::size(kValue) +
                 sizeof(MinidumpUTF8String) + annotation.name.size() + 1 +
                 sizeof(MinidumpByteArray) + annotation.value.size());
 

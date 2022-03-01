@@ -18,7 +18,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
 #include "test/hex_string.h"
 
@@ -124,7 +125,7 @@ TEST(CPUContextX86, FxsaveToFsave) {
       &fxsave.st_mm[6].st, kExponentAllZero, false, kFractionAllZero);
   SetX87Register(
       &fxsave.st_mm[7].st, kExponentNormal, true, kFractionNormal);  // valid
-  for (size_t index = 0; index < base::size(fxsave.st_mm); ++index) {
+  for (size_t index = 0; index < std::size(fxsave.st_mm); ++index) {
     memset(&fxsave.st_mm[index].st_reserved,
            0x5a,
            sizeof(fxsave.st_mm[index].st_reserved));
@@ -148,10 +149,10 @@ TEST(CPUContextX86, FxsaveToFsave) {
   EXPECT_EQ(fsave.fpu_dp, fxsave.fpu_dp);
   EXPECT_EQ(fsave.fpu_ds, fxsave.fpu_ds);
   EXPECT_EQ(fsave.reserved_4, 0);
-  for (size_t index = 0; index < base::size(fsave.st); ++index) {
-    EXPECT_EQ(BytesToHexString(fsave.st[index], base::size(fsave.st[index])),
+  for (size_t index = 0; index < std::size(fsave.st); ++index) {
+    EXPECT_EQ(BytesToHexString(fsave.st[index], std::size(fsave.st[index])),
               BytesToHexString(fxsave.st_mm[index].st,
-                               base::size(fxsave.st_mm[index].st)))
+                               std::size(fxsave.st_mm[index].st)))
         << "index " << index;
   }
 }
@@ -204,14 +205,14 @@ TEST(CPUContextX86, FsaveToFxsave) {
   EXPECT_EQ(fxsave.reserved_3, 0);
   EXPECT_EQ(fxsave.mxcsr, 0u);
   EXPECT_EQ(fxsave.mxcsr_mask, 0u);
-  for (size_t index = 0; index < base::size(fxsave.st_mm); ++index) {
+  for (size_t index = 0; index < std::size(fxsave.st_mm); ++index) {
     EXPECT_EQ(BytesToHexString(fxsave.st_mm[index].st,
-                               base::size(fxsave.st_mm[index].st)),
-              BytesToHexString(fsave.st[index], base::size(fsave.st[index])))
+                               std::size(fxsave.st_mm[index].st)),
+              BytesToHexString(fsave.st[index], std::size(fsave.st[index])))
         << "index " << index;
     EXPECT_EQ(BytesToHexString(fxsave.st_mm[index].st_reserved,
-                               base::size(fxsave.st_mm[index].st_reserved)),
-              std::string(base::size(fxsave.st_mm[index].st_reserved) * 2, '0'))
+                               std::size(fxsave.st_mm[index].st_reserved)),
+              std::string(std::size(fxsave.st_mm[index].st_reserved) * 2, '0'))
         << "index " << index;
   }
   size_t unused_len = sizeof(fxsave) - offsetof(decltype(fxsave), xmm);
@@ -318,7 +319,7 @@ TEST(CPUContextX86, FxsaveToFsaveTagWord) {
   // In this set, everything is valid.
   fsw = 0 << 11;  // top = 0: logical 0-7 maps to physical 0-7
   fxsave_tag = 0xff;  // nothing empty
-  for (size_t index = 0; index < base::size(st_mm); ++index) {
+  for (size_t index = 0; index < std::size(st_mm); ++index) {
     SetX87OrMMXRegister(&st_mm[index], kExponentNormal, true, kFractionAllZero);
   }
   EXPECT_EQ(CPUContextX86::FxsaveToFsaveTagWord(fsw, fxsave_tag, st_mm), 0);

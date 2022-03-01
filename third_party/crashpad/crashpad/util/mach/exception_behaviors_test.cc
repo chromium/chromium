@@ -16,7 +16,8 @@
 
 #include <sys/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/mach/mach_extensions.h"
@@ -53,7 +54,7 @@ TEST(ExceptionBehaviors, ExceptionBehaviors) {
        EXCEPTION_STATE_IDENTITY},
   };
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto& test_data = kTestData[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %zu, behavior %d", index, test_data.behavior));

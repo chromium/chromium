@@ -14,7 +14,8 @@
 
 #include "util/stdlib/thread_safe_vector.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
 #include "util/thread/thread.h"
 
@@ -57,12 +58,12 @@ TEST(ThreadSafeVector, ThreadSafeVector) {
   EXPECT_TRUE(vector.empty());
 
   ThreadSafeVectorTestThread threads[100];
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     threads[index].SetTestParameters(
         &thread_safe_vector, static_cast<int>(index * kElementsPerThread));
   }
 
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     threads[index].Start();
 
     if (index % 10 == 0) {
@@ -79,8 +80,8 @@ TEST(ThreadSafeVector, ThreadSafeVector) {
 
   std::vector<int> drained = thread_safe_vector.Drain();
   vector.insert(vector.end(), drained.begin(), drained.end());
-  bool found[base::size(threads) * kElementsPerThread] = {};
-  EXPECT_EQ(vector.size(), base::size(found));
+  bool found[std::size(threads) * kElementsPerThread] = {};
+  EXPECT_EQ(vector.size(), std::size(found));
   for (int element : vector) {
     EXPECT_FALSE(found[element]) << element;
     found[element] = true;

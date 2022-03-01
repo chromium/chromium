@@ -22,7 +22,8 @@
 #include <wchar.h>
 #include <winhttp.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
@@ -96,7 +97,7 @@ std::string WinHttpMessage(const char* extra) {
                              error_code,
                              0,
                              msgbuf,
-                             static_cast<DWORD>(base::size(msgbuf)),
+                             static_cast<DWORD>(std::size(msgbuf)),
                              nullptr);
   if (!len) {
     return base::StringPrintf("%s: error 0x%lx while retrieving error 0x%lx",

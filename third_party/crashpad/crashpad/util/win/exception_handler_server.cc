@@ -18,9 +18,9 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -306,7 +306,7 @@ void ExceptionHandlerServer::InitializeWithInheritedDataForInitialClient(
 void ExceptionHandlerServer::Run(Delegate* delegate) {
   uint64_t shutdown_token = base::RandUint64();
   ScopedKernelHANDLE thread_handles[kPipeInstances];
-  for (size_t i = 0; i < base::size(thread_handles); ++i) {
+  for (size_t i = 0; i < std::size(thread_handles); ++i) {
     HANDLE pipe;
     if (first_pipe_instance_.is_valid()) {
       pipe = first_pipe_instance_.release();
@@ -358,7 +358,7 @@ void ExceptionHandlerServer::Run(Delegate* delegate) {
   }
 
   // Signal to the named pipe instances that they should terminate.
-  for (size_t i = 0; i < base::size(thread_handles); ++i) {
+  for (size_t i = 0; i < std::size(thread_handles); ++i) {
     ClientToServerMessage message;
     memset(&message, 0, sizeof(message));
     message.type = ClientToServerMessage::kShutdown;

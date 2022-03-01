@@ -702,17 +702,6 @@ class CrashpadClient {
   static bool DumpAndCrashTargetProcess(HANDLE process,
                                         HANDLE blame_thread,
                                         DWORD exception_code);
-
-  enum : uint32_t {
-    //! \brief The exception code (roughly "Client called") used when
-    //!     DumpAndCrashTargetProcess() triggers an exception in a target
-    //!     process.
-    //!
-    //! \note This value does not have any bits of the top nibble set, to avoid
-    //!     confusion with real exception codes which tend to have those bits
-    //!     set.
-    kTriggeredExceptionCode = 0xcca11ed,
-  };
 #endif
 
 #if BUILDFLAG(IS_APPLE) || DOXYGEN

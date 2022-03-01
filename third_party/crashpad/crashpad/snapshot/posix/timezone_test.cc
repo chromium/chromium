@@ -18,9 +18,9 @@
 #include <sys/time.h>
 #include <time.h>
 
+#include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -154,7 +154,7 @@ TEST(TimeZone, Basic) {
       {"UTC", false, 0, 0, "UTC", "UTC"},
   };
 
-  for (size_t index = 0; index < base::size(kTestTimeZones); ++index) {
+  for (size_t index = 0; index < std::size(kTestTimeZones); ++index) {
     const auto& test_time_zone = kTestTimeZones[index];
     const char* tz = test_time_zone.tz;
     SCOPED_TRACE(base::StringPrintf("index %zu, tz %s", index, tz));

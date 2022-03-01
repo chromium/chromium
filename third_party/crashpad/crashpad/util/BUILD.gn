@@ -476,6 +476,7 @@ crashpad_static_library("util") {
       "win/critical_section_with_debug_info.h",
       "win/exception_handler_server.cc",
       "win/exception_handler_server.h",
+      "win/exception_codes.h",
       "win/get_function.cc",
       "win/get_function.h",
       "win/get_module_information.cc",

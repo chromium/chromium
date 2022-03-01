@@ -16,11 +16,11 @@
 
 #include <stdio.h>
 
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
 #include "base/atomicops.h"
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "gmock/gmock.h"
@@ -643,7 +643,7 @@ void LockingTest(FileLocking main_lock, FileLocking other_locks) {
 
   LockingTestThread threads[20];
   int expected_iterations = 0;
-  for (size_t index = 0; index < base::size(threads); ++index) {
+  for (size_t index = 0; index < std::size(threads); ++index) {
     int iterations_for_this_thread = static_cast<int>(index * 10);
     threads[index].Init(
         (other_locks == FileLocking::kShared)

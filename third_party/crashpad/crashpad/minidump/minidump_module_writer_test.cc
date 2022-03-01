@@ -17,9 +17,9 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <iterator>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -793,10 +793,10 @@ void InitializeTestModuleSnapshotFromMinidumpModule(
 
 TEST(MinidumpModuleWriter, InitializeFromSnapshot) {
   MINIDUMP_MODULE expect_modules[3] = {};
-  const char* module_paths[base::size(expect_modules)] = {};
-  const char* module_pdbs[base::size(expect_modules)] = {};
-  UUID uuids[base::size(expect_modules)] = {};
-  uint32_t ages[base::size(expect_modules)] = {};
+  const char* module_paths[std::size(expect_modules)] = {};
+  const char* module_pdbs[std::size(expect_modules)] = {};
+  UUID uuids[std::size(expect_modules)] = {};
+  uint32_t ages[std::size(expect_modules)] = {};
 
   expect_modules[0].BaseOfImage = 0x100101000;
   expect_modules[0].SizeOfImage = 0xf000;
@@ -887,7 +887,7 @@ TEST(MinidumpModuleWriter, InitializeFromSnapshot) {
 
   std::vector<std::unique_ptr<TestModuleSnapshot>> module_snapshots_owner;
   std::vector<const ModuleSnapshot*> module_snapshots;
-  for (size_t index = 0; index < base::size(expect_modules); ++index) {
+  for (size_t index = 0; index < std::size(expect_modules); ++index) {
     module_snapshots_owner.push_back(std::make_unique<TestModuleSnapshot>());
     TestModuleSnapshot* module_snapshot = module_snapshots_owner.back().get();
     InitializeTestModuleSnapshotFromMinidumpModule(module_snapshot,

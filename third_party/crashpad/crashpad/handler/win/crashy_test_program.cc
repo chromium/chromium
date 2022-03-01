@@ -19,12 +19,12 @@
 #include <windows.h>
 #include <winternl.h>
 
+#include <iterator>
 #include <map>
 #include <string>
 #include <type_traits>
 #include <vector>
 
-#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -83,11 +83,11 @@ void AllocateMemoryOfVariousProtections() {
   // All of these allocations are leaked, we want to view them in windbg via
   // !vprot.
   void* reserve = VirtualAlloc(
-      nullptr, base::size(kPageTypes) * kPageSize, MEM_RESERVE, PAGE_READWRITE);
+      nullptr, std::size(kPageTypes) * kPageSize, MEM_RESERVE, PAGE_READWRITE);
   PCHECK(reserve) << "VirtualAlloc MEM_RESERVE";
   uintptr_t reserve_as_int = reinterpret_cast<uintptr_t>(reserve);
 
-  for (size_t i = 0; i < base::size(kPageTypes); ++i) {
+  for (size_t i = 0; i < std::size(kPageTypes); ++i) {
     void* result =
         VirtualAlloc(reinterpret_cast<void*>(reserve_as_int + (kPageSize * i)),
                      kPageSize,

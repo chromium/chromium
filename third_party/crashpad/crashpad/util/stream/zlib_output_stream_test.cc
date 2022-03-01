@@ -17,8 +17,8 @@
 #include <string.h>
 
 #include <algorithm>
+#include <iterator>
 
-#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -102,7 +102,7 @@ TEST_F(ZlibOutputStreamTest, WriteDeterministicLongDataMultipleTimes) {
       4, 96, 40, kLongDataLength - 4 - 96 - 40};
 
   size_t offset = 0;
-  for (size_t index = 0; index < base::size(kWriteLengths); ++index) {
+  for (size_t index = 0; index < std::size(kWriteLengths); ++index) {
     const size_t write_length = kWriteLengths[index];
     SCOPED_TRACE(base::StringPrintf(
         "offset %zu, write_length %zu", offset, write_length));

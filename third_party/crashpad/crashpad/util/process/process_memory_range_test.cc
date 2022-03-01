@@ -14,9 +14,9 @@
 
 #include "util/process/process_memory_range.h"
 
+#include <iterator>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/process_type.h"
@@ -69,28 +69,28 @@ TEST(ProcessMemoryRange, Basic) {
   auto string1_addr = FromPointerCast<VMAddress>(kTestObject.string1);
   auto string2_addr = FromPointerCast<VMAddress>(kTestObject.string2);
   ASSERT_TRUE(range.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
   EXPECT_STREQ(string.c_str(), kTestObject.string1);
 
   ASSERT_TRUE(range.ReadCStringSizeLimited(
-      string2_addr, base::size(kTestObject.string2), &string));
+      string2_addr, std::size(kTestObject.string2), &string));
   EXPECT_STREQ(string.c_str(), kTestObject.string2);
 
   // Limit the range to remove access to string2.
   ProcessMemoryRange range2;
   ASSERT_TRUE(range2.Initialize(range));
   ASSERT_TRUE(
-      range2.RestrictRange(string1_addr, base::size(kTestObject.string1)));
+      range2.RestrictRange(string1_addr, std::size(kTestObject.string1)));
   EXPECT_TRUE(range2.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
   EXPECT_FALSE(range2.ReadCStringSizeLimited(
-      string2_addr, base::size(kTestObject.string2), &string));
+      string2_addr, std::size(kTestObject.string2), &string));
   EXPECT_FALSE(range2.Read(object_addr, sizeof(object), &object));
 
   // String reads fail if the NUL terminator is outside the range.
   ASSERT_TRUE(range2.RestrictRange(string1_addr, strlen(kTestObject.string1)));
   EXPECT_FALSE(range2.ReadCStringSizeLimited(
-      string1_addr, base::size(kTestObject.string1), &string));
+      string1_addr, std::size(kTestObject.string1), &string));
 
   // New range outside the old range.
   EXPECT_FALSE(range2.RestrictRange(string1_addr - 1, 1));

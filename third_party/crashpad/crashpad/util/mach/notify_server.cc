@@ -14,7 +14,8 @@
 
 #include "util/mach/notify_server.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "util/mach/mach_message.h"
 #include "util/mach/notifyServer.h"
 
@@ -227,7 +228,7 @@ std::set<mach_msg_id_t> NotifyServer::MachMessageServerRequestIDs() {
       MACH_NOTIFY_DEAD_NAME,
   };
   return std::set<mach_msg_id_t>(&request_ids[0],
-                                 &request_ids[base::size(request_ids)]);
+                                 &request_ids[std::size(request_ids)]);
 }
 
 mach_msg_size_t NotifyServer::MachMessageServerRequestSize() {

@@ -20,7 +20,8 @@
 #include <zircon/syscalls/port.h>
 #include <zircon/types.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
 #include "test/multiprocess_exec.h"
 #include "test/test_paths.h"
@@ -35,7 +36,7 @@ TEST(ProcessReaderFuchsia, SelfBasic) {
   ASSERT_TRUE(process_reader.Initialize(*zx::process::self()));
 
   static constexpr char kTestMemory[] = "Some test memory";
-  char buffer[base::size(kTestMemory)];
+  char buffer[std::size(kTestMemory)];
   ASSERT_TRUE(process_reader.Memory()->Read(
       reinterpret_cast<zx_vaddr_t>(kTestMemory), sizeof(kTestMemory), &buffer));
   EXPECT_STREQ(kTestMemory, buffer);

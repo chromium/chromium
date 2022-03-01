@@ -21,8 +21,8 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <iterator>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -161,7 +161,7 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   int maxfilesperproc;
   size_t maxfilesperproc_size = sizeof(maxfilesperproc);
   if (sysctl(oid,
-             base::size(oid),
+             std::size(oid),
              &maxfilesperproc,
              &maxfilesperproc_size,
              nullptr,

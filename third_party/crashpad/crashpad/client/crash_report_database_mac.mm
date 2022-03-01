@@ -14,9 +14,9 @@
 
 #include "client/crash_report_database.h"
 
+#import <Foundation/Foundation.h>
 #include <errno.h>
 #include <fcntl.h>
-#import <Foundation/Foundation.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -25,9 +25,9 @@
 #include <unistd.h>
 #include <uuid/uuid.h>
 
+#include <iterator>
 #include <tuple>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/posix/eintr_wrapper.h"
@@ -282,7 +282,7 @@ bool CrashReportDatabaseMac::Initialize(bool may_create) {
   }
 
   // Create the three processing directories for the database.
-  for (size_t i = 0; i < base::size(kReportDirectories); ++i) {
+  for (size_t i = 0; i < std::size(kReportDirectories); ++i) {
     if (!CreateOrEnsureDirectoryExists(base_dir_.Append(kReportDirectories[i])))
       return false;
   }

@@ -24,10 +24,10 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
@@ -167,8 +167,8 @@ mach_port_t ChildPortHandshakeServer::RunServer(
          0,
          0,
          nullptr);
-  int rv = HANDLE_EINTR(kevent(
-      kq.get(), changelist, base::size(changelist), nullptr, 0, nullptr));
+  int rv = HANDLE_EINTR(
+      kevent(kq.get(), changelist, std::size(changelist), nullptr, 0, nullptr));
   PCHECK(rv != -1) << "kevent";
 
   ChildPortServer child_port_server(this);

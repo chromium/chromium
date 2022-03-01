@@ -40,6 +40,7 @@
 #include "util/win/command_line.h"
 #include "util/win/context_wrappers.h"
 #include "util/win/critical_section_with_debug_info.h"
+#include "util/win/exception_codes.h"
 #include "util/win/get_function.h"
 #include "util/win/handle.h"
 #include "util/win/initial_client_data.h"
@@ -927,7 +928,7 @@ bool CrashpadClient::DumpAndCrashTargetProcess(HANDLE process,
 
     // ecx = kTriggeredExceptionCode for dwExceptionCode.
     data_to_write.push_back(0xb9);
-    AddUint32(&data_to_write, kTriggeredExceptionCode);
+    AddUint32(&data_to_write, ExceptionCodes::kTriggeredExceptionCode);
 
     // jmp to RaiseException() via rax.
     data_to_write.push_back(0x48);  // mov rax, imm.

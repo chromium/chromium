@@ -16,7 +16,8 @@
 
 #include <windows.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_context.h"
@@ -87,13 +88,13 @@ void TestInitializeX86Context_FsaveWithoutFxsave() {
     for (size_t st_mm = 0; st_mm < 7; ++st_mm) {
       EXPECT_EQ(
           BytesToHexString(cpu_context_x86.fxsave.st_mm[st_mm].st,
-                           base::size(cpu_context_x86.fxsave.st_mm[st_mm].st)),
-          std::string(base::size(cpu_context_x86.fxsave.st_mm[st_mm].st) * 2,
+                           std::size(cpu_context_x86.fxsave.st_mm[st_mm].st)),
+          std::string(std::size(cpu_context_x86.fxsave.st_mm[st_mm].st) * 2,
                       '0'))
           << "st_mm " << st_mm;
     }
     EXPECT_EQ(BytesToHexString(cpu_context_x86.fxsave.st_mm[7].st,
-                               base::size(cpu_context_x86.fxsave.st_mm[7].st)),
+                               std::size(cpu_context_x86.fxsave.st_mm[7].st)),
               "0000000000000080ff7f");
 
     EXPECT_EQ(cpu_context_x86.dr0, 3u);

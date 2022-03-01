@@ -26,12 +26,12 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/stringprintf.h"
@@ -88,7 +88,7 @@ TEST(ProcessReaderLinux, SelfBasic) {
   EXPECT_EQ(process_reader.ParentProcessID(), getppid());
 
   static constexpr char kTestMemory[] = "Some test memory";
-  char buffer[base::size(kTestMemory)];
+  char buffer[std::size(kTestMemory)];
   ASSERT_TRUE(process_reader.Memory()->Read(
       reinterpret_cast<LinuxVMAddress>(kTestMemory),
       sizeof(kTestMemory),

@@ -15,7 +15,8 @@
 #include <stdio.h>
 #include <windows.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -125,7 +126,7 @@ int wmain(int argc, wchar_t* argv[]) {
 
   // This is not expected to return.
   DWORD count = WaitForMultipleObjects(
-      static_cast<DWORD>(base::size(threads)), threads, true, INFINITE);
+      static_cast<DWORD>(std::size(threads)), threads, true, INFINITE);
   if (count == WAIT_FAILED) {
     PLOG(ERROR) << "WaitForMultipleObjects";
   } else {

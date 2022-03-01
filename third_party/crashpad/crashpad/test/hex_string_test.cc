@@ -14,7 +14,8 @@
 
 #include "test/hex_string.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
 
 namespace crashpad {
@@ -25,7 +26,7 @@ TEST(HexString, HexString) {
   EXPECT_EQ(BytesToHexString(nullptr, 0), "");
 
   static constexpr char kBytes[] = "Abc123xyz \x0a\x7f\xf0\x9f\x92\xa9_";
-  EXPECT_EQ(BytesToHexString(kBytes, base::size(kBytes)),
+  EXPECT_EQ(BytesToHexString(kBytes, std::size(kBytes)),
             "41626331323378797a200a7ff09f92a95f00");
 }
 

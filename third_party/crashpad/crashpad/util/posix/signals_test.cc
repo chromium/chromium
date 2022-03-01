@@ -20,9 +20,9 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <iterator>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -410,7 +410,7 @@ TEST(Signals, WillSignalReraiseAutonomously) {
       {SIGHUP, SEGV_MAPERR, false},
       {SIGINT, SI_USER, false},
   };
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     const auto test_data = kTestData[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %zu, sig %d, code %d", index, test_data.sig, test_data.code));

@@ -100,7 +100,7 @@ bool ModuleSnapshotMinidump::InitializeModuleCodeView(
   signature = *reinterpret_cast<uint32_t*>(cv_record.data());
 
   if (signature == CodeViewRecordPDB70::kSignature) {
-    if (cv_record.size() < offsetof(CodeViewRecordPDB70, pdb_name)) {
+    if (cv_record.size() < offsetof(CodeViewRecordPDB70, pdb_name) + 1) {
       LOG(ERROR) << "CodeView record in module marked as PDB70 but too small";
       return false;
     }
@@ -111,8 +111,14 @@ bool ModuleSnapshotMinidump::InitializeModuleCodeView(
     age_ = cv_record_pdb70->age;
     uuid_ = cv_record_pdb70->uuid;
 
+    if (cv_record.back() != '\0') {
+      LOG(ERROR) << "CodeView record marked as PDB70 missing NUL-terminator in "
+                    "pdb_name";
+      return false;
+    }
+
     std::copy(cv_record.begin() + offsetof(CodeViewRecordPDB70, pdb_name),
-              cv_record.end(),
+              cv_record.end() - 1,
               std::back_inserter(debug_file_name_));
     return true;
   }

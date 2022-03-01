@@ -17,9 +17,9 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/scoped_generic.h"
 #include "base/strings/stringprintf.h"
@@ -110,13 +110,13 @@ TEST(UUID, UUID) {
   EXPECT_NE(uuid, uuid_2);
   EXPECT_LT(uuid_2, uuid);
   --uuid.data_3;
-  for (size_t index = 0; index < base::size(uuid.data_4); ++index) {
+  for (size_t index = 0; index < std::size(uuid.data_4); ++index) {
     ++uuid.data_4[index];
     EXPECT_NE(uuid, uuid_2);
     EXPECT_LT(uuid_2, uuid);
     --uuid.data_4[index];
   }
-  for (size_t index = 0; index < base::size(uuid.data_5); ++index) {
+  for (size_t index = 0; index < std::size(uuid.data_5); ++index) {
     ++uuid.data_5[index];
     EXPECT_NE(uuid, uuid_2);
     EXPECT_LT(uuid_2, uuid);
@@ -207,7 +207,7 @@ TEST(UUID, FromString) {
   uuid_zero.InitializeToZero();
   const std::string empty_uuid = uuid_zero.ToString();
 
-  for (size_t index = 0; index < base::size(kCases); ++index) {
+  for (size_t index = 0; index < std::size(kCases); ++index) {
     const TestCase& test_case = kCases[index];
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ": %s", index, test_case.uuid_string));

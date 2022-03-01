@@ -14,10 +14,10 @@
 
 #include "minidump/minidump_misc_info_writer.h"
 
+#include <iterator>
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -311,7 +311,7 @@ void MinidumpMiscInfoWriter::SetTimeZone(uint32_t time_zone_id,
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
       AsU16CStr(misc_info_.TimeZone.StandardName),
-      base::size(misc_info_.TimeZone.StandardName),
+      std::size(misc_info_.TimeZone.StandardName),
       standard_name);
 
   misc_info_.TimeZone.StandardDate = standard_date;
@@ -319,7 +319,7 @@ void MinidumpMiscInfoWriter::SetTimeZone(uint32_t time_zone_id,
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
       AsU16CStr(misc_info_.TimeZone.DaylightName),
-      base::size(misc_info_.TimeZone.DaylightName),
+      std::size(misc_info_.TimeZone.DaylightName),
       daylight_name);
 
   misc_info_.TimeZone.DaylightDate = daylight_date;
@@ -337,11 +337,11 @@ void MinidumpMiscInfoWriter::SetBuildString(
 
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
       AsU16CStr(misc_info_.BuildString),
-      base::size(misc_info_.BuildString),
+      std::size(misc_info_.BuildString),
       build_string);
   internal::MinidumpWriterUtil::AssignUTF8ToUTF16(
       AsU16CStr(misc_info_.DbgBldStr),
-      base::size(misc_info_.DbgBldStr),
+      std::size(misc_info_.DbgBldStr),
       debug_build_string);
 }
 

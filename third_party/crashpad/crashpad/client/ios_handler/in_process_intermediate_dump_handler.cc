@@ -21,7 +21,8 @@
 #include <sys/sysctl.h>
 #include <time.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "build/build_config.h"
 #include "snapshot/snapshot_constants.h"
 #include "util/ios/ios_intermediate_dump_writer.h"
@@ -428,7 +429,7 @@ void CaptureMemoryPointedToByThreadState(IOSIntermediateDumpWriter* writer,
   MaybeCaptureMemoryAround(writer, thread_state.__rip);
 #elif defined(ARCH_CPU_ARM_FAMILY)
   MaybeCaptureMemoryAround(writer, thread_state.__pc);
-  for (size_t i = 0; i < base::size(thread_state.__x); ++i) {
+  for (size_t i = 0; i < std::size(thread_state.__x); ++i) {
     MaybeCaptureMemoryAround(writer, thread_state.__x[i]);
   }
 #endif
@@ -598,7 +599,7 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
   kinfo_proc kern_proc_info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
   size_t len = sizeof(kern_proc_info);
-  if (sysctl(mib, base::size(mib), &kern_proc_info, &len, nullptr, 0) == 0) {
+  if (sysctl(mib, std::size(mib), &kern_proc_info, &len, nullptr, 0) == 0) {
     WriteProperty(
         writer, IntermediateDumpKey::kPID, &kern_proc_info.kp_proc.p_pid);
     WriteProperty(writer,

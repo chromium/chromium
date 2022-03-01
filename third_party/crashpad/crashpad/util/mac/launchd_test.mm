@@ -20,9 +20,9 @@
 #include <string.h>
 
 #include <cmath>
+#include <iterator>
 #include <limits>
 
-#include "base/cxx17_backports.h"
 #include "base/mac/scoped_launch_data.h"
 #include "gtest/gtest.h"
 #include "util/stdlib/objc.h"
@@ -58,7 +58,7 @@ TEST(Launchd, CFPropertyToLaunchData_Integer) {
       @0xfedcba9876543210,
     };
 
-    for (size_t index = 0; index < base::size(integer_nses); ++index) {
+    for (size_t index = 0; index < std::size(integer_nses); ++index) {
       NSNumber* integer_ns = integer_nses[index];
       launch_data.reset(CFPropertyToLaunchData(integer_ns));
       ASSERT_TRUE(launch_data.get());
@@ -88,7 +88,7 @@ TEST(Launchd, CFPropertyToLaunchData_FloatingPoint) {
       @(std::numeric_limits<double>::signaling_NaN()),
     };
 
-    for (size_t index = 0; index < base::size(double_nses); ++index) {
+    for (size_t index = 0; index < std::size(double_nses); ++index) {
       NSNumber* double_ns = double_nses[index];
       launch_data.reset(CFPropertyToLaunchData(double_ns));
       ASSERT_TRUE(launch_data.get());
@@ -114,7 +114,7 @@ TEST(Launchd, CFPropertyToLaunchData_Boolean) {
       @YES,
     };
 
-    for (size_t index = 0; index < base::size(bool_nses); ++index) {
+    for (size_t index = 0; index < std::size(bool_nses); ++index) {
       NSNumber* bool_ns = bool_nses[index];
       launch_data.reset(CFPropertyToLaunchData(bool_ns));
       ASSERT_TRUE(launch_data.get());
@@ -138,7 +138,7 @@ TEST(Launchd, CFPropertyToLaunchData_String) {
       @"Üñîçø∂é",
     };
 
-    for (size_t index = 0; index < base::size(string_nses); ++index) {
+    for (size_t index = 0; index < std::size(string_nses); ++index) {
       NSString* string_ns = string_nses[index];
       launch_data.reset(CFPropertyToLaunchData(string_ns));
       ASSERT_TRUE(launch_data.get());

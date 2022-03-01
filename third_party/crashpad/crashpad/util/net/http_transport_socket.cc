@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "util/net/http_transport.h"
-
 #include <fcntl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <string.h>
 #include <sys/socket.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -30,6 +29,7 @@
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/net/http_body.h"
+#include "util/net/http_transport.h"
 #include "util/net/url.h"
 #include "util/stdlib/string_number_conversion.h"
 #include "util/string/split_string.h"
@@ -371,7 +371,7 @@ bool WriteRequest(Stream* stream,
 
   FileOperationResult data_bytes;
   do {
-    constexpr size_t kCRLFSize = base::size(kCRLFTerminator) - 1;
+    constexpr size_t kCRLFSize = std::size(kCRLFTerminator) - 1;
     struct __attribute__((packed)) {
       char size[8];
       char crlf[2];

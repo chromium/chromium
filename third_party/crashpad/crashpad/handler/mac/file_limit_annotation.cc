@@ -21,9 +21,9 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
@@ -108,7 +108,7 @@ void RecordFileLimitAnnotation() {
   int mib[] = {CTL_KERN, KERN_MAXFILES};
   size = sizeof(value);
   std::string max_files = FormatFromSysctl(
-      sysctl(mib, base::size(mib), &value, &size, nullptr, 0), &value, &size);
+      sysctl(mib, std::size(mib), &value, &size, nullptr, 0), &value, &size);
 
   std::string open_files = CountOpenFileDescriptors();
 

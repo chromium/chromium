@@ -14,9 +14,9 @@
 
 #include "minidump/minidump_annotation_writer.h"
 
+#include <iterator>
 #include <memory>
 
-#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/test/minidump_byte_array_writer_test_util.h"
@@ -107,7 +107,7 @@ TEST(MinidumpAnnotationWriter, ThreeItems) {
 
   MinidumpAnnotationListWriter list_writer;
 
-  for (size_t i = 0; i < base::size(kNames); ++i) {
+  for (size_t i = 0; i < std::size(kNames); ++i) {
     auto annotation = std::make_unique<MinidumpAnnotationWriter>();
     annotation->InitializeWithData(kNames[i], kTypes[i], kValues[i]);
     list_writer.AddObject(std::move(annotation));

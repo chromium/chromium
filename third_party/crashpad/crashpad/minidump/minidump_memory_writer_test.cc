@@ -14,9 +14,9 @@
 
 #include "minidump/minidump_memory_writer.h"
 
+#include <iterator>
 #include <utility>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -342,7 +342,7 @@ TEST(MinidumpMemoryWriter, ExtraMemory) {
 
 TEST(MinidumpMemoryWriter, AddFromSnapshot) {
   MINIDUMP_MEMORY_DESCRIPTOR expect_memory_descriptors[3] = {};
-  uint8_t values[base::size(expect_memory_descriptors)] = {};
+  uint8_t values[std::size(expect_memory_descriptors)] = {};
 
   expect_memory_descriptors[0].StartOfMemoryRange = 0;
   expect_memory_descriptors[0].Memory.DataSize = 0x1000;
@@ -358,7 +358,7 @@ TEST(MinidumpMemoryWriter, AddFromSnapshot) {
 
   std::vector<std::unique_ptr<TestMemorySnapshot>> memory_snapshots_owner;
   std::vector<const MemorySnapshot*> memory_snapshots;
-  for (size_t index = 0; index < base::size(expect_memory_descriptors);
+  for (size_t index = 0; index < std::size(expect_memory_descriptors);
        ++index) {
     memory_snapshots_owner.push_back(std::make_unique<TestMemorySnapshot>());
     TestMemorySnapshot* memory_snapshot = memory_snapshots_owner.back().get();
@@ -397,7 +397,7 @@ TEST(MinidumpMemoryWriter, AddFromSnapshot) {
 
 TEST(MinidumpMemoryWriter, CoalesceExplicitMultiple) {
   MINIDUMP_MEMORY_DESCRIPTOR expect_memory_descriptors[4] = {};
-  uint8_t values[base::size(expect_memory_descriptors)] = {};
+  uint8_t values[std::size(expect_memory_descriptors)] = {};
 
   expect_memory_descriptors[0].StartOfMemoryRange = 0;
   expect_memory_descriptors[0].Memory.DataSize = 1000;

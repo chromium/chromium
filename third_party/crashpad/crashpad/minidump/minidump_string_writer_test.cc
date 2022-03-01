@@ -14,9 +14,9 @@
 
 #include "minidump/minidump_string_writer.h"
 
+#include <iterator>
 #include <string>
 
-#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,16 +66,15 @@ TEST(MinidumpStringWriter, MinidumpUTF16StringWriter) {
       {4, "\360\220\204\202", 2, {0xd800, 0xdd02}},  // 𐄂 (non-BMP)
   };
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ", input %s", index, kTestData[index].input_string));
 
     // Make sure that the expected output string with its NUL terminator fits in
     // the space provided.
-    ASSERT_EQ(
-        kTestData[index]
-            .output_string[base::size(kTestData[index].output_string) - 1],
-        0);
+    ASSERT_EQ(kTestData[index]
+                  .output_string[std::size(kTestData[index].output_string) - 1],
+              0);
 
     string_file.Reset();
     crashpad::internal::MinidumpUTF16StringWriter string_writer;
@@ -112,7 +111,7 @@ TEST(MinidumpStringWriter, ConvertInvalidUTF8ToUTF16) {
       "\303\0\251",  // NUL in middle of valid sequence
   };
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ", input %s", index, kTestData[index]));
     string_file.Reset();
@@ -173,7 +172,7 @@ TEST(MinidumpStringWriter, MinidumpUTF8StringWriter) {
       {4, "\360\220\204\202"},  // 𐄂 (non-BMP)
   };
 
-  for (size_t index = 0; index < base::size(kTestData); ++index) {
+  for (size_t index = 0; index < std::size(kTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf(
         "index %" PRIuS ", input %s", index, kTestData[index].string));
 

@@ -18,7 +18,6 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "client/crashpad_client.h"
 #include "gtest/gtest.h"
 #include "snapshot/win/process_snapshot_win.h"
 #include "test/errors.h"

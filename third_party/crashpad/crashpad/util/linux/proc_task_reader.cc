@@ -16,7 +16,8 @@
 
 #include <stdio.h>
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,7 +30,7 @@ bool ReadThreadIDs(pid_t pid, std::vector<pid_t>* tids) {
   DCHECK(tids->empty());
 
   char path[32];
-  snprintf(path, base::size(path), "/proc/%d/task", pid);
+  snprintf(path, std::size(path), "/proc/%d/task", pid);
   DirectoryReader reader;
   if (!reader.Open(base::FilePath(path))) {
     return false;

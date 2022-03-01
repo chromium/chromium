@@ -13,10 +13,11 @@
 // limitations under the License.
 
 #include "util/misc/capture_context_test_util.h"
-#include "util/win/context_wrappers.h"
 
-#include "base/cxx17_backports.h"
+#include <iterator>
+
 #include "gtest/gtest.h"
+#include "util/win/context_wrappers.h"
 
 namespace crashpad {
 namespace test {
@@ -59,7 +60,7 @@ void SanityCheckContext(const NativeCPUContext& context) {
 
 #if defined(ARCH_CPU_X86)
   // fxsave doesn’t write these bytes.
-  for (size_t i = 464; i < base::size(context.ExtendedRegisters); ++i) {
+  for (size_t i = 464; i < std::size(context.ExtendedRegisters); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(context.ExtendedRegisters[i], 0);
   }
@@ -69,7 +70,7 @@ void SanityCheckContext(const NativeCPUContext& context) {
   EXPECT_EQ(context.FltSave.MxCsr, context.MxCsr);
 
   // fxsave doesn’t write these bytes.
-  for (size_t i = 0; i < base::size(context.FltSave.Reserved4); ++i) {
+  for (size_t i = 0; i < std::size(context.FltSave.Reserved4); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(context.FltSave.Reserved4[i], 0);
   }
@@ -81,7 +82,7 @@ void SanityCheckContext(const NativeCPUContext& context) {
   EXPECT_EQ(context.P4Home, 0u);
   EXPECT_EQ(context.P5Home, 0u);
   EXPECT_EQ(context.P6Home, 0u);
-  for (size_t i = 0; i < base::size(context.VectorRegister); ++i) {
+  for (size_t i = 0; i < std::size(context.VectorRegister); ++i) {
     SCOPED_TRACE(i);
     EXPECT_EQ(context.VectorRegister[i].Low, 0u);
     EXPECT_EQ(context.VectorRegister[i].High, 0u);

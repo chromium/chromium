@@ -17,10 +17,10 @@
 #include <sys/types.h>
 
 #include <array>
+#include <iterator>
 #include <limits>
 #include <type_traits>
 
-#include "base/cxx17_backports.h"
 #include "gtest/gtest.h"
 
 #define STRINGIFY(a) STR(a)
@@ -277,7 +277,7 @@ TEST(StringNumberConversion, StringToInt) {
   //   "decimal digit terminates octal escape sequence".
   int output;
   std::string kEmbeddedNullInput(kEmbeddedNullInputRaw,
-                                 base::size(kEmbeddedNullInputRaw) - 1);
+                                 std::size(kEmbeddedNullInputRaw) - 1);
   EXPECT_FALSE(StringToNumber(kEmbeddedNullInput, &output));
 }
 
@@ -307,7 +307,7 @@ TEST(StringNumberConversion, StringToUnsignedInt) {
   //   "decimal digit terminates octal escape sequence".
   unsigned int output;
   std::string kEmbeddedNullInput(kEmbeddedNullInputRaw,
-                                 base::size(kEmbeddedNullInputRaw) - 1);
+                                 std::size(kEmbeddedNullInputRaw) - 1);
   EXPECT_FALSE(StringToNumber(kEmbeddedNullInput, &output));
 }
 
