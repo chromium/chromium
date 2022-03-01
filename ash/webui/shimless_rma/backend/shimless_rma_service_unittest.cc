@@ -3100,13 +3100,16 @@ class FakeFinalizationObserver : public mojom::FinalizationObserver {
   struct Observation {
     rmad::FinalizeStatus::Status status;
     float progress;
+    rmad::FinalizeStatus::Error error;
   };
 
   void OnFinalizationUpdated(rmad::FinalizeStatus::Status status,
-                             float progress) override {
+                             float progress,
+                             rmad::FinalizeStatus::Error error) override {
     Observation observation;
     observation.status = status;
     observation.progress = progress;
+    observation.error = error;
     observations.push_back(observation);
   }
 
@@ -3119,27 +3122,39 @@ TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
   shimless_rma_provider_->ObserveFinalizationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
+
+  const rmad::FinalizeStatus::Status expected_status =
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS;
+  const float expected_progress = 0.5;
+  const rmad::FinalizeStatus::Error expected_error =
+      rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CANNOT_ENABLE_HWWP;
   fake_rmad_client_()->TriggerFinalizationProgressObservation(
-      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
+      expected_status, expected_progress, expected_error);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].status,
-            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS);
-  EXPECT_EQ(fake_observer.observations[0].progress, 0.5f);
+  EXPECT_EQ(fake_observer.observations[0].status, expected_status);
+  EXPECT_EQ(fake_observer.observations[0].progress, expected_progress);
+  EXPECT_EQ(fake_observer.observations[0].error, expected_error);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveFinalizationAfterSignal) {
-  fake_rmad_client_()->TriggerFinalizationProgressObservation(
-      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING, 0.75);
   FakeFinalizationObserver fake_observer;
   shimless_rma_provider_->ObserveFinalizationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
+
+  const rmad::FinalizeStatus::Status expected_status =
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING;
+  const float expected_progress = 0.75;
+  const rmad::FinalizeStatus::Error expected_error =
+      rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CR50;
+  fake_rmad_client_()->TriggerFinalizationProgressObservation(
+      expected_status, expected_progress, expected_error);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].status,
-            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING);
-  EXPECT_EQ(fake_observer.observations[0].progress, 0.75f);
+  EXPECT_EQ(fake_observer.observations[0].status, expected_status);
+  EXPECT_EQ(fake_observer.observations[0].progress, expected_progress);
+  EXPECT_EQ(fake_observer.observations[0].error, expected_error);
 }
 
 TEST_F(ShimlessRmaServiceTest, GetWriteProtectManuallyDisabledInstructions) {

@@ -952,8 +952,8 @@ void ShimlessRmaService::FinalizationProgress(
     const rmad::FinalizeStatus& status) {
   last_finalization_progress_ = status;
   if (finalization_observer_.is_bound()) {
-    finalization_observer_->OnFinalizationUpdated(status.status(),
-                                                  status.progress());
+    finalization_observer_->OnFinalizationUpdated(
+        status.status(), status.progress(), status.error());
   }
 }
 
@@ -1034,7 +1034,8 @@ void ShimlessRmaService::ObserveFinalizationStatus(
   if (last_finalization_progress_) {
     finalization_observer_->OnFinalizationUpdated(
         last_finalization_progress_->status(),
-        last_finalization_progress_->progress());
+        last_finalization_progress_->progress(),
+        last_finalization_progress_->error());
   }
 }
 

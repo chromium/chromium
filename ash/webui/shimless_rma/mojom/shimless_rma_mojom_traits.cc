@@ -60,6 +60,9 @@ using ProtoCalibrationStatus =
 using MojomFinalizationStatus = ash::shimless_rma::mojom::FinalizationStatus;
 using ProtoFinalizationStatus = rmad::FinalizeStatus_Status;
 
+using MojomFinalizationError = ash::shimless_rma::mojom::FinalizationError;
+using ProtoFinalizationError = rmad::FinalizeStatus::Error;
+
 using MojomUpdateRoFirmwareStatus =
     ash::shimless_rma::mojom::UpdateRoFirmwareStatus;
 using ProtoUpdateRoFirmwaretatus = rmad::UpdateRoFirmwareStatus;
@@ -1029,6 +1032,60 @@ bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
       return true;
     case MojomFinalizationStatus::kFailedNonBlocking:
       *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+MojomFinalizationError
+EnumTraits<MojomFinalizationError, ProtoFinalizationError>::ToMojom(
+    ProtoFinalizationError error) {
+  switch (error) {
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_UNKNOWN:
+      return MojomFinalizationError::kUnknown;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_INTERNAL:
+      return MojomFinalizationError::kInternal;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CANNOT_ENABLE_HWWP:
+      return MojomFinalizationError::kCannotEnableHardwareWp;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CANNOT_ENABLE_SWWP:
+      return MojomFinalizationError::kCannotEnableSoftwareWp;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CR50:
+      return MojomFinalizationError::kCr50;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_GBB:
+      return MojomFinalizationError::kGbb;
+
+    default:
+      NOTREACHED();
+      return MojomFinalizationError::kUnknown;
+  }
+  NOTREACHED();
+  return MojomFinalizationError::kUnknown;
+}
+
+// static
+bool EnumTraits<MojomFinalizationError, ProtoFinalizationError>::FromMojom(
+    MojomFinalizationError error,
+    ProtoFinalizationError* out) {
+  switch (error) {
+    case MojomFinalizationError::kUnknown:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_UNKNOWN;
+      return true;
+    case MojomFinalizationError::kInternal:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_INTERNAL;
+      return true;
+    case MojomFinalizationError::kCannotEnableHardwareWp:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CANNOT_ENABLE_HWWP;
+      return true;
+    case MojomFinalizationError::kCannotEnableSoftwareWp:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CANNOT_ENABLE_SWWP;
+      return true;
+    case MojomFinalizationError::kCr50:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_CR50;
+      return true;
+    case MojomFinalizationError::kGbb:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_ERROR_GBB;
       return true;
   }
   NOTREACHED();

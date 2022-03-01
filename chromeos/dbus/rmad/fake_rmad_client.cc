@@ -399,10 +399,12 @@ void FakeRmadClient::TriggerHardwareVerificationResultObservation(
 
 void FakeRmadClient::TriggerFinalizationProgressObservation(
     rmad::FinalizeStatus::Status status,
-    double progress) {
+    double progress,
+    rmad::FinalizeStatus::Error error) {
   rmad::FinalizeStatus finalizationStatus;
   finalizationStatus.set_status(status);
   finalizationStatus.set_progress(progress);
+  finalizationStatus.set_error(error);
   for (auto& observer : observers_)
     observer.FinalizationProgress(finalizationStatus);
 }

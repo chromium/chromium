@@ -362,6 +362,18 @@ enum FinalizationStatus {
   kFailedNonBlocking = 4,
 };
 
+// This must remain in sync with FinalizeStatus::Error in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum FinalizationError {
+  kUnknown = 0,
+  kInternal = 1,
+  kCannotEnableHardwareWp = 2,
+  kCannotEnableSoftwareWp = 3,
+  kCr50 = 4,
+  kGbb = 5,
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -426,8 +438,10 @@ interface HardwareVerificationStatusObserver {
 
 // Implemented by clients to receive status of finalization progress.
 interface FinalizationObserver {
-  // OnFinalizationUpdated is called to report progress of device finalization.
-  OnFinalizationUpdated(FinalizationStatus status, float progress);
+  // OnFinalizationUpdated is called to report progress of device finalization,
+  // reporting an error when finalization fails.
+  OnFinalizationUpdated(FinalizationStatus status, float progress,
+      FinalizationError error);
 };
 
 // Implemented by clients to receive status of RO firmware update progress.

@@ -69,6 +69,10 @@ mojom("mojom") {
           cpp = "::rmad::FinalizeStatus_Status"
         },
         {
+          mojom = "ash.shimless_rma.mojom.FinalizationError"
+          cpp = "::rmad::FinalizeStatus_Error"
+        },
+        {
           mojom = "ash.shimless_rma.mojom.UpdateRoFirmwareStatus"
           cpp = "::rmad::UpdateRoFirmwareStatus"
         },
