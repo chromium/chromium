@@ -14,6 +14,7 @@ import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
 
+import {SliderTick} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -90,9 +91,21 @@ Polymer({
       readOnly: true,
     },
 
+    /**
+     * The click sensitivity values from prefs are [1,3,5] but ChromeVox needs
+     * to announce them as [1,2,3].
+     * @type {!Array<SliderTick>}
+     * @private
+     */
     hapticClickSensitivityValues_: {
       type: Array,
-      value: [1, 3, 5],
+      value() {
+        return [
+          {value: 1, ariaValue: 1},
+          {value: 3, ariaValue: 2},
+          {value: 5, ariaValue: 3},
+        ];
+      },
       readOnly: true,
     },
 
