@@ -5935,7 +5935,9 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     GetDelegate()->ReadyToCommitNavigation(this);
   }
 
-  if (IsInMainFrame()) {
+  // View-source URLs can't be prerendered or loaded in a fenced frame or a
+  // portal.
+  if (IsInPrimaryMainFrame()) {
     NavigationEntry* entry = GetNavigationEntry();
     if (entry && entry->IsViewSourceMode()) {
       // Put the renderer in view source mode.
