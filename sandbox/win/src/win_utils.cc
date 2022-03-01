@@ -181,15 +181,6 @@ bool IsPipe(const std::wstring& path) {
   return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
 }
 
-HKEY GetReservedKeyFromName(const std::wstring& name) {
-  for (size_t i = 0; i < std::size(kKnownKey); ++i) {
-    if (name == kKnownKey[i].name)
-      return kKnownKey[i].key;
-  }
-
-  return nullptr;
-}
-
 bool ResolveRegistryName(std::wstring name, std::wstring* resolved_name) {
   for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name.find(kKnownKey[i].name) == 0) {

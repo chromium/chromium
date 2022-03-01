@@ -80,11 +80,6 @@ bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path);
 // Resolves a handle to its type name. Returns true if successful.
 bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name);
 
-// Translates a reserved key name to its handle.
-// For example "HKEY_LOCAL_MACHINE" returns HKEY_LOCAL_MACHINE.
-// Returns nullptr if the name does not represent any reserved key name.
-HKEY GetReservedKeyFromName(const std::wstring& name);
-
 // Resolves a user-readable registry path to a system-readable registry path.
 // For example, HKEY_LOCAL_MACHINE\\Software\\microsoft is translated to
 // \\registry\\machine\\software\\microsoft. Returns false if the path
