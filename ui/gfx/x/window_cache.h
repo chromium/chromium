@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/shape.h"
 #include "ui/gfx/x/xproto.h"
@@ -69,6 +70,10 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
   WindowCache(const WindowCache&) = delete;
   WindowCache& operator=(const WindowCache&) = delete;
   ~WindowCache() override;
+
+  // Returns the window at the specified point or Window::None if no match could
+  // be found. `point_px` is in coordinates of the parent of `window`.
+  Window GetWindowAtPoint(gfx::Point point_px, Window window);
 
   void SyncForTest();
 

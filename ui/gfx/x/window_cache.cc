@@ -5,11 +5,15 @@
 #include "ui/gfx/x/window_cache.h"
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -69,6 +73,39 @@ void WindowCache::SyncForTest() {
     connection_->Sync();
     connection_->DispatchAll();
   } while (pending_requests_);
+}
+
+Window WindowCache::GetWindowAtPoint(gfx::Point point_px, Window window) {
+  auto* info = GetInfo(window);
+  if (!info || !info->mapped)
+    return Window::None;
+
+  gfx::Rect rect(info->x_px, info->y_px, info->width_px, info->height_px);
+  rect.Outset(info->border_width_px);
+  rect.Inset(info->gtk_frame_extents_px);
+  if (!rect.Contains(point_px))
+    return Window::None;
+
+  point_px -= gfx::Vector2d(info->x_px, info->y_px);
+  if (info->bounding_rects_px && info->input_rects_px) {
+    for (const auto& rects : {info->bounding_rects_px, info->input_rects_px}) {
+      if (!base::ranges::any_of(*rects, [&point_px](const Rectangle& x_rect) {
+            gfx::Rect rect{x_rect.x, x_rect.y, x_rect.width, x_rect.height};
+            return rect.Contains(point_px);
+          })) {
+        return Window::None;
+      }
+    }
+  }
+
+  if (info->has_wm_name)
+    return window;
+  for (Window child : base::Reversed(info->children)) {
+    Window ret = GetWindowAtPoint(point_px, child);
+    if (ret != Window::None)
+      return ret;
+  }
+  return Window::None;
 }
 
 void WindowCache::OnEvent(const Event& event) {

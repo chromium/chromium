@@ -40,23 +40,29 @@ class WindowCacheTest : public testing::Test {
 
   Window root() const { return root_; }
 
+  Window root_container() const { return root_container_; }
+
   WindowCache* cache() { return cache_.get(); }
 
  private:
   void SetUp() override {
     connection_ = Connection::Get();
-    root_ = CreateWindow(connection_->default_root());
+    root_container_ = CreateWindow(connection_->default_root());
+    root_ = CreateWindow(root_container_);
     ResetCache();
   }
 
   void TearDown() override {
     cache_.reset();
     connection_->DestroyWindow({root_}).Sync();
+    connection_->DestroyWindow({root_container_}).Sync();
     root_ = Window::None;
+    root_container_ = Window::None;
     connection_ = nullptr;
   }
 
   Connection* connection_;
+  Window root_container_ = Window::None;
   Window root_ = Window::None;
   std::unique_ptr<WindowCache> cache_;
 };
@@ -64,7 +70,7 @@ class WindowCacheTest : public testing::Test {
 // Ensure creating the cache doesn't timeout.
 TEST_F(WindowCacheTest, Basic) {
   const WindowCache::WindowInfo& info = cache()->windows().at(root());
-  EXPECT_EQ(info.parent, connection()->default_root());
+  EXPECT_EQ(info.parent, root_container());
   EXPECT_FALSE(info.mapped);
   EXPECT_EQ(info.x_px, 0);
   EXPECT_EQ(info.y_px, 0);
@@ -300,6 +306,116 @@ TEST_F(WindowCacheTest, GtkFrameExtents) {
                    std::vector<uint8_t>{1, 2, 3, 4});
   cache()->SyncForTest();
   EXPECT_EQ(info.gtk_frame_extents_px, gfx::Insets());
+}
+
+TEST_F(WindowCacheTest, GetWindowAtPoint) {
+  // Basic test on an undecorated, unobscured window.
+  connection()->MapWindow(root());
+  SetStringProperty(root(), Atom::WM_NAME, Atom::STRING, "root");
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), root());
+
+  // Unmapped windows are hidden.
+  connection()->UnmapWindow(root());
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), Window::None);
+  connection()->MapWindow(root());
+
+  // Unnamed windows should not be returned.
+  connection()->DeleteProperty(root(), Atom::WM_NAME);
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), Window::None);
+
+  // GetWindowAtPoint on an uncached window shouldn't crash.
+  Window does_not_exist = connection()->GenerateId<Window>();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, does_not_exist),
+            Window::None);
+
+  // Basic hit test.
+  Window a = CreateWindow(root());
+  connection()->ConfigureWindow({
+      .window = a,
+      .x = 100,
+      .y = 100,
+      .width = 100,
+      .height = 100,
+  });
+  connection()->MapWindow(a);
+  SetStringProperty(a, Atom::WM_NAME, Atom::STRING, "a");
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), a);
+  EXPECT_EQ(cache()->GetWindowAtPoint({50, 50}, root()), Window::None);
+
+  // Border hit test.
+  auto& shape = connection()->shape();
+  if (shape.present()) {
+    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
+      shape.Rectangles(
+          {.destination_kind = kind,
+           .destination_window = a,
+           .rectangles = std::vector<Rectangle>{{0, 0, 300, 300}}});
+    }
+  }
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({250, 250}, root()), Window::None);
+  connection()->ConfigureWindow({.window = a, .border_width = 100});
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({250, 250}, root()), a);
+  connection()->ConfigureWindow({.window = a, .border_width = 0});
+  if (shape.present()) {
+    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input})
+      shape.Mask({.destination_kind = kind, .destination_window = a});
+  }
+
+  // GTK_FRAME_EXTENTS insets the window bounds.
+  EXPECT_EQ(cache()->GetWindowAtPoint({125, 125}, root()), a);
+  const Atom gtk_frame_extents = GetAtom("_GTK_FRAME_EXTENTS");
+  SetArrayProperty(a, gtk_frame_extents, Atom::CARDINAL,
+                   std::vector<uint32_t>{40, 40, 40, 40});
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({125, 125}, root()), Window::None);
+  connection()->DeleteProperty(a, gtk_frame_extents);
+
+  // Hit test in XShape region.
+  if (shape.present()) {
+    EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), a);
+    for (auto kind : {Shape::Sk::Bounding, Shape::Sk::Input}) {
+      // Set to an empty bounding shape.
+      shape.Rectangles({.destination_kind = kind, .destination_window = a});
+      cache()->SyncForTest();
+      EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), Window::None);
+      shape.Mask({.destination_kind = kind, .destination_window = a});
+    }
+  }
+
+  // Test window stacking order.
+  Window b = CreateWindow(root());
+  connection()->ConfigureWindow({
+      .window = b,
+      .x = 100,
+      .y = 100,
+      .width = 100,
+      .height = 100,
+  });
+  connection()->MapWindow(b);
+  SetStringProperty(b, Atom::WM_NAME, Atom::STRING, "b");
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), b);
+
+  // Test window nesting.
+  Window c = CreateWindow(b);
+  connection()->ConfigureWindow({
+      .window = c,
+      .x = 0,
+      .y = 0,
+      .width = 100,
+      .height = 100,
+  });
+  connection()->MapWindow(c);
+  SetStringProperty(c, Atom::WM_NAME, Atom::STRING, "c");
+  connection()->DeleteProperty(b, Atom::WM_NAME);
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({150, 150}, root()), c);
 }
 
 }  // namespace x11
