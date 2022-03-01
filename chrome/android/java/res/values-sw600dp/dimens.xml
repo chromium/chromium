@@ -39,7 +39,4 @@
 
     <!-- Preferences dimensions -->
     <dimen name="pref_spinner_padding_end">16dp</dimen>
-
-    <!-- Chrome Management dimensions -->
-    <dimen name="cm_padding">48dp</dimen>
 </resources>
