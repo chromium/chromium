@@ -947,6 +947,8 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
   CFDictionarySetValue(query, kSecAttrSubject, name_data);
 
+  base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+
   base::ScopedCFTypeRef<CFArrayRef> scoped_alternate_keychain_search_list;
   if (TestKeychainSearchList::HasInstance()) {
     OSStatus status = TestKeychainSearchList::GetInstance()->CopySearchList(
@@ -957,8 +959,6 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       return matching_cert_buffers;
     }
   }
-
-  base::AutoLock lock(crypto::GetMacSecurityServicesLock());
 
   // If a TestKeychainSearchList is present, it will have already set
   // |scoped_alternate_keychain_search_list|, which will be used as the
