@@ -7639,3 +7639,6 @@ crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-
 crbug.com/1301238 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-top-level-fenced-frame.https.html [ Pass Timeout ]
 
 crbug.com/1300487 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Failure Pass ]
+
+# Sheriff 2022-03-01
+crbug.com/1302043 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Pass Timeout ]
