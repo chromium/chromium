@@ -413,6 +413,13 @@ class NET_EXPORT HttpServerProperties
   void SetMaxServerConfigsStoredInProperties(
       size_t max_server_configs_stored_in_properties);
 
+  // If values are present, sets initial_delay and
+  // exponential_backoff_on_initial_delay which are used to calculate delay of
+  // broken alternative services.
+  void SetBrokenAlternativeServicesDelayParams(
+      absl::optional<base::TimeDelta> initial_delay,
+      absl::optional<bool> exponential_backoff_on_initial_delay);
+
   // Returns whether HttpServerProperties is initialized.
   bool IsInitialized() const;
 

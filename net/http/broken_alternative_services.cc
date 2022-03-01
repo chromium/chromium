@@ -15,19 +15,44 @@ namespace net {
 
 namespace {
 
-// Initial delay for broken alternative services.
-const uint64_t kBrokenAlternativeProtocolDelaySecs = 300;
+// Default broken alternative services, which is used when
+// exponential_backoff_on_initial_delay is false.
+constexpr base::TimeDelta kDefaultBrokenAlternativeProtocolDelay =
+    base::Seconds(300);
 // Subsequent failures result in exponential (base 2) backoff.
-// Limit binary shift to limit delay to approximately 2 days.
-const int kBrokenDelayMaxShift = 9;
+// Given the shortest broken delay is 1s, limit binary shift to limit delay to
+// approximately 2 days.
+const int kBrokenDelayMaxShift = 18;
+// Lower and upper limits of broken alternative service delay.
+constexpr base::TimeDelta kMinBrokenAlternativeProtocolDelay = base::Seconds(1);
+constexpr base::TimeDelta kMaxBrokenAlternativeProtocolDelay = base::Days(2);
 
 base::TimeDelta ComputeBrokenAlternativeServiceExpirationDelay(
-    int broken_count) {
+    int broken_count,
+    base::TimeDelta initial_delay,
+    bool exponential_backoff_on_initial_delay) {
   DCHECK_GE(broken_count, 0);
-  if (broken_count > kBrokenDelayMaxShift)
+  // Make sure initial delay is within [1s, 300s].
+  if (initial_delay < kMinBrokenAlternativeProtocolDelay) {
+    initial_delay = kMinBrokenAlternativeProtocolDelay;
+  }
+  if (initial_delay > kDefaultBrokenAlternativeProtocolDelay) {
+    initial_delay = kDefaultBrokenAlternativeProtocolDelay;
+  }
+  if (broken_count == 0) {
+    return initial_delay;
+  }
+  // Limit broken_count to avoid overflow.
+  if (broken_count > kBrokenDelayMaxShift) {
     broken_count = kBrokenDelayMaxShift;
-  return base::Seconds(kBrokenAlternativeProtocolDelaySecs) *
-         (1 << broken_count);
+  }
+  base::TimeDelta delay;
+  if (exponential_backoff_on_initial_delay) {
+    delay = initial_delay * (1 << broken_count);
+  } else {
+    delay = kDefaultBrokenAlternativeProtocolDelay * (1 << (broken_count - 1));
+  }
+  return std::min(delay, kMaxBrokenAlternativeProtocolDelay);
 }
 
 }  // namespace
@@ -56,7 +81,9 @@ BrokenAlternativeServices::BrokenAlternativeServices(
     : delegate_(delegate),
       clock_(clock),
       recently_broken_alternative_services_(
-          max_recently_broken_alternative_service_entries) {
+          max_recently_broken_alternative_service_entries),
+      initial_delay_(kDefaultBrokenAlternativeProtocolDelay),
+      exponential_backoff_on_initial_delay_(true) {
   DCHECK(delegate_);
   DCHECK(clock_);
 }
@@ -109,7 +136,8 @@ void BrokenAlternativeServices::MarkBrokenImpl(
   }
   base::TimeTicks expiration =
       clock_->NowTicks() +
-      ComputeBrokenAlternativeServiceExpirationDelay(broken_count);
+      ComputeBrokenAlternativeServiceExpirationDelay(
+          broken_count, initial_delay_, exponential_backoff_on_initial_delay_);
   // Return if alternative service is already in expiration queue.
   BrokenAlternativeServiceList::iterator list_it;
   if (!AddToBrokenListAndMap(broken_alternative_service, expiration,
@@ -285,6 +313,18 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
 
   if (new_next_expiration != next_expiration)
     ScheduleBrokenAlternateProtocolMappingsExpiration();
+}
+
+void BrokenAlternativeServices::SetDelayParams(
+    absl::optional<base::TimeDelta> initial_delay,
+    absl::optional<bool> exponential_backoff_on_initial_delay) {
+  if (initial_delay.has_value()) {
+    initial_delay_ = initial_delay.value();
+  }
+  if (exponential_backoff_on_initial_delay.has_value()) {
+    exponential_backoff_on_initial_delay_ =
+        exponential_backoff_on_initial_delay.value();
+  }
 }
 
 const BrokenAlternativeServiceList&

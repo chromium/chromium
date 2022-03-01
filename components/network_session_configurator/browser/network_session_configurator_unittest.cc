@@ -104,6 +104,9 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(params_.enable_quic_proxies_for_https_urls);
   EXPECT_EQ("Chrome/52.0.2709.0 Linux x86_64", quic_params_.user_agent_id);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
+  EXPECT_FALSE(
+      quic_params_.initial_delay_for_broken_alternative_service.has_value());
+  EXPECT_FALSE(quic_params_.exponential_backoff_on_initial_delay.has_value());
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2FieldTrialGroupNameDoesNotMatter) {
@@ -254,6 +257,47 @@ TEST_F(NetworkSessionConfiguratorTest,
 
   EXPECT_EQ(base::Milliseconds(1000),
             quic_params_.retransmittable_on_wire_timeout);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       InitialDelayForBrokenAlternativeServiceSeconds) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["initial_delay_for_broken_alternative_service_seconds"] =
+      "5";
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  ASSERT_TRUE(
+      quic_params_.initial_delay_for_broken_alternative_service.has_value());
+  EXPECT_EQ(base::Seconds(5),
+            quic_params_.initial_delay_for_broken_alternative_service.value());
+}
+
+TEST_F(NetworkSessionConfiguratorTest, ExponentialBackOffOnInitialDelay) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["exponential_backoff_on_initial_delay"] = "true";
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  ASSERT_TRUE(quic_params_.exponential_backoff_on_initial_delay.has_value());
+  EXPECT_TRUE(quic_params_.exponential_backoff_on_initial_delay.value());
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       DisableExponentialBackOffOnInitialDelay) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["exponential_backoff_on_initial_delay"] = "false";
+  variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  ASSERT_TRUE(quic_params_.exponential_backoff_on_initial_delay.has_value());
+  EXPECT_FALSE(quic_params_.exponential_backoff_on_initial_delay.value());
 }
 
 TEST_F(NetworkSessionConfiguratorTest,

@@ -46,6 +46,9 @@ class BrokenAlternativeServicesTest
         true /* use_network_isolation_key */));
   }
 
+  void TestExponentialBackoff(base::TimeDelta initial_delay,
+                              bool exponential_backoff_on_initial_delay);
+
   // All tests will run inside the scope of |test_task_runner_context_|, which
   // means any task posted to the main message loop will run on
   // |test_task_runner_|.
@@ -640,10 +643,89 @@ TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff) {
   // Max expiration delay has been reached; subsequent expiration delays from
   // this point forward should not increase further.
   broken_services_.MarkBroken(alternative_service);
-  test_task_runner_->FastForwardBy(base::Minutes(2560) - base::Seconds(1));
+  test_task_runner_->FastForwardBy(base::Minutes(2880) - base::Seconds(1));
   EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
   test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+
+  broken_services_.MarkBroken(alternative_service);
+  test_task_runner_->FastForwardBy(base::Minutes(2880) - base::Seconds(1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+}
+
+void BrokenAlternativeServicesTest::TestExponentialBackoff(
+    base::TimeDelta initial_delay,
+    bool exponential_backoff_on_initial_delay) {
+  // Tests the exponential backoff of the computed expiration delay when an
+  // alt svc is marked broken. After being marked broken 10 times, the max
+  // expiration delay will have been reached and exponential backoff will no
+  // longer apply.
+  broken_services_.SetDelayParams(initial_delay,
+                                  exponential_backoff_on_initial_delay);
+
+  BrokenAlternativeService alternative_service(
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
+      true /* use_network_isolation_key */);
+
+  broken_services_.MarkBroken(alternative_service);
+  test_task_runner_->FastForwardBy(initial_delay - base::Seconds(1));
+  EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+
+  for (size_t broken_count = 1; broken_count < 20; ++broken_count) {
+    broken_services_.MarkBroken(alternative_service);
+    base::TimeDelta broken_delay;
+    if (exponential_backoff_on_initial_delay) {
+      broken_delay = initial_delay * (1 << broken_count);
+    } else {
+      broken_delay = base::Seconds(kBrokenAlternativeProtocolDelaySecs) *
+                     (1 << (broken_count - 1));
+    }
+    if (broken_delay > base::Days(2)) {
+      broken_delay = base::Days(2);
+    }
+    test_task_runner_->FastForwardBy(broken_delay - base::Seconds(1));
+    EXPECT_TRUE(broken_services_.IsBroken(alternative_service));
+    test_task_runner_->FastForwardBy(base::Seconds(1));
+    EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
+  }
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_OneSecond_True) {
+  TestExponentialBackoff(base::Seconds(1), true);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_OneSecond_False) {
+  TestExponentialBackoff(base::Seconds(1), false);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveSeconds_True) {
+  TestExponentialBackoff(base::Seconds(5), true);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveSeconds_False) {
+  TestExponentialBackoff(base::Seconds(5), false);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_TenSeconds_True) {
+  TestExponentialBackoff(base::Seconds(10), true);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_TenSeconds_False) {
+  TestExponentialBackoff(base::Seconds(10), false);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveMinutes_True) {
+  TestExponentialBackoff(base::Seconds(kBrokenAlternativeProtocolDelaySecs),
+                         true);
+}
+
+TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff_FiveMinutes_False) {
+  TestExponentialBackoff(base::Seconds(kBrokenAlternativeProtocolDelaySecs),
+                         false);
 }
 
 TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {

@@ -179,6 +179,12 @@ struct NET_EXPORT QuicParams {
   // Network Service Type of the socket for iOS. Default is NET_SERVICE_TYPE_BE
   // (best effort).
   int ios_network_service_type = 0;
+  // Delay for the 1st time the alternative service is marked broken.
+  absl::optional<base::TimeDelta> initial_delay_for_broken_alternative_service;
+  // If true, the delay for broke alternative service would be initial_delay *
+  // (1 << broken_count). Otherwise, the delay would be initial_delay, 5min,
+  // 10min and so on.
+  absl::optional<bool> exponential_backoff_on_initial_delay;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

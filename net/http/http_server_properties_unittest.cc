@@ -2178,6 +2178,66 @@ TEST_F(AlternateProtocolServerPropertiesTest, RemoveExpiredBrokenAltSvc) {
       baz_alternative_service, NetworkIsolationKey()));
 }
 
+TEST_F(AlternateProtocolServerPropertiesTest,
+       SetBrokenAlternativeServicesDelayParams1) {
+  url::SchemeHostPort server("https", "foo", 443);
+  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  SetAlternativeService(server, alternative_service);
+
+  const base::TimeDelta initial_delay = base::Seconds(1);
+  impl_.SetBrokenAlternativeServicesDelayParams(initial_delay, true);
+  for (int i = 0; i < 10; ++i) {
+    impl_.MarkAlternativeServiceBroken(alternative_service,
+                                       NetworkIsolationKey());
+    // |impl_| should have posted task to expire the brokenness of
+    // |alternative_service|
+    EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
+    EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
+                                                 NetworkIsolationKey()));
+
+    // Advance time by just enough so that |alternative_service|'s brokenness
+    // expires.
+    FastForwardBy(initial_delay * (1 << i));
+
+    // Ensure brokenness of |alternative_service| has expired.
+    EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
+    EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
+                                                  NetworkIsolationKey()));
+  }
+}
+
+TEST_F(AlternateProtocolServerPropertiesTest,
+       SetBrokenAlternativeServicesDelayParams2) {
+  url::SchemeHostPort server("https", "foo", 443);
+  AlternativeService alternative_service(kProtoQUIC, "foo", 443);
+  SetAlternativeService(server, alternative_service);
+
+  const base::TimeDelta initial_delay = base::Seconds(5);
+  impl_.SetBrokenAlternativeServicesDelayParams(initial_delay, false);
+  for (int i = 0; i < 10; ++i) {
+    impl_.MarkAlternativeServiceBroken(alternative_service,
+                                       NetworkIsolationKey());
+    // |impl_| should have posted task to expire the brokenness of
+    // |alternative_service|
+    EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
+    EXPECT_TRUE(impl_.IsAlternativeServiceBroken(alternative_service,
+                                                 NetworkIsolationKey()));
+
+    // Advance time by just enough so that |alternative_service|'s brokenness
+    // expires.
+    if (i == 0) {
+      FastForwardBy(initial_delay);
+    } else {
+      FastForwardBy(base::Seconds(300) * (1 << (i - 1)));
+    }
+
+    // Ensure brokenness of |alternative_service| has expired.
+    EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
+    EXPECT_FALSE(impl_.IsAlternativeServiceBroken(alternative_service,
+                                                  NetworkIsolationKey()));
+  }
+}
+
 // Regression test for https://crbug.com/724302
 TEST_F(AlternateProtocolServerPropertiesTest, RemoveExpiredBrokenAltSvc2) {
   // This test will mark an alternative service A that has already been marked

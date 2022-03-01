@@ -564,6 +564,13 @@ void HttpServerProperties::SetMaxServerConfigsStoredInProperties(
   }
 }
 
+void HttpServerProperties::SetBrokenAlternativeServicesDelayParams(
+    absl::optional<base::TimeDelta> initial_delay,
+    absl::optional<bool> exponential_backoff_on_initial_delay) {
+  broken_alternative_services_.SetDelayParams(
+      initial_delay, exponential_backoff_on_initial_delay);
+}
+
 bool HttpServerProperties::IsInitialized() const {
   return is_initialized_;
 }

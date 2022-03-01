@@ -235,6 +235,10 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
 
   http_server_properties_->SetMaxServerConfigsStoredInProperties(
       context.quic_context->params()->max_server_configs_stored_in_properties);
+  http_server_properties_->SetBrokenAlternativeServicesDelayParams(
+      context.quic_context->params()
+          ->initial_delay_for_broken_alternative_service,
+      context.quic_context->params()->exponential_backoff_on_initial_delay);
 
   if (!params_.disable_idle_sockets_close_on_memory_pressure) {
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
