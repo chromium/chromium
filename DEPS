@@ -3827,11 +3827,14 @@ hooks = [
   },
   {
     # Build experimental in-tree Rust toolchain. Must run after clang_libs or
-    # clang_tot hook. This should only be run on bots.
+    # clang_tot hook. This should only be run on bots. Syncing clang-libs above
+    # and passing `--use-final-llvm-build-dir` links rustc against the LLVM libs
+    # in clang-libs
     'name': 'build_rust',
     'pattern': '.',
     'condition': 'build_chromium_rust_toolchain',
-    'action': ['python3', 'src/tools/rust/build_rust.py']
+    'action': ['python3', 'src/tools/rust/build_rust.py',
+               '--use-final-llvm-build-dir'],
   },
   {
     # Should run after the clang hook. Used on mac, as well as for orderfile

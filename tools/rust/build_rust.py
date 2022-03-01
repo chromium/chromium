@@ -52,7 +52,6 @@ sys.path.append(
 from update import (CHROMIUM_DIR, CLANG_REVISION, CLANG_SUB_REVISION,
                     LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
-from build import (LLVM_BOOTSTRAP_DIR)
 
 # Trunk on 2/24/2022
 RUST_REVISION = '4b043fa'
@@ -205,9 +204,9 @@ def main():
       '--fetch-llvm-libs',
       action='store_true',
       help='fetch Clang/LLVM libs and extract into LLVM_BUILD_DIR. Useless '
-      'without --llvm-not-bootstrap-dir.')
+      'without --use-final-llvm-build-dir.')
   parser.add_argument(
-      '--llvm-not-bootstrap-dir',
+      '--use-final-llvm-build-dir',
       action='store_true',
       help='use libs in LLVM_BUILD_DIR instead of LLVM_BOOTSTRAP_DIR. Useful '
       'with --fetch-llvm-libs for local builds.')
@@ -220,10 +219,10 @@ def main():
   #
   # TODO(https://crbug.com/1245714): use LTO libs from LLVM_BUILD_DIR for
   # stage 2+.
-  if args.llvm_not_bootstrap_dir:
+  if args.use_final_llvm_build_dir:
     llvm_libs_root = LLVM_BUILD_DIR
   else:
-    llvm_libs_root = LLVM_BOOTSTRAP_DIR
+    llvm_libs_root = build.LLVM_BOOTSTRAP_DIR
 
   # Fetch GCC package to build against same libstdc++ as Clang. This function
   # will only download it if necessary.
