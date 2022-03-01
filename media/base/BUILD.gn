@@ -573,6 +573,7 @@ source_set("unit_tests") {
     "audio_shifter_unittest.cc",
     "audio_timestamp_helper_unittest.cc",
     "bit_reader_unittest.cc",
+    "bitrate_unittest.cc",
     "callback_holder_unittest.cc",
     "callback_registry_unittest.cc",
     "channel_mixer_unittest.cc",
