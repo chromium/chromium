@@ -810,8 +810,8 @@ class ExtensionInstallDialogViewRequestTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest, NotifyDelegate) {
   {
-    // User presses request. Note that we have to wait for the 0ms delay for
-    // the request button to become enabled, hence the RunLoop later.
+    // User presses "Send". Note that we have to wait for the 0ms delay for the
+    // "Send" button to become enabled, hence the RunLoop later.
     ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
     ExtensionInstallPromptTestHelper helper;
     ExtensionInstallDialogView* delegate_view =
@@ -850,8 +850,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest, NotifyDelegate) {
   }
 }
 
-// Verifies that the "Request" button is disabled initially, but re-enabled
-// after a short time delay.
+// Verifies that the "Send" button is disabled initially, but re-enabled after a
+// short time delay.
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest,
                        RequestButtonDelay) {
   ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
@@ -869,6 +869,40 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest,
 
   // Check OK button state after timeout to verify that it is re-enabled.
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(delegate_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  CloseAndWait(delegate_view->GetWidget());
+}
+
+// Verifies that the "Send" button is disabled when the justification text
+// exceeds the limit.
+IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewRequestTest,
+                       SendButtonDisabledWhenJustificationExceedsLimit) {
+  ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
+  ExtensionInstallPromptTestHelper helper;
+  ExtensionInstallDialogView* delegate_view =
+      CreateAndShowRequestPrompt(&helper);
+
+  // Check that dialog and justification textfield are visible.
+  EXPECT_TRUE(delegate_view->GetVisible());
+  ASSERT_TRUE(delegate_view->IsJustificationFieldVisibleForTesting());
+
+  // Check OK button state after timeout to verify that it is re-enabled.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(delegate_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  // Add long justification and verify that OK button is disabled.
+  delegate_view->SetJustificationTextForTesting(
+      u"I really, really, really, really, really, really, really, really, "
+      u"really, really, really, really, really, really, really, really, "
+      u"really, really, really, really, really, really, really, really, "
+      u"really, really, really, really, really, really, really, really, "
+      u"really, really, really, really, really need this extension. Pretty "
+      u"please!");
+  EXPECT_FALSE(delegate_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  // Add short justificastion and verify that OK button is enabled.
+  delegate_view->SetJustificationTextForTesting(u"I need it now.");
   EXPECT_TRUE(delegate_view->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
   CloseAndWait(delegate_view->GetWidget());

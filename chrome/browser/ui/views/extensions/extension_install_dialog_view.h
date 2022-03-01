@@ -20,6 +20,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -27,9 +28,9 @@ class Profile;
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
 // Not a normal "bubble" despite being a subclass of BubbleDialogDelegateView.
-class ExtensionInstallDialogView
-    : public views::BubbleDialogDelegateView,
-      public extensions::ExtensionRegistryObserver {
+class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
+                                   public extensions::ExtensionRegistryObserver,
+                                   public views::TextfieldController {
  public:
   METADATA_HEADER(ExtensionInstallDialogView);
 
@@ -62,8 +63,8 @@ class ExtensionInstallDialogView
 
   ExtensionInstallPromptShowParams* GetShowParamsForTesting();
   void ClickLinkForTesting();
-
   bool IsJustificationFieldVisibleForTesting();
+  void SetJustificationTextForTesting(const std::u16string& new_text);
 
  private:
   // Forward-declaration.
@@ -84,6 +85,10 @@ class ExtensionInstallDialogView
   // Creates the contents area that contains permissions and other extension
   // info.
   void CreateContents();
+
+  // views::TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
 
   // Enables the install button and updates the dialog buttons.
   void EnableInstallButton();
@@ -113,6 +118,12 @@ class ExtensionInstallDialogView
 
   // Used to determine whether the install button should be enabled.
   bool install_button_enabled_;
+
+  // Along with install_button_enabled_, used to determine whether the extension
+  // request button should be enabled. Its value is initialized to |true| so
+  // that it has no effect unless the justification field is present and the
+  // entered text length is larger than the defined limit.
+  bool request_button_enabled_ = true;
 
   // Checkbox used to indicate if permissions should be withheld on install.
   raw_ptr<views::Checkbox> withhold_permissions_checkbox_;

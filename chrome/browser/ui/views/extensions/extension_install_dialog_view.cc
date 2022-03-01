@@ -215,25 +215,31 @@ void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
 class ExtensionInstallDialogView::ExtensionJustificationView
     : public views::View {
  public:
-  ExtensionJustificationView() {
+  explicit ExtensionJustificationView(TextfieldController* controller) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
-    auto header_label = std::make_unique<views::Label>(
+    justification_field_label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION),
-        views::style::CONTEXT_DIALOG_BODY_TEXT);
-    header_label->SetMultiLine(true);
-    header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(std::move(header_label));
+        views::style::CONTEXT_DIALOG_BODY_TEXT));
+    justification_field_label_->SetMultiLine(true);
+    justification_field_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-    auto justification_field = std::make_unique<views::Textarea>();
-    justification_field->SetPreferredSize(gfx::Size(0, 60));
-    justification_field->SetPlaceholderText(l10n_util::GetStringUTF16(
+    justification_field_ = AddChildView(std::make_unique<views::Textarea>());
+    justification_field_->SetPreferredSize(gfx::Size(0, 60));
+    justification_field_->SetPlaceholderText(l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_PLACEHOLDER));
-    justification_field_ = AddChildView(std::move(justification_field));
+    justification_field_->set_controller(controller);
+
+    justification_text_length_ = AddChildView(std::make_unique<views::Label>());
+    justification_text_length_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+        IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_LENGTH_LIMIT,
+        base::NumberToString16(0),
+        base::NumberToString16(kMaxJustificationTextLength)));
   }
   ExtensionJustificationView(const ExtensionJustificationView&) = delete;
   ExtensionJustificationView& operator=(const ExtensionJustificationView&) =
@@ -246,12 +252,47 @@ class ExtensionInstallDialogView::ExtensionJustificationView
     return justification_field_->GetText();
   }
 
+  void SetJustificationTextForTesting(const std::u16string& new_text) {
+    DCHECK(justification_field_);
+    // Resets the text field to an empty string so that InsertOrReplaceText()
+    // below does not append to the already entered text. Does not trigger
+    // UpdateAfterChange().
+    justification_field_->SetText(std::u16string());
+    // Triggers UpdateAfterChange() to update the state of DIALOG_BUTTON_OK.
+    justification_field_->InsertOrReplaceText(new_text);
+  }
+
+  bool IsJustificationLengthWithinLimit() {
+    return justification_field_->GetText().length() <=
+           kMaxJustificationTextLength;
+  }
+
+  void UpdateLengthLabel() {
+    justification_text_length_->SetText(l10n_util::GetStringFUTF16(
+        IDS_ENTERPRISE_EXTENSION_REQUEST_JUSTIFICATION_LENGTH_LIMIT,
+        base::NumberToString16(justification_field_->GetText().length()),
+        base::NumberToString16(kMaxJustificationTextLength)));
+
+    justification_text_length_->SetEnabledColor(
+        IsJustificationLengthWithinLimit()
+            // The original color is not stored because the theme may change
+            // while the dialog is visible. To get around this, another label
+            // (justification_field_label_) is used as the color reference.
+            ? justification_field_label_->GetEnabledColor()
+            : justification_text_length_->GetColorProvider()->GetColor(
+                  ui::kColorAlertHighSeverity));
+  }
+
   void ChildPreferredSizeChanged(views::View* child) override {
     PreferredSizeChanged();
   }
 
  private:
+  const size_t kMaxJustificationTextLength = 280;
+
+  raw_ptr<views::Label> justification_field_label_;
   raw_ptr<views::Textfield> justification_field_;
+  raw_ptr<views::Label> justification_text_length_;
 };
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
@@ -345,6 +386,12 @@ void ExtensionInstallDialogView::SetInstallButtonDelayForTesting(
 
 bool ExtensionInstallDialogView::IsJustificationFieldVisibleForTesting() {
   return justification_view_ != nullptr;
+}
+
+void ExtensionInstallDialogView::SetJustificationTextForTesting(
+    const std::u16string& new_text) {
+  DCHECK(justification_view_ != nullptr);
+  justification_view_->SetJustificationTextForTesting(new_text);  // IN-TEST
 }
 
 void ExtensionInstallDialogView::ResizeWidget() {
@@ -496,7 +543,7 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
 bool ExtensionInstallDialogView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   if (button == ui::DIALOG_BUTTON_OK)
-    return install_button_enabled_;
+    return install_button_enabled_ && request_button_enabled_;
   return true;
 }
 
@@ -634,7 +681,7 @@ void ExtensionInstallDialogView::CreateContents() {
     extension_info_container->AddChildView(std::move(separator));
 
     justification_view_ = extension_info_container->AddChildView(
-        std::make_unique<ExtensionJustificationView>());
+        std::make_unique<ExtensionJustificationView>(this));
   }
 
   scroll_view_ = new views::ScrollView();
@@ -645,6 +692,24 @@ void ExtensionInstallDialogView::CreateContents() {
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
   AddChildView(scroll_view_.get());
+}
+
+void ExtensionInstallDialogView::ContentsChanged(
+    views::Textfield* sender,
+    const std::u16string& new_contents) {
+  // This should never be triggered if justification_view_ is not initialized.
+  DCHECK(justification_view_);
+
+  justification_view_->UpdateLengthLabel();
+
+  // Check if the request button state should actually be updated before calling
+  // DialogModeChanged().
+  bool is_justification_length_within_limit =
+      justification_view_->IsJustificationLengthWithinLimit();
+  if (request_button_enabled_ != is_justification_length_within_limit) {
+    request_button_enabled_ = is_justification_length_within_limit;
+    DialogModelChanged();
+  }
 }
 
 void ExtensionInstallDialogView::EnableInstallButton() {
