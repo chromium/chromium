@@ -1429,16 +1429,9 @@ public class ExternalNavigationHandler {
 
         ResolveActivitySupplier resolveActivity = new ResolveActivitySupplier(targetIntent);
         boolean requiresIntentChooser = false;
-        if (isViewIntentToOtherBrowser(
-                    targetIntent, resolvingInfos, isIntentWithSupportedProtocol, resolveActivity)) {
-            RecordHistogram.recordBooleanHistogram("Android.Intent.WebIntentToOtherBrowser", true);
-            requiresIntentChooser = true;
-        }
-
-        if (mDelegate.maybeSetTargetPackage(targetIntent)) {
-            // This check was not combined with the one above to preserve the value of the
-            // Android.Intent.WebIntentToOtherBrowser histogram.
-            requiresIntentChooser = false;
+        if (!mDelegate.maybeSetTargetPackage(targetIntent)) {
+            requiresIntentChooser = isViewIntentToOtherBrowser(
+                    targetIntent, resolvingInfos, isIntentWithSupportedProtocol, resolveActivity);
         }
 
         if (shouldAvoidShowingDisambiguationPrompt(targetIntent, resolvingInfos, resolveActivity)) {
