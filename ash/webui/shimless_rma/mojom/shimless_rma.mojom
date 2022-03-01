@@ -340,6 +340,18 @@ enum ProvisioningStatus {
   kFailedNonBlocking = 4,
 };
 
+// This must remain in sync with ProvisionStatus::Error in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum ProvisioningError {
+  kUnknown = 0,
+  kInternal = 1,
+  kWpEnabled = 2,
+  kCannotRead = 3,
+  kCannotWrite = 4,
+  kGenerateSecret = 5,
+};
+
 // This must remain in sync with FinalizeStatus::Status in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // See shimless_rma_mojom_traits.cc\h.
@@ -381,8 +393,9 @@ interface CalibrationObserver {
 // calibration in a 0 - 1 range.
 interface ProvisioningObserver {
   // OnProvisioningUpdated is called whenever there is an update in the progress
-  // of device provisioning.
-  OnProvisioningUpdated(ProvisioningStatus status, float progress);
+  // of device provisioning, including an error when provisioning fails.
+  OnProvisioningUpdated(ProvisioningStatus status, float progress,
+      ProvisioningError error);
 };
 
 // Implemented by clients to track the current state of hardware write

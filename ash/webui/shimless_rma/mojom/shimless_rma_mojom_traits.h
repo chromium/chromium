@@ -94,6 +94,16 @@ struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStatus,
 };
 
 template <>
+struct EnumTraits<ash::shimless_rma::mojom::ProvisioningError,
+                  rmad::ProvisionStatus::Error> {
+  static ash::shimless_rma::mojom::ProvisioningError ToMojom(
+      rmad::ProvisionStatus::Error error);
+
+  static bool FromMojom(ash::shimless_rma::mojom::ProvisioningError input,
+                        rmad::ProvisionStatus::Error* out);
+};
+
+template <>
 class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
                    rmad::ComponentsRepairState_ComponentRepairStatus> {
  public:

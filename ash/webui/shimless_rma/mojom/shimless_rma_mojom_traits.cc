@@ -42,6 +42,9 @@ using ProtoWpDisableAction = rmad::WriteProtectDisableCompleteState::Action;
 using MojomProvisioningStatus = ash::shimless_rma::mojom::ProvisioningStatus;
 using ProtoProvisioningStatus = rmad::ProvisionStatus::Status;
 
+using MojomProvisioningError = ash::shimless_rma::mojom::ProvisioningError;
+using ProtoProvisioningError = rmad::ProvisionStatus::Error;
+
 using MojomCalibrationInstruction =
     ash::shimless_rma::mojom::CalibrationSetupInstruction;
 using ProtoCalibrationInstruction = rmad::CalibrationSetupInstruction;
@@ -757,6 +760,60 @@ bool EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::FromMojom(
       return true;
     case MojomProvisioningStatus::kFailedNonBlocking:
       *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
+MojomProvisioningError
+EnumTraits<MojomProvisioningError, ProtoProvisioningError>::ToMojom(
+    ProtoProvisioningError error) {
+  switch (error) {
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_UNKNOWN:
+      return MojomProvisioningError::kUnknown;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_INTERNAL:
+      return MojomProvisioningError::kInternal;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_WP_ENABLED:
+      return MojomProvisioningError::kWpEnabled;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CANNOT_READ:
+      return MojomProvisioningError::kCannotRead;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CANNOT_WRITE:
+      return MojomProvisioningError::kCannotWrite;
+    case rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GENERATE_SECRET:
+      return MojomProvisioningError::kGenerateSecret;
+
+    default:
+      NOTREACHED();
+      return MojomProvisioningError::kUnknown;
+  }
+  NOTREACHED();
+  return MojomProvisioningError::kUnknown;
+}
+
+// static
+bool EnumTraits<MojomProvisioningError, ProtoProvisioningError>::FromMojom(
+    MojomProvisioningError error,
+    ProtoProvisioningError* out) {
+  switch (error) {
+    case MojomProvisioningError::kUnknown:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_UNKNOWN;
+      return true;
+    case MojomProvisioningError::kInternal:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_INTERNAL;
+      return true;
+    case MojomProvisioningError::kWpEnabled:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_WP_ENABLED;
+      return true;
+    case MojomProvisioningError::kCannotRead:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CANNOT_READ;
+      return true;
+    case MojomProvisioningError::kCannotWrite:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_CANNOT_WRITE;
+      return true;
+    case MojomProvisioningError::kGenerateSecret:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GENERATE_SECRET;
       return true;
   }
   NOTREACHED();

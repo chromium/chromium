@@ -920,8 +920,8 @@ void ShimlessRmaService::ProvisioningProgress(
     const rmad::ProvisionStatus& status) {
   last_provisioning_progress_ = status;
   if (provisioning_observer_.is_bound()) {
-    provisioning_observer_->OnProvisioningUpdated(status.status(),
-                                                  status.progress());
+    provisioning_observer_->OnProvisioningUpdated(
+        status.status(), status.progress(), status.error());
   }
 }
 
@@ -993,7 +993,8 @@ void ShimlessRmaService::ObserveProvisioningProgress(
   if (last_provisioning_progress_) {
     provisioning_observer_->OnProvisioningUpdated(
         last_provisioning_progress_->status(),
-        last_provisioning_progress_->progress());
+        last_provisioning_progress_->progress(),
+        last_provisioning_progress_->error());
   }
 }
 

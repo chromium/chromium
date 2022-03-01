@@ -2929,13 +2929,23 @@ TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibrationAfterSignal) {
 
 class FakeProvisioningObserver : public mojom::ProvisioningObserver {
  public:
-  void OnProvisioningUpdated(rmad::ProvisionStatus::Status step,
-                             float progress) override {
-    observations.push_back(
-        std::pair<rmad::ProvisionStatus_Status, float>(step, progress));
+  struct Observation {
+    rmad::ProvisionStatus::Status status;
+    float progress;
+    rmad::ProvisionStatus::Error error;
+  };
+
+  void OnProvisioningUpdated(rmad::ProvisionStatus::Status status,
+                             float progress,
+                             rmad::ProvisionStatus::Error error) override {
+    Observation observation;
+    observation.status = status;
+    observation.progress = progress;
+    observation.error = error;
+    observations.push_back(observation);
   }
 
-  std::vector<std::pair<rmad::ProvisionStatus_Status, float>> observations;
+  std::vector<Observation> observations;
   mojo::Receiver<mojom::ProvisioningObserver> receiver{this};
 };
 
@@ -2944,21 +2954,39 @@ TEST_F(ShimlessRmaServiceTest, ObserveProvisioning) {
   shimless_rma_provider_->ObserveProvisioningProgress(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
+
+  const rmad::ProvisionStatus::Status expected_status =
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS;
+  const float expected_progress = 0.75;
+  const rmad::ProvisionStatus::Error expected_error =
+      rmad::ProvisionStatus::RMAD_PROVISION_ERROR_GENERATE_SECRET;
   fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
+      expected_status, expected_progress, expected_error);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].status, expected_status);
+  EXPECT_EQ(fake_observer.observations[0].progress, expected_progress);
+  EXPECT_EQ(fake_observer.observations[0].error, expected_error);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveProvisioningAfterSignal) {
-  fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
   FakeProvisioningObserver fake_observer;
   shimless_rma_provider_->ObserveProvisioningProgress(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
+
+  const rmad::ProvisionStatus::Status expected_status =
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS;
+  const float expected_progress = 0.75;
+  const rmad::ProvisionStatus::Error expected_error =
+      rmad::ProvisionStatus::RMAD_PROVISION_ERROR_WP_ENABLED;
+  fake_rmad_client_()->TriggerProvisioningProgressObservation(
+      expected_status, expected_progress, expected_error);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].status, expected_status);
+  EXPECT_EQ(fake_observer.observations[0].progress, expected_progress);
+  EXPECT_EQ(fake_observer.observations[0].error, expected_error);
 }
 
 class FakeHardwareWriteProtectionStateObserver

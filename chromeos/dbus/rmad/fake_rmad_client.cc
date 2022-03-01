@@ -366,10 +366,12 @@ void FakeRmadClient::TriggerCalibrationOverallProgressObservation(
 
 void FakeRmadClient::TriggerProvisioningProgressObservation(
     rmad::ProvisionStatus::Status status,
-    double progress) {
+    double progress,
+    rmad::ProvisionStatus::Error error) {
   rmad::ProvisionStatus status_proto;
   status_proto.set_status(status);
   status_proto.set_progress(progress);
+  status_proto.set_error(error);
   for (auto& observer : observers_)
     observer.ProvisioningProgress(status_proto);
 }

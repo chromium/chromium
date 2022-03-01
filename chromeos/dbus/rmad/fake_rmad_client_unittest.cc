@@ -542,11 +542,14 @@ TEST_F(FakeRmadClientTest, ProvisioningProgressObservation) {
   TestObserver observer_1(client_);
 
   fake_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25,
+      rmad::ProvisionStatus::RMAD_PROVISION_ERROR_WP_ENABLED);
   EXPECT_EQ(observer_1.num_provisioning_progress(), 1);
   EXPECT_EQ(observer_1.last_provisioning_status().status(),
             rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS);
   EXPECT_EQ(observer_1.last_provisioning_status().progress(), 0.25);
+  EXPECT_EQ(observer_1.last_provisioning_status().error(),
+            rmad::ProvisionStatus::RMAD_PROVISION_ERROR_WP_ENABLED);
 }
 
 // Tests that synchronous observers are notified about provisioning progress.

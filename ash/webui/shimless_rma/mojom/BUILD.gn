@@ -41,6 +41,10 @@ mojom("mojom") {
           cpp = "::rmad::ProvisionStatus_Status"
         },
         {
+          mojom = "ash.shimless_rma.mojom.ProvisioningError"
+          cpp = "::rmad::ProvisionStatus_Error"
+        },
+        {
           mojom = "ash.shimless_rma.mojom.RmadErrorCode"
           cpp = "::rmad::RmadErrorCode"
         },
