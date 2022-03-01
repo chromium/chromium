@@ -790,6 +790,9 @@
     'chromeos_wifi_sync': {
       'filepath': 'chromeos/components/sync_wifi/',
     },
+    'chrometto_proto_extensions': {
+      'filepath': 'base/tracing/protos/',
+    },
     'chromevox': {
       'filepath': 'chromevox|spoken_feedback',
     },
@@ -2418,6 +2421,7 @@
     'chromeos_wifi_sync': ['danlee+watch@google.com',
                            'jonmann+watch@chromium.org',
                            'stevenjb+watch@chromium.org'],
+    'chrometto_proto_extensions': ['ddrone+watch@google.com'],
     'chromevox': ['akihiroota@chromium.org',
                   'anastasi+watch@google.com',
                   'dtseng+chromevox@chromium.org',
