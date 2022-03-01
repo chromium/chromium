@@ -28,7 +28,7 @@ TEST(ChromeOSSystemExtensionInfo, HPExtension) {
   const auto extension_info =
       chromeos::GetChromeOSExtensionInfoForId(hp_extension_id);
   EXPECT_EQ("HP", extension_info.manufacturer);
-  EXPECT_EQ("*://hpcs-appschr.hpcloud.hp.com/*", extension_info.pwa_origin);
+  EXPECT_EQ("https://hpcs-appschr.hpcloud.hp.com/*", extension_info.pwa_origin);
 }
 
 TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
