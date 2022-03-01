@@ -49,6 +49,15 @@ class CORE_EXPORT PermissionsPolicyParser {
   STATIC_ONLY(PermissionsPolicyParser);
 
  public:
+  // Following is the intermediate represetnation(IR) of permissions policy.
+  // Parsing of syntax structures is done in this IR, but semantic checks, e.g.
+  // whether feature_name is valid, are not yet performed.
+  struct Declaration {
+    String feature_name;
+    Vector<String> allowlist;
+  };
+  using Node = Vector<Declaration>;
+
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional
   // ExecutionContext is used to determine if any origin trials affect the
