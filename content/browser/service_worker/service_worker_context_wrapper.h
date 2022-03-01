@@ -522,7 +522,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // fully converted to running on the UI thread.
   std::set<blink::StorageKey> registered_storage_keys_;
   bool registrations_initialized_ = false;
-  base::OnceClosure on_registrations_initialized_;
+  base::OnceClosure on_registrations_initialized_for_test_;
 
   std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 

@@ -1615,7 +1615,7 @@ void ServiceWorkerContextWrapper::WaitForRegistrationsInitializedForTest() {
   if (registrations_initialized_)
     return;
   base::RunLoop loop;
-  on_registrations_initialized_ = loop.QuitClosure();
+  on_registrations_initialized_for_test_ = loop.QuitClosure();
   loop.Run();
 }
 
@@ -1626,8 +1626,8 @@ void ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys(
   for (const blink::StorageKey& storage_key : storage_keys)
     registered_storage_keys_.insert(storage_key);
   registrations_initialized_ = true;
-  if (on_registrations_initialized_)
-    std::move(on_registrations_initialized_).Run();
+  if (on_registrations_initialized_for_test_)
+    std::move(on_registrations_initialized_for_test_).Run();
 
   base::UmaHistogramMediumTimes(
       "ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time",
