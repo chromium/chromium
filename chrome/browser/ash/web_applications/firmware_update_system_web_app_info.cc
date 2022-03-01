@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/display/screen.h"
 
 namespace {
@@ -23,6 +24,15 @@ namespace {
 // the specification.
 constexpr int kFirmwareUpdateAppDefaultWidth = 600;
 constexpr int kFirmwareUpdateAppDefaultHeight = 640;
+
+// FirmwareUpdateApp's title bar and background needs to be bg-elevation-2 for
+// dark mode instead of the default dark mode background color.
+SkColor GetDarkModeBackgroundColor() {
+  return cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColorElevation2, /*use_dark_mode=*/true,
+      base::FeatureList::IsEnabled(
+          ash::features::kSemanticColorsDebugOverride));
+}
 }  // namespace
 
 // TODO(michaelcheco): Update to correct icon.
@@ -38,6 +48,11 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color = GetDarkModeBackgroundColor();
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
 
   return info;
 }
