@@ -5,6 +5,7 @@
 #include "ash/system/message_center/notification_grouping_controller.h"
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"
@@ -46,7 +47,8 @@ class GroupedNotificationList {
 
   // Remove a single child notification from a grouped notification.
   void RemoveGroupedChildNotification(const std::string& notification_id) {
-    std::string& parent_id = child_parent_map_[notification_id];
+    DCHECK(base::Contains(child_parent_map_, notification_id));
+    const std::string& parent_id = child_parent_map_[notification_id];
     notifications_in_parent_map_[parent_id].erase(notification_id);
     child_parent_map_.erase(notification_id);
   }
@@ -357,6 +359,10 @@ void NotificationGroupingController::OnNotificationAdded(
     parent_view->AddGroupNotification(*notification, /*newest_first=*/false);
   else
     message_center->ResetSinglePopup(parent_id);
+
+  metrics_utils::LogCountOfNotificationsInOneGroup(
+      grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
+          .size());
 }
 
 void NotificationGroupingController::OnNotificationDisplayed(
@@ -371,7 +377,14 @@ void NotificationGroupingController::OnNotificationRemoved(
     bool by_user) {
   if (grouped_notification_list_->GroupedChildNotificationExists(
           notification_id)) {
+    const std::string parent_id =
+        grouped_notification_list_->GetParentForChild(notification_id);
+
     RemoveGroupedChild(notification_id);
+
+    metrics_utils::LogCountOfNotificationsInOneGroup(
+        grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
+            .size());
   }
 
   if (grouped_notification_list_->ParentNotificationExists(notification_id)) {

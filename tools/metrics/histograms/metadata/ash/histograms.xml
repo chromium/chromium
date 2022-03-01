@@ -2247,6 +2247,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.CountOfNotificationsInOneGroup"
+    units="Notifications" expires_after="2023-02-27">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    The number of notification contained in one group. Emitted when a
+    notification is added or removed from a group.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Notification.ExpandOrCollapse.AnimationSmoothness"
     units="%" expires_after="2022-07-02">
   <owner>leandre@chromium.org</owner>

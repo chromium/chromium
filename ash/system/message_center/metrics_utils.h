@@ -134,6 +134,9 @@ void LogNotificationAdded(const std::string& notification_id);
 // user logs in.
 void LogNotificationsShownInFirstMinute(int notifications_count);
 
+// Logs the number of notifications contained in a group.
+void LogCountOfNotificationsInOneGroup(int notification_count);
+
 }  // namespace metrics_utils
 
 }  // namespace ash
