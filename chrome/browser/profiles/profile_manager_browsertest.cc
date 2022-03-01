@@ -724,6 +724,22 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   EXPECT_EQ(1u, verify_add.GetPasswords().size());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // Create an additional profile. ScheduleProfileForDeletion() ensures another
+  // profile exists. If one does not exist, it will create one (async). As
+  // creation is async, and ScheduleProfileForDeletion() will close all
+  // browsers, triggering shutdown, creation will fail (DCHECK). By creating
+  // another profile first, we ensure this doesn't happen.
+  base::FilePath path_profile2 =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop create_run_loop;
+  profile_manager->CreateProfileAsync(
+      path_profile2,
+      base::BindRepeating(&OnUnblockOnProfileCreation, &create_run_loop));
+  // Run the message loop to allow profile creation to take place; the loop is
+  // terminated by OnUnblockOnProfileCreation when the profile is created.
+  create_run_loop.Run();
+
   base::RunLoop run_loop;
   profile_manager->ScheduleProfileForDeletion(
       profile->GetPath(),

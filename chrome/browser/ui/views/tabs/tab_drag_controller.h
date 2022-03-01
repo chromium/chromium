@@ -135,6 +135,10 @@ class TabDragController : public views::WidgetObserver {
   // Returns true if currently dragging a tab with |contents|.
   bool IsDraggingTab(content::WebContents* contents);
 
+  bool IsRemovingLastTabForRevert() const {
+    return is_removing_last_tab_for_revert_;
+  }
+
   // Invoked to drag to the new location, in screen coordinates.
   void Drag(const gfx::Point& point_in_screen);
 
@@ -728,6 +732,11 @@ class TabDragController : public views::WidgetObserver {
   // destroyed when we detached all tabs. Note that this can be true even though
   // the window is still visible; see the comment in Drag() for the reason.
   bool attached_context_hidden_ = false;
+
+  // Returns true if in the process of reverting the drag and the last tab in
+  // the TabStrip is being removed from `attached_context_` so that it can be
+  // inserted back into `source_context_`.
+  bool is_removing_last_tab_for_revert_ = false;
 
   base::WeakPtrFactory<TabDragController> weak_factory_{this};
 };

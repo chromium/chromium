@@ -292,6 +292,15 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     return started_drag;
   }
 
+  bool IsTabStripCloseable() const {
+    // Allow the close in two scenarios:
+    // . The user is not actively dragging the tabstrip.
+    // . In the process of reverting the drag, and the last tab is being
+    //   removed (so that it can be inserted back into the source tabstrip).
+    return !IsDragSessionActive() ||
+           drag_controller_->IsRemovingLastTabForRevert();
+  }
+
   // TabDragContext:
   views::View* AsView() override { return tab_strip_; }
 
@@ -865,7 +874,7 @@ bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
 }
 
 bool TabStrip::IsTabStripCloseable() const {
-  return !drag_context_->IsDragSessionActive();
+  return drag_context_->IsTabStripCloseable();
 }
 
 bool TabStrip::IsTabStripEditable() const {

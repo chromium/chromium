@@ -316,7 +316,7 @@ class BrowserCloseManagerBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForAllBrowsersToClose() {
-    for (size_t i = 0U; i < browsers_.size(); ++i)
+    while (!BrowserList::GetInstance()->empty())
       ui_test_utils::WaitForBrowserToClose();
   }
 

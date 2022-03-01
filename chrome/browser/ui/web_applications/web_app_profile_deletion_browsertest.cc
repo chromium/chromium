@@ -17,6 +17,18 @@
 #include "url/gurl.h"
 
 namespace web_app {
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
+                                Profile* profile,
+                                Profile::CreateStatus status) {
+  if (status == Profile::CREATE_STATUS_INITIALIZED)
+    run_loop->Quit();
+}
+#endif
+
+}  // namespace
 
 class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
  public:
@@ -55,6 +67,24 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
 
         run_loop.Quit();
       }));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Create an additional profile. ScheduleProfileForDeletion() ensures another
+  // profile exists. If one does not exist, it will create one (async). As
+  // creation is async, and ScheduleProfileForDeletion() will close all
+  // browsers, triggering shutdown, creation will fail (DCHECK). By creating
+  // another profile first, we ensure this doesn't happen.
+  base::FilePath path_profile2 =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  base::RunLoop create_run_loop;
+  profile_manager->CreateProfileAsync(
+      path_profile2,
+      base::BindRepeating(&OnUnblockOnProfileCreation, &create_run_loop));
+  // Run the message loop to allow profile creation to take place; the loop is
+  // terminated by OnUnblockOnProfileCreation when the profile is created.
+  create_run_loop.Run();
+#endif
 
   ScheduleCurrentProfileForDeletion();
   run_loop.Run();

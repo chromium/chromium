@@ -1910,11 +1910,18 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     int index = attached_context_->GetTabStripModel()->GetIndexOfWebContents(
         data->contents);
     if (attached_context_ != source_context_) {
+      std::unique_ptr<base::AutoReset<bool>> removing_last_tab_setter;
+      if (attached_context_->GetTabStripModel()->count() == 1) {
+        removing_last_tab_setter = std::make_unique<base::AutoReset<bool>>(
+            &is_removing_last_tab_for_revert_, true);
+      }
       // The Tab was inserted into another TabDragContext. We need to
       // put it back into the original one.
       std::unique_ptr<content::WebContents> detached_web_contents =
           attached_context_->GetTabStripModel()
               ->DetachWebContentsAtForInsertion(index);
+      // No-longer removing the last tab, so reset state.
+      removing_last_tab_setter.reset();
       // TODO(beng): (Cleanup) seems like we should use Attach() for this
       //             somehow.
       source_context_->GetTabStripModel()->InsertWebContentsAt(

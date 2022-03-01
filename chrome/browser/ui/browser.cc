@@ -934,7 +934,8 @@ void Browser::OnWindowClosing() {
 
   BrowserList::NotifyBrowserCloseStarted(this);
 
-  tab_strip_model_->CloseAllTabs();
+  if (!tab_strip_model_->empty())
+    tab_strip_model_->CloseAllTabs();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1252,19 +1253,13 @@ void Browser::TabGroupedStateChanged(
 }
 
 void Browser::TabStripEmpty() {
-  // Close the frame after we return to the message loop (not immediately,
-  // otherwise it will destroy this object before the stack has a chance to
-  // cleanly unwind.)
-  // Note: This will be called several times if TabStripEmpty is called several
-  //       times. This is because it does not close the window if tabs are
-  //       still present.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<Browser> browser) {
-                       if (browser)
-                         browser->window()->Close();
-                     },
-                     weak_factory_.GetWeakPtr()));
+  // This function is often called with various Browser related classes on the
+  // stack. Calling code can't handle Browser being deleted here (because it
+  // may delete the classes on the stack calling into this function). Because of
+  // this, BrowserWindow::Close() is used, instead of CloseNow(). CloseNow()
+  // immediately deletes, where was Close() is a hide, and then delete after
+  // posting a task.
+  window_->Close();
 
   // Instant may have visible WebContents that need to be detached before the
   // window system closes.

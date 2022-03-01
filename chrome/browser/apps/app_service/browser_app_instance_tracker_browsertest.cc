@@ -1204,6 +1204,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, StopInstancesOfApp) {
     recorder.Verify({
         {"removed", 5, kAppWindow, app_d_id, window2, "d.example.org", kActive,
          kActive},
+        {"updated", 1, kChromeWindow, {}, window1, {}, kActive, kInactive},
+        {"updated", 4, kAppTab, kAppId_B, window1, "b.example.org", kActive,
+         kInactive},
     });
   }
 
@@ -1215,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, StopInstancesOfApp) {
     tracker_->StopInstancesOfApp(kAppId_B);
 
     recorder.Verify({
-        {"removed", 4, kAppTab, kAppId_B, window1, kTitle_B, kInactive,
+        {"removed", 4, kAppTab, kAppId_B, window1, kTitle_B, kActive,
          kInactive},
     });
   }
