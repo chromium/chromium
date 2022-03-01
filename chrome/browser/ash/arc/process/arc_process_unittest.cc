@@ -224,31 +224,6 @@ TEST(ArcProcess, GmsCoreProtection) {
                            mojom::ProcessState::CACHED_EMPTY,
                            false /* is_focused */, 0 /* last_activity_time */);
 
-  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.process.gservices")
-                   .IsPersistent());
-  EXPECT_FALSE(
-      CreateFromPattern(pattern, "com.google.process.gservices").IsImportant());
-  EXPECT_FALSE(
-      CreateFromPattern(pattern, "com.google.android.gms").IsPersistent());
-  EXPECT_FALSE(
-      CreateFromPattern(pattern, "com.google.android.gms").IsImportant());
-  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
-                   .IsPersistent());
-  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.persistent")
-                   .IsImportant());
-  EXPECT_FALSE(
-      CreateFromPattern(pattern, "com.google.android.gms.ui").IsPersistent());
-  EXPECT_FALSE(
-      CreateFromPattern(pattern, "com.google.android.gms.ui").IsImportant());
-  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
-                   .IsPersistent());
-  EXPECT_FALSE(CreateFromPattern(pattern, "com.google.android.gms.unstable")
-                   .IsImportant());
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(kGmsCoreLowMemoryKillerProtection,
-                                    true /* enabled */);
-
   EXPECT_TRUE(CreateFromPattern(pattern, "com.google.process.gservices")
                   .IsPersistent());
   EXPECT_TRUE(

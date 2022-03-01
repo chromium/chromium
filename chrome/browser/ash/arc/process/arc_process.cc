@@ -128,9 +128,6 @@ bool ArcProcess::IsArcProtected() const {
 }
 
 bool ArcProcess::IsGmsCoreProtected() const {
-  if (!base::FeatureList::IsEnabled(arc::kGmsCoreLowMemoryKillerProtection))
-    return false;
-
   for (const char* service : kGmsCoreProtectedServices) {
     if (process_name() == service)
       return true;
