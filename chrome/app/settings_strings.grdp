@@ -1466,7 +1466,7 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_EMPTY" translateable="false" desc="Description of the empty state of the removed browser-based interests section of the 'ad personalization' dialog.">
     You haven’t removed any interests
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_INTERESTS_LABEL" translateable="false" desc="Label of the row to go to the removed browser-based interests section of the 'ad personalization' dialog.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_TOPICS_LABEL" translateable="false" desc="Label of the row to go to the removed browser-based interests section of the 'ad personalization' dialog.">
     Interests you removed
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_FLEDGE_TITLE" translateable="false" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
@@ -1477,6 +1477,9 @@
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_EMPTY" translateable="false" desc="Description of the empty state of the removed website-based interests section of the 'ad personalization' dialog.">
     You haven’t removed any sites
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_REMOVED_FLEDGE_LABEL" translateable="false" desc="Label of the row to go to the removed website-based interests section of the 'ad personalization' dialog.">
+    Sites you removed
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" translateable="false" desc="Title of the 'ad measurement' dialog.">
     Ad measurement

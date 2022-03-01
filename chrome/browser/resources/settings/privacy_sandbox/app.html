@@ -133,7 +133,7 @@
     margin-inline-start: 0;
   }
 
-  #adPersonalizationRemovedRow {
+  .ad-personalization-removed-row {
     border-top: var(--cr-separator-line);
     color: var(--cr-primary-text-color);
     margin-top: 8px;
@@ -274,8 +274,10 @@
                     on-interest-changed="onInterestChanged_">
                 </privacy-sandbox-interest-item>
               </template>
-              <cr-link-row id="adPersonalizationRemovedRow"
-                  label="$i18n{privacySandboxAdPersonalizationDialogRemovedInterestsLabel}"
+              <cr-link-row class="ad-personalization-removed-row"
+                  hidden="[[!showInterestsList_(blockedTopics_,
+                                                blockedTopics_.length)]]"
+                  label="$i18n{privacySandboxAdPersonalizationDialogRemovedTopicsLabel}"
                   on-click="onAdPersonalizationRemovedRowClick_">
               </cr-link-row>
             </div>
@@ -293,6 +295,12 @@
                     on-interest-changed="onInterestChanged_">
                 </privacy-sandbox-interest-item>
               </template>
+              <cr-link-row class="ad-personalization-removed-row"
+                  hidden="[[!showInterestsList_(blockedSites_,
+                                                blockedSites_.length)]]"
+                  label="$i18n{privacySandboxAdPersonalizationDialogRemovedFledgeLabel}"
+                  on-click="onAdPersonalizationRemovedRowClick_">
+              </cr-link-row>
             </div>
           </div>
         </template>

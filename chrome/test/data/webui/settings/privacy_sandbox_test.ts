@@ -298,7 +298,7 @@ suite('PrivacySandboxSettings3', function() {
                 '#' +
                 PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG)!.if !);
     const removedRow = page.shadowRoot!.querySelector<HTMLElement>(
-        '#adPersonalizationRemovedRow')!;
+        '.ad-personalization-removed-row')!;
     assertTrue(isVisible(removedRow));
     const backButton = page.shadowRoot!.querySelector<HTMLElement>(
         '#adPersonalizationBackButton')!;
@@ -319,7 +319,7 @@ suite('PrivacySandboxSettings3', function() {
                        PrivacySandboxSettingsView
                            .AD_PERSONALIZATION_REMOVED_DIALOG)!.if !);
     const removedRow = page.shadowRoot!.querySelector<HTMLElement>(
-        '#adPersonalizationRemovedRow')!;
+        '.ad-personalization-removed-row')!;
     assertFalse(isVisible(removedRow));
     const backButton = page.shadowRoot!.querySelector<HTMLElement>(
         '#adPersonalizationBackButton')!;
@@ -428,8 +428,8 @@ suite('PrivacySandboxSettings3', function() {
 
     // Clicking on the link row for removed interests should take you to the
     // removed interests page.
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#adPersonalizationRemovedRow')!.click();
+    page.shadowRoot!
+        .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
@@ -508,8 +508,8 @@ suite('PrivacySandboxSettings3', function() {
     assertEquals('test-topic-1', topTopics.items![0].topic!.displayString);
 
     // Switch to removed page.
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#adPersonalizationRemovedRow')!.click();
+    page.shadowRoot!
+        .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
@@ -541,8 +541,8 @@ suite('PrivacySandboxSettings3', function() {
     assertTrue(isVisible(topTopicsSection.querySelector('#topTopicsEmpty')));
 
     // Switch to removed page.
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#adPersonalizationRemovedRow')!.click();
+    page.shadowRoot!
+        .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
@@ -591,8 +591,8 @@ suite('PrivacySandboxSettings3', function() {
     assertEquals('test-site-one.com', joiningSites.items![0].site!);
 
     // Switch to removed page.
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#adPersonalizationRemovedRow')!.click();
+    page.shadowRoot!
+        .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
@@ -625,8 +625,8 @@ suite('PrivacySandboxSettings3', function() {
         isVisible(joiningSitesSection.querySelector('#joiningSitesEmpty')));
 
     // Switch to removed page.
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#adPersonalizationRemovedRow')!.click();
+    page.shadowRoot!
+        .querySelector<HTMLElement>('.ad-personalization-removed-row')!.click();
     await flushTasks();
     assertAdPersonalizationRemovedDialogVisible();
 
