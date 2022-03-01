@@ -2,4 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-cart_test_files = [ "modules/cart/module_test.ts" ]
+cart_test_files = [
+  "modules/cart/discount_consent_dialog_test.ts",
+  "modules/cart/module_test.ts",
+]
