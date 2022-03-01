@@ -77,6 +77,7 @@
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1.42001E_prefer-hardware [ RetryOnFailure ]
+crbug.com/1300963 [ chromeos-board-kevin ] WebCodecs_Encode_camera_* [ Failure ]
 
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
 
