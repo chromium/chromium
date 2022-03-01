@@ -162,7 +162,7 @@ TEST_F(FtrlRankerTest, TrainAndRankResults) {
   // better than the bad ranker.
   Wait();
   auto proto = ReadProtoFromDisk<FtrlOptimizerProto>();
-  ASSERT_EQ(proto.weights_size(), 2u);
+  ASSERT_EQ(proto.weights_size(), 2);
   EXPECT_GE(proto.weights()[0], 0.9);
   EXPECT_LE(proto.weights()[1], 0.1);
 
@@ -176,7 +176,7 @@ TEST_F(FtrlRankerTest, TrainAndRankResults) {
   // The weights of the 'bad' expert should have recovered.
   Wait();
   proto = ReadProtoFromDisk<FtrlOptimizerProto>();
-  ASSERT_EQ(proto.weights_size(), 2u);
+  ASSERT_EQ(proto.weights_size(), 2);
   EXPECT_LE(proto.weights()[0], 0.1);
   EXPECT_GE(proto.weights()[1], 0.9);
 }
@@ -217,7 +217,7 @@ TEST_F(FtrlRankerTest, TrainAndRankCategories) {
   // better than the bad ranker.
   Wait();
   auto proto = ReadProtoFromDisk<FtrlOptimizerProto>();
-  ASSERT_EQ(proto.weights_size(), 2u);
+  ASSERT_EQ(proto.weights_size(), 2);
   EXPECT_GE(proto.weights()[0], 0.9);
   EXPECT_LE(proto.weights()[1], 0.1);
 
@@ -232,7 +232,7 @@ TEST_F(FtrlRankerTest, TrainAndRankCategories) {
   // The weights of the 'bad' expert should have recovered.
   Wait();
   proto = ReadProtoFromDisk<FtrlOptimizerProto>();
-  ASSERT_EQ(proto.weights_size(), 2u);
+  ASSERT_EQ(proto.weights_size(), 2);
   EXPECT_LE(proto.weights()[0], 0.1);
   EXPECT_GE(proto.weights()[1], 0.9);
 }

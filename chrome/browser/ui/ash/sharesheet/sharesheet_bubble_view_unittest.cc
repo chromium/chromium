@@ -181,7 +181,7 @@ TEST_F(SharesheetBubbleViewTest, EmptyState) {
 
   // Footer should be an empty view that just acts as padding.
   ASSERT_TRUE(footer_view()->GetVisible());
-  ASSERT_EQ(footer_view()->children().size(), 0);
+  ASSERT_EQ(footer_view()->children().size(), 0u);
 }
 
 TEST_F(SharesheetBubbleViewTest, RecordLaunchSource) {

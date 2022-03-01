@@ -415,6 +415,7 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
   return profile;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 StartupProfilePathInfo GetProfilePickerStartupProfilePathInfo() {
   // To indicate that we want to show the profile picker, return the guest
   // profile.
@@ -423,6 +424,7 @@ StartupProfilePathInfo GetProfilePickerStartupProfilePathInfo() {
   return {ProfileManager::GetGuestProfilePath(),
           StartupProfileMode::kProfilePicker};
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 StartupProfileInfo GetProfilePickerStartupProfileInfo() {

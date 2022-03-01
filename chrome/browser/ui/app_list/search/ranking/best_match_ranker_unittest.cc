@@ -80,7 +80,7 @@ TEST_F(BestMatchRankerTest, ResultThresholdingAndSorting) {
   ExpectBestMatchOrderAndRanks({{"omni_4", 0}, {"omni_1", 1}, {"omni_6", 2}});
 
   const auto& results = results_map[ResultType::kOmnibox];
-  ASSERT_EQ(results.size(), 6);
+  ASSERT_EQ(results.size(), 6u);
 
   std::vector<std::string> result_map_ids;
   std::vector<int> result_map_ranks;
@@ -217,7 +217,7 @@ TEST_F(BestMatchRankerTest, ProviderReturnsMoreThanOnce_ResultDemoted) {
   ExpectBestMatchOrderAndRanks({{"omni_5", 0}, {"omni_6", 1}, {"omni_4", 2}});
 
   const auto& results = results_map[ResultType::kOmnibox];
-  ASSERT_EQ(results.size(), 6);
+  ASSERT_EQ(results.size(), 6u);
 
   std::vector<std::string> result_map_ids;
   std::vector<int> result_map_ranks;

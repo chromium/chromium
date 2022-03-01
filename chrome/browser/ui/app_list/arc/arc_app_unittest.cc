@@ -1126,7 +1126,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   void LoadIconsWithIconLoader(std::vector<std::string>& app_ids,
-                               int update_count) {
+                               size_t update_count) {
     FakeAppIconLoaderDelegate delegate;
     AppServiceAppIconLoader icon_loader(
         profile(), extension_misc::EXTENSION_ICON_MEDIUM, &delegate);

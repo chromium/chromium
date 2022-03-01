@@ -123,7 +123,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     }
   }
 
-  void ValidateExternalProviderCountInAppMode(int expected_count) {
+  void ValidateExternalProviderCountInAppMode(size_t expected_count) {
     base::CommandLine* command = base::CommandLine::ForCurrentProcess();
     command->AppendSwitchASCII(switches::kForceAppMode, std::string());
     command->AppendSwitchASCII(switches::kAppId, std::string("app_id"));
@@ -328,7 +328,7 @@ TEST_F(ExternalProviderImplChromeOSTest, ChromeAppKiosk) {
   fake_user_manager()->AddKioskAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
 
-  ValidateExternalProviderCountInAppMode(3);
+  ValidateExternalProviderCountInAppMode(3u);
 }
 
 // Validate the external providers enabled in the ARC++ App Kiosk session. The
@@ -339,7 +339,7 @@ TEST_F(ExternalProviderImplChromeOSTest, ArcAppKiosk) {
   fake_user_manager()->AddArcKioskAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
 
-  ValidateExternalProviderCountInAppMode(1);
+  ValidateExternalProviderCountInAppMode(1u);
 }
 
 // Validate the external providers enabled in the Web App Kiosk session. The
@@ -350,7 +350,7 @@ TEST_F(ExternalProviderImplChromeOSTest, WebAppKiosk) {
   fake_user_manager()->AddWebKioskAppUser(kiosk_account_id);
   fake_user_manager()->LoginUser(kiosk_account_id);
 
-  ValidateExternalProviderCountInAppMode(1);
+  ValidateExternalProviderCountInAppMode(1u);
 }
 
 }  // namespace extensions

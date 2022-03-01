@@ -65,7 +65,7 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
         mojo::PendingRemote<network::mojom::SocketObserver> observer,
         CreateTCPConnectedSocketCallback callback) override {
       EXPECT_EQ(kLocalAddress, local_addr);
-      EXPECT_EQ(1, remote_addr_list.size());
+      EXPECT_EQ(1u, remote_addr_list.size());
       EXPECT_EQ(kRemoteAddress, remote_addr_list[0]);
       EXPECT_EQ(kAnnotation, traffic_annotation);
       if (should_invoke_connect_callback_) {

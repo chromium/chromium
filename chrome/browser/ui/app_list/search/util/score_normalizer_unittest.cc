@@ -24,7 +24,7 @@ void ExpectBinsEqual(const ScoreNormalizerProto* proto,
   const auto& normalizer = it->second;
 
   ASSERT_EQ(dividers.size() + 1, counts.size());
-  ASSERT_EQ(normalizer.bins_size(), counts.size());
+  ASSERT_EQ(static_cast<size_t>(normalizer.bins_size()), counts.size());
 
   double total = 0.0;
   for (size_t i = 0; i < counts.size(); ++i) {

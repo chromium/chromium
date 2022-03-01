@@ -65,7 +65,7 @@ TEST_F(StreamParserTest, SingleEntireMessageAtOnce) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(stream_body.SerializeAsString());
-  EXPECT_EQ(responses.size(), 1);
+  EXPECT_EQ(responses.size(), 1u);
   EXPECT_EQ(responses[0].mutable_inbox_message()->message(), messages[0]);
 }
 
@@ -79,7 +79,7 @@ TEST_F(StreamParserTest, MultipleEntireMessagesAtOnce) {
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(stream_body.SerializeAsString());
 
-  EXPECT_EQ(responses.size(), 3);
+  EXPECT_EQ(responses.size(), 3u);
   EXPECT_EQ(responses[0].mutable_inbox_message()->message(), messages[0]);
   EXPECT_EQ(responses[1].mutable_inbox_message()->message(), messages[1]);
   EXPECT_EQ(responses[2].mutable_inbox_message()->message(), messages[2]);
@@ -98,10 +98,10 @@ TEST_F(StreamParserTest, SingleMessageSplit) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(serialized_msg.substr(0, pos));
-  EXPECT_EQ(responses.size(), 0);
+  EXPECT_EQ(responses.size(), 0u);
 
   responses = GetStreamParser().Append(serialized_msg.substr(pos));
-  EXPECT_EQ(responses.size(), 1);
+  EXPECT_EQ(responses.size(), 1u);
   EXPECT_EQ(responses[0].mutable_inbox_message()->message(), messages[0]);
 }
 
@@ -123,13 +123,13 @@ TEST_F(StreamParserTest, MultipleMessagesSplit) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(first_message);
-  EXPECT_EQ(3, responses.size());
+  EXPECT_EQ(3u, responses.size());
   EXPECT_EQ(messages_1[0], responses[0].mutable_inbox_message()->message());
   EXPECT_EQ(messages_1[1], responses[1].mutable_inbox_message()->message());
   EXPECT_EQ(messages_1[2], responses[2].mutable_inbox_message()->message());
 
   responses = GetStreamParser().Append(second_message);
-  EXPECT_EQ(2, responses.size());
+  EXPECT_EQ(2u, responses.size());
   EXPECT_EQ(messages_2[0], responses[0].mutable_inbox_message()->message());
   EXPECT_EQ(messages_2[1], responses[1].mutable_inbox_message()->message());
 }
@@ -151,7 +151,7 @@ TEST_F(StreamParserTest, LongMessageAtOnce) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(stream_body.SerializeAsString());
-  EXPECT_EQ(1, responses.size());
+  EXPECT_EQ(1u, responses.size());
   EXPECT_EQ(messages[0], responses[0].mutable_inbox_message()->message());
 }
 
@@ -161,13 +161,13 @@ TEST_F(StreamParserTest, TagFailure) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(message);
-  EXPECT_EQ(0, responses.size());
+  EXPECT_EQ(0u, responses.size());
 
   char bytes[2] = {0x0f, 0x00};
   auto bytes_string = base::StringPiece(bytes);
-  EXPECT_EQ(1, bytes_string.length());
+  EXPECT_EQ(1u, bytes_string.length());
   responses = GetStreamParser().Append(bytes);
-  EXPECT_EQ(0, responses.size());
+  EXPECT_EQ(0u, responses.size());
 }
 
 // Check that when we have a ReadBytes failure, no message is received.
@@ -183,5 +183,5 @@ TEST_F(StreamParserTest, ReadBytesFailure) {
   std::vector<
       chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse>
       responses = GetStreamParser().Append(serialized_msg.substr(0, pos));
-  EXPECT_EQ(responses.size(), 0);
+  EXPECT_EQ(responses.size(), 0u);
 }

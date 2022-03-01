@@ -56,7 +56,7 @@ TEST(AnswerRankerTest, SelectAndFilterOmnibox) {
   ranker.OnBurnInPeriodElapsed();
 
   const auto& results = results_map[ResultType::kOmnibox];
-  ASSERT_EQ(results.size(), 3);
+  ASSERT_EQ(results.size(), 3u);
 
   // The highest scoring Omnibox answer is selected.
   EXPECT_EQ(results[1]->display_type(),
@@ -79,7 +79,7 @@ TEST(AnswerRankerTest, SelectBestShortcut) {
   ranker.OnBurnInPeriodElapsed();
 
   const auto& results = results_map[ResultType::kKeyboardShortcut];
-  ASSERT_EQ(results.size(), 2);
+  ASSERT_EQ(results.size(), 2u);
 
   // The best match shortcut is selected.
   EXPECT_EQ(results[1]->display_type(),
@@ -102,7 +102,7 @@ TEST(AnswerRankerTest, OnlySelectIfOneBestShortcut) {
   ranker.OnBurnInPeriodElapsed();
 
   const auto& results = results_map[ResultType::kKeyboardShortcut];
-  ASSERT_EQ(results.size(), 2);
+  ASSERT_EQ(results.size(), 2u);
 
   // No shortcuts should be selected.
   for (const auto& result : results) {
@@ -124,13 +124,13 @@ TEST(AnswerRankerTest, OmniboxOverShortcuts) {
 
   // Shortcut candidate should not be selected.
   const auto& shortcut_results = results_map[ResultType::kKeyboardShortcut];
-  ASSERT_EQ(shortcut_results.size(), 1);
+  ASSERT_EQ(shortcut_results.size(), 1u);
   EXPECT_NE(shortcut_results[0]->display_type(),
             ash::SearchResultDisplayType::kAnswerCard);
 
   // Omnibox candidate should be selected.
   const auto& omnibox_results = results_map[ResultType::kOmnibox];
-  ASSERT_EQ(omnibox_results.size(), 1);
+  ASSERT_EQ(omnibox_results.size(), 1u);
   EXPECT_EQ(omnibox_results[0]->display_type(),
             ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_FALSE(omnibox_results[0]->scoring().filter);
@@ -147,7 +147,7 @@ TEST(AnswerRankerTest, SelectedAnswerNotChangedAfterBurnIn) {
 
   // The shortcut answer is selected.
   const auto& shortcut_results = results_map[ResultType::kKeyboardShortcut];
-  ASSERT_EQ(shortcut_results.size(), 1);
+  ASSERT_EQ(shortcut_results.size(), 1u);
   EXPECT_EQ(shortcut_results[0]->display_type(),
             ash::SearchResultDisplayType::kAnswerCard);
 
@@ -156,7 +156,7 @@ TEST(AnswerRankerTest, SelectedAnswerNotChangedAfterBurnIn) {
   ranker.UpdateResultRanks(results_map, ProviderType::kOmnibox);
 
   const auto& omnibox_results = results_map[ResultType::kOmnibox];
-  ASSERT_EQ(omnibox_results.size(), 1);
+  ASSERT_EQ(omnibox_results.size(), 1u);
   EXPECT_TRUE(omnibox_results[0]->scoring().filter);
 }
 

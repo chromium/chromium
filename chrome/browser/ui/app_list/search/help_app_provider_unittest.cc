@@ -83,7 +83,7 @@ TEST_F(HelpAppProviderTest,
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1, provider()->results().size());
+  EXPECT_EQ(1u, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
   ExpectDiscoverTabChip(result);
 }
@@ -97,7 +97,7 @@ TEST_F(HelpAppProviderTest,
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1, provider()->results().size());
+  EXPECT_EQ(1u, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
   ExpectReleaseNotesChip(result);
 }
@@ -110,7 +110,7 @@ TEST_F(HelpAppProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
 
   provider()->StartZeroState();
 
-  EXPECT_EQ(1, provider()->results().size());
+  EXPECT_EQ(1u, provider()->results().size());
   ChromeSearchResult* result = provider()->results().at(0).get();
   ExpectDiscoverTabChip(result);
 }

@@ -81,7 +81,7 @@ TEST_F(KeyboardShortcutResultTest,
 
   const TextVector text_vector = GetTextVectorFromTemplate(
       template_string, replacement_strings, shortcut_key_codes);
-  ASSERT_EQ(text_vector.size(), 7);
+  ASSERT_EQ(text_vector.size(), 7u);
 
   EXPECT_EQ(text_vector[0].GetType(), TextType::kIconifiedText);
   EXPECT_EQ(text_vector[0].GetText(), u"Ctrl");
@@ -121,7 +121,7 @@ TEST_F(KeyboardShortcutResultTest,
 
   const TextVector text_vector = GetTextVectorFromTemplate(
       template_string, replacement_strings, shortcut_key_codes);
-  ASSERT_EQ(text_vector.size(), 5);
+  ASSERT_EQ(text_vector.size(), 5u);
 
   EXPECT_EQ(text_vector[0].GetType(), TextType::kString);
   EXPECT_EQ(text_vector[0].GetText(), u"Press ");

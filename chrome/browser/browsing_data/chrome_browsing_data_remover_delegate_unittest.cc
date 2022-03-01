@@ -1967,7 +1967,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       chromeos::AttestationClient::Get()
           ->GetTestInterface()
           ->delete_keys_history();
-  EXPECT_EQ(history.size(), 1);
+  EXPECT_EQ(history.size(), 1u);
 
   chromeos::AttestationClient::Shutdown();
 }
