@@ -20330,7 +20330,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -20352,7 +20352,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21100,7 +21100,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21138,7 +21138,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -21160,7 +21160,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -22267,7 +22267,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -24289,7 +24289,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -24311,7 +24311,7 @@
           "dimension_sets": [
             {
               "cpu": "x86",
-              "os": "Ubuntu-16.04"
+              "os": "Ubuntu-18.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
