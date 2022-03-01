@@ -45,8 +45,8 @@ const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams{
         /*matches_origin=*/"*://www.google.com/*"),
     ExtensionInfoTestParams(
         /*extension_id=*/"alnedpmllcfpgldkagbfbjkloonjlfjb",
-        /*pwa_page_url=*/"http://hpcs-appschr.hpcloud.hp.com",
-        /*matches_origin=*/"*://hpcs-appschr.hpcloud.hp.com/*")};
+        /*pwa_page_url=*/"https://hpcs-appschr.hpcloud.hp.com",
+        /*matches_origin=*/"https://hpcs-appschr.hpcloud.hp.com/*")};
 
 // Tests that Chrome OS System Extensions must fulfill the requirements to
 // access Telemetry Extension APIs. All tests are parameterized with the
