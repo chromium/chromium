@@ -10,7 +10,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.ntp.ForeignSessionHelper.ForeignSessionTab;
@@ -31,7 +30,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -441,13 +439,9 @@ public class RecentTabsManager implements SyncService.SyncStateChangedListener, 
 
     private void update() {
         updatePromoState();
-        // TODO(crbug.com/1129853): Re-evaluate whether it's necessary to post
-        // a task.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            if (mIsDestroyed) return;
-            updateForeignSessions();
-            postUpdate();
-        });
+        if (mIsDestroyed) return;
+        updateForeignSessions();
+        postUpdate();
     }
 
     @VisibleForTesting
