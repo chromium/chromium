@@ -30,6 +30,7 @@
 namespace {
 
 struct TestParam {
+  std::string test_suffix = "";
   DiceWebSigninInterceptor::SigninInterceptionType interception_type =
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   policy::EnterpriseManagementAuthority management_authority =
@@ -38,41 +39,54 @@ struct TestParam {
   bool is_intercepted_account_managed = false;
 };
 
+// To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
+// to be named like `All/<TestClassName>.InvokeUi_default/<TestSuffix>` instead
+// of using the index of the param in `kTestParam` as suffix.
+std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
+  return info.param.test_suffix;
+}
+
 // Permutations of supported bubbles.
 const TestParam kTestParams[] = {
     // Common consumer user case: regular account signing in to a profile having
     // a regular account on a non-managed device.
-    {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+    {"ConsumerSimple",
+     DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
 
     // Regular account signing in to a profile having a regular account on a
     // managed device (having policies configured locally for example).
-    {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+    {"ConsumerManagedDevice",
+     DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
      /*is_intercepted_account_managed=*/false},
 
     // Regular account signing in to a profile having a managed account on a
     // non-managed device.
-    {DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+    {"EnterpriseSimple",
+     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
 
     // Managed account signing in to a profile having a regular account on a
     // non-managed device.
-    {DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+    {"EnterpriseManagedIntercepted",
+     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/true},
 
     // Regular account signing in to a profile having a managed account on a
     // managed device.
-    {DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+    {"EntepriseManagedDevice",
+     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
      /*is_intercepted_account_managed=*/false},
 
     // Profile switch bubble: the account used for signing in is already
     // associated with another profile.
-    {DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+    {"ProfileSwitch",
+     DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
 };
@@ -155,7 +169,8 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceWebSigninInterceptionBubblePixelTest,
-                         testing::ValuesIn(kTestParams));
+                         testing::ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
 
 class DiceWebSigninInterceptionBubbleSyncPromoPixelTest
     : public DiceWebSigninInterceptionBubblePixelTest {
@@ -173,7 +188,8 @@ IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubbleSyncPromoPixelTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceWebSigninInterceptionBubbleSyncPromoPixelTest,
-                         testing::ValuesIn(kTestParams));
+                         testing::ValuesIn(kTestParams),
+                         &ParamToTestSuffix);
 
 class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
  public:
