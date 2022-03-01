@@ -7580,6 +7580,23 @@ crbug.com/1295707 http/tests/devtools/elements/elements-treeoutline-copy.js [ Fa
 # Disable to skip performance test caused by potential O(n^2) problem in AXObjectCacheImpl::ChildrenChanged
 crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ Skip ]
 
+# Temporarily disabled to land refactoring in DevTools
+crbug.com/1301903 http/tests/devtools/elements/css-variables/defined-css-variables.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/css-variables/resolve-css-variables.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/css-variables/resolve-inherited-css-variables.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/hide-shortcut.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-1/cached-sync-computed-styles.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-1/edit-value-inside-property.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-2/add-import-rule.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-2/import-pseudoclass-crash.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-2/multiple-imports-edit-crash.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-2/property-ui-location.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-3/styles-variables.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-4/disable-last-property-without-semicolon.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/elements/styles-4/styles-formatting.js [ Skip ]
+crbug.com/1301903 http/tests/devtools/modify-cross-domain-rule.js [ Skip ]
+
 # The test has a flaky baseline
 crbug.com/1243128 http/tests/devtools/extensions/extensions-useragent.js [ Failure Pass ]
 
