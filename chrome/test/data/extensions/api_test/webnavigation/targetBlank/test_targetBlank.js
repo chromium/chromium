@@ -15,10 +15,18 @@ loadScript.then(async function() {
   var URL_TARGET = "http://127.0.0.1:" + port +
     "/extensions/api_test/webnavigation/targetBlank/b.html";
 
+  var topDocumentId;
+
   chrome.test.runTests([
     // Opens a tab and waits for the user to click on a link with
     // target=_blank in it.
     function targetBlank() {
+      // store the real documentId for the testGetFrame later.
+      chrome.webNavigation.onCommitted.addListener(
+        function(details) {
+          if (!topDocumentId)
+            topDocumentId = details.documentId;
+      });
       expect([
         { label: "a-onBeforeNavigate",
           event: "onBeforeNavigate",
@@ -127,5 +135,21 @@ loadScript.then(async function() {
       // Notify the api test that we're waiting for the user.
       chrome.test.notifyPass();
     },
+
+    // Verify GetFrame via documentId works correctly in incognito mode.
+    function testGetFrame() {
+      chrome.webNavigation.getFrame({documentId: topDocumentId},
+        function (details) {
+          chrome.test.assertEq({
+              errorOccurred: false,
+              url: URL_LOAD,
+              parentFrameId: -1,
+              documentId: topDocumentId,
+              documentLifecycle: 'active',
+              frameType: 'outermost_frame',
+            }, details);
+          chrome.test.succeed();
+      });
+    }
   ]);
 });

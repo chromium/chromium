@@ -769,6 +769,24 @@ ExtensionTabUtil::GetAllActiveWebContentsForContext(
   return active_contents;
 }
 
+// static
+bool ExtensionTabUtil::IsWebContentsInContext(
+    content::WebContents* web_contents,
+    content::BrowserContext* browser_context,
+    bool include_incognito) {
+  // Look at the WebContents BrowserContext and see if it is the same.
+  content::BrowserContext* web_contents_browser_context =
+      web_contents->GetBrowserContext();
+  if (web_contents_browser_context == browser_context)
+    return true;
+
+  // If not it might be to include the incongito mode, so we if the profiles
+  // are the same or the parent.
+  return include_incognito && Profile::FromBrowserContext(browser_context)
+                                  ->IsSameOrParent(Profile::FromBrowserContext(
+                                      web_contents_browser_context));
+}
+
 GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
                                                   const Extension* extension) {
   GURL url = GURL(url_string);
