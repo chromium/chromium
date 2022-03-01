@@ -96,7 +96,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int matchIndex) {
         return suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST;
     }
 
@@ -116,22 +116,29 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
         final List<AutocompleteMatch.NavsuggestTile> tiles = suggestion.getNavsuggestTiles();
         final int tilesCount = tiles.size();
         final List<ListItem> tileList = new ArrayList<>(tilesCount);
         final LargeIconBridge iconBridge = mIconBridgeSupplier.get();
 
-        for (int index = 0; index < tilesCount; index++) {
+        for (int elementIndex = 0; elementIndex < tilesCount; elementIndex++) {
             final PropertyModel tileModel = new PropertyModel(TileViewProperties.ALL_KEYS);
-            final String title = tiles.get(index).title;
-            final GURL url = tiles.get(index).url;
+            final String title = tiles.get(elementIndex).title;
+            final GURL url = tiles.get(elementIndex).url;
             tileModel.set(TileViewProperties.TITLE, title);
             tileModel.set(TileViewProperties.TITLE_LINES, 1);
             tileModel.set(TileViewProperties.ON_FOCUS_VIA_SELECTION,
                     () -> mSuggestionHost.setOmniboxEditingText(url.getSpec()));
             tileModel.set(TileViewProperties.ON_CLICK,
-                    v -> mSuggestionHost.onSuggestionClicked(suggestion, position, url));
+                    v -> mSuggestionHost.onSuggestionClicked(suggestion, matchIndex, url));
+
+            final int elementIndexForDeletion = elementIndex;
+            tileModel.set(TileViewProperties.ON_LONG_CLICK, v -> {
+                mSuggestionHost.onDeleteMatchElement(
+                        suggestion, title, matchIndex, elementIndexForDeletion);
+                return true;
+            });
             tileModel.set(TileViewProperties.CONTENT_DESCRIPTION,
                     mContext.getString(R.string.accessibility_omnibox_most_visited_tile, title,
                             url.getHost()));
@@ -147,7 +154,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             if (TextUtils.equals(url.getSpec(), UrlConstants.EXPLORE_URL)) {
                 setExploreSitesIcon(tileModel);
             } else if (iconBridge != null) {
-                iconBridge.getLargeIconForUrl(tiles.get(index).url, mDesiredFaviconWidthPx,
+                iconBridge.getLargeIconForUrl(tiles.get(elementIndex).url, mDesiredFaviconWidthPx,
                         (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                                 int iconType) -> {
                             if (icon == null) return;

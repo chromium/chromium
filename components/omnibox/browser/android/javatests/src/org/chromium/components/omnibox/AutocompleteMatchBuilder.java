@@ -269,4 +269,13 @@ public class AutocompleteMatchBuilder {
         mOmniboxPedal = omniboxPedal;
         return this;
     }
+
+    /**
+     * @param isDeletable Whether the match should be made deletable.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setDeletable(boolean isDeletable) {
+        mIsDeletable = isDeletable;
+        return this;
+    }
 }

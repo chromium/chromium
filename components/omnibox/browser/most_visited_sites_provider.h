@@ -30,9 +30,12 @@ class MostVisitedSitesProvider : public AutocompleteProvider,
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
   void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void DeleteMatch(const AutocompleteMatch& match) override;
+  void DeleteMatchElement(const AutocompleteMatch& match,
+                          size_t element) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MostVisitedSitesProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(ParameterizedMostVisitedSitesProviderTest,
                            AllowMostVisitedSitesSuggestions);
 
   ~MostVisitedSitesProvider() override;
@@ -57,6 +60,7 @@ class MostVisitedSitesProvider : public AutocompleteProvider,
       const std::map<ntp_tiles::SectionType, ntp_tiles::NTPTilesVector>&
           sections) override;
   void OnIconMadeAvailable(const GURL& site_url) override;
+  void BlockURL(const GURL& site_url);
 
   raw_ptr<ntp_tiles::MostVisitedSites> most_visited_sites_{};
 
