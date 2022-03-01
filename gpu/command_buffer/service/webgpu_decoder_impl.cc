@@ -1075,6 +1075,7 @@ void WebGPUDecoderImpl::DoRequestDevice(
   // If a new toggle is added here, ForceDawnTogglesForWebGPU() which collects
   // info for about:gpu should be updated as well.
   WGPUDawnTogglesDeviceDescriptor dawn_toggles;
+  dawn_toggles.chain.next = nullptr;
   std::vector<const char*> force_enabled_toggles;
   std::vector<const char*> force_disabled_toggles;
 
