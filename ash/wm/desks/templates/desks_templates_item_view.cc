@@ -282,7 +282,7 @@ void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid) {
 void DesksTemplatesItemView::RevertTemplateName() {
   views::FocusManager* focus_manager = GetFocusManager();
   focus_manager->SetFocusedView(name_view_);
-  name_view_->SetViewName(name_view_->GetAccessibleName());
+  name_view_->SetViewName(name_view_->GetText());
   name_view_->SelectAll(true);
 
   name_view_->OnContentsChanged();
