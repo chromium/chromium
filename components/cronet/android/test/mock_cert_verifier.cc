@@ -80,4 +80,11 @@ static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
   return reinterpret_cast<jlong>(mock_cert_verifier);
 }
 
+static jlong JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
+    JNIEnv* env) {
+  net::MockCertVerifier* mock_cert_verifier = new net::MockCertVerifier();
+  mock_cert_verifier->set_default_result(net::OK);
+  return reinterpret_cast<jlong>(mock_cert_verifier);
+}
+
 }  // namespace cronet
