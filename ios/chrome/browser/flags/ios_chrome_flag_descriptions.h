@@ -73,6 +73,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kContentSuggestionsHeaderMigrationName[];
 extern const char kContentSuggestionsHeaderMigrationDescription[];
 
+// Title and description for the flag that moves the Content Suggestions to a
+// UIViewController.
+extern const char kContentSuggestionsUIViewControllerMigrationName[];
+extern const char kContentSuggestionsUIViewControllerMigrationDescription[];
+
 // Title and description for the flag to control which crash generation tool
 // is used.
 extern const char kCrashpadIOSName[];

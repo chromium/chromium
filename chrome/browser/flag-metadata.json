@@ -866,6 +866,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "content-suggestions-uiviewcontroller-migration",
+    "owners": [ "thegreenfrog@google.com", "adamta@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "context-menu-google-lens-chip",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 100

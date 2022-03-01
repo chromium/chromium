@@ -818,6 +818,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfSigninPromo)},
+    {"content-suggestions-uiviewcontroller-migration",
+     flag_descriptions::kContentSuggestionsUIViewControllerMigrationName,
+     flag_descriptions::kContentSuggestionsUIViewControllerMigrationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kContentSuggestionsUIViewControllerMigration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
