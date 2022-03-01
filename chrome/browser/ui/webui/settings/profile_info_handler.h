@@ -63,11 +63,11 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoHandlerTest, PushProfileInfo);
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(base::Value::ConstListView args);
+  void HandleGetProfileInfo(const base::Value::List& args);
   void PushProfileInfo();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleGetProfileStats(base::Value::ConstListView args);
+  void HandleGetProfileStats(const base::Value::List& args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
   // there exists a stat that was not successfully retrieved.

@@ -139,39 +139,39 @@ void CookiesViewHandler::OnJavascriptDisallowed() {
 }
 
 void CookiesViewHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.getDisplayList",
       base::BindRepeating(&CookiesViewHandler::HandleGetDisplayList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.removeAll",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveAll,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.removeShownItems",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveShownItems,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.removeItem",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveItem,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.getCookieDetails",
       base::BindRepeating(&CookiesViewHandler::HandleGetCookieDetails,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.getNumCookiesString",
       base::BindRepeating(&CookiesViewHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.removeSite",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveSite,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.removeThirdPartyCookies",
       base::BindRepeating(&CookiesViewHandler::HandleRemoveThirdParty,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "localData.reload",
       base::BindRepeating(&CookiesViewHandler::HandleReloadCookies,
                           base::Unretained(this)));
@@ -232,8 +232,7 @@ void CookiesViewHandler::RecreateCookiesTreeModel() {
   cookies_tree_model_->AddCookiesTreeObserver(this);
 }
 
-void CookiesViewHandler::HandleGetCookieDetails(
-    base::Value::ConstListView args) {
+void CookiesViewHandler::HandleGetCookieDetails(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
   std::string site = args[1].GetString();
@@ -266,7 +265,7 @@ void CookiesViewHandler::GetCookieDetails(const std::string& callback_id,
 }
 
 void CookiesViewHandler::HandleGetNumCookiesString(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   std::string callback_id;
   callback_id = args[0].GetString();
@@ -281,7 +280,7 @@ void CookiesViewHandler::HandleGetNumCookiesString(
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
 
-void CookiesViewHandler::HandleGetDisplayList(base::Value::ConstListView args) {
+void CookiesViewHandler::HandleGetDisplayList(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   std::string callback_id = args[0].GetString();
   std::u16string filter = base::UTF8ToUTF16(args[1].GetString());
@@ -307,7 +306,7 @@ void CookiesViewHandler::GetDisplayList(std::string callback_id,
   ReturnLocalDataList(callback_id);
 }
 
-void CookiesViewHandler::HandleReloadCookies(base::Value::ConstListView args) {
+void CookiesViewHandler::HandleReloadCookies(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   std::string callback_id = args[0].GetString();
 
@@ -333,7 +332,7 @@ void CookiesViewHandler::HandleReloadCookies(base::Value::ConstListView args) {
   ProcessPendingRequests();
 }
 
-void CookiesViewHandler::HandleRemoveAll(base::Value::ConstListView args) {
+void CookiesViewHandler::HandleRemoveAll(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   AllowJavascript();
 
@@ -351,7 +350,7 @@ void CookiesViewHandler::RemoveAll(const std::string& callback_id) {
   ResolveJavascriptCallback(base::Value(callback_id), base::Value());
 }
 
-void CookiesViewHandler::HandleRemoveItem(base::Value::ConstListView args) {
+void CookiesViewHandler::HandleRemoveItem(const base::Value::List& args) {
   std::string node_path = args[0].GetString();
 
   AllowJavascript();
@@ -370,8 +369,7 @@ void CookiesViewHandler::RemoveItem(const std::string& path) {
   }
 }
 
-void CookiesViewHandler::HandleRemoveThirdParty(
-    base::Value::ConstListView args) {
+void CookiesViewHandler::HandleRemoveThirdParty(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   std::string callback_id = args[0].GetString();
 
@@ -390,8 +388,7 @@ void CookiesViewHandler::HandleRemoveThirdParty(
   ProcessPendingRequests();
 }
 
-void CookiesViewHandler::HandleRemoveShownItems(
-    base::Value::ConstListView args) {
+void CookiesViewHandler::HandleRemoveShownItems(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
   AllowJavascript();
@@ -408,7 +405,7 @@ void CookiesViewHandler::RemoveShownItems() {
     cookies_tree_model_->DeleteCookieNode(parent->children().front().get());
 }
 
-void CookiesViewHandler::HandleRemoveSite(base::Value::ConstListView args) {
+void CookiesViewHandler::HandleRemoveSite(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   std::u16string site = base::UTF8ToUTF16(args[0].GetString());
   AllowJavascript();

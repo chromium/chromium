@@ -54,28 +54,28 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
  private:
   // Retrieves all search engines and returns them to WebUI.
-  void HandleGetSearchEnginesList(base::Value::ConstListView args);
+  void HandleGetSearchEnginesList(const base::Value::List& args);
 
   std::unique_ptr<base::DictionaryValue> GetSearchEnginesList();
 
   // Removes the search engine at the given index. Called from WebUI.
-  void HandleRemoveSearchEngine(base::Value::ConstListView args);
+  void HandleRemoveSearchEngine(const base::Value::List& args);
 
   // Sets the search engine at the given index to be default. Called from WebUI.
-  void HandleSetDefaultSearchEngine(base::Value::ConstListView args);
+  void HandleSetDefaultSearchEngine(const base::Value::List& args);
 
   // Activates or deactivates the search engine at the given index. Called from
   // WebUI.
-  void HandleSetIsActiveSearchEngine(base::Value::ConstListView args);
+  void HandleSetIsActiveSearchEngine(const base::Value::List& args);
 
   // Starts an edit session for the search engine at the given index. If the
   // index is -1, starts editing a new search engine instead of an existing one.
   // Called from WebUI.
-  void HandleSearchEngineEditStarted(base::Value::ConstListView args);
+  void HandleSearchEngineEditStarted(const base::Value::List& args);
 
   // Validates the given search engine values, and reports the results back
   // to WebUI. Called from WebUI.
-  void HandleValidateSearchEngineInput(base::Value::ConstListView args);
+  void HandleValidateSearchEngineInput(const base::Value::List& args);
 
   // Checks whether the given user input field (searchEngine, keyword, queryUrl)
   // is populated with a valid value.
@@ -84,11 +84,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   // Called when an edit is canceled.
   // Called from WebUI.
-  void HandleSearchEngineEditCancelled(base::Value::ConstListView args);
+  void HandleSearchEngineEditCancelled(const base::Value::List& args);
 
   // Called when an edit is finished and should be saved.
   // Called from WebUI.
-  void HandleSearchEngineEditCompleted(base::Value::ConstListView args);
+  void HandleSearchEngineEditCompleted(const base::Value::List& args);
 
   // Returns a dictionary to pass to WebUI representing the given search engine.
   std::unique_ptr<base::DictionaryValue> CreateDictionaryForEngine(

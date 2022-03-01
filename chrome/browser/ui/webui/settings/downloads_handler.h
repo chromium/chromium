@@ -38,16 +38,16 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   // Callback for the "initializeDownloads" message. This starts observers and
   // retrieves the current browser state.
-  void HandleInitialize(base::Value::ConstListView args);
+  void HandleInitialize(const base::Value::List& args);
 
   void SendAutoOpenDownloadsToJavascript();
 
   // Resets the list of filetypes that are auto-opened after download.
-  void HandleResetAutoOpenFileTypes(base::Value::ConstListView args);
+  void HandleResetAutoOpenFileTypes(const base::Value::List& args);
 
   // Callback for the "selectDownloadLocation" message. This will prompt the
   // user for a destination folder using platform-specific APIs.
-  void HandleSelectDownloadLocation(base::Value::ConstListView args);
+  void HandleSelectDownloadLocation(const base::Value::List& args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -59,7 +59,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   // Callback for the "getDownloadLocationText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/Downloads => "Downloads".
-  void HandleGetDownloadLocationText(base::Value::ConstListView args);
+  void HandleGetDownloadLocationText(const base::Value::List& args);
 #endif
 
   bool IsDownloadsConnectionPolicyEnabled() const;
@@ -70,7 +70,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   // there is an existing linked account and arg is false, this removes the
   // linked account info and stored authentication tokens; otherwise, this
   // merely sends the latest stored account info.
-  void HandleSetDownloadsConnectionAccountLink(base::Value::ConstListView args);
+  void HandleSetDownloadsConnectionAccountLink(const base::Value::List& args);
   // Callback for file system connector code, since prompting the user to sign
   // in is async.
   void OnDownloadsConnectionAccountLinkSet(bool success);

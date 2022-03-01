@@ -90,17 +90,17 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui,
 ClearBrowsingDataHandler::~ClearBrowsingDataHandler() = default;
 
 void ClearBrowsingDataHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getInstalledApps",
       base::BindRepeating(
           &ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -159,11 +159,11 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   list_args.Append(std::move(data_types));
   list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(list_args.GetListDeprecated());
+  HandleClearBrowsingData(list_args.GetList());
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
-    base::Value::ConstListView list) {
+    const base::Value::List& list) {
   CHECK_EQ(2U, list.size());
   std::string webui_callback_id = list[0].GetString();
   int period_selected = list[1].GetInt();
@@ -240,7 +240,7 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
-    base::Value::ConstListView args_list) {
+    const base::Value::List& args_list) {
   CHECK_EQ(4U, args_list.size());
   std::string webui_callback_id = args_list[0].GetString();
 
@@ -413,8 +413,7 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   ResolveJavascriptCallback(base::Value(webui_callback_id), std::move(result));
 }
 
-void ClearBrowsingDataHandler::HandleInitialize(
-    base::Value::ConstListView args) {
+void ClearBrowsingDataHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 

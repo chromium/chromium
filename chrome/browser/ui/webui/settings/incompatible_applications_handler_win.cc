@@ -28,27 +28,27 @@ IncompatibleApplicationsHandler::IncompatibleApplicationsHandler() = default;
 IncompatibleApplicationsHandler::~IncompatibleApplicationsHandler() = default;
 
 void IncompatibleApplicationsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestIncompatibleApplicationsList",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleRequestIncompatibleApplicationsList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "startApplicationUninstallation",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleStartApplicationUninstallation,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSubtitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetSubtitlePluralString,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSubtitleNoAdminRightsPluralString",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleGetSubtitleNoAdminRightsPluralString,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getListTitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetListTitlePluralString,
@@ -62,7 +62,7 @@ void IncompatibleApplicationsHandler::OnJavascriptDisallowed() {
 }
 
 void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
 
   AllowJavascript();
@@ -116,7 +116,7 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
 }
 
 void IncompatibleApplicationsHandler::HandleStartApplicationUninstallation(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1u, args.size());
   base::RecordAction(base::UserMetricsAction(
       "IncompatibleApplicationsPage.UninstallationStarted"));
@@ -127,27 +127,26 @@ void IncompatibleApplicationsHandler::HandleStartApplicationUninstallation(
 }
 
 void IncompatibleApplicationsHandler::HandleGetSubtitlePluralString(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   GetPluralString(IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE,
                   args);
 }
 
 void IncompatibleApplicationsHandler::
-    HandleGetSubtitleNoAdminRightsPluralString(
-        base::Value::ConstListView args) {
+    HandleGetSubtitleNoAdminRightsPluralString(const base::Value::List& args) {
   GetPluralString(
       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE_NO_ADMIN_RIGHTS,
       args);
 }
 
 void IncompatibleApplicationsHandler::HandleGetListTitlePluralString(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   GetPluralString(IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_LIST_TITLE, args);
 }
 
 void IncompatibleApplicationsHandler::GetPluralString(
     int id,
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
 
   const base::Value& callback_id = args[0];

@@ -117,7 +117,7 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleResizeDialog) {
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kDefaultDialogHeight);
-  handler()->HandleResizeDialog(args.GetListDeprecated());
+  handler()->HandleResizeDialog(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -137,16 +137,14 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleClickLearnMore) {
   base::Value more_info_opened_args(base::Value::Type::LIST);
   more_info_opened_args.Append(static_cast<int>(
       PrivacySandboxService::DialogAction::kConsentMoreInfoOpened));
-  handler()->HandleDialogActionOccurred(
-      more_info_opened_args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(more_info_opened_args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 
   base::Value more_info_closed_args(base::Value::Type::LIST);
   more_info_closed_args.Append(static_cast<int>(
       PrivacySandboxService::DialogAction::kConsentMoreInfoClosed));
-  handler()->HandleDialogActionOccurred(
-      more_info_closed_args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(more_info_closed_args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -165,7 +163,7 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentAccepted) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(PrivacySandboxService::DialogAction::kConsentAccepted));
-  handler()->HandleDialogActionOccurred(args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -184,7 +182,7 @@ TEST_F(PrivacySandboxConsentDialogHandlerTest, HandleConsentDeclined) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(PrivacySandboxService::DialogAction::kConsentDeclined));
-  handler()->HandleDialogActionOccurred(args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -217,7 +215,7 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleResizeDialog) {
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kDefaultDialogHeight);
-  handler()->HandleResizeDialog(args.GetListDeprecated());
+  handler()->HandleResizeDialog(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -237,7 +235,7 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleOpenSettings) {
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       PrivacySandboxService::DialogAction::kNoticeOpenSettings));
-  handler()->HandleDialogActionOccurred(args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }
@@ -256,7 +254,7 @@ TEST_F(PrivacySandboxNoticeDialogHandlerTest, HandleNoticeAcknowledge) {
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       PrivacySandboxService::DialogAction::kNoticeAcknowledge));
-  handler()->HandleDialogActionOccurred(args.GetListDeprecated());
+  handler()->HandleDialogActionOccurred(args.GetList());
 
   ASSERT_EQ(0U, web_ui()->call_data().size());
 }

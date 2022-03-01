@@ -50,19 +50,19 @@ class SecureDnsHandler : public SettingsPageUIHandler {
 
  protected:
   // Retrieves all pre-approved secure resolvers and returns them to WebUI.
-  void HandleGetSecureDnsResolverList(base::Value::ConstListView args);
+  void HandleGetSecureDnsResolverList(const base::Value::List& args);
 
   // Intended to be called once upon creation of the secure DNS setting.
-  void HandleGetSecureDnsSetting(base::Value::ConstListView args);
+  void HandleGetSecureDnsSetting(const base::Value::List& args);
 
   // Parses a custom entry and returns true if it is a fully valid config.
-  void HandleIsValidConfig(base::Value::ConstListView args);
+  void HandleIsValidConfig(const base::Value::List& args);
 
   // Returns whether or not a test query succeeds with the provided config.
-  void HandleProbeConfig(base::Value::ConstListView args);
+  void HandleProbeConfig(const base::Value::List& args);
 
   // Records metrics on the user-initiated dropdown selection event.
-  void HandleRecordUserDropdownInteraction(base::Value::ConstListView args);
+  void HandleRecordUserDropdownInteraction(const base::Value::List& args);
 
   // Retrieves the current host resolver configuration, computes the
   // corresponding UI representation, and sends it to javascript.

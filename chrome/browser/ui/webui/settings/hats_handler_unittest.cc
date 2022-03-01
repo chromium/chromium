@@ -112,12 +112,12 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 
-  args.GetListDeprecated()[0] = base::Value(
+  args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -130,7 +130,7 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -164,7 +164,7 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -185,7 +185,7 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
   task_environment()->RunUntilIdle();
 }
 
@@ -198,12 +198,12 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   base::Value args(base::Value::Type::LIST);
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
-  args.GetListDeprecated()[0] = base::Value(
+  args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 }
 
 TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
@@ -217,12 +217,12 @@ TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 
   EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
-  args.GetListDeprecated()[0] = base::Value(static_cast<int>(
+  args.GetList()[0] = base::Value(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
-  handler()->HandleTrustSafetyInteractionOccurred(args.GetListDeprecated());
+  handler()->HandleTrustSafetyInteractionOccurred(args.GetList());
 }
 
 }  // namespace settings

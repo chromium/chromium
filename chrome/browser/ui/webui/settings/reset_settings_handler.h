@@ -50,26 +50,26 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   virtual ProfileResetter* GetResetter();
 
   // Javascript callback to start clearing data.
-  void HandleResetProfileSettings(base::Value::ConstListView args);
+  void HandleResetProfileSettings(const base::Value::List& args);
 
  private:
   // Retrieves the settings that will be reported, called from Javascript.
-  void HandleGetReportedSettings(base::Value::ConstListView args);
+  void HandleGetReportedSettings(const base::Value::List& args);
 
   // Called once the settings that will be reported have been retrieved.
   void OnGetReportedSettingsDone(std::string callback_id);
 
   // Called when the reset profile dialog is shown.
-  void OnShowResetProfileDialog(base::Value::ConstListView args);
+  void OnShowResetProfileDialog(const base::Value::List& args);
 
   // Called when the reset profile dialog is hidden.
-  void OnHideResetProfileDialog(base::Value::ConstListView args);
+  void OnHideResetProfileDialog(const base::Value::List& args);
 
   // Called when the reset profile banner is shown.
-  void OnHideResetProfileBanner(base::Value::ConstListView args);
+  void OnHideResetProfileBanner(const base::Value::List& args);
 
   // Retrieve the triggered reset tool name, called from Javascript.
-  void HandleGetTriggeredResetToolName(base::Value::ConstListView args);
+  void HandleGetTriggeredResetToolName(const base::Value::List& args);
 
   // Called when BrandcodeConfigFetcher completed fetching settings.
   void OnSettingsFetched();
@@ -89,7 +89,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Will be called when powerwash dialog is shown.
-  void OnShowPowerwashDialog(base::Value::ConstListView args);
+  void OnShowPowerwashDialog(const base::Value::List& args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;

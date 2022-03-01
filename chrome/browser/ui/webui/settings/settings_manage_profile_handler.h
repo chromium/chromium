@@ -59,24 +59,24 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
 
   // Callback for the "getAvailableIcons" message.
   // Sends the array of default profile icon URLs and profile names to WebUI.
-  void HandleGetAvailableIcons(base::Value::ConstListView args);
+  void HandleGetAvailableIcons(const base::Value::List& args);
 
   // Get all the available profile icons to choose from.
   std::vector<base::Value> GetAvailableIcons();
 
   // Callback for the "setProfileIconToGaiaAvatar" message.
-  void HandleSetProfileIconToGaiaAvatar(base::Value::ConstListView args);
+  void HandleSetProfileIconToGaiaAvatar(const base::Value::List& args);
 
   // Callback for the "setProfileIconToDefaultAvatar" message.
-  void HandleSetProfileIconToDefaultAvatar(base::Value::ConstListView args);
+  void HandleSetProfileIconToDefaultAvatar(const base::Value::List& args);
 
   // Callback for the "setProfileName" message.
-  void HandleSetProfileName(base::Value::ConstListView args);
+  void HandleSetProfileName(const base::Value::List& args);
 
   // Callback for the "requestProfileShortcutStatus" message, which is called
   // when editing an existing profile. Asks the profile shortcut manager whether
   // the profile has shortcuts and gets the result in |OnHasProfileShortcuts()|.
-  void HandleRequestProfileShortcutStatus(base::Value::ConstListView args);
+  void HandleRequestProfileShortcutStatus(const base::Value::List& args);
 
   // Callback invoked from the profile manager indicating whether the profile
   // being edited has any desktop shortcuts.
@@ -86,12 +86,12 @@ class ManageProfileHandler : public settings::SettingsPageUIHandler,
   // Callback for the "addProfileShortcut" message, which is called when editing
   // an existing profile and the user clicks the "Add desktop shortcut" button.
   // Adds a desktop shortcut for the profile.
-  void HandleAddProfileShortcut(base::Value::ConstListView args);
+  void HandleAddProfileShortcut(const base::Value::List& args);
 
   // Callback for the "removeProfileShortcut" message, which is called when
   // editing an existing profile and the user clicks the "Remove desktop
   // shortcut" button. Removes the desktop shortcut for the profile.
-  void HandleRemoveProfileShortcut(base::Value::ConstListView args);
+  void HandleRemoveProfileShortcut(const base::Value::List& args);
 
   // Non-owning pointer to the associated profile.
   raw_ptr<Profile> profile_;

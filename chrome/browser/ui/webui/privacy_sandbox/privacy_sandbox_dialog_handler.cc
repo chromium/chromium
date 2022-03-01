@@ -23,12 +23,12 @@ PrivacySandboxDialogHandler::~PrivacySandboxDialogHandler() {
 }
 
 void PrivacySandboxDialogHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "dialogActionOccurred",
       base::BindRepeating(
           &PrivacySandboxDialogHandler::HandleDialogActionOccurred,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "resizeDialog",
       base::BindRepeating(&PrivacySandboxDialogHandler::HandleResizeDialog,
                           base::Unretained(this)));
@@ -57,7 +57,7 @@ void PrivacySandboxDialogHandler::OnJavascriptDisallowed() {
 }
 
 void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   auto action =
       static_cast<PrivacySandboxService::DialogAction>(args[0].GetInt());
@@ -85,7 +85,7 @@ void PrivacySandboxDialogHandler::HandleDialogActionOccurred(
 }
 
 void PrivacySandboxDialogHandler::HandleResizeDialog(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // Notify the service that the DOM was loaded and the dialog was shown to

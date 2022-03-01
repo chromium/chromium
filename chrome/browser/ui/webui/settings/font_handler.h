@@ -32,7 +32,7 @@ class FontHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for script asking for font information.
-  void HandleFetchFontsData(base::Value::ConstListView args);
+  void HandleFetchFontsData(const base::Value::List& args);
 
   // Callback to handle fonts loading.
   void FontListHasLoaded(std::string callback_id,

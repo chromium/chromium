@@ -67,32 +67,32 @@ PrivacySandboxHandler::PrivacySandboxHandler() = default;
 PrivacySandboxHandler::~PrivacySandboxHandler() = default;
 
 void PrivacySandboxHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getFlocId", base::BindRepeating(&PrivacySandboxHandler::HandleGetFlocId,
                                        base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "resetFlocId",
       base::BindRepeating(&PrivacySandboxHandler::HandleResetFlocId,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setFledgeJoiningAllowed",
       base::BindRepeating(&PrivacySandboxHandler::HandleSetFledgeJoiningAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getFledgeState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetFledgeState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setTopicAllowed",
       base::BindRepeating(&PrivacySandboxHandler::HandleSetTopicAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getTopicsState",
       base::BindRepeating(&PrivacySandboxHandler::HandleGetTopicsState,
                           base::Unretained(this)));
 }
 
-void PrivacySandboxHandler::HandleGetFlocId(base::Value::ConstListView args) {
+void PrivacySandboxHandler::HandleGetFlocId(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -102,7 +102,7 @@ void PrivacySandboxHandler::HandleGetFlocId(base::Value::ConstListView args) {
                             GetFlocIdInformation(Profile::FromWebUI(web_ui())));
 }
 
-void PrivacySandboxHandler::HandleResetFlocId(base::Value::ConstListView args) {
+void PrivacySandboxHandler::HandleResetFlocId(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   AllowJavascript();
 
@@ -122,14 +122,14 @@ void PrivacySandboxHandler::HandleResetFlocId(base::Value::ConstListView args) {
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::string& site = args[0].GetString();
   const bool enabled = args[1].GetBool();
   GetPrivacySandboxService()->SetFledgeJoiningAllowed(site, enabled);
 }
 
 void PrivacySandboxHandler::HandleGetFledgeState(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::string& callback_id = args[0].GetString();
   GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
       base::BindOnce(&PrivacySandboxHandler::OnFledgeJoiningSitesRecieved,
@@ -137,7 +137,7 @@ void PrivacySandboxHandler::HandleGetFledgeState(
 }
 
 void PrivacySandboxHandler::HandleSetTopicAllowed(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const int topic_id = args[0].GetInt();
   const int taxonomy_version = args[1].GetInt();
   const bool allowed = args[2].GetBool();
@@ -146,7 +146,7 @@ void PrivacySandboxHandler::HandleSetTopicAllowed(
 }
 
 void PrivacySandboxHandler::HandleGetTopicsState(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   base::Value top_topics_list(base::Value::Type::LIST);
   for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics())
     top_topics_list.Append(ConvertTopicToValue(topic));

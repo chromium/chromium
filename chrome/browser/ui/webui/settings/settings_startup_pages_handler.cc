@@ -30,23 +30,23 @@ void StartupPagesHandler::RegisterMessages() {
   if (Profile::FromWebUI(web_ui())->IsOffTheRecord())
     return;
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "addStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleAddStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "editStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleEditStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "onStartupPrefsPageLoad",
       base::BindRepeating(&StartupPagesHandler::HandleOnStartupPrefsPageLoad,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeStartupPage",
       base::BindRepeating(&StartupPagesHandler::HandleRemoveStartupPage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setStartupPagesToCurrentPages",
       base::BindRepeating(
           &StartupPagesHandler::HandleSetStartupPagesToCurrentPages,
@@ -105,8 +105,7 @@ void StartupPagesHandler::OnItemsRemoved(int start, int length) {
   OnModelChanged();
 }
 
-void StartupPagesHandler::HandleAddStartupPage(
-    base::Value::ConstListView args) {
+void StartupPagesHandler::HandleAddStartupPage(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
 
   const base::Value& callback_id = args[0];
@@ -128,8 +127,7 @@ void StartupPagesHandler::HandleAddStartupPage(
   ResolveJavascriptCallback(callback_id, base::Value(true));
 }
 
-void StartupPagesHandler::HandleEditStartupPage(
-    base::Value::ConstListView args) {
+void StartupPagesHandler::HandleEditStartupPage(const base::Value::List& args) {
   CHECK_EQ(args.size(), 3U);
   const base::Value& callback_id = args[0];
   int index = args[1].GetInt();
@@ -155,12 +153,12 @@ void StartupPagesHandler::HandleEditStartupPage(
 }
 
 void StartupPagesHandler::HandleOnStartupPrefsPageLoad(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
 void StartupPagesHandler::HandleRemoveStartupPage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_GE(args.size(), 1u);
   if (!args[0].is_int()) {
     NOTREACHED();
@@ -179,7 +177,7 @@ void StartupPagesHandler::HandleRemoveStartupPage(
 }
 
 void StartupPagesHandler::HandleSetStartupPagesToCurrentPages(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   startup_custom_pages_table_model_.SetToCurrentlyOpenPages(
       web_ui()->GetWebContents());
   SaveStartupPagesPref();

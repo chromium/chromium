@@ -29,13 +29,13 @@ void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
 }
 
 void SystemHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showProxySettings",
       base::BindRepeating(&SystemHandler::HandleShowProxySettings,
                           base::Unretained(this)));
 }
 
-void SystemHandler::HandleShowProxySettings(base::Value::ConstListView args) {
+void SystemHandler::HandleShowProxySettings(const base::Value::List& args) {
   base::RecordAction(base::UserMetricsAction("Options_ShowProxySettings"));
   settings_utils::ShowNetworkProxySettings(web_ui()->GetWebContents());
 }

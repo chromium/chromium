@@ -32,7 +32,7 @@ class SystemHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for the "showProxySettings" message. No args.
-  void HandleShowProxySettings(base::Value::ConstListView args);
+  void HandleShowProxySettings(const base::Value::List& args);
 };
 
 }  // namespace settings

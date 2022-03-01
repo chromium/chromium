@@ -95,7 +95,7 @@ TEST_F(ResetSettingsHandlerTest, HandleResetProfileSettings) {
   list.Append(expected_callback_id);
   list.Append(false);
   list.Append("");
-  handler()->HandleResetProfileSettings(list.GetListDeprecated());
+  handler()->HandleResetProfileSettings(list.GetList());
   // Check that the delegate ProfileResetter was called.
   EXPECT_EQ(1u, handler()->resets());
   // Check that Javascript side is notified after resetting is done.

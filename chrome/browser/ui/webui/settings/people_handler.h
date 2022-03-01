@@ -153,28 +153,28 @@ class PeopleHandler : public SettingsPageUIHandler,
   LoginUIService* GetLoginUIService() const;
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(base::Value::ConstListView args);
-  void OnDidClosePage(base::Value::ConstListView args);
-  void HandleSetDatatypes(base::Value::ConstListView args);
-  void HandleSetEncryptionPassphrase(base::Value::ConstListView args);
-  void HandleSetDecryptionPassphrase(base::Value::ConstListView args);
-  void HandleShowSyncSetupUI(base::Value::ConstListView args);
-  void HandleSyncPrefsDispatch(base::Value::ConstListView args);
-  void HandleTrustedVaultBannerStateDispatch(base::Value::ConstListView args);
+  void HandleGetProfileInfo(const base::Value::List& args);
+  void OnDidClosePage(const base::Value::List& args);
+  void HandleSetDatatypes(const base::Value::List& args);
+  void HandleSetEncryptionPassphrase(const base::Value::List& args);
+  void HandleSetDecryptionPassphrase(const base::Value::List& args);
+  void HandleShowSyncSetupUI(const base::Value::List& args);
+  void HandleSyncPrefsDispatch(const base::Value::List& args);
+  void HandleTrustedVaultBannerStateDispatch(const base::Value::List& args);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleAttemptUserExit(base::Value::ConstListView args);
-  void HandleTurnOnSync(base::Value::ConstListView args);
-  void HandleTurnOffSync(base::Value::ConstListView args);
+  void HandleAttemptUserExit(const base::Value::List& args);
+  void HandleTurnOnSync(const base::Value::List& args);
+  void HandleTurnOffSync(const base::Value::List& args);
 #else
-  void HandleStartSignin(base::Value::ConstListView args);
+  void HandleStartSignin(const base::Value::List& args);
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void HandleSignout(base::Value::ConstListView args);
-  void HandlePauseSync(base::Value::ConstListView args);
+  void HandleSignout(const base::Value::List& args);
+  void HandlePauseSync(const base::Value::List& args);
 #endif
-  void HandleStartKeyRetrieval(base::Value::ConstListView args);
-  void HandleGetSyncStatus(base::Value::ConstListView args);
+  void HandleStartKeyRetrieval(const base::Value::List& args);
+  void HandleGetSyncStatus(const base::Value::List& args);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Displays the GAIA login form.
@@ -186,8 +186,8 @@ class PeopleHandler : public SettingsPageUIHandler,
       signin_metrics::AccessPoint access_point);
 #endif
 
-  void HandleGetStoredAccounts(base::Value::ConstListView args);
-  void HandleStartSyncingWithEmail(base::Value::ConstListView args);
+  void HandleGetStoredAccounts(const base::Value::List& args);
+  void HandleStartSyncingWithEmail(const base::Value::List& args);
   base::Value GetStoredAccountsList();
 
   // Pushes the updated sync prefs to JavaScript.

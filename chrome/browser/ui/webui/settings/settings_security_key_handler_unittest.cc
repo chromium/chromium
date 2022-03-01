@@ -59,7 +59,7 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
     constexpr char kCallbackId[] = "securityKeyCredentialManagementStart";
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStart(args.GetListDeprecated());
+    HandleStart(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -71,7 +71,7 @@ class TestSecurityKeysCredentialHandler : public SecurityKeysCredentialHandler {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestPIN);
-    HandlePIN(args.GetListDeprecated());
+    HandlePIN(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -100,7 +100,7 @@ class TestSecurityKeysBioEnrollmentHandler
     constexpr char kCallbackId[] = "bioEnrollStart";
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStart(args.GetListDeprecated());
+    HandleStart(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -112,7 +112,7 @@ class TestSecurityKeysBioEnrollmentHandler
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestPIN);
-    HandleProvidePIN(args.GetListDeprecated());
+    HandleProvidePIN(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -123,7 +123,7 @@ class TestSecurityKeysBioEnrollmentHandler
     constexpr char kCallbackId[] = "bioEnrollStartEnrolling";
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    HandleStartEnrolling(args.GetListDeprecated());
+    HandleStartEnrolling(args.GetList());
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -212,7 +212,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestUpdateUserInformation) {
   EXPECT_TRUE(*response->FindBoolKey("supportsUpdateUserInformation"));
 
   handler_->SimulateProvidePIN();
-  handler_->HandleUpdateUserInformation(args.GetListDeprecated());
+  handler_->HandleUpdateUserInformation(args.GetList());
   base::RunLoop().RunUntilIdle();
 
   device::PublicKeyCredentialUserEntity updated_user(
@@ -241,7 +241,7 @@ TEST_F(SecurityKeysCredentialHandlerTest, TestForcePINChange) {
   std::string callback_id("start_callback_id");
   base::Value args(base::Value::Type::LIST);
   args.Append(callback_id);
-  handler_->HandleStart(args.GetListDeprecated());
+  handler_->HandleStart(args.GetList());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(),

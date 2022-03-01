@@ -36,13 +36,13 @@ class AppearanceHandler : public SettingsPageUIHandler {
 
  private:
   // Changes the UI theme of the browser to the default theme.
-  void HandleUseDefaultTheme(base::Value::ConstListView args);
+  void HandleUseDefaultTheme(const base::Value::List& args);
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Changes the UI theme of the browser to the system (GTK+) theme.
-  void HandleUseSystemTheme(base::Value::ConstListView args);
+  void HandleUseSystemTheme(const base::Value::List& args);
 #endif
 
   raw_ptr<Profile> profile_;  // Weak pointer.

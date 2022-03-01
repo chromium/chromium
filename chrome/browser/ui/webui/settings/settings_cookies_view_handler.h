@@ -71,41 +71,41 @@ class CookiesViewHandler : public SettingsPageUIHandler,
   void RecreateCookiesTreeModel();
 
   // Set |filter_| and get a portion (or all) of the list items.
-  void HandleGetDisplayList(base::Value::ConstListView args);
+  void HandleGetDisplayList(const base::Value::List& args);
   void GetDisplayList(std::string callback_id, const std::u16string& filter);
 
   // Remove all items matching the current |filter_|.
-  void HandleRemoveShownItems(base::Value::ConstListView args);
+  void HandleRemoveShownItems(const base::Value::List& args);
   void RemoveShownItems();
 
   // Remove selected sites data.
-  void HandleRemoveSite(base::Value::ConstListView args);
+  void HandleRemoveSite(const base::Value::List& args);
   void RemoveSite(const std::u16string& site);
 
   // Retrieve cookie details for a specific site.
-  void HandleGetCookieDetails(base::Value::ConstListView args);
+  void HandleGetCookieDetails(const base::Value::List& args);
   void GetCookieDetails(const std::string& callback_id,
                         const std::string& site);
 
   // Gets a plural string for the given number of cookies.
-  void HandleGetNumCookiesString(base::Value::ConstListView args);
+  void HandleGetNumCookiesString(const base::Value::List& args);
 
   // Remove all sites data.
-  void HandleRemoveAll(base::Value::ConstListView args);
+  void HandleRemoveAll(const base::Value::List& args);
   void RemoveAll(const std::string& callback_id);
 
   // Remove a single item.
-  void HandleRemoveItem(base::Value::ConstListView args);
+  void HandleRemoveItem(const base::Value::List& args);
   void RemoveItem(const std::string& path);
 
   // Removes cookies and site data available in third-party contexts.
-  void HandleRemoveThirdParty(base::Value::ConstListView args);
+  void HandleRemoveThirdParty(const base::Value::List& args);
 
   void ReturnLocalDataList(const std::string& callback_id);
 
   // Reloads the CookiesTreeModel and passes the nodes to
   // 'CookiesView.loadChildren' to update the WebUI.
-  void HandleReloadCookies(base::Value::ConstListView args);
+  void HandleReloadCookies(const base::Value::List& args);
 
   // Flag to indicate whether there is a batch update in progress.
   bool batch_update_;

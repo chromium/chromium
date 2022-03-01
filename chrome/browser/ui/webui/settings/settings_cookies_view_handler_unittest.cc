@@ -92,7 +92,7 @@ class CookiesViewHandlerTest : public ChromeRenderViewHostTestHarness {
     SetupTreeModelForTesting();
     base::Value reload_args(base::Value::Type::LIST);
     reload_args.Append(kCallbackId);
-    handler()->HandleReloadCookies(reload_args.GetListDeprecated());
+    handler()->HandleReloadCookies(reload_args.GetList());
 
     // The handler will post a task to recreate the tree model.
     task_environment()->RunUntilIdle();
@@ -134,7 +134,7 @@ TEST_F(CookiesViewHandlerTest, SingleRequestDuringBatch) {
 
   base::Value reload_args(base::Value::Type::LIST);
   reload_args.Append(kReloadCallbackID);
-  handler()->HandleReloadCookies(reload_args.GetListDeprecated());
+  handler()->HandleReloadCookies(reload_args.GetList());
   task_environment()->RunUntilIdle();
 
   // At the point the handler will have recreated the model (using the provided
@@ -143,7 +143,7 @@ TEST_F(CookiesViewHandlerTest, SingleRequestDuringBatch) {
   base::Value get_display_list_args(base::Value::Type::LIST);
   get_display_list_args.Append(kGetDisplaylistCallbackID);
   get_display_list_args.Append("");
-  handler()->HandleGetDisplayList(get_display_list_args.GetListDeprecated());
+  handler()->HandleGetDisplayList(get_display_list_args.GetList());
   task_environment()->RunUntilIdle();
 
   // Because the tree model hasn't completed the batch, no callback should
@@ -188,33 +188,33 @@ TEST_F(CookiesViewHandlerTest, NoStarvation) {
         args.Append(callback_id);
         current_filter = current_filter == kTestHost1 ? "" : kTestHost1;
         args.Append(kTestHost1);
-        handler()->HandleGetDisplayList(args.GetListDeprecated());
+        handler()->HandleGetDisplayList(args.GetList());
       });
   auto get_display_list_same_filter =
       base::BindLambdaForTesting([&](std::string callback_id) {
         base::Value args(base::Value::Type::LIST);
         args.Append(callback_id);
         args.Append(current_filter);
-        handler()->HandleGetDisplayList(args.GetListDeprecated());
+        handler()->HandleGetDisplayList(args.GetList());
       });
   auto get_cookie_details =
       base::BindLambdaForTesting([&](std::string callback_id) {
         base::Value args(base::Value::Type::LIST);
         args.Append(callback_id);
         args.Append(kTestHost1);
-        handler()->HandleGetCookieDetails(args.GetListDeprecated());
+        handler()->HandleGetCookieDetails(args.GetList());
       });
   auto reload_cookies =
       base::BindLambdaForTesting([&](std::string callback_id) {
         base::Value args(base::Value::Type::LIST);
         args.Append(callback_id);
-        handler()->HandleReloadCookies(args.GetListDeprecated());
+        handler()->HandleReloadCookies(args.GetList());
       });
   auto remove_third_party =
       base::BindLambdaForTesting([&](std::string callback_id) {
         base::Value args(base::Value::Type::LIST);
         args.Append(callback_id);
-        handler()->HandleRemoveThirdParty(args.GetListDeprecated());
+        handler()->HandleRemoveThirdParty(args.GetList());
       });
   // Include a dummy request which allows the request queue to be cleared. This
   // ensures that requests may be queued up both during, and outside of, batch
@@ -270,7 +270,7 @@ TEST_F(CookiesViewHandlerTest, ImmediateTreeOperation) {
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
   args.Append(kTestHost1);
-  handler()->HandleGetCookieDetails(args.GetListDeprecated());
+  handler()->HandleGetCookieDetails(args.GetList());
   task_environment()->RunUntilIdle();
 
   // At this point the handler should have queued the creation of a tree and
@@ -301,7 +301,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetDisplayList) {
     args.Append(kCallbackId);
     args.Append(kTestHost1);
 
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -320,7 +320,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetDisplayList) {
     args.Append(kCallbackId);
     args.Append("");
 
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -345,7 +345,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveShownItems) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestHost2);
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -361,7 +361,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveShownItems) {
   // Remove displayed items.
   {
     base::Value args(base::Value::Type::LIST);
-    handler()->HandleRemoveShownItems(args.GetListDeprecated());
+    handler()->HandleRemoveShownItems(args.GetList());
     task_environment()->RunUntilIdle();
   }
 
@@ -370,7 +370,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveShownItems) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append("");
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -390,7 +390,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetCookieDetails) {
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId);
   args.Append(kTestHost1);
-  handler()->HandleGetCookieDetails(args.GetListDeprecated());
+  handler()->HandleGetCookieDetails(args.GetList());
   task_environment()->RunUntilIdle();
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -410,7 +410,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveAll) {
   {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
-    handler()->HandleRemoveAll(args.GetListDeprecated());
+    handler()->HandleRemoveAll(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -424,7 +424,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveAll) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append("");
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -448,7 +448,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveItem) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestHost1);
-    handler()->HandleGetCookieDetails(args.GetListDeprecated());
+    handler()->HandleGetCookieDetails(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -465,7 +465,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveItem) {
   {
     base::Value args(base::Value::Type::LIST);
     args.Append(node_path_id);
-    handler()->HandleRemoveItem(args.GetListDeprecated());
+    handler()->HandleRemoveItem(args.GetList());
     task_environment()->RunUntilIdle();
 
     // Removal should fire an update event.
@@ -480,7 +480,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveItem) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append(kTestHost1);
-    handler()->HandleGetCookieDetails(args.GetListDeprecated());
+    handler()->HandleGetCookieDetails(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -497,7 +497,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveSite) {
   {
     base::Value args(base::Value::Type::LIST);
     args.Append(kTestHost1);
-    handler()->HandleRemoveSite(args.GetListDeprecated());
+    handler()->HandleRemoveSite(args.GetList());
     task_environment()->RunUntilIdle();
 
     // Removal should fire an update event.
@@ -511,7 +511,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveSite) {
     base::Value args(base::Value::Type::LIST);
     args.Append(kCallbackId);
     args.Append("");
-    handler()->HandleGetDisplayList(args.GetListDeprecated());
+    handler()->HandleGetDisplayList(args.GetList());
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();

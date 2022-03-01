@@ -42,10 +42,10 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   std::string check_default_callback_id_;
 
   // Called from WebUI to request the current state.
-  void RequestDefaultBrowserState(base::Value::ConstListView args);
+  void RequestDefaultBrowserState(const base::Value::List& args);
 
   // Makes this the default browser. Called from WebUI.
-  void SetAsDefaultBrowser(base::Value::ConstListView args);
+  void SetAsDefaultBrowser(const base::Value::List& args);
 
   // Called with the default browser state when the DefaultBrowserWorker is
   // done.

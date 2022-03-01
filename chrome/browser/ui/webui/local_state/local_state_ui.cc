@@ -49,7 +49,7 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
  private:
   // Called from JS when the page has loaded. Serializes local state prefs and
   // sends them to the page.
-  void HandleRequestJson(base::Value::ConstListView args);
+  void HandleRequestJson(const base::Value::List& args);
 };
 
 LocalStateUIHandler::LocalStateUIHandler() {
@@ -59,13 +59,13 @@ LocalStateUIHandler::~LocalStateUIHandler() {
 }
 
 void LocalStateUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestJson",
       base::BindRepeating(&LocalStateUIHandler::HandleRequestJson,
                           base::Unretained(this)));
 }
 
-void LocalStateUIHandler::HandleRequestJson(base::Value::ConstListView args) {
+void LocalStateUIHandler::HandleRequestJson(const base::Value::List& args) {
   AllowJavascript();
   base::Value local_state_values =
       g_browser_process->local_state()->GetPreferenceValues(

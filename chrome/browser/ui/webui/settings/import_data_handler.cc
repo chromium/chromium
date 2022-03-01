@@ -55,14 +55,14 @@ ImportDataHandler::~ImportDataHandler() {
 void ImportDataHandler::RegisterMessages() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeImportDialog",
       base::BindRepeating(&ImportDataHandler::HandleInitializeImportDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importData", base::BindRepeating(&ImportDataHandler::HandleImportData,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importFromBookmarksFile",
       base::BindRepeating(&ImportDataHandler::HandleImportFromBookmarksFile,
                           base::Unretained(this)));
@@ -103,7 +103,7 @@ void ImportDataHandler::StartImport(
                                     source_profile.importer_type);
 }
 
-void ImportDataHandler::HandleImportData(base::Value::ConstListView args) {
+void ImportDataHandler::HandleImportData(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const auto& list = args;
   CHECK_GE(list.size(), 2u);
@@ -145,7 +145,7 @@ void ImportDataHandler::HandleImportData(base::Value::ConstListView args) {
 }
 
 void ImportDataHandler::HandleInitializeImportDialog(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -160,7 +160,7 @@ void ImportDataHandler::HandleInitializeImportDialog(
 }
 
 void ImportDataHandler::HandleImportFromBookmarksFile(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (select_file_dialog_)

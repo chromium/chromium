@@ -445,7 +445,7 @@ void ProfilePickerHandler::RegisterMessages() {
       "getAvailableAccounts",
       base::BindRepeating(&ProfilePickerHandler::HandleGetAvailableAccounts,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "openAshAccountSettingsPage",
       base::BindRepeating(
           &ProfilePickerHandler::HandleOpenAshAccountSettingsPage,
@@ -1169,7 +1169,7 @@ void ProfilePickerHandler::OnVisibilityChanged(content::Visibility visibility) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ProfilePickerHandler::HandleOpenAshAccountSettingsPage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   std::string settings_url = chrome::kChromeUIOSSettingsURL;
   settings_url.append(chromeos::settings::mojom::kMyAccountsSubpagePath);
   lacros_url_handling::NavigateInAsh(GURL(settings_url));

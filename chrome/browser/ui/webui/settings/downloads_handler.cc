@@ -42,26 +42,26 @@ DownloadsHandler::~DownloadsHandler() {
 }
 
 void DownloadsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeDownloads",
       base::BindRepeating(&DownloadsHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "resetAutoOpenFileTypes",
       base::BindRepeating(&DownloadsHandler::HandleResetAutoOpenFileTypes,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "selectDownloadLocation",
       base::BindRepeating(&DownloadsHandler::HandleSelectDownloadLocation,
                           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getDownloadLocationText",
       base::BindRepeating(&DownloadsHandler::HandleGetDownloadLocationText,
                           base::Unretained(this)));
 #endif
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setDownloadsConnectionAccountLink",
       base::BindRepeating(
           &DownloadsHandler::HandleSetDownloadsConnectionAccountLink,
@@ -85,7 +85,7 @@ void DownloadsHandler::OnJavascriptDisallowed() {
   pref_registrar_.RemoveAll();
 }
 
-void DownloadsHandler::HandleInitialize(base::Value::ConstListView args) {
+void DownloadsHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
   SendDownloadsConnectionPolicyToJavascript();
   SendAutoOpenDownloadsToJavascript();
@@ -100,14 +100,14 @@ void DownloadsHandler::SendAutoOpenDownloadsToJavascript() {
 }
 
 void DownloadsHandler::HandleResetAutoOpenFileTypes(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   base::RecordAction(UserMetricsAction("Options_ResetAutoOpenFiles"));
   content::DownloadManager* manager = profile_->GetDownloadManager();
   DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 }
 
 void DownloadsHandler::HandleSelectDownloadLocation(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   // Early return if the select folder dialog is already active.
   if (select_folder_dialog_)
     return;
@@ -143,7 +143,7 @@ void DownloadsHandler::FileSelectionCanceled(void* params) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void DownloadsHandler::HandleGetDownloadLocationText(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -183,7 +183,7 @@ void DownloadsHandler::SendDownloadsConnectionPolicyToJavascript() {
 }
 
 void DownloadsHandler::HandleSetDownloadsConnectionAccountLink(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(IsDownloadsConnectionPolicyEnabled());
   CHECK_EQ(1U, args.size());
   bool enable_link = args[0].GetBool();

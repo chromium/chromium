@@ -48,14 +48,14 @@ HatsHandler::HatsHandler() = default;
 HatsHandler::~HatsHandler() = default;
 
 void HatsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "trustSafetyInteractionOccurred",
       base::BindRepeating(&HatsHandler::HandleTrustSafetyInteractionOccurred,
                           base::Unretained(this)));
 }
 
 void HatsHandler::HandleTrustSafetyInteractionOccurred(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

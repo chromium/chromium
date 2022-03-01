@@ -58,26 +58,26 @@ SecureDnsHandler::SecureDnsHandler() = default;
 SecureDnsHandler::~SecureDnsHandler() = default;
 
 void SecureDnsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSecureDnsResolverList",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsResolverList,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSecureDnsSetting",
       base::BindRepeating(&SecureDnsHandler::HandleGetSecureDnsSetting,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "isValidConfig",
       base::BindRepeating(&SecureDnsHandler::HandleIsValidConfig,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "probeConfig", base::BindRepeating(&SecureDnsHandler::HandleProbeConfig,
                                          base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "recordUserDropdownInteraction",
       base::BindRepeating(
           &SecureDnsHandler::HandleRecordUserDropdownInteraction,
@@ -152,7 +152,7 @@ void SecureDnsHandler::SetProvidersForTesting(
 }
 
 void SecureDnsHandler::HandleGetSecureDnsResolverList(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   std::string callback_id = args[0].GetString();
 
@@ -161,14 +161,14 @@ void SecureDnsHandler::HandleGetSecureDnsResolverList(
 }
 
 void SecureDnsHandler::HandleGetSecureDnsSetting(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1u, args.size());
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, CreateSecureDnsSettingDict());
 }
 
-void SecureDnsHandler::HandleIsValidConfig(base::Value::ConstListView args) {
+void SecureDnsHandler::HandleIsValidConfig(const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   const std::string& custom_entry = args[1].GetString();
@@ -178,7 +178,7 @@ void SecureDnsHandler::HandleIsValidConfig(base::Value::ConstListView args) {
   ResolveJavascriptCallback(callback_id, base::Value(valid));
 }
 
-void SecureDnsHandler::HandleProbeConfig(base::Value::ConstListView args) {
+void SecureDnsHandler::HandleProbeConfig(const base::Value::List& args) {
   AllowJavascript();
 
   if (!probe_callback_id_.empty()) {
@@ -203,7 +203,7 @@ void SecureDnsHandler::HandleProbeConfig(base::Value::ConstListView args) {
 }
 
 void SecureDnsHandler::HandleRecordUserDropdownInteraction(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   const std::string& old_provider = args[0].GetString();
   const std::string& new_provider = args[1].GetString();

@@ -69,41 +69,41 @@ void ProtocolHandlersHandler::OnJavascriptDisallowed() {
 }
 
 void ProtocolHandlersHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "observeProtocolHandlers",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveProtocolHandlers,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "observeProtocolHandlersEnabledState",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveProtocolHandlersEnabledState,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeHandler",
       base::BindRepeating(&ProtocolHandlersHandler::HandleRemoveHandler,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setHandlersEnabled",
       base::BindRepeating(&ProtocolHandlersHandler::HandleSetHandlersEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setDefault",
       base::BindRepeating(&ProtocolHandlersHandler::HandleSetDefault,
                           base::Unretained(this)));
 
   // Web App Protocol Handlers register message callbacks:
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "observeAppProtocolHandlers",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleObserveAppProtocolHandlers,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeAppAllowedHandler",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleRemoveAllowedAppHandler,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeAppDisallowedHandler",
       base::BindRepeating(
           &ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler,
@@ -175,14 +175,14 @@ void ProtocolHandlersHandler::UpdateHandlerList() {
 }
 
 void ProtocolHandlersHandler::HandleObserveProtocolHandlers(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   SendHandlersEnabledValue();
   UpdateHandlerList();
 }
 
 void ProtocolHandlersHandler::HandleObserveProtocolHandlersEnabledState(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   SendHandlersEnabledValue();
 }
@@ -193,7 +193,7 @@ void ProtocolHandlersHandler::SendHandlersEnabledValue() {
 }
 
 void ProtocolHandlersHandler::HandleRemoveHandler(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   ProtocolHandler handler(ParseHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   GetProtocolHandlerRegistry()->RemoveHandler(handler);
@@ -204,7 +204,7 @@ void ProtocolHandlersHandler::HandleRemoveHandler(
 }
 
 void ProtocolHandlersHandler::HandleSetHandlersEnabled(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   bool enabled = true;
   CHECK(args[0].is_bool());
   enabled = args[0].GetBool();
@@ -214,22 +214,19 @@ void ProtocolHandlersHandler::HandleSetHandlersEnabled(
     GetProtocolHandlerRegistry()->Disable();
 }
 
-void ProtocolHandlersHandler::HandleSetDefault(
-    base::Value::ConstListView args) {
+void ProtocolHandlersHandler::HandleSetDefault(const base::Value::List& args) {
   const ProtocolHandler& handler(ParseHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   GetProtocolHandlerRegistry()->OnAcceptRegisterProtocolHandler(handler);
 }
 
 ProtocolHandler ProtocolHandlersHandler::ParseHandlerFromArgs(
-    base::Value::ConstListView args) const {
-  base::Value::ConstListView args_list = args;
-  bool ok = args_list.size() >= 2u && args_list[0].is_string() &&
-            args_list[1].is_string();
+    const base::Value::List& args) const {
+  bool ok = args.size() >= 2u && args[0].is_string() && args[1].is_string();
   if (!ok)
     return ProtocolHandler::EmptyProtocolHandler();
-  std::string protocol = args_list[0].GetString();
-  std::string url = args_list[1].GetString();
+  std::string protocol = args[0].GetString();
+  std::string url = args[1].GetString();
   return ProtocolHandler::CreateProtocolHandler(protocol, GURL(url));
 }
 
@@ -303,14 +300,14 @@ void ProtocolHandlersHandler::UpdateAllDisallowedLaunchProtocols() {
 }
 
 void ProtocolHandlersHandler::HandleObserveAppProtocolHandlers(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   UpdateAllAllowedLaunchProtocols();
   UpdateAllDisallowedLaunchProtocols();
 }
 
 void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   DCHECK(web_app_provider_);
@@ -324,7 +321,7 @@ void ProtocolHandlersHandler::HandleRemoveAllowedAppHandler(
 }
 
 void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   content::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
   DCHECK(web_app_provider_);
@@ -343,7 +340,7 @@ void ProtocolHandlersHandler::HandleRemoveDisallowedAppHandler(
 }
 
 content::ProtocolHandler ProtocolHandlersHandler::ParseAppHandlerFromArgs(
-    base::Value::ConstListView args) const {
+    const base::Value::List& args) const {
   const std::string* protocol = args[0].GetIfString();
   const std::string* url = args[1].GetIfString();
   const std::string* app_id = args[2].GetIfString();

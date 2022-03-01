@@ -43,15 +43,15 @@ class ImportDataHandler : public SettingsPageUIHandler,
 
   // Handler for the "importData" message. First argument is the selected
   // browser index, and second argument is the types of data to import.
-  void HandleImportData(base::Value::ConstListView args);
+  void HandleImportData(const base::Value::List& args);
 
   // Handler for the "initializeImportDialog" message. First argument is a
   // callback id.
-  void HandleInitializeImportDialog(base::Value::ConstListView args);
+  void HandleInitializeImportDialog(const base::Value::List& args);
 
   // Handler for the "importFromBookmarksFile" message. Opens a file selection
   // dialog to choose the bookmarks HTML file.
-  void HandleImportFromBookmarksFile(base::Value::ConstListView args);
+  void HandleImportFromBookmarksFile(const base::Value::List& args);
 
   void SendBrowserProfileData(const std::string& callback_id);
 

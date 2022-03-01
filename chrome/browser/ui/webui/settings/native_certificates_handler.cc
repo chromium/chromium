@@ -17,7 +17,7 @@ NativeCertificatesHandler::NativeCertificatesHandler() {}
 NativeCertificatesHandler::~NativeCertificatesHandler() {}
 
 void NativeCertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showManageSSLCertificates",
       base::BindRepeating(
           &NativeCertificatesHandler::HandleShowManageSSLCertificates,
@@ -25,7 +25,7 @@ void NativeCertificatesHandler::RegisterMessages() {
 }
 
 void NativeCertificatesHandler::HandleShowManageSSLCertificates(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   base::RecordAction(base::UserMetricsAction("Options_ManageSSLCertificates"));
   settings_utils::ShowManageSSLCertificates(web_ui()->GetWebContents());
 }

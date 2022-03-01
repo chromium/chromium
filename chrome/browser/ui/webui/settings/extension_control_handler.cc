@@ -19,14 +19,14 @@ ExtensionControlHandler::ExtensionControlHandler() {}
 ExtensionControlHandler::~ExtensionControlHandler() {}
 
 void ExtensionControlHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "disableExtension",
       base::BindRepeating(&ExtensionControlHandler::HandleDisableExtension,
                           base::Unretained(this)));
 }
 
 void ExtensionControlHandler::HandleDisableExtension(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const std::string& extension_id = args[0].GetString();
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(Profile::FromWebUI(web_ui()))

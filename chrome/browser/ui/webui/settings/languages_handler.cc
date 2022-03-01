@@ -33,18 +33,18 @@ LanguagesHandler::LanguagesHandler() = default;
 LanguagesHandler::~LanguagesHandler() = default;
 
 void LanguagesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleGetProspectiveUILanguage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setProspectiveUILanguage",
       base::BindRepeating(&LanguagesHandler::HandleSetProspectiveUILanguage,
                           base::Unretained(this)));
 }
 
 void LanguagesHandler::HandleGetProspectiveUILanguage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
   AllowJavascript();
@@ -64,7 +64,7 @@ void LanguagesHandler::HandleGetProspectiveUILanguage(
 }
 
 void LanguagesHandler::HandleSetProspectiveUILanguage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 

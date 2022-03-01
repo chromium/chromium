@@ -53,34 +53,34 @@ ManageProfileHandler::ManageProfileHandler(Profile* profile)
 ManageProfileHandler::~ManageProfileHandler() {}
 
 void ManageProfileHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getAvailableIcons",
       base::BindRepeating(&ManageProfileHandler::HandleGetAvailableIcons,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setProfileIconToGaiaAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToGaiaAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setProfileIconToDefaultAvatar",
       base::BindRepeating(
           &ManageProfileHandler::HandleSetProfileIconToDefaultAvatar,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setProfileName",
       base::BindRepeating(&ManageProfileHandler::HandleSetProfileName,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestProfileShortcutStatus",
       base::BindRepeating(
           &ManageProfileHandler::HandleRequestProfileShortcutStatus,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "addProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleAddProfileShortcut,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeProfileShortcut",
       base::BindRepeating(&ManageProfileHandler::HandleRemoveProfileShortcut,
                           base::Unretained(this)));
@@ -124,7 +124,7 @@ void ManageProfileHandler::OnProfileThemeColorsChanged(
 }
 
 void ManageProfileHandler::HandleGetAvailableIcons(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   profiles::UpdateGaiaProfileInfoIfNeeded(profile_);
@@ -181,7 +181,7 @@ std::vector<base::Value> ManageProfileHandler::GetAvailableIcons() {
 }
 
 void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PrefService* pref_service = profile_->GetPrefs();
@@ -201,7 +201,7 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
 }
 
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK_EQ(1u, args.size());
   CHECK(args[0].is_int());
@@ -220,8 +220,7 @@ void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(
   ProfileMetrics::LogProfileUpdate(profile_->GetPath());
 }
 
-void ManageProfileHandler::HandleSetProfileName(
-    base::Value::ConstListView args) {
+void ManageProfileHandler::HandleSetProfileName(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK_EQ(1u, args.size());
 
@@ -235,7 +234,7 @@ void ManageProfileHandler::HandleSetProfileName(
 }
 
 void ManageProfileHandler::HandleRequestProfileShortcutStatus(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
@@ -271,7 +270,7 @@ void ManageProfileHandler::OnHasProfileShortcuts(
 }
 
 void ManageProfileHandler::HandleAddProfileShortcut(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
   ProfileShortcutManager* shortcut_manager =
       g_browser_process->profile_manager()->profile_shortcut_manager();
@@ -281,7 +280,7 @@ void ManageProfileHandler::HandleAddProfileShortcut(
 }
 
 void ManageProfileHandler::HandleRemoveProfileShortcut(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(ProfileShortcutManager::IsFeatureEnabled());
   ProfileShortcutManager* shortcut_manager =
     g_browser_process->profile_manager()->profile_shortcut_manager();

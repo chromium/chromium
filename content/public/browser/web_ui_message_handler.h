@@ -65,18 +65,17 @@ class CONTENT_EXPORT WebUIMessageHandler {
 
   // Extract an integer value from a list Value.
   static bool ExtractIntegerValue(const base::ListValue* value, int* out_int);
-  static bool ExtractIntegerValue(base::Value::ConstListView value,
-                                  int* out_int);
+  static bool ExtractIntegerValue(const base::Value::List& list, int* out_int);
 
   // Extract a floating point (double) value from a list Value.
   static bool ExtractDoubleValue(const base::ListValue* value,
                                  double* out_value);
-  static bool ExtractDoubleValue(base::Value::ConstListView value,
+  static bool ExtractDoubleValue(const base::Value::List& list,
                                  double* out_value);
 
   // Extract a string value from a list Value.
   static std::u16string ExtractStringValue(const base::ListValue* value);
-  static std::u16string ExtractStringValue(base::Value::ConstListView value);
+  static std::u16string ExtractStringValue(const base::Value::List& list);
 
   // This is where subclasses specify which messages they'd like to handle and
   // perform any additional initialization.. At this point web_ui() will return

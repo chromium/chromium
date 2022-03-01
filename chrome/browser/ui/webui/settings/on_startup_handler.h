@@ -44,11 +44,11 @@ class OnStartupHandler : public SettingsPageUIHandler,
   base::Value GetNtpExtension();
 
   // Handler for the "getNtpExtension" message. No arguments.
-  void HandleGetNtpExtension(base::Value::ConstListView args);
+  void HandleGetNtpExtension(const base::Value::List& args);
 
   // Handles the "validateStartupPage" message. Passed a URL that might be a
   // valid startup page.
-  void HandleValidateStartupPage(base::Value::ConstListView args);
+  void HandleValidateStartupPage(const base::Value::List& args);
 
   // extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

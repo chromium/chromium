@@ -142,7 +142,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Opens the Ash account settings page in a new window.
-  void HandleOpenAshAccountSettingsPage(base::Value::ConstListView args);
+  void HandleOpenAshAccountSettingsPage(const base::Value::List& args);
 
   // List of available accounts used by the profile choice and the account
   // selection screens.

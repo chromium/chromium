@@ -45,12 +45,12 @@ ProfileInfoHandler::ProfileInfoHandler(Profile* profile) : profile_(profile) {
 ProfileInfoHandler::~ProfileInfoHandler() {}
 
 void ProfileInfoHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getProfileInfo",
       base::BindRepeating(&ProfileInfoHandler::HandleGetProfileInfo,
                           base::Unretained(this)));
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getProfileStatsCount",
       base::BindRepeating(&ProfileInfoHandler::HandleGetProfileStats,
                           base::Unretained(this)));
@@ -97,7 +97,7 @@ void ProfileInfoHandler::OnProfileAvatarChanged(
   PushProfileInfo();
 }
 
-void ProfileInfoHandler::HandleGetProfileInfo(base::Value::ConstListView args) {
+void ProfileInfoHandler::HandleGetProfileInfo(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -107,8 +107,7 @@ void ProfileInfoHandler::HandleGetProfileInfo(base::Value::ConstListView args) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void ProfileInfoHandler::HandleGetProfileStats(
-    base::Value::ConstListView args) {
+void ProfileInfoHandler::HandleGetProfileStats(const base::Value::List& args) {
   AllowJavascript();
 
   ProfileStatisticsFactory::GetForProfile(profile_)->GatherStatistics(

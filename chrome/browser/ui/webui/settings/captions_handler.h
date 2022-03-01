@@ -29,8 +29,8 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleLiveCaptionSectionReady(base::Value::ConstListView args);
-  void HandleOpenSystemCaptionsDialog(base::Value::ConstListView args);
+  void HandleLiveCaptionSectionReady(const base::Value::List& args);
+  void HandleOpenSystemCaptionsDialog(const base::Value::List& args);
 
   // SodaInstaller::Observer overrides:
   void OnSodaInstalled() override;

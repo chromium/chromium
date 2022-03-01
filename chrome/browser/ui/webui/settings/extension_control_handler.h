@@ -26,7 +26,7 @@ class ExtensionControlHandler : public SettingsPageUIHandler {
  private:
   // Handler for the "disableExtension" message. Extension ID is passed as the
   // single string argument.
-  void HandleDisableExtension(base::Value::ConstListView args);
+  void HandleDisableExtension(const base::Value::List& args);
 };
 
 }  // namespace settings

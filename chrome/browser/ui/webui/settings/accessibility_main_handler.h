@@ -28,8 +28,8 @@ class AccessibilityMainHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleA11yPageReady(base::Value::ConstListView args);
-  void HandleCheckAccessibilityImageLabels(base::Value::ConstListView args);
+  void HandleA11yPageReady(const base::Value::List& args);
+  void HandleCheckAccessibilityImageLabels(const base::Value::List& args);
 
  private:
   void SendScreenReaderStateChanged();

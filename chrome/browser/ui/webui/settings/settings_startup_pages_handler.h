@@ -40,19 +40,19 @@ class StartupPagesHandler : public SettingsPageUIHandler,
 
  private:
   // Adds a startup page with the given URL after the given index.
-  void HandleAddStartupPage(base::Value::ConstListView args);
+  void HandleAddStartupPage(const base::Value::List& args);
 
   // Changes the startup page at the given index to the given URL.
-  void HandleEditStartupPage(base::Value::ConstListView args);
+  void HandleEditStartupPage(const base::Value::List& args);
 
   // Informs the code that the JS page has loaded.
-  void HandleOnStartupPrefsPageLoad(base::Value::ConstListView args);
+  void HandleOnStartupPrefsPageLoad(const base::Value::List& args);
 
   // Removes the startup page at the given index.
-  void HandleRemoveStartupPage(base::Value::ConstListView args);
+  void HandleRemoveStartupPage(const base::Value::List& args);
 
   // Sets the startup page set to the current pages.
-  void HandleSetStartupPagesToCurrentPages(base::Value::ConstListView args);
+  void HandleSetStartupPagesToCurrentPages(const base::Value::List& args);
 
   // Stores the current state of the startup page preferences.
   void SaveStartupPagesPref();

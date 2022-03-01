@@ -167,7 +167,7 @@ class PrivacySandboxHandlerTest : public testing::Test {
 TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId1);
-  handler()->HandleGetFlocId(args.GetListDeprecated());
+  handler()->HandleGetFlocId(args.GetList());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId1, data.arg1()->GetString());
@@ -178,7 +178,7 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
 
 TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
   base::Value args(base::Value::Type::LIST);
-  handler()->HandleResetFlocId(args.GetListDeprecated());
+  handler()->HandleResetFlocId(args.GetList());
 
   // Resetting the FLoC ID should fire the appropriate WebUI listener.
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -214,7 +214,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetFledgeJoiningAllowed) {
   base::Value args(base::Value::Type::LIST);
   args.Append(kTestSite);
   args.Append(true);
-  handler()->HandleSetFledgeJoiningAllowed(args.GetListDeprecated());
+  handler()->HandleSetFledgeJoiningAllowed(args.GetList());
 }
 
 TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
@@ -232,11 +232,11 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetFledgeState) {
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId1);
-  handler()->HandleGetFledgeState(args.GetListDeprecated());
+  handler()->HandleGetFledgeState(args.GetList());
 
   args.ClearList();
   args.Append(kCallbackId2);
-  handler()->HandleGetFledgeState(args.GetListDeprecated());
+  handler()->HandleGetFledgeState(args.GetList());
 
   // Provide different sets of information to each request to the FLEDGE
   // backend.
@@ -270,7 +270,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, SetTopicAllowed) {
   args.Append(kTestTopic.topic_id());
   args.Append(kTestTopic.taxonomy_version());
   args.Append(false);
-  handler()->HandleSetTopicAllowed(args.GetListDeprecated());
+  handler()->HandleSetTopicAllowed(args.GetList());
 }
 
 TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
@@ -294,7 +294,7 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
 
   base::Value args(base::Value::Type::LIST);
   args.Append(kCallbackId1);
-  handler()->HandleGetTopicsState(args.GetListDeprecated());
+  handler()->HandleGetTopicsState(args.GetList());
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId1, data.arg1()->GetString());

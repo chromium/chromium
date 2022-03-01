@@ -291,70 +291,70 @@ CertificatesHandler::~CertificatesHandler() {
 }
 
 void CertificatesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "viewCertificate",
       base::BindRepeating(&CertificatesHandler::HandleViewCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleGetCATrust,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "editCaCertificateTrust",
       base::BindRepeating(&CertificatesHandler::HandleEditCATrust,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "cancelImportExportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleCancelImportExportProcess,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "exportPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "exportPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleExportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importPersonalCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportPersonal,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importPersonalCertificatePasswordSelected",
       base::BindRepeating(
           &CertificatesHandler::HandleImportPersonalPasswordSelected,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importCaCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportCA,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importCaCertificateTrustSelected",
       base::BindRepeating(&CertificatesHandler::HandleImportCATrustSelected,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "importServerCertificate",
       base::BindRepeating(&CertificatesHandler::HandleImportServer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "exportCertificate",
       base::BindRepeating(&CertificatesHandler::HandleExportCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "deleteCertificate",
       base::BindRepeating(&CertificatesHandler::HandleDeleteCertificate,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "refreshCertificates",
       base::BindRepeating(&CertificatesHandler::HandleRefreshCertificates,
                           base::Unretained(this)));
@@ -404,8 +404,7 @@ void CertificatesHandler::FileSelectionCanceled(void* params) {
   }
 }
 
-void CertificatesHandler::HandleViewCertificate(
-    base::Value::ConstListView args) {
+void CertificatesHandler::HandleViewCertificate(const base::Value::List& args) {
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 0 /* arg_index */);
   if (!cert_info)
@@ -416,14 +415,13 @@ void CertificatesHandler::HandleViewCertificate(
       std::move(certs), web_ui()->GetWebContents(), GetParentWindow());
 }
 
-void CertificatesHandler::AssignWebUICallbackId(
-    base::Value::ConstListView args) {
+void CertificatesHandler::AssignWebUICallbackId(const base::Value::List& args) {
   CHECK_LE(1U, args.size());
   CHECK(webui_callback_id_.empty());
   webui_callback_id_ = args[0].GetString();
 }
 
-void CertificatesHandler::HandleGetCATrust(base::Value::ConstListView args) {
+void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
@@ -451,7 +449,7 @@ void CertificatesHandler::HandleGetCATrust(base::Value::ConstListView args) {
   ResolveCallback(*ca_trust_info);
 }
 
-void CertificatesHandler::HandleEditCATrust(base::Value::ConstListView args) {
+void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
   CHECK_EQ(5U, args.size());
   AssignWebUICallbackId(args);
 
@@ -490,8 +488,7 @@ void CertificatesHandler::HandleEditCATrust(base::Value::ConstListView args) {
   }
 }
 
-void CertificatesHandler::HandleExportPersonal(
-    base::Value::ConstListView args) {
+void CertificatesHandler::HandleExportPersonal(const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   AssignWebUICallbackId(args);
 
@@ -526,7 +523,7 @@ void CertificatesHandler::ExportPersonalFileSelected(
 }
 
 void CertificatesHandler::HandleExportPersonalPasswordSelected(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   AssignWebUICallbackId(args);
   password_ = UTF8ToUTF16(args[1].GetString());  // CHECKs if non-string.
@@ -580,8 +577,7 @@ void CertificatesHandler::ExportPersonalFileWritten(const int* write_errno,
   }
 }
 
-void CertificatesHandler::HandleImportPersonal(
-    base::Value::ConstListView args) {
+void CertificatesHandler::HandleImportPersonal(const base::Value::List& args) {
   // When the "allowed" value changes while user on the certificate manager
   // page, the UI doesn't update without page refresh and user can still see and
   // use import button. Because of this 'return' the button will do nothing.
@@ -669,7 +665,7 @@ void CertificatesHandler::ImportPersonalFileRead(const int* read_errno,
 }
 
 void CertificatesHandler::HandleImportPersonalPasswordSelected(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   AssignWebUICallbackId(args);
   password_ = UTF8ToUTF16(args[1].GetString());  // CHECKs if non-string.
@@ -729,7 +725,7 @@ void CertificatesHandler::ImportPersonalSlotUnlocked() {
 }
 
 void CertificatesHandler::HandleCancelImportExportProcess(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   ImportExportCleanup();
 }
 
@@ -749,7 +745,7 @@ void CertificatesHandler::ImportExportCleanup() {
   select_file_dialog_ = nullptr;
 }
 
-void CertificatesHandler::HandleImportServer(base::Value::ConstListView args) {
+void CertificatesHandler::HandleImportServer(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   AssignWebUICallbackId(args);
 
@@ -816,7 +812,7 @@ void CertificatesHandler::ImportServerFileRead(const int* read_errno,
   ImportExportCleanup();
 }
 
-void CertificatesHandler::HandleImportCA(base::Value::ConstListView args) {
+void CertificatesHandler::HandleImportCA(const base::Value::List& args) {
   // When the "allowed" value changes while user on the certificate manager
   // page, the UI doesn't update without page refresh and user can still see and
   // use import button. Because of this 'return' the button will do nothing.
@@ -881,7 +877,7 @@ void CertificatesHandler::ImportCAFileRead(const int* read_errno,
 }
 
 void CertificatesHandler::HandleImportCATrustSelected(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(4U, args.size());
   AssignWebUICallbackId(args);
 
@@ -916,7 +912,7 @@ void CertificatesHandler::HandleImportCATrustSelected(
 }
 
 void CertificatesHandler::HandleExportCertificate(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CertificateManagerModel::CertInfo* cert_info =
       GetCertInfoFromCallbackArgs(args, 0 /* arg_index */);
   if (!cert_info)
@@ -929,7 +925,7 @@ void CertificatesHandler::HandleExportCertificate(
 }
 
 void CertificatesHandler::HandleDeleteCertificate(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   AssignWebUICallbackId(args);
 
@@ -979,7 +975,7 @@ void CertificatesHandler::CertificateManagerModelReady() {
 }
 
 void CertificatesHandler::HandleRefreshCertificates(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   if (certificate_manager_model_) {
@@ -1140,9 +1136,8 @@ gfx::NativeWindow CertificatesHandler::GetParentWindow() {
 }
 
 CertificateManagerModel::CertInfo*
-CertificatesHandler::GetCertInfoFromCallbackArgs(
-    base::Value::ConstListView args,
-    size_t arg_index) {
+CertificatesHandler::GetCertInfoFromCallbackArgs(const base::Value::List& args,
+                                                 size_t arg_index) {
   if (arg_index >= args.size())
     return nullptr;
   const auto& arg = args[arg_index];

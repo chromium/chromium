@@ -34,17 +34,16 @@ class IncompatibleApplicationsHandler : public SettingsPageUIHandler {
 
  private:
   // Sends the list of incompatible applications to the caller via a promise.
-  void HandleRequestIncompatibleApplicationsList(
-      base::Value::ConstListView args);
+  void HandleRequestIncompatibleApplicationsList(const base::Value::List& args);
 
   // Initiates the uninstallation of the application passed using |args|.
-  void HandleStartApplicationUninstallation(base::Value::ConstListView args);
+  void HandleStartApplicationUninstallation(const base::Value::List& args);
 
-  void HandleGetSubtitlePluralString(base::Value::ConstListView args);
+  void HandleGetSubtitlePluralString(const base::Value::List& args);
   void HandleGetSubtitleNoAdminRightsPluralString(
-      base::Value::ConstListView args);
-  void HandleGetListTitlePluralString(base::Value::ConstListView args);
-  void GetPluralString(int id, base::Value::ConstListView args);
+      const base::Value::List& args);
+  void HandleGetListTitlePluralString(const base::Value::List& args);
+  void GetPluralString(int id, const base::Value::List& args);
 
   // Callback for the registry key watchers.
   void OnApplicationRemoved(

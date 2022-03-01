@@ -25,18 +25,18 @@ class BrowserLifetimeHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleRestart(base::Value::ConstListView args);
-  void HandleRelaunch(base::Value::ConstListView args);
+  void HandleRestart(const base::Value::List& args);
+  void HandleRelaunch(const base::Value::List& args);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleSignOutAndRestart(base::Value::ConstListView args);
-  void HandleFactoryReset(base::Value::ConstListView args);
+  void HandleSignOutAndRestart(const base::Value::List& args);
+  void HandleFactoryReset(const base::Value::List& args);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleGetRelaunchConfirmationDialogDescription(
-      base::Value::ConstListView args);
+      const base::Value::List& args);
   void HandleShouldShowRelaunchConfirmationDialog(
-      base::Value::ConstListView args);
+      const base::Value::List& args);
 #endif
 };
 

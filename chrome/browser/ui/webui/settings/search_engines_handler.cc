@@ -57,37 +57,37 @@ SearchEnginesHandler::~SearchEnginesHandler() {
 }
 
 void SearchEnginesHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setIsActiveSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetIsActiveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleRemoveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "validateSearchEngineInput",
       base::BindRepeating(
           &SearchEnginesHandler::HandleValidateSearchEngineInput,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditStarted",
       base::BindRepeating(&SearchEnginesHandler::HandleSearchEngineEditStarted,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditCancelled",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCancelled,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "searchEngineEditCompleted",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,
@@ -252,7 +252,7 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
 }
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
@@ -260,7 +260,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 }
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -275,7 +275,7 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
 }
 
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(2U, args.size());
   const int index = args[0].GetInt();
   const bool is_active = args[1].GetBool();
@@ -287,7 +287,7 @@ void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
 }
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -303,7 +303,7 @@ void SearchEnginesHandler::HandleRemoveSearchEngine(
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditStarted(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   int index;
   if (!ExtractIntegerValue(args, &index)) {
     NOTREACHED();
@@ -336,7 +336,7 @@ void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
 }
 
 void SearchEnginesHandler::HandleValidateSearchEngineInput(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
 
   const base::Value& callback_id = args[0];
@@ -365,7 +365,7 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditCancelled(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   if (!edit_controller_.get())
     return;
   edit_controller_->CleanUpCancelledAdd();
@@ -373,7 +373,7 @@ void SearchEnginesHandler::HandleSearchEngineEditCancelled(
 }
 
 void SearchEnginesHandler::HandleSearchEngineEditCompleted(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   if (!edit_controller_.get())
     return;
   const std::string& search_engine = args[0].GetString();
