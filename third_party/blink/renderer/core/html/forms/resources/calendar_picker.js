@@ -4307,197 +4307,194 @@ class CalendarTableView extends ListView {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends View
- * @param {!Object} config
- */
-function CalendarPicker(type, config) {
-  View.call(this, createElement('div', CalendarPicker.ClassNameCalendarPicker));
-  this.element.classList.add(CalendarPicker.ClassNamePreparing);
-  if (global.params.isBorderTransparent) {
-    this.element.style.borderColor = 'transparent';
+class CalendarPicker extends View {
+  /**
+   * @param {!Object} config
+   */
+  constructor(type, config) {
+    super(createElement('div', CalendarPicker.ClassNameCalendarPicker));
+    this.element.classList.add(CalendarPicker.ClassNamePreparing);
+    if (global.params.isBorderTransparent) {
+      this.element.style.borderColor = 'transparent';
+    }
+    /**
+     * @type {!string}
+     * @const
+     */
+    this.type = type;
+    if (this.type === 'week')
+      this._dateTypeConstructor = Week;
+    else if (this.type === 'month')
+      this._dateTypeConstructor = Month;
+    else
+      this._dateTypeConstructor = Day;
+
+    this._setValidDateConfig(config);
+
+    if (this.type === 'week') {
+      this.element.classList.add(CalendarPicker.ClassNameWeekPicker);
+    }
+
+    /**
+     * @type {!Month}
+     * @const
+     */
+    this.minimumMonth = Month.createFromDay(this.config.minimum.firstDay());
+    /**
+     * @type {!Month}
+     * @const
+     */
+    this.maximumMonth = Month.createFromDay(this.config.maximum.lastDay());
+    if (global.params.isLocaleRTL)
+      this.element.classList.add('rtl');
+    /**
+     * @type {!CalendarTableView}
+     * @const
+     */
+    this.calendarTableView = new CalendarTableView(this);
+    this.calendarTableView.hasNumberColumn = this.type === 'week';
+    /**
+     * @type {!CalendarHeaderView}
+     * @const
+     */
+    this.calendarHeaderView = new CalendarHeaderView(this);
+    this.calendarHeaderView.monthPopupButton.on(
+        MonthPopupButton.EventTypeButtonClick,
+        this.onMonthPopupButtonClick.bind(this));
+    /**
+     * @type {!MonthPopupView}
+     * @const
+     */
+    this.monthPopupView =
+        new MonthPopupView(this.minimumMonth, this.maximumMonth);
+    this.monthPopupView.yearListView.on(
+        YearListView.EventTypeYearListViewDidSelectMonth,
+        this.onYearListViewDidSelectMonth.bind(this));
+    this.monthPopupView.yearListView.on(
+        YearListView.EventTypeYearListViewDidHide,
+        this.onYearListViewDidHide.bind(this));
+    this.calendarHeaderView.attachTo(this);
+    this.calendarTableView.attachTo(this);
+    /**
+     * @type {!Month}
+     * @protected
+     */
+    this._currentMonth = new Month(NaN, NaN);
+    /**
+     * @type {?DateType}
+     * @protected
+     */
+    this._selection = null;
+
+    this.calendarTableView.element.addEventListener(
+        'keydown', this.onCalendarTableKeyDown.bind(this));
+
+    document.body.addEventListener('click', this.onBodyClick.bind(this));
+    this._onBodyKeyDownBound = this.onBodyKeyDown.bind(this);
+    document.body.addEventListener('keydown', this._onBodyKeyDownBound);
+
+    this._onWindowResizeBound = this.onWindowResize.bind(this);
+    window.addEventListener('resize', this._onWindowResizeBound);
+
+    /**
+     * @type {!number}
+     * @protected
+     */
+    this._height = -1;
+
+    this._hadValidValueWhenOpened = false;
+
+    var initialSelection = parseDateString(config.currentValue);
+    if (initialSelection) {
+      this.setCurrentMonth(
+          Month.createFromDay(initialSelection.middleDay()),
+          CalendarPicker.NavigationBehavior.None);
+
+      this._hadValidValueWhenOpened = this.isValid(initialSelection);
+      this.setSelection(this.getNearestValidRange(
+          initialSelection, /*lookForwardFirst*/ true));
+    } else {
+      this.setCurrentMonth(
+          Month.createFromToday(), CalendarPicker.NavigationBehavior.None);
+
+      // Ensure that the next date closest to today is selected to start with
+      // so that the user can simply submit the popup to choose it.
+      this.setSelection(this.getValidRangeNearestToDay(
+          this._dateTypeConstructor.createFromToday(),
+          /*lookForwardFirst*/ true));
+    }
+
+    /**
+     * @type {?DateType}
+     * @protected
+     */
+    this._initialSelection = this._selection;
   }
-  /**
-   * @type {!string}
-   * @const
-   */
-  this.type = type;
-  if (this.type === 'week')
-    this._dateTypeConstructor = Week;
-  else if (this.type === 'month')
-    this._dateTypeConstructor = Month;
-  else
-    this._dateTypeConstructor = Day;
 
-  this._setValidDateConfig(config);
-
-  if (this.type === 'week') {
-    this.element.classList.add(CalendarPicker.ClassNameWeekPicker);
-  }
-
-  /**
-   * @type {!Month}
-   * @const
-   */
-  this.minimumMonth = Month.createFromDay(this.config.minimum.firstDay());
-  /**
-   * @type {!Month}
-   * @const
-   */
-  this.maximumMonth = Month.createFromDay(this.config.maximum.lastDay());
-  if (global.params.isLocaleRTL)
-    this.element.classList.add('rtl');
-  /**
-   * @type {!CalendarTableView}
-   * @const
-   */
-  this.calendarTableView = new CalendarTableView(this);
-  this.calendarTableView.hasNumberColumn = this.type === 'week';
-  /**
-   * @type {!CalendarHeaderView}
-   * @const
-   */
-  this.calendarHeaderView = new CalendarHeaderView(this);
-  this.calendarHeaderView.monthPopupButton.on(
-      MonthPopupButton.EventTypeButtonClick, this.onMonthPopupButtonClick);
-  /**
-   * @type {!MonthPopupView}
-   * @const
-   */
-  this.monthPopupView =
-      new MonthPopupView(this.minimumMonth, this.maximumMonth);
-  this.monthPopupView.yearListView.on(
-      YearListView.EventTypeYearListViewDidSelectMonth,
-      this.onYearListViewDidSelectMonth);
-  this.monthPopupView.yearListView.on(
-      YearListView.EventTypeYearListViewDidHide, this.onYearListViewDidHide);
-  this.calendarHeaderView.attachTo(this);
-  this.calendarTableView.attachTo(this);
-  /**
-   * @type {!Month}
-   * @protected
-   */
-  this._currentMonth = new Month(NaN, NaN);
-  /**
-   * @type {?DateType}
-   * @protected
-   */
-  this._selection = null;
-
-  this.calendarTableView.element.addEventListener(
-      'keydown', this.onCalendarTableKeyDown, false);
-
-  document.body.addEventListener('click', this.onBodyClick, false);
-  document.body.addEventListener('keydown', this.onBodyKeyDown, false);
-
-
-  window.addEventListener('resize', this.onWindowResize, false);
-
-  /**
-   * @type {!number}
-   * @protected
-   */
-  this._height = -1;
-
-  this._hadValidValueWhenOpened = false;
-
-  var initialSelection = parseDateString(config.currentValue);
-  if (initialSelection) {
-    this.setCurrentMonth(
-        Month.createFromDay(initialSelection.middleDay()),
-        CalendarPicker.NavigationBehavior.None);
-
-    this._hadValidValueWhenOpened = this.isValid(initialSelection);
-    this.setSelection(
-        this.getNearestValidRange(initialSelection, /*lookForwardFirst*/ true));
-  } else {
-    this.setCurrentMonth(
-        Month.createFromToday(), CalendarPicker.NavigationBehavior.None);
-
-    // Ensure that the next date closest to today is selected to start with so that
-    // the user can simply submit the popup to choose it.
-    this.setSelection(this.getValidRangeNearestToDay(
-        this._dateTypeConstructor.createFromToday(),
-        /*lookForwardFirst*/ true));
-  }
-
-  /**
-   * @type {?DateType}
-   * @protected
-   */
-  this._initialSelection = this._selection;
-}
-
-{
-  CalendarPicker.prototype = Object.create(View.prototype);
-  Object.assign(CalendarPicker.prototype, DateRangeManager);
-
-  CalendarPicker.Padding = 10;
-  CalendarPicker.BorderWidth = 1;
-  CalendarPicker.ClassNameCalendarPicker = 'calendar-picker';
-  CalendarPicker.ClassNameWeekPicker = 'week-picker';
-  CalendarPicker.ClassNamePreparing = 'preparing';
-  CalendarPicker.EventTypeCurrentMonthChanged = 'currentMonthChanged';
-  CalendarPicker.commitDelayMs = 100;
-  CalendarPicker.VisibleRows = 6;
+  static Padding = 10;
+  static BorderWidth = 1;
+  static ClassNameCalendarPicker = 'calendar-picker';
+  static ClassNameWeekPicker = 'week-picker';
+  static ClassNamePreparing = 'preparing';
+  static EventTypeCurrentMonthChanged = 'currentMonthChanged';
+  static commitDelayMs = 100;
+  static VisibleRows = 6;
 
   /**
    * @param {!Event} event
    */
-  CalendarPicker.prototype.onWindowResize = function(event) {
+  onWindowResize(event) {
     this.element.classList.remove(CalendarPicker.ClassNamePreparing);
-    window.removeEventListener('resize', this.onWindowResize, false);
-  };
+    window.removeEventListener('resize', this._onWindowResizeBound);
+  }
 
-  CalendarPicker.prototype.resetToInitialValue = function() {
+  resetToInitialValue() {
     this.setSelection(this._initialSelection);
-  };
+  }
 
   /**
    * @param {!YearListView} sender
    */
-  CalendarPicker.prototype.onYearListViewDidHide = function(sender) {
+  onYearListViewDidHide(sender) {
     this.monthPopupView.hide();
     this.calendarHeaderView.setDisabled(false);
     this.calendarTableView.element.style.visibility = 'visible';
     this.calendarTableView.element.focus();
-  };
+  }
 
   /**
    * @param {!YearListView} sender
    * @param {!Month} month
    */
-  CalendarPicker.prototype.onYearListViewDidSelectMonth = function(
-      sender, month) {
+  onYearListViewDidSelectMonth(sender, month) {
     this.setCurrentMonth(month, CalendarPicker.NavigationBehavior.None);
 
     this.ensureSelectionIsWithinCurrentMonth();
     this.onYearListViewDidHide();
-  };
+  }
 
   /**
    * @param {!View|Node} parent
    * @param {?View|Node=} before
    * @override
    */
-  CalendarPicker.prototype.attachTo = function(parent, before) {
+  attachTo(parent, before) {
     View.prototype.attachTo.call(this, parent, before);
     this.calendarTableView.element.focus();
-  };
+  }
 
-  CalendarPicker.prototype.cleanup = function() {
-    window.removeEventListener('resize', this.onWindowResize, false);
+  cleanup() {
+    window.removeEventListener('resize', this._onWindowResizeBound);
     this.calendarTableView.element.removeEventListener(
-        'keydown', this.onBodyKeyDown, false);
+        'keydown', this._onBodyKeyDownBound);
     // Month popup view might be attached to document.body.
     this.monthPopupView.hide();
-  };
+  }
 
   /**
    * @param {?MonthPopupButton} sender
    */
-  CalendarPicker.prototype.onMonthPopupButtonClick = function(sender) {
+  onMonthPopupButtonClick(sender) {
     var clientRect = this.calendarTableView.element.getBoundingClientRect();
     var calendarTableRect = new Rectangle(
         clientRect.left + document.body.scrollLeft,
@@ -4506,25 +4503,25 @@ function CalendarPicker(type, config) {
     this.monthPopupView.show(this.currentMonth(), calendarTableRect);
     this.calendarHeaderView.setDisabled(true);
     this.calendarTableView.element.style.visibility = 'hidden';
-  };
+  }
 
   /**
    * @return {!Month}
    */
-  CalendarPicker.prototype.currentMonth = function() {
+  currentMonth() {
     return this._currentMonth;
-  };
+  }
 
   /**
    * @enum {number}
    */
-  CalendarPicker.NavigationBehavior = {None: 0, WithAnimation: 1};
+  static NavigationBehavior = {None: 0, WithAnimation: 1};
 
   /**
    * @param {!Month} month
    * @param {!CalendarPicker.NavigationBehavior} animate
    */
-  CalendarPicker.prototype.setCurrentMonth = function(month, behavior) {
+  setCurrentMonth(month, behavior) {
     if (month > this.maximumMonth)
       month = this.maximumMonth;
     else if (month < this.minimumMonth)
@@ -4539,9 +4536,9 @@ function CalendarPicker(type, config) {
     this.calendarTableView.setNeedsUpdateCells(true);
     this.dispatchEvent(
         CalendarPicker.EventTypeCurrentMonthChanged, {target: this});
-  };
+  }
 
-  CalendarPicker.prototype.adjustHeight = function() {
+  adjustHeight() {
     var rowForFirstDayInMonth =
         this.calendarTableView.columnAndRowForDay(this._currentMonth.firstDay())
             .row;
@@ -4557,20 +4554,20 @@ function CalendarPicker(type, config) {
         CalendarHeaderView.BottomMargin + CalendarPicker.Padding * 2 +
         CalendarPicker.BorderWidth * 2;
     this.setHeight(height);
-  };
+  }
 
-  CalendarPicker.prototype.selection = function() {
+  selection() {
     return this._selection;
-  };
+  }
 
-  CalendarPicker.prototype.highlight = function() {
+  highlight() {
     return this._highlight;
-  };
+  }
 
   /**
    * @return {!Day}
    */
-  CalendarPicker.prototype.firstVisibleDay = function() {
+  firstVisibleDay() {
     var firstVisibleRow =
         this.calendarTableView
             .columnAndRowForDay(this.currentMonth().firstDay())
@@ -4580,12 +4577,12 @@ function CalendarPicker(type, config) {
     if (!firstVisibleDay)
       firstVisibleDay = Day.Minimum;
     return firstVisibleDay;
-  };
+  }
 
   /**
    * @return {!Day}
    */
-  CalendarPicker.prototype.lastVisibleDay = function() {
+  lastVisibleDay() {
     var lastVisibleRow =
         this.calendarTableView.columnAndRowForDay(this.currentMonth().lastDay())
             .row;
@@ -4598,29 +4595,29 @@ function CalendarPicker(type, config) {
     if (!lastVisibleDay)
       lastVisibleDay = Day.Maximum;
     return lastVisibleDay;
-  };
+  }
 
   /**
    * @param {?Day} day
    */
-  CalendarPicker.prototype.selectRangeContainingDay = function(day) {
+  selectRangeContainingDay(day) {
     var selection = day ? this._dateTypeConstructor.createFromDay(day) : null;
     this.setSelectionAndCommit(selection);
-  };
+  }
 
   /**
    * @param {?Day} day
    */
-  CalendarPicker.prototype.highlightRangeContainingDay = function(day) {
+  highlightRangeContainingDay(day) {
     var highlight = day ? this._dateTypeConstructor.createFromDay(day) : null;
     this._setHighlight(highlight);
-  };
+  }
 
   /**
    * Select the specified date.
    * @param {?DateType} dayOrWeekOrMonth
    */
-  CalendarPicker.prototype.setSelection = function(dayOrWeekOrMonth) {
+  setSelection(dayOrWeekOrMonth) {
     if (!this._selection && !dayOrWeekOrMonth)
       return;
     if (this._selection && this._selection.equals(dayOrWeekOrMonth))
@@ -4667,23 +4664,24 @@ function CalendarPicker(type, config) {
     this.monthPopupView.yearListView.setSelectedMonth(
         Month.createFromDay(dayOrWeekOrMonth.middleDay()));
     this.calendarTableView.setNeedsUpdateCells(true);
-  };
+  }
 
-  CalendarPicker.prototype.getSelectedValue = function() {
+  getSelectedValue() {
     return this._selection.toString();
-  };
+  }
 
   /**
    * Select the specified date, commit it, and close the popup.
    * @param {?DateType} dayOrWeekOrMonth
    */
-  CalendarPicker.prototype.setSelectionAndCommit = function(dayOrWeekOrMonth) {
+  setSelectionAndCommit(dayOrWeekOrMonth) {
     this.setSelection(dayOrWeekOrMonth);
     // Redraw the widget immediately, and wait for some time to give feedback to
     // a user.
     this.element.offsetLeft;
 
-    // CalendarPicker doesn't handle the submission when used for datetime-local.
+    // CalendarPicker doesn't handle the submission when used for
+    // datetime-local.
     if (this.type == 'datetime-local')
       return;
 
@@ -4699,12 +4697,12 @@ function CalendarPicker(type, config) {
         window.pagePopupController.setValueAndClosePopup(0, value);
       }, CalendarPicker.commitDelayMs);
     }
-  };
+  }
 
   /**
    * @param {?DateType} dayOrWeekOrMonth
    */
-  CalendarPicker.prototype._setHighlight = function(dayOrWeekOrMonth) {
+  _setHighlight(dayOrWeekOrMonth) {
     if (!this._highlight && !dayOrWeekOrMonth)
       return;
     if (!dayOrWeekOrMonth && !this._highlight)
@@ -4713,15 +4711,15 @@ function CalendarPicker(type, config) {
       return;
     this._highlight = dayOrWeekOrMonth;
     this.calendarTableView.setNeedsUpdateCells(true);
-  };
+  }
 
   /**
    * @param {!Day} day
    * @return {!boolean}
    */
-  CalendarPicker.prototype.isValidDay = function(day) {
+  isValidDay(day) {
     return this.isValid(this._dateTypeConstructor.createFromDay(day));
-  };
+  }
 
   /**
    * If the selection is not inside the month currently shown in the control,
@@ -4734,7 +4732,7 @@ function CalendarPicker(type, config) {
    * 3) If the next and previous valid date are equidistant and both within
    * the new month, arbitrarily choose the older date.
    */
-  CalendarPicker.prototype.ensureSelectionIsWithinCurrentMonth = function() {
+  ensureSelectionIsWithinCurrentMonth() {
     if (!this._selection)
       return;
     if (this._selection.isFullyContainedInMonth(this.currentMonth()))
@@ -4794,13 +4792,13 @@ function CalendarPicker(type, config) {
     if (newSelection) {
       this.setSelection(newSelection);
     }
-  };
+  }
 
   /**
    * @param {!DateType} dateRange
    * @return {!boolean} Returns true if the highlight was changed.
    */
-  CalendarPicker.prototype._moveHighlight = function(dateRange) {
+  _moveHighlight(dateRange) {
     if (!dateRange)
       return false;
     if (this._outOfRange(dateRange.valueOf()))
@@ -4812,12 +4810,12 @@ function CalendarPicker(type, config) {
           CalendarPicker.NavigationBehavior.WithAnimation);
     this._setHighlight(dateRange);
     return true;
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarPicker.prototype.onCalendarTableKeyDown = function(event) {
+  onCalendarTableKeyDown(event) {
     var key = event.key;
     var offset = 0;
 
@@ -4891,34 +4889,34 @@ function CalendarPicker(type, config) {
             this.setSelection(newSelection);
           }
           break;
-      };
+      }
     }
     // else if there is no selection it must be the case that there are no
     // valid values (because min >= max).  Otherwise we would have set the
     // selection during initialization.  In this case there's nothing to do.
-  };
+  }
 
   /**
    * @return {!number} Width in pixels.
    */
-  CalendarPicker.prototype.width = function() {
+  width() {
     return this.calendarTableView.width() +
         (CalendarTableView.GetBorderWidth() + CalendarPicker.BorderWidth +
          CalendarPicker.Padding) *
         2;
-  };
+  }
 
   /**
    * @return {!number} Height in pixels.
    */
-  CalendarPicker.prototype.height = function() {
+  height() {
     return this._height;
-  };
+  }
 
   /**
    * @param {!number} height Height in pixels.
    */
-  CalendarPicker.prototype.setHeight = function(height) {
+  setHeight(height) {
     if (this._height === height)
       return;
     this._height = height;
@@ -4927,24 +4925,25 @@ function CalendarPicker(type, config) {
         this._height - CalendarHeaderView.Height -
         CalendarHeaderView.BottomMargin - CalendarPicker.Padding * 2 -
         CalendarPicker.BorderWidth * 2);
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarPicker.prototype.onBodyClick = function(event) {
+  onBodyClick(event) {
     if (this.type !== 'datetime-local') {
       if (event.target.matches(
-              '.calendar-navigation-button, .navigation-button-icon, .month-button')) {
+              '.calendar-navigation-button, ' +
+              '.navigation-button-icon, .month-button')) {
         window.pagePopupController.setValue(this.getSelectedValue());
       }
     }
-  };
+  }
 
   /**
    * @param {?Event} event
    */
-  CalendarPicker.prototype.onBodyKeyDown = function(event) {
+  onBodyKeyDown(event) {
     var key = event.key;
     var eventHandled = false;
     switch (key) {
@@ -4984,14 +4983,15 @@ function CalendarPicker(type, config) {
         // Today button, or previous/next month arrows.
         if (this.type !== 'datetime-local') {
           if (!event.target.matches(
-                  '.calendar-navigation-button, .clear-button, .month-popup-button, .year-list-view')) {
+                  '.calendar-navigation-button, .clear-button, ' +
+                  '.month-popup-button, .year-list-view')) {
             if (this._selection) {
               window.pagePopupController.setValueAndClosePopup(
                   0, this.getSelectedValue());
             } else {
               // If there is no selection it must be the case that there are no
-              // valid values (because min >= max).  There's nothing useful to do
-              // with the popup in this case so just close on Enter.
+              // valid values (because min >= max).  There's nothing useful to
+              // do with the popup in this case so just close on Enter.
               window.pagePopupController.closePopup();
             }
           } else if (event.target.matches(
@@ -5008,8 +5008,12 @@ function CalendarPicker(type, config) {
       event.stopPropagation();
       event.preventDefault();
     }
-  };
+  }
 }
+
+Object.assign(CalendarPicker.prototype, DateRangeManager);
+
+// ----------------------------------------------------------------
 
 if (window.dialogArguments) {
   initialize(dialogArguments);
@@ -5018,6 +5022,7 @@ if (window.dialogArguments) {
 }
 
 // Necessary for some web tests.
+window.CalendarPicker = CalendarPicker;
 window.Day = Day;
 window.Month = Month;
 window.Week = Week;
