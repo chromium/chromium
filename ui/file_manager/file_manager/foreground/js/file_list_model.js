@@ -4,7 +4,7 @@
 
 import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
 
-import {FileType} from '../../common/js/file_type.js';
+import {FileExtensionType, FileType} from '../../common/js/file_type.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -81,7 +81,8 @@ export class FileListModel extends ArrayDataModel {
   }
 
   /**
-   * @param {!Object} fileType Type object returned by FileType.getType().
+   * @param {!FileExtensionType} fileType Type object returned by
+   *     FileType.getType().
    * @return {string} Localized string representation of file type.
    */
   static getFileTypeString(fileType) {

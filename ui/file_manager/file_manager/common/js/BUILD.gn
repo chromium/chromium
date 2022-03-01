@@ -30,6 +30,7 @@ group("js_modules") {
     ":error_counter",
     ":file_operation_common",
     ":file_type",
+    ":file_types_data",
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
@@ -58,6 +59,7 @@ js_type_check("closure_compile_jsmodules") {
     ":error_counter",
     ":file_operation_common",
     ":file_type",
+    ":file_types_data",
     ":files_app_entry_types",
     ":filtered_volume_manager",
     ":glitch",
@@ -155,8 +157,14 @@ js_library("files_app_state") {
   ]
 }
 
+js_library("file_types_data") {
+  sources = [ "$target_gen_dir/file_types_data.js" ]
+  extra_deps = [ "//ui/file_manager/base/gn:file_types_data_gen_js" ]
+}
+
 js_library("file_type") {
   deps = [
+    ":file_types_data",
     ":files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",

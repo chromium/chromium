@@ -61,7 +61,18 @@ export function testGetTypeForName() {
     {name: '/amr/foo.oga', want: {type: 'audio', subtype: 'OGG'}},
     {name: '/wav/dir/foo.ogg', want: {type: 'audio', subtype: 'OGG'}},
     {name: '/mp3/amr/foo.opus', want: {type: 'audio', subtype: 'OGG'}},
-    {name: '/dir/foo.wav', want: {type: 'audio', subtype: 'WAV'}},
+    // Distinguish double dot extension from single dot extension.
+    {name: '/dir/foo.tar.gz', want: {type: 'archive', subtype: 'TGZ'}},
+    {name: '/dir/foo.gz', want: {type: 'archive', subtype: 'GZ'}},
+    {name: '/dir/foo.lzma', want: {type: 'archive', subtype: 'LZMA'}},
+    {name: '/dir/foo.tar.lzma', want: {type: 'archive', subtype: 'TLZMA'}},
+    {name: '/dir/foo.tar1.gz', want: {type: 'archive', subtype: 'GZ'}},
+    {name: 'tar.gz', want: {type: 'archive', subtype: 'GZ'}},
+    // Support upper case file name.
+    {name: '/dir/foo.JPG', want: {type: 'image', subtype: 'JPEG'}},
+    // Unknown files.
+    {name: '/dir/foo', want: {type: 'UNKNOWN', subtype: ''}},
+    {name: '/dir/foo.abc', want: {type: 'UNKNOWN', subtype: 'ABC'}},
   ];
   for (const item of testItems) {
     const got = FileType.getTypeForName(item.name);
