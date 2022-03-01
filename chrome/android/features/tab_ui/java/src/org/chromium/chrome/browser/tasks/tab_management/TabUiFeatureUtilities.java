@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.DoubleCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
@@ -100,12 +99,6 @@ public class TabUiFeatureUtilities {
     public static final BooleanCachedFieldTrialParameter GRID_TAB_SWITCHER_FOR_TABLETS_POLISH =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
                     GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, false);
-
-    // Field trial parameter for defining tab width for tab strip improvements.
-    private static final String TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM = "min_tab_width";
-    public static final DoubleCachedFieldTrialParameter TAB_STRIP_TAB_WIDTH =
-            new DoubleCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
-                    TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM, 190.f);
 
     private static Boolean sTabManagementModuleSupportedForTesting;
 
@@ -205,13 +198,6 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isLaunchPolishEnabled() {
         return ENABLE_LAUNCH_POLISH.getValue();
-    }
-
-    /**
-     * @return The min tab width.
-     */
-    public static float getTabMinWidth() {
-        return (float) TAB_STRIP_TAB_WIDTH.getValue();
     }
 
     /**
