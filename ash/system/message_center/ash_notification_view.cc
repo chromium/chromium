@@ -41,6 +41,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -405,6 +406,7 @@ AshNotificationView::AshNotificationView(
                                      ? kControlButtonsContainerExpandedPadding
                                      : kControlButtonsContainerCollapsedPadding)
           .SetMainAxisAlignment(MainAxisAlignment::kEnd)
+          .SetMinimumCrossAxisSize(kControlButtonsContainerMinimumHeight)
           .SetVisible(!notification.group_child())
           .AddChild(CreateControlButtonsBuilder()
                         .CopyAddressTo(&control_buttons_view_)
