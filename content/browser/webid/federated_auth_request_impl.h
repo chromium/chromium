@@ -118,6 +118,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void DispatchOneLogout();
   void OnLogoutCompleted();
   std::unique_ptr<WebContents> CreateIdpWebContents();
+  // |should_call_callback| represents whether we should call the callback to
+  // either resolve or reject the promise immediately when the renderer receives
+  // the IPC from the browser. For some failures we choose to reject with
+  // |delay_timer_| for privacy reasons.
   void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
                        const std::string& id_token,
                        bool should_call_callback);
@@ -126,6 +130,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
                                   IdpNetworkRequestManager::Endpoints,
                                   IdentityProviderMetadata idp_metadata);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
+  // |should_call_callback| represents whether we should call the callback to
+  // either resolve or reject the promise immediately when the renderer receives
+  // the IPC from the browser. For some failures we choose to reject with
+  // |delay_timer_| for privacy reasons.
   void CompleteRevokeRequest(blink::mojom::RevokeStatus status,
                              bool should_call_callback);
 
