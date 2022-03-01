@@ -4265,7 +4265,6 @@ if (is_android) {
       # AssertsTest doesn't really belong in //base but it's preferable to
       # stick it here than create another target for a single test.
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
-      "android/javatests/src/org/chromium/base/ApiCompatibilityUtilsTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineInitUtilTest.java",

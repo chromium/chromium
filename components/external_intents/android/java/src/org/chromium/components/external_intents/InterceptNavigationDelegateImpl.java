@@ -6,7 +6,6 @@ package org.chromium.components.external_intents;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -274,7 +273,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         if (mClient.getOrCreateRedirectHandler().wasTaskStartedByExternalIntent()) {
                             // If Chrome was only launched to perform a redirect, don't keep its
                             // task in history.
-                            ApiCompatibilityUtils.finishAndRemoveTask(mClient.getActivity());
+                            mClient.getActivity().finishAndRemoveTask();
                         } else {
                             // Takes Chrome out of the back stack.
                             mClient.getActivity().moveTaskToBack(false);

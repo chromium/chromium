@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.metrics.RecordHistogram;
@@ -399,7 +398,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 if (activity.getTaskId() == this.getTaskId()) {
                     activity.finish();
                 } else {
-                    ApiCompatibilityUtils.finishAndRemoveTask(activity);
+                    activity.finishAndRemoveTask();
                     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
                         // On L ApiCompatibilityUtils.finishAndRemoveTask() sometimes fails. Try one
                         // last time, see crbug.com/781396 for origin of this approach.

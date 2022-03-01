@@ -236,21 +236,6 @@ public class ApiCompatibilityUtils {
         return Html.toHtml(spanned);
     }
 
-    // These methods have a new name, and the old name is deprecated.
-
-    /**
-     * @see android.app.Activity#finishAndRemoveTask()
-     */
-    public static void finishAndRemoveTask(Activity activity) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            activity.finishAndRemoveTask();
-        } else {
-            assert Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP;
-            // crbug.com/395772 : Fallback for Activity.finishAndRemoveTask() failing.
-            new FinishAndRemoveTaskWithRetry(activity).run();
-        }
-    }
-
     /**
      *  Gets an intent to start the Android system notification settings activity for an app.
      *
@@ -267,30 +252,6 @@ public class ApiCompatibilityUtils {
                     "app_uid", ContextUtils.getApplicationContext().getApplicationInfo().uid);
         }
         return intent;
-    }
-
-    private static class FinishAndRemoveTaskWithRetry implements Runnable {
-        private static final long RETRY_DELAY_MS = 500;
-        private static final long MAX_TRY_COUNT = 3;
-        private final Activity mActivity;
-        private int mTryCount;
-
-        FinishAndRemoveTaskWithRetry(Activity activity) {
-            mActivity = activity;
-        }
-
-        @Override
-        public void run() {
-            mActivity.finishAndRemoveTask();
-            mTryCount++;
-            if (!mActivity.isFinishing()) {
-                if (mTryCount < MAX_TRY_COUNT) {
-                    ThreadUtils.postOnUiThreadDelayed(this, RETRY_DELAY_MS);
-                } else {
-                    mActivity.finish();
-                }
-            }
-        }
     }
 
     /**

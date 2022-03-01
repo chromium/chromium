@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import com.google.android.material.color.DynamicColors;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -44,7 +43,7 @@ public class ChromeLauncherActivity extends Activity {
                 finish();
                 break;
             case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
-                ApiCompatibilityUtils.finishAndRemoveTask(this);
+                this.finishAndRemoveTask();
                 break;
             default:
                 assert false : "Intent dispatcher finished with action " + dispatchAction
