@@ -21,17 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-// Flaky on Chrome OS debug and Linux Chromium OS ASan LSan Tests. b/217762791
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
-#define MAYBE_GetSingleImage DISABLED_GetSingleImage
-#define MAYBE_CellularUninitialized DISABLED_CellularUninitialized
-#define MAYBE_CellularScanning DISABLED_CellularScanning
-#else
-#define MAYBE_GetSingleImage GetSingleImage
-#define MAYBE_CellularUninitialized CellularUninitialized
-#define MAYBE_CellularScanning CellularScanning
-#endif
-
 using chromeos::network_config::mojom::ConnectionStateType;
 using chromeos::network_config::mojom::NetworkType;
 
@@ -208,7 +197,7 @@ TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
       tooltip);
 }
 
-TEST_F(ActiveNetworkIconTest, MAYBE_GetSingleImage) {
+TEST_F(ActiveNetworkIconTest, GetSingleImage) {
   // Cellular only = Cellular icon
   SetupCellular(shill::kStateOnline);
   bool animating;
@@ -259,7 +248,7 @@ TEST_F(ActiveNetworkIconTest, MAYBE_GetSingleImage) {
   EXPECT_FALSE(animating);
 }
 
-TEST_F(ActiveNetworkIconTest, MAYBE_CellularUninitialized) {
+TEST_F(ActiveNetworkIconTest, CellularUninitialized) {
   SetCellularUninitialized(false /* scanning */);
 
   bool animating;
@@ -271,7 +260,7 @@ TEST_F(ActiveNetworkIconTest, MAYBE_CellularUninitialized) {
   EXPECT_TRUE(animating);
 }
 
-TEST_F(ActiveNetworkIconTest, MAYBE_CellularScanning) {
+TEST_F(ActiveNetworkIconTest, CellularScanning) {
   SetCellularUninitialized(true /* scanning */);
 
   ASSERT_TRUE(network_state_handler()->GetScanningByType(

@@ -22,34 +22,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-// Flaky on Chrome OS debug and Linux Chromium OS ASan LSan Tests. b/217762791
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
-#define MAYBE_DefaultImageWifiConnecting DISABLED_DefaultImageWifiConnecting
-#define MAYBE_DefaultImageReconnectingWifiWithCellularConnected \
-  DISABLED_DefaultImageReconnectingWifiWithCellularConnected
-#define MAYBE_DefaultImageWhileNonDefaultNetworkReconnecting \
-  DISABLED_DefaultImageWhileNonDefaultNetworkReconnecting
-#define MAYBE_DefaultImageConnectingToWifiWhileCellularConnected \
-  DISABLED_DefaultImageConnectingToWifiWhileCellularConnected
-#define MAYBE_DefaultNetworkVpnBadge DISABLED_DefaultNetworkVpnBadge
-#define MAYBE_DefaultNetworkImageVpnAndWifi \
-  DISABLED_DefaultNetworkImageVpnAndWifi
-#define MAYBE_DefaultNetworkImageVpnAndCellular \
-  DISABLED_DefaultNetworkImageVpnAndCellular
-#else
-#define MAYBE_DefaultImageWifiConnecting DefaultImageWifiConnecting
-#define MAYBE_DefaultImageReconnectingWifiWithCellularConnected \
-  DefaultImageReconnectingWifiWithCellularConnected
-#define MAYBE_DefaultImageWhileNonDefaultNetworkReconnecting \
-  DefaultImageWhileNonDefaultNetworkReconnecting
-#define MAYBE_DefaultImageConnectingToWifiWhileCellularConnected \
-  DefaultImageConnectingToWifiWhileCellularConnected
-#define MAYBE_DefaultNetworkVpnBadge DefaultNetworkVpnBadge
-#define MAYBE_DefaultNetworkImageVpnAndWifi DefaultNetworkImageVpnAndWifi
-#define MAYBE_DefaultNetworkImageVpnAndCellular \
-  DefaultNetworkImageVpnAndCellular
-#endif
-
 // This tests both the helper functions in network_icon, and ActiveNetworkIcon
 // which is a primary consumer of the helper functions.
 
@@ -278,7 +250,7 @@ TEST_F(NetworkIconTest, DefaultImageWifiConnected) {
       gfx::Image(default_image), ImageForNetwork(reference_network.get())));
 }
 
-TEST_F(NetworkIconTest, MAYBE_DefaultImageWifiConnecting) {
+TEST_F(NetworkIconTest, DefaultImageWifiConnecting) {
   // Set the Wifi service as connected.
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -332,8 +304,7 @@ TEST_F(NetworkIconTest, DefaultImageCellularDefaultWithWifiConnected) {
 
 // Tests the use case where the default network starts reconnecting while
 // another network is connected.
-TEST_F(NetworkIconTest,
-       MAYBE_DefaultImageReconnectingWifiWithCellularConnected) {
+TEST_F(NetworkIconTest, DefaultImageReconnectingWifiWithCellularConnected) {
   // First connect both wifi and cellular network (with wifi as default).
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -429,7 +400,7 @@ TEST_F(NetworkIconTest, DefaultImageDisconnectWifiWithCellularConnected) {
 
 // Tests that the default network image remains the same if non-default network
 // reconnects.
-TEST_F(NetworkIconTest, MAYBE_DefaultImageWhileNonDefaultNetworkReconnecting) {
+TEST_F(NetworkIconTest, DefaultImageWhileNonDefaultNetworkReconnecting) {
   // First connect both wifi and cellular network (with wifi as default).
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -488,8 +459,7 @@ TEST_F(NetworkIconTest, MAYBE_DefaultImageWhileNonDefaultNetworkReconnecting) {
 
 // Tests that the default network image shows a cellular network icon if
 // cellular network is connected while wifi is connecting.
-TEST_F(NetworkIconTest,
-       MAYBE_DefaultImageConnectingToWifiWhileCellularConnected) {
+TEST_F(NetworkIconTest, DefaultImageConnectingToWifiWhileCellularConnected) {
   // Connect cellular network, and set the wifi as connecting.
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(45));
@@ -560,7 +530,7 @@ TEST_F(NetworkIconTest,
 }
 
 // Tests VPN badging for the default network.
-TEST_F(NetworkIconTest, MAYBE_DefaultNetworkVpnBadge) {
+TEST_F(NetworkIconTest, DefaultNetworkVpnBadge) {
   // Set up initial state with Ethernet and WiFi connected.
   std::string ethernet_path = ConfigureService(
       R"({"GUID": "ethernet_guid", "Type": "ethernet", "State": "online"})");
@@ -622,7 +592,7 @@ TEST_F(NetworkIconTest, MAYBE_DefaultNetworkVpnBadge) {
 }
 
 // Tests that wifi image is shown when connecting to wifi network with vpn.
-TEST_F(NetworkIconTest, MAYBE_DefaultNetworkImageVpnAndWifi) {
+TEST_F(NetworkIconTest, DefaultNetworkImageVpnAndWifi) {
   SetServiceProperty(wifi1_path(), shill::kSignalStrengthProperty,
                      base::Value(65));
   SetServiceProperty(wifi1_path(), shill::kStateProperty,
@@ -646,7 +616,7 @@ TEST_F(NetworkIconTest, MAYBE_DefaultNetworkImageVpnAndWifi) {
 
 // Tests that cellular image is shown when connecting to cellular network with
 // VPN.
-TEST_F(NetworkIconTest, MAYBE_DefaultNetworkImageVpnAndCellular) {
+TEST_F(NetworkIconTest, DefaultNetworkImageVpnAndCellular) {
   SetServiceProperty(cellular_path(), shill::kSignalStrengthProperty,
                      base::Value(65));
   SetServiceProperty(cellular_path(), shill::kStateProperty,
