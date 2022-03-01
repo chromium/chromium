@@ -95,6 +95,10 @@ const char kQuicFlags[] = "set_quic_flags";
 const char kQuicIOSNetworkServiceType[] = "ios_network_service_type";
 const char kRetryWithoutAltSvcOnQuicErrors[] =
     "retry_without_alt_svc_on_quic_errors";
+const char kInitialDelayForBrokenAlternativeServiceSeconds[] =
+    "initial_delay_for_broken_alternative_service_seconds";
+const char kExponentialBackoffOnInitialDelay[] =
+    "exponential_backoff_on_initial_delay";
 
 // AsyncDNS experiment dictionary name.
 const char kAsyncDnsFieldTrialName[] = "AsyncDNS";
@@ -580,6 +584,13 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       quic_params->retry_without_alt_svc_on_quic_errors =
           quic_args.FindBoolKey(kRetryWithoutAltSvcOnQuicErrors)
               .value_or(quic_params->retry_without_alt_svc_on_quic_errors);
+
+      quic_params->initial_delay_for_broken_alternative_service = map(
+          quic_args.FindIntKey(kInitialDelayForBrokenAlternativeServiceSeconds),
+          base::Seconds<int>);
+
+      quic_params->exponential_backoff_on_initial_delay =
+          quic_args.FindBoolKey(kExponentialBackoffOnInitialDelay);
 
       quic_params->disable_tls_zero_rtt =
           quic_args.FindBoolKey(kDisableTlsZeroRtt)
