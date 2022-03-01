@@ -128,7 +128,7 @@ class HistoryClustersInternalsBrowserTest
  public:
   HistoryClustersInternalsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {history_clusters::kHistoryClustersInternalsPage}, {});
+        {history_clusters::internal::kHistoryClustersInternalsPage}, {});
   }
   ~HistoryClustersInternalsBrowserTest() override = default;
 

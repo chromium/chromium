@@ -37,6 +37,7 @@
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
@@ -266,7 +267,7 @@ base::Value HistoryEntryToValue(
                       entry.remote_icon_url_for_uma.spec());
 
   // Additional debugging fields shown only if the debug feature is enabled.
-  if (base::FeatureList::IsEnabled(history_clusters::kUserVisibleDebug)) {
+  if (history_clusters::GetConfig().user_visible_debug) {
     base::Value debug(base::Value::Type::DICTIONARY);
     debug.SetBoolKey("isUrlInLocalDatabase", IsUrlInLocalDatabase(entry));
     debug.SetIntKey("visitCount", entry.visit_count);

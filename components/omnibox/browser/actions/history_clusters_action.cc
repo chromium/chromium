@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -27,16 +28,16 @@ class HistoryClustersAction : public OmniboxAction {
   explicit HistoryClustersAction(const std::string& query)
       : OmniboxAction(
             OmniboxAction::LabelStrings(
-                kAlternateOmniboxActionText.Get()
+                GetConfig().alternate_omnibox_action_text
                     ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT_ALTERNATE
                     : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
-                kAlternateOmniboxActionText.Get()
+                GetConfig().alternate_omnibox_action_text
                     ? IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS_ALTERNATE
                     : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
-                kAlternateOmniboxActionText.Get()
+                GetConfig().alternate_omnibox_action_text
                     ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX_ALTERNATE
                     : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
-                kAlternateOmniboxActionText.Get()
+                GetConfig().alternate_omnibox_action_text
                     ? IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_ALTERNATE
                     : IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
             GURL(base::StringPrintf(
@@ -75,8 +76,7 @@ void AttachHistoryClustersActions(
     return;
 
   // Both features must be enabled to ever attach the action chip.
-  if (!service->IsJourneysEnabled() ||
-      !base::FeatureList::IsEnabled(history_clusters::kOmniboxAction)) {
+  if (!service->IsJourneysEnabled() || !GetConfig().omnibox_action) {
     return;
   }
 

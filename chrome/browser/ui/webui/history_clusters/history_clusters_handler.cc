@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/query_clusters_state.h"
@@ -86,7 +87,7 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->annotations.push_back(mojom::Annotation::kSearchResultsPage);
   }
 
-  if (base::FeatureList::IsEnabled(kUserVisibleDebug)) {
+  if (GetConfig().user_visible_debug) {
     visit_mojom->debug_info["visit_id"] =
         base::NumberToString(annotated_visit.visit_row.visit_id);
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
@@ -153,8 +154,9 @@ mojom::QueryResultPtr QueryClustersResultToMojom(
         visit_mojom->below_the_fold =
             (top_visit_mojom->related_visits.size() >=
                  static_cast<size_t>(
-                     kNumVisitsToAlwaysShowAboveTheFold.Get()) &&
-             visit.score < kMinScoreToAlwaysShowAboveTheFold.Get()) ||
+                     GetConfig().num_visits_to_always_show_above_the_fold) &&
+             visit.score <
+                 GetConfig().min_score_to_always_show_above_the_fold) ||
             visit.score == 0.0;
         top_visit_mojom->related_visits.push_back(std::move(visit_mojom));
       }
@@ -317,7 +319,7 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
 
 void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
   content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  if (rfh && base::FeatureList::IsEnabled(kNonUserVisibleDebug)) {
+  if (rfh && GetConfig().non_user_visible_debug) {
     rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }
 }

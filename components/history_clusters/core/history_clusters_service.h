@@ -104,7 +104,7 @@ class HistoryClustersService : public KeyedService {
   // Returns true if the Journeys feature is enabled for the current application
   // locale. This is a cached wrapper of `IsJourneysEnabled()` within features.h
   // that's already evaluated against the g_browser_process application locale.
-  bool IsJourneysEnabled() const { return is_journeys_enabled_; }
+  bool IsJourneysEnabled() const;
 
   // Used to add and remove observers.
   void AddObserver(Observer* obs);
@@ -202,7 +202,7 @@ class HistoryClustersService : public KeyedService {
                         QueryClustersCallback callback,
                         std::vector<history::Cluster> clusters) const;
 
-  // True if the Journeys feature is enabled for the application locale.
+  // True if Journeys is enabled based on field trial and locale checks.
   const bool is_journeys_enabled_;
 
   // Non-owning pointer, but never nullptr.

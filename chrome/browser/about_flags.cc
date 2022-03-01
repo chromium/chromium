@@ -4969,7 +4969,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"history-journeys-omnibox-action",
      flag_descriptions::kJourneysOmniboxActionName,
      flag_descriptions::kJourneysOmniboxActionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(history_clusters::kOmniboxAction)},
+     FEATURE_VALUE_TYPE(history_clusters::internal::kOmniboxAction)},
 
     {"page-content-annotations", flag_descriptions::kPageContentAnnotationsName,
      flag_descriptions::kPageContentAnnotationsDescription, kOsDesktop,

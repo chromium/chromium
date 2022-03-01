@@ -5,6 +5,7 @@
 #include "components/history_clusters/history_clusters_internals/webui/history_clusters_internals_page_handler_impl.h"
 
 #include "base/time/time.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 
@@ -14,8 +15,7 @@ HistoryClustersInternalsPageHandlerImpl::
         history_clusters::HistoryClustersService* history_clusters_service)
     : page_(std::move(page)),
       history_clusters_service_(history_clusters_service) {
-  if (!base::FeatureList::IsEnabled(
-          history_clusters::kHistoryClustersInternalsPage)) {
+  if (!history_clusters::GetConfig().history_clusters_internals_page) {
     page_->OnLogMessageAdded(
         "History clusters internals page feature is turned off.");
     return;

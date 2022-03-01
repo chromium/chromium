@@ -30,6 +30,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
@@ -191,7 +192,8 @@ HistoryClustersService::HistoryClustersService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : is_journeys_enabled_(
-          ::history_clusters::IsJourneysEnabled(application_locale)),
+          GetConfig().is_journeys_enabled_no_locale_check &&
+          IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
       visit_deletion_observer_(this) {
   DCHECK(history_service_);
@@ -212,6 +214,10 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
 }
 
 void HistoryClustersService::Shutdown() {}
+
+bool HistoryClustersService::IsJourneysEnabled() const {
+  return is_journeys_enabled_;
+}
 
 void HistoryClustersService::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
@@ -265,7 +271,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
     // If the main Journeys feature is enabled, we want to persist visits.
     // And if the persist-only switch is enabled, we also want to persist them.
     if (IsJourneysEnabled() ||
-        base::FeatureList::IsEnabled(kPersistContextAnnotationsInHistoryDb)) {
+        GetConfig().persist_context_annotations_in_history_db) {
       history_service_->AddContextAnnotationsForVisit(
           visit_context_annotations.visit_row.visit_id,
           visit_context_annotations.context_annotations);
@@ -398,7 +404,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     std::vector<history::Cluster> clusters,
     base::Time continuation_end_time) {
   base::ElapsedThreadTimer populate_keywords_thread_timer;
-  const size_t max_keyword_phrases = kMaxKeywordPhrases.Get();
+  const size_t max_keyword_phrases = GetConfig().max_keyword_phrases;
 
   // Copy keywords from every cluster into a the accumulator set.
   for (auto& cluster : clusters) {

@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/query_parser/query_parser.h"
 #include "components/url_formatter/url_formatter.h"
@@ -84,11 +85,14 @@ void PromoteMatchingVisitsAboveNonMatchingVisits(
   for (auto& visit : *cluster_visits) {
     if (visit.matches_search_query) {
       // Smash all matching scores into the range that's above the fold.
-      visit.score = kMinScoreToAlwaysShowAboveTheFold.Get() +
-                    visit.score * (1 - kMinScoreToAlwaysShowAboveTheFold.Get());
+      visit.score =
+          GetConfig().min_score_to_always_show_above_the_fold +
+          visit.score *
+              (1 - GetConfig().min_score_to_always_show_above_the_fold);
     } else {
       // Smash all non-matching scores into the range that's below the fold.
-      visit.score = visit.score * kMinScoreToAlwaysShowAboveTheFold.Get();
+      visit.score =
+          visit.score * GetConfig().min_score_to_always_show_above_the_fold;
     }
   }
 
@@ -157,7 +161,8 @@ void ApplySearchQuery(const std::string& query,
 
   for (auto& cluster : all_clusters) {
     bool any_visits_match = FlagMatchingVisits(find_nodes, &cluster.visits);
-    if (any_visits_match && kRescoreVisitsWithinClustersForQuery.Get()) {
+    if (any_visits_match &&
+        GetConfig().rescore_visits_within_clusters_for_query) {
       PromoteMatchingVisitsAboveNonMatchingVisits(&cluster.visits);
     }
 

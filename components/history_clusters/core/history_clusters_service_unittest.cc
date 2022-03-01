@@ -25,6 +25,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -244,9 +245,10 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase {
 };
 
 TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      internal::kJourneys, {{"JourneysMaxVisitsToCluster", "20"}});
+  Config config;
+  config.is_journeys_enabled_no_locale_check = true;
+  config.max_visits_to_cluster = 20;
+  SetConfigForTesting(config);
 
   history::ContextID context_id = reinterpret_cast<history::ContextID>(1);
   auto visit = GetHardcodedTestVisits()[0];
@@ -526,7 +528,7 @@ class HistoryClustersServiceJourneysDisabledTest
         /*enabled_features=*/{},
         /*disabled_features=*/{
             internal::kJourneys,
-            kPersistContextAnnotationsInHistoryDb,
+            internal::kPersistContextAnnotationsInHistoryDb,
         });
   }
 };
@@ -694,11 +696,13 @@ class HistoryClustersServiceMaxKeywordsTest
  public:
   HistoryClustersServiceMaxKeywordsTest() {
     // Set the max keyword phrases to 5.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        internal::kJourneys, {
-                                 {kMaxKeywordPhrases.name, "5"},
-                             });
+    config_.is_journeys_enabled_no_locale_check = true;
+    config_.max_keyword_phrases = 5;
+    SetConfigForTesting(config_);
   }
+
+ private:
+  Config config_;
 };
 TEST_F(HistoryClustersServiceMaxKeywordsTest,
        DoesQueryMatchAnyClusterMaxKeywordPhrases) {
