@@ -10,6 +10,7 @@
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/resources/ui_resource_client.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace cc {

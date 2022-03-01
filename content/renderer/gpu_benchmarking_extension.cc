@@ -57,10 +57,11 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
-#include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.

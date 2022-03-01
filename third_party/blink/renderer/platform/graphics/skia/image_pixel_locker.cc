@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 
 namespace blink {
 

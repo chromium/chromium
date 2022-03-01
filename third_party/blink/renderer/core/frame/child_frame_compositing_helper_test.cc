@@ -7,6 +7,7 @@
 #include "cc/layers/layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/child_frame_compositor.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace blink {
 
