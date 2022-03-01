@@ -4,7 +4,7 @@
 """Definitions of builders in the chromium.rust builder group."""
 
 load("//lib/builders.star", "goma", "os")
-load("//lib/ci.star", "ci")
+load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -36,6 +36,9 @@ ci.builder(
     ),
     notifies = ["chrome-memory-safety"],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(
