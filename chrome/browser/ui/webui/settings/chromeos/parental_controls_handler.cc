@@ -35,13 +35,13 @@ ParentalControlsHandler::ParentalControlsHandler(Profile* profile)
 ParentalControlsHandler::~ParentalControlsHandler() = default;
 
 void ParentalControlsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showAddSupervisionDialog",
       base::BindRepeating(
           &ParentalControlsHandler::HandleShowAddSupervisionDialog,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "launchFamilyLinkSettings",
       base::BindRepeating(
           &ParentalControlsHandler::HandleLaunchFamilyLinkSettings,
@@ -52,13 +52,13 @@ void ParentalControlsHandler::OnJavascriptAllowed() {}
 void ParentalControlsHandler::OnJavascriptDisallowed() {}
 
 void ParentalControlsHandler::HandleShowAddSupervisionDialog(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(args.empty());
   AddSupervisionDialog::Show();
 }
 
 void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(args.empty());
 
   apps::AppServiceProxy* proxy =

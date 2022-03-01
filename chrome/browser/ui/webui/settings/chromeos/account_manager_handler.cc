@@ -207,32 +207,32 @@ void AccountManagerUIHandler::RegisterMessages() {
   if (!profile_)
     profile_ = Profile::FromWebUI(web_ui());
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getAccounts",
       base::BindRepeating(&AccountManagerUIHandler::HandleGetAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "addAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleAddAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "reauthenticateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleReauthenticateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "migrateAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleMigrateAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeAccount",
       base::BindRepeating(&AccountManagerUIHandler::HandleRemoveAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showWelcomeDialogIfRequired",
       base::BindRepeating(
           &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "changeArcAvailability",
       base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
                           weak_factory_.GetWeakPtr()));
@@ -242,8 +242,7 @@ void AccountManagerUIHandler::SetProfileForTesting(Profile* profile) {
   profile_ = profile;
 }
 
-void AccountManagerUIHandler::HandleGetAccounts(
-    const base::Value::ConstListView args) {
+void AccountManagerUIHandler::HandleGetAccounts(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1u);
@@ -393,8 +392,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
   return accounts;
 }
 
-void AccountManagerUIHandler::HandleAddAccount(
-    const base::Value::ConstListView args) {
+void AccountManagerUIHandler::HandleAddAccount(const base::Value::List& args) {
   AllowJavascript();
   ::GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowAddAccountDialog(
@@ -403,7 +401,7 @@ void AccountManagerUIHandler::HandleAddAccount(
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
@@ -417,7 +415,7 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
@@ -427,7 +425,7 @@ void AccountManagerUIHandler::HandleMigrateAccount(
 }
 
 void AccountManagerUIHandler::HandleRemoveAccount(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
@@ -457,12 +455,12 @@ void AccountManagerUIHandler::HandleRemoveAccount(
 }
 
 void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   chromeos::AccountManagerWelcomeDialog::ShowIfRequired();
 }
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(
-    const base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 
   // 2 args: account, is_available.

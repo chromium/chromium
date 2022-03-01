@@ -51,16 +51,16 @@ class AmbientModeHandler : public ::settings::SettingsPageUIHandler {
   void OnEnabledPrefChanged();
 
   // WebUI call to request topic source and temperature unit related data.
-  void HandleRequestSettings(base::Value::ConstListView args);
+  void HandleRequestSettings(const base::Value::List& args);
 
   // WebUI call to request albums related data.
-  void HandleRequestAlbums(base::Value::ConstListView args);
+  void HandleRequestAlbums(const base::Value::List& args);
 
   // WebUI call to sync temperature unit with server.
-  void HandleSetSelectedTemperatureUnit(base::Value::ConstListView args);
+  void HandleSetSelectedTemperatureUnit(const base::Value::List& args);
 
   // WebUI call to sync albums with server.
-  void HandleSetSelectedAlbums(base::Value::ConstListView args);
+  void HandleSetSelectedAlbums(const base::Value::List& args);
 
   // Send the "temperature-unit-changed" WebUIListener event to update the
   // WebUI.

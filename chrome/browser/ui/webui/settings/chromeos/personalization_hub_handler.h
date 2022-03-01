@@ -29,7 +29,7 @@ class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override {}
 
  private:
-  void HandleOpenPersonalizationHub(base::Value::ConstListView args);
+  void HandleOpenPersonalizationHub(const base::Value::List& args);
 };
 
 }  // namespace settings

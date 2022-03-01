@@ -31,13 +31,13 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   // WebUI call to launch into the Google Assistant app settings.
-  void HandleShowGoogleAssistantSettings(base::Value::ConstListView args);
+  void HandleShowGoogleAssistantSettings(const base::Value::List& args);
   // WebUI call to retrain Assistant voice model.
-  void HandleRetrainVoiceModel(base::Value::ConstListView args);
+  void HandleRetrainVoiceModel(const base::Value::List& args);
   // WebUI call to sync Assistant voice model status.
-  void HandleSyncVoiceModelStatus(base::Value::ConstListView args);
+  void HandleSyncVoiceModelStatus(const base::Value::List& args);
   // WebUI call to signal js side is ready.
-  void HandleInitialized(base::Value::ConstListView args);
+  void HandleInitialized(const base::Value::List& args);
 
   bool pending_hotword_update_ = false;
 

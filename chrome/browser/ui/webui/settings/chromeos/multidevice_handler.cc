@@ -101,59 +101,59 @@ MultideviceHandler::MultideviceHandler(
 MultideviceHandler::~MultideviceHandler() {}
 
 void MultideviceHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showMultiDeviceSetupDialog",
       base::BindRepeating(&MultideviceHandler::HandleShowMultiDeviceSetupDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getPageContentData",
       base::BindRepeating(&MultideviceHandler::HandleGetPageContent,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setFeatureEnabledState",
       base::BindRepeating(&MultideviceHandler::HandleSetFeatureEnabledState,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeHostDevice",
       base::BindRepeating(&MultideviceHandler::HandleRemoveHostDevice,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "retryPendingHostSetup",
       base::BindRepeating(&MultideviceHandler::HandleRetryPendingHostSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setUpAndroidSms",
       base::BindRepeating(&MultideviceHandler::HandleSetUpAndroidSms,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSmartLockSignInEnabled",
       base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setSmartLockSignInEnabled",
       base::BindRepeating(&MultideviceHandler::HandleSetSmartLockSignInEnabled,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getSmartLockSignInAllowed",
       base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInAllowed,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getAndroidSmsInfo",
       base::BindRepeating(&MultideviceHandler::HandleGetAndroidSmsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "attemptNotificationSetup",
       base::BindRepeating(&MultideviceHandler::HandleAttemptNotificationSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "cancelNotificationSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelNotificationSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "attemptAppsSetup",
       base::BindRepeating(&MultideviceHandler::HandleAttemptAppsSetup,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "cancelAppsSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelAppsSetup,
                           base::Unretained(this)));
@@ -308,12 +308,12 @@ void MultideviceHandler::NotifyAndroidSmsInfoChange() {
 }
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(args.empty());
   multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
-void MultideviceHandler::HandleGetPageContent(base::Value::ConstListView args) {
+void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {
   // This callback is expected to be the first one executed when the page is
   // loaded, so it should be the one to allow JS calls.
   AllowJavascript();
@@ -331,7 +331,7 @@ void MultideviceHandler::HandleGetPageContent(base::Value::ConstListView args) {
 }
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const auto& list = args;
   DCHECK_GE(list.size(), 3u);
   std::string callback_id = list[0].GetString();
@@ -364,27 +364,25 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
   }
 }
 
-void MultideviceHandler::HandleRemoveHostDevice(
-    base::Value::ConstListView args) {
+void MultideviceHandler::HandleRemoveHostDevice(const base::Value::List& args) {
   DCHECK(args.empty());
   multidevice_setup_client_->RemoveHostDevice();
 }
 
 void MultideviceHandler::HandleRetryPendingHostSetup(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(args.empty());
   multidevice_setup_client_->RetrySetHostNow(
       base::BindOnce(&OnRetrySetHostNowResult));
 }
 
-void MultideviceHandler::HandleSetUpAndroidSms(
-    base::Value::ConstListView args) {
+void MultideviceHandler::HandleSetUpAndroidSms(const base::Value::List& args) {
   DCHECK(args.empty());
   android_sms_app_manager_->SetUpAndLaunchAndroidSmsApp();
 }
 
 void MultideviceHandler::HandleGetSmartLockSignInEnabled(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const base::Value& callback_id = args[0];
   CHECK(callback_id.is_string());
 
@@ -394,7 +392,7 @@ void MultideviceHandler::HandleGetSmartLockSignInEnabled(
 }
 
 void MultideviceHandler::HandleSetSmartLockSignInEnabled(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   bool enabled = false;
   if (args[0].is_bool())
     enabled = args[0].GetBool();
@@ -415,7 +413,7 @@ void MultideviceHandler::HandleSetSmartLockSignInEnabled(
 }
 
 void MultideviceHandler::HandleGetSmartLockSignInAllowed(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const base::Value& callback_id = args[0];
   CHECK(callback_id.is_string());
 
@@ -451,14 +449,14 @@ MultideviceHandler::GenerateAndroidSmsInfo() {
 }
 
 void MultideviceHandler::HandleGetAndroidSmsInfo(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const base::Value& callback_id = args[0];
 
   ResolveJavascriptCallback(callback_id, *GenerateAndroidSmsInfo());
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!notification_access_operation_);
 
@@ -479,15 +477,14 @@ void MultideviceHandler::HandleAttemptNotificationSetup(
 }
 
 void MultideviceHandler::HandleCancelNotificationSetup(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(notification_access_operation_);
 
   notification_access_operation_.reset();
 }
 
-void MultideviceHandler::HandleAttemptAppsSetup(
-    base::Value::ConstListView args) {
+void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
   DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(!apps_access_operation_);
@@ -507,8 +504,7 @@ void MultideviceHandler::HandleAttemptAppsSetup(
   DCHECK(apps_access_operation_);
 }
 
-void MultideviceHandler::HandleCancelAppsSetup(
-    base::Value::ConstListView args) {
+void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
   DCHECK(features::IsEcheSWAEnabled());
   DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
   DCHECK(apps_access_operation_);

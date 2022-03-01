@@ -23,9 +23,9 @@ class TtsHandler : public SettingsPageUIHandler,
 
   ~TtsHandler() override;
 
-  void HandleGetAllTtsVoiceData(base::Value::ConstListView args);
-  void HandleGetTtsExtensions(base::Value::ConstListView args);
-  void HandlePreviewTtsVoice(base::Value::ConstListView args);
+  void HandleGetAllTtsVoiceData(const base::Value::List& args);
+  void HandleGetTtsExtensions(const base::Value::List& args);
+  void HandlePreviewTtsVoice(const base::Value::List& args);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -43,7 +43,7 @@ class TtsHandler : public SettingsPageUIHandler,
                   const std::string& error_message) override;
 
  private:
-  void WakeTtsEngine(base::Value::ConstListView args);
+  void WakeTtsEngine(const base::Value::List& args);
   void OnTtsEngineAwake(bool success);
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);

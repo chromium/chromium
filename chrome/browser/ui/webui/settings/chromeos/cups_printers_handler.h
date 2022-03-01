@@ -73,14 +73,14 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                       CupsPrintersManager* printers_manager);
 
   // Gets all CUPS printers and return it to WebUI.
-  void HandleGetCupsSavedPrintersList(base::Value::ConstListView args);
-  void HandleGetCupsEnterprisePrintersList(base::Value::ConstListView args);
-  void HandleUpdateCupsPrinter(base::Value::ConstListView args);
-  void HandleRemoveCupsPrinter(base::Value::ConstListView args);
+  void HandleGetCupsSavedPrintersList(const base::Value::List& args);
+  void HandleGetCupsEnterprisePrintersList(const base::Value::List& args);
+  void HandleUpdateCupsPrinter(const base::Value::List& args);
+  void HandleRemoveCupsPrinter(const base::Value::List& args);
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
   // using an IPP call to the printer.
-  void HandleGetPrinterInfo(base::Value::ConstListView args);
+  void HandleGetPrinterInfo(const base::Value::List& args);
 
   // Handles the callback for HandleGetPrinterInfo. |callback_id| is the
   // identifier to resolve the correct Promise. |result| indicates if the query
@@ -113,11 +113,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                      const Printer::PpdReference& ppd_ref,
                      const std::string& usb_manufacturer);
 
-  void HandleAddCupsPrinter(base::Value::ConstListView args);
+  void HandleAddCupsPrinter(const base::Value::List& args);
 
-  void HandleReconfigureCupsPrinter(base::Value::ConstListView args);
+  void HandleReconfigureCupsPrinter(const base::Value::List& args);
 
-  void AddOrReconfigurePrinter(base::Value::ConstListView args,
+  void AddOrReconfigurePrinter(const base::Value::List& args,
                                bool is_printer_edit);
 
   // Handles the result of adding a printer which the user specified the
@@ -136,15 +136,15 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // printer supported.  Takes one argument, the callback id for the result.
   // The callback will be invoked with {success: <boolean>, models:
   // <Array<string>>}.
-  void HandleGetCupsPrinterManufacturers(base::Value::ConstListView args);
+  void HandleGetCupsPrinterManufacturers(const base::Value::List& args);
 
   // Given a manufacturer, get a list of all models of printers for which we can
   // get drivers.  Takes two arguments - the callback id and the manufacturer
   // name for which we want to list models.  The callback will be called with
   // {success: <boolean>, models: Array<string>}.
-  void HandleGetCupsPrinterModels(base::Value::ConstListView args);
+  void HandleGetCupsPrinterModels(const base::Value::List& args);
 
-  void HandleSelectPPDFile(base::Value::ConstListView args);
+  void HandleSelectPPDFile(const base::Value::List& args);
 
   // PpdProvider callback handlers.
   void ResolveManufacturersDone(const std::string& callback_id,
@@ -155,14 +155,14 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                            PpdProvider::CallbackResultCode result_code,
                            const PpdProvider::ResolvedPrintersList& printers);
 
-  void HandleStartDiscovery(base::Value::ConstListView args);
-  void HandleStopDiscovery(base::Value::ConstListView args);
+  void HandleStartDiscovery(const base::Value::List& args);
+  void HandleStopDiscovery(const base::Value::List& args);
 
   // Logs printer set ups that are abandoned.
-  void HandleSetUpCancel(base::Value::ConstListView args);
+  void HandleSetUpCancel(const base::Value::List& args);
 
   // Given a printer id, find the corresponding ppdManufacturer and ppdModel.
-  void HandleGetPrinterPpdManufacturerAndModel(base::Value::ConstListView args);
+  void HandleGetPrinterPpdManufacturerAndModel(const base::Value::List& args);
   void OnGetPrinterPpdManufacturerAndModel(
       const std::string& callback_id,
       PpdProvider::CallbackResultCode result_code,
@@ -173,7 +173,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void UpdateDiscoveredPrinters();
 
   // Attempt to add a discovered printer.
-  void HandleAddDiscoveredPrinter(base::Value::ConstListView args);
+  void HandleAddDiscoveredPrinter(const base::Value::List& args);
 
   // Post printer setup callback.
   void OnAddedDiscoveredPrinter(const std::string& callback_id,
@@ -190,7 +190,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                          const std::vector<Printer>& printers) override;
 
   // Handles getting the EULA URL if available.
-  void HandleGetEulaUrl(base::Value::ConstListView args);
+  void HandleGetEulaUrl(const base::Value::List& args);
 
   // Post EULA URL callback.
   void OnGetEulaUrl(const std::string& callback_id,
@@ -217,7 +217,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                     const Printer& printer,
                     const net::IPEndPoint& endpoint);
 
-  void HandleQueryPrintServer(base::Value::ConstListView args);
+  void HandleQueryPrintServer(const base::Value::List& args);
 
   void QueryPrintServer(const std::string& callback_id,
                         const GURL& server_url,
@@ -230,9 +230,9 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const GURL& server_url,
       std::vector<PrinterDetector::DetectedPrinter>&& returned_printers);
 
-  void HandleOpenPrintManagementApp(base::Value::ConstListView args);
+  void HandleOpenPrintManagementApp(const base::Value::List& args);
 
-  void HandleOpenScanningApp(base::Value::ConstListView args);
+  void HandleOpenScanningApp(const base::Value::List& args);
 
   Profile* profile_;
 

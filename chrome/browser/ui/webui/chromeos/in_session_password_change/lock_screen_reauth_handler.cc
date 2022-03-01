@@ -97,15 +97,14 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
-void LockScreenReauthHandler::HandleInitialize(
-    base::Value::ConstListView value) {
+void LockScreenReauthHandler::HandleInitialize(const base::Value::List& value) {
   AllowJavascript();
   OnReauthDialogReadyForTesting();
   LoadAuthenticatorParam();
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    base::Value::ConstListView value) {
+    const base::Value::List& value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -241,7 +240,7 @@ void LockScreenReauthHandler::CallJavascript(const std::string& function,
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
-    base::Value::ConstListView params) {
+    const base::Value::List& params) {
   CHECK_EQ(params.size(), 6u);
   std::string gaia_id, email, password;
   bool using_saml;
@@ -322,7 +321,7 @@ void LockScreenReauthHandler::CheckCredentials(
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
-    base::Value::ConstListView value) {
+    const base::Value::List& value) {
   DCHECK(!value.empty());
   std::string old_password = value[0].GetString();
   password_sync_manager_->UpdateUserPassword(old_password);
@@ -333,21 +332,21 @@ void LockScreenReauthHandler::ShowPasswordChangedScreen() {
 }
 
 void LockScreenReauthHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initialize",
       base::BindRepeating(&LockScreenReauthHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "authenticatorLoaded",
       base::BindRepeating(&LockScreenReauthHandler::HandleAuthenticatorLoaded,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "completeAuthentication",
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "updateUserPassword",
       base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
                           weak_factory_.GetWeakPtr()));

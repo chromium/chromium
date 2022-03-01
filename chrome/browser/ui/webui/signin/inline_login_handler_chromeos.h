@@ -50,7 +50,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   void GetAccountsInSession(const base::ListValue* args);
   void OnGetAccounts(const std::string& callback_id,
                      const std::vector<::account_manager::Account>& accounts);
-  void GetAccountsNotAvailableInArc(base::Value::ConstListView args);
+  void GetAccountsNotAvailableInArc(const base::Value::List& args);
   void ContinueGetAccountsNotAvailableInArc(
       const std::string& callback_id,
       const std::vector<::account_manager::Account>& accounts);
@@ -58,9 +58,9 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
       const std::string& callback_id,
       const std::vector<::account_manager::Account>& accounts,
       const base::flat_set<account_manager::Account>& arc_accounts);
-  void MakeAvailableInArcAndCloseDialog(base::Value::ConstListView args);
+  void MakeAvailableInArcAndCloseDialog(const base::Value::List& args);
   void HandleSkipWelcomePage(const base::ListValue* args);
-  void OpenGuestWindowAndCloseDialog(base::Value::ConstListView args);
+  void OpenGuestWindowAndCloseDialog(const base::Value::List& args);
 
   base::RepeatingClosure close_dialog_closure_;
   base::WeakPtrFactory<InlineLoginHandlerChromeOS> weak_factory_{this};

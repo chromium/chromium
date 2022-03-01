@@ -83,11 +83,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   // Handlers of JS messages.
-  void HandleUpdateAndroidEnabled(base::Value::ConstListView unused_args);
-  void HandleUpdateStorageInfo(base::Value::ConstListView unused_args);
-  void HandleOpenMyFiles(base::Value::ConstListView unused_args);
-  void HandleOpenArcStorage(base::Value::ConstListView unused_args);
-  void HandleUpdateExternalStorages(base::Value::ConstListView unused_args);
+  void HandleUpdateAndroidEnabled(const base::Value::List& unused_args);
+  void HandleUpdateStorageInfo(const base::Value::List& unused_args);
+  void HandleOpenMyFiles(const base::Value::List& unused_args);
+  void HandleOpenArcStorage(const base::Value::List& unused_args);
+  void HandleUpdateExternalStorages(const base::Value::List& unused_args);
 
   // Updates storage row on the UI.
   void UpdateStorageItem(

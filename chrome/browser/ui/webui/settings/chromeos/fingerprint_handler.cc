@@ -64,38 +64,38 @@ FingerprintHandler::~FingerprintHandler() {
 
 void FingerprintHandler::RegisterMessages() {
   // Note: getFingerprintsList must be called before observers will be added.
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getFingerprintsList",
       base::BindRepeating(&FingerprintHandler::HandleGetFingerprintsList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getNumFingerprints",
       base::BindRepeating(&FingerprintHandler::HandleGetNumFingerprints,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "startEnroll", base::BindRepeating(&FingerprintHandler::HandleStartEnroll,
                                          base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "cancelCurrentEnroll",
       base::BindRepeating(&FingerprintHandler::HandleCancelCurrentEnroll,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getEnrollmentLabel",
       base::BindRepeating(&FingerprintHandler::HandleGetEnrollmentLabel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeEnrollment",
       base::BindRepeating(&FingerprintHandler::HandleRemoveEnrollment,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "changeEnrollmentLabel",
       base::BindRepeating(&FingerprintHandler::HandleChangeEnrollmentLabel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "startAuthentication",
       base::BindRepeating(&FingerprintHandler::HandleStartAuthentication,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "endCurrentAuthentication",
       base::BindRepeating(&FingerprintHandler::HandleEndCurrentAuthentication,
                           base::Unretained(this)));
@@ -159,7 +159,7 @@ void FingerprintHandler::OnSessionStateChanged() {
 }
 
 void FingerprintHandler::HandleGetFingerprintsList(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
@@ -189,7 +189,7 @@ void FingerprintHandler::OnGetFingerprintsList(
 }
 
 void FingerprintHandler::HandleGetNumFingerprints(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
@@ -201,7 +201,7 @@ void FingerprintHandler::HandleGetNumFingerprints(
                             base::Value(fingerprints_num));
 }
 
-void FingerprintHandler::HandleStartEnroll(base::Value::ConstListView args) {
+void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
   AllowJavascript();
 
   const std::string& auth_token = args[0].GetString();
@@ -228,7 +228,7 @@ void FingerprintHandler::HandleStartEnroll(base::Value::ConstListView args) {
 }
 
 void FingerprintHandler::HandleCancelCurrentEnroll(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   fp_service_->CancelCurrentEnrollSession(
       base::BindOnce(&FingerprintHandler::OnCancelCurrentEnrollSession,
@@ -241,7 +241,7 @@ void FingerprintHandler::OnCancelCurrentEnrollSession(bool success) {
 }
 
 void FingerprintHandler::HandleGetEnrollmentLabel(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const auto& list = args;
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
@@ -261,8 +261,7 @@ void FingerprintHandler::OnRequestRecordLabel(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(label));
 }
 
-void FingerprintHandler::HandleRemoveEnrollment(
-    base::Value::ConstListView args) {
+void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
   const auto& list = args;
   CHECK_EQ(2U, list.size());
   std::string callback_id = list[0].GetString();
@@ -285,7 +284,7 @@ void FingerprintHandler::OnRemoveRecord(const std::string& callback_id,
 }
 
 void FingerprintHandler::HandleChangeEnrollmentLabel(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   const auto& list = args;
   CHECK_EQ(3U, list.size());
 
@@ -311,13 +310,13 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
 }
 
 void FingerprintHandler::HandleStartAuthentication(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   fp_service_->StartAuthSession();
 }
 
 void FingerprintHandler::HandleEndCurrentAuthentication(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   fp_service_->EndCurrentAuthSession(
       base::BindOnce(&FingerprintHandler::OnEndCurrentAuthSession,

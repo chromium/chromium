@@ -38,7 +38,7 @@ class PointerHandler
   void PointingStickExists(bool exists) override;
 
   // Initializes the page with the current pointer information.
-  void HandleInitialize(base::Value::ConstListView args);
+  void HandleInitialize(const base::Value::List& args);
 
   std::unique_ptr<chromeos::system::PointerDeviceObserver>
       pointer_device_observer_;

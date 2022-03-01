@@ -21,11 +21,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void Initialize(base::Value::ConstListView args);
-  void ShowNetworkDetails(base::Value::ConstListView args);
-  void ShowNetworkConfig(base::Value::ConstListView args);
-  void AddNetwork(base::Value::ConstListView args);
-  void GetHostname(base::Value::ConstListView args);
+  void Initialize(const base::Value::List& args);
+  void ShowNetworkDetails(const base::Value::List& args);
+  void ShowNetworkConfig(const base::Value::List& args);
+  void AddNetwork(const base::Value::List& args);
+  void GetHostname(const base::Value::List& args);
   void Respond(const std::string& callback_id, const base::Value& response);
 
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};

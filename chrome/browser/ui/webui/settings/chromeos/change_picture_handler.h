@@ -70,25 +70,25 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   void SetCameraPresent(bool present);
 
   // Opens a file selection dialog to choose user image from file.
-  void HandleChooseFile(base::Value::ConstListView args);
+  void HandleChooseFile(const base::Value::List& args);
 
   // Handles photo taken with WebRTC UI.
-  void HandlePhotoTaken(base::Value::ConstListView args);
+  void HandlePhotoTaken(const base::Value::List& args);
 
   // Handles 'discard-photo' button click.
-  void HandleDiscardPhoto(base::Value::ConstListView args);
+  void HandleDiscardPhoto(const base::Value::List& args);
 
   // Gets the list of available user images and sends it to the page.
-  void HandleGetAvailableImages(base::Value::ConstListView args);
+  void HandleGetAvailableImages(const base::Value::List& args);
 
   // Handles page initialized event.
-  void HandlePageInitialized(base::Value::ConstListView args);
+  void HandlePageInitialized(const base::Value::List& args);
 
   // Selects one of the available images as user's.
-  void HandleSelectImage(base::Value::ConstListView args);
+  void HandleSelectImage(const base::Value::List& args);
 
   // Requests the currently selected image.
-  void HandleRequestSelectedImage(base::Value::ConstListView args);
+  void HandleRequestSelectedImage(const base::Value::List& args);
 
   void FileSelected(const base::FilePath& path);
 

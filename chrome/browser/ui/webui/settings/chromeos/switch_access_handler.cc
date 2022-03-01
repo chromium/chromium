@@ -86,18 +86,18 @@ SwitchAccessHandler::~SwitchAccessHandler() {
 }
 
 void SwitchAccessHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "refreshAssignmentsFromPrefs",
       base::BindRepeating(
           &SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "notifySwitchAccessActionAssignmentPaneActive",
       base::BindRepeating(
           &SwitchAccessHandler::
               HandleNotifySwitchAccessActionAssignmentPaneActive,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "notifySwitchAccessActionAssignmentPaneInactive",
       base::BindRepeating(
           &SwitchAccessHandler::
@@ -155,13 +155,13 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
   web_ui()->GetWebContents()->GetNativeView()->AddPreTargetHandler(this);
@@ -169,7 +169,7 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
   ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }

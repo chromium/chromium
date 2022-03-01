@@ -31,19 +31,19 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
   // Callback which updates if startup sound is enabled. Visible for testing.
-  void HandleManageA11yPageReady(base::Value::ConstListView args);
+  void HandleManageA11yPageReady(const base::Value::List& args);
 
  private:
   friend class AccessibilityHandlerTest;
 
   // Callback for the messages to show settings for ChromeVox or
   // Select To Speak.
-  void HandleShowChromeVoxSettings(base::Value::ConstListView args);
-  void HandleShowSelectToSpeakSettings(base::Value::ConstListView args);
-  void HandleSetStartupSoundEnabled(base::Value::ConstListView args);
+  void HandleShowChromeVoxSettings(const base::Value::List& args);
+  void HandleShowSelectToSpeakSettings(const base::Value::List& args);
+  void HandleSetStartupSoundEnabled(const base::Value::List& args);
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
-      base::Value::ConstListView args);
-  void HandleShowChromeVoxTutorial(base::Value::ConstListView args);
+      const base::Value::List& args);
+  void HandleShowChromeVoxTutorial(const base::Value::List& args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

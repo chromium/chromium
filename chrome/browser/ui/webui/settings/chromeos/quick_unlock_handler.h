@@ -29,10 +29,10 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleRequestPinLoginState(base::Value::ConstListView args);
+  void HandleRequestPinLoginState(const base::Value::List& args);
   void OnPinLoginAvailable(bool is_available);
 
-  void HandleQuickUnlockDisabledByPolicy(base::Value::ConstListView args);
+  void HandleQuickUnlockDisabledByPolicy(const base::Value::List& args);
   void UpdateQuickUnlockDisabledByPolicy();
 
   Profile* profile_;

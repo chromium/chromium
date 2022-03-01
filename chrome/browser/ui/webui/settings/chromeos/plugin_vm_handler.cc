@@ -24,12 +24,12 @@ PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
 PluginVmHandler::~PluginVmHandler() = default;
 
 void PluginVmHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "isRelaunchNeededForNewPermissions",
       base::BindRepeating(
           &PluginVmHandler::HandleIsRelaunchNeededForNewPermissions,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "relaunchPluginVm",
       base::BindRepeating(&PluginVmHandler::HandleRelaunchPluginVm,
                           base::Unretained(this)));
@@ -40,7 +40,7 @@ void PluginVmHandler::OnJavascriptAllowed() {}
 void PluginVmHandler::OnJavascriptDisallowed() {}
 
 void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -52,7 +52,7 @@ void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
       base::Value(requires_relaunch));
 }
 
-void PluginVmHandler::HandleRelaunchPluginVm(base::Value::ConstListView args) {
+void PluginVmHandler::HandleRelaunchPluginVm(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
       ->RelaunchPluginVm();

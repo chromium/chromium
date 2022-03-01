@@ -31,11 +31,11 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
-  void HandleRefreshAssignmentsFromPrefs(base::Value::ConstListView args);
+  void HandleRefreshAssignmentsFromPrefs(const base::Value::List& args);
   void HandleNotifySwitchAccessActionAssignmentPaneActive(
-      base::Value::ConstListView args);
+      const base::Value::List& args);
   void HandleNotifySwitchAccessActionAssignmentPaneInactive(
-      base::Value::ConstListView args);
+      const base::Value::List& args);
   void OnSwitchAccessAssignmentsUpdated();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

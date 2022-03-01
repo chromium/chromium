@@ -86,25 +86,25 @@ ChangePictureHandler::ChangePictureHandler()
 ChangePictureHandler::~ChangePictureHandler() = default;
 
 void ChangePictureHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "chooseFile", base::BindRepeating(&ChangePictureHandler::HandleChooseFile,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "photoTaken", base::BindRepeating(&ChangePictureHandler::HandlePhotoTaken,
                                         base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "discardPhoto",
       base::BindRepeating(&ChangePictureHandler::HandleDiscardPhoto,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "onChangePicturePageInitialized",
       base::BindRepeating(&ChangePictureHandler::HandlePageInitialized,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "selectImage",
       base::BindRepeating(&ChangePictureHandler::HandleSelectImage,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestSelectedImage",
       base::BindRepeating(&ChangePictureHandler::HandleRequestSelectedImage,
                           base::Unretained(this)));
@@ -137,7 +137,7 @@ void ChangePictureHandler::SendDefaultImages() {
   FireWebUIListener("default-images-changed", result);
 }
 
-void ChangePictureHandler::HandleChooseFile(base::Value::ConstListView args) {
+void ChangePictureHandler::HandleChooseFile(const base::Value::List& args) {
   DCHECK(args.empty());
   user_image_file_selector_ =
       std::make_unique<ash::UserImageFileSelector>(web_ui());
@@ -148,13 +148,13 @@ void ChangePictureHandler::HandleChooseFile(base::Value::ConstListView args) {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangePictureHandler::HandleDiscardPhoto(base::Value::ConstListView args) {
+void ChangePictureHandler::HandleDiscardPhoto(const base::Value::List& args) {
   DCHECK(args.empty());
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kObjectDelete, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
 }
 
-void ChangePictureHandler::HandlePhotoTaken(base::Value::ConstListView args) {
+void ChangePictureHandler::HandlePhotoTaken(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   AccessibilityManager::Get()->PlayEarcon(
       Sound::kCameraSnap, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
@@ -184,7 +184,7 @@ void ChangePictureHandler::HandlePhotoTaken(base::Value::ConstListView args) {
 }
 
 void ChangePictureHandler::HandlePageInitialized(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(args.empty());
 
   AllowJavascript();
@@ -281,7 +281,7 @@ void ChangePictureHandler::SendOldImage(std::string&& image_url) {
   FireWebUIListener("old-image-changed", base::Value(image_url));
 }
 
-void ChangePictureHandler::HandleSelectImage(base::Value::ConstListView args) {
+void ChangePictureHandler::HandleSelectImage(const base::Value::List& args) {
   if (args.size() != 2 || !args[0].is_string() || !args[1].is_string()) {
     NOTREACHED();
     return;
@@ -346,7 +346,7 @@ void ChangePictureHandler::HandleSelectImage(base::Value::ConstListView args) {
 }
 
 void ChangePictureHandler::HandleRequestSelectedImage(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   SendSelectedImage();
 }
 

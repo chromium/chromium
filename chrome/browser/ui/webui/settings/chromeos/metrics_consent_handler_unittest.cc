@@ -90,7 +90,7 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
   void GetMetricsConsentState() {
     base::ListValue args;
     args.Append(base::Value("callback-id"));
-    HandleGetMetricsConsentState(args.GetListDeprecated());
+    HandleGetMetricsConsentState(args.GetList());
   }
 
   void UpdateMetricsConsent(bool metrics_consent) {
@@ -101,7 +101,7 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
     dict.SetBoolKey("consent", metrics_consent);
     args.Append(std::move(dict));
 
-    HandleUpdateMetricsConsent(args.GetListDeprecated());
+    HandleUpdateMetricsConsent(args.GetList());
   }
 };
 

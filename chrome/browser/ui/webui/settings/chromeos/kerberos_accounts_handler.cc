@@ -200,24 +200,24 @@ KerberosAccountsHandler::KerberosAccountsHandler(
 }
 
 void KerberosAccountsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getKerberosAccounts",
       base::BindRepeating(&KerberosAccountsHandler::HandleGetKerberosAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "addKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleAddKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "removeKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleRemoveKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "validateKerberosConfig",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleValidateKerberosConfig,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setAsActiveKerberosAccount",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleSetAsActiveKerberosAccount,
@@ -225,7 +225,7 @@ void KerberosAccountsHandler::RegisterMessages() {
 }
 
 void KerberosAccountsHandler::HandleGetKerberosAccounts(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -285,7 +285,7 @@ void KerberosAccountsHandler::OnListAccounts(
 }
 
 void KerberosAccountsHandler::HandleAddKerberosAccount(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   // TODO(https://crbug.com/961246):
@@ -321,7 +321,7 @@ void KerberosAccountsHandler::OnAddAccountAndAuthenticate(
 }
 
 void KerberosAccountsHandler::HandleRemoveKerberosAccount(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
@@ -346,7 +346,7 @@ void KerberosAccountsHandler::OnRemoveAccount(const std::string& callback_id,
 }
 
 void KerberosAccountsHandler::HandleValidateKerberosConfig(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
@@ -381,7 +381,7 @@ void KerberosAccountsHandler::OnValidateConfig(
 }
 
 void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

@@ -43,17 +43,17 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   void UpdateNoteTakingApps();
-  void HandleRequestApps(base::Value::ConstListView unused_args);
-  void HandleSetPreferredNoteTakingApp(base::Value::ConstListView args);
+  void HandleRequestApps(const base::Value::List& unused_args);
+  void HandleSetPreferredNoteTakingApp(const base::Value::List& args);
   void HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
-      base::Value::ConstListView args);
-  void HandleInitialize(base::Value::ConstListView args);
+      const base::Value::List& args);
+  void HandleInitialize(const base::Value::List& args);
 
   // Enables or disables the stylus UI section.
   void SendHasStylus();
 
   // Called by JS to show the Play Store Android app.
-  void HandleShowPlayStoreApps(base::Value::ConstListView args);
+  void HandleShowPlayStoreApps(const base::Value::List& args);
 
   // IDs of available note-taking apps.
   std::set<std::string> note_taking_app_ids_;

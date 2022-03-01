@@ -40,12 +40,12 @@ void DeviceNameHandler::OnJavascriptDisallowed() {
 }
 
 void DeviceNameHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "notifyReadyForDeviceName",
       base::BindRepeating(&DeviceNameHandler::HandleNotifyReadyForDeviceName,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "attemptSetDeviceName",
       base::BindRepeating(&DeviceNameHandler::HandleAttemptSetDeviceName,
                           base::Unretained(this)));
@@ -62,13 +62,12 @@ base::Value DeviceNameHandler::GetDeviceNameMetadata() const {
 }
 
 void DeviceNameHandler::HandleAttemptSetDeviceName(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   DCHECK_EQ(2U, args.size());
-  const base::Value::ConstListView args_list = args;
-  const std::string callback_id = args_list[0].GetString();
-  const std::string name_from_user = args_list[1].GetString();
+  const std::string callback_id = args[0].GetString();
+  const std::string name_from_user = args[1].GetString();
   DeviceNameStore::SetDeviceNameResult result =
       device_name_store_->SetDeviceName(name_from_user);
 
@@ -77,7 +76,7 @@ void DeviceNameHandler::HandleAttemptSetDeviceName(
 }
 
 void DeviceNameHandler::HandleNotifyReadyForDeviceName(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   FireWebUIListener("settings.updateDeviceNameMetadata",
                     base::Value(GetDeviceNameMetadata()));

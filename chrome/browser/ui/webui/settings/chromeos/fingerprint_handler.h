@@ -51,15 +51,15 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   void OnSessionStateChanged() override;
 
  private:
-  void HandleGetFingerprintsList(base::Value::ConstListView args);
-  void HandleGetNumFingerprints(base::Value::ConstListView args);
-  void HandleStartEnroll(base::Value::ConstListView args);
-  void HandleCancelCurrentEnroll(base::Value::ConstListView args);
-  void HandleGetEnrollmentLabel(base::Value::ConstListView args);
-  void HandleRemoveEnrollment(base::Value::ConstListView args);
-  void HandleChangeEnrollmentLabel(base::Value::ConstListView args);
-  void HandleStartAuthentication(base::Value::ConstListView args);
-  void HandleEndCurrentAuthentication(base::Value::ConstListView args);
+  void HandleGetFingerprintsList(const base::Value::List& args);
+  void HandleGetNumFingerprints(const base::Value::List& args);
+  void HandleStartEnroll(const base::Value::List& args);
+  void HandleCancelCurrentEnroll(const base::Value::List& args);
+  void HandleGetEnrollmentLabel(const base::Value::List& args);
+  void HandleRemoveEnrollment(const base::Value::List& args);
+  void HandleChangeEnrollmentLabel(const base::Value::List& args);
+  void HandleStartAuthentication(const base::Value::List& args);
+  void HandleEndCurrentAuthentication(const base::Value::List& args);
 
   void OnGetFingerprintsList(const std::string& callback_id,
                              const base::flat_map<std::string, std::string>&

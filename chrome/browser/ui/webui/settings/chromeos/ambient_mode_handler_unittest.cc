@@ -110,20 +110,20 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
   }
 
   void RequestSettings() {
-    handler_->HandleRequestSettings(base::Value::ConstListView());
+    handler_->HandleRequestSettings(base::Value::List());
   }
 
   void RequestAlbums(ash::AmbientModeTopicSource topic_source) {
     base::Value args(base::Value::Type::LIST);
     args.Append(static_cast<int>(topic_source));
-    handler_->HandleRequestAlbums(args.GetListDeprecated());
+    handler_->HandleRequestAlbums(args.GetList());
   }
 
-  void HandleSetSelectedTemperatureUnit(base::Value::ConstListView args) {
+  void HandleSetSelectedTemperatureUnit(const base::Value::List& args) {
     handler_->HandleSetSelectedTemperatureUnit(args);
   }
 
-  void HandleSetSelectedAlbums(base::Value::ConstListView args) {
+  void HandleSetSelectedAlbums(const base::Value::List& args) {
     handler_->HandleSetSelectedAlbums(args);
   }
 
@@ -785,7 +785,7 @@ TEST_P(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
   dictionary.SetKey("albums", std::move(albums));
 
   args.Append(std::move(dictionary));
-  HandleSetSelectedAlbums(args.GetListDeprecated());
+  HandleSetSelectedAlbums(args.GetList());
 
   histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
                                       /*count=*/1);
@@ -802,7 +802,7 @@ TEST_P(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
   base::Value args(base::Value::Type::LIST);
   args.Append("fahrenheit");
 
-  HandleSetSelectedTemperatureUnit(args.GetListDeprecated());
+  HandleSetSelectedTemperatureUnit(args.GetList());
 
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
@@ -822,7 +822,7 @@ TEST_P(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
   base::Value args(base::Value::Type::LIST);
   args.Append("celsius");
 
-  HandleSetSelectedTemperatureUnit(args.GetListDeprecated());
+  HandleSetSelectedTemperatureUnit(args.GetList());
 
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());

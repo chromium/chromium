@@ -36,12 +36,12 @@ MetricsConsentHandler::MetricsConsentHandler(
 MetricsConsentHandler::~MetricsConsentHandler() = default;
 
 void MetricsConsentHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       kUpdateMetricsConsent,
       base::BindRepeating(&MetricsConsentHandler::HandleUpdateMetricsConsent,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       kGetMetricsConsentState,
       base::BindRepeating(&MetricsConsentHandler::HandleGetMetricsConsentState,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -52,7 +52,7 @@ void MetricsConsentHandler::OnJavascriptAllowed() {}
 void MetricsConsentHandler::OnJavascriptDisallowed() {}
 
 void MetricsConsentHandler::HandleGetMetricsConsentState(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
 
@@ -73,7 +73,7 @@ void MetricsConsentHandler::HandleGetMetricsConsentState(
 }
 
 void MetricsConsentHandler::HandleUpdateMetricsConsent(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   CHECK_EQ(args[1].type(), base::Value::Type::DICTIONARY);

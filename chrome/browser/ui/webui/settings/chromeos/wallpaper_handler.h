@@ -27,13 +27,13 @@ class WallpaperHandler : public ::settings::SettingsPageUIHandler {
 
  private:
   // Whether the wallpaper setting should be shown.
-  void HandleIsWallpaperSettingVisible(base::Value::ConstListView args);
+  void HandleIsWallpaperSettingVisible(const base::Value::List& args);
 
   // Whether the wallpaper is policy controlled.
-  void HandleIsWallpaperPolicyControlled(base::Value::ConstListView args);
+  void HandleIsWallpaperPolicyControlled(const base::Value::List& args);
 
   // Open the wallpaper manager app.
-  void HandleOpenWallpaperManager(base::Value::ConstListView args);
+  void HandleOpenWallpaperManager(const base::Value::List& args);
 
   // Helper function to resolve the Javascript callback.
   void ResolveCallback(const base::Value& callback_id, bool result);

@@ -119,18 +119,18 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   };
 
   // Handler to request updating the power status.
-  void HandleUpdatePowerStatus(base::Value::ConstListView args);
+  void HandleUpdatePowerStatus(const base::Value::List& args);
 
   // Handler to change the power source.
-  void HandleSetPowerSource(base::Value::ConstListView args);
+  void HandleSetPowerSource(const base::Value::List& args);
 
   // Handler to request the current power management settings. Just calls
   // SendPowerManagementSettings().
-  void HandleRequestPowerManagementSettings(base::Value::ConstListView args);
+  void HandleRequestPowerManagementSettings(const base::Value::List& args);
 
   // Handlers to change the idle and lid-closed behaviors.
-  void HandleSetIdleBehavior(base::Value::ConstListView args);
-  void HandleSetLidClosedBehavior(base::Value::ConstListView args);
+  void HandleSetIdleBehavior(const base::Value::List& args);
+  void HandleSetLidClosedBehavior(const base::Value::List& args);
 
   // Updates the UI with the current battery status.
   void SendBatteryStatus();

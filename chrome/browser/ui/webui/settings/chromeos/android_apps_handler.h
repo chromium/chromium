@@ -54,10 +54,10 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   std::unique_ptr<base::DictionaryValue> BuildAndroidAppsInfo();
-  void HandleRequestAndroidAppsInfo(base::Value::ConstListView args);
+  void HandleRequestAndroidAppsInfo(const base::Value::List& args);
   void HandleAppChanged(const std::string& app_id);
   void SendAndroidAppsInfo();
-  void ShowAndroidAppsSettings(base::Value::ConstListView args);
+  void ShowAndroidAppsSettings(const base::Value::List& args);
   int64_t GetDisplayIdForCurrentProfile();
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

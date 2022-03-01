@@ -120,15 +120,15 @@ void EduAccountLoginHandler::ProfileImageFetcher::OnImageFetched(
 }
 
 void EduAccountLoginHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "isNetworkReady",
       base::BindRepeating(&EduAccountLoginHandler::HandleIsNetworkReady,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getParents",
       base::BindRepeating(&EduAccountLoginHandler::HandleGetParents,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "parentSignin",
       base::BindRepeating(&EduAccountLoginHandler::HandleParentSignin,
                           base::Unretained(this)));
@@ -144,7 +144,7 @@ void EduAccountLoginHandler::OnJavascriptDisallowed() {
 }
 
 void EduAccountLoginHandler::HandleIsNetworkReady(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   bool is_network_ready =
@@ -152,7 +152,7 @@ void EduAccountLoginHandler::HandleIsNetworkReady(
   ResolveJavascriptCallback(args[0], base::Value(is_network_ready));
 }
 
-void EduAccountLoginHandler::HandleGetParents(base::Value::ConstListView args) {
+void EduAccountLoginHandler::HandleGetParents(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1u);
@@ -167,8 +167,7 @@ void EduAccountLoginHandler::HandleGetParents(base::Value::ConstListView args) {
   FetchFamilyMembers();
 }
 
-void EduAccountLoginHandler::HandleParentSignin(
-    base::Value::ConstListView args) {
+void EduAccountLoginHandler::HandleParentSignin(const base::Value::List& args) {
   CHECK_EQ(args.size(), 3u);
   CHECK(args[0].is_string());
 

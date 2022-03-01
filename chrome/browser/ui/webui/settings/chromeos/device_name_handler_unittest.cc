@@ -49,7 +49,7 @@ class DeviceNameHandlerTest : public testing::Test {
     // listening to changes in device name metadata.
     base::Value args(base::Value::Type::LIST);
     args.Append("callback-id");
-    handler()->HandleNotifyReadyForDeviceName(args.GetListDeprecated());
+    handler()->HandleNotifyReadyForDeviceName(args.GetList());
 
     // On notifying, device name metadata should be received and be equal to the
     // default values.
@@ -87,7 +87,7 @@ class DeviceNameHandlerTest : public testing::Test {
     base::Value args(base::Value::Type::LIST);
     args.Append("callback-id");
     args.Append(device_name);
-    handler()->HandleAttemptSetDeviceName(args.GetListDeprecated());
+    handler()->HandleAttemptSetDeviceName(args.GetList());
 
     const content::TestWebUI::CallData& call_data =
         *web_ui()->call_data().back();

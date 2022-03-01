@@ -36,17 +36,17 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   void SystemClockCanSetTimeChanged(bool can_set_time) override;
 
   // Called when the page is ready.
-  void HandleDateTimePageReady(base::Value::ConstListView args);
+  void HandleDateTimePageReady(const base::Value::List& args);
 
   // Handler to fetch the list of time zones.
-  void HandleGetTimeZones(base::Value::ConstListView args);
+  void HandleGetTimeZones(const base::Value::List& args);
 
   // Called to show the Set Time UI.
-  void HandleShowSetDateTimeUI(base::Value::ConstListView args);
+  void HandleShowSetDateTimeUI(const base::Value::List& args);
 
   // Handles clicks on the timezone row on the settings page. This should only
   // be called when the current user is a child.
-  void HandleShowParentAccessForTimeZone(base::Value::ConstListView args);
+  void HandleShowParentAccessForTimeZone(const base::Value::List& args);
 
   // Called when the parent access code was validated with result equals
   // |success|.

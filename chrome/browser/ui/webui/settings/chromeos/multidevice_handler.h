@@ -104,20 +104,20 @@ class MultideviceHandler
   // update (e.g., not due to a getPageContent() request).
   void UpdatePageContent();
 
-  void HandleShowMultiDeviceSetupDialog(base::Value::ConstListView args);
-  void HandleGetPageContent(base::Value::ConstListView args);
-  void HandleSetFeatureEnabledState(base::Value::ConstListView args);
-  void HandleRemoveHostDevice(base::Value::ConstListView args);
-  void HandleRetryPendingHostSetup(base::Value::ConstListView args);
-  void HandleSetUpAndroidSms(base::Value::ConstListView args);
-  void HandleGetSmartLockSignInEnabled(base::Value::ConstListView args);
-  void HandleSetSmartLockSignInEnabled(base::Value::ConstListView args);
-  void HandleGetSmartLockSignInAllowed(base::Value::ConstListView args);
-  void HandleGetAndroidSmsInfo(base::Value::ConstListView args);
-  void HandleAttemptNotificationSetup(base::Value::ConstListView args);
-  void HandleCancelNotificationSetup(base::Value::ConstListView args);
-  void HandleAttemptAppsSetup(base::Value::ConstListView args);
-  void HandleCancelAppsSetup(base::Value::ConstListView args);
+  void HandleShowMultiDeviceSetupDialog(const base::Value::List& args);
+  void HandleGetPageContent(const base::Value::List& args);
+  void HandleSetFeatureEnabledState(const base::Value::List& args);
+  void HandleRemoveHostDevice(const base::Value::List& args);
+  void HandleRetryPendingHostSetup(const base::Value::List& args);
+  void HandleSetUpAndroidSms(const base::Value::List& args);
+  void HandleGetSmartLockSignInEnabled(const base::Value::List& args);
+  void HandleSetSmartLockSignInEnabled(const base::Value::List& args);
+  void HandleGetSmartLockSignInAllowed(const base::Value::List& args);
+  void HandleGetAndroidSmsInfo(const base::Value::List& args);
+  void HandleAttemptNotificationSetup(const base::Value::List& args);
+  void HandleCancelNotificationSetup(const base::Value::List& args);
+  void HandleAttemptAppsSetup(const base::Value::List& args);
+  void HandleCancelAppsSetup(const base::Value::List& args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);

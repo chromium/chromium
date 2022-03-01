@@ -30,8 +30,8 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  protected:
-  void HandleAttemptSetDeviceName(base::Value::ConstListView args);
-  void HandleNotifyReadyForDeviceName(base::Value::ConstListView args);
+  void HandleAttemptSetDeviceName(const base::Value::List& args);
+  void HandleNotifyReadyForDeviceName(const base::Value::List& args);
 
  private:
   friend class TestDeviceNameHandler;

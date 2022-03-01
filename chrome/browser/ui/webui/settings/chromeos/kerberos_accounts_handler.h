@@ -58,31 +58,31 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
       KerberosCredentialsManager* kerberos_credentials_manager);
 
   // WebUI "getKerberosAccounts" message callback.
-  void HandleGetKerberosAccounts(base::Value::ConstListView args);
+  void HandleGetKerberosAccounts(const base::Value::List& args);
 
   // WebUI "addKerberosAccount" message callback.
-  void HandleAddKerberosAccount(base::Value::ConstListView args);
+  void HandleAddKerberosAccount(const base::Value::List& args);
 
   // Callback for the credential manager's AddAccountAndAuthenticate method.
   void OnAddAccountAndAuthenticate(const std::string& callback_id,
                                    kerberos::ErrorType error);
 
   // WebUI "removeKerberosAccount" message callback.
-  void HandleRemoveKerberosAccount(base::Value::ConstListView args);
+  void HandleRemoveKerberosAccount(const base::Value::List& args);
 
   // Callback for the credential manager's RemoveAccount method.
   void OnRemoveAccount(const std::string& callback_id,
                        kerberos::ErrorType error);
 
   // WebUI "validateKerberosConfig" message callback.
-  void HandleValidateKerberosConfig(base::Value::ConstListView args);
+  void HandleValidateKerberosConfig(const base::Value::List& args);
 
   // Callback for the credential manager's ValidateConfig method.
   void OnValidateConfig(const std::string& callback_id,
                         const kerberos::ValidateConfigResponse& response);
 
   // WebUI "setAsActiveKerberosAccount" message callback.
-  void HandleSetAsActiveKerberosAccount(base::Value::ConstListView args);
+  void HandleSetAsActiveKerberosAccount(const base::Value::List& args);
 
   // Callback for the credential manager's ListAccounts method.
   void OnListAccounts(const std::string& callback_id,

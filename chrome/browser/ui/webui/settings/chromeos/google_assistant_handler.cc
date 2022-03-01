@@ -51,40 +51,40 @@ void GoogleAssistantHandler::OnAudioNodesChanged() {
 }
 
 void GoogleAssistantHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showGoogleAssistantSettings",
       base::BindRepeating(
           &GoogleAssistantHandler::HandleShowGoogleAssistantSettings,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "retrainAssistantVoiceModel",
       base::BindRepeating(&GoogleAssistantHandler::HandleRetrainVoiceModel,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "syncVoiceModelStatus",
       base::BindRepeating(&GoogleAssistantHandler::HandleSyncVoiceModelStatus,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeGoogleAssistantPage",
       base::BindRepeating(&GoogleAssistantHandler::HandleInitialized,
                           base::Unretained(this)));
 }
 
 void GoogleAssistantHandler::HandleShowGoogleAssistantSettings(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   ash::AssistantController::Get()->OpenAssistantSettings();
 }
 
 void GoogleAssistantHandler::HandleRetrainVoiceModel(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   chromeos::AssistantOptInDialog::Show(ash::FlowType::kSpeakerIdRetrain,
                                        base::DoNothing());
 }
 
 void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
 
   auto* settings = assistant::AssistantSettings::Get();
@@ -92,8 +92,7 @@ void GoogleAssistantHandler::HandleSyncVoiceModelStatus(
     settings->SyncSpeakerIdEnrollmentStatus();
 }
 
-void GoogleAssistantHandler::HandleInitialized(
-    base::Value::ConstListView args) {
+void GoogleAssistantHandler::HandleInitialized(const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   AllowJavascript();
 }

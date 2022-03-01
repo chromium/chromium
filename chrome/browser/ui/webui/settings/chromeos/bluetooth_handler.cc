@@ -31,11 +31,11 @@ BluetoothHandler::BluetoothHandler() {
 BluetoothHandler::~BluetoothHandler() {}
 
 void BluetoothHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       kIsDeviceBlockedByPolicy,
       base::BindRepeating(&BluetoothHandler::HandleIsDeviceBlockedByPolicy,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       kRequestFastPairDeviceSupport,
       base::BindRepeating(&BluetoothHandler::HandleRequestFastPairDeviceSupport,
                           base::Unretained(this)));
@@ -52,7 +52,7 @@ void BluetoothHandler::BluetoothDeviceAdapterReady(
 }
 
 void BluetoothHandler::HandleIsDeviceBlockedByPolicy(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -76,7 +76,7 @@ void BluetoothHandler::HandleIsDeviceBlockedByPolicy(
 }
 
 void BluetoothHandler::HandleRequestFastPairDeviceSupport(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 
   base::Value is_supported(

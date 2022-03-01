@@ -29,11 +29,11 @@ AndroidAppsHandler::~AndroidAppsHandler() {}
 
 void AndroidAppsHandler::RegisterMessages() {
   // Note: requestAndroidAppsInfo must be called before observers will be added.
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestAndroidAppsInfo",
       base::BindRepeating(&AndroidAppsHandler::HandleRequestAndroidAppsInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showAndroidAppsSettings",
       base::BindRepeating(&AndroidAppsHandler::ShowAndroidAppsSettings,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -94,7 +94,7 @@ AndroidAppsHandler::BuildAndroidAppsInfo() {
 }
 
 void AndroidAppsHandler::HandleRequestAndroidAppsInfo(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
   SendAndroidAppsInfo();
 }
@@ -105,7 +105,7 @@ void AndroidAppsHandler::SendAndroidAppsInfo() {
 }
 
 void AndroidAppsHandler::ShowAndroidAppsSettings(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   bool activated_from_keyboard = false;
   if (args[0].is_bool())

@@ -69,18 +69,18 @@ DateTimeHandler::DateTimeHandler() {}
 DateTimeHandler::~DateTimeHandler() = default;
 
 void DateTimeHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "dateTimePageReady",
       base::BindRepeating(&DateTimeHandler::HandleDateTimePageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "getTimeZones", base::BindRepeating(&DateTimeHandler::HandleGetTimeZones,
                                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showSetDateTimeUI",
       base::BindRepeating(&DateTimeHandler::HandleShowSetDateTimeUI,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "handleShowParentAccessForTimeZone",
       base::BindRepeating(&DateTimeHandler::HandleShowParentAccessForTimeZone,
                           base::Unretained(this)));
@@ -115,7 +115,7 @@ void DateTimeHandler::OnJavascriptDisallowed() {
   local_state_pref_change_registrar_.RemoveAll();
 }
 
-void DateTimeHandler::HandleDateTimePageReady(base::Value::ConstListView args) {
+void DateTimeHandler::HandleDateTimePageReady(const base::Value::List& args) {
   AllowJavascript();
 
   // Send the time zone automatic detection policy in case it changed after the
@@ -123,7 +123,7 @@ void DateTimeHandler::HandleDateTimePageReady(base::Value::ConstListView args) {
   NotifyTimezoneAutomaticDetectionPolicy();
 }
 
-void DateTimeHandler::HandleGetTimeZones(base::Value::ConstListView args) {
+void DateTimeHandler::HandleGetTimeZones(const base::Value::List& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -131,7 +131,7 @@ void DateTimeHandler::HandleGetTimeZones(base::Value::ConstListView args) {
   ResolveJavascriptCallback(callback_id, *system::GetTimezoneList());
 }
 
-void DateTimeHandler::HandleShowSetDateTimeUI(base::Value::ConstListView args) {
+void DateTimeHandler::HandleShowSetDateTimeUI(const base::Value::List& args) {
   // Make sure the clock status hasn't changed since the button was clicked.
   if (!SystemClockClient::Get()->CanSetTime())
     return;
@@ -140,7 +140,7 @@ void DateTimeHandler::HandleShowSetDateTimeUI(base::Value::ConstListView args) {
 }
 
 void DateTimeHandler::HandleShowParentAccessForTimeZone(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(

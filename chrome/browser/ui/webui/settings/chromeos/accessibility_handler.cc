@@ -54,49 +54,49 @@ AccessibilityHandler::~AccessibilityHandler() {
 }
 
 void AccessibilityHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showChromeVoxSettings",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showSelectToSpeakSettings",
       base::BindRepeating(
           &AccessibilityHandler::HandleShowSelectToSpeakSettings,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setStartupSoundEnabled",
       base::BindRepeating(&AccessibilityHandler::HandleSetStartupSoundEnabled,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "recordSelectedShowShelfNavigationButtonValue",
       base::BindRepeating(
           &AccessibilityHandler::
               HandleRecordSelectedShowShelfNavigationButtonsValue,
           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "manageA11yPageReady",
       base::BindRepeating(&AccessibilityHandler::HandleManageA11yPageReady,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showChromeVoxTutorial",
       base::BindRepeating(&AccessibilityHandler::HandleShowChromeVoxTutorial,
                           base::Unretained(this)));
 }
 
 void AccessibilityHandler::HandleShowChromeVoxSettings(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   OpenExtensionOptionsPage(extension_misc::kChromeVoxExtensionId);
 }
 
 void AccessibilityHandler::HandleShowSelectToSpeakSettings(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   OpenExtensionOptionsPage(extension_misc::kSelectToSpeakExtensionId);
 }
 
 void AccessibilityHandler::HandleSetStartupSoundEnabled(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
   if (args[0].is_bool())
@@ -105,7 +105,7 @@ void AccessibilityHandler::HandleSetStartupSoundEnabled(
 }
 
 void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK_EQ(1U, args.size());
   bool enabled = false;
   if (args[0].is_bool())
@@ -117,7 +117,7 @@ void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
 }
 
 void AccessibilityHandler::HandleManageA11yPageReady(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AllowJavascript();
 }
 
@@ -135,7 +135,7 @@ void AccessibilityHandler::OnJavascriptDisallowed() {
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   AccessibilityManager::Get()->ShowChromeVoxTutorial();
 }
 

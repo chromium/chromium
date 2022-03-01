@@ -59,22 +59,22 @@ namespace settings {
 const char KeyboardHandler::kShowKeysChangedName[] = "show-keys-changed";
 
 void KeyboardHandler::TestAPI::Initialize() {
-  handler_->HandleInitialize(base::Value::ConstListView());
+  handler_->HandleInitialize(base::Value::List());
 }
 
 KeyboardHandler::KeyboardHandler() = default;
 KeyboardHandler::~KeyboardHandler() = default;
 
 void KeyboardHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeKeyboardSettings",
       base::BindRepeating(&KeyboardHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "showKeyboardShortcutViewer",
       base::BindRepeating(&KeyboardHandler::HandleShowKeyboardShortcutViewer,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "initializeKeyboardWatcher",
       base::BindRepeating(&KeyboardHandler::HandleKeyboardChange,
                           base::Unretained(this)));
@@ -97,18 +97,18 @@ void KeyboardHandler::OnInputDeviceConfigurationChanged(
   }
 }
 
-void KeyboardHandler::HandleInitialize(base::Value::ConstListView args) {
+void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
   AllowJavascript();
   UpdateShowKeys();
   UpdateKeyboards();
 }
 
 void KeyboardHandler::HandleShowKeyboardShortcutViewer(
-    base::Value::ConstListView args) const {
+    const base::Value::List& args) const {
   ash::ToggleKeyboardShortcutViewer();
 }
 
-void KeyboardHandler::HandleKeyboardChange(base::Value::ConstListView args) {
+void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
   AllowJavascript();
   UpdateKeyboards();
 }

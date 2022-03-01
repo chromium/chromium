@@ -62,7 +62,7 @@ constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
 };
 
 ash::AmbientModeTemperatureUnit ExtractTemperatureUnit(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   auto temperature_unit = args[0].GetString();
   if (temperature_unit == kCelsius)
     return ash::AmbientModeTemperatureUnit::kCelsius;
@@ -92,8 +92,7 @@ ash::AmbientModeTopicSource ExtractTopicSource(const base::Value& value) {
   return topic_source;
 }
 
-ash::AmbientModeTopicSource ExtractTopicSource(
-    base::Value::ConstListView args) {
+ash::AmbientModeTopicSource ExtractTopicSource(const base::Value::List& args) {
   CHECK_EQ(args.size(), 1U);
   return ExtractTopicSource(args[0]);
 }
@@ -135,22 +134,22 @@ AmbientModeHandler::AmbientModeHandler(PrefService* pref_service)
 AmbientModeHandler::~AmbientModeHandler() = default;
 
 void AmbientModeHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestSettings",
       base::BindRepeating(&AmbientModeHandler::HandleRequestSettings,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "requestAlbums",
       base::BindRepeating(&AmbientModeHandler::HandleRequestAlbums,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setSelectedTemperatureUnit",
       base::BindRepeating(&AmbientModeHandler::HandleSetSelectedTemperatureUnit,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback2(
+  web_ui()->RegisterMessageCallback(
       "setSelectedAlbums",
       base::BindRepeating(&AmbientModeHandler::HandleSetSelectedAlbums,
                           base::Unretained(this)));
@@ -182,8 +181,7 @@ void AmbientModeHandler::OnEnabledPrefChanged() {
     UpdateSettings();
 }
 
-void AmbientModeHandler::HandleRequestSettings(
-    base::Value::ConstListView args) {
+void AmbientModeHandler::HandleRequestSettings(const base::Value::List& args) {
   CHECK(args.empty());
 
   AllowJavascript();
@@ -195,7 +193,7 @@ void AmbientModeHandler::HandleRequestSettings(
   RequestSettingsAndAlbums(/*topic_source=*/absl::nullopt);
 }
 
-void AmbientModeHandler::HandleRequestAlbums(base::Value::ConstListView args) {
+void AmbientModeHandler::HandleRequestAlbums(const base::Value::List& args) {
   CHECK_EQ(args.size(), 1U);
 
   AllowJavascript();
@@ -208,7 +206,7 @@ void AmbientModeHandler::HandleRequestAlbums(base::Value::ConstListView args) {
 }
 
 void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   DCHECK(settings_);
   CHECK_EQ(1U, args.size());
 
@@ -220,7 +218,7 @@ void AmbientModeHandler::HandleSetSelectedTemperatureUnit(
 }
 
 void AmbientModeHandler::HandleSetSelectedAlbums(
-    base::Value::ConstListView args) {
+    const base::Value::List& args) {
   CHECK_EQ(args.size(), 1U);
   const base::Value& dictionary = args[0];
   const base::Value* topic_source_value = dictionary.FindKey("topicSource");
