@@ -228,10 +228,6 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
                            reservation.id, reservation.generation,
                            WGPUTextureUsage_CopyDst,
                            reinterpret_cast<const GLbyte*>(&dst_mailbox));
-
-  WGPUCommandEncoder command_encoder =
-      GetProcs().deviceCreateCommandEncoder(device_->GetHandle(), nullptr);
-
   WGPUImageCopyTexture source = {
       .nextInChain = nullptr,
       .texture = texture,
@@ -251,8 +247,18 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
       .height = static_cast<uint32_t>(size.height()),
       .depthOrArrayLayers = 1,
   };
-  GetProcs().commandEncoderCopyTextureToTextureInternal(
-      command_encoder, &source, &destination, &copy_size);
+
+  WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
+      .chain = {.sType = WGPUSType_DawnEncoderInternalUsageDescriptor},
+      .useInternalUsages = true,
+  };
+  WGPUCommandEncoderDescriptor command_encoder_desc = {
+      .nextInChain = &internal_usage_desc.chain,
+  };
+  WGPUCommandEncoder command_encoder = GetProcs().deviceCreateCommandEncoder(
+      device_->GetHandle(), &command_encoder_desc);
+  GetProcs().commandEncoderCopyTextureToTexture(command_encoder, &source,
+                                                &destination, &copy_size);
 
   WGPUCommandBuffer command_buffer =
       GetProcs().commandEncoderFinish(command_encoder, nullptr);
