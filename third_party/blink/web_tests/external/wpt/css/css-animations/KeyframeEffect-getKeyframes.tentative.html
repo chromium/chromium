@@ -843,8 +843,8 @@ test(t => {
   const frames = getKeyframes(div);
 
   const expected = [
-    { offset: 0,   computedOffset: 0,   easing: "ease",   composite: "auto", left: "auto" },
     { offset: 0,   computedOffset: 0,   easing: "linear", composite: "auto" },
+    { offset: 0,   computedOffset: 0,   easing: "ease",   composite: "auto", left: "auto" },
     { offset: 0.5, computedOffset: 0.5, easing: "ease",   composite: "auto", left: "10px" },
     { offset: 1,   computedOffset: 1,   easing: "linear", composite: "auto" },
     { offset: 1,   computedOffset: 1,   easing: "ease",   composite: "auto", left: "auto" }

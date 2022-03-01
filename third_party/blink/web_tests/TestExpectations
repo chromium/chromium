@@ -3336,6 +3336,7 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 crbug.com/626703 [ Win ] external/wpt/css/css-animations/KeyframeEffect-getKeyframes.tentative.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-006.https.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/idlharness.https.window.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
@@ -7429,7 +7430,7 @@ crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-s
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
 
 # Sheriff 2022-01-05
-crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Skip Failure Pass Timeout ]
+crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Failure Pass Skip Timeout ]
 
 # Incomplete support for mouse wheel in test_driver.
 crbug.com/1285411 external/wpt/css/css-scroll-snap/input/mouse-wheel.html [ Timeout ]

@@ -110474,7 +110474,7 @@
       ]
      ],
      "font-palette-21.html": [
-      "289f1bae06bc1835a03ade6c39d47732d218a6b8",
+      "75709ccdc6cbba1f21c775245d964cca1bd0d96d",
       [
        null,
        [
@@ -291714,7 +291714,7 @@
          []
         ],
         "path-objects.yaml": [
-         "bdabfd66cf92cef516ed406542c5fc42ff5d7436",
+         "8216de36ec1d8d8db19e43f6dc0e482f23a8bdf6",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -306061,7 +306061,7 @@
     ]
    },
    "lint.ignore": [
-    "eab1f2bb361230ccc958b9ebecaf4b8e62aac080",
+    "d78f4a39c4c21c564d95055bba937c35f0a7d79f",
     []
    ],
    "loading": {
@@ -312414,6 +312414,10 @@
       "d66f886dd23d44bb33750cb5723f3edb6b7930ab",
       []
      ],
+     "delay-css.py": [
+      "9a905960eea4ac35ab1abc487f80084621e358d2",
+      []
+     ],
      "document-domain-no-impact.html": [
       "64cdd8a8701eb4d749f112ad4015d4e5779b77b1",
       []
@@ -312536,6 +312540,10 @@
      ],
      "iframe_TAO_match_origin.html": [
       "cf68aade7954e609087d34f21e437c285eb73a58",
+      []
+     ],
+     "import.sub.css": [
+      "618c568d2a1d7be2365c7c2cd4078601d8aad25f",
       []
      ],
      "inject_resource_test.html": [
@@ -323765,7 +323773,7 @@
       []
      ],
      "usb-helpers.js": [
-      "8525da74b559cb776b2a91529c5e47a8c47984d3",
+      "8b8365093cd073d95e51a365e3a1552d592f1726",
       []
      ]
     },
@@ -339904,7 +339912,7 @@
      ]
     },
     "getRandomValues.any.js": [
-     "a6762353798f43d1a922477c8e3087138376cbdf",
+     "1a3370ea13d2c0ab4c88c90926ea85ed48482c11",
      [
       "WebCryptoAPI/getRandomValues.any.html",
       {}
@@ -360465,6 +360473,13 @@
         {}
        ]
       ],
+      "block-in-inline-hittest-float-002.html": [
+       "91f8e447d90c09f4b0c6dbaf09e2ec782d9da674",
+       [
+        null,
+        {}
+       ]
+      ],
       "block-in-inline-insert-018.html": [
        "39118d610b79a0b479a6da1becb5295e01dc9911",
        [
@@ -361643,7 +361658,7 @@
       ]
      ],
      "KeyframeEffect-getKeyframes.tentative.html": [
-      "ed15e20f29f6bd5b5914b8cf364b8ff91855f0a0",
+      "0167fda679996b045ae4205d615f73b72e23095c",
       [
        null,
        {}
@@ -433210,7 +433225,7 @@
         ]
        ],
        "2d.path.roundrect.radius.noarugment.html": [
-        "764f739710a46d584f93ce59b9c052b06e234132",
+        "8b1840e02836e054b05791adf7a156663071b24e",
         [
          null,
          {}
@@ -476359,6 +476374,13 @@
        "testdriver": true
       }
      ]
+    ],
+    "VideoTrackGenerator.https.html": [
+     "afcc1a04e91f77859fb0c700e5d2f28e29f62689",
+     [
+      null,
+      {}
+     ]
     ]
    },
    "mediacapture-record": {
@@ -499676,6 +499698,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "link-sequence-of-events.html": [
+     "be9db32cd92968a210f54a26ae14b6e93a8e836c",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "nested-context-navigations-embed.html": [
@@ -548682,6 +548713,28 @@
       {}
      ]
     ],
+    "usb-garbage-collection.https.window.js": [
+     "26c99786c37ba23a7ceec7cbd514cd0103f4460b",
+     [
+      "webusb/usb-garbage-collection.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/fake-devices.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/usb-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "usb-supported-by-feature-policy.html": [
      "d5b585a094f516839dd897935839953d15043dce",
      [
@@ -548895,6 +548948,47 @@
      [
       null,
       {}
+     ]
+    ],
+    "usbDevice-same-objecct.https.any.js": [
+     "088b4a258aa71a3e0b54f7cf1e38e26b4b58a0aa",
+     [
+      "webusb/usbDevice-same-objecct.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/fake-devices.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/usb-helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "webusb/usbDevice-same-objecct.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/fake-devices.js"
+        ],
+        [
+         "script",
+         "/webusb/resources/usb-helpers.js"
+        ]
+       ]
+      }
      ]
     ],
     "usbDevice-worker.https.html": [
