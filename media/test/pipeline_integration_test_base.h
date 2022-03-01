@@ -212,10 +212,6 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
       TestMediaSource* source,
       uint8_t test_type,
       FakeEncryptedMedia* encrypted_media);
-  PipelineStatus StartPipelineWithMediaSource(
-      TestMediaSource* source,
-      uint8_t test_type,
-      CreateAudioDecodersCB prepend_audio_decoders_cb);
 
   void OnSeeked(base::TimeDelta seek_time, PipelineStatus status);
   void OnStatusCallback(const base::RepeatingClosure& quit_run_loop_closure,
