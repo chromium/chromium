@@ -2020,11 +2020,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     AddSameConstraintsToSides(
         self.view, containerView,
         LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-
-    NamedGuide* guide =
-        [[NamedGuide alloc] initWithName:kSecondaryToolbarNoFullscreenGuide];
-    [self.view addLayoutGuide:guide];
-    guide.constrainedView = containerView;
   }
 }
 
@@ -2040,11 +2035,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   AddSameConstraintsToSides(
       self.view, containerView,
       LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-
-  NamedGuide* guide =
-      [[NamedGuide alloc] initWithName:kSecondaryToolbarNoFullscreenGuide];
-  [self.view addLayoutGuide:guide];
-  guide.constrainedView = containerView;
 }
 
 // Adds constraints to the primary and secondary toolbars, anchoring them to the

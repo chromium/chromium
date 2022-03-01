@@ -21,9 +21,6 @@ extern GuideName* const kContentAreaGuide;
 extern GuideName* const kPrimaryToolbarGuide;
 // A guide that is constrained to match the frame of the secondary toolbar.
 extern GuideName* const kSecondaryToolbarGuide;
-// A guide that is constrained to match the frame the secondary toolbar would
-// have if fullscreen was disabled.
-extern GuideName* const kSecondaryToolbarNoFullscreenGuide;
 // A guide that is constrainted to match the frame of the displayedBadge in the
 // Badge View.
 extern GuideName* const kBadgeOverflowMenuGuide;
