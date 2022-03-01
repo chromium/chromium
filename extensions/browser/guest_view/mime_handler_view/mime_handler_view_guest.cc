@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -37,10 +36,6 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 using content::WebContents;
 using guest_view::GuestViewBase;
@@ -448,14 +443,12 @@ void MimeHandlerViewGuest::DocumentOnLoadCompletedInPrimaryMainFrame() {
 void MimeHandlerViewGuest::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned)) {
-    const GURL& url = navigation_handle->GetURL();
-    if (url.SchemeIs(kExtensionScheme) &&
-        url.host_piece() == extension_misc::kPdfExtensionId) {
-      // The unseasoned PDF viewer will navigate to the stream URL (using
-      // PdfNavigtionThrottle), rather than using it as a subresource.
-      return;
-    }
+  const GURL& url = navigation_handle->GetURL();
+  if (url.SchemeIs(kExtensionScheme) &&
+      url.host_piece() == extension_misc::kPdfExtensionId) {
+    // The unseasoned PDF viewer will navigate to the stream URL (using
+    // PdfNavigtionThrottle), rather than using it as a subresource.
+    return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

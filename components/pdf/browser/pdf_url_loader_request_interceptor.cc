@@ -8,14 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "components/pdf/browser/plugin_response_writer.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "pdf/pdf_features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
@@ -50,9 +48,6 @@ std::unique_ptr<content::URLLoaderRequestInterceptor>
 PdfURLLoaderRequestInterceptor::MaybeCreateInterceptor(
     int frame_tree_node_id,
     std::unique_ptr<PdfStreamDelegate> stream_delegate) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned))
-    return nullptr;
-
   return std::make_unique<PdfURLLoaderRequestInterceptor>(
       frame_tree_node_id, std::move(stream_delegate));
 }

@@ -11,9 +11,4 @@ static_library("common") {
     "internal_plugin_helpers.cc",
     "internal_plugin_helpers.h",
   ]
-
-  deps = [
-    "//base",
-    "//pdf:features",
-  ]
 }

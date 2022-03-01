@@ -764,8 +764,7 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
     return false;
   }
 #if BUILDFLAG(ENABLE_PDF)
-  if (plugin_info->actual_mime_type == pdf::kInternalPluginMimeType &&
-      pdf::IsInternalPluginExternallyHandled()) {
+  if (plugin_info->actual_mime_type == pdf::kInternalPluginMimeType) {
     // Only actually treat the internal PDF plugin as externally handled if
     // used within an origin allowed to create the internal PDF plugin;
     // otherwise, let Blink try to create the in-process PDF plugin.
@@ -1062,7 +1061,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
         if (info.name ==
             ASCIIToUTF16(ChromeContentClient::kPDFInternalPluginName)) {
           return pdf::CreateInternalPlugin(
-              info, std::move(params), render_frame,
+              std::move(params), render_frame,
               std::make_unique<ChromePdfInternalPluginDelegate>());
         }
 #endif  // BUILDFLAG(ENABLE_PDF)

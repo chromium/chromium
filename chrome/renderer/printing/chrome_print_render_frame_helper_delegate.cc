@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -23,7 +22,6 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/common/pdf_util.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
-#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 ChromePrintRenderFrameHelperDelegate::ChromePrintRenderFrameHelperDelegate() =
@@ -37,25 +35,8 @@ ChromePrintRenderFrameHelperDelegate::~ChromePrintRenderFrameHelperDelegate() =
 blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (IsPdfInternalPluginAllowedOrigin(frame->GetSecurityOrigin())) {
-    DCHECK(!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned));
-    // <object> with id="plugin" is created in
-    // chrome/browser/resources/pdf/pdf_viewer_base.js.
-    auto viewer_element = frame->GetDocument().GetElementById("viewer");
-    if (!viewer_element.IsNull() && !viewer_element.ShadowRoot().IsNull()) {
-      auto plugin_element =
-          viewer_element.ShadowRoot().QuerySelector("#plugin");
-      if (!plugin_element.IsNull()) {
-        return plugin_element;
-      }
-    }
-    NOTREACHED();
-    return blink::WebElement();
-  }
-
   if (frame->Parent() &&
       IsPdfInternalPluginAllowedOrigin(frame->Parent()->GetSecurityOrigin())) {
-    DCHECK(base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned));
     auto plugin_element = frame->GetDocument().QuerySelector("embed");
     DCHECK(!plugin_element.IsNull());
     return plugin_element;

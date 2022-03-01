@@ -14,7 +14,6 @@ struct WebPluginParams;
 
 namespace content {
 class RenderFrame;
-struct WebPluginInfo;
 }  // namespace content
 
 namespace pdf {
@@ -32,7 +31,6 @@ bool IsPdfRenderer();
 // Note that `blink::WebPlugin` has a special life cycle, so it's returned as a
 // raw pointer here.
 blink::WebPlugin* CreateInternalPlugin(
-    const content::WebPluginInfo& info,
     blink::WebPluginParams params,
     content::RenderFrame* render_frame,
     std::unique_ptr<PdfInternalPluginDelegate> delegate);

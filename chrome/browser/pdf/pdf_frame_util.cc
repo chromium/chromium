@@ -8,18 +8,13 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "chrome/common/pdf_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "pdf/pdf_features.h"
 
 namespace pdf_frame_util {
 
 content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned))
-    return nullptr;
-
   if (!IsPdfInternalPluginAllowedOrigin(rfh->GetLastCommittedOrigin()))
     return nullptr;
 

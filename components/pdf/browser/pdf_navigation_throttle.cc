@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -19,7 +18,6 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "pdf/pdf_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -31,9 +29,6 @@ std::unique_ptr<content::NavigationThrottle>
 PdfNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<PdfStreamDelegate> stream_delegate) {
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned))
-    return nullptr;
-
   if (navigation_handle->IsInMainFrame())
     return nullptr;
 

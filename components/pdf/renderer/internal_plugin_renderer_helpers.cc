@@ -9,14 +9,12 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/mojom/pdf.mojom.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdf_view_web_plugin.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -36,7 +34,6 @@ bool IsPdfRenderer() {
 }
 
 blink::WebPlugin* CreateInternalPlugin(
-    const content::WebPluginInfo& info,
     blink::WebPluginParams params,
     content::RenderFrame* render_frame,
     std::unique_ptr<PdfInternalPluginDelegate> delegate) {
@@ -48,11 +45,6 @@ blink::WebPlugin* CreateInternalPlugin(
       params.url = GURL(params.attribute_values[i].Utf16());
       break;
     }
-  }
-
-  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned)) {
-    // Delegate Pepper plugin creation to `content::RenderFrame`.
-    return render_frame->CreatePlugin(info, params);
   }
 
   // The in-process plugin should only be created if the parent frame's origin
