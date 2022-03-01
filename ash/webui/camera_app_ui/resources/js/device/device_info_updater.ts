@@ -121,6 +121,7 @@ export class DeviceInfoUpdater {
    * Requests to lock update of device information. This function is preserved
    * for device information reader to lock the update capability so as to ensure
    * getting consistent data between all information providers.
+   *
    * @param callback Called after update capability is locked. Getting
    *     information from all providers in callback are guaranteed to be
    *     consistent.
@@ -154,6 +155,7 @@ export class DeviceInfoUpdater {
 
   /**
    * Gets MediaDeviceInfo of specific video device.
+   *
    * @param deviceId Device id of video device to get information from.
    */
   getDeviceInfo(deviceId: string): MediaDeviceInfo|null {

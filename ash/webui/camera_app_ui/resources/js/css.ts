@@ -20,6 +20,7 @@ const cssRules: CSSRule[] = (() => {
 
 /**
  * Gets the CSS style by the given selector.
+ *
  * @param selector Selector text.
  */
 export function cssStyle(selector: string): CSSStyleDeclaration {

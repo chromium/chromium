@@ -91,6 +91,7 @@ const allObservers = new Map<StateUnion, Set<StateObserver>>();
 
 /**
  * Adds observer function to be called on any state change.
+ *
  * @param state State to be observed.
  * @param observer Observer function called with newly changed value.
  */
@@ -105,6 +106,7 @@ export function addObserver(state: StateUnion, observer: StateObserver): void {
 
 /**
  * Adds one-time observer function to be called on any state change.
+ *
  * @param state State to be observed.
  * @param observer Observer function called with newly changed value.
  */
@@ -119,6 +121,7 @@ export function addOneTimeObserver(
 
 /**
  * Removes observer function to be called on state change.
+ *
  * @param state State to remove observer from.
  * @param observer Observer function to be removed.
  * @return Whether the observer is in the set and is removed successfully or
@@ -135,6 +138,7 @@ export function removeObserver(
 
 /**
  * Checks if the specified state exists.
+ *
  * @param state State to be checked.
  * @return Whether the state exists.
  */
@@ -145,6 +149,7 @@ export function get(state: StateUnion): boolean {
 /**
  * Sets the specified state on or off. Optionally, pass the information for
  * performance measurement.
+ *
  * @param state State to be set.
  * @param val True to set the state on, false otherwise.
  * @param perfInfo Optional information of this state for performance

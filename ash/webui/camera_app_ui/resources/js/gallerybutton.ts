@@ -112,6 +112,7 @@ export class GalleryButton implements ResultSaver {
 
   /**
    * Initializes the gallery button.
+   *
    * @param dir Directory holding saved pictures showing in gallery.
    */
   async initialize(dir: DirectoryAccessEntry): Promise<void> {

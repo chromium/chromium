@@ -23,6 +23,9 @@ export const WarningType = {
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
+/**
+ * Asserts that the argument is an I18nString, throws error otherwise.
+ */
 function assertI18nString(value: unknown): I18nString {
   const stringValue = assertString(value);
   return assertEnumVariant(I18nString, stringValue);

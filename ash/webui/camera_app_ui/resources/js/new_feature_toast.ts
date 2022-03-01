@@ -177,6 +177,9 @@ let showing: {
   timeout: number,
 }|null = null;
 
+/**
+ * Hides the new feature toast.
+ */
 export function hide(): void {
   if (showing === null) {
     return;
@@ -193,6 +196,9 @@ export function hide(): void {
  */
 const SHOWING_TIMEOUT_MS = 10000;
 
+/**
+ * Shows the toast on the given element.
+ */
 export async function show(el: HTMLElement): Promise<void> {
   if (showing !== null) {
     hide();

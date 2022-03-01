@@ -15,7 +15,10 @@ import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Creates a canvas element for 2D drawing.
- * @param params Width/Height of the canvas.
+ *
+ * @param params Size of the canvas.
+ * @param params.width Width of the canvas.
+ * @param params.height Height of the canvas.
  * @return Returns canvas element and the context for 2D drawing.
  */
 export function newDrawingCanvas(
@@ -29,6 +32,9 @@ export function newDrawingCanvas(
   return {canvas, ctx};
 }
 
+/**
+ * Converts canvas content to a JPEG Blob.
+ */
 export function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
@@ -41,6 +47,9 @@ export function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   });
 }
 
+/**
+ * Converts ImageBitmap to a JPEG Blob.
+ */
 export function bitmapToJpegBlob(bitmap: ImageBitmap): Promise<Blob> {
   const {canvas, ctx} =
       newDrawingCanvas({width: bitmap.width, height: bitmap.height});
@@ -50,6 +59,7 @@ export function bitmapToJpegBlob(bitmap: ImageBitmap): Promise<Blob> {
 
 /**
  * Returns a shortcut string, such as Ctrl-Alt-A.
+ *
  * @param event Keyboard event.
  * @return Shortcut identifier.
  */
@@ -87,6 +97,7 @@ export function getShortcutIdentifier(event: KeyboardEvent): string {
 
 /**
  * Sets up i18n messages on DOM subtree by i18n attributes.
+ *
  * @param rootElement Root of DOM subtree to be set up with.
  */
 export function setupI18nElements(rootElement: DocumentFragment|Element): void {
@@ -198,6 +209,7 @@ export function instantiateTemplate(selector: string): DocumentFragment {
 /**
  * Creates JS module by given |scriptUrl| under untrusted context with given
  * origin and returns its proxy.
+ *
  * @param scriptUrl The URL of the script to load.
  */
 export async function createUntrustedJSModule<T>(scriptUrl: string):
@@ -225,6 +237,7 @@ export async function createUntrustedJSModule<T>(scriptUrl: string):
 
 /**
  * Sleeps for a specified time.
+ *
  * @param ms Milliseconds to sleep.
  */
 export function sleep(ms: number): Promise<void> {
@@ -232,7 +245,7 @@ export function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Gets value in px of a property in a StylePropertyMapReadOnly
+ * Gets value in px of a property in a StylePropertyMapReadOnly.
  */
 export function getStyleValueInPx(
     style: (StylePropertyMap|StylePropertyMapReadOnly), prop: string): number {
@@ -249,6 +262,7 @@ export class DelayInterval {
   private readonly delayTimeoutId: number;
 
   /**
+   * @param callback Callback to be triggered in fixed interval.
    * @param delayMs Delay milliseconds at start.
    * @param intervalMs Interval in milliseconds.
    */
@@ -292,8 +306,10 @@ export async function share(file: File): Promise<void> {
 
 /**
  * Check if a string value is a variant of an enum.
- * @param value value to be checked
- * @return the value if it's an enum variant, null otherwise
+ *
+ * @param enumType The enum type to be checked.
+ * @param value Value to be checked.
+ * @return The value if it's an enum variant, null otherwise.
  */
 export function checkEnumVariant<T extends string>(
     enumType: {[key: string]: T}, value: string|null|undefined): T|null {
@@ -306,8 +322,10 @@ export function checkEnumVariant<T extends string>(
 
 /**
  * Asserts that a string value is a variant of an enum.
- * @param value value to be checked
- * @return the value if it's an enum variant, throws assertion error otherwise.
+ *
+ * @param enumType The enum type to be checked.
+ * @param value Value to be checked.
+ * @return The value if it's an enum variant, throws assertion error otherwise.
  */
 export function assertEnumVariant<T extends string>(
     enumType: {[key: string]: T}, value: string|null|undefined): T {

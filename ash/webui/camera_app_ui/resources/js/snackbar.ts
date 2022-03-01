@@ -9,6 +9,7 @@ import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Shows a snackbar message.
+ *
  * @param label The label of the message to show.
  * @param substitutions The substitutions for the label.
  */

@@ -20,6 +20,7 @@ const elementsStatus = new Map<HTMLAudioElement, Status>();
 
 /**
  * Plays a sound.
+ *
  * @param el Audio element to play.
  * @return Promise which will be resolved once the sound is stopped. The
  *     resolved value will be true if it is ended. Otherwise, it is just paused
@@ -51,6 +52,7 @@ export async function play(el: HTMLAudioElement): Promise<boolean> {
 /**
  * Cancel a sound from playing. If the sound is loading, cancel it right after
  * it start playing. If the sound is paused, do nothing.
+ *
  * @param el Audio element to cancel.
  */
 export async function cancel(el: HTMLAudioElement): Promise<void> {

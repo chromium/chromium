@@ -28,6 +28,7 @@ export class Resolution {
 
   /**
    * Compares width/height of resolutions, see if they are equal or not.
+   *
    * @param resolution Resolution to be compared with.
    * @return Whether width/height of resolutions are equal.
    */
@@ -37,6 +38,7 @@ export class Resolution {
 
   /**
    * Compares aspect ratio of resolutions, see if they are equal or not.
+   *
    * @param resolution Resolution to be compared with.
    * @return Whether aspect ratio of resolutions are equal.
    */
@@ -199,6 +201,12 @@ export interface VideoTrackSettings {
   frameRate: number;
 }
 
+/**
+ * Gets video track settings from a video track.
+ *
+ * This asserts that all property that should exists on video track settings
+ * (.width, .height, .deviceId, .frameRate) all exists and narrow the type.
+ */
 export function getVideoTrackSettings(videoTrack: MediaStreamTrack):
     VideoTrackSettings {
   // TODO(pihsun): The type from TypeScript lib.dom.d.ts is wrong on Chrome and

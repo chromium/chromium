@@ -38,10 +38,16 @@ export function getBool(key: string, defaultValue = false): boolean {
   return assertBoolean(getHelper(key, defaultValue));
 }
 
+/**
+ * Sets the value of localStorage for the given key.
+ */
 export function set(key: string, value: unknown): void {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
+/**
+ * Removes values of localStorage for the given keys.
+ */
 export function remove(...keys: string[]): void {
   for (const key of keys) {
     window.localStorage.removeItem(key);

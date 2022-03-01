@@ -67,7 +67,7 @@ export class StreamManager {
   private realDevices: DeviceInfo[] = [];
 
   /**
-   * real device id and corresponding virtual devices id mapping and it is
+   * Real device id and corresponding virtual devices id mapping and it is
    * only available on HALv3.
    */
   private virtualMap: VirtualMap|null = null;
@@ -101,6 +101,7 @@ export class StreamManager {
   /**
    * Creates a new instance of StreamManager if it is not set. Returns the
    *     exist instance.
+   *
    * @return The singleton instance.
    */
   static getInstance(): StreamManager {
@@ -251,6 +252,7 @@ export class StreamManager {
 
   /**
    * Queries Camera3DeviceInfo of available devices through private mojo API.
+   *
    * @return Camera3DeviceInfo of available devices. Maybe null on HALv1
    *     devices without supporting private mojo api.
    * @throws Thrown when camera unplugging happens between enumerating devices
@@ -273,6 +275,7 @@ export class StreamManager {
    * Enables/Disables multiple streams on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
+   *
    * @param deviceId The id of target camera device.
    * @param enabled True for eanbling multiple streams.
    */

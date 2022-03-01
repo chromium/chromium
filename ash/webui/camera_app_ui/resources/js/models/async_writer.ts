@@ -34,6 +34,7 @@ export class AsyncWriter {
 
   /**
    * Writes the blob asynchronously.
+   *
    * @return Resolved when the data is written.
    */
   async write(blob: Blob): Promise<void> {
@@ -43,6 +44,7 @@ export class AsyncWriter {
 
   /**
    * Seeks to the specified |offset|.
+   *
    * @return Resolved when the seek operation is finished.
    */
   async seek(offset: number): Promise<void> {
@@ -55,6 +57,7 @@ export class AsyncWriter {
 
   /**
    * Closes the writer. No more write operations are allowed.
+   *
    * @return Resolved when all write operations are finished.
    */
   async close(): Promise<void> {
@@ -73,6 +76,7 @@ export class AsyncWriter {
   /**
    * Combines multiple writers into one writer such that the blob would be
    * written to each of them.
+   *
    * @return The combined writer.
    */
   static combine(...writers: AsyncWriter[]): AsyncWriter {

@@ -40,6 +40,7 @@ export abstract class ModeBase {
 
   /**
    * Initiates video/photo capture operation.
+   *
    * @return Promise for ongoing capture operation and resolved to handler
    *     function which should be run after capture finished.
    */
@@ -58,6 +59,7 @@ export abstract class ModeBase {
 
   /**
    * Stops the ongoing capture operation.
+   *
    * @return Promise for ongoing capture operation.
    */
   async stopCapture(): Promise<void> {
@@ -80,6 +82,7 @@ export abstract class ModeBase {
 
   /**
    * Adds an observer to save image metadata.
+   *
    * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
@@ -91,6 +94,7 @@ export abstract class ModeBase {
 
   /**
    * Removes the observer that saves metadata.
+   *
    * @return Promise for the operation.
    */
   async removeMetadataObserver(): Promise<void> {

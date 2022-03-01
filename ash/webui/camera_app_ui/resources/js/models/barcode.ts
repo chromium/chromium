@@ -94,6 +94,7 @@ export class BarcodeScanner {
 
   /**
    * Scans barcodes from the current frame.
+   *
    * @return The detected barcode value, or null if no barcode is detected.
    */
   private async scan(): Promise<string|null> {

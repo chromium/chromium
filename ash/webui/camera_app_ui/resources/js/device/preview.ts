@@ -99,6 +99,7 @@ export class Preview {
   private onPreviewExpired: WaitableEvent|null = null;
 
   /**
+   * @param getLastScreenOnTime Callback to get last time screen is on.
    * @param onNewStreamNeeded Callback to request new stream.
    */
   constructor(
@@ -145,6 +146,7 @@ export class Preview {
 
   /**
    * USB camera vid:pid identifier of the opened stream.
+   *
    * @return Identifier formatted as "vid:pid" or null for non-USB camera.
    */
   getVidPid(): string|null {
@@ -267,6 +269,7 @@ export class Preview {
 
   /**
    * Sets video element's source.
+   *
    * @param stream Stream to be the source.
    * @return Promise for the operation.
    */
@@ -308,6 +311,7 @@ export class Preview {
 
   /**
    * Opens preview stream.
+   *
    * @param constraints Constraints of preview stream.
    * @return Promise resolved to opened preview stream.
    */
@@ -408,6 +412,7 @@ export class Preview {
 
   /**
    * Creates an image blob of the current frame.
+   *
    * @return Promise for the result.
    */
   toImage(): Promise<Blob> {
@@ -419,6 +424,7 @@ export class Preview {
 
   /**
    * Displays preview metadata on preview screen.
+   *
    * @return Promise for the operation.
    */
   private async enableShowMetadata(): Promise<void> {
@@ -655,6 +661,7 @@ export class Preview {
 
   /**
    * Hide display preview metadata on preview screen.
+   *
    * @return Promise for the operation.
    */
   private async disableShowMetadata(): Promise<void> {
@@ -695,6 +702,7 @@ export class Preview {
 
   /**
    * Apply point of interest to the stream.
+   *
    * @param point The point in normalize coordidate system, which means both
    *     |x| and |y| are in range [0, 1).
    */
@@ -708,6 +716,7 @@ export class Preview {
 
   /**
    * Handles clicking for focus.
+   *
    * @param event Click event.
    */
   private onFocusClicked(event: MouseEvent) {

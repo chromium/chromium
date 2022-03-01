@@ -431,6 +431,7 @@ export class Camera extends View implements CameraViewUI {
 
   /**
    * Begins to take photo or recording with the current options, e.g. timer.
+   *
    * @param shutterType The shutter is triggered by which shutter type.
    * @return Promise resolved when take action completes. Returns null if CCA
    *     can't start take action.
@@ -481,7 +482,8 @@ export class Camera extends View implements CameraViewUI {
   }
 
   /**
-   * Ends the current take (or clears scheduled further takes if any.)
+   * Ends the current take (or clears scheduled further takes if any).
+   *
    * @return Promise for the operation.
    */
   private async endTake(): Promise<void> {

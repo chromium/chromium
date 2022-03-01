@@ -35,6 +35,7 @@ const BURST_COVER_SUFFIX = '_COVER';
 
 /**
  * Transforms from capture timestamp to datetime name.
+ *
  * @param timestamp Timestamp to be transformed.
  * @return Transformed datetime name.
  */
@@ -69,6 +70,7 @@ export class Filenamer {
 
   /**
    * Creates new filename for burst image.
+   *
    * @param isCover If the image is set as cover of the burst.
    * @return New filename.
    */
@@ -83,6 +85,7 @@ export class Filenamer {
 
   /**
    * Creates new filename for video.
+   *
    * @return New filename.
    */
   newVideoName(videoType: VideoType): string {
@@ -92,6 +95,7 @@ export class Filenamer {
 
   /**
    * Creates new filename for image.
+   *
    * @return New filename.
    */
   newImageName(): string {
@@ -100,6 +104,7 @@ export class Filenamer {
 
   /**
    * Creates new filename for pdf.
+   *
    * @return New filename.
    */
   newDocumentName(mimeType: MimeType): string {
@@ -118,6 +123,7 @@ export class Filenamer {
 
   /**
    * Get the metadata name from image name.
+   *
    * @param imageName Name of image to derive the metadata name.
    * @return Metadata name of the image.
    */

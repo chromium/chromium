@@ -58,6 +58,7 @@ const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
 /**
  * Closes the given mojo endpoint once the page is unloaded.
  * Reference b/176139064.
+ *
  * @param endpoint The mojo endpoint.
  */
 function closeWhenUnload(endpoint: MojoEndpoint) {
@@ -66,6 +67,7 @@ function closeWhenUnload(endpoint: MojoEndpoint) {
 
 /**
  * Returns a mojo |endpoint| and returns a proxy of it.
+ *
  * @return The proxy of the given endpoint.
  */
 export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {

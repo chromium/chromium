@@ -35,6 +35,7 @@ function* getRecursiveViews(view: View): Generator<View> {
 
 /**
  * Sets up navigation for all views, e.g. camera-view, dialog-view, etc.
+ *
  * @param views All views in ascending z-order.
  */
 export function setup(views: View[]): void {
@@ -52,6 +53,7 @@ export function setup(views: View[]): void {
 
 /**
  * Activates the view to be focusable.
+ *
  * @param index Index of the view.
  */
 function activate(index: number) {
@@ -71,6 +73,7 @@ function activate(index: number) {
 
 /**
  * Deactivates the view to be unfocusable.
+ *
  * @param index Index of the view.
  */
 function deactivate(index: number) {
@@ -89,6 +92,7 @@ function deactivate(index: number) {
 
 /**
  * Checks if the view is already shown.
+ *
  * @param index Index of the view.
  * @return Whether the view is shown or not.
  */
@@ -99,6 +103,7 @@ function isShown(index: number): boolean {
 /**
  * Shows the view indexed in the stacked views and activates the view only if
  * it becomes the topmost visible view.
+ *
  * @param index Index of the view.
  * @return View shown.
  */
@@ -120,6 +125,7 @@ function show(index: number): View {
 
 /**
  * Finds the next topmost visible view in the stacked views.
+ *
  * @return Index of the view found; otherwise, -1.
  */
 function findNextTopmostIndex(): number {
@@ -134,6 +140,7 @@ function findNextTopmostIndex(): number {
 /**
  * Hides the view indexed in the stacked views and deactivate the view if it was
  * the topmost visible view.
+ *
  * @param index Index of the view.
  */
 function hide(index: number) {
@@ -150,6 +157,7 @@ function hide(index: number) {
 
 /**
  * Finds the view by its name in the stacked views.
+ *
  * @param name View name.
  * @return Index of the view found; otherwise, -1.
  */
@@ -160,8 +168,9 @@ function findIndex(name: ViewName): number {
 /**
  * Opens a navigation session of the view; shows the view before entering it and
  * hides the view after leaving it for the ended session.
+ *
  * @param name View name.
- * @param args Optional rest parameters for entering the view.
+ * @param options Optional rest parameters for entering the view.
  * @return Promise for the operation or result.
  */
 export function open(
@@ -174,6 +183,7 @@ export function open(
 
 /**
  * Closes the current navigation session of the view by leaving it.
+ *
  * @param name View name.
  * @param condition Optional condition for leaving the view.
  * @return Whether successfully leaving the view or not.
@@ -185,6 +195,7 @@ export function close(name: ViewName, condition?: unknown): boolean {
 
 /**
  * Handles key pressed event.
+ *
  * @param event Key press event.
  */
 export function onKeyPressed(event: KeyboardEvent): void {
@@ -236,7 +247,8 @@ export function onWindowStatusChanged(): void {
 
 /**
  * Returns whether the view is the top view above all shown view.
- * @param name Name of the view
+ *
+ * @param name Name of the view.
  */
 export function isTopMostView(name: ViewName): boolean {
   return topmostIndex === findIndex(name);

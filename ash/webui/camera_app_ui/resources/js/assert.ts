@@ -4,11 +4,11 @@
 
 /**
  * Verify |condition| is truthy and return |condition| if so.
+ *
  * @param condition A condition to check for truthiness.  Note that this
  *     may be used to test whether a value is defined or not, and we don't want
  *     to force a cast to Boolean.
  * @param optMessage A message to show on failure.
- * @return A non-null |condition|.
  */
 export function assert(
     condition: boolean, optMessage?: string): asserts condition {
@@ -24,22 +24,23 @@ export function assert(
 /**
  * Call this from places in the code that should never be reached.
  *
- * For example, handling all the values of enum with a switch() like this:
- *
- *   function getValueFromEnum(enum) {
- *     switch (enum) {
- *       case ENUM_FIRST_OF_TWO:
- *         return first
- *       case ENUM_LAST_OF_TWO:
- *         return last;
- *     }
- *     assertNotReached();
- *     return document;
- *   }
- *
  * This code should only be hit in the case of serious programmer error or
  * unexpected input.
  *
+ * @example
+ *   Handling all the values of enum with a switch() like this:
+ *   ```
+ *     function getValueFromEnum(enum) {
+ *       switch (enum) {
+ *         case ENUM_FIRST_OF_TWO:
+ *           return first
+ *         case ENUM_LAST_OF_TWO:
+ *           return last;
+ *       }
+ *       assertNotReached();
+ *       return document;
+ *     }
+ *   ```
  * @param optMessage A message to show when this is hit.
  */
 export function assertNotReached(optMessage = 'Unreachable code hit'): never {
@@ -111,7 +112,7 @@ export function assertBoolean(value: unknown, optMessage?: string): boolean {
 /**
  * Verify that the value is not null or undefined.
  *
- * @param value The value to check
+ * @param value The value to check.
  * @param optMessage A message to show when this is hit.
  */
 export function assertExists<T>(

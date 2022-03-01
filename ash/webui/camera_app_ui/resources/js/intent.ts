@@ -31,6 +31,8 @@ export class Intent {
   private doneInternal = false;
 
   /**
+   * @param url URL passed along with app launch event.
+   * @param intentId Id of the intent.
    * @param mode Capture mode of intent.
    * @param shouldHandleResult Whether the intent should return with the
    *     captured result.
@@ -68,6 +70,7 @@ export class Intent {
 
   /**
    * Notifies ARC++ to append data to the intent result.
+   *
    * @param data The data to be appended to intent result.
    */
   async appendData(data: Uint8Array): Promise<void> {
@@ -98,8 +101,8 @@ export class Intent {
   }
 
   /**
-   * @param url Url passed along with app launch event.
-   * @param mode Mode for the intent
+   * @param url URL passed along with app launch event.
+   * @param mode Mode for the intent.
    * @return Created intent object.
    */
   static create(url: URL, mode: Mode): Intent {

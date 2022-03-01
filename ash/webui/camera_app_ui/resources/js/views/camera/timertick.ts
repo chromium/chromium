@@ -15,6 +15,7 @@ let doCancel: (() => void)|null = null;
 
 /**
  * Starts timer ticking if applicable.
+ *
  * @return Promise for the operation.
  */
 export function start(): Promise<void> {

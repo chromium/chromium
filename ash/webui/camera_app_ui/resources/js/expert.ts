@@ -7,7 +7,8 @@ import * as state from './state.js';
 
 /**
  * Enables or disables expert mode.
- * @param enable Whether to enable or disable expert mode
+ *
+ * @param enable Whether to enable or disable expert mode.
  */
 export function setExpertMode(enable: boolean): void {
   state.set(state.State.EXPERT, enable);

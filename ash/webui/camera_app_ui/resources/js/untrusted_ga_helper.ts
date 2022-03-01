@@ -24,6 +24,7 @@ declare global {
 
 /**
  * Initializes GA for sending metrics.
+ *
  * @param id The GA tracker ID to send metrics.
  * @param clientId The GA client ID representing the current client.
  * @param setClientIdCallback Callback to store client id.
@@ -70,6 +71,7 @@ function initGA(
 
 /**
  * Sends event to GA.
+ *
  * @param event Event to send.
  */
 function sendGAEvent(event: UniversalAnalytics.FieldsObject): void {
@@ -78,6 +80,7 @@ function sendGAEvent(event: UniversalAnalytics.FieldsObject): void {
 
 /**
  * Sets if GA can send metrics.
+ *
  * @param id The GA tracker ID.
  * @param enabled True if the metrics is enabled.
  */

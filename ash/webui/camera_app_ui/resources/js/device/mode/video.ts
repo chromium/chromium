@@ -83,6 +83,7 @@ export function setAvc1Parameters(params: h264.EncoderParameters|null): void {
 
 /**
  * Gets video recording MIME type. Mkv with AVC1 is the only preferred format.
+ *
  * @return Video recording MIME type.
  */
 function getVideoMimeType(param: h264.EncoderParameters|null): string {
@@ -203,9 +204,6 @@ export class Video extends ModeBase {
    */
   private everPaused = false;
 
-  /**
-   * @param stream Preview stream.
-   */
   constructor(
       video: PreviewVideo,
       private readonly captureConstraints: StreamConstraints|null,
@@ -260,6 +258,7 @@ export class Video extends ModeBase {
 
   /**
    * Takes a video snapshot during recording.
+   *
    * @return Promise resolved when video snapshot is finished.
    */
   async takeSnapshot(): Promise<void> {
@@ -304,6 +303,7 @@ export class Video extends ModeBase {
 
   /**
    * Toggles pause/resume state of video recording.
+   *
    * @return Promise resolved when recording is paused/resumed.
    */
   async togglePaused(): Promise<void> {
@@ -511,6 +511,7 @@ export class Video extends ModeBase {
   /**
    * Starts recording gif animation and waits for stop recording event triggered
    * by stop shutter or time out over 5 seconds.
+   *
    * @return Saves recorded video.
    */
   private async captureGif(): Promise<GifSaver> {
@@ -554,6 +555,7 @@ export class Video extends ModeBase {
   /**
    * Starts recording and waits for stop recording event triggered by stop
    * shutter.
+   *
    * @return Saves recorded video.
    */
   private async captureVideo(): Promise<VideoSaver> {

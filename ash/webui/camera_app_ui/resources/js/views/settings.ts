@@ -92,6 +92,7 @@ export class BaseSettings extends View {
 
   /**
    * Opens sub-settings.
+   *
    * @param opener The DOM element triggering the open.
    * @param name Name of settings view.
    */
@@ -318,14 +319,14 @@ export class ResolutionSettings extends BaseSettings {
         this.externalSettings = [];
 
         devices.forEach(({deviceId, facing, photoResols, videoResols}) => {
-          const /** !DeviceSetting */ deviceSetting = {
+          const deviceSetting = {
             deviceId,
             photo: {
               prefResol: assertInstanceof(
                   cameraManager.getPrefPhotoResolution(deviceId), Resolution),
               resols:
                   /* Filter out resolutions of megapixels < 0.1 i.e. megapixels
-                   * 0.0*/
+                   * 0.0 */
                   photoResols.filter((r) => r.area >= 100000),
             },
             video: {
@@ -391,6 +392,7 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Template for generating option text from photo resolution width and height.
+   *
    * @param r Resolution of text to be generated.
    * @param resolutions All available resolutions.
    * @return Text shown on resolution option item.
@@ -416,6 +418,7 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Template for generating option text from video resolution width and height.
+   *
    * @param r Resolution of text to be generated.
    * @return Text shown on resolution option item.
    */
@@ -544,6 +547,7 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Updates current selected photo resolution.
+   *
    * @param deviceId Device id of the selected resolution.
    * @param resolution Selected resolution.
    */
@@ -579,6 +583,7 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Updates current selected video resolution.
+   *
    * @param deviceId Device id of the selected resolution.
    * @param resolution Selected resolution.
    */
@@ -614,12 +619,13 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Opens photo resolution setting view.
-   * @param Setting of video device to be opened.
+   *
+   * @param setting Setting of video device to be opened.
    * @param resolItem Dom element from upper layer menu item showing title of
    *     the selected resolution.
    */
-  private openPhotoResSettings(
-      {deviceId, photo}: DeviceSetting, resolItem: HTMLElement) {
+  private openPhotoResSettings(setting: DeviceSetting, resolItem: HTMLElement) {
+    const {deviceId, photo} = setting;
     this.openedSettingDeviceId = deviceId;
     this.updateMenu(
         resolItem, this.photoResMenu, this.photoOptTextTempl,
@@ -630,12 +636,13 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Opens video resolution setting view.
-   * @param Setting of video device to be opened.
+   *
+   * @param setting Setting of video device to be opened.
    * @param resolItem Dom element from upper layer menu item showing title of
    *     the selected resolution.
    */
-  private openVideoResSettings(
-      {deviceId, video}: DeviceSetting, resolItem: HTMLElement) {
+  private openVideoResSettings(setting: DeviceSetting, resolItem: HTMLElement) {
+    const {deviceId, video} = setting;
     this.openedSettingDeviceId = deviceId;
     this.updateMenu(
         resolItem, this.videoResMenu, this.videoOptTextTempl,
@@ -646,6 +653,7 @@ export class ResolutionSettings extends BaseSettings {
 
   /**
    * Updates resolution menu with specified resolutions.
+   *
    * @param resolItem DOM element holding selected resolution.
    * @param menu Menu holding all resolution option elements.
    * @param optTextTempl Template generating text content for each resolution

@@ -10,6 +10,9 @@ export interface VideoProcessorArgs {
   outputExtension: string;
 }
 
+/**
+ * Creates the command line arguments to ffmpeg for mp4 recording.
+ */
 export function createMp4Args(
     videoRotation: number, outputSeekable: boolean): VideoProcessorArgs {
   // input in mkv format
@@ -38,6 +41,9 @@ export function createMp4Args(
 }
 
 
+/**
+ * Creates the command line arguments to ffmpeg for gif recording.
+ */
 export function createGifArgs({width, height}: Resolution): VideoProcessorArgs {
   // Raw rgba frame input format with fixed resolution.
   const decoderArgs =

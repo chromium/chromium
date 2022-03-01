@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
+/*
  * strings.m.js is generated when we enable it via UseStringsJs() in webUI
  * controller. When loading it, it will populate data such as localized strings
  * into |window.loadTimeData|.

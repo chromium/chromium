@@ -22,6 +22,7 @@ export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
 
 /**
  * Positions tooltip relative to UI.
+ *
  * @param rect UI's reference region.
  */
 export function position(rect: DOMRectReadOnly): void {
@@ -57,6 +58,7 @@ export function hide(): void {
 
 /**
  * Shows a tooltip over the hovered element.
+ *
  * @param element Hovered element whose tooltip to be shown.
  */
 function show(element: HTMLElement) {
@@ -85,6 +87,7 @@ function show(element: HTMLElement) {
 
 /**
  * Sets up tooltips for elements.
+ *
  * @param elements Elements whose tooltips to be shown.
  * @return Elements whose tooltips have been set up.
  */

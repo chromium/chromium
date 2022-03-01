@@ -38,12 +38,18 @@ const FFMpegVideoProcessor = (async () => {
 })();
 
 
+/**
+ * Creates a VideoProcessor instance for recording video.
+ */
 async function createVideoProcessor(output: AsyncWriter, videoRotation: number):
     Promise<Comlink.Remote<VideoProcessor>> {
   return new (await FFMpegVideoProcessor)(
       Comlink.proxy(output), createMp4Args(videoRotation, output.seekable()));
 }
 
+/**
+ * Creates a VideoProcessor instance for recording gif.
+ */
 async function createGifVideoProcessor(
     output: AsyncWriter,
     resolution: Resolution): Promise<Comlink.Remote<VideoProcessor>> {
@@ -51,6 +57,9 @@ async function createGifVideoProcessor(
       Comlink.proxy(output), createGifArgs(resolution));
 }
 
+/**
+ * Creates an AsyncWriter that writes to the given intent.
+ */
 function createWriterForIntent(intent: Intent): AsyncWriter {
   const write = async (blob: Blob) => {
     await intent.appendData(new Uint8Array(await blob.arrayBuffer()));
@@ -84,6 +93,7 @@ export class VideoSaver {
 
   /**
    * Finishes the write of video data parts and returns result video file.
+   *
    * @return Result video file.
    */
   async endWrite(): Promise<FileAccessEntry> {

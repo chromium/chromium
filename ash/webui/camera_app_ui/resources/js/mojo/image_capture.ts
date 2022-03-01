@@ -59,6 +59,7 @@ export class CrosImageCapture {
 
   /**
    * Gets the photo capabilities with the available options/effects.
+   *
    * @return Promise for the result.
    */
   async getPhotoCapabilities(): Promise<PhotoCapabilities> {
@@ -71,6 +72,7 @@ export class CrosImageCapture {
    * effects, and the first promise in the returned array will always resolve
    * with the unreprocessed photo. The returned array will be resolved once it
    * received the shutter event.
+   *
    * @param photoSettings Photo settings for ImageCapture's takePhoto().
    * @param photoEffects Photo effects to be applied.
    * @return A promise of the array containing promise of each photo result.

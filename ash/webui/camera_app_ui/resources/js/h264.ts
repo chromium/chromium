@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
+ * @file
  * H264 related utility functions referenced from
  * media/video/h264_level_limits.cc.
  */
@@ -20,6 +20,9 @@ export enum Profile {
 export const profileValues = new Set(
     Object.values(Profile).filter((x): x is Profile => typeof x === 'number'));
 
+/**
+ * Asserts that a number is one of the value of possible h264 profile.
+ */
 export function assertProfile(v: number): Profile {
   assert(profileValues.has(v));
   return v;
@@ -31,6 +34,9 @@ const profileNames: Record<Profile, string> = {
   [Profile.HIGH]: 'high',
 };
 
+/**
+ * Gets the name of a h264 profile.
+ */
 export function getProfileName(profile: Profile): string {
   return profileNames[profile];
 }

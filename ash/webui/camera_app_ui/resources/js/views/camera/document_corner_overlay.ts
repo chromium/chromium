@@ -50,9 +50,10 @@ class Line {
   constructor(private readonly el: HTMLDivElement) {}
 
   /**
-   * @param params
-   *     'position' is the x, y coordinates of start endpoint in px.  'angle' is
-   *     the rotate angle in rad.  'length' is the length of the line.
+   * @param params Place parameters.
+   * @param params.position The x, y coordinates of start endpoint in px.
+   * @param params.angle The rotate angle in rad.
+   * @param params.length The length of the line.
    */
   place({position, angle, length}: {
     position?: Point,
@@ -173,7 +174,7 @@ export class DocumentCornerOverlay {
   private prevDocArea: DocumentArea|null = null;
 
   /**
-   * @param updatePointOfInterest function to update point of interest on the
+   * @param updatePointOfInterest Function to update point of interest on the
    *     stream.
    */
   constructor(

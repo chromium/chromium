@@ -51,8 +51,11 @@ export interface PhotoHandler {
  */
 export class Photo extends ModeBase {
   /**
+   * @param video Preview video.
+   * @param facing Camera facing of current mode.
    * @param captureResolution Capture resolution. May be null on device not
    *     support of setting resolution.
+   * @param handler Handler for photo operations.
    */
   constructor(
       video: PreviewVideo, facing: Facing,

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview
+ * @file
  * This scripts should only be loaded as a SharedWorker and the worker is only
  * used for communication between Tast tests and CCA instance. Generally, the
  * SharedWorker will first be created by Tast tests when constructing the test
@@ -42,6 +42,7 @@ export function registerUnboundWindow(): AppWindow&Comlink.ProxyMarked {
 
 /**
  * Binds the URL to pending AppWindow and exposes AppWindow using the URL.
+ *
  * @param url The URL to bind.
  */
 function bindWindow(url: string): (AppWindow&Comlink.ProxyMarked)|null {

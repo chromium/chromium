@@ -24,6 +24,7 @@ export class FileAccessEntry {
 
   /**
    * Writes |blob| data into the file.
+   *
    * @return The returned promise is resolved once the write operation is
    *     completed.
    */
@@ -50,6 +51,7 @@ export class FileAccessEntry {
 
   /**
    * Gets the timestamp of the last modification time of the file.
+   *
    * @return The number of milliseconds since the Unix epoch in UTC.
    */
   async getLastModificationTime(): Promise<number> {
@@ -59,6 +61,7 @@ export class FileAccessEntry {
 
   /**
    * Deletes the file.
+   *
    * @throws Thrown when trying to delete file with no parent directory.
    */
   async remove(): Promise<void> {
@@ -99,6 +102,7 @@ export interface DirectoryAccessEntry {
 
   /**
    * Gets the file given by its |name|.
+   *
    * @param name The name of the file.
    * @return The entry of the found file.
    */
@@ -112,7 +116,8 @@ export interface DirectoryAccessEntry {
   /**
    * Create the file given by its |name|. If there is already a file with same
    * name, it will try to use a name with index as suffix.
-   * e.g. IMG.png => IMG (1).png
+   * (e.g. IMG.png => IMG (1).png).
+   *
    * @param name The name of the file.
    * @return The entry of the created file.
    */
@@ -123,6 +128,7 @@ export interface DirectoryAccessEntry {
    * create one if |createIfNotExist| is true.
    * TODO(crbug.com/1127587): Split this method to getDirectory() and
    * createDirectory().
+   *
    * @return The entry of the found/created directory.
    */
   getDirectory({name, createIfNotExist}:
@@ -131,6 +137,7 @@ export interface DirectoryAccessEntry {
 
   /**
    * Removes file by given |name| from the directory.
+   *
    * @param name The name of the file.
    */
   removeEntry(name: string): Promise<void>;

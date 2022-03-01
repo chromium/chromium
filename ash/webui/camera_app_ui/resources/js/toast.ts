@@ -9,6 +9,7 @@ import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Updates the toast message.
+ *
  * @param message Message to be updated.
  */
 function update(message: string) {
@@ -23,6 +24,7 @@ function update(message: string) {
 
 /**
  * Shows a toast with given message which doesn't need i18n.
+ *
  * @param message Message to be shown.
  */
 export function showDebugMessage(message: string): void {
@@ -31,6 +33,7 @@ export function showDebugMessage(message: string): void {
 
 /**
  * Shows a toast message.
+ *
  * @param label The label of the message to show.
  * @param substitutions The substitutions needed for the given label.
  */

@@ -19,10 +19,16 @@ enum ScanType {
   DOCUMENT = 'document',
 }
 
+/**
+ * Gets the scan type from element's data-scantype.
+ */
 function getScanTypeFromElement(el: HTMLInputElement): ScanType {
   return assertEnumVariant(ScanType, el.dataset['scantype']);
 }
 
+/**
+ * Gets HTMLInputElements that has the given scan type.
+ */
 function getElemetFromScanType(type: ScanType): HTMLInputElement {
   return dom.get(`input[data-scantype=${type}]`, HTMLInputElement);
 }
@@ -60,9 +66,8 @@ export class ScanOptions implements CameraUI {
     // Do nothing.
   };
 
-  /*
-   * @param updatePointOfInterest function to update point of interest on the
-   *     stream.
+  /**
+   * @param cameraManager Camera manager instance.
    */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);

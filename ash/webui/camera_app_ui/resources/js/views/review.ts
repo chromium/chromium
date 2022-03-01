@@ -31,10 +31,13 @@ export class Option<T> {
   readonly callback: (() => void)|null;
 
   /**
-   * @param UIArgs Arguments to create corresponding UI.
-   * @param handlerParams Sets |exitValue| if the review page will exit with
-   *     this value when option selected. Sets |callback| for the function get
-   *     executed when option selected.
+   * @param uiArgs Arguments to create corresponding UI.
+   * @param params Handler parameters.
+   * @param params.exitValue If set, the review page will exit with this value
+   *     when option selected.
+   * @param params.callback If set, the function get executed when option
+   *     selected.
+   * @param params.hasPopup Sets aria-haspopup for the option.
    */
   constructor(readonly uiArgs: UIArgs, {exitValue, callback, hasPopup}: {
     exitValue?: T,
@@ -64,7 +67,6 @@ export class OptionGroup<T> {
 
   readonly template: ButtonGroupTemplate;
 
-  /** Constructs Options. */
   constructor({options, template}:
                   {options: Array<Option<T>>, template: ButtonGroupTemplate}) {
     this.options = options;

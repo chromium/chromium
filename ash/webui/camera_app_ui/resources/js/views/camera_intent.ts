@@ -19,7 +19,7 @@ import * as review from './review.js';
 
 /**
  * The maximum number of pixels in the downscaled intent photo result. Reference
- * from GCA: https://goto.google.com/gca-inline-bitmap-max-pixel-num
+ * from GCA: https://goto.google.com/gca-inline-bitmap-max-pixel-num.
  */
 const DOWNSCALE_INTENT_MAX_PIXEL_NUM = 50 * 1024;
 

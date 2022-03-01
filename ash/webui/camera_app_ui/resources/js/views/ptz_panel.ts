@@ -32,10 +32,15 @@ const digitalZoomCameras = new Set([
 
 /**
  * Detects hold gesture on UI and triggers corresponding handler.
- * @param params For the first press, triggers |handlePress| handler once. When
- * holding UI for more than |pressTimeout| ms, triggers |handleHold| handler
- * every |holdInterval| ms. Triggers |handleRelease| once the user releases the
- * button.
+ *
+ * @param params Gesture parameters.
+ * @param params.button Target button for the gesture.
+ * @param params.handlePress Triggered once for the first press.
+ * @param params.handleHold Triggered every |holdInterval| ms when holding UI
+ *     for more than |pressTimeout| ms.
+ * @param params.handleRelease Triggered once the user releases the button.
+ * @param params.pressTimeout Timeout in ms before triggering |handleHold|.
+ * @param params.holdInterval Trigger interval for the |handleHold|.
  */
 function detectHoldGesture({
   button,
@@ -212,6 +217,7 @@ export class PTZPanel extends View {
 
   /**
    * Binds buttons with the attribute name to be controlled.
+   *
    * @param attr One of pan, tilt, zoom attribute name to be bound.
    * @param incBtn Button for increasing the value.
    * @param decBtn Button for decreasing the value.
@@ -230,6 +236,7 @@ export class PTZPanel extends View {
     /**
      * Returns a function triggering |attr| change of preview moving toward
      * +1/-1 direction with |deltaInPercent|.
+     *
      * @param deltaInPercent Change rate in percent with respect to min/max
      *     range.
      * @param direction Change in +1 or -1 direction.

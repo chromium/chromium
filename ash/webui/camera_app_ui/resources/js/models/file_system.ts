@@ -23,6 +23,7 @@ import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
 
 /**
  * Checks if the entry's name has the video prefix.
+ *
  * @param entry File entry.
  * @return Has the video prefix or not.
  */
@@ -32,6 +33,7 @@ export function hasVideoPrefix(entry: FileAccessEntry): boolean {
 
 /**
  * Checks if the entry's name has the image prefix.
+ *
  * @param entry File entry.
  * @return Has the image prefix or not.
  */
@@ -41,6 +43,7 @@ function hasImagePrefix(entry: FileAccessEntry): boolean {
 
 /**
  * Checks if the entry's name has the document prefix.
+ *
  * @param entry File entry.
  * @return Has the document prefix or not.
  */
@@ -67,6 +70,7 @@ export function getCameraDirectory(): DirectoryAccessEntry|null {
 
 /**
  * Initializes the temporary directory in the internal file system.
+ *
  * @return Promise for the directory result.
  */
 async function initInternalTempDir(): Promise<DirectoryAccessEntry> {
@@ -75,6 +79,7 @@ async function initInternalTempDir(): Promise<DirectoryAccessEntry> {
 
 /**
  * Initializes the camera directory in the external file system.
+ *
  * @return Promise for the directory result.
  */
 async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
@@ -122,6 +127,7 @@ export async function initialize(): Promise<void> {
 
 /**
  * Saves photo blob or metadata blob into predefined default location.
+ *
  * @param blob Data of the photo to be saved.
  * @param name Filename of the photo to be saved.
  * @return Promise for the result.
@@ -138,6 +144,7 @@ export async function saveBlob(
 
 /**
  * Creates a file for saving video recording result.
+ *
  * @return Newly created video file.
  * @throws If failed to create video file.
  */
@@ -171,6 +178,7 @@ export async function createPrivateTempVideoFile(): Promise<FileAccessEntry> {
 
 /**
  * Gets the picture entries.
+ *
  * @return Promise for the picture entries.
  */
 export async function getEntries(): Promise<FileAccessEntry[]> {
@@ -187,6 +195,7 @@ export async function getEntries(): Promise<FileAccessEntry[]> {
 
 /**
  * Returns an URL for a picture given by the file |entry|.
+ *
  * @param entry The file entry of the picture.
  * @return Promise for the result.
  */

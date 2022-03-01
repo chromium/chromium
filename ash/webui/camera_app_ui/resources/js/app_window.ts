@@ -17,6 +17,7 @@ const DEFAULT_WINDOW_WIDTH = 764;
 /**
  * Gets default window size which minimizes the letterbox area for given preview
  * aspect ratio.
+ *
  * @param aspectRatio Preview aspect ratio.
  */
 export function getDefaultWindowSize(aspectRatio: number): Resolution {
@@ -67,6 +68,7 @@ export class AppWindow {
 
   /**
    * Waits until the window is bound and returns the URL of the window.
+   *
    * @return The URL of the window.
    */
   waitUntilWindowBound(): Promise<string> {
@@ -138,6 +140,7 @@ export class AppWindow {
 
   /**
    * Reports error and makes it visible on Tast side.
+   *
    * @param errorInfo Information of the error.
    */
   reportError(errorInfo: ErrorInfo): void {
@@ -153,6 +156,7 @@ export class AppWindow {
 
   /**
    * Reports perf information and makes it visible on Tast side.
+   *
    * @param perfEntry Information of the perf event.
    */
   reportPerf(perfEntry: PerfEntry): void {

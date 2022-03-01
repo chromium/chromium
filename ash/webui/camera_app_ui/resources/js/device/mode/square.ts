@@ -20,6 +20,7 @@ import {
 
 /**
  * Crops out maximum possible centered square from the image blob.
+ *
  * @return Promise with result cropped square image.
  */
 async function cropSquare(blob: Blob): Promise<Blob> {

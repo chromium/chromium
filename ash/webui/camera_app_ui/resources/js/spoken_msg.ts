@@ -8,6 +8,7 @@ import * as loadTimeData from './models/load_time_data.js';
 
 /**
  * Speaks a message.
+ *
  * @param label The label of the message to speak.
  * @param substitutions The substitutions needed for the given label.
  */

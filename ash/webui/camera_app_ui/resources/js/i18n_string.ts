@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * All string resources in resources.h
+ * All string resources in resources.h.
  */
 export enum I18nString {
   ARIA_CAMERA_MODE_GROUP = 'aria_camera_mode_group',

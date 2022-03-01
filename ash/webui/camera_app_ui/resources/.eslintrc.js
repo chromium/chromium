@@ -378,9 +378,31 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module',
   },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:jsdoc/recommended',
+  ],
+  settings: {
+    jsdoc: {
+      tagNamePreference: {
+        returns: 'return',
+        // go/tsstyle#omit-comments-that-are-redundant-with-typescript
+        default: false,
+        enum: false,
+        implements: false,
+        interface: false,
+        override: false,
+        private: false,
+        protected: false,
+        template: false,
+        type: false,
+        typedef: false,
+      },
+    },
+  },
   parser: `${typescriptEslintDir}/parser`,
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'jsdoc'],
   // Generally, the rules should be compatible to both bundled and the newest
   // stable eslint, so it's easier to upgrade and develop without the full
   // Chromium tree.
@@ -410,24 +432,47 @@ module.exports = {
     // enabled in @typescript-eslint/recommended.
     'no-unused-vars': 'off',
 
-    // TODO(pihsun): We should use eslint-plugin-jsdoc for jsdoc in
-    // TypeScript, since the Google TypeScript style guide states that
-    // redundant type or trivial arguments for params and returns can be
-    // omitted in jsdoc for TypeScript, but eslint builtin valid-jsdoc rule
-    // doesn't have fine-grained control to disable those checks (and is also
-    // deprecated).
-    // (TypeScript doesn't yet support getting types from jsdoc,
-    // https://github.com/microsoft/TypeScript/issues/42048)
+    // Use eslint-plugin-jsdoc instead of ESLint builtin valid-jsdoc /
+    // require-jsdoc, since it has better flexibility on not requiring types
+    // for jsdoc, and is also recommended on the ESLint rule page.
     'valid-jsdoc': 'off',
-
-    // TODO(pihsun): Currently there are many existing js files that have
-    // jsdoc which only contains type information and nothing else, which is
-    // all removed while converting to ts. Disabling the requirement for
-    // jsdoc for now. Note that the style guide suggest to document all
-    // properties and methods whose purpose is not immediately obvious from
-    // their name, which means that we should be able to skip jsdoc for some
-    // of the constructors and trivial structs.
     'require-jsdoc': 'off',
+
+    // go/tsstyle#omit-comments-that-are-redundant-with-typescript
+    'jsdoc/no-types': 'error',
+    'jsdoc/require-jsdoc': [
+      'error',
+      {
+        publicOnly: true,
+      },
+    ],
+    'jsdoc/require-param': 'off',
+    'jsdoc/require-param-type': 'off',
+    'jsdoc/require-returns': 'off',
+    'jsdoc/require-returns-type': 'off',
+    'jsdoc/require-yields': 'off',
+
+    'jsdoc/multiline-blocks': [
+      'error',
+      {
+        noSingleLineBlocks: true,
+      },
+    ],
+    'jsdoc/no-bad-blocks': 'error',
+    'jsdoc/no-defaults': 'error',
+    'jsdoc/no-multi-asterisks': [
+      'error',
+      {
+        allowWhitespace: true,
+      },
+    ],
+    'jsdoc/require-asterisk-prefix': 'error',
+    'jsdoc/require-description-complete-sentence': [
+      'error',
+      {
+        abbreviations: ['e.g.'],
+      },
+    ],
 
     // go/tsstyle states that no variable should have _ as prefix/suffix, but
     // there's no better alternative for unused function parameters. Since the

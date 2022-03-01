@@ -5,9 +5,12 @@
 import {assertInstanceof} from './assert.js';
 
 /**
- * Gets an element matching css selector under the target element and checks its
+ * Gets an element matching CSS selector under the target element and checks its
  * type.
- * @param The expected element type.
+ *
+ * @param target The target root element to execute the CSS selector from.
+ * @param selector The CSS selector.
+ * @param ctor The expected element type.
  */
 export function getFrom<T>(
     target: ParentNode, selector: string,
@@ -16,8 +19,11 @@ export function getFrom<T>(
 }
 
 /**
- * Gets all elements matching css selector under the target element and asserts
+ * Gets all elements matching CSS selector under the target element and asserts
  * their type to be specific type.
+ *
+ * @param target The target root element to execute the CSS selector from.
+ * @param selector The CSS selector.
  * @param ctor The expected element type.
  */
 export function getAllFrom<T extends Element>(
@@ -35,7 +41,9 @@ export function getAllFrom<T extends Element>(
 }
 
 /**
- * Gets an element in document matching css selector and checks its type.
+ * Gets an element in document matching CSS selector and checks its type.
+ *
+ * @param selector The CSS selector.
  * @param ctor The expected element type.
  */
 export function get<T>(
@@ -44,8 +52,10 @@ export function get<T>(
 }
 
 /**
- * Gets all elements in document matching css selector and asserts their type to
+ * Gets all elements in document matching CSS selector and asserts their type to
  * be specific type.
+ *
+ * @param selector The CSS selector.
  * @param ctor The expected element type.
  */
 export function getAll<T extends Element>(

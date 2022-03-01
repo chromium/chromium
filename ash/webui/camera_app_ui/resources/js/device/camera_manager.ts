@@ -355,7 +355,6 @@ export class CameraManager implements EventListener {
   /**
    * Sets fps of constant video recording on currently opened camera and
    * resolution.
-   * @param fps
    */
   setPrefVideoConstFps(fps: number): Promise<boolean>|null {
     if (!this.cameraAvailable) {

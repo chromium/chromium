@@ -53,7 +53,7 @@ export class Options implements CameraUI {
   private cameraAvailble = false;
 
   /**
-   * @param doSwitchDevice Callback to trigger device switching.
+   * @param cameraManager Camera manager instance.
    */
   constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
@@ -163,6 +163,7 @@ export class Options implements CameraUI {
 
   /**
    * Updates mirroring for a new stream.
+   *
    * @param facing Facing of the stream.
    */
   private updateMirroring(facing: Facing) {

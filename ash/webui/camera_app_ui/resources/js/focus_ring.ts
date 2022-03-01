@@ -63,6 +63,9 @@ function showFocus(el: HTMLElement) {
   ringCSSStyle.setProperty('left', `${(uiRect.left + uiRect.right) / 2}px`);
 }
 
+/**
+ * Initializes DOM elements and observers used for focus ring.
+ */
 export function initialize(): void {
   ring = dom.get('#focus-ring', HTMLElement);
   ringCSSStyle = cssStyle('#focus-ring');

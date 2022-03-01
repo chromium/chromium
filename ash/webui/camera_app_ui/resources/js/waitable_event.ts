@@ -25,7 +25,7 @@ export class WaitableEvent<T = void> {
   }
 
   /**
-   * @return Whether the event is signaled
+   * @return Whether the event is signaled.
    */
   isSignaled(): boolean {
     return this.isSignaledInternal;

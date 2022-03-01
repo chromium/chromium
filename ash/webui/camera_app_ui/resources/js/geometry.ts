@@ -188,6 +188,7 @@ export class Box {
   /**
    * Calculates intersection with a ray formed by a start point(inside box) and
    * a pointing direction.
+   *
    * @param pt Start point of the ray.
    * @param dir Direction of the ray.
    * @return The intersection point.
@@ -223,14 +224,16 @@ export class Box {
 
   /**
    * Calculates intersection with segment.
+   *
    * @return Intersections with segment formed by |pt| and |pt2|.
    */
   segmentIntersect(pt: Point, pt2: Point): Point[] {
     /**
      * Intersection point of two line segments in 2 dimensions:
-     * http://paulbourke.net/geometry/pointlineplane/
+     * http://paulbourke.net/geometry/pointlineplane/.
+     *
      * @return Intersection of segment pt1, pt2 and segment pt3, pt4.
-     *     null for no intersection between two segment.
+     *     Returns null for no intersection between two segment.
      */
     const intersect =
         (pt1: Point, pt2: Point, pt3: Point, pt4: Point): Point|null => {

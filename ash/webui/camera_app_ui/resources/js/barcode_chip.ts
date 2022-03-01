@@ -49,6 +49,7 @@ function deactivate() {
 
 /**
  * Activates the chip on container and starts the timer.
+ *
  * @param container The container of the chip.
  */
 function activate(container: HTMLElement) {
@@ -83,6 +84,7 @@ function isSafeUrl(s: string): boolean {
 
 /**
  * Setups the copy button.
+ *
  * @param container The container for the button.
  * @param content The content to be copied.
  * @param snackbarLabel The label to be displayed on snackbar when the content

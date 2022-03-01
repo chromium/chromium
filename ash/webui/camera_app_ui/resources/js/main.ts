@@ -309,6 +309,7 @@ export class App {
 
   /**
    * Handles pressed keys.
+   *
    * @param event Key press event.
    */
   private onKeyPressed(event: Event) {
@@ -334,6 +335,7 @@ export class App {
 
   /**
    * Begins to take photo or recording with the current options, e.g. timer.
+   *
    * @param shutterType The shutter is triggered by which shutter type.
    * @return Promise resolved when take action completes.
    *     Returns null if CCA can't start take action.

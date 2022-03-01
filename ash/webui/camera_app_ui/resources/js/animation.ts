@@ -31,9 +31,10 @@ function getAnimations({el, onChild}: {el: HTMLElement, onChild: boolean}):
 }
 
 /**
- * @param param |el| is the target element to cancel animation. |onChild|
- *     specifies whether the cancelled animation is applied to all subtree
- *     children, false by default.
+ * @param params Cancel parameters.
+ * @param params.el Target element to cancel animation.
+ * @param params.onChild Specifies whether the cancelled animation is applied to
+ *     all subtree children, false by default.
  * @return Promise resolved when the animation is cancelled.
  */
 async function doCancel({el, onChild}: {el: HTMLElement, onChild: boolean}):
@@ -44,6 +45,7 @@ async function doCancel({el, onChild}: {el: HTMLElement, onChild: boolean}):
 
 /**
  * Cancels the running animation on the element, if any.
+ *
  * @return Promise resolved when the animation is cancelled.
  */
 export async function cancel(el: HTMLElement): Promise<void> {
@@ -52,6 +54,7 @@ export async function cancel(el: HTMLElement): Promise<void> {
 
 /**
  * Cancels all running animation on children of the element, if any.
+ *
  * @return Promise resolved when all animation is cancelled.
  */
 export async function cancelOnChild(el: HTMLElement): Promise<void> {
@@ -61,8 +64,11 @@ export async function cancelOnChild(el: HTMLElement): Promise<void> {
 /**
  * Animates the target element once by applying the "animate" class. If the
  * animation is already running, the previous one would be cancelled first.
- * @param param |el| is the target element to apply "animate" class. |onChild|
- *     specifies whether the animation is applied to all subtree children.
+ *
+ * @param params Cancel parameters.
+ * @param params.el Target element to apply "animate" class.
+ * @param params.onChild Specifies whether the animation is applied to all
+ *     subtree children.
  * @return Promise resolved when the animation is settled.
  */
 async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
@@ -84,6 +90,7 @@ async function doPlay({el, onChild}: {el: HTMLElement, onChild: boolean}):
 
 /**
  * Sets "animate" class on the element and waits for its animation settled.
+ *
  * @return Promise resolved when the animation is settled.
  */
 export function play(el: HTMLElement): Promise<void> {
@@ -93,6 +100,7 @@ export function play(el: HTMLElement): Promise<void> {
 /**
  * Sets "animate" class on the element and waits for its child's animation
  * settled.
+ *
  * @return Promise resolved when the child's animation is settled.
  */
 export function playOnChild(el: HTMLElement): Promise<void> {

@@ -12,6 +12,7 @@ import {
  * Gets directory entry by given |name| under |parentDir| directory. If the
  * directory does not exist, returns a lazy directory which will only be created
  * once there is any file written in it.
+ *
  * @param parentDir Parent directory.
  * @param name Name of the target directory.
  */
@@ -34,7 +35,8 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
   private creatingDirectory: Promise<DirectoryAccessEntry>|null = null;
 
   /**
-   * @param name The name of the directory that will lazily created.
+   * @param parent The parent of the directory that will be lazily created.
+   * @param name The name of the directory that will be lazily created.
    */
   constructor(
       private readonly parent: DirectoryAccessEntry, readonly name: string) {}

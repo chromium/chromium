@@ -87,6 +87,7 @@ interface ModeConfig {
 
   /**
    * Makes video capture device prepared for capturing in this mode.
+   *
    * @param constraints Constraints for preview stream.
    */
   prepareDevice(constraints: StreamConstraints, captureResolution: Resolution):
@@ -140,6 +141,7 @@ export class Modes {
   ) {
     /**
      * Returns a set of general constraints for fake cameras.
+     *
      * @param videoMode Is getting constraints for video mode.
      * @param deviceId Id of video device.
      * @return Result of constraints-candidates.
@@ -178,6 +180,9 @@ export class Modes {
     // space after async). Using async function instead to get around this.
     // TODO(pihsun): style guide recommends using function xxx() instead of
     // lambda anyway, change other location too.
+    /**
+     * Prepare the device for the specific resolution and capture intent.
+     */
     async function prepareDeviceForPhoto(
         constraints: StreamConstraints, resolution: Resolution,
         captureIntent: CaptureIntent): Promise<void> {
@@ -343,8 +348,6 @@ export class Modes {
   }
 
   /**
-   * @param deviceId
-   * @param startingMode
    * @return Supported mode candidates for specific |deviceId| starting from
    *     |startingMode| followed by its fallback modes.
    */
@@ -391,7 +394,12 @@ export class Modes {
   }
 
   /**
+   * @param mode Mode for the capture.
    * @param constraints Constraints for preview stream.
+   * @param captureResolution Capture resolution. May be null on device not
+   *     support of setting resolution.
+   * @param videoSnapshotResolution Video snapshot resolution. May be null on
+   *     device not support of setting resolution.
    */
   setCaptureParams(
       mode: Mode, constraints: StreamConstraints,
@@ -426,6 +434,7 @@ export class Modes {
 
   /**
    * Creates and updates current mode object.
+   *
    * @param factory The factory ready for producing mode capture object.
    * @param stream Stream of the new switching mode.
    * @param facing Camera facing of the current mode.
@@ -461,6 +470,7 @@ export class Modes {
 
   /**
    * Checks whether to save image metadata or not.
+   *
    * @return Promise for the operation.
    */
   private async updateSaveMetadata(): Promise<void> {
@@ -473,6 +483,7 @@ export class Modes {
 
   /**
    * Enables save metadata of subsequent photos in the current mode.
+   *
    * @return Promise for the operation.
    */
   private async enableSaveMetadata(): Promise<void> {
@@ -483,6 +494,7 @@ export class Modes {
 
   /**
    * Disables save metadata of subsequent photos in the current mode.
+   *
    * @return Promise for the operation.
    */
   private async disableSaveMetadata(): Promise<void> {

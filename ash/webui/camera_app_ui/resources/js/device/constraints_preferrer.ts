@@ -49,6 +49,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Restores saved preferred capture resolution per video device.
+   *
    * @param key Key of local storage saving preferences.
    */
   protected restoreResolutionPreference(key: string): void {
@@ -62,6 +63,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Saves preferred capture resolution per video device.
+   *
    * @param key Key of local storage saving preferences.
    */
   protected saveResolutionPreference(key: string): void {
@@ -70,6 +72,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Gets user preferred capture resolution for a specific device.
+   *
    * @param deviceId Device id of the device.
    * @return Returns preferred resolution or null if no preferred resolution
    *     found in user preference.
@@ -86,6 +89,7 @@ export abstract class ConstraintsPreferrer {
   /**
    * Updates values according to currently working video device and capture
    * settings.
+   *
    * @param deviceId Device id of video device to be updated.
    * @param stream Currently active preview stream.
    * @param facing Camera facing of video device to be updated.
@@ -100,6 +104,7 @@ export abstract class ConstraintsPreferrer {
    * corresponding preview constraints for the specified video device. Returned
    * resolutions and constraints candidates are both sorted in desired trying
    * order.
+   *
    * @param deviceId Device id of video device.
    * @return Capture resolution and its preview constraints-candidates.
    */
@@ -107,6 +112,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Changes user preferred capture resolution.
+   *
    * @param deviceId Device id of the video device to be changed.
    * @param resolution Preferred capture resolution.
    */
@@ -170,6 +176,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Sorts prefer resolutions.
+   *
    * @param prefR Preferred resolution.
    * @return Return compare function for comparing based on preferred
    *     resolution.
@@ -206,6 +213,7 @@ export abstract class ConstraintsPreferrer {
 
   /**
    * Groups resolutions with same ratio into same list.
+   *
    * @return Ratio as key, all resolutions with that ratio as value.
    */
   protected groupResolutionRatio(rs: ResolutionList):
@@ -293,6 +301,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
   /**
    * Sets the preferred fps used in video recording for particular video device
    * with particular resolution.
+   *
    * @param deviceId Device id of video device to be set with.
    * @param resolution Resolution to be set with.
    * @param prefFps Preferred fps to be set with.
@@ -312,6 +321,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
 
   /**
    * Gets user preferred video constant fps for a specific device/resolution.
+   *
    * @param deviceId Device id of the device.
    * @return Returns preferred fps or null if no preferred fps found in user
    *     preference.

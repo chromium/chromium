@@ -7,12 +7,15 @@ import * as dom from '../dom.js';
 import {ViewName} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-/**
- * message for message of the dialog view, cancellable for whether the dialog
- * view is cancellable.
- */
 export interface DialogEnterOptions {
+  /**
+   * Message of the dialog view.
+   */
   message?: string;
+
+  /**
+   * Whether the dialog view is cancellable.
+   */
   cancellable?: boolean;
 }
 
@@ -58,14 +61,18 @@ export type LeaveCondition = {
 };
 
 interface ViewOptions {
-  /** enables dismissible by Esc-key. */
+  /**
+   * Enables dismissible by Esc-key.
+   */
   dismissByEsc?: boolean;
 
-  /** enables dismissible by background-click. */
+  /**
+   * Enables dismissible by background-click.
+   */
   dismissByBackgroundClick?: boolean;
 
   /**
-   * selects element to be focused in focus(). Focus to first element whose
+   * Selects element to be focused in focus(). Focus to first element whose
    * tabindex is not -1 when argument is not presented.
    */
   defaultFocusSelector?: string;
@@ -116,7 +123,8 @@ export class View {
 
   /**
    * Hook of the subclass for handling the key.
-   * @param key Key to be handled.
+   *
+   * @param _key Key to be handled.
    * @return Whether the key has been handled or not.
    */
   handlingKey(_key: string): boolean {
@@ -125,6 +133,7 @@ export class View {
 
   /**
    * Handles the pressed key.
+   *
    * @param key Key to be handled.
    * @return Whether the key has been handled or not.
    */
@@ -157,7 +166,8 @@ export class View {
 
   /**
    * Hook of the subclass for entering the view.
-   * @param options Optional rest parameters for entering the view.
+   *
+   * @param _options Optional rest parameters for entering the view.
    */
   entering(_options?: EnterOptions): void {
     // To be overridden by subclasses.
@@ -165,6 +175,7 @@ export class View {
 
   /**
    * Enters the view.
+   *
    * @param options Optional rest parameters for entering the view.
    * @return Promise for the navigation session.
    */
@@ -180,7 +191,8 @@ export class View {
 
   /**
    * Hook of the subclass for leaving the view.
-   * @param condition Optional condition for leaving the view.
+   *
+   * @param _condition Optional condition for leaving the view.
    * @return Whether able to leaving the view or not.
    */
   leaving(_condition: LeaveCondition): boolean {
@@ -189,6 +201,7 @@ export class View {
 
   /**
    * Leaves the view.
+   *
    * @param condition Optional condition for leaving the view and also as
    *     the result for the ended session.
    * @return Whether able to leaving the view or not.

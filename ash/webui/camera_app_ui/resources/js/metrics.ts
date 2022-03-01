@@ -35,6 +35,7 @@ const gaHelper = util.createUntrustedJSModule<GAHelperInterface>(
 
 /**
  * Send the event to GA backend.
+ *
  * @param event The event to send.
  * @param dimen Optional object contains dimension information.
  */
@@ -69,6 +70,7 @@ async function sendEvent(
 /**
  * Set if the metrics is enabled. Note that the metrics will only be sent if it
  * is enabled AND the logging consent option is enabled in OS settings.
+ *
  * @param enabled True if the metrics is enabled.
  */
 export async function setMetricsEnabled(enabled: boolean): Promise<void> {
@@ -255,18 +257,34 @@ export enum ShutterType {
  * Parameters of capture metrics event.
  */
 export interface CaptureEventParam {
-  /** Camera facing of the capture. */
+  /**
+   * Camera facing of the capture.
+   */
   facing: Facing;
-  /** Length of duration for captured motion result in milliseconds. */
+
+  /**
+   * Length of duration for captured motion result in milliseconds.
+   */
   duration?: number;
-  /** Capture resolution. */
+
+  /**
+   * Capture resolution.
+   */
   resolution: Resolution;
+
   intentResult?: IntentResultType;
   shutterType: ShutterType;
-  /** Whether the event is for video snapshot. */
+
+  /**
+   * Whether the event is for video snapshot.
+   */
   isVideoSnapshot?: boolean;
-  /** Whether the video have ever paused and resumed in the recording. */
+
+  /**
+   * Whether the video have ever paused and resumed in the recording.
+   */
   everPaused?: boolean;
+
   docResult?: DocResultType;
   docFixType?: DocFixType;
   gifResult?: GifResultType;
@@ -345,11 +363,19 @@ export function sendCaptureEvent({
  * Parameters for logging perf event.
  */
 interface PerfEventParam {
-  /** Target event type. */
+  /**
+   * Target event type.
+   */
   event: PerfEvent;
-  /** Duration of the event in ms. */
+
+  /**
+   * Duration of the event in ms.
+   */
   duration: number;
-  /** Optional information for the event. */
+
+  /**
+   * Optional information for the event.
+   */
   perfInfo?: PerfInformation;
 }
 

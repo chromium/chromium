@@ -52,6 +52,8 @@ export class Camera3DeviceInfo {
   /**
    * Creates a Camera3DeviceInfo by given device info and the mojo device
    *     operator.
+   *
+   * @param deviceInfo Given device info.
    * @param videoConfigFilter Filters the available video capability exposed by
    *     device.
    * @throws Thrown when the device operation is not supported.

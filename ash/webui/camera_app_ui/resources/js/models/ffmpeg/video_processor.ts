@@ -19,8 +19,8 @@ interface FileStream {
 }
 
 /**
- * The set of callbacks for an emulated device in Emscripten. ref:
- * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.registerDevice
+ * The set of callbacks for an emulated device in Emscripten. Ref:
+ * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.registerDevice.
  */
 interface FileOps {
   open(stream: FileStream): void;
@@ -117,6 +117,8 @@ class InputDevice {
 
   /**
    * Implements the read() operation for the emulated device.
+   *
+   * @param stream The target stream.
    * @param buffer The destination buffer.
    * @param offset The destination buffer offset.
    * @param length The maximum length to read.
@@ -200,6 +202,8 @@ class OutputDevice {
 
   /**
    * Implements the write() operation for the emulated device.
+   *
+   * @param stream The target stream.
    * @param buffer The source buffer.
    * @param offset The source buffer offset.
    * @param length The maximum length to be write.
@@ -221,7 +225,9 @@ class OutputDevice {
   /**
    * Implements the llseek() operation for the emulated device.
    * Only SEEK_SET (0) is supported as |whence|. Reference:
-   * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.llseek
+   * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.llseek.
+   *
+   * @param stream The target stream.
    * @param offset The offset in bytes relative to |whence|.
    * @param whence The reference position to be used.
    * @return The resulting file position.
@@ -375,6 +381,7 @@ class FFMpegVideoProcessor {
 
   /**
    * Closes the writer. No more write operations are allowed.
+   *
    * @return Resolved when all write operations are finished.
    */
   async close(): Promise<void> {
