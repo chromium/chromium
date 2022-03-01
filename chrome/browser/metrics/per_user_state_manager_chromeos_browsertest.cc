@@ -210,10 +210,6 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   EXPECT_FALSE(ash::StatsReportingController::Get()->IsEnabled());
   EXPECT_FALSE(GetLocalStateMetricsConsent());
 
-  // Alternate ongoing log store should not be set until consent is set for the
-  // first time for the guest session with no device owner.
-  EXPECT_FALSE(log_store->has_alternate_ongoing_log_store());
-
   bool guest_consent = GetParam();
   ChangeUserMetricsConsent(guest_consent);
 
@@ -224,7 +220,9 @@ IN_PROC_BROWSER_TEST_P(ChromeOSPerUserGuestUserWithNoOwnerTest,
   // appropriately. Log store should be the inverse of the first consent since
   // consent means that log store used should be local state.
   EXPECT_THAT(GetLocalStateMetricsConsent(), Eq(guest_consent));
-  EXPECT_THAT(log_store->has_alternate_ongoing_log_store(), Ne(guest_consent));
+
+  // No owner means that ephemeral partition should always be used.
+  EXPECT_TRUE(log_store->has_alternate_ongoing_log_store());
 
   // Guests do not have a user id.
   EXPECT_THAT(metrics_service->GetCurrentUserId(), Eq(absl::nullopt));

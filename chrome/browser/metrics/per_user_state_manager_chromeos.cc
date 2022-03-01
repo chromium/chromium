@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -127,22 +128,13 @@ PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
 
 void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
     bool metrics_consent) {
-  DCHECK(state_ >= State::WAITING_ON_FIRST_CONSENT);
-
-  // If waiting on the first consent, trigger initialization now that first
-  // consent has happened.
-  if (state_ == State::WAITING_ON_FIRST_CONSENT) {
-    OnFirstConsent(metrics_consent);
-    return;
-  }
+  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
 
   DCHECK(current_user_);
 
   // No-op if user should not be able to change metrics consent.
   if (!IsUserAllowedToChangeConsent(current_user_))
     return;
-
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
 
   auto* user_prefs = GetCurrentUserPrefs();
 
@@ -168,12 +160,14 @@ bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
   DCHECK(state_ > State::CONSTRUCTED);
 
   if (user_manager_->IsCurrentUserCryptohomeDataEphemeral()) {
-    // Sessions using temporary cryptohome should have logs be persisted in
-    // the cryptohome partition if metrics reporting managed by device is
-    // disabled so recorded logs are deleted when the session ends. For
-    // metrics reporting enabled, logs should be persisted in local store with
-    // no associated user_id.
-    return !GetDeviceMetricsConsent();
+    // Sessions using ephemeral cryptohome should hold the logs if owner has
+    // disabled metrics reporting. This way the recorded logs are deleted when
+    // the session ends.
+    if (IsDeviceOwned())
+      return !GetDeviceMetricsConsent();
+
+    // If the device is not owned, use the ephemeral partition.
+    return true;
   }
 
   // Users with persistent cryptohome data should store logs in the user
@@ -196,10 +190,8 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
 
   // Guest sessions for non-owned devices should be allowed to modify metrics
   // consent during the lifetime of the session.
-  if (user_type == user_manager::USER_TYPE_GUEST) {
-    return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-           ash::DeviceSettingsService::OWNERSHIP_NONE;
-  }
+  if (user_type == user_manager::USER_TYPE_GUEST)
+    return !IsDeviceOwned();
 
   // Non-managed devices only have control if owner has enabled metrics
   // reporting.
@@ -223,8 +215,7 @@ void PerUserStateManagerChromeOS::SetIsManagedForTesting(bool is_managed) {
 
 void PerUserStateManagerChromeOS::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> log_store) {
-  DCHECK(state_ == State::USER_PROFILE_READY ||
-         state_ == State::WAITING_ON_FIRST_CONSENT);
+  DCHECK(state_ == State::USER_PROFILE_READY);
 
   metrics_service_client_->GetMetricsService()->SetUserLogStore(
       std::move(log_store));
@@ -298,17 +289,6 @@ void PerUserStateManagerChromeOS::OnUserToBeRemoved(
 void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   DCHECK_EQ(state_, State::USER_LOGIN);
 
-  // Defer initialization if we should wait for first consent. Initialization
-  // will occur when SetCurrentUserMetricsConsent() is called for the first time
-  // for the user.
-  //
-  // Logs created in this state will be stored in local state and will be
-  // treated as pre-login logs.
-  if (ShouldWaitForFirstConsent()) {
-    state_ = State::WAITING_ON_FIRST_CONSENT;
-    return;
-  }
-
   state_ = State::USER_PROFILE_READY;
 
   if (ShouldUseUserLogStore()) {
@@ -320,6 +300,23 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
     DCHECK(!HasUserLogStore());
   }
   state_ = State::USER_LOG_STORE_HANDLED;
+
+  const bool is_guest =
+      current_user_->GetType() == user_manager::USER_TYPE_GUEST;
+
+  // If a guest session is about to be started, the metrics reporting will
+  // normally inherit from the device owner's setting. If there is no owner,
+  // then the guest will set metrics reporting during ToS.
+  if (is_guest && !IsDeviceOwned()) {
+    SetReportingState(
+        local_state_->GetBoolean(ash::prefs::kOobeGuestMetricsEnabled));
+
+    // Reset state set during guest OOBE. This should be fine as if the guest
+    // session crashes, the consent is saved in the guest's profile pref and
+    // will be loaded correctly.
+    local_state_->ClearPref(ash::prefs::kOobeGuestMetricsEnabled);
+    return;
+  }
 
   // Sets the current logged-in user ID to handle crashes. Assigns a user ID if
   // current user has one. Otherwise, clear the pref to reflect that current
@@ -364,42 +361,19 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   }
 }
 
-void PerUserStateManagerChromeOS::OnFirstConsent(bool metrics_consent) {
-  // See ShouldWaitForFirstConsent() documentation for when this is called.
-  DCHECK_EQ(state_, State::WAITING_ON_FIRST_CONSENT);
-
-  // If metrics collection is disabled, then the ephemeral partition should be
-  // used to log metrics. That way, all data collected at the end of the guest
-  // session will be deleted when the guest session is over.
-  //
-  // If metrics collection is enabled, local state should continue to be used
-  // to persist logs so that they are persistent.
-  if (!metrics_consent)
-    AssignUserLogStore();
-  else
-    DCHECK(!HasUserLogStore());
-
-  state_ = State::USER_LOG_STORE_HANDLED;
-
-  // Sessions only need to keep track of the consent since no user ID will be
-  // assigned.
-  GetCurrentUserPrefs()->SetBoolean(prefs::kMetricsUserConsent,
-                                    metrics_consent);
-
-  // User should not be associated with a user ID.
-  local_state_->ClearPref(prefs::kMetricsCurrentUserId);
-
-  // Only change the reporting state if the reporting policy is not managed.
-  if (!IsReportingPolicyManaged())
-    SetReportingState(metrics_consent);
-}
-
 void PerUserStateManagerChromeOS::UpdateCurrentUserId(
     const std::string& new_user_id) {
   DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
 
-  // Updates both the user profile as well as the user ID stored in local state
-  // to handle crashes appropriately.
+  // Guest sessions should not have a user id.
+  if (current_user_->GetType() == user_manager::USER_TYPE_GUEST) {
+    GetCurrentUserPrefs()->ClearPref(prefs::kMetricsUserId);
+    local_state_->ClearPref(prefs::kMetricsCurrentUserId);
+    return;
+  }
+
+  // Updates both the user profile as well as the user ID stored in local
+  // state to handle crashes appropriately.
   GetCurrentUserPrefs()->SetString(prefs::kMetricsUserId, new_user_id);
   local_state_->SetString(prefs::kMetricsCurrentUserId, new_user_id);
 }
@@ -424,21 +398,6 @@ void PerUserStateManagerChromeOS::AssignUserLogStore() {
       storage_limits_.min_ongoing_log_queue_count,
       storage_limits_.min_ongoing_log_queue_size,
       storage_limits_.max_ongoing_log_size, signing_key_));
-}
-
-bool PerUserStateManagerChromeOS::ShouldWaitForFirstConsent() const {
-  DCHECK_EQ(state_, State::USER_LOGIN);
-
-  // Managed devices consent should be controlled by
-  // ash::StatsReportingController.
-  if (IsReportingPolicyManaged())
-    return false;
-
-  // If the device owner has not been set and a guest session starts, the
-  // decision which log store to use must be deferred until the first consent
-  // (done in ToS) is established.
-  return current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
-         !IsDeviceOwned();
 }
 
 void PerUserStateManagerChromeOS::NotifyObservers(bool metrics_consent) {
