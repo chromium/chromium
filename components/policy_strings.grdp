@@ -778,4 +778,7 @@ Additional details:
           =1 {Your device will restart in 1 second}
           other {Your device will restart in # seconds}}
   </message>
+  <message name="IDS_POLICY_DEVICE_POST_REBOOT_TITLE" desc="The title for notification informing the user that the device was restarted by the administrator.">
+    Your administrator restarted your device
+  </message>
 </grit-part>

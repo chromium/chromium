@@ -41,6 +41,11 @@ class RebootNotificationController {
   void MaybeShowPendingRebootDialog(const base::Time& reboot_time,
                                     base::OnceClosure reboot_callback);
 
+  // Shows notification after the reboot, only if the user is in session and
+  // kiosk session is not in progress.
+  void MaybeShowPostRebootNotification() const;
+
+  // Close pending reboot notification.
   void CloseRebootNotification() const;
 
   void CloseRebootDialog();

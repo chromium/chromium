@@ -28,6 +28,9 @@ namespace {
 constexpr char kPendingRebootNotificationId[] =
     "ash.device_scheduled_reboot_pending_notification";
 
+// Id of the post reboot notification
+constexpr char kPostRebootNotificationId[] =
+    "ash.device_scheduled_reboot_post_reboot_notification";
 }  // namespace
 
 RebootNotificationController::RebootNotificationController() = default;
@@ -74,6 +77,20 @@ void RebootNotificationController::MaybeShowPendingRebootDialog(
   // notifying the user about the reboot.
   scheduled_reboot_dialog_ = std::make_unique<ScheduledRebootDialog>(
       reboot_time, parent, std::move(reboot_callback));
+}
+
+void RebootNotificationController::MaybeShowPostRebootNotification() const {
+  if (!ShouldNotifyUser())
+    return;
+  std::u16string title =
+      l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_POST_REBOOT_TITLE);
+  scoped_refptr<message_center::NotificationDelegate> delegate =
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &RebootNotificationController::HandleNotificationClick,
+              weak_ptr_factory_.GetWeakPtr()));
+  ShowNotification(kPostRebootNotificationId, title, std::u16string(),
+                   message_center::RichNotificationData(), delegate);
 }
 
 void RebootNotificationController::CloseRebootNotification() const {
