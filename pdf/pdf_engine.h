@@ -71,9 +71,6 @@ enum class FontMappingMode {
   kNoMapping,
   // Perform font mapping in renderer processes using Blink/content APIs.
   kBlink,
-  // Perform font mapping in plugin processes using PPAPI.
-  // TODO(crbug.com/702993): Remove when PPAPI is gone.
-  kPepper,
 };
 
 enum class DocumentPermission {

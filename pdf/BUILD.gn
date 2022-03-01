@@ -291,13 +291,6 @@ if (enable_pdf) {
       "//ui/base/cursor/mojom:cursor_type",
       "//ui/gfx",
     ]
-
-    if (is_linux || is_chromeos) {
-      sources += [
-        "ppapi_migration/pdfium_font_linux.cc",
-        "ppapi_migration/pdfium_font_linux.h",
-      ]
-    }
   }
 
   static_library("pdf_view_web_plugin") {
