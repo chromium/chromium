@@ -19,6 +19,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/origin.h"
 
 // Controls the visibility of IntentPickerView by updating the visibility based
 // on stored state. This class is instantiated for both web apps and SWAs.
@@ -36,6 +37,10 @@ class IntentPickerTabHelper
                                 bool should_show_icon);
 
   bool should_show_icon() const { return should_show_icon_; }
+
+  bool should_show_collapsed_chip() const {
+    return should_show_collapsed_chip_;
+  }
 
   using IntentPickerIconLoaderCallback =
       base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo> apps)>;
@@ -60,6 +65,8 @@ class IntentPickerTabHelper
                    IntentPickerIconLoaderCallback callback,
                    size_t index);
 
+  void UpdateCollapsedState();
+
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -71,6 +78,8 @@ class IntentPickerTabHelper
   const raw_ptr<web_app::WebAppInstallManager> install_manager_;
 
   bool should_show_icon_ = false;
+  url::Origin last_shown_origin_;
+  bool should_show_collapsed_chip_ = false;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

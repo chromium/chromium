@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -88,6 +90,11 @@ void IntentPickerTabHelper::SetShouldShowIcon(
 #endif
 
   tab_helper->should_show_icon_ = should_show_icon;
+
+  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    tab_helper->UpdateCollapsedState();
+  }
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (!browser)
     return;
@@ -163,6 +170,29 @@ void IntentPickerTabHelper::LoadAppIcon(
         apps::MojomIconValueToIconValueCallback(base::BindOnce(
             &IntentPickerTabHelper::OnAppIconLoaded, weak_factory_.GetWeakPtr(),
             std::move(apps), std::move(callback), index)));
+  }
+}
+
+void IntentPickerTabHelper::UpdateCollapsedState() {
+  if (!should_show_icon_) {
+    should_show_collapsed_chip_ = false;
+    last_shown_origin_ = url::Origin();
+    return;
+  }
+
+  GURL url = web_contents()->GetLastCommittedURL();
+  url::Origin origin = url::Origin::Create(url);
+
+  // Determine whether to show the Chip as expanded/collapsed whenever the
+  // origin changes.
+  if (!origin.IsSameOriginWith(last_shown_origin_)) {
+    last_shown_origin_ = origin;
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    auto chip_state = IntentPickerAutoDisplayService::Get(profile)
+                          ->GetChipStateAndIncrementCounter(url);
+    should_show_collapsed_chip_ =
+        chip_state == IntentPickerAutoDisplayService::ChipState::kCollapsed;
   }
 }
 

@@ -175,3 +175,50 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   waiter.WaitIfNeededAndGet();
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
 }
+
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsIntentChipCollapsed) {
+  if (!HasRequiredAshVersionForLacros())
+    return;
+
+  InstallTestWebApp();
+
+  const GURL in_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL out_of_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+  const GURL separate_host_url =
+      https_server().GetURL(GetLaunchingPageHost(), GetLaunchingPagePath());
+
+  NavigateToLaunchingPage(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // 1st appearance: Expanded.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+
+  ClickLinkAndWait(web_contents, separate_host_url, LinkTarget::SELF, "");
+  EXPECT_FALSE(GetIntentChip()->GetVisible());
+
+  // 2nd appearance: Expanded.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+
+  ClickLinkAndWait(web_contents, out_of_scope_url, LinkTarget::SELF, "");
+  EXPECT_FALSE(GetIntentChip()->GetVisible());
+
+  // 3rd appearance: Expanded.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
+
+  ClickLinkAndWait(web_contents, out_of_scope_url, LinkTarget::SELF, "");
+  EXPECT_FALSE(GetIntentChip()->GetVisible());
+
+  // 4th appearance: Collapsed.
+  ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_TRUE(GetIntentChip()->is_fully_collapsed());
+}

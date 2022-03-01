@@ -18,8 +18,13 @@ namespace {
 // |kDismissThreshold|+ times.
 constexpr int kDismissThreshold = 2;
 
+// Show the Intent Chip as collapsed after it has been shown expanded
+// |kIntentChipCollapseThreshold| times.
+constexpr int kIntentChipCollapseThreshold = 3;
+
 constexpr char kAutoDisplayKey[] = "picker_auto_display_key";
 constexpr char kPlatformKey[] = "picker_platform_key";
+constexpr char kIntentChipCountKey[] = "intent_chip_display_count";
 
 // Retrieves or creates a new dictionary for the specific |url|.
 base::Value GetAutoDisplayDictForSettings(
@@ -64,6 +69,26 @@ void IntentPickerAutoDisplayService::IncrementCounter(const GURL& url) {
   settings_map->SetWebsiteSettingDefaultScope(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
       std::move(pref_dict));
+}
+
+IntentPickerAutoDisplayService::ChipState
+IntentPickerAutoDisplayService::GetChipStateAndIncrementCounter(
+    const GURL& url) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+  base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
+
+  int display_count = pref_dict.FindIntKey(kIntentChipCountKey).value_or(0);
+  if (display_count >= kIntentChipCollapseThreshold) {
+    // Exit before updating the counter so we don't keep counting indefinitely.
+    return ChipState::kCollapsed;
+  }
+
+  pref_dict.SetIntKey(kIntentChipCountKey, ++display_count);
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
+      std::move(pref_dict));
+
+  return ChipState::kExpanded;
 }
 
 IntentPickerAutoDisplayService::Platform

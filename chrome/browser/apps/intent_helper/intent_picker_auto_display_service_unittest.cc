@@ -108,3 +108,31 @@ TEST_F(IntentPickerAutoDisplayServiceTest, ShouldAutoDisplayUi) {
   // Should return true for a different host.
   EXPECT_TRUE(service->ShouldAutoDisplayUi(url3));
 }
+
+// Checks that calling GetChipStateAndIncrementCounter tracks views per-URL
+// and collapses the chip after a fixed number of views.
+TEST_F(IntentPickerAutoDisplayServiceTest, GetChipStateAndIncrementCounter) {
+  using ChipState = IntentPickerAutoDisplayService::ChipState;
+
+  GURL url1("https://www.google.com/abcde");
+  GURL url2("https://www.google.com/hi");
+  GURL url3("https://www.boogle.com/a");
+
+  TestingProfile profile;
+  IntentPickerAutoDisplayService* service =
+      IntentPickerAutoDisplayService::Get(&profile);
+
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url1),
+            ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url2),
+            ChipState::kExpanded);
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url2),
+            ChipState::kExpanded);
+  // Fourth view for a host should be collapsed.
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url1),
+            ChipState::kCollapsed);
+
+  // URL on a different host should still be expanded.
+  EXPECT_EQ(service->GetChipStateAndIncrementCounter(url3),
+            ChipState::kExpanded);
+}

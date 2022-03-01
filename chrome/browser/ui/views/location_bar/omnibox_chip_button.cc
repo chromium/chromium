@@ -70,6 +70,7 @@ void OmniboxChipButton::AnimateExpand() {
 }
 
 void OmniboxChipButton::ResetAnimation(double value) {
+  fully_collapsed_ = value == 0.0;
   animation_->Reset(value);
 }
 

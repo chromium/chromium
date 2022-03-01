@@ -30,6 +30,7 @@ class IntentChipButton : public OmniboxChipButton {
 
  private:
   bool GetShowChip() const;
+  bool GetChipCollapsed() const;
   void HandlePressed();
 
   IntentPickerTabHelper* GetTabHelper() const;

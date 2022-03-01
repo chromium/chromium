@@ -19,6 +19,10 @@ class IntentPickerAutoDisplayService : public KeyedService {
   // form factor.
   enum class Platform { kNone = 0, kArc = 1, kChrome = 2, kMaxValue = kChrome };
 
+  // Whether the Intent Chip displays as Expanded (full chip with label
+  // text) or collapsed (just an icon).
+  enum class ChipState { kExpanded = 0, kCollapsed = 1 };
+
   static IntentPickerAutoDisplayService* Get(Profile* profile);
 
   explicit IntentPickerAutoDisplayService(Profile* profile);
@@ -33,6 +37,11 @@ class IntentPickerAutoDisplayService : public KeyedService {
 
   // Keep track of the |url| repetitions.
   void IncrementCounter(const GURL& url);
+
+  // Returns a ChipState indicating whether the Intent Chip should be shown as
+  // expanded or collapsed for a given URL. Increments an internal counter to
+  // track the number of times the chip has been shown for that URL.
+  ChipState GetChipStateAndIncrementCounter(const GURL& url);
 
   // Returns the last platform selected by the user to handle |url|.
   // If it has not been checked then it will return |Platform::kNone|
