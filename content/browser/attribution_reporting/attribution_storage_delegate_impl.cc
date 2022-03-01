@@ -141,11 +141,14 @@ base::Time AttributionStorageDelegateImpl::GetReportTime(
 }
 
 base::GUID AttributionStorageDelegateImpl::NewReportID() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::GUID::GenerateRandomV4();
 }
 
 absl::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
 AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (noise_mode_ == AttributionNoiseMode::kDefault &&
       delay_mode_ == AttributionDelayMode::kDefault) {
     // Add uniform random noise in the range of [0, 1 minutes] to the report
@@ -165,6 +168,8 @@ AttributionStorageDelegateImpl::GetOfflineReportDelayConfig() const {
 
 void AttributionStorageDelegateImpl::ShuffleReports(
     std::vector<AttributionReport>& reports) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:
       rng_->RandomShuffle(reports);
@@ -176,6 +181,8 @@ void AttributionStorageDelegateImpl::ShuffleReports(
 
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     CommonSourceInfo::SourceType source_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   switch (source_type) {
     case CommonSourceInfo::SourceType::kNavigation:
       return randomized_response_rates_.navigation;
@@ -272,6 +279,8 @@ int64_t AttributionStorageDelegateImpl::GetAggregatableBudgetPerSource() const {
 uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
     uint64_t trigger_data,
     CommonSourceInfo::SourceType source_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const uint64_t cardinality = TriggerDataCardinality(source_type);
   return trigger_data % cardinality;
 }
