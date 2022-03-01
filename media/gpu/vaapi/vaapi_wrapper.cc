@@ -2679,8 +2679,17 @@ uint64_t VaapiWrapper::GetEncodedChunkSize(VABufferID buffer_id,
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSize");
   base::AutoLockMaybe auto_lock(va_lock_);
   TRACE_EVENT0("media,gpu", "VaapiWrapper::GetEncodedChunkSizeLocked");
-  VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, 0u);
+
+  // vaSyncSurface() is not necessary on Intel platforms as long as there is a
+  // vaMapBuffer() like in ScopedVABufferMapping below.
+  // vaSyncSurface() synchronizes all active workloads (potentially many, e.g.
+  // for k-SVC encoding). On Intel, we'd rather use the more fine-grained
+  // vaMapBuffer() in ScopedVABufferMapping below. see b/184312032.
+  if (VaapiWrapper::GetImplementationType() != VAImplementation::kIntelI965 &&
+      VaapiWrapper::GetImplementationType() != VAImplementation::kIntelIHD) {
+    VAStatus va_res = vaSyncSurface(va_display_, sync_surface_id);
+    VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, 0u);
+  }
 
   ScopedVABufferMapping mapping(va_lock_, va_display_, buffer_id);
   if (!mapping.IsValid())
