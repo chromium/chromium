@@ -58,12 +58,10 @@ GURL CreateAltSvcUrl(const GURL& origin_url,
   DCHECK(origin_url.is_valid());
   DCHECK(origin_url.IsStandard());
 
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
   std::string port_str = base::NumberToString(alternative_destination.port());
-  replacements.SetPort(port_str.c_str(), url::Component(0, port_str.size()));
-  replacements.SetHost(
-      alternative_destination.host().c_str(),
-      url::Component(0, alternative_destination.host().size()));
+  replacements.SetPortStr(port_str);
+  replacements.SetHostStr(alternative_destination.host());
 
   return origin_url.ReplaceComponents(replacements);
 }
