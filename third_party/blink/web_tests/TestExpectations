@@ -3380,7 +3380,6 @@ crbug.com/626703 [ Mac10.12 ] virtual/portals/external/wpt/portals/portal-activa
 crbug.com/626703 [ Mac10.12 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.12 ] virtual/fenced-frame-mparch/external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/scroll-to-text-fragment/force-load-at-top.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-content/quotes-030.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-public [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/service-worker.https.window.html [ Timeout ]
@@ -7616,3 +7615,5 @@ crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-
 
 # Sheriff 2022-02-28
 crbug.com/1301238 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/navigate-ancestor-top-level-fenced-frame.https.html [ Pass Timeout ]
+
+crbug.com/1300487 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/hid.https.html [ Failure Pass ]
