@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
+@protocol InfobarModalPresentationHandler;
 @protocol InfobarPermissionsModalDelegate;
 
 // InfobarPermissionsTableViewController represents the content for the
@@ -20,6 +21,10 @@ API_AVAILABLE(ios(15.0))
     (id<InfobarPermissionsModalDelegate>)modalDelegate
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
+// Handler used to resize the modal.
+@property(nonatomic, weak) id<InfobarModalPresentationHandler>
+    presentationHandler;
 
 @end
 

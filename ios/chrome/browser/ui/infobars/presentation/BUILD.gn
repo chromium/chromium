@@ -17,14 +17,26 @@ source_set("presentation") {
     "infobar_modal_positioner.h",
     "infobar_modal_presentation_controller.h",
     "infobar_modal_presentation_controller.mm",
+    "infobar_modal_presentation_handler.h",
     "infobar_modal_transition_driver.h",
     "infobar_modal_transition_driver.mm",
   ]
   deps = [
+    ":positioner",
     "//base",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/overlays:presentation_controller",
+    "//ios/chrome/browser/ui/overlays:util",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
   ]
+}
+
+source_set("positioner") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "infobar_banner_positioner.h",
+    "infobar_modal_positioner.h",
+  ]
+  deps = [ "//base" ]
 }

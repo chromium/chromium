@@ -135,7 +135,8 @@ TEST_F(InfobarModalOverlayCoordinatorTest, ModalPresentation) {
   OverlayRequestMediator* mediator = coordinator_.mediator;
   EXPECT_TRUE(mediator);
   EXPECT_EQ(coordinator_.modalMediator, mediator);
-  EXPECT_EQ(coordinator_, mediator.delegate);
+  EXPECT_EQ((id<OverlayRequestMediatorDelegate>)coordinator_,
+            mediator.delegate);
 
   // Stop the coordinator, expecting OverlayUIDidFinishDismissal() to be
   // executed.

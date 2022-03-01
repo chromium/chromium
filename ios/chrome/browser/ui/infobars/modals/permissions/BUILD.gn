@@ -16,6 +16,7 @@ source_set("permissions") {
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/ui/permissions",
     "//ios/chrome/browser/ui/settings/cells:cells",
     "//ios/chrome/browser/ui/table_view",

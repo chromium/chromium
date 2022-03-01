@@ -63,6 +63,8 @@
 
   modalViewController.title =
       l10n_util::GetNSString(IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE);
+  modalViewController.presentationHandler = self;
+
   modalMediator.consumer = modalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;

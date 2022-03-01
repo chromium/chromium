@@ -27,8 +27,8 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
+#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_positioner.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_presentation_controller.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -49,7 +49,7 @@ NSString* const kActivityServicesSnackbarCategory =
 }  // namespace
 
 @interface SendTabToSelfCoordinator () <UIViewControllerTransitioningDelegate,
-                                        SendTabToSelfModalPositioner,
+                                        InfobarModalPositioner,
                                         SendTabToSelfModalDelegate>
 
 // The TableViewController that shows the Send Tab To Self UI.
@@ -120,7 +120,7 @@ NSString* const kActivityServicesSnackbarCategory =
   return presentationController;
 }
 
-#pragma mark - SendTabToSelfModalPositioner
+#pragma mark - InfobarModalPositioner
 
 - (CGFloat)modalHeightForWidth:(CGFloat)width {
   UIView* view = self.sendTabToSelfViewController.view;

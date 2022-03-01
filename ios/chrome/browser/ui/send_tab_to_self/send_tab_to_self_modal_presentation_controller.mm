@@ -5,7 +5,8 @@
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_presentation_controller.h"
 
 #include "base/check.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_positioner.h"
+#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
+#import "ios/chrome/browser/ui/overlays/overlay_presentation_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -14,10 +15,6 @@
 #endif
 
 namespace {
-// The presented view outer margins.
-const CGFloat kPresentedViewMargin = 10.0;
-// The presented view maximum width.
-const CGFloat kPresentedViewMaxWidth = 394.0;
 // The rounded corner radius for the container view.
 const CGFloat kContainerCornerRadius = 13.0;
 }  // namespace
@@ -25,7 +22,8 @@ const CGFloat kContainerCornerRadius = 13.0;
 @implementation SendTabToSelfModalPresentationController
 
 - (void)containerViewWillLayoutSubviews {
-  self.presentedView.frame = [self frameForPresentedView];
+  self.presentedView.frame =
+      ContainedModalFrameThatFit(self.modalPositioner, self.containerView);
 
   // Style the presented and container views.
   self.presentedView.layer.cornerRadius = kContainerCornerRadius;
@@ -33,31 +31,6 @@ const CGFloat kContainerCornerRadius = 13.0;
   self.presentedView.clipsToBounds = YES;
   self.containerView.backgroundColor =
       [UIColor colorNamed:kScrimBackgroundColor];
-}
-
-- (CGRect)frameForPresentedView {
-  DCHECK(self.modalPositioner);
-  CGRect safeAreaBounds = self.containerView.safeAreaLayoutGuide.layoutFrame;
-  CGFloat safeAreaWidth = CGRectGetWidth(safeAreaBounds);
-  CGFloat safeAreaHeight = CGRectGetHeight(safeAreaBounds);
-
-  // Calculate the frame width.
-  CGFloat maxAvailableWidth = safeAreaWidth - 2 * kPresentedViewMargin;
-  CGFloat frameWidth = fmin(maxAvailableWidth, kPresentedViewMaxWidth);
-
-  CGFloat modalTargetHeight =
-      [self.modalPositioner modalHeightForWidth:frameWidth];
-  CGFloat maxAvailableHeight = safeAreaHeight - 2 * kPresentedViewMargin;
-  CGFloat frameHeight = fmin(maxAvailableHeight, modalTargetHeight);
-
-  // Based on the container width calculate the values in order to center the
-  // frame in the X and Y axis.
-  CGFloat containerWidth = CGRectGetWidth(self.containerView.bounds);
-  CGFloat containerHeight = CGRectGetHeight(self.containerView.bounds);
-  CGFloat modalXPosition = (containerWidth / 2) - (frameWidth / 2);
-  CGFloat modalYPosition = (containerHeight / 2) - (frameHeight / 2);
-
-  return CGRectMake(modalXPosition, modalYPosition, frameWidth, frameHeight);
 }
 
 @end

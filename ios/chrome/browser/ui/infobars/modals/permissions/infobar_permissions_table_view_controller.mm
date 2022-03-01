@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_delegate.h"
+#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_handler.h"
 #include "ios/chrome/browser/ui/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
@@ -270,7 +271,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (tableViewLoaded) {
-    // TODO(crbug.com/1289645): Update the modal frame after reload.
+    [self.presentationHandler resizeInfobarModal];
     NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
     [self.tableView insertRowsAtIndexPaths:@[ index ]
                           withRowAnimation:UITableViewRowAnimationAutomatic];

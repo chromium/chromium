@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_transition_driver.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_mediator.h"
+#import "ios/chrome/browser/ui/overlays/overlay_presentation_util.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_coordinator_delegate.h"
 
@@ -75,6 +76,13 @@
   }
   return modalContentSize.height +
          CGRectGetHeight(self.modalNavController.navigationBar.bounds);
+}
+
+#pragma mark - InfobarModalPresentationHandler
+
+- (void)resizeInfobarModal {
+  UIView* containerView = self.modalNavController.view;
+  containerView.frame = ContainedModalFrameThatFit(self, containerView);
 }
 
 #pragma mark - Private
