@@ -7,9 +7,10 @@ import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
+import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpContentProviderInterface, SearchRequest, SearchResponse, stringToMojoString16} from './feedback_types.js';
+import {HelpContentProviderInterface, SearchRequest, SearchResponse} from './feedback_types.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
 
 /**

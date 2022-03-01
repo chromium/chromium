@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HelpContent, HelpContentList, mojoString16ToString} from './feedback_types.js';
+import {HelpContent, HelpContentList} from './feedback_types.js';
 
 /**
  * @fileoverview

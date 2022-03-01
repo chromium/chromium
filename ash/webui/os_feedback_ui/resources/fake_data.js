@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {HelpContentList, HelpContentType, SearchRequest, SearchResponse, stringToMojoString16} from './feedback_types.js';
+import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
+import {HelpContentList, HelpContentType, SearchRequest, SearchResponse} from './feedback_types.js';
 
 /**
  * @fileoverview

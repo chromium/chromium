@@ -87,7 +87,10 @@ js_library("fake_help_content_provider") {
 }
 
 js_library("feedback_types") {
-  deps = [ "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile" ]
+  deps = [
+    "//ash/webui/common/resources:mojo_utils",
+    "//ash/webui/os_feedback_ui/mojom:mojom_js_library_for_compile",
+  ]
 }
 
 js_library("help_resources_icons") {

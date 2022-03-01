@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {mojoString16ToString} from 'chrome://resources/ash/common/mojo_utils.js';
 
-import {HelpContentProviderInterface, mojoString16ToString, SearchRequest, SearchResponse} from './feedback_types.js';
+import {HelpContentProviderInterface, SearchRequest, SearchResponse} from './feedback_types.js';
 
 /**
  * @fileoverview
