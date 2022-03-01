@@ -642,13 +642,12 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
-  DCHECK(metronome_source_);
   pcf_deps.task_queue_factory =
       !base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)
           ? CreateWebRtcTaskQueueFactory()
-          : CreateWebRtcMetronomeTaskQueueFactory(metronome_source_);
-  if (metronome_source_)
-    pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();
+          : CreateWebRtcMetronomeTaskQueueFactory();
+  DCHECK(metronome_source_);
+  pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());

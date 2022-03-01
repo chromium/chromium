@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
 
@@ -24,7 +23,6 @@ RTC_EXPORT extern const base::Feature kWebRtcMetronomeTaskQueue;
 // blink::MetronomeSource. Tested by
 // /third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
 RTC_EXPORT std::unique_ptr<webrtc::TaskQueueFactory>
-CreateWebRtcMetronomeTaskQueueFactory(
-    scoped_refptr<blink::MetronomeSource> metronome_source);
+CreateWebRtcMetronomeTaskQueueFactory();
 
 #endif  // THIRD_PARTY_WEBRTC_OVERRIDES_METRONOME_TASK_QUEUE_FACTORY_H_

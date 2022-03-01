@@ -16,6 +16,7 @@
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
 
@@ -24,8 +25,7 @@ const base::Feature kWebRtcMetronomeTaskQueue{
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
  public:
-  explicit WebRtcMetronomeTaskQueue(
-      scoped_refptr<MetronomeSource> metronome_source);
+  WebRtcMetronomeTaskQueue();
 
   // webrtc::TaskQueueBase implementation.
   void Delete() override;
@@ -48,7 +48,6 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
       scoped_refptr<base::RefCountedData<bool>> is_active,
       base::TimeTicks scheduled_time_now);
 
-  const scoped_refptr<MetronomeSource> metronome_source_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Value of |is_active_| is checked and set on |task_runner_|.
   const scoped_refptr<base::RefCountedData<bool>> is_active_;
@@ -57,10 +56,8 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   CoalescedTasks coalesced_tasks_;
 };
 
-WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(
-    scoped_refptr<MetronomeSource> metronome_source)
-    : metronome_source_(std::move(metronome_source)),
-      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue()
+    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
       is_active_(new base::RefCountedData<bool>(true)) {}
 
 void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
@@ -157,26 +154,19 @@ namespace {
 
 class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
-  explicit WebrtcMetronomeTaskQueueFactory(
-      scoped_refptr<MetronomeSource> metronome_source)
-      : metronome_source_(std::move(metronome_source)) {}
-
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
   CreateTaskQueue(absl::string_view name, Priority priority) const override {
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
-        new WebRtcMetronomeTaskQueue(metronome_source_));
+        new WebRtcMetronomeTaskQueue());
   }
-
- private:
-  const scoped_refptr<MetronomeSource> metronome_source_;
 };
 
 }  // namespace
 
 }  // namespace blink
 
-std::unique_ptr<webrtc::TaskQueueFactory> CreateWebRtcMetronomeTaskQueueFactory(
-    scoped_refptr<blink::MetronomeSource> metronome_source) {
+std::unique_ptr<webrtc::TaskQueueFactory>
+CreateWebRtcMetronomeTaskQueueFactory() {
   return std::unique_ptr<webrtc::TaskQueueFactory>(
-      new blink::WebrtcMetronomeTaskQueueFactory(std::move(metronome_source)));
+      new blink::WebrtcMetronomeTaskQueueFactory());
 }
