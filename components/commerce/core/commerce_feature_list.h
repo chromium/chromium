@@ -76,6 +76,20 @@ extern const char kRetailCouponsWithCodeParam[];
 // Feature flag for Discount user consent v2.
 extern const base::Feature kDiscountConsentV2;
 
+enum class DiscountConsentNtpVariation { kDefault = 0, kStringChange = 1 };
+
+extern const char kDiscountConsentNtpVariationParam[];
+extern const base::FeatureParam<int> kDiscountConsentNtpVariation;
+
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kDiscountConsentNtpStringChange[] = {
+        {kDiscountConsentNtpVariationParam, "1"}};
+
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kDiscountConsentV2Variations[] = {
+        {"Changing string", kDiscountConsentNtpStringChange,
+         base::size(kDiscountConsentNtpStringChange), nullptr}};
+
 // Interval that controls the frequency of showing coupons in infobar bubbles.
 constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
     &commerce::kRetailCoupons, "coupon_display_interval", base::Hours(18)};
