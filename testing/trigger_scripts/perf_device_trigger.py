@@ -64,7 +64,7 @@ import generate_perf_sharding
 from core import bot_platforms
 
 
-class Bot(object):
+class Bot(object):  # pylint: disable=useless-object-inheritance
     """Eligible bots to run the task."""
 
     def __init__(self, bot_id, is_alive):
@@ -83,7 +83,9 @@ class Bot(object):
 
 class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
     def __init__(self, args, swarming_args):
+        # pylint: disable=super-with-arguments
         super(PerfDeviceTriggerer, self).__init__()
+        # pylint: enable=super-with-arguments
         self._sharded_query_failed = False
 
         if not args.multiple_trigger_configs:
@@ -131,12 +133,13 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
         if '--' in args:
             dash_ind = args.index('--')
             return args[:dash_ind] + shard_tag + args[dash_ind:]
-        else:
-            return args + shard_tag
+        return args + shard_tag
 
     def parse_bot_configs(self, args):
         if args.multiple_trigger_configs:
+            # pylint: disable=super-with-arguments
             super(PerfDeviceTriggerer, self).parse_bot_configs(args)
+            # pylint: enable=super-with-arguments
         else:
             self._bot_configs = []
             # For each eligible bot, append the dimension
@@ -363,6 +366,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
                 dimensions[args[i + 1]] = args[i + 2]
         return dimensions
 
+    # pylint: disable=inconsistent-return-statements
     def _get_swarming_server(self, args):
         for i in range(len(args)):
             if '--swarming' in args[i]:
@@ -370,6 +374,7 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
                 slashes_index = server.index('//') + 2
                 # Strip out the protocol
                 return server[slashes_index:]
+    # pylint: enable=inconsistent-return-statements
 
 
 def main():

@@ -9,7 +9,7 @@ import unittest
 import perf_device_trigger
 
 
-class Args(object):
+class Args(object): # pylint: disable=useless-object-inheritance
     def __init__(self):
         self.shards = 1
         self.shard_index = None
@@ -29,7 +29,9 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
         self._triggered_with_swarming_go = 0
         self._list_bots_result = list_bots_result
         self._list_tasks_results = list_tasks_results
+        # pylint: disable=super-with-arguments
         super(FakeTriggerer, self).__init__(args, swarming_args)
+        # pylint: enable=super-with-arguments
 
     def set_files(self, files):
         self._files = files
@@ -141,8 +143,7 @@ class UnitTest(unittest.TestCase):
             # out of the tags.
             if shard % 2:
                 return [{'bot_id': bot_id}]
-            else:
-                return [{'tags': ['id:%s' % bot_id]}]
+            return [{'tags': ['id:%s' % bot_id]}]
         return []
 
     def generate_list_of_eligible_bots_query_response(self, alive_bots,

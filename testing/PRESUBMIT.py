@@ -20,7 +20,10 @@ def CommonChecks(input_api, output_api):
 
   output = []
   output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', [r'^.+_unittest\.py$']))
+      input_api,
+      output_api,
+      '.',
+      [r'^.+_unittest\.py$']))
   output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
       input_api,
       output_api,
@@ -29,7 +32,16 @@ def CommonChecks(input_api, output_api):
       [r'^.+_unittest\.py$'],
       env=testing_env))
   output.extend(input_api.canned_checks.RunPylint(
-      input_api, output_api, files_to_skip=[r'gmock.*', r'gtest.*']))
+      input_api,
+      output_api,
+      files_to_skip=[r'gmock.*', r'gtest.*', r'trigger_scripts.*']))
+  # Pylint2.7 is run on subdirs whose presubmit checks are migrated to Python3
+  output.extend(input_api.canned_checks.RunPylint(
+      input_api,
+      output_api,
+      files_to_check=[r'trigger_scripts.*\.py$'],
+      version='2.7'))
+
   return output
 
 
