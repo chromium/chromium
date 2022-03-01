@@ -295,7 +295,9 @@ bool ProfilePickerDiceSignInProvider::IsInitialized() const {
 
 void ProfilePickerDiceSignInProvider::FinishFlow(bool is_saml) {
   DCHECK(IsInitialized());
+  // Stop listening to notifications.
   contents()->SetDelegate(nullptr);
+  identity_manager_observation_.Reset();
   // Stop the sign-in: hide and clear the toolbar.
   toolbar_->ClearToolbar();
   toolbar_->SetVisible(false);

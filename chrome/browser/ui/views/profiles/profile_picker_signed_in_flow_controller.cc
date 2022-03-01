@@ -4,167 +4,70 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
-#include "base/trace_event/trace_event.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/base/theme_provider.h"
-
-namespace {
-
-// Shows the customization bubble if possible. The bubble won't be shown if the
-// color is enforced by policy or downloaded through Sync or the default theme
-// should be used. An IPH is shown after the bubble, or right away if the bubble
-// cannot be shown.
-void ShowCustomizationBubble(absl::optional<SkColor> new_profile_color,
-                             Browser* browser) {
-  DCHECK(browser);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view || !browser_view->toolbar_button_provider())
-    return;
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
-  CHECK(anchor_view);
-
-  if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
-          browser->profile())) {
-    // For sync users, their profile color has not been applied yet. Call a
-    // helper class that applies the color and shows the bubble only if there is
-    // no conflict with a synced theme / color.
-    ProfileCustomizationBubbleSyncController::
-        ApplyColorAndShowBubbleWhenNoValueSynced(
-            browser->profile(), anchor_view,
-            /*suggested_profile_color=*/new_profile_color.value());
-  } else {
-    // For non syncing users, simply show the bubble.
-    ProfileCustomizationBubbleView::CreateBubble(browser->profile(),
-                                                 anchor_view);
-  }
-}
-
-void MaybeShowProfileSwitchIPH(Browser* browser) {
-  DCHECK(browser);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
-    return;
-  browser_view->MaybeShowProfileSwitchIPH();
-}
-
-// `profile_color` should be set now because the sync confirmation webUI is not
-// re-initialized when loading a URL for the same host but with another path.
-GURL GetSyncConfirmationLoadingURL(absl::optional<SkColor> profile_color) {
-  GURL url = GURL(chrome::kChromeUISyncConfirmationURL)
-                 .Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
-  return AppendSyncConfirmationQueryParams(
-      url, {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
-            profile_color});
-}
-
-void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
-                        Browser* browser) {
-  DCHECK(browser);
-  browser->tab_strip_model()->ReplaceWebContentsAt(0, std::move(saml_wc));
-
-  ProfileMetrics::LogProfileAddSignInFlowOutcome(
-      ProfileMetrics::ProfileAddSignInFlowOutcome::kSAML);
-}
-
-}  // namespace
 
 ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    absl::optional<SkColor> profile_color,
-    base::TimeDelta extended_account_info_timeout)
+    absl::optional<SkColor> profile_color)
     : host_(host),
       profile_(profile),
       contents_(std::move(contents)),
-      profile_color_(profile_color),
-      extended_account_info_timeout_(extended_account_info_timeout) {
+      profile_color_(profile_color) {
   DCHECK(profile_);
   DCHECK(contents_);
+  // TODO(crbug.com/1300109): Consider renaming the enum entry -- this does not
+  // have to be profile creation flow, it can be profile onboarding.
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
 }
 
 ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
   if (contents())
     contents()->SetDelegate(nullptr);
-
-  // Record unfinished signed-in profile creation.
-  if (!is_finished_) {
-    // Schedule the profile for deletion, it's not needed any more.
-    g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-        profile_->GetPath());
-
-    ProfileMetrics::LogProfileAddSignInFlowOutcome(
-        ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
-  }
 }
 
-void ProfilePickerSignedInFlowController::Cancel() {
-  DCHECK(IsInitialized());
-  if (is_finished_)
-    return;
+void ProfilePickerSignedInFlowController::Init() {
+  contents()->SetDelegate(this);
 
-  is_finished_ = true;
+  const CoreAccountInfo& account_info =
+      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  DCHECK(!account_info.IsEmpty()) << "A profile with valid (unconsented) "
+                                     "primary account must be passed in.";
+  email_ = account_info.email;
 
-  // Schedule the profile for deletion, it's not needed any more.
-  g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
-      profile_->GetPath());
-}
+  base::OnceClosure sync_consent_completed_closure =
+      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
+                     weak_ptr_factory_.GetWeakPtr(), BrowserOpenedCallback());
 
-void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
-    BrowserOpenedCallback callback) {
-  DCHECK(IsInitialized());
-  // Do nothing if the sign-in flow is aborted or if this has already been
-  // called. Note that this can get called first time from a special case
-  // handling (such as the Settings link) and than second time when the
-  // TurnSyncOnHelper finishes.
-  if (is_finished_)
-    return;
-  is_finished_ = true;
-
-  if (name_for_signed_in_profile_.empty()) {
-    on_profile_name_available_ = base::BindOnce(
-        &ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl,
-        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-    return;
-  }
-
-  FinishAndOpenBrowserImpl(std::move(callback));
+  // TurnSyncOnHelper deletes itself once done.
+  new TurnSyncOnHelper(
+      profile_, signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
+      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+      std::make_unique<ProfilePickerTurnSyncOnDelegate>(
+          weak_ptr_factory_.GetWeakPtr(), profile_),
+      std::move(sync_consent_completed_closure));
 }
 
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
-  GURL sync_confirmation_url = AppendSyncConfirmationQueryParams(
-      GURL(chrome::kChromeUISyncConfirmationURL),
-      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
-       GetProfileColor()});
-  host_->ShowScreen(contents(), sync_confirmation_url,
+  host_->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/false),
                     /*navigation_finished_closure=*/
                     base::BindOnce(&ProfilePickerSignedInFlowController::
                                        SwitchToSyncConfirmationFinished,
@@ -199,100 +102,40 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"));
 }
 
+absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
+    const {
+  // The new profile theme may be overridden by an existing policy theme. This
+  // check ensures the correct theme is applied to the sync confirmation window.
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+  if (theme_service->UsingPolicyTheme())
+    return theme_service->GetPolicyThemeColor();
+  return profile_color_;
+}
+
+GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
+  // The color should be set also for the loading case. Namely, the sync
+  // confirmation webUI is not re-initialized when loading a URL for the same
+  // host but with another path. If a policy later changes the value of
+  // `GetProfileColor()`, it's fine. In this case, Chrome shows the enterprise
+  // welcome screen in between the loading URL and the sync confirmation URL and
+  // thus the sync confirmation webUI will get recreated with the right color.
+  GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
+  return AppendSyncConfirmationQueryParams(
+      loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
+      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
+       GetProfileColor()});
+}
+
+std::unique_ptr<content::WebContents>
+ProfilePickerSignedInFlowController::ReleaseContents() {
+  return std::move(contents_);
+}
+
 bool ProfilePickerSignedInFlowController::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
-}
-
-void ProfilePickerSignedInFlowController::Init(bool is_saml) {
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kProfileCreationFlow);
-
-  if (is_saml) {
-    FinishAndOpenBrowserForSAML();
-    return;
-  }
-
-  contents_->SetDelegate(this);
-
-  // Listen for extended account info getting fetched.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  identity_manager_observation_.Observe(identity_manager);
-
-  const CoreAccountInfo& account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  DCHECK(!account_info.IsEmpty()) << "A profile with valid (unconsented) "
-                                     "primary account must be passed in.";
-  email_ = account_info.email;
-
-  base::OnceClosure sync_consent_completed_closure =
-      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
-                     weak_ptr_factory_.GetWeakPtr(), BrowserOpenedCallback());
-
-  // Stop with the sign-in navigation and show a spinner instead. The spinner
-  // will be shown until TurnSyncOnHelper (below) figures out whether it's a
-  // managed account and whether sync is disabled by policies (which in some
-  // cases involves fetching policies and can take a couple of seconds).
-  //
-  // It's fine to pass `profile_color_` here even though a policy can still
-  // overwrite its value later when polices become available. If policies get
-  // applied, we'll show the enterprise welcome screen in between the loading
-  // URL and the sync confirmation URL and thus the sync confirmation webUI will
-  // get recreated with the right color.
-  host_->ShowScreen(contents(), GetSyncConfirmationLoadingURL(profile_color_));
-
-  // Set up a timeout for extended account info (which cancels any existing
-  // timeout closure).
-  extended_account_info_timeout_closure_.Reset(base::BindOnce(
-      &ProfilePickerSignedInFlowController::OnExtendedAccountInfoTimeout,
-      weak_ptr_factory_.GetWeakPtr(), account_info));
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, extended_account_info_timeout_closure_.callback(),
-      extended_account_info_timeout_);
-
-  // TurnSyncOnHelper deletes itself once done.
-  new TurnSyncOnHelper(
-      profile_, signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
-      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-      std::make_unique<ProfilePickerTurnSyncOnDelegate>(
-          weak_ptr_factory_.GetWeakPtr(), profile_),
-      std::move(sync_consent_completed_closure));
-}
-
-void ProfilePickerSignedInFlowController::OnExtendedAccountInfoUpdated(
-    const AccountInfo& account_info) {
-  DCHECK(IsInitialized());
-  if (!account_info.IsValid())
-    return;
-  name_for_signed_in_profile_ =
-      profiles::GetDefaultNameForNewSignedInProfile(account_info);
-  OnProfileNameAvailable();
-  // Extended info arrived on time, no need for the timeout callback any more.
-  extended_account_info_timeout_closure_.Cancel();
-}
-
-void ProfilePickerSignedInFlowController::OnExtendedAccountInfoTimeout(
-    const CoreAccountInfo& account) {
-  DCHECK(IsInitialized());
-  name_for_signed_in_profile_ =
-      profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(account);
-  OnProfileNameAvailable();
-}
-
-void ProfilePickerSignedInFlowController::OnProfileNameAvailable() {
-  DCHECK(IsInitialized());
-  // Stop listening to further changes.
-  DCHECK(identity_manager_observation_.IsObservingSource(
-      IdentityManagerFactory::GetForProfile(profile_)));
-  identity_manager_observation_.Reset();
-
-  if (on_profile_name_available_)
-    std::move(on_profile_name_available_).Run();
 }
 
 void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
@@ -324,129 +167,6 @@ void ProfilePickerSignedInFlowController::
 }
 
 bool ProfilePickerSignedInFlowController::IsInitialized() const {
-  // This is initialized if the `profile_keep_alive_` object exists.
-  return static_cast<bool>(profile_keep_alive_);
-}
-
-absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
-    const {
-  // The new profile theme may be overridden by an existing policy theme. This
-  // check ensures the correct theme is applied to the sync confirmation window.
-  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-  if (theme_service->UsingPolicyTheme())
-    return theme_service->GetPolicyThemeColor();
-  return profile_color_;
-}
-
-void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
-    BrowserOpenedCallback callback) {
-  TRACE_EVENT1("browser",
-               "ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl",
-               "profile_path", profile_->GetPath().AsUTF8Unsafe());
-  DCHECK(IsInitialized());
-  DCHECK(!name_for_signed_in_profile_.empty());
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-  if (!entry) {
-    NOTREACHED();
-    return;
-  }
-
-  entry->SetIsOmitted(false);
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
-    // Unmark this profile ephemeral so that it isn't deleted upon next startup.
-    // Profiles should never be made non-ephemeral if ephemeral mode is forced
-    // by policy.
-    entry->SetIsEphemeral(false);
-  }
-  entry->SetLocalProfileName(name_for_signed_in_profile_,
-                             /*is_default_name=*/false);
-  ProfileMetrics::LogProfileAddNewUser(
-      ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
-
-  // If there's no custom callback specified (that overrides profile
-  // customization bubble), Chrome should show the customization bubble.
-  if (!callback) {
-    // If there's no color to apply to the profile, skip the customization
-    // bubble and trigger an IPH, instead.
-    if (ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme() ||
-        !profile_color_.has_value()) {
-      callback = base::BindOnce(&MaybeShowProfileSwitchIPH);
-    } else {
-      callback = base::BindOnce(&ShowCustomizationBubble, profile_color_);
-
-      // If sync cannot start, we apply `profile_color_` right away before
-      // opening a browser window to avoid flicker. Otherwise, it's applied
-      // later by code triggered from ShowCustomizationBubble().
-      if (!ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
-              profile_)) {
-        auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
-        theme_service->BuildAutogeneratedThemeFromColor(profile_color_.value());
-      }
-    }
-  }
-
-  // Skip the FRE for this profile as it's replaced by profile creation flow.
-  profile_->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
-
-  profiles::OpenBrowserWindowForProfile(
-      base::BindOnce(&ProfilePickerSignedInFlowController::OnBrowserOpened,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      /*always_create=*/false,   // Don't create a window if one already exists.
-      /*is_new_profile=*/false,  // Don't create a first run window.
-      /*unblock_extensions=*/false,  // There is no need to unblock all
-                                     // extensions because we only open browser
-                                     // window if the Profile is not locked.
-                                     // Hence there is no extension blocked.
-      profile_);
-}
-
-void ProfilePickerSignedInFlowController::FinishAndOpenBrowserForSAML() {
-  DCHECK(IsInitialized());
-  // First, free up `contents()` to be moved to a new browser window.
-  host_->ShowScreenInPickerContents(
-      GURL(url::kAboutBlankURL),
-      /*navigation_finished_closure=*/
-      base::BindOnce(
-          &ProfilePickerSignedInFlowController::OnSignInContentsFreedUp,
-          // Unretained is enough as the callback is called by a
-          // member of `host_` that outlives `this`.
-          base::Unretained(this)));
-}
-
-void ProfilePickerSignedInFlowController::OnSignInContentsFreedUp() {
-  DCHECK(IsInitialized());
-  DCHECK(!is_finished_);
-  is_finished_ = true;
-
-  DCHECK(name_for_signed_in_profile_.empty());
-  name_for_signed_in_profile_ =
-      profiles::GetDefaultNameForNewEnterpriseProfile();
-  contents_->SetDelegate(nullptr);
-  FinishAndOpenBrowserImpl(
-      base::BindOnce(&ContinueSAMLSignin, std::move(contents_)));
-}
-
-void ProfilePickerSignedInFlowController::OnBrowserOpened(
-    BrowserOpenedCallback finish_flow_callback,
-    Profile* profile) {
-  TRACE_EVENT1("browser",
-               "ProfilePickerSignedInFlowController::OnBrowserOpened",
-               "profile_path", profile_->GetPath().AsUTF8Unsafe());
-  DCHECK(IsInitialized());
-  CHECK_EQ(profile, profile_);
-
-  // Hide the flow window. This posts a task on the message loop to destroy the
-  // window incl. this view.
-  host_->Clear();
-
-  if (!finish_flow_callback)
-    return;
-
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  CHECK(browser);
-  std::move(finish_flow_callback).Run(browser);
+  // `email_` is set in Init(), use it as the proxy here.
+  return !email_.empty();
 }

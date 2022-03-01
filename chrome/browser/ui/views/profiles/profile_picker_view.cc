@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
@@ -689,9 +689,11 @@ void ProfilePickerView::OnDiceSigninFinished(
     Profile* signed_in_profile,
     std::unique_ptr<content::WebContents> contents,
     bool is_saml) {
-  dice_sign_in_provider_.reset();
   SwitchToSignedInFlow(profile_color, signed_in_profile, std::move(contents),
                        is_saml);
+  // Reset the provider after switching to signed-in flow to make sure there's
+  // always one ScopedProfileKeepAlive.
+  dice_sign_in_provider_.reset();
 }
 #endif
 
@@ -701,10 +703,10 @@ void ProfilePickerView::SwitchToSignedInFlow(
     std::unique_ptr<content::WebContents> contents,
     bool is_saml) {
   DCHECK(!signed_in_flow_);
-  signed_in_flow_ = std::make_unique<ProfilePickerSignedInFlowController>(
+  signed_in_flow_ = std::make_unique<ProfileCreationSignedInFlowController>(
       this, signed_in_profile, std::move(contents), profile_color,
-      extended_account_info_timeout_);
-  signed_in_flow_->Init(is_saml);
+      extended_account_info_timeout_, is_saml);
+  signed_in_flow_->Init();
 }
 
 void ProfilePickerView::CancelSignedInFlow() {
