@@ -119,7 +119,7 @@
         TODO(https://crbug.com/819142): Remove textAppearance when all TextViews have text style
         explicitly specified. -->
     <style name="Base.V17.Theme.Chromium.DialogWhenLarge"
-        parent="Theme.BrowserUI.DialogWhenLarge">
+        parent="Theme.BrowserUI.DialogWhenLarge.DayNight">
         <item name="android:windowBackground">@drawable/bg_white_dialog</item>
         <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
         <item name="android:textColorLink">@macro/default_text_color_link</item>

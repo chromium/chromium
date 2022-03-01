@@ -3,8 +3,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<resources>
-    <!-- Colors should be mirrored by Base.Theme.BrowserUI.DialogWhenLarge. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Full themes. -->
+
+    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge. -->
     <style name="Base.V21.Theme.BrowserUI" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
@@ -52,9 +54,44 @@
     </style>
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
     <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
+    <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI">
+        <!-- Control styles -->
+        <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
+        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
+
+        <!-- Window Properties -->
+        <item name="android:windowBackground">@macro/default_bg_color</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+
+        <!-- Spinner styles -->
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBarStyle</item>
+
+        <!-- Popup styles -->
+        <!-- Set android popup menu attributes for context menu styles because the context menus are
+             OS-dependent. -->
+        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
+        <item name="android:textAppearanceLargePopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:textAppearanceSmallPopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
+
+        <!-- This is for keeping the current TextInputLayout style.
+             TODO(crbug.com/1206024): Remove or update once the design for the app is updated. -->
+        <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
+    </style>
+    <!-- Overridden by night mode. -->
+    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI" />
 
     <!-- Colors should be mirrored by Base.V21.Theme.BrowserUI. -->
-    <style name="Base.Theme.BrowserUI.DialogWhenLarge" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
+    <style name="Theme.BrowserUI.DialogWhenLarge" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
          <!-- Color palettes -->
@@ -99,7 +136,8 @@
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
     </style>
-    <style name="Theme.BrowserUI.DialogWhenLarge" parent="Base.Theme.BrowserUI.DialogWhenLarge"/>
+    <!-- Overridden by night mode. -->
+    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
 
     <!-- Theme overlays -->
 

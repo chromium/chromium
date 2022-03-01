@@ -4,45 +4,6 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Theme shared between Chrome and embedders. -->
-    <!-- TODO(https://crbug.com/1227450): This should be dissolved into the base theme or moved to
-         themes.xml. -->
-    <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI">
-        <!-- Control styles -->
-        <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
-        <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
-        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
-
-        <!-- Window Properties -->
-        <item name="android:windowBackground">@macro/default_bg_color</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
-
-        <!-- Spinner styles -->
-        <item name="spinnerStyle">@style/SpinnerStyle</item>
-        <item name="android:progressBarStyle">@style/ProgressBarStyle</item>
-
-        <!-- Popup styles -->
-        <!-- Set android popup menu attributes for context menu styles because the context menus are
-             OS-dependent. -->
-        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
-        <item name="android:textAppearanceLargePopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:textAppearanceSmallPopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
-
-        <!-- This is for keeping the current TextInputLayout style.
-             TODO(crbug.com/1206024): Remove or update once the design for the app is updated. -->
-        <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
-    </style>
-
-    <style name="Theme.BrowserUI.DayNight" />
-
     <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
          attributes in case the context ends up being used to inflate views. -->
     <style name="Theme.BrowserUI.NoDisplay" parent="Theme.BrowserUI.DayNight">
