@@ -533,8 +533,10 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
   if (!user_capture_region_.IsEmpty() && by_user)
     last_capture_region_update_time_ = base::TimeTicks::Now();
 
-  if (camera_controller_ && !is_recording_in_progress())
+  if (camera_controller_ && !is_recording_in_progress() &&
+      source_ == CaptureModeSource::kRegion) {
     camera_controller_->MaybeReparentPreviewWidget();
+  }
 }
 
 bool CaptureModeController::CanShowUserNudge() const {

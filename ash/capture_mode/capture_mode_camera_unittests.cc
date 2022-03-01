@@ -17,6 +17,7 @@
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -26,7 +27,9 @@
 #include "base/system/system_monitor.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -43,6 +46,22 @@ TestCaptureModeDelegate* GetTestDelegate() {
 
 CaptureModeCameraController* GetCameraController() {
   return CaptureModeController::Get()->camera_controller();
+}
+
+// Returns the current root window where the current capture activities are
+// hosted in.
+aura::Window* GetCurrentRoot() {
+  auto* controller = CaptureModeController::Get();
+  if (controller->IsActive())
+    return controller->capture_mode_session()->current_root();
+
+  if (controller->is_recording_in_progress()) {
+    return controller->video_recording_watcher_for_testing()
+        ->window_being_recorded()
+        ->GetRootWindow();
+  }
+
+  return Shell::GetPrimaryRootWindow();
 }
 
 // Defines a waiter for the camera devices change notifications.
@@ -840,6 +859,31 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
       preview_widget->GetWindowBoundsInScreen()));
 }
 
+// Tests that switching from `kImage` to `kVideo` with capture source `kWindow`,
+// and capture window is already selected before the switch, the camera preview
+// widget should be positioned and parented correctly.
+TEST_F(CaptureModeCameraTest, CameraPreviewWidgetAfterTypeSwitched) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  auto* camera_controller = GetCameraController();
+  GetEventGenerator()->MoveMouseToCenterOf(window());
+
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  controller->SetType(CaptureModeType::kVideo);
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+  auto* parent = camera_preview_widget->GetNativeWindow()->parent();
+  const auto* selected_window =
+      controller->capture_mode_session()->GetSelectedWindow();
+  ASSERT_EQ(parent, selected_window);
+
+  // Verify that camera preview is at the bottom right corner of the window.
+  VerifyPreviewAlignment(selected_window->GetBoundsInScreen());
+}
+
 // Tests that audio and camera menu groups should be hidden from the settings
 // menu when there's a video recording in progress.
 TEST_F(CaptureModeCameraTest,
@@ -984,6 +1028,108 @@ TEST_F(CaptureModeCameraTest, HoveringMouseOverCameraPreview) {
                                    ->GetWindowBoundsInScreen()
                                    .CenterPoint());
   EXPECT_EQ(window(), controller->capture_mode_session()->GetSelectedWindow());
+
+  controller->Stop();
 }
+
+class CameraPreviewBoundsTest
+    : public CaptureModeCameraTest,
+      public testing::WithParamInterface<CaptureModeSource> {
+ public:
+  CameraPreviewBoundsTest() = default;
+  CameraPreviewBoundsTest(
+      const CameraPreviewBoundsTest& capture_mode_save_file_test) = delete;
+  CameraPreviewBoundsTest& operator=(const CameraPreviewBoundsTest&) = delete;
+  ~CameraPreviewBoundsTest() override = default;
+
+  void StartCaptureSessionWithParam() {
+    auto* controller = CaptureModeController::Get();
+    const gfx::Rect capture_region(10, 20, 1300, 750);
+    controller->SetUserCaptureRegion(capture_region, /*by_user=*/true);
+    // Set the window's bounds big enough here to make sure after display
+    // rotation, the event is located on top of `window_`.
+    // TODO(conniekxu): investigate why the position of the event received is
+    // different than the position we pass.
+    window()->SetBounds({30, 40, 1300, 750});
+
+    StartCaptureSession(GetParam(), CaptureModeType::kVideo);
+    if (GetParam() == CaptureModeSource::kWindow)
+      GetEventGenerator()->MoveMouseToCenterOf(window());
+  }
+
+  // Based on the `CaptureModeSource`, it returns the current capture region's
+  // bounds in screen.
+  gfx::Rect GetCaptureBoundsInScreen() {
+    auto* controller = CaptureModeController::Get();
+    auto* root = GetCurrentRoot();
+
+    switch (GetParam()) {
+      case CaptureModeSource::kFullscreen:
+        return display::Screen::GetScreen()
+            ->GetDisplayNearestWindow(root)
+            .work_area();
+
+      case CaptureModeSource::kRegion: {
+        auto* recording_watcher =
+            controller->video_recording_watcher_for_testing();
+        gfx::Rect capture_region =
+            controller->is_recording_in_progress()
+                ? recording_watcher->GetEffectivePartialRegionBounds()
+                : controller->user_capture_region();
+        wm::ConvertRectToScreen(root, &capture_region);
+        return capture_region;
+      }
+
+      case CaptureModeSource::kWindow:
+        return window()->GetBoundsInScreen();
+    }
+  }
+};
+
+// Tests that camera preview's bounds is updated after display rotations with
+// two use cases, when capture session is active and when there's a video
+// recording in progress.
+TEST_P(CameraPreviewBoundsTest, DisplayRotation) {
+  StartCaptureSessionWithParam();
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+
+  // Verify that the camera preview should be at the bottom right corner of
+  // capture bounds.
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Rotate the primary display by 90 degrees. Verify that the camera preview is
+  // still at the bottom right corner of capture bounds.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(), display::Display::ROTATE_90,
+      display::Display::RotationSource::USER);
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Start video recording, verify camera preview's bounds is updated after
+  // display rotations when there's a video recording in progress.
+  StartVideoRecordingImmediately();
+  EXPECT_FALSE(CaptureModeController::Get()->IsActive());
+
+  // Rotate the primary display by 180 degrees. Verify that the camera preview
+  // is still at the bottom right corner of capture bounds.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(),
+      display::Display::ROTATE_180, display::Display::RotationSource::USER);
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+
+  // Rotate the primary display by 270 degrees. Verify that the camera preview
+  // is still at the bottom right corner of capture bounds.
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      WindowTreeHostManager::GetPrimaryDisplayId(),
+      display::Display::ROTATE_270, display::Display::RotationSource::USER);
+  VerifyPreviewAlignment(GetCaptureBoundsInScreen());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CameraPreviewBoundsTest,
+                         testing::Values(CaptureModeSource::kFullscreen,
+                                         CaptureModeSource::kRegion,
+                                         CaptureModeSource::kWindow));
 
 }  // namespace ash

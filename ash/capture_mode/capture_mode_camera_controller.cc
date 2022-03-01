@@ -113,6 +113,10 @@ std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
   params.bounds = bounds;
+  // Need to set `params.child` to true here, otherwise camera preview widget
+  // will be added as a transient child to `params.parent`. For more details,
+  // please check `NativeWidgetAura::InitNativeWidget`.
+  params.child = true;
   params.name = "CameraPreviewWidget";
   camera_preview_widget->Init(std::move(params));
   StackingPreviewAtTop(camera_preview_widget.get());
@@ -363,7 +367,6 @@ void CaptureModeCameraController::OnSelectedCameraDisconnected() {
 
 gfx::Rect CaptureModeCameraController::GetPreviewWidgetBounds() const {
   auto* controller = CaptureModeController::Get();
-  DCHECK_EQ(CaptureModeType::kVideo, controller->type());
   DCHECK(controller->IsActive() || controller->is_recording_in_progress());
   const gfx::Rect confine_bounds = controller->GetCameraPreviewConfineBounds();
   const gfx::Size preview_size = camera_preview_view_

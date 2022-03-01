@@ -1029,6 +1029,17 @@ void CaptureModeSession::OnDisplayMetricsChanged(
   RefreshBarWidgetBounds();
   MaybeUpdateSettingsBounds();
 
+  // Only need to update the camera preview's bounds if the capture source is
+  // `kFullscreen`, since `ClampCaptureRegionToRootWindowSize` will take care of
+  // it if the source is `kRegion`.
+  // `CaptureWindowObserver::OnWindowBoundsChanged` will take care of it if the
+  // source is `kWindow`.
+  if (controller_->camera_controller() &&
+      controller_->source() == CaptureModeSource::kFullscreen &&
+      !controller_->is_recording_in_progress()) {
+    controller_->camera_controller()->MaybeUpdatePreviewWidgetBounds();
+  }
+
   if (capture_label_widget_)
     UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   layer()->SchedulePaint(layer()->bounds());

@@ -76,6 +76,13 @@ void CaptureWindowObserver::OnWindowBoundsChanged(
     ui::PropertyChangeReason reason) {
   DCHECK_EQ(window, window_);
   RepaintCaptureRegion();
+
+  // The bounds of camera preview should be updated accordingly if the bounds of
+  // the selected window has been updated.
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = controller->camera_controller();
+  if (camera_controller && !controller->is_recording_in_progress())
+    camera_controller->MaybeUpdatePreviewWidgetBounds();
 }
 
 void CaptureWindowObserver::OnWindowVisibilityChanging(aura::Window* window,

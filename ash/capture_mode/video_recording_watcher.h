@@ -131,6 +131,11 @@ class ASH_EXPORT VideoRecordingWatcher
   // CursorWindowController::Observer:
   void OnCursorCompositingStateChanged(bool enabled) override;
 
+  // Returns the `partial_region_bounds_` clamped to the bounds of the
+  // `current_root_`. It should only be called if `recording_source_` is
+  // `kRegion`.
+  gfx::Rect GetEffectivePartialRegionBounds() const;
+
   bool IsWindowDimmedForTesting(aura::Window* window) const;
 
   void BindCursorOverlayForTesting(
