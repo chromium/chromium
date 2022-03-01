@@ -769,6 +769,9 @@ std::u16string ResourceBundle::GetLocalizedString(int resource_id) {
     can_override_locale_string_resources_ = false;
   }
 #endif
+  DCHECK(!IsGzipped(resource_id) && !IsBrotli(resource_id))
+      << "Compressed string encountered, perhaps use "
+         "ResourceBundle::LoadLocalizedResourceString instead";
   return GetLocalizedStringImpl(resource_id);
 }
 
