@@ -834,8 +834,12 @@ config("compiler") {
   if (use_lto_in_rustc_linking) {
     rustflags += [ "-Clinker-plugin-lto" ]
   }
-  if (!use_thin_lto) {
-    # Optimization - don't include bitcode if it won't be used.
+  if (!use_thin_lto || !use_chromium_rust_toolchain) {
+    # Don't include bitcode if it won't be used, or can't be used. When
+    # use_thin_lto is true, we will try to apply LTO to any objects that have
+    # the appropriate bitcode. But we have to use Chromium's toolchain in order
+    # to use LTO with rust code. Chromium's rustc will have an LLVM backend that
+    # matches the C++ clang compiler.
     rustflags += [ "-Cembed-bitcode=no" ]
   }
   if (is_official_build) {
