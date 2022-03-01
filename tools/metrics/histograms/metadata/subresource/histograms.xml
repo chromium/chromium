@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
-    enum="Boolean" expires_after="2022-06-26">
+    enum="Boolean" expires_after="2022-08-28">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
