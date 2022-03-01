@@ -7,6 +7,8 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+
+#include "chrome/browser/ui/incognito_clear_browsing_data_dialog_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -17,26 +19,10 @@ class View;
 }  // namespace views
 
 class IncognitoClearBrowsingDataDialog
-    : public views::BubbleDialogDelegateView {
+    : public IncognitoClearBrowsingDataDialogInterface,
+      public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(IncognitoClearBrowsingDataDialog);
-
-  enum Type {
-    kDefaultBubble = 0,
-    kHistoryDisclaimerBubble = 1,
-    kMaxValue = kHistoryDisclaimerBubble,
-  };
-
-  // Represents the action type that the user can take in the dialog.
-  // Do not reorder items here because it's mirrored to UMA as
-  // IncognitoClearBrowsingDataDialogActionType. Values should be enumerated
-  // from 0. When removing items, comment them out and keep the existing numeric
-  // values stable. Don't forget to also add any new entries to the enums.xml.
-  enum class DialogActionType {
-    kCancel = 0,
-    kCloseIncognito = 1,
-    kMaxValue = kCloseIncognito,
-  };
 
   static void Show(views::View* anchor_view,
                    Profile* incognito_profile,
@@ -62,9 +48,10 @@ class IncognitoClearBrowsingDataDialog
   static void CloseDialog();
 
   // Helper methods to add functionality to the button.
-  void OnCloseWindowsButtonClicked();
-  void OnCancelButtonClicked();
+  void OnCloseWindowsButtonClicked() override;
+  void OnCancelButtonClicked() override;
 
+  // Helper methods to decorate the dialog for different dialog type.
   void SetDialogForDefaultBubbleType();
   void SetDialogForHistoryDisclaimerBubbleType();
 

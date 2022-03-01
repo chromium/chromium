@@ -3254,6 +3254,7 @@ static_library("ui") {
       "autofill/payments/webauthn_dialog_view.h",
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
+      "incognito_clear_browsing_data_dialog_interface.h",
       "signin_modal_dialog.cc",
       "signin_modal_dialog.h",
       "signin_modal_dialog_impl.cc",
