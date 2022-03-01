@@ -105,7 +105,8 @@ class SystemWebAppManager {
   absl::optional<AppId> GetAppIdForSystemApp(SystemAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
-  absl::optional<SystemAppType> GetSystemAppTypeForAppId(AppId app_id) const;
+  absl::optional<SystemAppType> GetSystemAppTypeForAppId(
+      const AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
   const SystemWebAppDelegate* GetSystemApp(SystemAppType type) const;

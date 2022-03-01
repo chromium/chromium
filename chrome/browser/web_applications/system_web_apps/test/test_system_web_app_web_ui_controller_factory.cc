@@ -16,7 +16,7 @@ namespace {
 // WebUIController that serves a System PWA.
 class TestSystemWebAppWebUIController : public content::WebUIController {
  public:
-  explicit TestSystemWebAppWebUIController(std::string source_name,
+  explicit TestSystemWebAppWebUIController(const std::string& source_name,
                                            content::WebUI* web_ui)
       : WebUIController(web_ui) {
     web_app::AddTestURLDataSource(

@@ -262,21 +262,20 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
             include_launch_directory);
   }
 
-  content::WebContents* LaunchApp(
-      const std::vector<base::FilePath> launch_files,
-      bool wait_for_load = true) {
+  content::WebContents* LaunchApp(std::vector<base::FilePath> launch_files,
+                                  bool wait_for_load = true) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
     params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
-    params.launch_files = launch_files;
+    params.launch_files = std::move(launch_files);
 
     return SystemWebAppBrowserTestBase::LaunchApp(std::move(params));
   }
 
   content::WebContents* LaunchAppWithoutWaiting(
-      const std::vector<base::FilePath> launch_files) {
+      std::vector<base::FilePath> launch_files) {
     apps::AppLaunchParams params = LaunchParamsForApp(GetMockAppType());
     params.launch_source = apps::mojom::LaunchSource::kFromChromeInternal;
-    params.launch_files = launch_files;
+    params.launch_files = std::move(launch_files);
 
     return SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
         std::move(params));
@@ -315,7 +314,7 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
   }
 
   std::string GetJsStatementValueAsString(content::WebContents* web_contents,
-                                          std::string js_statement) {
+                                          const std::string& js_statement) {
     std::string str;
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         web_contents, "domAutomationController.send( " + js_statement + ");",
