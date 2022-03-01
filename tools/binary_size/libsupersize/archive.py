@@ -256,6 +256,9 @@ def _CreateMetadata(container_spec):
 
   if apk_spec:
     metadata[models.METADATA_APK_SIZE] = os.path.getsize(apk_spec.apk_path)
+    if apk_spec.mapping_path:
+      metadata[models.METADATA_PROGUARD_MAPPING_FILENAME] = shorten_path(
+          apk_spec.mapping_path)
     if apk_spec.minimal_apks_path:
       metadata[models.METADATA_APK_FILENAME] = shorten_path(
           apk_spec.minimal_apks_path)
