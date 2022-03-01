@@ -13,13 +13,13 @@ import UIKit
     self.matches = matches
     self.delegate = delegate
   }
-  
+
   // MARK: AutocompleteResultConsumer
-  
-  public func updateMatches(_ matches : [AutocompleteSuggestion], withAnimation: Bool) {
+
+  public func updateMatches(_ matches: [AutocompleteSuggestion], withAnimation: Bool) {
     self.matches = matches.map(PopupMatch.init(match:))
   }
-  
+
   public func setTextAlignment(_ alignment: NSTextAlignment) {}
   public func setSemanticContentAttribute(_ semanticContentAttribute: UISemanticContentAttribute) {}
 }

@@ -35,11 +35,11 @@ import Foundation
     self.pedal = nil
     self.trailingButtonHandler = {}
     self.deletionHandler = {}
-    self.url = nil // TODO: remove url
+    self.url = nil  // TODO: remove url
   }
 
   public init(
-    title: String, subtitle: String?, url: URL?, isAppendable: Bool, isTabMatch: Bool,
+    title: String, subtitle: String? = nil, url: URL?, isAppendable: Bool, isTabMatch: Bool,
     supportsDeletion: Bool, pedal: Pedal?, trailingButtonHandler: @escaping () -> Void = {},
     deletionHandler: @escaping () -> Void = {}
   ) {
@@ -85,13 +85,12 @@ extension PopupMatch {
     supportsDeletion: false,
     pedal: nil)
   static let pedal = PopupMatch(
-    title: "Set Default browser",
-    subtitle: "Make Chrome your default browser",
+    title: "clear browsing data",
     url: nil,
     isAppendable: false,
     isTabMatch: false,
     supportsDeletion: false,
-    pedal: Pedal(title: "Click here"))
+    pedal: Pedal(title: "Clear Browsing Data"))
   static let appendable = PopupMatch(
     title: "is appendable",
     subtitle: nil,

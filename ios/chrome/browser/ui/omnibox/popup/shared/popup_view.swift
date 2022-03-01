@@ -5,6 +5,10 @@
 import SwiftUI
 
 struct PopupView: View {
+  enum Dimensions {
+    static let matchListRowInsets = EdgeInsets(top: 9, leading: 0, bottom: 9, trailing: 16)
+  }
+
   @ObservedObject var model: PopupModel
   var body: some View {
     VStack {
@@ -12,10 +16,12 @@ struct PopupView: View {
         ForEach(model.matches) { match in
           PopupMatchRowView(match: match)
             .deleteDisabled(!match.supportsDeletion)
+            .listRowInsets(Dimensions.matchListRowInsets)
         }
         .onDelete { indexSet in
           for matchIndex in indexSet {
-            model.delegate?.autocompleteResultConsumer( model, didSelectRowForDeletion: UInt(matchIndex))
+            model.delegate?.autocompleteResultConsumer(
+              model, didSelectRowForDeletion: UInt(matchIndex))
           }
         }
       }
@@ -27,6 +33,6 @@ struct PopupView_Previews: PreviewProvider {
   static var previews: some View {
     PopupView(
       model: PopupModel(
-        matches: PopupMatch.previews, delegate:nil))
+        matches: PopupMatch.previews, delegate: nil))
   }
 }

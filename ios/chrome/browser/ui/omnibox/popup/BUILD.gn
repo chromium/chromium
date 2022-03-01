@@ -10,6 +10,7 @@ swift_source_set("popup_swift") {
     "omnibox_popup_view_provider.swift",
     "shared/omnibox_pedal.swift",
     "shared/popup_match.swift",
+    "shared/popup_match_row_action_button.swift",
     "shared/popup_match_row_view.swift",
     "shared/popup_model.swift",
     "shared/popup_view.swift",
