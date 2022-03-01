@@ -76,6 +76,7 @@ public class SendTabToSelfCoordinatorTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO)
+    @DisabledTest(message = "https://crbug.com/1302062")
     public void testShowSigninPromoIfSignedOutAndFeatureEnabled() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addTestAccount();
