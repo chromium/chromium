@@ -135,6 +135,9 @@ const base::Feature kJSONModules{"JSONModules",
 const base::Feature kForceSynchronousHTMLParsing{
     "ForceSynchronousHTMLParsing", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kDeferredFontShaping{"DeferredShaping",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable EditingNG by default. This feature is for a kill switch.
 const base::Feature kEditingNG{"EditingNG", base::FEATURE_ENABLED_BY_DEFAULT};
 

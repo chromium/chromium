@@ -55625,6 +55625,7 @@ from previous Chrome versions.
   <int value="793287900" label="VerifyDidCommitParams:disabled"/>
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
+  <int value="797924041" label="DeferredShaping:enabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
@@ -57394,6 +57395,7 @@ from previous Chrome versions.
   <int value="2043141918" label="DnsOverHttps:enabled"/>
   <int value="2043321329" label="OfflinePagesPrefetchingUI:disabled"/>
   <int value="2043794900" label="CommercePriceTracking:enabled"/>
+  <int value="2044623453" label="DeferredShaping:disabled"/>
   <int value="2047503404" label="FilesSWA:enabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>

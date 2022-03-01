@@ -859,6 +859,8 @@
     {
       // crbug.com/1259085
       name: "DeferredShaping",
+      depends_on: ["LayoutNG"],
+      // The status is managed by the corresponding base::Feature.
     },
     {
       name: "DelegatedInkTrails",

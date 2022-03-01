@@ -7163,6 +7163,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kCheckOfflineCapability,
                                     kCheckOfflineCapabilityVariations,
                                     "CheckOfflineCapability")},
+
+    {"deferred-font-shaping", flag_descriptions::kDeferredFontShapingName,
+     flag_descriptions::kDeferredFontShapingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kDeferredFontShaping)},
+
     {"detect-form-submission-on-form-clear",
      flag_descriptions::kDetectFormSubmissionOnFormClearName,
      flag_descriptions::kDetectFormSubmissionOnFormClearDescription, kOsAll,

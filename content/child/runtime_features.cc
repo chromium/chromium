@@ -335,6 +335,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"ComputePressure", blink::features::kComputePressure,
            kSetOnlyIfOverridden},
+          {"DeferredShaping", blink::features::kDeferredFontShaping},
           {"DesktopPWAsSubApps", blink::features::kDesktopPWAsSubApps},
           {"DocumentTransition", blink::features::kDocumentTransition},
           // TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
