@@ -125,7 +125,8 @@ class TestShortcutManager : public WebAppShortcutManager {
   void GetAppExistingShortCutLocation(
       ShortcutLocationCallback callback,
       std::unique_ptr<ShortcutInfo> shortcut_info) override;
-  void SetAppExistingShortcuts(GURL app_url, ShortcutLocations locations) {
+  void SetAppExistingShortcuts(const GURL& app_url,
+                               ShortcutLocations locations) {
     existing_shortcut_locations_[app_url] = locations;
   }
 

@@ -243,7 +243,7 @@ base::Value GetCustomAppNameItem(std::string name) {
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
-  item.SetKey(kCustomNameKey, base::Value(name));
+  item.SetKey(kCustomNameKey, base::Value(std::move(name)));
   return item;
 }
 
@@ -256,7 +256,7 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
   options.install_placeholder = true;
   options.reinstall_placeholder = true;
   options.wait_for_windows_closed = true;
-  options.override_name = name;
+  options.override_name = std::move(name);
   return options;
 }
 
@@ -386,7 +386,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  void SimulatePreviouslyInstalledApp(GURL url,
+  void SimulatePreviouslyInstalledApp(const GURL& url,
                                       ExternalInstallSource install_source) {
     auto web_app = test::CreateWebApp(
         url, ConvertExternalInstallSourceToSourceType(install_source));

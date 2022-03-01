@@ -86,18 +86,18 @@ void FakeWebAppRegistryController::UnregisterAll() {
 
 void FakeWebAppRegistryController::SetInstallWebAppsAfterSyncDelegate(
     InstallWebAppsAfterSyncDelegate delegate) {
-  install_web_apps_after_sync_delegate_ = delegate;
+  install_web_apps_after_sync_delegate_ = std::move(delegate);
 }
 
 void FakeWebAppRegistryController::
     SetUninstallWithoutRegistryUpdateFromSyncDelegate(
         UninstallWithoutRegistryUpdateFromSyncDelegate delegate) {
-  uninstall_from_sync_before_registry_update_delegate_ = delegate;
+  uninstall_from_sync_before_registry_update_delegate_ = std::move(delegate);
 }
 
 void FakeWebAppRegistryController::SetRetryIncompleteUninstallsDelegate(
     RetryIncompleteUninstallsDelegate delegate) {
-  retry_incomplete_uninstalls_delegate_ = delegate;
+  retry_incomplete_uninstalls_delegate_ = std::move(delegate);
 }
 
 void FakeWebAppRegistryController::InstallWebAppsAfterSync(

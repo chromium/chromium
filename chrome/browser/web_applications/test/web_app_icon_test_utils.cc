@@ -203,7 +203,9 @@ GeneratedIconsInfo::GeneratedIconsInfo(const GeneratedIconsInfo&) = default;
 GeneratedIconsInfo::GeneratedIconsInfo(IconPurpose purpose,
                                        std::vector<SquareSizePx> sizes_px,
                                        std::vector<SkColor> colors)
-    : purpose(purpose), sizes_px(sizes_px), colors(colors) {}
+    : purpose(purpose),
+      sizes_px(std::move(sizes_px)),
+      colors(std::move(colors)) {}
 
 GeneratedIconsInfo::~GeneratedIconsInfo() = default;
 

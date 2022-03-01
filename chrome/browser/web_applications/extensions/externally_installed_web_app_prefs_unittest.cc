@@ -43,11 +43,11 @@ class ExternallyInstalledWebAppPrefsTest
                                         false);  // autoupdate_enabled
   }
 
-  std::string GenerateFakeExtensionId(GURL url) {
+  std::string GenerateFakeExtensionId(const GURL& url) {
     return crx_file::id_util::GenerateId("fake_app_id_for:" + url.spec());
   }
 
-  void SimulatePreviouslyInstalledApp(GURL url,
+  void SimulatePreviouslyInstalledApp(const GURL& url,
                                       ExternalInstallSource install_source) {
     std::string id = GenerateFakeExtensionId(url);
     extensions::ExtensionRegistry::Get(profile())->AddEnabled(
@@ -57,7 +57,7 @@ class ExternallyInstalledWebAppPrefsTest
         .Insert(url, id, install_source);
   }
 
-  void SimulateUninstallApp(GURL url) {
+  void SimulateUninstallApp(const GURL& url) {
     std::string id = GenerateFakeExtensionId(url);
     extensions::ExtensionRegistry::Get(profile())->RemoveEnabled(id);
   }

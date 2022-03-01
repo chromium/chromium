@@ -13,12 +13,12 @@ namespace web_app {
 
 scoped_refptr<TestFileUtils> TestFileUtils::Create(
     std::map<base::FilePath, base::FilePath> read_file_rerouting) {
-  return base::MakeRefCounted<TestFileUtils>(read_file_rerouting);
+  return base::MakeRefCounted<TestFileUtils>(std::move(read_file_rerouting));
 }
 
 TestFileUtils::TestFileUtils(
     std::map<base::FilePath, base::FilePath> read_file_rerouting)
-    : read_file_rerouting_(read_file_rerouting) {}
+    : read_file_rerouting_(std::move(read_file_rerouting)) {}
 
 TestFileUtils::~TestFileUtils() = default;
 

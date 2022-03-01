@@ -41,27 +41,27 @@ WebAppInstallManagerObserverAdapter::~WebAppInstallManagerObserverAdapter() =
 
 void WebAppInstallManagerObserverAdapter::SetWebAppInstalledDelegate(
     WebAppInstalledDelegate delegate) {
-  app_installed_delegate_ = delegate;
+  app_installed_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManagerObserverAdapter::SetWebAppInstalledWithOsHooksDelegate(
     WebAppInstalledWithOsHooksDelegate delegate) {
-  app_installed_with_os_hooks_delegate_ = delegate;
+  app_installed_with_os_hooks_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManagerObserverAdapter::SetWebAppWillBeUninstalledDelegate(
     WebAppWillBeUninstalledDelegate delegate) {
-  app_will_be_uninstalled_delegate_ = delegate;
+  app_will_be_uninstalled_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManagerObserverAdapter::SetWebAppUninstalledDelegate(
     WebAppUninstalledDelegate delegate) {
-  app_uninstalled_delegate_ = delegate;
+  app_uninstalled_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManagerObserverAdapter::SetWebAppManifestUpdateDelegate(
     WebAppManifestUpdateDelegate delegate) {
-  app_manifest_updated_delegate_ = delegate;
+  app_manifest_updated_delegate_ = std::move(delegate);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppInstalled(
@@ -80,7 +80,7 @@ void WebAppInstallManagerObserverAdapter::OnWebAppManifestUpdated(
     const AppId& app_id,
     base::StringPiece old_name) {
   if (app_manifest_updated_delegate_)
-    app_manifest_updated_delegate_.Run(app_id, std::move(old_name));
+    app_manifest_updated_delegate_.Run(app_id, old_name);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppWillBeUninstalled(
@@ -134,23 +134,23 @@ WebAppTestRegistryObserverAdapter::~WebAppTestRegistryObserverAdapter() =
 
 void WebAppTestRegistryObserverAdapter::SetWebAppWillBeUpdatedFromSyncDelegate(
     WebAppWillBeUpdatedFromSyncDelegate delegate) {
-  app_will_be_updated_from_sync_delegate_ = delegate;
+  app_will_be_updated_from_sync_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::SetWebAppLastBadgingTimeChangedDelegate(
     WebAppLastBadgingTimeChangedDelegate delegate) {
-  app_last_badging_time_changed_delegate_ = delegate;
+  app_last_badging_time_changed_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::
     SetWebAppProtocolSettingsChangedDelegate(
         WebAppProtocolSettingsChangedDelegate delegate) {
-  app_protocol_settings_changed_delegate_ = delegate;
+  app_protocol_settings_changed_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::SetWebAppProfileWillBeDeletedDelegate(
     WebAppProfileWillBeDeletedDelegate delegate) {
-  app_profile_will_be_deleted_delegate_ = delegate;
+  app_profile_will_be_deleted_delegate_ = std::move(delegate);
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppsWillBeUpdatedFromSync(

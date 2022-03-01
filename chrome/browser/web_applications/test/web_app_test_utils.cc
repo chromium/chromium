@@ -134,9 +134,7 @@ std::vector<PermissionsPolicyDeclaration> CreateRandomPermissionsPolicy(
   const int num_permissions_policy_declarations =
       random.next_uint(features.size());
 
-  std::vector<std::string> available_features;
-  for (const auto& feature : features)
-    available_features.push_back(feature);
+  std::vector<std::string> available_features = features;
 
   const auto suffix = random.next_uint();
   std::default_random_engine rng;

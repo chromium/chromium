@@ -92,8 +92,7 @@ void FakeOsIntegrationManager::InstallOsHooks(
   }
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), std::move(os_hooks_errors)));
+      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
 void FakeOsIntegrationManager::UninstallOsHooks(
