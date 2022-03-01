@@ -1,7 +1,1 @@
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-jshikaram@chromium.org
-
-# For backup
-dominickn@chromium.org
+file://ui/webui/resources/cr_components/app_management/OWNERS
