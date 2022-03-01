@@ -49,6 +49,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -1173,7 +1174,9 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
         token && nonce && dm_server_url.is_valid() && is_valid_command &&
                 dm_server_url.SchemeIsHTTPOrHTTPS() &&
                 installer::RotateDeviceTrustKey(
-                    enterprise_connectors::KeyRotationManager::Create(),
+                    enterprise_connectors::KeyRotationManager::Create(
+                        std::make_unique<
+                            enterprise_connectors::WinKeyNetworkDelegate>()),
                     dm_server_url, *token, *nonce)
             ? installer::ROTATE_DTKEY_SUCCESS
             : installer::ROTATE_DTKEY_FAILED;

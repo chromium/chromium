@@ -8,12 +8,18 @@
 #include <winerror.h>
 #include <wrl/client.h>
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/syslog_logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/windows_types.h"
 #include "chrome/install_static/install_util.h"
@@ -38,7 +44,7 @@ void ConfigureProxyBlanket(IUnknown* interface_pointer) {
 
 // The maximum number of string that can appear in `args` when calling
 // RunGoogleUpdateElevatedCommand().
-const int kMaxCommandArgs = 9;
+constexpr int kMaxCommandArgs = 9;
 
 // TODO(rogerta): Should really move this function to a common place where it
 // can be called by any code that needs to run an elevated service.  Right now

@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h",
+  "+chrome/browser/enterprise/connectors/device_trust/key_management/core/network/win_key_network_delegate.h",
   "+chrome/chrome_elf/chrome_elf_constants.h",
   "+chrome/install_static",
   "+components/base32",

@@ -26,14 +26,9 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   using KeyTrustLevel =
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
-  // `sleep_during_backoff` allows tests to control whether the manager will
-  // perform a sleep during network backoff inside RotateWithAdminRights().
-  // Removing the sleep is useful to keep tests from timing out.  This should
-  // never be done in production.
   KeyRotationManagerImpl(
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
-      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate,
-      bool sleep_during_backoff);
+      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
   ~KeyRotationManagerImpl() override;
 
   // KeyRotationManager:
@@ -54,7 +49,6 @@ class KeyRotationManagerImpl : public KeyRotationManager {
   std::unique_ptr<KeyNetworkDelegate> network_delegate_;
   std::unique_ptr<KeyPersistenceDelegate> persistence_delegate_;
   std::unique_ptr<SigningKeyPair> key_pair_;
-  bool sleep_during_backoff_;
 };
 
 }  // namespace enterprise_connectors
