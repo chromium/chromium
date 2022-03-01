@@ -42,34 +42,15 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
 // Helpers --------------------------------------------------------------------
 
-// Used to mark children that are Labels, so we can update their background
-// colors on a theme change.
-enum class LabelType {
-  kNone,
-  kLabel,
-  kLink,
-};
-DEFINE_UI_CLASS_PROPERTY_TYPE(LabelType)
-
 namespace {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(LabelType, kLabelType, LabelType::kNone)
-
-// IDs of the colors to use for infobar elements.
-constexpr int kInfoBarLabelBackgroundColor = ThemeProperties::COLOR_INFOBAR;
-constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_TOOLBAR_TEXT;
-
 constexpr int kSeparatorHeightDip = 1;
-
-bool SortViewsByDecreasingWidth(views::View* view_1, views::View* view_2) {
-  return view_1->GetPreferredSize().width() >
-         view_2->GetPreferredSize().width();
-}
 
 int GetElementSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -219,8 +200,8 @@ void InfoBarView::ViewHierarchyChanged(
 void InfoBarView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  const SkColor color =
-      GetColor(ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR);
+  const SkColor color = GetThemeProvider()->GetColor(
+      ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR);
   const gfx::RectF local_bounds(GetLocalBounds());
   const gfx::Vector2d separator_offset(0, kSeparatorHeightDip);
   canvas->DrawSharpLine(local_bounds.bottom_left() - separator_offset,
@@ -229,21 +210,21 @@ void InfoBarView::OnPaint(gfx::Canvas* canvas) {
 
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  const SkColor background_color = GetColor(kInfoBarLabelBackgroundColor);
+  const auto* tp = GetThemeProvider();
+  const SkColor background_color = tp->GetColor(ThemeProperties::COLOR_INFOBAR);
   SetBackground(views::CreateSolidBackground(background_color));
 
-  const SkColor text_color = GetColor(kInfoBarLabelTextColor);
+  const SkColor text_color = tp->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT);
   if (close_button_) {
     views::SetImageFromVectorIcon(close_button_,
                                   vector_icons::kCloseRoundedIcon, text_color);
   }
 
   for (views::View* child : children()) {
-    LabelType label_type = child->GetProperty(kLabelType);
-    if (label_type != LabelType::kNone) {
-      auto* label = static_cast<views::Label*>(child);
+    auto* label = views::AsViewClass<views::Label>(child);
+    if (label) {
       label->SetBackgroundColor(background_color);
-      if (label_type == LabelType::kLabel) {
+      if (!views::IsViewClass<views::Link>(child)) {
         label->SetEnabledColor(text_color);
         label->SetAutoColorReadabilityEnabled(false);
       }
@@ -269,8 +250,6 @@ views::Label* InfoBarView::CreateLabel(const std::u16string& text) const {
   views::Label* label =
       new views::Label(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(label);
-  label->SetEnabledColor(GetColor(kInfoBarLabelTextColor));
-  label->SetProperty(kLabelType, LabelType::kLabel);
   return label;
 }
 
@@ -280,13 +259,17 @@ views::Link* InfoBarView::CreateLink(const std::u16string& text) {
   SetLabelDetails(link);
   link->SetCallback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));
-  link->SetProperty(kLabelType, LabelType::kLink);
   return link;
 }
 
 // static
 void InfoBarView::AssignWidths(Views* views, int available_width) {
-  std::sort(views->begin(), views->end(), SortViewsByDecreasingWidth);
+  // Sort by width decreasing.
+  std::sort(views->begin(), views->end(),
+            [](views::View* view_1, views::View* view_2) {
+              return view_1->GetPreferredSize().width() >
+                     view_2->GetPreferredSize().width();
+            });
   AssignWidthsSorted(views, available_width);
 }
 
@@ -361,16 +344,8 @@ void InfoBarView::AssignWidthsSorted(Views* views, int available_width) {
   AssignWidthsSorted(views, available_width - back_view_size.width());
 }
 
-SkColor InfoBarView::GetColor(int id) const {
-  const auto* theme_provider = GetThemeProvider();
-  // When there's no theme provider, this color will never be used; it will be
-  // reset due to the OnThemeChanged() override.
-  return theme_provider ? theme_provider->GetColor(id) : gfx::kPlaceholderColor;
-}
-
 void InfoBarView::SetLabelDetails(views::Label* label) const {
   label->SizeToPreferredSize();
-  label->SetBackgroundColor(GetColor(kInfoBarLabelBackgroundColor));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetProperty(views::kMarginsKey,
                      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(

@@ -91,10 +91,6 @@ class InfoBarView : public infobars::InfoBar,
   // decreasing preferred width.
   static void AssignWidthsSorted(Views* views, int available_width);
 
-  // Returns the current color for the theme property |id|.  Will return the
-  // wrong value if no theme provider is available.
-  SkColor GetColor(int id) const;
-
   // Sets various attributes on |label| that are common to all child links and
   // labels.
   void SetLabelDetails(views::Label* label) const;
