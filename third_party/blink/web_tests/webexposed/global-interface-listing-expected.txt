@@ -9096,6 +9096,7 @@ interface USBDevice
     method constructor
     method controlTransferIn
     method controlTransferOut
+    method forget
     method isochronousTransferIn
     method isochronousTransferOut
     method open

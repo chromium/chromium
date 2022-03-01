@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/web_usb_chooser.h"
+#include "chrome/browser/usb/web_usb_histograms.h"
 #include "chrome/browser/usb/web_usb_service_impl.h"
 #include "chrome/browser/web_applications/test/isolated_app_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -389,6 +391,38 @@ IN_PROC_BROWSER_TEST_F(WebUsbTest, ShowChooserInBackgroundTab) {
             return `${e.name}: ${e.message}`;
           }
         })())"));
+}
+
+class WebUsbDeviceForgetTest : public WebUsbTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebUsbTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "WebUsbDeviceForget");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUsbDeviceForgetTest, ForgetDevice) {
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_EQ(1, content::EvalJs(web_contents,
+                               R"((async () => {
+        await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
+        const devices = await navigator.usb.getDevices();
+        return devices.length;
+      })())"));
+
+  EXPECT_EQ(0, content::EvalJs(web_contents,
+                               R"((async () => {
+        const [device] = await navigator.usb.getDevices();
+        await device.forget();
+        const devices = await navigator.usb.getDevices();
+        return devices.length;
+      })())"));
+  histogram_tester.ExpectUniqueSample("WebUsb.PermissionRevoked",
+                                      WEBUSB_PERMISSION_REVOKED_BY_WEBSITE, 1);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

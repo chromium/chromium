@@ -324,6 +324,18 @@ void WebUsbServiceImpl::GetPermission(
   usb_chooser_->GetPermission(std::move(device_filters), std::move(callback));
 }
 
+void WebUsbServiceImpl::ForgetDevice(const std::string& guid,
+                                     ForgetDeviceCallback callback) {
+  if (chooser_context_) {
+    auto* device_info = chooser_context_->GetDeviceInfo(guid);
+    if (device_info && HasDevicePermission(*device_info)) {
+      chooser_context_->RevokeDevicePermissionWebInitiated(origin_,
+                                                           *device_info);
+    }
+  }
+  std::move(callback).Run();
+}
+
 void WebUsbServiceImpl::SetClient(
     mojo::PendingAssociatedRemote<device::mojom::UsbDeviceManagerClient>
         client) {

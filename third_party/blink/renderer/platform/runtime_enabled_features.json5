@@ -2652,6 +2652,10 @@
       status: "stable",
     },
     {
+      name: "WebUsbDeviceForget",
+      status: "stable",
+    },
+    {
       name: "WebUSBOnDedicatedWorkers",
       status: "stable",
       depends_on: ["WebUSB"],

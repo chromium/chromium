@@ -67,6 +67,9 @@ class USB final : public EventTargetWithInlineData,
     return service_.get();
   }
 
+  void ForgetDevice(const String& device_guid,
+                    mojom::blink::WebUsbService::ForgetDeviceCallback callback);
+
   void OnGetDevices(ScriptPromiseResolver*,
                     Vector<device::mojom::blink::UsbDeviceInfoPtr>);
   void OnGetPermission(ScriptPromiseResolver*,

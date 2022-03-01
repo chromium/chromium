@@ -23,6 +23,7 @@ namespace blink {
 
 class ScriptPromiseResolver;
 class ScriptState;
+class USB;
 class USBConfiguration;
 class USBControlTransferParameters;
 
@@ -31,7 +32,8 @@ class USBDevice : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit USBDevice(device::mojom::blink::UsbDeviceInfoPtr,
+  explicit USBDevice(USB* parent,
+                     device::mojom::blink::UsbDeviceInfoPtr,
                      mojo::PendingRemote<device::mojom::blink::UsbDevice>,
                      ExecutionContext*);
   ~USBDevice() override;
@@ -66,6 +68,7 @@ class USBDevice : public ScriptWrappable,
 
   ScriptPromise open(ScriptState*);
   ScriptPromise close(ScriptState*);
+  ScriptPromise forget(ScriptState*, ExceptionState& exception_state);
   ScriptPromise selectConfiguration(ScriptState*, uint8_t configuration_value);
   ScriptPromise claimInterface(ScriptState*, uint8_t interface_number);
   ScriptPromise releaseInterface(ScriptState*, uint8_t interface_number);
@@ -127,6 +130,7 @@ class USBDevice : public ScriptWrappable,
   void AsyncOpen(ScriptPromiseResolver*,
                  device::mojom::blink::UsbOpenDeviceError);
   void AsyncClose(ScriptPromiseResolver*);
+  void AsyncForget(ScriptPromiseResolver*);
   void OnDeviceOpenedOrClosed(bool);
   void AsyncSelectConfiguration(wtf_size_t configuration_index,
                                 ScriptPromiseResolver*,
@@ -169,6 +173,7 @@ class USBDevice : public ScriptWrappable,
   void OnConnectionError();
   bool MarkRequestComplete(ScriptPromiseResolver*);
 
+  const Member<USB> parent_;
   device::mojom::blink::UsbDeviceInfoPtr device_info_;
   HeapMojoRemote<device::mojom::blink::UsbDevice> device_;
   HeapHashSet<Member<ScriptPromiseResolver>> device_requests_;

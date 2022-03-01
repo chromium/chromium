@@ -6,6 +6,11 @@
 
 #include "base/metrics/histogram_macros.h"
 
+void RecordWebUsbPermissionRevocation(WebUsbPermissionRevoked kind) {
+  UMA_HISTOGRAM_ENUMERATION("WebUsb.PermissionRevoked", kind,
+                            WEBUSB_PERMISSION_REVOKED_MAX);
+}
+
 void RecordWebUsbChooserClosure(WebUsbChooserClosed disposition) {
   UMA_HISTOGRAM_ENUMERATION("WebUsb.ChooserClosed", disposition,
                             WEBUSB_CHOOSER_CLOSED_MAX);

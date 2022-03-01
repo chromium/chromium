@@ -209,9 +209,16 @@ USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
   mojo::PendingRemote<UsbDevice> pipe;
   service_->GetDevice(guid, pipe.InitWithNewPipeAndPassReceiver());
   USBDevice* device = MakeGarbageCollected<USBDevice>(
-      std::move(device_info), std::move(pipe), GetExecutionContext());
+      this, std::move(device_info), std::move(pipe), GetExecutionContext());
   device_cache_.insert(guid, device);
   return device;
+}
+
+void USB::ForgetDevice(
+    const String& device_guid,
+    mojom::blink::WebUsbService::ForgetDeviceCallback callback) {
+  EnsureServiceConnection();
+  service_->ForgetDevice(device_guid, std::move(callback));
 }
 
 void USB::OnGetDevices(ScriptPromiseResolver* resolver,
@@ -255,8 +262,9 @@ void USB::OnDeviceRemoved(UsbDeviceInfoPtr device_info) {
   if (it != device_cache_.end()) {
     device = it->value;
   } else {
-    device = MakeGarbageCollected<USBDevice>(
-        std::move(device_info), mojo::NullRemote(), GetExecutionContext());
+    device = MakeGarbageCollected<USBDevice>(this, std::move(device_info),
+                                             mojo::NullRemote(),
+                                             GetExecutionContext());
   }
   DispatchEvent(
       *USBConnectionEvent::Create(event_type_names::kDisconnect, device));

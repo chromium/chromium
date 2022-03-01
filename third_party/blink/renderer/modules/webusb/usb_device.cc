@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/modules/webusb/usb.h"
 #include "third_party/blink/renderer/modules/webusb/usb_configuration.h"
 #include "third_party/blink/renderer/modules/webusb/usb_in_transfer_result.h"
 #include "third_party/blink/renderer/modules/webusb/usb_isochronous_in_transfer_result.h"
@@ -98,10 +99,12 @@ String ConvertTransferStatus(const UsbTransferStatus& status) {
 
 }  // namespace
 
-USBDevice::USBDevice(UsbDeviceInfoPtr device_info,
+USBDevice::USBDevice(USB* parent,
+                     UsbDeviceInfoPtr device_info,
                      mojo::PendingRemote<UsbDevice> device,
                      ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
+      parent_(parent),
       device_info_(std::move(device_info)),
       device_(context),
       opened_(false),
@@ -181,6 +184,23 @@ ScriptPromise USBDevice::close(ScriptState* script_state) {
                                WrapPersistent(resolver)));
     }
   }
+  return promise;
+}
+
+ScriptPromise USBDevice::forget(ScriptState* script_state,
+                                ExceptionState& exception_state) {
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Script context has shut down.");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  parent_->ForgetDevice(device_info_->guid,
+                        WTF::Bind(&USBDevice::AsyncForget, WrapPersistent(this),
+                                  WrapPersistent(resolver)));
+
   return promise;
 }
 
@@ -541,6 +561,7 @@ void USBDevice::ContextDestroyed() {
 }
 
 void USBDevice::Trace(Visitor* visitor) const {
+  visitor->Trace(parent_);
   visitor->Trace(device_);
   visitor->Trace(device_requests_);
   visitor->Trace(configurations_);
@@ -787,6 +808,10 @@ void USBDevice::AsyncClose(ScriptPromiseResolver* resolver) {
     return;
 
   OnDeviceOpenedOrClosed(false /* closed */);
+  resolver->Resolve();
+}
+
+void USBDevice::AsyncForget(ScriptPromiseResolver* resolver) {
   resolver->Resolve();
 }
 

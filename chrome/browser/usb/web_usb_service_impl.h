@@ -64,6 +64,8 @@ class WebUsbServiceImpl
   void GetPermission(
       std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
       GetPermissionCallback callback) override;
+  void ForgetDevice(const std::string& guid,
+                    ForgetDeviceCallback callback) override;
   void SetClient(
       mojo::PendingAssociatedRemote<device::mojom::UsbDeviceManagerClient>
           client) override;

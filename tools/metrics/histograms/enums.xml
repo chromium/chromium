@@ -37341,6 +37341,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4173" label="VideoTrackGenerator"/>
   <int value="4174" label="MediaCapabilitiesDecodingInfoWebrtc"/>
   <int value="4175" label="MediaCapabilitiesEncodingInfoWebrtc"/>
+  <int value="4176" label="UsbDeviceForget"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -95493,8 +95494,10 @@ Called by update_scheduler_enums.py.-->
 </enum>
 
 <enum name="WebUsbPermissionRevoked">
-  <int value="0" label="Revoked permission"/>
-  <int value="1" label="Revoked ephemeral permission"/>
+  <int value="0" label="Revoked permission by user"/>
+  <int value="1" label="Revoked ephemeral permission by user"/>
+  <int value="2" label="Revoked permission by website"/>
+  <int value="3" label="Revoked ephemeral permission by website"/>
 </enum>
 
 <enum name="WebViewApiCall">

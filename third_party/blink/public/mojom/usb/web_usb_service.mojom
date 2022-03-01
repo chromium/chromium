@@ -29,6 +29,10 @@ interface WebUsbService {
   GetPermission(array<device.mojom.UsbDeviceFilter> device_filters)
       => (device.mojom.UsbDeviceInfo? result);
 
+  // Attempts to revoke the permission to the device by guid.
+  // It will fail silently if the permission cannot be revoked.
+  ForgetDevice(string guid) => ();
+
   // Sets the client for this WebUsbService.
   SetClient(
       pending_associated_remote<device.mojom.UsbDeviceManagerClient> client);

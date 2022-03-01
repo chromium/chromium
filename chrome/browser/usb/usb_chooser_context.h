@@ -68,6 +68,11 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
   bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::UsbDeviceInfo& device_info);
 
+  // Revokes |origin| access to the USB device ordered by website.
+  void RevokeDevicePermissionWebInitiated(
+      const url::Origin& origin,
+      const device::mojom::UsbDeviceInfo& device);
+
   void AddObserver(DeviceObserver* observer);
   void RemoveObserver(DeviceObserver* observer);
 
@@ -99,6 +104,10 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
   // device::mojom::UsbDeviceManagerClient implementation.
   void OnDeviceAdded(device::mojom::UsbDeviceInfoPtr device_info) override;
   void OnDeviceRemoved(device::mojom::UsbDeviceInfoPtr device_info) override;
+
+  void RevokeObjectPermissionInternal(const url::Origin& origin,
+                                      const base::Value& object,
+                                      bool revoked_by_website);
 
   void OnDeviceManagerConnectionError();
   void EnsureConnectionWithDeviceManager();

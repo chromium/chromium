@@ -8,7 +8,7 @@
 // Reasons the chooser may be closed. These are used in histograms so do not
 // remove/reorder entries. Only add at the end just before
 // WEBUSB_CHOOSER_CLOSED_MAX. Also remember to update the enum listing in
-// tools/metrics/histograms/histograms.xml.
+// tools/metrics/histograms/enums.xml.
 enum WebUsbChooserClosed {
   // The user cancelled the permission prompt without selecting a device.
   WEBUSB_CHOOSER_CLOSED_CANCELLED = 0,
@@ -23,6 +23,25 @@ enum WebUsbChooserClosed {
   // Maximum value for the enum.
   WEBUSB_CHOOSER_CLOSED_MAX
 };
+
+// Reasons a permission may be closed. These are used in histograms so do not
+// remove/reorder entries. Only add at the end just before
+// WEBUSB_PERMISSION_REVOKED_MAX. Also remember to update the enum listing in
+// tools/metrics/histograms/enums.xml.
+enum WebUsbPermissionRevoked {
+  // Permission to access a USB device was revoked by the user.
+  WEBUSB_PERMISSION_REVOKED_BY_USER = 0,
+  // Permission to access an ephemeral USB device was revoked by the user.
+  WEBUSB_PERMISSION_REVOKED_EPHEMERAL_BY_USER,
+  // Permission to access a USB device was revoked by the website.
+  WEBUSB_PERMISSION_REVOKED_BY_WEBSITE,
+  // Permission to access an ephemeral USB device was revoked by the website.
+  WEBUSB_PERMISSION_REVOKED_EPHEMERAL_BY_WEBSITE,
+  // Maximum value for the enum.
+  WEBUSB_PERMISSION_REVOKED_MAX
+};
+
+void RecordWebUsbPermissionRevocation(WebUsbPermissionRevoked kind);
 
 void RecordWebUsbChooserClosure(WebUsbChooserClosed disposition);
 
