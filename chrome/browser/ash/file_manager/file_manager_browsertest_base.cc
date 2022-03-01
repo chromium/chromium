@@ -1924,8 +1924,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
     if (options.enable_guest_os_files) {
       // Create some mocks, that show up by default,
-      auto* registry = guest_os::GuestOsService::GetForProfile(
-                           profile()->GetOriginalProfile())
+      auto* registry = guest_os::GuestOsService::GetForProfile(profile())
                            ->MountProviderRegistry();
       registry->Register(std::make_unique<MockGuestOsMountProvider>("Jemima"));
       registry->Register(std::make_unique<MockGuestOsMountProvider>("Electra"));

@@ -20,8 +20,7 @@ namespace extensions {
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateListMountableGuestsFunction::Run() {
-  Profile* profile =
-      Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   auto* registry =
       guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
   auto entries = base::Value(base::Value::Type::LIST);
