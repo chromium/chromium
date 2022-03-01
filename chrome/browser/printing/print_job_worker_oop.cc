@@ -247,7 +247,7 @@ bool PrintJobWorkerOop::TryRestartPrinting() {
   // Register that this printer requires elevated privileges.
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
-  service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name_);
+  service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(device_name_);
 
   // Failure from access-denied means we no longer need the prior client ID.
   UnregisterServiceManagerClient();
@@ -273,7 +273,7 @@ void PrintJobWorkerOop::NotifyFailure(mojom::ResultCode result) {
     // further attempts to print should succeed.
     PrintBackendServiceManager& service_mgr =
         PrintBackendServiceManager::GetInstance();
-    service_mgr.SetPrinterDriverRequiresElevatedPrivilege(device_name_);
+    service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(device_name_);
   }
   ShowErrorDialog();
 

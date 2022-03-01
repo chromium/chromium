@@ -337,13 +337,14 @@ void PrintBackendServiceManager::DocumentDone(
                      base::Unretained(this), context));
 }
 
-bool PrintBackendServiceManager::PrinterDriverRequiresElevatedPrivilege(
+bool PrintBackendServiceManager::PrinterDriverFoundToRequireElevatedPrivilege(
     const std::string& printer_name) const {
   return drivers_requiring_elevated_privilege_.contains(printer_name);
 }
 
-void PrintBackendServiceManager::SetPrinterDriverRequiresElevatedPrivilege(
-    const std::string& printer_name) {
+void PrintBackendServiceManager::
+    SetPrinterDriverFoundToRequireElevatedPrivilege(
+        const std::string& printer_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "Destination '" << printer_name
           << "' requires elevated privileges.";
@@ -470,7 +471,8 @@ const mojo::Remote<mojom::PrintBackendService>&
 PrintBackendServiceManager::GetService(const std::string& printer_name,
                                        ClientType client_type,
                                        bool* is_sandboxed) {
-  bool should_sandbox = !PrinterDriverRequiresElevatedPrivilege(printer_name);
+  bool should_sandbox =
+      !PrinterDriverFoundToRequireElevatedPrivilege(printer_name);
   *is_sandboxed = should_sandbox;
 
   if (sandboxed_service_remote_for_test_) {

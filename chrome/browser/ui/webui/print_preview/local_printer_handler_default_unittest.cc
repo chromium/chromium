@@ -504,7 +504,7 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
 
   // Note that printer does not initially show as requiring elevated privileges.
   EXPECT_FALSE(PrintBackendServiceManager::GetInstance()
-                   .PrinterDriverRequiresElevatedPrivilege("printer1"));
+                   .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 
   base::Value fetched_caps("dummy");
   local_printer_handler()->StartGetCapability(
@@ -518,7 +518,7 @@ TEST_F(LocalPrinterHandlerDefaultTestService,
 
   // Verify that this printer now shows up as requiring elevated privileges.
   EXPECT_TRUE(PrintBackendServiceManager::GetInstance()
-                  .PrinterDriverRequiresElevatedPrivilege("printer1"));
+                  .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 }
 
 // Tests that fetching capabilities fails when there is invalid printer data.

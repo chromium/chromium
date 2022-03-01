@@ -108,12 +108,12 @@ class PrintBackendServiceManager {
 
   // Query if printer driver has been found to require elevated privilege in
   // order to have print queries/commands succeed.
-  bool PrinterDriverRequiresElevatedPrivilege(
+  bool PrinterDriverFoundToRequireElevatedPrivilege(
       const std::string& printer_name) const;
 
   // Make note that `printer_name` has been detected as requiring elevated
   // privileges in order to operate.
-  void SetPrinterDriverRequiresElevatedPrivilege(
+  void SetPrinterDriverFoundToRequireElevatedPrivilege(
       const std::string& printer_name);
 
   // Overrides the print backend service for testing.  Caller retains ownership

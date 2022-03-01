@@ -131,7 +131,7 @@ void CapabilitiesFetchedFromService(
       // Register that this printer requires elevated privileges.
       ::printing::PrintBackendServiceManager& service_mgr =
           ::printing::PrintBackendServiceManager::GetInstance();
-      service_mgr.SetPrinterDriverRequiresElevatedPrivilege(printer_id);
+      service_mgr.SetPrinterDriverFoundToRequireElevatedPrivilege(printer_id);
 
       // Retry the operation which should now happen at a higher privilege
       // level.
@@ -165,10 +165,10 @@ void FetchCapabilities(const std::string& printer_id,
         ::printing::PrintBackendServiceManager::GetInstance();
     service_mgr.GetPrinterSemanticCapsAndDefaults(
         printer_id,
-        base::BindOnce(
-            &CapabilitiesFetchedFromService, printer_id,
-            service_mgr.PrinterDriverRequiresElevatedPrivilege(printer_id),
-            std::move(cb)));
+        base::BindOnce(&CapabilitiesFetchedFromService, printer_id,
+                       service_mgr.PrinterDriverFoundToRequireElevatedPrivilege(
+                           printer_id),
+                       std::move(cb)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
