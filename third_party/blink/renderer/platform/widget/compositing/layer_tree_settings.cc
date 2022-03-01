@@ -170,7 +170,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   Platform* platform = Platform::Current();
   settings.use_zoom_for_dsf = platform->IsUseZoomForDSFEnabled();
   settings.percent_based_scrolling =
-      base::FeatureList::IsEnabled(::features::kPercentBasedScrolling);
+      ::features::IsPercentBasedScrollingEnabled();
   settings.compositor_threaded_scrollbar_scrolling =
       base::FeatureList::IsEnabled(
           ::features::kCompositorThreadedScrollbarScrolling);

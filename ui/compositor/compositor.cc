@@ -240,7 +240,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
     settings.compositor_threaded_scrollbar_scrolling = true;
   }
 
-  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
+  if (features::IsPercentBasedScrollingEnabled()) {
     settings.percent_based_scrolling = true;
   }
 

@@ -476,7 +476,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
   // in the renderer.
   // TODO(yshalivskyy) Currently, for page based scrolling we always scroll
   // by one page dismissing delta_y/delta_x values. https://crbug.com/1196092
-  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling) &&
+  if (features::IsPercentBasedScrollingEnabled() &&
       webkit_event.delta_units != ui::ScrollGranularity::kScrollByPage) {
     webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
     webkit_event.delta_y *=

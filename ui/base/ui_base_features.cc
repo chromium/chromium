@@ -114,6 +114,10 @@ const base::Feature kInputMethodSettingsUiUpdate = {
 const base::Feature kPercentBasedScrolling = {
     "PercentBasedScrolling", base::FEATURE_DISABLED_BY_DEFAULT};
 
+bool IsPercentBasedScrollingEnabled() {
+  return base::FeatureList::IsEnabled(features::kPercentBasedScrolling);
+}
+
 // Allows requesting unadjusted movement when entering pointerlock.
 const base::Feature kPointerLockOptions = {"PointerLockOptions",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
