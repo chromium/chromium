@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
@@ -477,6 +478,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
+    @DisabledTest(message = "crbug.com/1300291")
     public void testPedalsStartedOnCtrlEnterKeyStroke() throws InterruptedException {
         mOmniboxUtils.requestFocus();
         mOmniboxUtils.typeText("Chrome accessibility", false);
