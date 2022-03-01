@@ -225,19 +225,6 @@ void BrowserRootView::OnDragExited() {
   drop_info_.reset();
 }
 
-DragOperation BrowserRootView::OnPerformDrop(const ui::DropTargetEvent& event) {
-  using base::UserMetricsAction;
-
-  if (!drop_info_)
-    return DragOperation::kNone;
-
-  auto cb = GetDropCallback(event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(cb).Run(event, output_drag_op);
-
-  return output_drag_op;
-}
-
 views::View::DropCallback BrowserRootView::GetDropCallback(
     const ui::DropTargetEvent& event) {
   if (!drop_info_)
