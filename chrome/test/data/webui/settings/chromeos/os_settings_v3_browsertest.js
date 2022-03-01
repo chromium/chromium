@@ -344,7 +344,6 @@ TEST_F('OSSettingsSearchEngineV3Test', 'AllJsTests', () => {
  ['KerberosAccounts', 'kerberos_accounts_test.m.js'],
  ['KerberosPage', 'kerberos_page_test.m.js'],
  ['KeyboardShortcutBanner', 'keyboard_shortcut_banner_test.m.js'],
- ['LocalizedLink', 'localized_link_test.m.js'],
  ['LockScreenPage', 'lock_screen_tests.m.js'],
  ['ManageAccessibilityPage', 'manage_accessibility_page_tests.m.js'],
  ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.m.js'],

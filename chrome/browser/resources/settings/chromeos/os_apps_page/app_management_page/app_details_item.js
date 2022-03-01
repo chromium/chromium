@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 
 import {AppType} from '//resources/cr_components/app_management/constants.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

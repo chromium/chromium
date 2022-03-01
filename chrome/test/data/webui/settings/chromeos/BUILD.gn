@@ -98,7 +98,6 @@ js_modulizer("modulize") {
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
     "keyboard_shortcut_banner_test.js",
-    "localized_link_test.js",
     "manage_accessibility_page_tests.js",
     "multidevice_combined_setup_item_tests.js",
     "multidevice_feature_item_tests.js",

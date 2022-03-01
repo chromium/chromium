@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../settings_shared_css.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';

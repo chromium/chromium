@@ -102,3 +102,14 @@ var CrComponentsManagedDialogTest = class extends CrComponentsBrowserTest {
 TEST_F('CrComponentsManagedDialogTest', 'All', function() {
   mocha.run();
 });
+
+var CrComponentsLocalizedLinkTest = class extends CrComponentsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_components/localized_link_test.js';
+  }
+};
+
+TEST_F('CrComponentsLocalizedLinkTest', 'All', function() {
+  mocha.run();
+});

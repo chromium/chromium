@@ -27,7 +27,7 @@ import {Router, Route} from '../../router.js';
 import {RouteObserverBehavior} from '../route_observer_behavior.js';
 import '../../settings_shared_css.js';
 import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.m.js';
 import {ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy} from './manage_a11y_page_browser_proxy.js';
 

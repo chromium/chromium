@@ -12,7 +12,7 @@ import '//resources/cr_elements/cr_input/cr_input.m.js';
 import '//resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
 import './cups_printer_shared_css.js';

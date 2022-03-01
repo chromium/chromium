@@ -7,7 +7,7 @@
  * Google Photos or categories in Art gallery.
  */
 
-import 'chrome://resources/cr_components/chromeos/localized_link/localized_link.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './album_list_element.js';

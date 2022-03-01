@@ -17,7 +17,7 @@ import '../../settings_shared_css.js';
 import '../../settings_shared_css.js';
 import '../guest_os/guest_os_shared_usb_devices.js';
 import '../guest_os/guest_os_shared_paths.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import './android_apps_subpage.js';
 import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';

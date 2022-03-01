@@ -13,7 +13,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';

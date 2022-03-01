@@ -8,7 +8,7 @@
  * settings.
  */
 
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import './storage_external_entry.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';

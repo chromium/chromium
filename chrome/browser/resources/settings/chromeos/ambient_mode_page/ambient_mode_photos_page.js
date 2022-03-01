@@ -9,7 +9,7 @@
 import './album_list.js';
 import './art_album_dialog.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared_css.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';

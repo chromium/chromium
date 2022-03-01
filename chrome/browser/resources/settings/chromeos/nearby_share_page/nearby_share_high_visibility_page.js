@@ -10,7 +10,7 @@
 
 import '//resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import '../../shared/nearby_page_template.m.js';
 import '../../shared/nearby_shared_icons.m.js';
 

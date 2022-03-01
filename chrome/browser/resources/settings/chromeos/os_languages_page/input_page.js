@@ -6,7 +6,7 @@
  * @fileoverview 'os-settings-input-page' is the input sub-page
  * for language and input method settings.
  */
-import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';

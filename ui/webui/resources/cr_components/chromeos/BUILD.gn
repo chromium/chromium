@@ -10,7 +10,6 @@ group("closure_compile") {
   deps = [
     "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile_module",
-    "localized_link:closure_compile_module",
     "multidevice_setup:closure_compile_module",
     "network:closure_compile",
     "network:closure_compile_module",
@@ -25,7 +24,6 @@ group("polymer3_elements") {
   public_deps = [
     "bluetooth:polymer3_elements",
     "cellular_setup:polymer3_elements",
-    "localized_link:web_components",
     "multidevice_setup:polymer3_elements",
     "network:polymer3_elements",
     "network_health:polymer3_elements",

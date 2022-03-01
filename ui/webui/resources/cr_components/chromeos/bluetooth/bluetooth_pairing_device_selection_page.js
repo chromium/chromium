@@ -11,7 +11,7 @@ import './bluetooth_base_page.js';
 import './bluetooth_pairing_device_item.js';
 import '../../../cr_elements/shared_style_css.m.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
-import '../localized_link/localized_link.js';
+import '../../localized_link/localized_link.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
