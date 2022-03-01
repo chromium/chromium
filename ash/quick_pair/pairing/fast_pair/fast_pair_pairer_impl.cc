@@ -230,7 +230,7 @@ void FastPairPairerImpl::OnGattClientInitializedCallback(
 
         adapter_->ConnectDevice(
             device_address,
-            device::BluetoothDevice::AddressType::ADDR_TYPE_PUBLIC,
+            /*address_type=*/absl::nullopt,
             base::BindOnce(&FastPairPairerImpl::OnConnectDevice,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindOnce(&FastPairPairerImpl::OnConnectError,
