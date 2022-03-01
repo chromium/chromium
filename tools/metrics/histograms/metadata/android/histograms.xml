@@ -957,6 +957,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip"
+    units="dp" expires_after="2022-07-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the distance of the drag end position from the initial drag start
+    position when dragging starts and ends within ContentView containing web
+    contents. Note that the distance only counts the distance of drag event
+    happend on the screen; scrolling for the web content will be disabled during
+    drag. Used to assist in setting proper threshold to dismiss context menu
+    during drag. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Android.DragDrop.FromWebContent.DropInWebContent.Duration"
+    units="ms" expires_after="2022-07-01">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the duration in ms of drag process when drop happend inside
+    ContentView containing web contents, regardless DragEvent#getResult. Does
+    not capture drag events that end outside the ContentView (Use
+    Android.DragDrop.FromWebContent.Duration instead). Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.DragDrop.FromWebContent.Duration{DropResult}"
     units="ms" expires_after="2022-07-01">
   <owner>wenyufu@chromium.org</owner>

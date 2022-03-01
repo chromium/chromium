@@ -48,6 +48,13 @@ public class ShadowRecordHistogram {
 
     /** @deprecated This method should be protected. Use RecordHistogram directly instead */
     @Implementation
+    public static void recordExactLinearHistogram(String name, int sample, int max) {
+        Pair<String, Integer> key = Pair.create(name, sample);
+        recordSample(key);
+    }
+
+    /** @deprecated This method should be protected. Use RecordHistogram directly instead */
+    @Implementation
     public static void recordCountHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         recordSample(key);

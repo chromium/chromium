@@ -92,7 +92,7 @@ public class DragAndDropDelegateImplUnitTest {
         Assert.assertEquals("Drag shadow height should be reset.", 0,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
         assertDragTypeRecorded(DragTargetType.TEXT);
-        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/true);
+        assertDragOutsideWebContentHistogramsRecorded(/*dropResult=*/false);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class DragAndDropDelegateImplUnitTest {
         Assert.assertNull("Cached Image bytes should be cleaned.",
                 DropDataContentProvider.getImageBytesForTesting());
         assertDragTypeRecorded(DragTargetType.IMAGE);
-        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/true);
+        assertDragOutsideWebContentHistogramsRecorded(/*dropResult=*/false);
     }
 
     /**
@@ -175,7 +175,7 @@ public class DragAndDropDelegateImplUnitTest {
         Assert.assertNotNull("Cached Image bytes should not be cleaned, drag is handled.",
                 DropDataContentProvider.getImageBytesForTesting());
         assertDragTypeRecorded(DragTargetType.IMAGE);
-        assertDragDurationRecorded(/*dropResult=*/true, /*recorded=*/true);
+        assertDragOutsideWebContentHistogramsRecorded(/*dropResult=*/true);
     }
 
     @Test
@@ -191,9 +191,22 @@ public class DragAndDropDelegateImplUnitTest {
 
         // Drop on the same view does not lead to recording of drag duration.
         assertDragTypeNotRecorded("Drag dropped on the same view.");
-        assertDragDurationRecorded(/*dropResult=*/false, /*recorded=*/false);
+        assertDropInWebContentHistogramsRecorded();
         Assert.assertNull("Cached Image bytes should be cleaned since drop is not handled.",
                 DropDataContentProvider.getImageBytesForTesting());
+    }
+
+    @Test
+    public void testIgnoreDragStartedElsewhere() {
+        final View containerView = new View(mContext);
+        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DROP));
+        mDragAndDropDelegateImpl.onDrag(containerView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+
+        assertDragTypeNotRecorded("Drag dropped on the same view.");
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.Duration", false,
+                "Only tracking drag started by mDragAndDropDelegateImpl#startDragAndDrop.");
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
+                false, "Only tracking drag started by mDragAndDropDelegateImpl#startDragAndDrop.");
     }
 
     @Test
@@ -277,10 +290,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     private void assertDragTypeNotRecorded(String reason) {
-        final String histogram = "Android.DragDrop.FromWebContent.TargetType";
-        final String errorMsg = "<" + histogram + "> should not recorded. Reason:" + reason;
-        Assert.assertEquals(
-                errorMsg, 0, ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.TargetType", false, reason);
     }
 
     private void assertDragTypeRecorded(@DragTargetType int type) {
@@ -290,11 +300,37 @@ public class DragAndDropDelegateImplUnitTest {
                 ShadowRecordHistogram.getHistogramValueCountForTesting(histogram, type));
     }
 
-    private void assertDragDurationRecorded(boolean dropResult, boolean recorded) {
+    private void assertDragOutsideWebContentHistogramsRecorded(boolean dropResult) {
+        // Verify drop outside metrics recorded.
         final String histogram =
                 "Android.DragDrop.FromWebContent.Duration." + (dropResult ? "Success" : "Canceled");
-        final String errorMsg = "<" + histogram + "> is not recorded correctly.";
-        Assert.assertEquals(errorMsg, recorded ? 1 : 0,
+        assertHistogramRecorded(histogram, true, "Drop outside of web content.");
+
+        // Verify drop inside metrics not recorded.
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.Duration", false,
+                "Drop outside of web content.");
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
+                false, "Drop outside of web content.");
+    }
+
+    private void assertDropInWebContentHistogramsRecorded() {
+        // Verify drop inside metrics recorded.
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.Duration", true,
+                "Drop inside web content.");
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip",
+                true, "Drop inside web content.");
+
+        // Verify drop outside metrics not recorded.
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.Duration.Success", false,
+                "Should not recorded when drop inside web content.");
+        assertHistogramRecorded("Android.DragDrop.FromWebContent.Duration.Canceled", false,
+                "Should not recorded when drop inside web content.");
+    }
+
+    private void assertHistogramRecorded(String histogram, boolean recorded, String reason) {
+        Assert.assertEquals(
+                String.format("<%s> is not recorded correctly. Reason: %s", histogram, reason),
+                recorded ? 1 : 0,
                 ShadowRecordHistogram.getHistogramTotalCountForTesting(histogram));
     }
 }
