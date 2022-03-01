@@ -267,6 +267,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
   copy->set_timestamp(parent_notification.timestamp() - base::Milliseconds(1));
   copy->set_settings_button_handler(
       parent_notification.rich_notification_data().settings_button_handler);
+  copy->set_fullscreen_visibility(parent_notification.fullscreen_visibility());
   copy->set_delegate(parent_notification.delegate());
 
   // After copying, set to be a group parent.

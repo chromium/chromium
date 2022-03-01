@@ -40,6 +40,8 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/workspace/workspace_layout_manager.h"
+#include "ash/wm/workspace_controller.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -1240,6 +1242,8 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   for (auto& observer : observers_)
     observer.OnDeskActivationChanged(active_desk_, old_active);
 
+  NotifyFullScreenStateChangedAcrossDesksIfNeeded(old_active);
+
   // Only update active desk prefs when a primary user switches a desk.
   if (shell->session_controller()->IsUserPrimary()) {
     desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
@@ -1422,6 +1426,26 @@ void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
   }
 
   mru_tracker->SetIgnoreActivations(false);
+}
+
+void DesksController::NotifyFullScreenStateChangedAcrossDesksIfNeeded(
+    const Desk* previous_active_desk) {
+  Shell* shell = Shell::Get();
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    aura::Window* active_desk_container =
+        active_desk_->GetDeskContainerForRoot(root);
+    const bool is_active_desk_fullscreen =
+        GetWorkspaceController(active_desk_container)
+            ->layout_manager()
+            ->is_fullscreen();
+    if (GetWorkspaceController(
+            previous_active_desk->GetDeskContainerForRoot(root))
+            ->layout_manager()
+            ->is_fullscreen() != is_active_desk_fullscreen) {
+      shell->NotifyFullscreenStateChanged(is_active_desk_fullscreen,
+                                          active_desk_container);
+    }
+  }
 }
 
 void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {

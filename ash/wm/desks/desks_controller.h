@@ -339,6 +339,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // reside on |active_desk_| to |new_desk|.
   void MoveVisibleOnAllDesksWindowsFromActiveDeskTo(Desk* new_desk);
 
+  // Checks if the fullscreen state has changed after desks were switched and
+  // notifies shell if needed. For e.g Desk 1 has a window in fullscreen while
+  // Desk 2 does not, this function would notify shell of a fullscreen state
+  // change when switching between Desk 1 and 2 in that case.
+  void NotifyFullScreenStateChangedAcrossDesksIfNeeded(
+      const Desk* previous_active_desk);
+
   // Iterates through the visible on all desks windows on the active desk
   // and restacks them based on their position in the global MRU tracker. This
   // should be called after desk activation.
