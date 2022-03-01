@@ -188,6 +188,11 @@ bool ShouldArcStartManually() {
              ash::switches::kArcStartMode) == kManualStart;
 }
 
+bool ShouldMountVmDebugFs() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kArcVmMountDebugFs);
+}
+
 bool ShouldShowOptInForTesting() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kArcForceShowOptInUi);

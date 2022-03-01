@@ -1376,6 +1376,22 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DisableMediaStoreMaintenance) {
                      "androidboot.disable_media_store_maintenance=1"));
 }
 
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcVmMountDebugFsDefaultDisabled) {
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_mount_debugfs=1"));
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcVmMountDebugFsEnabled) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arcvm-mount-debugfs"});
+  StartMiniArcWithParams(true, GetPopulatedStartParams());
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_mount_debugfs=1"));
+}
+
 TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_ArcVmUreadaheadMode) {
   StartParams start_params(GetPopulatedStartParams());
   SetValidUserInfo();
