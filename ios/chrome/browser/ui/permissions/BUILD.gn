@@ -1,0 +1,17 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("permissions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "permission_info.h",
+    "permission_info.mm",
+    "permission_metrics_util.h",
+    "permission_metrics_util.mm",
+  ]
+  deps = [
+    "//base:base",
+    "//ios/web/public/permissions",
+  ]
+}

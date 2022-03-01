@@ -47753,6 +47753,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Obsolete - Loading Started"/>
 </enum>
 
+<enum name="IOSPermissionEvent">
+  <int value="0" label="Camera permission disabled"/>
+  <int value="1" label="Camera permission enabled"/>
+  <int value="2" label="Microphone permission disabled"/>
+  <int value="3" label="Microphone permission enabled"/>
+</enum>
+
 <enum name="IOSRepeatedExternalAppPromptResponse">
   <int value="0" label="Blocked">
     User selected to block the application for the current session.

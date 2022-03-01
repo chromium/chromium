@@ -6,8 +6,9 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_modal/permissions/permissions_modal_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/modals/permissions/permission_info.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -88,8 +89,12 @@
 #pragma mark - InfobarPermissionsModalDelegate
 
 - (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
+  RecordPermissionToogled();
   self.webState->SetStateForPermission(permissionDescription.state,
                                        permissionDescription.permission);
+  RecordPermissionEventFromOrigin(
+      permissionDescription,
+      PermissionEventOrigin::PermissionEventOriginModalInfobar);
 }
 
 #pragma mark - Private

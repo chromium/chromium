@@ -1021,6 +1021,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Permission.Modal.Events" enum="IOSPermissionEvent"
+    expires_after="2023-02-22">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs media permission events when the user changes the state of a permission
+    (e.g. the microphone permission) from the infobar modal.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Permission.PageInfo.Events" enum="IOSPermissionEvent"
+    expires_after="2023-02-22">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Logs media permission events when the user changes the state of a permission
+    (e.g. the microphone permission) from the page info.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2022-08-14">
   <owner>olivierrobin@chromium.org</owner>

@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_modal_delegate.h"
-#include "ios/chrome/browser/ui/infobars/modals/permissions/permission_info.h"
+#include "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
@@ -82,6 +85,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
   [self loadModel];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Presented];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.infobarModalDelegate modalInfobarWasDismissed:self];
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Dismissed];
+  [super viewDidDisappear:animated];
 }
 
 #pragma mark - TableViewModel
@@ -174,7 +188,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Dismisses the infobar modal.
 - (void)dismissInfobarModal {
-  // TODO(crbug.com/1289645): Record some metrics.
+  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
   [self.infobarModalDelegate dismissInfobarModal:self];
 }
 
