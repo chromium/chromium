@@ -16,6 +16,7 @@ import android.util.Pair;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
@@ -75,6 +76,13 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
     @RequiresApi(api = VERSION_CODES.N)
     public boolean startDragAndDrop(@NonNull View containerView, @NonNull Bitmap shadowImage,
             @NonNull DropDataAndroid dropData) {
+        // Drag and drop is disabled when gesture related a11y service is enabled.
+        // See https://crbug.com/1250067.
+        AccessibilityManager a11yManager =
+                (AccessibilityManager) containerView.getContext().getSystemService(
+                        Context.ACCESSIBILITY_SERVICE);
+        if (a11yManager.isEnabled() && a11yManager.isTouchExplorationEnabled()) return false;
+
         ClipData clipdata = buildClipData(dropData);
         if (clipdata == null) {
             return false;
