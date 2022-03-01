@@ -69,7 +69,8 @@ class TouchToFillController {
 
   // Instructs the controller to show the provided |credentials| to the user.
   void Show(base::span<const password_manager::UiCredential> credentials,
-            base::WeakPtr<password_manager::PasswordManagerDriver> driver);
+            base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+            bool trigger_submission);
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if invoked
@@ -108,6 +109,10 @@ class TouchToFillController {
   // Driver passed to the latest invocation of Show(). Gets cleared when
   // OnCredentialSelected() or OnDismissed() gets called.
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
+
+  // Whether the controller should trigger submission when a credential is
+  // filled in.
+  bool trigger_submission_ = false;
 
   // Authenticator used to trigger a biometric auth before filling.
   scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;

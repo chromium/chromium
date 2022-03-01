@@ -1774,7 +1774,12 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillUsername) {
   EXPECT_EQ(WebAutofillState::kPreviewed, username_element_.GetAutofillState());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
+// TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(fake_driver_, ShowTouchToFill(true));
+#else
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
+#endif
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1786,7 +1791,29 @@ TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillPassword) {
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
+// TODO(crbug.com/1299430): Consider to disable |ShowTouchToFill| on Desktop.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(fake_driver_, ShowTouchToFill(true));
+#else
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
+#endif
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest, TryToShowTouchToFillButDontEnableSubmission) {
+  LoadHTML(kPasswordChangeFormHTML);
+  UpdateUrlForHTML(kPasswordChangeFormHTML);
+  UpdateUsernameAndPasswordElements();
+  // Enable filling for the old password field.
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
+  EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
+
+  // As there are other input fields, don't enable automatic submission.
+  EXPECT_CALL(fake_driver_, ShowTouchToFill(/*trigger_submission=*/false));
   base::RunLoop().RunUntilIdle();
 }
 

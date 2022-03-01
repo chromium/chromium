@@ -62,7 +62,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
                                int options,
                                const gfx::RectF& bounds) override {}
 
-  void ShowTouchToFill() override {}
+  void ShowTouchToFill(bool trigger_submission) override {}
 
   void RecordSavePasswordProgress(const std::string& log) override {
     called_record_save_ = true;

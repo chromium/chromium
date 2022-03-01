@@ -445,6 +445,20 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Returns a prediction whether the form that contains |username_element| and
+// password_element will be ready for submission after filling these two
+// elements.
+bool IsReadyForSubmissionAfterCredentialFilling(
+    WebInputElement& username_element,
+    WebInputElement& password_element) {
+  if (password_element.IsNull() || !password_element.IsLastInputElementInForm())
+    return false;
+  // TODO(crbug.com/1299394): Add additional checks and metrics for them.
+  return true;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -520,8 +534,9 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
     DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions,
              text_direction, typed_username, options, bounds);
   }
-  void ShowTouchToFill() override {
-    DeferMsg(&mojom::PasswordManagerDriver::ShowTouchToFill);
+  void ShowTouchToFill(bool trigger_submission) override {
+    DeferMsg(&mojom::PasswordManagerDriver::ShowTouchToFill,
+             trigger_submission);
   }
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {
@@ -983,7 +998,17 @@ bool PasswordAutofillAgent::TryToShowTouchToFill(
   password_element.SetAutofillState(WebAutofillState::kPreviewed);
 
   focused_input_element_ = input_element;
-  GetPasswordManagerDriver().ShowTouchToFill();
+
+// TODO(crbug.com/1299430): Consider to disable |TryToShowTouchToFill| and
+// |ShowTouchToFill| on Desktop.
+#if BUILDFLAG(IS_ANDROID)
+  GetPasswordManagerDriver().ShowTouchToFill(
+      IsReadyForSubmissionAfterCredentialFilling(username_element,
+                                                 password_element));
+#else
+  GetPasswordManagerDriver().ShowTouchToFill(/*trigger_submission*/ false);
+#endif
+
   touch_to_fill_state_ = TouchToFillState::kIsShowing;
   return true;
 }
@@ -1481,8 +1506,14 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
   // TODO(crbug.com/1283004): Support filling single username fields too.
   DCHECK(input.IsPasswordFieldForAutofill())
       << "Form submission attempt for a non-password element";
-  if (input.IsLastInputElementInForm())
-    input.DispatchSimulatedEnter();
+
+  // TODO(crbug.com/1283004): Ideally,
+  // |IsReadyForSubmissionAfterCredentialFilling| should be called to check
+  // all criteria. Use the DCHECK just for a sanity check now and remove it
+  // later.
+  DCHECK(input.IsLastInputElementInForm())
+      << "Form is not ready for submission";
+  input.DispatchSimulatedEnter();
 }
 #endif
 

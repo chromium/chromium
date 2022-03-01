@@ -31,15 +31,20 @@ class FakeMojoPasswordManagerDriver
 
   // mojom::PasswordManagerDriver:
   // TODO(crbug.com/948062): Migrate the other methods to GMock as well.
-  MOCK_METHOD1(PasswordFormCleared, void(const autofill::FormData&));
+  MOCK_METHOD(void,
+              PasswordFormCleared,
+              (const autofill::FormData&),
+              (override));
 
-  MOCK_METHOD0(ShowTouchToFill, void());
+  MOCK_METHOD(void, ShowTouchToFill, (bool), (override));
 
-  MOCK_METHOD4(ShowPasswordSuggestions,
-               void(base::i18n::TextDirection,
-                    const std::u16string&,
-                    int,
-                    const gfx::RectF&));
+  MOCK_METHOD(void,
+              ShowPasswordSuggestions,
+              (base::i18n::TextDirection,
+               const std::u16string&,
+               int,
+               const gfx::RectF&),
+              (override));
 
   bool called_show_not_secure_warning() const {
     return called_show_not_secure_warning_;

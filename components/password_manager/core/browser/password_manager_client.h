@@ -184,7 +184,8 @@ class PasswordManagerClient {
       CredentialsCallback callback) = 0;
 
   // Instructs the client to show the Touch To Fill UI.
-  virtual void ShowTouchToFill(PasswordManagerDriver* driver);
+  virtual void ShowTouchToFill(PasswordManagerDriver* driver,
+                               bool trigger_submission);
 
   // Informs `PasswordReuseDetectionManager` about reused passwords selected
   // from the AllPasswordsBottomSheet.

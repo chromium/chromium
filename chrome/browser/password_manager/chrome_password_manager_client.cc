@@ -423,15 +423,15 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
 #endif
 }
 
-void ChromePasswordManagerClient::ShowTouchToFill(
-    PasswordManagerDriver* driver) {
+void ChromePasswordManagerClient::ShowTouchToFill(PasswordManagerDriver* driver,
+                                                  bool trigger_submission) {
 #if BUILDFLAG(IS_ANDROID)
   GetOrCreateTouchToFillController()->Show(
       credential_cache_
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      driver->AsWeakPtr());
+      driver->AsWeakPtr(), trigger_submission);
 #endif
 }
 

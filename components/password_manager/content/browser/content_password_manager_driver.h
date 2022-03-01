@@ -139,7 +139,7 @@ class ContentPasswordManagerDriver
                                const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override;
-  void ShowTouchToFill() override;
+  void ShowTouchToFill(bool trigger_submission) override;
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override;
   void FocusedInputChanged(
