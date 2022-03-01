@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_OBSERVER_UTIL_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_STATE_OBSERVER_UTIL_H_
 
+#include <Foundation/Foundation.h>
 #include <memory>
 
 #include "ios/web/public/favicon/favicon_url.h"
@@ -13,6 +14,7 @@
 namespace web {
 
 class NavigationContext;
+enum Permission : NSUInteger;
 struct SSLStatus;
 class WebFrame;
 class WebState;
@@ -123,6 +125,12 @@ struct TestWebStateRealizedInfo {
 // Arguments passed to |WebStateDestroyed|.
 struct TestWebStateDestroyedInfo {
   WebState* web_state = nullptr;
+};
+
+// Arguments passed to |PermissionStateChanged|.
+struct TestWebStatePermissionStateChangedInfo {
+  WebState* web_state = nullptr;
+  web::Permission permission;
 };
 
 }  // namespace web

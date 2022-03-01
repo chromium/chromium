@@ -53,6 +53,9 @@
 // Arguments passed to |webStateDestroyed:|.
 @property(nonatomic, readonly)
     web::TestWebStateDestroyedInfo* webStateDestroyedInfo;
+// Arguments passed to |webState:didChangeStateForPermission:|.
+@property(nonatomic, readonly)
+    web::TestWebStatePermissionStateChangedInfo* permissionStateChangedInfo;
 
 @end
 

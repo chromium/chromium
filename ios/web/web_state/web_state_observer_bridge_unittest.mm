@@ -249,7 +249,22 @@ TEST_F(WebStateObserverBridgeTest, FaviconUrlUpdated) {
 
 // Tests |webState:didChangeStateForPermission:| forwarding.
 TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
-  // TODO(crbug.com/1284709): Implement this test.
+  if (@available(iOS 15.0, *)) {
+    ASSERT_FALSE([observer_ permissionStateChangedInfo]);
+    // Test PermissionMicrophone state changed.
+    observer_bridge_.PermissionStateChanged(&fake_web_state_,
+                                            web::PermissionMicrophone);
+    ASSERT_TRUE([observer_ permissionStateChangedInfo]);
+    EXPECT_EQ(&fake_web_state_,
+              [observer_ permissionStateChangedInfo]->web_state);
+    EXPECT_EQ(web::PermissionMicrophone,
+              [observer_ permissionStateChangedInfo]->permission);
+    // Test PermissionCamera state changed.
+    observer_bridge_.PermissionStateChanged(&fake_web_state_,
+                                            web::PermissionCamera);
+    EXPECT_EQ(web::PermissionCamera,
+              [observer_ permissionStateChangedInfo]->permission);
+  }
 }
 
 // Tests |renderProcessGoneForWebState:| forwarding.

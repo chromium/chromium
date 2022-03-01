@@ -8,6 +8,7 @@
 
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/permissions/permissions.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,6 +54,9 @@
   std::unique_ptr<web::TestWebStateRealizedInfo> _webStateRealizedInfo;
   // Arguments passed to |webStateDestroyed:|.
   std::unique_ptr<web::TestWebStateDestroyedInfo> _webStateDestroyedInfo;
+  // Arguments passed to |webState:didChangeStateForPermission:|.
+  std::unique_ptr<web::TestWebStatePermissionStateChangedInfo>
+      _permissionStateChangedInfo;
 }
 
 - (web::TestWasShownInfo*)wasShownInfo {
@@ -118,6 +122,10 @@
 
 - (web::TestWebStateDestroyedInfo*)webStateDestroyedInfo {
   return _webStateDestroyedInfo.get();
+}
+
+- (web::TestWebStatePermissionStateChangedInfo*)permissionStateChangedInfo {
+  return _permissionStateChangedInfo.get();
 }
 
 #pragma mark CRWWebStateObserver methods -
@@ -227,6 +235,14 @@
       std::make_unique<web::TestUpdateFaviconUrlCandidatesInfo>();
   _updateFaviconUrlCandidatesInfo->web_state = webState;
   _updateFaviconUrlCandidatesInfo->candidates = candidates;
+}
+
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission {
+  _permissionStateChangedInfo =
+      std::make_unique<web::TestWebStatePermissionStateChangedInfo>();
+  _permissionStateChangedInfo->web_state = webState;
+  _permissionStateChangedInfo->permission = permission;
 }
 
 - (void)renderProcessGoneForWebState:(web::WebState*)webState {
