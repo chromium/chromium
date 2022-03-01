@@ -2770,7 +2770,8 @@ class LayerTreeHostTestDeviceScaleFactorChange : public LayerTreeHostTest {
   scoped_refptr<Layer> child_layer_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDeviceScaleFactorChange);
+// TODO(crbug.com/1295115): Flaky on ChromeOS and Linux.
+// SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDeviceScaleFactorChange);
 
 class LayerTreeHostTestRasterColorSpaceChange : public LayerTreeHostTest {
  public:
