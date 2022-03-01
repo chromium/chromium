@@ -99,7 +99,7 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::OptionalBool expect_has_badge_;
   bool expect_has_badge_changed_;
 
-  apps::mojom::OptionalBool expect_paused_;
+  absl::optional<bool> expect_paused_;
   bool expect_paused_changed_;
 
   std::vector<apps::mojom::IntentFilterPtr> expect_intent_filters_;
@@ -283,7 +283,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_handles_intents_ = apps::mojom::OptionalBool::kUnknown;
     expect_allow_uninstall_ = absl::nullopt;
     expect_has_badge_ = apps::mojom::OptionalBool::kUnknown;
-    expect_paused_ = apps::mojom::OptionalBool::kUnknown;
+    expect_paused_ = absl::nullopt;
     expect_intent_filters_.clear();
     expect_resize_locked_ = apps::mojom::OptionalBool::kUnknown;
     expect_window_mode_ = apps::mojom::WindowMode::kUnknown;
@@ -801,14 +801,14 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       state->paused = apps::mojom::OptionalBool::kFalse;
-      expect_paused_ = apps::mojom::OptionalBool::kFalse;
+      expect_paused_ = false;
       expect_paused_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
       delta->paused = apps::mojom::OptionalBool::kTrue;
-      expect_paused_ = apps::mojom::OptionalBool::kTrue;
+      expect_paused_ = true;
       expect_paused_changed_ = true;
       CheckExpects(u);
     }

@@ -242,7 +242,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_has_badge_, u.GetHasBadge());
     EXPECT_EQ(expect_has_badge_changed_, u.HasBadgeChanged());
 
-    EXPECT_EQ(expect_paused_, u.GetPaused());
+    EXPECT_EQ(expect_paused_, u.Paused());
     EXPECT_EQ(expect_paused_changed_, u.PausedChanged());
 
     EXPECT_TRUE(IsEqual(expect_intent_filters_, u.GetIntentFilters()));

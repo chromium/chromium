@@ -169,8 +169,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   absl::optional<bool> GetHasBadge() const;
   bool HasBadgeChanged() const;
 
-  apps::mojom::OptionalBool Paused() const;
-  absl::optional<bool> GetPaused() const;
+  absl::optional<bool> Paused() const;
   bool PausedChanged() const;
 
   std::vector<apps::mojom::IntentFilterPtr> IntentFilters() const;

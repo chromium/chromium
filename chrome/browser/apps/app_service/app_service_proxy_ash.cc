@@ -165,7 +165,7 @@ void AppServiceProxyAsh::PauseApps(
 
     app_registry_cache_.ForOneApp(
         data.first, [this](const apps::AppUpdate& update) {
-          if (update.Paused() != apps::mojom::OptionalBool::kTrue) {
+          if (!update.Paused().value_or(false)) {
             pending_pause_requests_.MaybeAddApp(update.AppId());
           }
         });
@@ -350,7 +350,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
 
   // Return true, and load the icon for the app pause dialog when the app
   // is paused.
-  if (update.Paused() == apps::mojom::OptionalBool::kTrue ||
+  if (update.Paused().value_or(false) ||
       pending_pause_requests_.IsPaused(update.AppId())) {
     ash::app_time::AppTimeLimitInterface* app_limit =
         ash::app_time::AppTimeLimitInterface::Get(profile_);
@@ -462,7 +462,7 @@ void AppServiceProxyAsh::OnPauseDialogClosed(apps::mojom::AppType app_type,
   if (!should_pause_app) {
     app_registry_cache_.ForOneApp(
         app_id, [&should_pause_app](const apps::AppUpdate& update) {
-          if (update.Paused() == apps::mojom::OptionalBool::kTrue) {
+          if (update.Paused().value_or(false)) {
             should_pause_app = true;
           }
         });
@@ -473,8 +473,7 @@ void AppServiceProxyAsh::OnPauseDialogClosed(apps::mojom::AppType app_type,
 }
 
 void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
-  if ((update.PausedChanged() &&
-       update.Paused() == apps::mojom::OptionalBool::kTrue) ||
+  if ((update.PausedChanged() && update.Paused().value_or(false)) ||
       (update.ReadinessChanged() &&
        !apps_util::IsInstalled(update.Readiness()))) {
     pending_pause_requests_.MaybeRemoveApp(update.AppId());

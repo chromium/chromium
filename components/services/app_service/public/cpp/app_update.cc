@@ -867,19 +867,12 @@ bool AppUpdate::HasBadgeChanged() const {
           (mojom_delta_->has_badge != mojom_state_->has_badge));
 }
 
-apps::mojom::OptionalBool AppUpdate::Paused() const {
-  if (mojom_delta_ &&
-      (mojom_delta_->paused != apps::mojom::OptionalBool::kUnknown)) {
-    return mojom_delta_->paused;
+absl::optional<bool> AppUpdate::Paused() const {
+  if (ShouldUseNonMojom()) {
+    GET_VALUE_WITH_FALLBACK(paused, absl::nullopt);
   }
-  if (mojom_state_) {
-    return mojom_state_->paused;
-  }
-  return apps::mojom::OptionalBool::kUnknown;
-}
 
-absl::optional<bool> AppUpdate::GetPaused() const {
-  GET_VALUE_WITH_FALLBACK(paused, absl::nullopt);
+  CONVERT_MOJOM_OPTIONALBOOL_TO_OPTIONAL_VALUE(paused)
 }
 
 bool AppUpdate::PausedChanged() const {
@@ -1060,7 +1053,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "AllowUninstall: " << PRINT_OPTIONAL_VALUE(AllowUninstall)
       << std::endl;
   out << "HasBadge: " << app.HasBadge() << std::endl;
-  out << "Paused: " << app.Paused() << std::endl;
+  out << "Paused: " << PRINT_OPTIONAL_VALUE(Paused) << std::endl;
   out << "IntentFilters: " << std::endl;
   for (const auto& filter : app.IntentFilters()) {
     out << filter << std::endl;

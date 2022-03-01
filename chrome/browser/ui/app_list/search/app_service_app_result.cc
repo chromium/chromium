@@ -61,7 +61,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
           SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_APP_ACCESSIBILITY_BLOCKED_INSTALLED_APP_ANNOUNCEMENT,
               base::UTF8ToUTF16(update.ShortName())));
-        } else if (update.Paused() == apps::mojom::OptionalBool::kTrue) {
+        } else if (update.Paused().value_or(false)) {
           SetAccessibleName(l10n_util::GetStringFUTF16(
               IDS_APP_ACCESSIBILITY_PAUSED_INSTALLED_APP_ANNOUNCEMENT,
               base::UTF8ToUTF16(update.ShortName())));

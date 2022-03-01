@@ -79,7 +79,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     bool is_app_paused = false;
     app_service_proxy()->AppRegistryCache().ForOneApp(
         app_id(), [&is_app_paused](const apps::AppUpdate& update) {
-          is_app_paused = (update.Paused() == apps::mojom::OptionalBool::kTrue);
+          is_app_paused = (update.Paused().value_or(false));
         });
     return is_app_paused;
   }
