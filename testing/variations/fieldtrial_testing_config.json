@@ -2833,6 +2833,27 @@
             ]
         }
     ],
+    "EnableCachedManagementStatus": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableCachedManagementStatus",
+                    "enable_features": [
+                        "EnableCachedManagementStatus"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableNewDownloadAPI": [
         {
             "platforms": [
