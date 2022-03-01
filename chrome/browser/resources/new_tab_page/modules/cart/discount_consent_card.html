@@ -1,0 +1,95 @@
+<style>
+  :host {
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    display: inline-flex;
+    flex-direction: column;
+    height: 140px;
+    vertical-align: top;
+    width: 244px;
+  }
+
+  #consentCardContainer {
+    height: 100%;
+  }
+
+  :host([color-consent-container_]) #consentCardContainer {
+    background-color: var(--google-blue-100);
+  }
+
+  #faviconsContainer {
+    /* TODO(crbug.com/1298116): These are placehold style, need to update when
+     * loading favicons. */
+    background: var(--discount-chip-background);
+    border-radius: 4px;
+    height: 24px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
+    width: 24px;
+  }
+
+  .content-container {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+    height: 40px;
+    line-height: 20px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 4px;
+    text-align: center;
+    white-space: normal;
+    width: 220px;
+  }
+
+  .button-container {
+    display: inline-block;
+    margin-inline-start: 16px;
+    margin-top: 8px;
+  }
+
+  .wide-button {
+    width: 212px;
+  }
+</style>
+
+<div id="consentCardContainer">
+  <div id="faviconsContainer">
+    <!-- TODO(crbug/1298116): loop |merchants| and load the favicon to img. -->
+  </div>
+  <div id="contentSteps">
+    <iron-pages selected="[[currentStep]]">
+      <template id="consentStepRepeat" is="dom-repeat" items="[[steps_]]"
+          as="step">
+        <div class="step-container" id="[[step.id]]">
+          <div class="content-container">
+            <span class="content">
+              [[step.content]]
+            </span>
+          </div>
+          <div class="button-container">
+            <template id="oneButtonElement" is="dom-if"
+                if="[[step.hasOneButton]]">
+              <cr-button class="action-button wide-button"
+                  onClick="[[step.actionButton.onClickHandler]]">
+                [[step.actionButton.text]]
+              </cr-button>
+            </template>
+            <template id="TwoButtonElement" is="dom-if"
+                if="[[step.hasTwoButtons]]">
+              <cr-button id="cancelButton" class="cancel-button"
+                  onClick="[[step.cancelButton.onClickHandler]]">
+                [[step.cancelButton.text]]
+               </cr-button>
+              <cr-button id="actionButton" class="action-button"
+                  onClick="[[step.actionButton.onClickHandler]]">
+                [[step.actionButton.text]]
+              </cr-button>
+            </template>
+          </div>
+        </div>
+      </template>
+    </iron-pages>
+  </div>
+</div>
