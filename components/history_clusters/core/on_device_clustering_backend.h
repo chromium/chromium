@@ -44,7 +44,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   // ClusteringBackend:
   void GetClusters(ClusteringRequestSource clustering_request_source,
                    ClustersCallback callback,
-                   const std::vector<history::AnnotatedVisit>& visits) override;
+                   std::vector<history::AnnotatedVisit> visits) override;
 
  private:
   // Callback invoked when batch entity metadata has been received from
@@ -53,7 +53,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   void OnBatchEntityMetadataRetrieved(
       ClusteringRequestSource clustering_request_source,
       optimization_guide::BatchEntityMetadataTask* completed_task,
-      const std::vector<history::AnnotatedVisit>& annotated_visits,
+      std::vector<history::AnnotatedVisit> annotated_visits,
       absl::optional<base::TimeTicks> entity_metadata_start,
       ClustersCallback callback,
       const base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -66,7 +66,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       size_t index_to_process,
       std::vector<history::ClusterVisit> cluster_visits,
       optimization_guide::BatchEntityMetadataTask* completed_task,
-      const std::vector<history::AnnotatedVisit>& annotated_visits,
+      std::vector<history::AnnotatedVisit> annotated_visits,
       absl::optional<base::TimeTicks> entity_metadata_start,
       ClustersCallback callback,
       const base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -77,13 +77,13 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       ClusteringRequestSource clustering_request_source,
       size_t num_batches_processed,
       optimization_guide::BatchEntityMetadataTask* completed_task,
-      const std::vector<history::ClusterVisit>& cluster_visits,
+      std::vector<history::ClusterVisit> cluster_visits,
       ClustersCallback callback);
 
   // Clusters |visits| on background thread.
   static std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
       bool engagement_score_provider_is_valid,
-      const std::vector<history::ClusterVisit>& visits);
+      std::vector<history::ClusterVisit> visits);
 
   // The object used to normalize SRP URLs. Not owned. Must outlive |this|.
   const TemplateURLService* template_url_service_;

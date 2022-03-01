@@ -107,7 +107,7 @@ OnDeviceClusteringBackend::~OnDeviceClusteringBackend() {
 void OnDeviceClusteringBackend::GetClusters(
     ClusteringRequestSource clustering_request_source,
     ClustersCallback callback,
-    const std::vector<history::AnnotatedVisit>& visits) {
+    std::vector<history::AnnotatedVisit> visits) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (visits.empty()) {
@@ -144,7 +144,8 @@ void OnDeviceClusteringBackend::GetClusters(
   // metadata for.
   if (entity_ids.empty()) {
     OnBatchEntityMetadataRetrieved(
-        clustering_request_source, /*completed_task=*/nullptr, visits,
+        clustering_request_source, /*completed_task=*/nullptr,
+        std::move(visits),
         /*entity_metadata_start=*/absl::nullopt, std::move(callback),
         /*entity_metadata_map=*/{});
     return;
@@ -163,14 +164,14 @@ void OnDeviceClusteringBackend::GetClusters(
   batch_entity_metadata_task_ptr->Execute(
       base::BindOnce(&OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), clustering_request_source,
-                     batch_entity_metadata_task_ptr, visits,
+                     batch_entity_metadata_task_ptr, std::move(visits),
                      base::TimeTicks::Now(), std::move(callback)));
 }
 
 void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     ClusteringRequestSource clustering_request_source,
     optimization_guide::BatchEntityMetadataTask* completed_task,
-    const std::vector<history::AnnotatedVisit>& annotated_visits,
+    std::vector<history::AnnotatedVisit> annotated_visits,
     absl::optional<base::TimeTicks> entity_metadata_start,
     ClustersCallback callback,
     const base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -199,8 +200,9 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
   ProcessBatchOfVisits(clustering_request_source,
                        /*num_batches_processed_so_far=*/0,
                        /*index_to_process=*/0, std::move(cluster_visits),
-                       completed_task, annotated_visits, entity_metadata_start,
-                       std::move(callback), entity_metadata_map);
+                       completed_task, std::move(annotated_visits),
+                       entity_metadata_start, std::move(callback),
+                       entity_metadata_map);
 }
 
 void OnDeviceClusteringBackend::ProcessBatchOfVisits(
@@ -209,7 +211,7 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
     size_t index_to_process,
     std::vector<history::ClusterVisit> cluster_visits,
     optimization_guide::BatchEntityMetadataTask* completed_task,
-    const std::vector<history::AnnotatedVisit>& annotated_visits,
+    std::vector<history::AnnotatedVisit> annotated_visits,
     absl::optional<base::TimeTicks> entity_metadata_start,
     ClustersCallback callback,
     const base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -336,7 +338,7 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
     RecordBatchUpdateProcessingTime(process_batch_timer.Elapsed());
     OnAllVisitsFinishedProcessing(
         clustering_request_source, num_batches_processed_so_far + 1,
-        completed_task, cluster_visits, std::move(callback));
+        completed_task, std::move(cluster_visits), std::move(callback));
     return;
   }
 
@@ -347,7 +349,7 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
                      weak_ptr_factory_.GetWeakPtr(), clustering_request_source,
                      num_batches_processed_so_far + 1, index_to_process,
                      std::move(cluster_visits), completed_task,
-                     annotated_visits, entity_metadata_start,
+                     std::move(annotated_visits), entity_metadata_start,
                      std::move(callback), entity_metadata_map));
 }
 
@@ -355,7 +357,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
     ClusteringRequestSource clustering_request_source,
     size_t num_batches_processed,
     optimization_guide::BatchEntityMetadataTask* completed_task,
-    const std::vector<history::ClusterVisit>& cluster_visits,
+    std::vector<history::ClusterVisit> cluster_visits,
     ClustersCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -380,7 +382,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
         FROM_HERE,
         base::BindOnce(
             &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-            engagement_score_provider_ != nullptr, cluster_visits),
+            engagement_score_provider_ != nullptr, std::move(cluster_visits)),
         std::move(callback));
     return;
   }
@@ -393,7 +395,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
       FROM_HERE,
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          engagement_score_provider_ != nullptr, cluster_visits),
+          engagement_score_provider_ != nullptr, std::move(cluster_visits)),
       std::move(callback));
 }
 
@@ -401,7 +403,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     bool engagement_score_provider_is_valid,
-    const std::vector<history::ClusterVisit>& visits) {
+    std::vector<history::ClusterVisit> visits) {
   base::ElapsedThreadTimer cluster_visits_timer;
 
   // TODO(crbug.com/1260145): All of these objects are "stateless" between
@@ -445,7 +447,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 
   // Group visits into clusters.
   std::vector<history::Cluster> clusters =
-      clusterer->CreateInitialClustersFromVisits(visits);
+      clusterer->CreateInitialClustersFromVisits(&visits);
 
   // Process clusters.
   for (const auto& processor : cluster_processors) {

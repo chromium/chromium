@@ -525,7 +525,7 @@ void HistoryClustersService::OnGotHistoryVisits(
       base::BindOnce(&HistoryClustersService::OnGotRawClusters,
                      weak_ptr_factory_.GetWeakPtr(), continuation_end_time,
                      base::TimeTicks::Now(), std::move(callback)),
-      annotated_visits);
+      std::move(annotated_visits));
 }
 
 void HistoryClustersService::OnGotRawClusters(

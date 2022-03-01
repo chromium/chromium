@@ -36,20 +36,18 @@ Clusterer::Clusterer() = default;
 Clusterer::~Clusterer() = default;
 
 std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
-    const std::vector<history::ClusterVisit>& visits) {
+    std::vector<history::ClusterVisit>* visits) {
   // Sort visits by visit ID.
-  std::vector<history::ClusterVisit> sorted_visits(visits.size());
-  std::partial_sort_copy(
-      visits.begin(), visits.end(), sorted_visits.begin(), sorted_visits.end(),
-      [](const history::ClusterVisit& a, const history::ClusterVisit& b) {
-        return a.annotated_visit.visit_row.visit_id <
-               b.annotated_visit.visit_row.visit_id;
-      });
+  std::sort(visits->begin(), visits->end(),
+            [](const history::ClusterVisit& a, const history::ClusterVisit& b) {
+              return a.annotated_visit.visit_row.visit_id <
+                     b.annotated_visit.visit_row.visit_id;
+            });
 
   base::flat_map<std::string, size_t> url_to_cluster_map;
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
-  for (const auto& visit : sorted_visits) {
+  for (const auto& visit : *visits) {
     const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
     history::VisitID previous_visit_id =

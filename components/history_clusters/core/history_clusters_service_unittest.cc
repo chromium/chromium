@@ -38,10 +38,9 @@ namespace {
 // Trivial backend to allow us to specifically test just the service behavior.
 class TestClusteringBackend : public ClusteringBackend {
  public:
-  void GetClusters(
-      ClusteringRequestSource clustering_request_source,
-      ClustersCallback callback,
-      const std::vector<history::AnnotatedVisit>& visits) override {
+  void GetClusters(ClusteringRequestSource clustering_request_source,
+                   ClustersCallback callback,
+                   std::vector<history::AnnotatedVisit> visits) override {
     callback_ = std::move(callback);
     last_clustered_visits_ = visits;
 

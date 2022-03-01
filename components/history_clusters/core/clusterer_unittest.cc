@@ -21,8 +21,8 @@ class ClustererTest : public ::testing::Test {
   void TearDown() override { clusterer_.reset(); }
 
   std::vector<history::Cluster> CreateInitialClustersFromVisits(
-      const std::vector<history::ClusterVisit>& visits) {
-    return clusterer_->CreateInitialClustersFromVisits(visits);
+      std::vector<history::ClusterVisit> visits) {
+    return clusterer_->CreateInitialClustersFromVisits(&visits);
   }
 
  private:
