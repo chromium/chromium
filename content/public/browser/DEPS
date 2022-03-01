@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/browsing_topics/common",
   # components/download are needed for providing the download feature.
   # TODO(qinmin): move it to services/download when download becomes a service.
   "+components/download/public/common",

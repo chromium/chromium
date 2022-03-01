@@ -1990,6 +1990,7 @@ test("content_unittests") {
     "../browser/browsing_data/browsing_data_remover_impl_unittest.cc",
     "../browser/browsing_data/clear_site_data_handler_unittest.cc",
     "../browser/browsing_data/same_site_data_remover_impl_unittest.cc",
+    "../browser/browsing_topics/browsing_topics_site_data_manager_impl_unittest.cc",
     "../browser/browsing_topics/browsing_topics_site_data_storage_unittest.cc",
     "../browser/buckets/bucket_manager_host_unittest.cc",
     "../browser/byte_stream_unittest.cc",

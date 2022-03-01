@@ -142,6 +142,11 @@ InterestGroupManager* TestStoragePartition::GetInterestGroupManager() {
   return nullptr;
 }
 
+BrowsingTopicsSiteDataManager*
+TestStoragePartition::GetBrowsingTopicsSiteDataManager() {
+  return browsing_topics_site_data_manager_;
+}
+
 DevToolsBackgroundServicesContext*
 TestStoragePartition::GetDevToolsBackgroundServicesContext() {
   return devtools_background_services_context_;
