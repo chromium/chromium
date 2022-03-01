@@ -14,6 +14,7 @@
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -26,8 +27,10 @@ class VisitedLinkUpdater;
 // VisitedLinkEventListener broadcasts link coloring database updates to all
 // processes. It also coalesces the updates to avoid excessive broadcasting of
 // messages to the renderers.
-class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
-                                 public content::NotificationObserver {
+class VisitedLinkEventListener
+    : public VisitedLinkWriter::Listener,
+      public content::NotificationObserver,
+      public content::RenderProcessHostCreationObserver {
  public:
   explicit VisitedLinkEventListener(content::BrowserContext* browser_context);
 
@@ -43,6 +46,9 @@ class VisitedLinkEventListener : public VisitedLinkWriter::Listener,
   // Sets a custom timer to use for coalescing events for testing.
   // |coalesce_timer_override| must outlive this.
   void SetCoalesceTimerForTest(base::OneShotTimer* coalesce_timer_override);
+
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* rph) override;
 
  private:
   void CommitVisitedLinks();

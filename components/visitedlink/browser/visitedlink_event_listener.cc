@@ -121,8 +121,6 @@ VisitedLinkEventListener::VisitedLinkEventListener(
     content::BrowserContext* browser_context)
     : coalesce_timer_(&default_coalesce_timer_),
       browser_context_(browser_context) {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
@@ -189,26 +187,24 @@ void VisitedLinkEventListener::CommitVisitedLinks() {
   pending_visited_links_.clear();
 }
 
+void VisitedLinkEventListener::OnRenderProcessHostCreated(
+    content::RenderProcessHost* rph) {
+  if (browser_context_ != rph->GetBrowserContext())
+    return;
+
+  // Happens on browser start up.
+  if (!table_region_.IsValid())
+    return;
+
+  updaters_[rph->GetID()] = std::make_unique<VisitedLinkUpdater>(rph->GetID());
+  updaters_[rph->GetID()]->SendVisitedLinkTable(&table_region_);
+}
+
 void VisitedLinkEventListener::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      if (browser_context_ != process->GetBrowserContext())
-        return;
-
-      // Happens on browser start up.
-      if (!table_region_.IsValid())
-        return;
-
-      updaters_[process->GetID()] =
-          std::make_unique<VisitedLinkUpdater>(process->GetID());
-      updaters_[process->GetID()]->SendVisitedLinkTable(&table_region_);
-      break;
-    }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
       content::RenderProcessHost* process =
           content::Source<content::RenderProcessHost>(source).ptr();
