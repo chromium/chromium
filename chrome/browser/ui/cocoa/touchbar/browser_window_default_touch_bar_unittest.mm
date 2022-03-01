@@ -55,6 +55,16 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
     command_updater_->UpdateCommandEnabled(id, enabled);
   }
 
+  bool ShowsHomeButton() {
+    return browser()->profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton);
+  }
+
+  void SetShowHomeButton(bool flag) {
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, flag);
+    browser()->profile()->GetPrefs()->ChangePrefValueStore(nullptr, nullptr,
+                                                           nullptr, nullptr);
+  }
+
   void TearDown() override {
     if (@available(macOS 10.12.2, *)) {
       touch_bar_.get().browser = nullptr;
@@ -251,5 +261,33 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, ForwardAccessibilityLabel) {
     ASSERT_TRUE([view conformsToProtocol:@protocol(NSAccessibility)]);
     EXPECT_NSEQ(view.accessibilityTitle,
                 l10n_util::GetNSString(IDS_ACCNAME_FORWARD));
+  }
+}
+
+// Tests that the home button in the Touch Bar is in sync with the setting.
+TEST_F(BrowserWindowDefaultTouchBarUnitTest, HomeUpdate) {
+  if (@available(macOS 10.12.2, *)) {
+    NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
+
+    // Save the current state before we start mucking with preferences.
+    bool home_button_showing = ShowsHomeButton();
+
+    SetShowHomeButton(false);
+    touch_bar = [touch_bar_ makeTouchBar];
+
+    NSString* home_identifier =
+        [BrowserWindowDefaultTouchBar homeItemIdentifier];
+
+    EXPECT_FALSE(
+        [[touch_bar defaultItemIdentifiers] containsObject:home_identifier]);
+
+    SetShowHomeButton(true);
+    touch_bar = [touch_bar_ makeTouchBar];
+
+    EXPECT_TRUE(
+        [[touch_bar defaultItemIdentifiers] containsObject:home_identifier]);
+
+    // Restore the original state.
+    SetShowHomeButton(home_button_showing);
   }
 }

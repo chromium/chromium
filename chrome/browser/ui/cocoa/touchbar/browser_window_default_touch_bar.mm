@@ -283,6 +283,13 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 
   // The starred button in the touch bar.
   base::scoped_nsobject<NSButton> _starredButton;
+
+  // The last created BrowserWindowDefaultTouchBar (cached until it needs a
+  // rebuild).
+  base::scoped_nsobject<NSTouchBar> _touchBar;
+
+  // The existence of the Home button in the Touch Bar.
+  bool _touchBarHasHomeButton;
 }
 
 // Creates and returns a touch bar for tab non-fullscreen mode.
@@ -434,37 +441,45 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
 }
 
 - (NSTouchBar*)createTabTouchBar {
-  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
-  [touchBar
-      setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
-  [touchBar setDelegate:self];
+  bool showHomeButton = _notificationBridge->show_home_button();
 
-  NSMutableArray<NSString*>* customIdentifiers = [NSMutableArray array];
-  NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
+  if (!_touchBar || _touchBarHasHomeButton != showHomeButton) {
+    _touchBar.reset([[NSTouchBar alloc] init]);
+    [_touchBar
+        setCustomizationIdentifier:ui::GetTouchBarId(kBrowserWindowTouchBarId)];
+    [_touchBar setDelegate:self];
 
-  NSArray<NSString*>* touchBarItems = @[
-    kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
-    kSearchTouchId, kStarTouchId, kNewTabTouchId
-  ];
+    NSMutableArray<NSString*>* customizationIdentifiers =
+        [NSMutableArray array];
+    NSMutableArray<NSString*>* defaultIdentifiers = [NSMutableArray array];
 
-  for (NSString* item in touchBarItems) {
-    NSString* itemIdentifier =
-        ui::GetTouchBarItemId(kBrowserWindowTouchBarId, item);
-    [customIdentifiers addObject:itemIdentifier];
+    NSArray<NSString*>* touchBarItemIdentifiers = @[
+      kBackTouchId, kForwardTouchId, kReloadOrStopTouchId, kHomeTouchId,
+      kSearchTouchId, kStarTouchId, kNewTabTouchId
+    ];
 
-    // Don't add the home button if it's not shown in the toolbar.
-    if (item == kHomeTouchId && !_notificationBridge->show_home_button())
-      continue;
+    for (NSString* itemIdentifier in touchBarItemIdentifiers) {
+      NSString* fullIdentifier =
+          ui::GetTouchBarItemId(kBrowserWindowTouchBarId, itemIdentifier);
+      [customizationIdentifiers addObject:fullIdentifier];
 
-    [defaultIdentifiers addObject:itemIdentifier];
+      // Don't add the home button if it's not shown in the toolbar.
+      if (itemIdentifier == kHomeTouchId && !showHomeButton) {
+        continue;
+      }
+
+      [defaultIdentifiers addObject:fullIdentifier];
+    }
+
+    [customizationIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
+
+    [_touchBar setDefaultItemIdentifiers:defaultIdentifiers];
+    [_touchBar setCustomizationAllowedItemIdentifiers:customizationIdentifiers];
+
+    _touchBarHasHomeButton = showHomeButton;
   }
 
-  [customIdentifiers addObject:NSTouchBarItemIdentifierFlexibleSpace];
-
-  [touchBar setDefaultItemIdentifiers:defaultIdentifiers];
-  [touchBar setCustomizationAllowedItemIdentifiers:customIdentifiers];
-
-  return touchBar.autorelease();
+  return _touchBar.get();
 }
 
 - (NSTouchBar*)createTabFullscreenTouchBar {
@@ -629,6 +644,10 @@ class API_AVAILABLE(macos(10.12.2)) TouchBarNotificationBridge
                                       kTouchBarDefaultIconColor) retain];
       }());
   return _starDefaultIcon->get();
+}
+
++ (NSString*)homeItemIdentifier {
+  return ui::GetTouchBarItemId(kBrowserWindowTouchBarId, kHomeTouchId);
 }
 
 + (NSImage*)starActiveIcon {
