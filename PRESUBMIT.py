@@ -990,6 +990,17 @@ _BANNED_CPP_FUNCTIONS = (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$'
       ),
     ),
+    (
+        r'/base::(size|empty|data)',
+        (
+            'Please use the STL equivalent (std::size/std::empty/std::data) ',
+            'instead. The base versions are being removed: ',
+            'https://crbug.com/1299695'
+
+        ),
+        False,
+        [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+    ),
 )
 
 # Format: Sequence of tuples containing:
