@@ -127,14 +127,14 @@ TEST_F(ChromeMetricsServiceClientTest, FilterFiles) {
 
 TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // Test that UKM service has initialized its metrics providers. Currently
-  // there are 6 providers for all platform except ChromeOS.
+  // there are 7 providers for all platform except ChromeOS.
   // NetworkMetricsProvider, GPUMetricsProvider, CPUMetricsProvider
-  // ScreenInfoMetricsProvider, FieldTrialsProvider, and
-  // PrivacyBudgetMetricsProvider.
+  // ScreenInfoMetricsProvider, FormFactorMetricsProvider, FieldTrialsProvider,
+  // and PrivacyBudgetMetricsProvider.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const size_t expected_providers = 7;  // ChromeOSMetricsProvider
+  const size_t expected_providers = 8;  // ChromeOSMetricsProvider
 #else
-  const size_t expected_providers = 6;
+  const size_t expected_providers = 7;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
@@ -155,7 +155,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 21;
+  expected_providers += 22;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(

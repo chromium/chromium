@@ -49,6 +49,8 @@ static_library("metrics") {
     "field_trials_provider.h",
     "file_metrics_provider.cc",
     "file_metrics_provider.h",
+    "form_factor_metrics_provider.cc",
+    "form_factor_metrics_provider.h",
     "histogram_encoder.cc",
     "histogram_encoder.h",
     "log_decoder.cc",
@@ -132,6 +134,7 @@ static_library("metrics") {
     "//crypto",
     "//extensions/buildflags",
     "//third_party/icu",
+    "//ui/base",
     "//url",
   ]
 
@@ -445,6 +448,7 @@ source_set("unit_tests") {
     "expired_histograms_checker_unittest.cc",
     "field_trials_provider_unittest.cc",
     "file_metrics_provider_unittest.cc",
+    "form_factor_metrics_provider_unittest.cc",
     "histogram_encoder_unittest.cc",
     "library_support/histogram_manager_unittest.cc",
     "log_decoder_unittest.cc",
