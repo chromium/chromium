@@ -2,24 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './supported_links_overlapping_apps_dialog.js';
-import './supported_links_dialog.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';
-import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 
-import {AppManagementUserAction, AppType} from '//resources/cr_components/app_management/constants.js';
-import {assert} from '//resources/js/assert.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {AppType} from '//resources/cr_components/app_management/constants.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
-import {recordSettingChange} from '../../metrics_recorder.m.js';
-
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementStoreClient} from './store_client.js';
 
 /**
  * @constructor
