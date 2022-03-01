@@ -700,7 +700,7 @@ int QuicHttpStream::DoSendBodyComplete(int rv) {
 
 int QuicHttpStream::ProcessResponseHeaders(
     const spdy::Http2HeaderBlock& headers) {
-  const bool rv = SpdyHeadersToHttpResponse(headers, response_info_);
+  const int rv = SpdyHeadersToHttpResponse(headers, response_info_);
   base::UmaHistogramBoolean("Net.QuicHttpStream.ProcessResponseHeaderSuccess",
                             rv == OK);
   if (rv != OK) {
