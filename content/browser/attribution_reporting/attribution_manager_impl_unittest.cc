@@ -77,6 +77,12 @@ using ::testing::UnorderedElementsAre;
 
 using Checkpoint = ::testing::MockFunction<void(int step)>;
 
+constexpr AttributionStorageDelegate::OfflineReportDelayConfig
+    kDefaultOfflineReportDelay{
+        .min = base::Minutes(0),
+        .max = base::Minutes(1),
+    };
+
 class MockAttributionObserver : public AttributionObserver {
  public:
   MOCK_METHOD(void, OnSourcesChanged, (), (override));
@@ -231,7 +237,9 @@ class AttributionManagerImplTest : public testing::Test {
         mock_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
         cookie_checker_(new MockCookieChecker()),
-        report_sender_(new MockReportSender()) {
+        report_sender_(new MockReportSender()) {}
+
+  void SetUp() override {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
 
     content::SetNetworkConnectionTrackerForTesting(
@@ -242,17 +250,19 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void CreateManager() {
+    CHECK(!attribution_manager_);
+
     auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
 
     storage_delegate->set_report_delay(kFirstReportingWindow);
     storage_delegate->set_max_attributions_per_source(3);
     storage_delegate->set_offline_report_delay_config(
-        AttributionStorageDelegate::OfflineReportDelayConfig{
-            .min = base::Minutes(0),
-            .max = base::Minutes(1),
-        });
+        kDefaultOfflineReportDelay);
 
-    storage_delegate_ = storage_delegate.get();
+    ConfigureStorageDelegate(*storage_delegate);
+    // From this point on, the delegate will only be accessed on storage's
+    // sequence.
+    storage_delegate->DetachFromSequence();
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         AttributionManagerImpl::DefaultIsReportAllowedCallback(
@@ -327,13 +337,16 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
  protected:
+  // Override this in order to modify the delegate before it is passed
+  // irretrievably to storage.
+  virtual void ConfigureStorageDelegate(ConfigurableStorageDelegate&) const {}
+
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
   const raw_ptr<MockCookieChecker> cookie_checker_;
   const raw_ptr<MockReportSender> report_sender_;
-  raw_ptr<ConfigurableStorageDelegate> storage_delegate_;
   raw_ptr<MockAggregationService> aggregation_service_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
@@ -645,8 +658,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   // Advance by the max offline report delay, per
   // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
-  task_environment_.FastForwardBy(
-      storage_delegate_->GetOfflineReportDelayConfig()->max);
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
@@ -890,10 +902,10 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
   // started and the min and max offline report delays, per
   // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   base::Time min_new_time = base::Time::Now();
-  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
   EXPECT_THAT(StoredReports(),
-              ElementsAre(ReportTimeIs(AllOf(Ge(min_new_time + delay->min),
-                                             Le(min_new_time + delay->max)))));
+              ElementsAre(ReportTimeIs(
+                  AllOf(Ge(min_new_time + kDefaultOfflineReportDelay.min),
+                        Le(min_new_time + kDefaultOfflineReportDelay.max)))));
 
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
@@ -1216,21 +1228,21 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
-#if defined(THREAD_SANITIZER)
-#define MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted \
-  DISABLED_OnlineConnectionTypeChanges_ReportTimesNotAdjusted
-#else
-#define MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted \
-  OnlineConnectionTypeChanges_ReportTimesNotAdjusted
-#endif
-TEST_F(AttributionManagerImplTest,
-       MAYBE_OnlineConnectionTypeChanges_ReportTimesNotAdjusted) {
-  storage_delegate_->set_offline_report_delay_config(
-      AttributionStorageDelegate::OfflineReportDelayConfig{
-          .min = base::Minutes(1),
-          .max = base::Minutes(1),
-      });
+class AttributionManagerImplOnlineConnectionTypeTest
+    : public AttributionManagerImplTest {
+ protected:
+  void ConfigureStorageDelegate(
+      ConfigurableStorageDelegate& delegate) const override {
+    delegate.set_offline_report_delay_config(
+        AttributionStorageDelegate::OfflineReportDelayConfig{
+            .min = base::Minutes(1),
+            .max = base::Minutes(1),
+        });
+  }
+};
 
+TEST_F(AttributionManagerImplOnlineConnectionTypeTest,
+       OnlineConnectionTypeChanges_ReportTimesNotAdjusted) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
@@ -1282,12 +1294,12 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   SetConnectionTypeAndWaitForObserversToBeNotified(
       network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
-  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
-  task_environment_.FastForwardBy(delay->max);
+  task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
-  histograms.ExpectUniqueTimeSample("Conversions.ExtraReportDelay2",
-                                    base::Days(3) + delay->min, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.ExtraReportDelay2",
+      base::Days(3) + kDefaultOfflineReportDelay.min, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
@@ -1306,16 +1318,23 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
   histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
 }
 
-// Regression test for https://crbug.com/1294519.
-TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
-  storage_delegate_->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {
-              .trigger_data = 0,
-              .report_time = base::Time::Now() + base::Days(1),
-          },
-      });
+class AttributionManagerImplFakeReportTest : public AttributionManagerImplTest {
+ protected:
+  void ConfigureStorageDelegate(
+      ConfigurableStorageDelegate& delegate) const override {
+    delegate.set_randomized_response(
+        std::vector<AttributionStorageDelegate::FakeReport>{
+            {
+                .trigger_data = 0,
+                .report_time = base::Time::Now() + base::Days(1),
+            },
+        });
+  }
+};
 
+// Regression test for https://crbug.com/1294519.
+TEST_F(AttributionManagerImplFakeReportTest,
+       FakeReport_UpdatesSendReportTimer) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
 

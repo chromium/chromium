@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_sources.h"
@@ -165,60 +166,42 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       uint64_t trigger_data,
       CommonSourceInfo::SourceType source_type) const override;
 
-  void set_max_attributions_per_source(int max) {
-    max_attributions_per_source_ = max;
-  }
+  void set_max_attributions_per_source(int max);
 
-  void set_max_sources_per_origin(int max) { max_sources_per_origin_ = max; }
+  void set_max_sources_per_origin(int max);
 
-  void set_max_attributions_per_origin(int max) {
-    max_attributions_per_origin_ = max;
-  }
+  void set_max_attributions_per_origin(int max);
 
-  void set_max_destinations_per_source_site_reporting_origin(int max) {
-    max_destinations_per_source_site_reporting_origin_ = max;
-  }
+  void set_max_destinations_per_source_site_reporting_origin(int max);
 
-  void set_aggregatable_budget_per_source(int64_t max) {
-    aggregatable_budget_per_source_ = max;
-  }
+  void set_aggregatable_budget_per_source(int64_t max);
 
-  RateLimitConfig& rate_limits() { return rate_limits_; }
+  RateLimitConfig& rate_limits();
 
-  void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
+  void set_rate_limits(RateLimitConfig c);
 
-  void set_delete_expired_sources_frequency(base::TimeDelta frequency) {
-    delete_expired_sources_frequency_ = frequency;
-  }
+  void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
-  void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency) {
-    delete_expired_rate_limits_frequency_ = frequency;
-  }
+  void set_delete_expired_rate_limits_frequency(base::TimeDelta frequency);
 
-  void set_report_delay(base::TimeDelta report_delay) {
-    report_delay_ = report_delay;
-  }
+  void set_report_delay(base::TimeDelta report_delay);
 
   void set_offline_report_delay_config(
-      absl::optional<OfflineReportDelayConfig> config) {
-    offline_report_delay_config_ = config;
-  }
+      absl::optional<OfflineReportDelayConfig> config);
 
-  void set_reverse_reports_on_shuffle(bool reverse) {
-    reverse_reports_on_shuffle_ = reverse;
-  }
+  void set_reverse_reports_on_shuffle(bool reverse);
 
   // Note that these rates are *not* used to produce a randomized response; that
   // is controlled deterministically by `set_randomized_response()`.
-  void set_randomized_response_rates(AttributionRandomizedResponseRates rates) {
-    randomized_response_rates_ = rates;
-  }
+  void set_randomized_response_rates(AttributionRandomizedResponseRates rates);
 
-  void set_randomized_response(RandomizedResponse randomized_response) {
-    randomized_response_ = std::move(randomized_response);
-  }
+  void set_randomized_response(RandomizedResponse randomized_response);
 
   void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
+
+  // Detaches the delegate from its current sequence in preparation for being
+  // moved to storage, which runs on its own sequence.
+  void DetachFromSequence();
 
  private:
   int max_attributions_per_source_ = INT_MAX;
@@ -251,6 +234,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   absl::optional<uint64_t> navigation_trigger_data_cardinality_;
   absl::optional<uint64_t> event_trigger_data_cardinality_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Test manager provider which can be used to inject a fake AttributionManager.
