@@ -448,12 +448,14 @@ void Metrics::RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
 void Metrics::RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
                                            bool success,
-                                           int64_t time_taken_ms) {
+                                           int64_t time_taken_ms,
+                                           UserDataSource source) {
   ukm::builders::AutofillAssistant_CollectUserDataResult(source_id)
       .SetResult(static_cast<int64_t>(
           success ? Metrics::CollectUserDataResult::SUCCESS
                   : Metrics::CollectUserDataResult::FAILURE))
       .SetTimeTakenMs(time_taken_ms)
+      .SetUserDataSource(static_cast<int64_t>(source))
       .Record(ukm_recorder);
 }
 

@@ -580,6 +580,21 @@ class Metrics {
     kMaxValue = FAILURE
   };
 
+  // The source of the initial data for the current CollectUserData action.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantUserDataSource enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class UserDataSource {
+    UNKNOWN,
+    BACKEND,
+    CHROME_AUTOFILL,
+
+    kMaxValue = CHROME_AUTOFILL
+  };
+
   // Used for bitmasks for the InitialContactFieldsStatus,
   // InitialBillingFieldsStatus and InitialShippingFieldsStatus metrics.
   enum AutofillAssistantProfileFields {
@@ -694,7 +709,8 @@ class Metrics {
   static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
                                            ukm::SourceId source_id,
                                            bool success,
-                                           int64_t time_taken_ms);
+                                           int64_t time_taken_ms,
+                                           UserDataSource source);
   static void RecordOnboardingFetcherResult(
       OnboardingFetcherResultStatus status);
 

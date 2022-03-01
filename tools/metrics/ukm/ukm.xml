@@ -2184,6 +2184,11 @@ be describing additional metrics about the same event.
       prompted to them to when the action finished, either succesfully or not.
     </summary>
   </metric>
+  <metric name="UserDataSource" enum="AutofillAssistantUserDataSource">
+    <summary>
+      The source of the user data for the CollectUserData action.
+    </summary>
+  </metric>
 </event>
 
 <event name="AutofillAssistant.InChromeTriggering">

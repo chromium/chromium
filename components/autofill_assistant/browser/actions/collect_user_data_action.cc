@@ -440,7 +440,8 @@ void CollectUserDataAction::MaybeLogMetrics() {
   Metrics::RecordCollectUserDataSuccess(
       delegate_->GetUkmRecorder(), metrics_data_.source_id,
       metrics_data_.action_successful,
-      action_stopwatch_.TotalActiveTime().InMilliseconds());
+      action_stopwatch_.TotalActiveTime().InMilliseconds(),
+      metrics_data_.user_data_source);
   if (RequiresContact(*collect_user_data_options_)) {
     Metrics::RecordContactMetrics(
         delegate_->GetUkmRecorder(), metrics_data_.source_id,
@@ -711,6 +712,10 @@ void CollectUserDataAction::UpdateMetrics(UserData* user_data) {
     } else {
       metrics_data_.source_id =
           ukm::GetSourceIdForWebContentsDocument(delegate_->GetWebContents());
+      metrics_data_.user_data_source =
+          ShouldUseBackendData(proto_.collect_user_data())
+              ? Metrics::UserDataSource::BACKEND
+              : Metrics::UserDataSource::CHROME_AUTOFILL;
       FillInitialDataStateForMetrics(user_data->available_contacts_,
                                      user_data->available_addresses_,
                                      user_data->available_payment_instruments_);

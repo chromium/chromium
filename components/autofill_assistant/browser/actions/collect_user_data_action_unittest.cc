@@ -3554,6 +3554,11 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
   EXPECT_THAT(
       GetUkmTimeTakenMs(ukm_recorder_),
       ElementsAreArray({ToHumanReadableEntry(source_id_, kTimeTakenMs, 4000)}));
+  EXPECT_THAT(
+      GetUkmUserDataSource(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kUserDataSource,
+          static_cast<int64_t>(Metrics::UserDataSource::CHROME_AUTOFILL))}));
 }
 
 TEST_F(CollectUserDataActionTest, LogUkmFailure) {
@@ -3588,6 +3593,42 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
   EXPECT_THAT(
       GetUkmTimeTakenMs(ukm_recorder_),
       ElementsAreArray({ToHumanReadableEntry(source_id_, kTimeTakenMs, 3000)}));
+}
+
+TEST_F(CollectUserDataActionTest, LogUkmDataFromBackend) {
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_privacy_notice_text("privacy");
+  collect_user_data_proto->set_request_terms_and_conditions(true);
+  collect_user_data_proto->set_accept_terms_and_conditions_text(
+      "terms and conditions");
+  collect_user_data_proto->set_show_terms_as_checkbox(false);
+  collect_user_data_proto->set_terms_require_review_text("terms review");
+  collect_user_data_proto->mutable_user_data();
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
+        user_data_.terms_and_conditions_ = ACCEPTED;
+
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      });
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmCollectUserDataResult(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kResult,
+          static_cast<int64_t>(Metrics::CollectUserDataResult::SUCCESS))}));
+  EXPECT_THAT(GetUkmUserDataSource(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kUserDataSource,
+                  static_cast<int64_t>(Metrics::UserDataSource::BACKEND))}));
 }
 
 TEST_F(CollectUserDataActionTest, LogsUkmInitialSelectionFieldBitArray) {

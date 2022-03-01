@@ -70,6 +70,7 @@ const char kInitialShippingFieldsStatus[] = "InitialShippingFieldsStatus";
 const char kShippingModified[] = "ShippingModified";
 const char kResult[] = "Result";
 const char kTimeTakenMs[] = "TimeTakenMs";
+const char kUserDataSource[] = "UserDataSource";
 
 // Convenience accessors for UKM metrics.
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
@@ -122,6 +123,8 @@ std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmShippingModified(
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
 GetUkmCollectUserDataResult(ukm::TestAutoSetUkmRecorder& ukm_recorder);
 std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmTimeTakenMs(
+    ukm::TestAutoSetUkmRecorder& ukm_recorder);
+std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> GetUkmUserDataSource(
     ukm::TestAutoSetUkmRecorder& ukm_recorder);
 
 // Variant containing all UKM enums that we currently record/test.

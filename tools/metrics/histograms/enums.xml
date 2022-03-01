@@ -6008,6 +6008,12 @@ others/histograms.xml -->
   <int value="4" label="Created new entry"/>
 </enum>
 
+<enum name="AutofillAssistantUserDataSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Backend"/>
+  <int value="2" label="Chrome Autofill"/>
+</enum>
+
 <enum name="AutofillAwGSuggestionAvailability">
   <int value="0" label="No suggestion"/>
   <int value="1" label="Has suggestion, user doesn't select it"/>

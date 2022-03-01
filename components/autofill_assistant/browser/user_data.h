@@ -160,6 +160,8 @@ struct UserDataMetrics {
   bool personal_data_changed = false;
   bool action_successful = false;
 
+  Metrics::UserDataSource user_data_source = Metrics::UserDataSource::UNKNOWN;
+
   // Selection states.
   Metrics::UserDataSelectionState contact_selection_state =
       Metrics::UserDataSelectionState::NO_CHANGE;
