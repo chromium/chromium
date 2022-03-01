@@ -1428,7 +1428,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/mig/${{platform}}',
-              'version': 'vJgfh6ZaBQ_Re5o4LFapZr-dYRdfM-GjXEbilySNcNQC',
+              'version': '4wxov_ILjFdgBumBqgUgOgIcr4kcMh7i4b4oJi_cLjcC',
           },
       ],
       'condition': 'host_os == "linux" and checkout_mac',
