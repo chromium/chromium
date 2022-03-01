@@ -27,7 +27,7 @@
     "type": "image",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "JPEG",
-    "extensions": [".jpeg", ".jpg"],
+    "extensions": [".jpeg", ".jpg", ".jfif", ".pjpeg", ".pjp"],
     "mime": "image/jpeg"
   },
   {
@@ -76,8 +76,29 @@
     "type": "image",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "SVG",
-    "extensions": [".svg"],
+    "extensions": [".svg", ".svgz"],
     "mime": "image/svg+xml"
+  },
+  {
+    "type": "image",
+    "name": "IMAGE_FILE_TYPE",
+    "subtype": "AVIF",
+    "extensions": [".avif"],
+    "mime": "image/avif"
+  },
+  {
+    "type": "image",
+    "name": "IMAGE_FILE_TYPE",
+    "subtype": "JXL",
+    "extensions": [".jxl"],
+    "mime": "image/jxl"
+  },
+  {
+    "type": "image",
+    "name": "IMAGE_FILE_TYPE",
+    "subtype": "XBM",
+    "extensions": [".xbm"],
+    "mime": "image/x-xbitmap"
   },
 
   // Raw
@@ -86,56 +107,64 @@
     "name": "IMAGE_FILE_TYPE",
     "subtype": "ARW",
     "extensions": [".arw"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-sony-arw"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "CR2",
     "extensions": [".cr2"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-canon-cr2"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "DNG",
     "extensions": [".dng"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-adobe-dng"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "NEF",
     "extensions": [".nef"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-nikon-nef"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "NRW",
     "extensions": [".nrw"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-nikon-nrw"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "ORF",
     "extensions": [".orf"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-olympus-orf"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "RAF",
     "extensions": [".raf"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-fuji-raf"
   },
   {
     "type": "raw",
     "name": "IMAGE_FILE_TYPE",
     "subtype": "RW2",
     "extensions": [".rw2"],
-    "icon": "image"
+    "icon": "image",
+    "mime": "image/x-panasonic-rw2"
   },
 
   // Video
@@ -245,6 +274,13 @@
     "subtype": "WAV",
     "extensions": [".wav"],
     "mime": "audio/x-wav"
+  },
+  {
+    "type": "audio",
+    "name": "AUDIO_FILE_TYPE",
+    "subtype": "WEBA",
+    "extensions": [".weba"],
+    "mime": "audio/webm"
   },
 
   // Text

@@ -62,6 +62,7 @@ source_set("chromeos") {
     "//ui/chromeos/resources",
     "//ui/chromeos/strings",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/file_manager/base/gn:file_types_data_cpp",
     "//ui/resources",
     "//ui/strings",
   ]

@@ -226,16 +226,19 @@ TEST_F(RecentDiskSourceTest, GetAudioFiles) {
   ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
   ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
   ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
+  ASSERT_TRUE(CreateEmptyFile("7.amr", base::Time::FromJavaTime(7000)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(6, base::Time(), RecentSource::FileType::kAudio);
+      GetRecentFiles(7, base::Time(), RecentSource::FileType::kAudio);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
-  ASSERT_EQ(1u, files.size());
-  EXPECT_EQ("4.mp3", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+  ASSERT_EQ(2u, files.size());
+  EXPECT_EQ("7.amr", files[0].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(7000), files[0].last_modified());
+  EXPECT_EQ("4.mp3", files[1].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(4000), files[1].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetImageFiles) {
@@ -270,18 +273,26 @@ TEST_F(RecentDiskSourceTest, GetVideoFiles) {
   ASSERT_TRUE(CreateEmptyFile("4.mp3", base::Time::FromJavaTime(4000)));
   ASSERT_TRUE(CreateEmptyFile("5.gif", base::Time::FromJavaTime(5000)));
   ASSERT_TRUE(CreateEmptyFile("6.webm", base::Time::FromJavaTime(6000)));
+  ASSERT_TRUE(CreateEmptyFile("7.avi", base::Time::FromJavaTime(7000)));
+  ASSERT_TRUE(CreateEmptyFile("8.mov", base::Time::FromJavaTime(8000)));
+  // *.wmv is not supported yet.
+  ASSERT_TRUE(CreateEmptyFile("9.wmv", base::Time::FromJavaTime(9000)));
   // Newest
 
   std::vector<RecentFile> files =
-      GetRecentFiles(6, base::Time(), RecentSource::FileType::kVideo);
+      GetRecentFiles(9, base::Time(), RecentSource::FileType::kVideo);
 
   std::sort(files.begin(), files.end(), RecentFileComparator());
 
-  ASSERT_EQ(2u, files.size());
-  EXPECT_EQ("6.webm", files[0].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(6000), files[0].last_modified());
-  EXPECT_EQ("2.mp4", files[1].url().path().BaseName().value());
-  EXPECT_EQ(base::Time::FromJavaTime(2000), files[1].last_modified());
+  ASSERT_EQ(4u, files.size());
+  EXPECT_EQ("8.mov", files[0].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(8000), files[0].last_modified());
+  EXPECT_EQ("7.avi", files[1].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(7000), files[1].last_modified());
+  EXPECT_EQ("6.webm", files[2].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(6000), files[2].last_modified());
+  EXPECT_EQ("2.mp4", files[3].url().path().BaseName().value());
+  EXPECT_EQ(base::Time::FromJavaTime(2000), files[3].last_modified());
 }
 
 TEST_F(RecentDiskSourceTest, GetRecentFiles_UmaStats) {
